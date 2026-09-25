@@ -1,0 +1,9 @@
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.bin
+*.bits
+*.chk
+agents/NUM/data/*.bitset

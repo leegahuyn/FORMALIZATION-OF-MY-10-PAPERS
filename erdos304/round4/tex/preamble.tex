@@ -1,0 +1,51 @@
+% Common preamble for Erdos 304 Round 4 (XeLaTeX)
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Noto Serif CJK KR}[ItalicFont={Noto Serif CJK KR},ItalicFeatures={FakeSlant=0.18},BoldItalicFont={Noto Serif CJK KR Bold},BoldItalicFeatures={FakeSlant=0.18}]
+\setsansfont{Noto Sans CJK KR}
+\XeTeXlinebreaklocale "ko"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\usepackage{newunicodechar}
+\newfontfamily\latinfb{DejaVu Serif}[Scale=MatchLowercase]
+\newunicodechar{ő}{{\latinfb\symbol{"0151}}}
+\newunicodechar{é}{{\latinfb\symbol{"00E9}}}
+\newunicodechar{è}{{\latinfb\symbol{"00E8}}}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=green!40!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{tcolorbox}
+% status tags
+\newcommand{\PROVED}{\textcolor{green!45!black}{\textbf{[PROVED]}}}
+\newcommand{\COND}[1]{\textcolor{orange!80!black}{\textbf{[CONDITIONAL on #1]}}}
+\newcommand{\OPEN}{\textcolor{red!70!black}{\textbf{[OPEN]}}}
+\newcommand{\REFUTED}{\textcolor{purple!80!black}{\textbf{[REFUTED]}}}
+\newcommand{\NUMERIC}{\textcolor{blue!70!black}{\textbf{[NUMERICAL]}}}
+\newcommand{\HEUR}{\textcolor{gray!70!black}{\textbf{[HEURISTIC]}}}
+\newcommand{\EXT}{\textcolor{teal!70!black}{\textbf{[EXTERNAL INPUT]}}}
+% theorem environments (Korean names)
+\theoremstyle{plain}
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{proposition}[theorem]{명제}
+\newtheorem{corollary}[theorem]{따름정리}
+\newtheorem{conjecture}[theorem]{추측}
+\newtheorem{hypothesis}[theorem]{가설}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{example}[theorem]{예}
+\newtheorem{counterexample}[theorem]{반례}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{주의}
+% notation
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\Lam}{\Lambda}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\e}{\mathrm{e}}
+\DeclareMathOperator{\lcm}{lcm}
