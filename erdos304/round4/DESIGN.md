@@ -73,5 +73,6 @@ Baker Ch.12–13: literature inputs (Drappeau–Shao arXiv:1602.07885 Thm 2.4 & 
 | CMM | S5 | composite-modulus mixing theorem, singular-series consequence, numerics |
 | STRUCT | S1, S2, S3 (implications), S6, ladder table | rigorous structural theorems, barrier for geometric blocks, conditional ladder, smooth route restated with dedup |
 | NUM | S7 | `H(23)`, histograms, resonance-height data |
+| CORE | SP1 directly | three honest attempts at SP1 or a strict intermediate step; rigorous method-barrier theorems |
 
 Stage 2: two auditors (different agents) re-derive everything tagged PROVED/REFUTED.
