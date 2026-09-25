@@ -1,0 +1,2 @@
+L=193 M=20 eta=0.3: local max of g at t=60322.634132729373844: g/M=0.700028135229  threshold 0.7: RESONANCE (g>=thr)
+   first crossing t_c = 60322.5931551352;  certified no resonance on [60322.383044 (= left end of the ambiguous resscan cell), t_c - 1e-3]: True (52278 grid points, step 4e-6)

@@ -1,0 +1,21 @@
+L=25 Lambda=26771144400 proper divisors=2879 |S3|=244906585 (29.0s)
+a=13192321591  in S3+S3 (kappa<=6): NO
+a=13192321590  in S3+S3 (kappa<=6): YES  (x=16719150, a-x=13175602440)
+a=3805051219  in S3+S3 (kappa<=6): YES  (x=65999, a-x=3804985220)
+a=3805051218  in S3+S3 (kappa<=6): YES  (x=65998, a-x=3804985220)
+a=13206515701  in S3+S3 (kappa<=6): NO
+a=13260200809  in S3+S3 (kappa<=6): NO
+a=13371898789  in S3+S3 (kappa<=6): NO
+a=13376592721  in S3+S3 (kappa<=6): NO
+a=13376620223  in S3+S3 (kappa<=6): NO
+a=13378611373  in S3+S3 (kappa<=6): NO
+a=13378799657  in S3+S3 (kappa<=6): NO
+a=13381865747  in S3+S3 (kappa<=6): NO
+a=13382764459  in S3+S3 (kappa<=6): NO
+a=13383937813  in S3+S3 (kappa<=6): NO
+a=13384031093  in S3+S3 (kappa<=6): NO
+a=13385312069  in S3+S3 (kappa<=6): NO
+a=13385425717  in S3+S3 (kappa<=6): NO
+a=13385435681  in S3+S3 (kappa<=6): NO
+a=13385478149  in S3+S3 (kappa<=6): NO
+a=13385486033  in S3+S3 (kappa<=6): NO

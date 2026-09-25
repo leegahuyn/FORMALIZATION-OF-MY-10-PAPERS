@@ -15,6 +15,7 @@
  * existing level is loaded and the BFS resumes from there.
  *
  * usage: hbfs L [-t threads] [-B blockwords] [-c ckdir] [-o outprefix] [-k kappafile] [-m maxlevel]
+ *   -keep1 : delete checkpoint of level k-1 after level k is written (disk saving, L=25)
  *   -s : scatter threshold (|R_{k-1}|*#div below it -> sparse scatter step; 0 = always dense)
  *   -k : (small L only) write kappa(a), a=0..Lambda-1, as uint8 to kappafile
  * outputs: <outprefix>_levels.csv, <outprefix>_dyadic.csv, progress on stderr.
@@ -135,7 +136,7 @@ static int load_level(const char*dir,int L,int k,u64*b){
 
 int main(int argc,char**argv){
   if(argc<2){ fprintf(stderr,"usage: hbfs L [-t th] [-B bw] [-c ckdir] [-o outprefix] [-k kappafile] [-m maxlev]\n"); return 1; }
-  int L=atoi(argv[1]); int th=2; u64 BW=1<<15; const char*ck=NULL; const char*op="hbfs"; const char*kf=NULL; int maxlev=64; u64 scth=100000000ULL;
+  int L=atoi(argv[1]); int th=2; u64 BW=1<<15; const char*ck=NULL; const char*op="hbfs"; const char*kf=NULL; int maxlev=64; u64 scth=100000000ULL; int keep1=0;
   for(int i=2;i<argc;i++){
     if(!strcmp(argv[i],"-t")) th=atoi(argv[++i]);
     else if(!strcmp(argv[i],"-B")) BW=strtoull(argv[++i],0,10);
@@ -144,6 +145,7 @@ int main(int argc,char**argv){
     else if(!strcmp(argv[i],"-k")) kf=argv[++i];
     else if(!strcmp(argv[i],"-m")) maxlev=atoi(argv[++i]);
     else if(!strcmp(argv[i],"-s")) scth=strtoull(argv[++i],0,10);
+    else if(!strcmp(argv[i],"-keep1")) keep1=1;
   }
   gen_divisors(L); W=(LAM+63)/64;
   fprintf(stderr,"L=%d Lambda=%llu tau=%d proper=%d words=%llu (%.1f MB/bitset) threads=%d BW=%llu\n",L,(unsigned long long)LAM,ndiv+1,ndiv,(unsigned long long)W,W*8/1e6,th,(unsigned long long)BW);
@@ -157,7 +159,7 @@ int main(int argc,char**argv){
   char fn[1200]; snprintf(fn,sizeof fn,"%s_levels.csv",op);
   FILE*fl=fopen(fn,k0?"a":"w"); if(k0==0) fprintf(fl,"L,Lambda,tau,k,ones_Rk,new_k,a_k_first_zero_of_Rkm1,lowerhalf_zeros_Rk,upperhalf_zeros_Rk,first_zero_Rk,seconds\n");
   snprintf(fn,sizeof fn,"%s_dyadic.csv",op);
-  FILE*fd=fopen(fn,k0?"a":"w"); if(k0==0) fprintf(fd,"L,k,j,lo,hi,zeros_Rk_in_[lo,hi)\n");
+  FILE*fd=fopen(fn,k0?"a":"w"); if(k0==0) fprintf(fd,"L,k,j,lo,hi,zeros_Rk_in_lo_hi\n");
   u64 half=LAM/2;
   u64 prevones=count_ones(A,0,LAM);
   if(k0==0){ fprintf(fl,"%d,%llu,%d,0,1,1,0,%llu,%llu,1,0\n",L,(unsigned long long)LAM,ndiv+1,(unsigned long long)(half-1),(unsigned long long)(LAM-half)); fflush(fl); }
@@ -177,7 +179,8 @@ int main(int argc,char**argv){
     fflush(fd);
     if(kap){ for(u64 j=0;j<W;j++){ u64 x=B[j]&~A[j]; while(x){ int b=__builtin_ctzll(x); x&=x-1; kap[(j<<6)+b]=(uint8_t)k; } } }
     fprintf(stderr,"L=%d level %d: |R_k|=%llu new=%llu a_k=%llu lowerzeros=%llu upperzeros=%llu  (%.1fs, total %.1fs)\n",L,k,(unsigned long long)ones,(unsigned long long)(ones-prevones),(unsigned long long)ak,(unsigned long long)lz,(unsigned long long)uz,dt,now()-T0);
-    if(ck){ double ts=now(); if(save_level(ck,L,k,B)) fprintf(stderr,"checkpoint write FAILED\n"); else fprintf(stderr,"  checkpoint level %d written (%.1fs)\n",k,now()-ts); }
+    if(ck){ double ts=now(); if(save_level(ck,L,k,B)) fprintf(stderr,"checkpoint write FAILED\n"); else { fprintf(stderr,"  checkpoint level %d written (%.1fs)\n",k,now()-ts);
+        if(keep1 && k>=2){ char old[1100]; snprintf(old,sizeof old,"%s/L%d_R%d.bin",ck,L,k-1); unlink(old); } } }
     u64*tmp=A; A=B; B=tmp; prevones=ones;
     if(ones==LAM){ fprintf(stderr,"H(%d) = %d\n",L,k); break; }
   }
