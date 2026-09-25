@@ -109,7 +109,7 @@ $Q_y$에 남는다; 그래도 $c\mid Q_y$, $E\subseteq P_y$이면 $v_p(cU(E))\le
 \end{remark}
 
 %======================================================================
-\subsection{특성함수의 세 구간 評價}
+\subsection{특성함수의 세 구간 평가}
 \label{VKGAP:sec-charfun}
 
 모든 $\tau$에서 $|1-q+qe^{i\alpha}|^2=1-2q(1-q)(1-\cos\alpha)\le e^{-2q(1-q)(1-\cos\alpha)}$이므로
@@ -150,10 +150,110 @@ $v_y\ge 0.19^2(\log 1.5)^2=0.005935\ldots\ge v_0$.
 \end{proof}
 
 \begin{remark}\label{VKGAP:rem-lattice}
-\HEUR/\NUMERIC\ 이 구간의 評價는 본질적으로 최선이다: $\tau=2\pi/\log y$에서
+\HEUR/\NUMERIC\ 이 구간의 평가는 본질적으로 최선이다: $\tau=2\pi/\log y$에서
 $S=N\log y-\sum_p\xi_pu_p$ ($u_p=\log y-\log p\in[0,\log2)$, $N=\sum\xi_p$)이므로 $e^{i\tau S}=e^{-i\tau\sum\xi_pu_p}$이고
 $|\varphi(\tau)|\approx\exp(-\tau^2 q(1-q)\sum_p (u_p-\bar u)^2/2)=\exp(-\Theta(n/(\log y)^2))$ (DESIGN S4(ii)의 경고).
 참 극한 분산은 $\mathrm{Var}(\log U)$, $U\sim\mathrm{Unif}(1/2,1]$, 즉 $2-(\log2)^2-2\log2-(\log2-1)^2=0.03907$;
 수치는 \S\ref{VKGAP:sec-num}.
 아래의 핵심은 이 구간이 Fejér 적분에 $\int e^{-c_2n\tau^2}d\tau$로만 들어간다는 것이다(높이 $T$의 인자가 없음).
+\end{remark}
+
+\paragraph{매끄러운 가중치.} $\kappa=1/20$, $w:\R\to[0,1]$을 사다리꼴 함수로 둔다:
+$w=0$ ($u\le1/2$ 또는 $u\ge1$), $w(u)=(u-1/2)/\kappa$ ($1/2\le u\le1/2+\kappa$), $w=1$ ($1/2+\kappa\le u\le1-\kappa$),
+$w(u)=(1-u)/\kappa$ ($1-\kappa\le u\le1$). $\tilde w(s)=\int_0^\infty w(u)u^{s-1}du$ (정함수),
+$W_y(\tau):=\sum_{p}w(p/y)\log p\;p^{i\tau}$.
+$\tilde w(1)=\int w=1/2-\kappa=0.45$.
+
+\begin{lemma}[Mellin 평가]\label{VKGAP:lem-mellin}
+\PROVED\ $0\le\sigma\le3$이면 $|\tilde w(\sigma+it)|\le\min(1,80/t^2)$이고 $\int_\R|\tilde w(\sigma+it)|dt<36$.
+또 모든 실수 $\tau$에서 $|\tilde w(1+i\tau)|\le \tfrac12|F(\tau)|+\kappa$, 여기서
+$F(\tau):=\frac{2-2^{-i\tau}}{1+i\tau}$, $|F(\tau)|\le 3/\sqrt{1+\tau^2}$.
+\end{lemma}
+\begin{proof}
+$w(1/2)=w(1)=0$이므로 부분적분으로 $\tilde w(s)=-\frac1s\int w'(u)u^sdu$, 그리고
+$\int w'(u)u^sdu=\frac{1}{\kappa(s+1)}\big[(\tfrac12+\kappa)^{s+1}-(\tfrac12)^{s+1}-1+(1-\kappa)^{s+1}\big]$.
+$\sigma\ge0$이면 $u\le1$에서 $|u^{s+1}|\le1$이므로 $|\tilde w(s)|\le 4/(\kappa|s||s+1|)\le 80/t^2$.
+또 $[1/2,1]$에서 $u^{\sigma-1}\le2$이므로 $|\tilde w(s)|\le\frac12\cdot2=1$.
+$\int\min(1,80/t^2)dt=4\sqrt{80}<36$.
+끝으로 $\int|w-1_{[1/2,1]}|=\kappa$ (두 삼각형)이고 $\int_{1/2}^1u^{i\tau}du=\frac{1-2^{-1-i\tau}}{1+i\tau}=\frac12F(\tau)$,
+$|2-2^{-i\tau}|\le3$.
+\end{proof}
+
+\begin{lemma}[VK로부터의 매끄러운 소수합]\label{VKGAP:lem-VK}
+\COND{(E1)--(E4) (교과서 입력, \EXT)}\ 절대상수 $y_1$과 $\eps_3(y)\to0$이 있어, $y\ge y_1$, $|\tau|\le T_*(y)$이면
+\[
+\big|W_y(\tau)-y^{1+i\tau}\tilde w(1+i\tau)\big|\le\eps_3(y)\,y .
+\]
+명시적으로 $\eps_3(y)\le C\exp\!\big(\tfrac52\log\log y-\tfrac{c_1}{4}(\log\log y)^{5/3}\big)+4y^{-1/2}$ ($C$ 절대상수).
+\end{lemma}
+\begin{proof}
+(1) \emph{Mellin 표현.} $I(\tau):=\sum_n\Lam(n)n^{-i\tau}w(n/y)$. (E4)와 Lemma~\ref{VKGAP:lem-mellin}에서
+$w(n/y)=\frac1{2\pi i}\int_{(2)}\tilde w(s)(n/y)^{-s}ds$이고, $\sum_n\Lam(n)n^{-2}\int|\tilde w(2+it)|dt<\infty$이므로
+합과 적분을 교환하여
+$I(\tau)=\frac1{2\pi i}\int_{(2)}\tilde w(s)\,y^s\,G(s)\,ds$, $G(s):=-\frac{\zeta'}{\zeta}(s+i\tau)=\sum_n\Lam(n)n^{-i\tau-s}$.
+
+(2) \emph{윤곽.} $Y:=|\tau|+y^3$, $H:=3T_*(y)$ (큰 $y$에서 $T_*(y)\ge y^3+3$이므로 $2|\tau|+y^3+2\le H$),
+$\eta_*:=\eta(H)$, $\sigma_1:=1-\eta_*/2$. 직사각형 $\mathcal R=[\sigma_1,2]\times[-Y,Y]$의 점 $s$에 대해
+$z=s+i\tau$는 $|\mathrm{Im}\,z|\le Y+|\tau|\le H$, $\mathrm{Re}\,z\ge\sigma_1>1-\eta(\mathrm{Im}\,z)$이므로 (E2)에 의해 $\zeta(z)\ne0$.
+따라서 $\mathcal R$에서 피적분함수의 특이점은 $z=1$, 즉 $s=1-i\tau$ ($|\tau|<Y$이므로 내부) 하나뿐이고
+$-\zeta'/\zeta$의 $z=1$에서의 유수는 $1$이므로 유수는 $\tilde w(1-i\tau)y^{1-i\tau}$이다. Cauchy 정리로
+\[
+I(\tau)=y^{1-i\tau}\tilde w(1-i\tau)+J_{\rm left}+J_{\rm hor}+J_{\rm tail},
+\]
+$J_{\rm left}$은 $\mathrm{Re}\,s=\sigma_1$, $|t|\le Y$ 위의, $J_{\rm hor}$은 $t=\pm Y$, $\sigma_1\le\sigma\le2$ 위의,
+$J_{\rm tail}$은 $\mathrm{Re}\,s=2$, $|t|>Y$ 위의 적분 (각각 $\frac1{2\pi i}$ 포함).
+
+(3) \emph{윤곽 위의 $|G|$.} $J_{\rm left}$, $J_{\rm hor}$ 위에서 $z=\sigma+iu$, $\sigma\in[\sigma_1,2]$, $|u|\le H$.
+$|u|\ge2$이면 (E3)에서 $|G(s)|\le\sum_{|\gamma-u|\le1}|z-\rho|^{-1}+C\log(|u|+2)$; 이런 $\rho$는 $|\gamma|\le H+1$이므로
+(E2)에서 $\beta<1-\eta(\gamma)\le1-\eta(H+1)$. $\eta(H+1)$과 $\eta(H)$의 차이는 무시할 수 있으므로 (필요하면 $H$를 $H+1$로 바꾸어) $\beta\le1-\eta_*$,
+따라서 $|z-\rho|\ge\sigma-\beta\ge\eta_*/2$, 개수 $\le C\log(|u|+2)$. 즉 $|G|\le 3C\log(H+2)/\eta_*$.
+$|u|\le2$이면 이는 $J_{\rm left}$ 위에서만 일어나고 ($J_{\rm hor}$ 위에서는 $|u|=|\tau\pm Y|\ge y^3$),
+$|z-1|\ge1-\sigma_1=\eta_*/2$이므로 (E3)의 마지막 문장에서 $|G|\le B_0+2/\eta_*$.
+따라서 윤곽 위에서 $|G|\le Z_*:=C_7\log(H+2)/\eta_*$.
+
+(4) \emph{적분 평가.} Lemma~\ref{VKGAP:lem-mellin}에서
+$|J_{\rm left}|\le\frac{1}{2\pi}y^{\sigma_1}Z_*\cdot36\le 6Z_*y^{1-\eta_*/2}$;
+$|J_{\rm hor}|\le 2\cdot\frac1{2\pi}\cdot\frac{80}{Y^2}y^2Z_*\le 26Z_*y^{-4}$;
+$\mathrm{Re}\,s=2$에서 $|G|\le\sum\Lam(n)n^{-2}=-\zeta'(2)/\zeta(2)<0.6$이므로
+$|J_{\rm tail}|\le\frac1{2\pi}y^2\cdot0.6\cdot\frac{160}{Y}\le 16/y$.
+
+(5) \emph{점근.} $\lambda:=\log T_*(y)=(\log y)^{3/2}(\log\log y)^{-3}$. 큰 $y$에서
+$\log(H+3)\le2\lambda$, $\log\log(H+3)\le2\log\log y$, $(2\lambda)^{2/3}=2^{2/3}\log y\,(\log\log y)^{-2}$이므로
+\[
+\eta_*\ge c_1(2\lambda)^{-2/3}(2\log\log y)^{-1/3}=\tfrac{c_1}{2}\,\frac{(\log\log y)^{5/3}}{\log y},\qquad
+Z_*\le C_7\cdot 2\lambda\cdot\tfrac{2\log y}{c_1(\log\log y)^{5/3}}\le C_8(\log y)^{5/2}.
+\]
+따라서 $y^{-\eta_*/2}\le\exp(-\tfrac{c_1}{4}(\log\log y)^{5/3})$이고
+$|I(\tau)-y^{1-i\tau}\tilde w(1-i\tau)|\le 6C_8\,y\exp(\tfrac52\log\log y-\tfrac{c_1}4(\log\log y)^{5/3})+26C_8(\log y)^{5/2}y^{-4}+16/y$.
+
+(6) \emph{소수 거듭제곱 제거.} $w$는 실수이므로 $\overline{I(\tau)}=\sum_n\Lam(n)n^{i\tau}w(n/y)$, $\overline{y^{1-i\tau}\tilde w(1-i\tau)}=y^{1+i\tau}\tilde w(1+i\tau)$.
+$\overline{I(\tau)}-W_y(\tau)$은 $n=p^k$ ($k\ge2$, $n\le y$) 항의 합이고 절댓값 $\le\psi(y)-\theta(y)=\sum_{k\ge2}\theta(y^{1/k})
+\le\log4\,(\sqrt y+y^{1/3}\log_2y)\le3\sqrt y$ ((E1)의 Chebyshev 상계; 큰 $y$).
+(5)와 합치면 주장.
+\end{proof}
+
+\begin{corollary}[무조건적 비공명 $(\mathrm{NR}')$]\label{VKGAP:cor-NRuncond}
+\COND{(E1)--(E4)}\ 절대상수 $y_1'$이 있어 $y\ge y_1'$, $4\le|\tau|\le T_*(y)$이면
+$\sum_{p\in P_y}(1-\cos(\tau\log p))\ge M_y/15$, 따라서 $|\varphi(\tau)|\le e^{-n/15}$.
+\end{corollary}
+\begin{proof}
+$0\le w(p/y)\le 1_{P_y}(p)$, $\log p\le\log y$, $1-\cos\ge0$이므로
+\[
+\sum_{p\in P_y}(1-\cos(\tau\log p))\ge\frac1{\log y}\sum_pw(p/y)\log p\,(1-\cos(\tau\log p))=\frac{W_y(0)-\mathrm{Re}\,W_y(\tau)}{\log y}.
+\]
+Lemma~\ref{VKGAP:lem-VK} ($\tau$와 $0$에서)과 Lemma~\ref{VKGAP:lem-mellin}에서 이는
+$\ge\frac{y}{\log y}\big(\tilde w(1)-|\tilde w(1+i\tau)|-2\eps_3(y)\big)\ge\frac{y}{\log y}\big(0.45-\tfrac{3}{2\sqrt{17}}-0.05-2\eps_3(y)\big)
+\ge 0.035\,\frac{y}{\log y}$ ($\frac{3}{2\sqrt{17}}=0.36380\ldots$).
+(E1)에서 $M_y\le0.51\,y/\log y$이므로 $\ge0.068M_y\ge M_y/15$. 마지막은 \eqref{VKGAP:eq-phi-basic}.
+\end{proof}
+
+\begin{remark}[DESIGN S4(iii)의 $F$와 $1/\log p$ 가중치]\label{VKGAP:rem-F}
+(a) 위 증명은 $1-\cos\ge0$이므로 \emph{하한 방향}만 필요하다는 점을 써서, 절단 소수합 $A_y(\tau)$와 $1/\log p$ 가중의 부분합을
+피했다: $1_{P_y}(p)\ge w(p/y)\log p/\log y$. 이렇게 하면 뒤틀린 절단 명시공식 대신 Mellin 윤곽 이동만으로 충분하다.
+(b) \PROVED\ $|F(\tau)|^2=\frac{5-4\cos(\tau\log2)}{1+\tau^2}\le a+\frac{1-a}{1+\tau^2}$, $a=2(\log2)^2=0.96091\ldots$
+($1-\cos x\le x^2/2$ 사용). 따라서 $\sup_{|\tau|\ge1}|F|\le\sqrt{(1+a)/2}=0.99018\ldots$이고
+$1-|F(\tau)|\ge\frac{1-|F|^2}{2}\ge\frac{(1-a)\tau^2}{2(1+\tau^2)}\ge 0.01954\,\frac{\tau^2}{1+\tau^2}$.
+(c) \NUMERIC\ (구간 산술, \texttt{code/F\_check.py}, 출력 \texttt{out/F\_check.out}) $\sup_{|\tau|\ge1}|F(\tau)|=|F(1)|=0.98057\ldots$,
+$1-|F(\tau)|\ge0.0194\,\tau^2$ ($0.02\le\tau\le1$; $\tau<0.02$에서는 (b)가 $0.01953\tau^2$를 준다). lead의 수치 주장과 일치한다.
+(d) 본 증명에서는 $|\tau|\le4$를 Lemma~\ref{VKGAP:lem-pair}로, $|\tau|\ge4$를 $|F|\le3/\sqrt{17}$로 처리하므로 (b),(c)는 필요 없다.
 \end{remark}
