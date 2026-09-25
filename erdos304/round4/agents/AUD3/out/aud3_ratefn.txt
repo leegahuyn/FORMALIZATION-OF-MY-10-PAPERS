@@ -1,0 +1,6 @@
+x=0.7: lambda*=2.01363 I(x)=0.5760 slope I/ln10=0.2502
+x=0.8: lambda*=2.87129 I(x)=0.8153 slope I/ln10=0.3541
+x=0.9: lambda*=5.30469 I(x)=1.1963 slope I/ln10=0.5195
+eta=0.3: 2pi/arccos(1-eta)=7.899 -> Q=8
+eta=0.2: 2pi/arccos(1-eta)=9.764 -> Q=10
+eta=0.1: 2pi/arccos(1-eta)=13.931 -> Q=14

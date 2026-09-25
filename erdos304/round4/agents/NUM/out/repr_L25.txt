@@ -1,0 +1,16 @@
+L=25 a_1=1: 1 terms: 1  distinct=True (dedup steps 0) [dfs nodes 1]
+      = Lam/26771144400
+L=25 a_2=27: 2 terms: 26 + 1  distinct=True (dedup steps 0) [dfs nodes 1]
+      = Lam/1029659400 + Lam/26771144400
+L=25 a_3=10103: 3 terms: 10032 + 70 + 1  distinct=True (dedup steps 0) [dfs nodes 1]
+      = Lam/2668575 + Lam/382444920 + Lam/26771144400
+L=25 a_4=5959627: 4 terms: 5920200 + 39330 + 95 + 2  distinct=True (dedup steps 0) [dfs nodes 1]
+      = Lam/4522 + Lam/680680 + Lam/281801520 + Lam/13385572200
+L=25 a_5=381174281: 5 terms: 371821450 + 9237800 + 114114 + 912 + 5  distinct=True (dedup steps 0) [dfs nodes 1]
+      = Lam/72 + Lam/2898 + Lam/234600 + Lam/29354325 + Lam/5354228880
+L=25 a_6=3805051219: 6 terms: 3346393050 + 446185740 + 12257850 + 214200 + 374 + 5  distinct=True (dedup steps 0) [dfs nodes 2]
+      = Lam/8 + Lam/60 + Lam/2184 + Lam/124982 + Lam/71580600 + Lam/5354228880
+L=25 a_7=13192321591: 7 terms: 8923714800 + 3824449200 + 424938800 + 19122246 + 96140 + 400 + 5  distinct=True (dedup steps 0) [dfs nodes 3]
+      = Lam/3 + Lam/7 + Lam/63 + Lam/1400 + Lam/278460 + Lam/66927861 + Lam/5354228880
+L=25 a_8=26577893791: 8 terms: 13385572200 + 8923714800 + 3824449200 + 424938800 + 19122246 + 96140 + 400 + 5  distinct=True (dedup steps 0) [dfs nodes 4]
+      = Lam/2 + Lam/3 + Lam/7 + Lam/63 + Lam/1400 + Lam/278460 + Lam/66927861 + Lam/5354228880

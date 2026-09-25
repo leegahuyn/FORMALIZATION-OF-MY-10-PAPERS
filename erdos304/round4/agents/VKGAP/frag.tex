@@ -1,0 +1,720 @@
+\section{VKGAP: 소수 풀의 비공명에서 $\Lam_L$의 약수 간격으로}
+\label{VKGAP:sec}
+
+이 절의 목표는 DESIGN S3--S4의 경로를 완전한 증명으로 만드는 것이다.
+핵심은 풀 $P=(L/2,L]$의 소수들에 대한 독립 Bernoulli 포함 모형에서 $S=\sum_{p\in E}\log p$의
+국소 분포를 Fejér 핵으로 제어하고, 공약수 $c\mid Q$로 목표 규모까지 이동시키는 것이다.
+해석적 입력은 (i) 소수 정리, (ii) Vinogradov--Korobov(VK) 영점 자유 영역, (iii) $\zeta'/\zeta$의
+부분분수 전개뿐이다(모두 교과서 사실, \EXT).
+결과 요약은 \S\ref{VKGAP:sec-ledger}의 상태 원장에 있다.
+
+\paragraph{설계에 관한 한 마디.}
+DESIGN S4는 $\ell\ge C(\log L)^4$을 요구했으나, 아래에서는 구간 $\tau_1\le|\tau|\le 4$ (격자 공명 구간)의
+기여를 ``길이 $\times$ 상한''이 아니라 적분 $\int e^{-c n\tau^2}\,d\tau$로 직접 평가한다.
+이 구간은 Fejér 가중치 $\le 1$로만 들어오므로 높이 $T$의 인자가 붙지 않는다. 그 결과
+$n\ge C_0(\log L)^2\log\log L$이면 충분하고 $X_0=\exp(C(\log L)^3\log\log L)$를 얻는다.
+또한 해석적 입력을 매끄러운(사다리꼴) 가중 소수합으로 바꾸어 뒤틀린(twisted) 절단 명시공식을
+쓸 필요를 없앴다. 작은 규모는 더 작은 풀 $P_y=(y/2,y]$에 같은 정리를 적용해 처리한다(정리~\ref{VKGAP:thm-A-y}).
+
+%======================================================================
+\subsection{기호, 가져오는 결과, 외부 입력}
+\label{VKGAP:sec-setup}
+
+$L$은 충분히 큰 정수, $\Lam=\Lam_L=\lcm(1,\dots,L)$, $\log\Lam_L=\psi(L)$.
+$y\ge 16$에 대하여
+\[
+P_y=\{p \text{ 소수}: y/2<p\le y\},\quad M_y=|P_y|,\quad \theta_y=\sum_{p\in P_y}\log p,\quad
+A_y(\tau)=\sum_{p\in P_y}p^{i\tau},
+\]
+$P=P_L$, $M=M_L$, $\theta_P=\theta_L$, $A=A_L$. $E\subseteq P_y$에 대해 $U(E)=\prod_{p\in E}p$.
+$L\ge y$일 때 $Q_y=Q_{y,L}:=\Lam_L/\prod_{p\in P_y}p$ (정수; $P_y$의 소수는 $\Lam_L$을 나눈다).
+$Q:=Q_{L,L}$은 BRIEF의 $Q$와 같다. $\log Q_y=\psi(L)-\theta_y$.
+VK 높이: $T_*(y):=\exp\!\big((\log y)^{3/2}(\log\log y)^{-3}\big)$.
+
+\paragraph{Bernoulli 모형.} $q\in(0,1/2]$, $(\xi_p)_{p\in P_y}$ 독립, $\Pr(\xi_p=1)=q$.
+\[
+S=\sum_{p\in P_y}\xi_p\log p,\quad \mu=q\theta_y,\quad V=q(1-q)\sum_{p\in P_y}(\log p)^2,\quad
+n=q(1-q)M_y,\quad \varphi(\tau)=\mathbb{E}\,e^{i\tau S}.
+\]
+$0<q<1$이므로 모든 부분집합 $E\subseteq P_y$가 양의 확률을 가진다: 따라서
+``$\Pr(|S-s|\le r)>0$''은 ``$|\log U(E)-s|\le r$인 $E\subseteq P_y$가 존재''와 동치이다.
+$\log(y/2)\ge \log y/\sqrt2$ ($y\ge 11$)이므로
+\begin{equation}\label{VKGAP:eq-V}
+n(\log y)^2/2\le V\le n(\log y)^2 .
+\end{equation}
+
+\paragraph{말뭉치에서 가져오는 결과 (모두 [PROVED], 포인터).}
+(K1) 약수 판정 $m\mid\Lam_L\iff p^{v_p(m)}\le L$ (p1p4 Lem.~5.1).
+(K2) Greedy: $1\le R<\Lam_L$에서 $R$ 이하의 최대 약수 $d$를 빼면 $R-d<R/2$, $R-d<d$이고
+greedy 항들은 엄격히 감소하는 진약수이다 (p1p4 Lem.~5.2, Cor.~5.3).
+(K3) 작은 잔차 정리 (p1p4 Thm.~5.7, $U=\emptyset$, $u=0$): $M\ge 3k+1$이면 $3\le R<\min((L/2)^{k+1},\Lam_L)$은
+서로 다른 약수 $\le k+2$개의 합.
+(K4) 간격 가설 $\Rightarrow$ 상계 (p1p4 Prop.~5.18): $0<\delta\le 1/4$, $X_0\ge L$, 모든 $x\in[X_0,\Lam_L/X_0]$에
+대해 $[(1-\delta)x,x]$에 $\Lam_L$의 약수가 있고 $k=\lceil\log X_0/\log(L/2)\rceil$가 $M\ge 3k+1$을 만족하면
+$H(L)\le \log_2X_0+\log\Lam_L/\log(1/\delta)+\log X_0/\log(L/2)+5$.
+(K5) 전이: $b\le\Lam_L\Rightarrow N(a,b)\le 2H(L)$ (p1p4 5752--5819).
+
+\paragraph{외부 입력.}
+\begin{itemize}[leftmargin=2em]
+\item[(E1)] \EXT\ (소수 정리, 오차항 포함; de la Vallée Poussin; 예: Montgomery--Vaughan I, Thm.~6.9,
+Davenport ch.~18; recalled) $\psi(x)=x+O(xe^{-c\sqrt{\log x}})$, $\pi(x)=x/\log x+O(x/\log^2x)$.
+따라서 고정된 $0<\alpha<\beta\le 1$에 대해 $\pi(\beta y)-\pi(\alpha y)=(\beta-\alpha+o(1))y/\log y$,
+$M_y=(1/2+o(1))y/\log y$, $\theta_y=(1/2+o(1))y$.
+또 Chebyshev 상계 $\theta(x)\le x\log 4$ ($x\ge1$; Erdős의 초등 증명, 예: MV I \S2.2; recalled).
+\item[(E2)] \EXT\ (VK 영점 자유 영역; Titchmarsh, \emph{The theory of the Riemann zeta-function}, Thm.~6.19;
+Ivić, \emph{The Riemann zeta-function}, Thm.~6.1; Iwaniec--Kowalski Thm.~8.29; recalled)
+절대상수 $c_1\in(0,1/10]$이 있어 $\eta(t):=c_1(\log(|t|+3))^{-2/3}(\log\log(|t|+3))^{-1/3}$라 두면
+$\zeta(\sigma+it)\ne0$ ($\sigma\ge1-\eta(t)$, 모든 실수 $t$).
+(교과서는 $|t|\ge t_0$에 대해 서술한다. $|t|\le t_0$에서는 $\sigma\ge1$에 영점이 없고 $|\gamma|\le t_0$인 영점은 유한개이며
+모두 $\beta<1$이므로 $c_1$을 줄이면 모든 $t$로 확장된다.) $\eta$는 $|t|$에 대해 감소한다.
+\item[(E3)] \EXT\ ($\zeta'/\zeta$의 부분분수; Titchmarsh Thm.~9.6(A), Thm.~9.2; Davenport ch.~15; recalled)
+$|t|\ge2$, $-1\le\sigma\le2$에서 $\frac{\zeta'}{\zeta}(s)=\sum_{\rho:|\gamma-t|\le1}\frac1{s-\rho}+O(\log(|t|+2))$이고
+$\#\{\rho:|\gamma-t|\le1\}\le C\log(|t|+2)$.
+또 $\zeta$는 $0<\sigma<1$, $|t|<14$에 영점이 없으므로 $\zeta'/\zeta(s)+1/(s-1)$은
+$\{1/2\le\sigma\le2,\ |t|\le2\}$에서 정칙이고 절대상수 $B_0$로 유계이다.
+\item[(E4)] (Mellin 역변환; 초등) 연속이고 조각별 $C^1$이며 $[1/2,1]$에 지지된 $w$와 $\tilde w(s)=\int_0^\infty w(u)u^{s-1}du$에 대해,
+$\int|\tilde w(2+it)|dt<\infty$이면 $w(u)=\frac1{2\pi i}\int_{(2)}\tilde w(s)u^{-s}ds$ ($u>0$).
+(변수 $u=e^{-v}$로 Fourier 역변환 정리가 된다.)
+\end{itemize}
+Fejér 핵 $F_T(x)=T\big(\frac{\sin \pi Tx}{\pi Tx}\big)^2$ ($T>0$)에 대해
+$\int_{-T}^{T}(1-|\xi|/T)e^{2\pi i\xi x}d\xi=F_T(x)$ (직접 적분: $\int_{-T}^T(1-|\xi|/T)\cos(2\pi\xi x)d\xi
+=\frac{1-\cos 2\pi Tx}{2\pi^2Tx^2}=F_T(x)$) \PROVED. 또 $0\le F_T(x)\le \min(T,\,1/(\pi^2Tx^2))$이고
+$|x|\le 1/(2T)$이면 $\sin v/v\ge 2/\pi$ ($|v|\le\pi/2$)에서 $F_T(x)\ge 4T/\pi^2$.
+
+%======================================================================
+\subsection{공약수 $Q_y$의 약수 간격}
+\label{VKGAP:sec-cofactor}
+
+\begin{lemma}[공약수의 연속 약수 비 $\le2$]\label{VKGAP:lem-cofactor}
+\PROVED\ $L\ge y\ge 16$이라 하자. $Q_y=\Lam_L/\prod_{p\in P_y}p$의 연속된 약수 $d<d^+$는 $d^+\le 2d$를 만족한다.
+따라서 모든 실수 $z\in[0,\log Q_y]$에 대해 $z-\log2<\log c\le z$인 $c\mid Q_y$가 있다.
+\end{lemma}
+\begin{proof}
+$y\ge16$이면 $2\notin P_y$이므로 $v_2(Q_y)=v_2(\Lam_L)=a_2$이고, $Q_y\mid\Lam_L$이므로 $Q_y$를 나누는 모든 소수 거듭제곱
+$p^a$는 $p^a\le L$을 만족한다 (K1).
+주장: $e\mid Q_y$, $e>1$이면 $e/2\le e'<e$인 $e'\mid Q_y$가 있다. $2\mid e$이면 $e'=e/2$.
+$e$가 홀수이면 $e$의 한 소인수 $p$ ($p$ 홀수)와 $p^a\,\|\,e$를 잡고 $2^b<p^a<2^{b+1}$인 $b\ge1$을 잡는다
+($p^a\ge3$는 홀수이므로 2의 거듭제곱이 아니다). $e'=e\,2^b/p^a$로 두면 $e/2<e'<e$이다.
+$v_2(e')=b$이고 $2^b<p^a\le L$이므로 $b\le a_2=v_2(Q_y)$; $v_p(e')=0$; 다른 소수의 지수는 $e$의 것과 같다.
+따라서 $e'\mid Q_y$.
+연속 약수: $d\mid Q_y$, $d<Q_y$이면 $e=Q_y/d>1$에 주장을 적용하여 $d'=Q_y/e'\in(d,2d]$가 $Q_y$의 약수이므로 $d^+\le 2d$.
+마지막 주장: $c$를 $\le e^z$인 $Q_y$의 최대 약수라 하자($1\le e^z\le Q_y$이므로 존재). $c=Q_y$이면 $\log c=z$.
+아니면 $c^+>e^z$이고 $c^+\le 2c$이므로 $c>e^z/2$.
+\end{proof}
+
+\begin{remark}\label{VKGAP:rem-cofactor}
+$y=L$이면 $Q_L=Q$ (BRIEF의 공약수)이고, 이 보조정리는 lead가 $L<60$에서 수치로만 확인한 주장
+(``$Q$의 연속 약수 비 $\le2$'')의 증명이다. $y\le\sqrt L$이면 $P_y$의 소수 $p$는 $v_p(Q_y)=a_p-1\ge1$로
+$Q_y$에 남는다; 그래도 $c\mid Q_y$, $E\subseteq P_y$이면 $v_p(cU(E))\le a_p$이므로 $cU(E)\mid\Lam_L$이다.
+\end{remark}
+
+%======================================================================
+\subsection{특성함수의 세 구간 평가}
+\label{VKGAP:sec-charfun}
+
+모든 $\tau$에서 $|1-q+qe^{i\alpha}|^2=1-2q(1-q)(1-\cos\alpha)\le e^{-2q(1-q)(1-\cos\alpha)}$이므로
+\begin{equation}\label{VKGAP:eq-phi-basic}
+|\varphi(\tau)|=\prod_{p\in P_y}|1-q+qp^{i\tau}|\le \exp\Big(-q(1-q)\sum_{p\in P_y}(1-\cos(\tau\log p))\Big)
+=\exp\big(-q(1-q)(M_y-\mathrm{Re}\,A_y(\tau))\big).
+\end{equation}
+
+\begin{lemma}[원점 근방]\label{VKGAP:lem-phi1}
+\PROVED\ $|\tau|\le\pi/\log y$이면 $|\varphi(\tau)|\le\exp(-\tfrac{2}{\pi^2}\tau^2V)$.
+\end{lemma}
+\begin{proof}
+$|\tau\log p|\le\pi$이고 $|x|\le\pi$에서 $1-\cos x\ge 2x^2/\pi^2$ (함수 $x\mapsto (1-\cos x)/x^2$는 $(0,\pi]$에서 감소, $x=\pi$에서 $2/\pi^2$).
+\eqref{VKGAP:eq-phi-basic}에 대입.
+\end{proof}
+
+\begin{lemma}[쌍 논법: 격자 공명 구간]\label{VKGAP:lem-pair}
+\PROVED\ $v_y:=\mathrm{Var}_{p\in P_y}(\log p)$ (균등 분포 $P_y$ 위의 분산)라 하자. $|\tau|\le\pi/\log2$이면
+\[
+M_y-|A_y(\tau)|\ge \tfrac{2}{\pi^2}\,v_y\,\tau^2M_y .
+\]
+또한 (E1)에 의해 $y\ge y_0$이면 $v_y\ge v_0:=0.0059$. 따라서 $c_2:=2v_0/\pi^2$ ($>0.00119$)라 두면
+$|\tau|\le4$에서 $|\varphi(\tau)|\le\exp(-c_2n\tau^2)$.
+\end{lemma}
+\begin{proof}
+$|A_y|^2=\sum_{p,p'}\cos(\tau(\log p-\log p'))$ (실수)이므로
+$M_y^2-|A_y|^2=\sum_{p,p'}(1-\cos(\tau(\log p-\log p')))$.
+$p,p'\in(y/2,y]$이면 $|\log p-\log p'|<\log2$, 따라서 $|\tau(\log p-\log p')|<\pi$이고
+$1-\cos x\ge2x^2/\pi^2$에서
+$M_y^2-|A_y|^2\ge\frac{2\tau^2}{\pi^2}\sum_{p,p'}(\log p-\log p')^2=\frac{2\tau^2}{\pi^2}\cdot 2M_y^2v_y$.
+$M_y+|A_y|\le 2M_y$이므로 $M_y-|A_y|=(M_y^2-|A_y|^2)/(M_y+|A_y|)\ge \frac{2}{\pi^2}v_y\tau^2M_y$.
+분산 하한: $P^-=P_y\cap(y/2,0.6y]$, $P^+=P_y\cap(0.9y,y]$. (E1)에서 $|P^\pm|=(0.1+o(1))y/\log y$,
+$M_y=(0.5+o(1))y/\log y$이므로 $y\ge y_0$에서 $|P^\pm|\ge0.19M_y$.
+$p\in P^-$, $p'\in P^+$이면 $|\log p-\log p'|\ge\log1.5$이므로
+$2M_y^2v_y=\sum_{p,p'}(\log p-\log p')^2\ge 2|P^-||P^+|(\log1.5)^2$, 즉
+$v_y\ge 0.19^2(\log 1.5)^2=0.005935\ldots\ge v_0$.
+마지막 주장: $\pi/\log2>4$이고 $M_y-\mathrm{Re}A_y\ge M_y-|A_y|$를 \eqref{VKGAP:eq-phi-basic}에 대입.
+\end{proof}
+
+\begin{remark}\label{VKGAP:rem-lattice}
+\HEUR/\NUMERIC\ 이 구간의 평가는 본질적으로 최선이다: $\tau=2\pi/\log y$에서
+$S=N\log y-\sum_p\xi_pu_p$ ($u_p=\log y-\log p\in[0,\log2)$, $N=\sum\xi_p$)이므로 $e^{i\tau S}=e^{-i\tau\sum\xi_pu_p}$이고
+$|\varphi(\tau)|\approx\exp(-\tau^2 q(1-q)\sum_p (u_p-\bar u)^2/2)=\exp(-\Theta(n/(\log y)^2))$ (DESIGN S4(ii)의 경고).
+% AUD3: numerical slip corrected: 2-(log2)^2-2log2-(log2-1)^2 = 0.0390940 (not 0.03907); cf. NUM Prop. var and agents/AUD3/out/aud3_vkgap_constants.txt
+참 극한 분산은 $\mathrm{Var}(\log U)$, $U\sim\mathrm{Unif}(1/2,1]$, 즉 $2-(\log2)^2-2\log2-(\log2-1)^2=0.039094$;
+수치는 \S\ref{VKGAP:sec-num}.
+아래의 핵심은 이 구간이 Fejér 적분에 $\int e^{-c_2n\tau^2}d\tau$로만 들어간다는 것이다(높이 $T$의 인자가 없음).
+\end{remark}
+
+\paragraph{매끄러운 가중치.} $\kappa=1/20$, $w:\R\to[0,1]$을 사다리꼴 함수로 둔다:
+$w=0$ ($u\le1/2$ 또는 $u\ge1$), $w(u)=(u-1/2)/\kappa$ ($1/2\le u\le1/2+\kappa$), $w=1$ ($1/2+\kappa\le u\le1-\kappa$),
+$w(u)=(1-u)/\kappa$ ($1-\kappa\le u\le1$). $\tilde w(s)=\int_0^\infty w(u)u^{s-1}du$ (정함수),
+$W_y(\tau):=\sum_{p}w(p/y)\log p\;p^{i\tau}$.
+$\tilde w(1)=\int w=1/2-\kappa=0.45$.
+
+\begin{lemma}[Mellin 평가]\label{VKGAP:lem-mellin}
+\PROVED\ $0\le\sigma\le3$이면 $|\tilde w(\sigma+it)|\le\min(1,80/t^2)$이고 $\int_\R|\tilde w(\sigma+it)|dt<36$.
+또 모든 실수 $\tau$에서 $|\tilde w(1+i\tau)|\le \tfrac12|F(\tau)|+\kappa$, 여기서
+$F(\tau):=\frac{2-2^{-i\tau}}{1+i\tau}$, $|F(\tau)|\le 3/\sqrt{1+\tau^2}$.
+\end{lemma}
+\begin{proof}
+$w(1/2)=w(1)=0$이므로 부분적분으로 $\tilde w(s)=-\frac1s\int w'(u)u^sdu$, 그리고
+$\int w'(u)u^sdu=\frac{1}{\kappa(s+1)}\big[(\tfrac12+\kappa)^{s+1}-(\tfrac12)^{s+1}-1+(1-\kappa)^{s+1}\big]$.
+$\sigma\ge0$이면 $u\le1$에서 $|u^{s+1}|\le1$이므로 $|\tilde w(s)|\le 4/(\kappa|s||s+1|)\le 80/t^2$.
+또 $[1/2,1]$에서 $u^{\sigma-1}\le2$이므로 $|\tilde w(s)|\le\frac12\cdot2=1$.
+$\int\min(1,80/t^2)dt=4\sqrt{80}<36$.
+끝으로 $\int|w-1_{[1/2,1]}|=\kappa$ (두 삼각형)이고 $\int_{1/2}^1u^{i\tau}du=\frac{1-2^{-1-i\tau}}{1+i\tau}=\frac12F(\tau)$,
+$|2-2^{-i\tau}|\le3$.
+\end{proof}
+
+\begin{lemma}[VK로부터의 매끄러운 소수합]\label{VKGAP:lem-VK}
+\COND{(E1)--(E4) (교과서 입력, \EXT)}\ 절대상수 $y_1$과 $\eps_3(y)\to0$이 있어, $y\ge y_1$, $|\tau|\le T_*(y)$이면
+\[
+\big|W_y(\tau)-y^{1+i\tau}\tilde w(1+i\tau)\big|\le\eps_3(y)\,y .
+\]
+명시적으로 $\eps_3(y)\le C\exp\!\big(\tfrac52\log\log y-\tfrac{c_1}{4}(\log\log y)^{5/3}\big)+4y^{-1/2}$ ($C$ 절대상수).
+\end{lemma}
+\begin{proof}
+(1) \emph{Mellin 표현.} $I(\tau):=\sum_n\Lam(n)n^{-i\tau}w(n/y)$. (E4)와 Lemma~\ref{VKGAP:lem-mellin}에서
+$w(n/y)=\frac1{2\pi i}\int_{(2)}\tilde w(s)(n/y)^{-s}ds$이고, $\sum_n\Lam(n)n^{-2}\int|\tilde w(2+it)|dt<\infty$이므로
+합과 적분을 교환하여
+$I(\tau)=\frac1{2\pi i}\int_{(2)}\tilde w(s)\,y^s\,G(s)\,ds$, $G(s):=-\frac{\zeta'}{\zeta}(s+i\tau)=\sum_n\Lam(n)n^{-i\tau-s}$.
+
+(2) \emph{윤곽.} $Y:=|\tau|+y^3$, $H:=3T_*(y)$ (큰 $y$에서 $T_*(y)\ge y^3+3$이므로 $2|\tau|+y^3+2\le H$),
+$\eta_*:=\eta(H+1)$, $\sigma_1:=1-\eta_*/2$ ($\ge1/2$). 직사각형 $\mathcal R=[\sigma_1,2]\times[-Y,Y]$의 점 $s$에 대해
+$z=s+i\tau$는 $|\mathrm{Im}\,z|\le Y+|\tau|\le H$, $\mathrm{Re}\,z\ge\sigma_1>1-\eta_*\ge1-\eta(\mathrm{Im}\,z)$ ($\eta$ 감소)이므로 (E2)에 의해 $\zeta(z)\ne0$.
+따라서 $\mathcal R$에서 피적분함수의 특이점은 $z=1$, 즉 $s=1-i\tau$ ($|\tau|<Y$이므로 내부) 하나뿐이고
+$-\zeta'/\zeta$의 $z=1$에서의 유수는 $1$이므로 유수는 $\tilde w(1-i\tau)y^{1-i\tau}$이다. Cauchy 정리로
+\[
+I(\tau)=y^{1-i\tau}\tilde w(1-i\tau)+J_{\rm left}+J_{\rm hor}+J_{\rm tail},
+\]
+$J_{\rm left}$은 $\mathrm{Re}\,s=\sigma_1$, $|t|\le Y$ 위의, $J_{\rm hor}$은 $t=\pm Y$, $\sigma_1\le\sigma\le2$ 위의,
+$J_{\rm tail}$은 $\mathrm{Re}\,s=2$, $|t|>Y$ 위의 적분 (각각 $\frac1{2\pi i}$ 포함).
+
+(3) \emph{윤곽 위의 $|G|$.} $J_{\rm left}$, $J_{\rm hor}$ 위에서 $z=\sigma+iu$, $\sigma\in[\sigma_1,2]$, $|u|\le H$.
+$|u|\ge2$이면 (E3)에서 $|G(s)|\le\sum_{|\gamma-u|\le1}|z-\rho|^{-1}+C\log(|u|+2)$; 이런 $\rho$는 $|\gamma|\le H+1$이므로
+(E2)에서 $\beta<1-\eta(\gamma)\le1-\eta(H+1)=1-\eta_*$,
+따라서 $|z-\rho|\ge\sigma-\beta\ge\eta_*/2$, 개수 $\le C\log(|u|+2)$. 즉 $|G|\le 3C\log(H+2)/\eta_*$.
+$|u|\le2$이면 이는 $J_{\rm left}$ 위에서만 일어나고 ($J_{\rm hor}$ 위에서는 $|u|=|\tau\pm Y|\ge y^3$),
+$|z-1|\ge1-\sigma_1=\eta_*/2$이므로 (E3)의 마지막 문장에서 $|G|\le B_0+2/\eta_*$.
+따라서 윤곽 위에서 $|G|\le Z_*:=C_7\log(H+2)/\eta_*$.
+
+(4) \emph{적분 평가.} Lemma~\ref{VKGAP:lem-mellin}에서
+$|J_{\rm left}|\le\frac{1}{2\pi}y^{\sigma_1}Z_*\cdot36\le 6Z_*y^{1-\eta_*/2}$;
+$|J_{\rm hor}|\le 2\cdot\frac1{2\pi}\cdot1.05\cdot\frac{80}{Y^2}y^2Z_*\le 27Z_*y^{-4}$ (각 변의 길이 $2-\sigma_1\le1.05$);
+$\mathrm{Re}\,s=2$에서 $|G|\le\sum\Lam(n)n^{-2}=-\zeta'(2)/\zeta(2)<0.6$이므로
+$|J_{\rm tail}|\le\frac1{2\pi}y^2\cdot0.6\cdot\frac{160}{Y}\le 16/y$.
+
+(5) \emph{점근.} $\lambda:=\log T_*(y)=(\log y)^{3/2}(\log\log y)^{-3}$. 큰 $y$에서
+$\log(H+4)\le2\lambda$, $\log\log(H+4)\le2\log\log y$, $(2\lambda)^{2/3}=2^{2/3}\log y\,(\log\log y)^{-2}$이므로
+\[
+\eta_*\ge c_1(2\lambda)^{-2/3}(2\log\log y)^{-1/3}=\tfrac{c_1}{2}\,\frac{(\log\log y)^{5/3}}{\log y},\qquad
+Z_*\le C_7\cdot 2\lambda\cdot\tfrac{2\log y}{c_1(\log\log y)^{5/3}}\le C_8(\log y)^{5/2}.
+\]
+따라서 $y^{-\eta_*/2}\le\exp(-\tfrac{c_1}{4}(\log\log y)^{5/3})$이고
+$|I(\tau)-y^{1-i\tau}\tilde w(1-i\tau)|\le 6C_8\,y\exp(\tfrac52\log\log y-\tfrac{c_1}4(\log\log y)^{5/3})+27C_8(\log y)^{5/2}y^{-4}+16/y$.
+
+(6) \emph{소수 거듭제곱 제거.} $w$는 실수이므로 $\overline{I(\tau)}=\sum_n\Lam(n)n^{i\tau}w(n/y)$, $\overline{y^{1-i\tau}\tilde w(1-i\tau)}=y^{1+i\tau}\tilde w(1+i\tau)$.
+$\overline{I(\tau)}-W_y(\tau)$은 $n=p^k$ ($k\ge2$, $n\le y$) 항의 합이고 절댓값 $\le\psi(y)-\theta(y)=\sum_{k\ge2}\theta(y^{1/k})
+\le\log4\,(\sqrt y+y^{1/3}\log_2y)\le3\sqrt y$ ((E1)의 Chebyshev 상계; 큰 $y$).
+(5)와 합치면 주장.
+\end{proof}
+
+\begin{corollary}[무조건적 비공명 $(\mathrm{NR}')$]\label{VKGAP:cor-NRuncond}
+\COND{(E1)--(E4)}\ 절대상수 $y_1'$이 있어 $y\ge y_1'$, $4\le|\tau|\le T_*(y)$이면
+$\sum_{p\in P_y}(1-\cos(\tau\log p))\ge M_y/15$, 따라서 $|\varphi(\tau)|\le e^{-n/15}$.
+\end{corollary}
+\begin{proof}
+$0\le w(p/y)\le 1_{P_y}(p)$, $\log p\le\log y$, $1-\cos\ge0$이므로
+\[
+\sum_{p\in P_y}(1-\cos(\tau\log p))\ge\frac1{\log y}\sum_pw(p/y)\log p\,(1-\cos(\tau\log p))=\frac{W_y(0)-\mathrm{Re}\,W_y(\tau)}{\log y}.
+\]
+Lemma~\ref{VKGAP:lem-VK} ($\tau$와 $0$에서)과 Lemma~\ref{VKGAP:lem-mellin}에서 이는
+$\ge\frac{y}{\log y}\big(\tilde w(1)-|\tilde w(1+i\tau)|-2\eps_3(y)\big)\ge\frac{y}{\log y}\big(0.45-\tfrac{3}{2\sqrt{17}}-0.05-2\eps_3(y)\big)
+\ge 0.035\,\frac{y}{\log y}$ ($\frac{3}{2\sqrt{17}}=0.36380\ldots$).
+(E1)에서 $M_y\le0.51\,y/\log y$이므로 $\ge0.068M_y\ge M_y/15$. 마지막은 \eqref{VKGAP:eq-phi-basic}.
+\end{proof}
+
+\begin{remark}[DESIGN S4(iii)의 $F$와 $1/\log p$ 가중치]\label{VKGAP:rem-F}
+(a) 위 증명은 $1-\cos\ge0$이므로 \emph{하한 방향}만 필요하다는 점을 써서, 절단 소수합 $A_y(\tau)$와 $1/\log p$ 가중의 부분합을
+피했다: $1_{P_y}(p)\ge w(p/y)\log p/\log y$. 이렇게 하면 뒤틀린 절단 명시공식 대신 Mellin 윤곽 이동만으로 충분하다.
+(b) \PROVED\ $|F(\tau)|^2=\frac{5-4\cos(\tau\log2)}{1+\tau^2}\le a+\frac{1-a}{1+\tau^2}$, $a=2(\log2)^2=0.96091\ldots$
+($1-\cos x\le x^2/2$ 사용). 따라서 $\sup_{|\tau|\ge1}|F|\le\sqrt{(1+a)/2}=0.99018\ldots$이고
+$1-|F(\tau)|\ge\frac{1-|F|^2}{2}\ge\frac{(1-a)\tau^2}{2(1+\tau^2)}\ge 0.01954\,\frac{\tau^2}{1+\tau^2}$.
+(c) \NUMERIC\ (구간 산술, \texttt{code/F\_check.py}, 출력 \texttt{out/F\_check.out}) $\sup_{|\tau|\ge1}|F(\tau)|=|F(1)|=0.98057\ldots$,
+$1-|F(\tau)|\ge0.0194\,\tau^2$ ($0<\tau\le1$; $(0,0.08]$은 (b)의 형태로, $[0.08,1]$은 20000개 소구간의 단조성 평가로 확인; $\tau=1$에서 $1-|F(1)|=0.019428$이므로 상수는 거의 최선). lead의 수치 주장과 일치한다.
+(d) 본 증명에서는 $|\tau|\le4$를 Lemma~\ref{VKGAP:lem-pair}로, $|\tau|\ge4$를 $|F|\le3/\sqrt{17}$로 처리하므로 (b),(c)는 필요 없다.
+\end{remark}
+
+%======================================================================
+\subsection{Fejér 핵에 의한 국소 극한: 핵심 명제}
+\label{VKGAP:sec-core}
+
+\begin{lemma}[누적량 전개, 삼차 나머지]\label{VKGAP:lem-cumulant}
+\PROVED\ $X$가 평균 $0$, $|X|\le b$, 분산 $\sigma^2$인 확률변수이고 $|\tau|b\le1/2$이면
+$\mathbb{E}e^{i\tau X}=1+z$, $|z|<1/2$이고 $\log(1+z)=-\tau^2\sigma^2/2+r$, $|r|\le\frac12|\tau|^3b\sigma^2$.
+\end{lemma}
+\begin{proof}
+$|e^{ix}-1-ix+x^2/2|\le|x|^3/6$와 $\mathbb{E}X=0$에서 $z=-\tau^2\sigma^2/2+r_1$, $|r_1|\le|\tau|^3\mathbb{E}|X|^3/6\le|\tau|^3b\sigma^2/6$.
+$\sigma^2\le b^2$이므로 $|z|\le\tau^2\sigma^2(\frac12+\frac{|\tau|b}{6})\le\frac7{12}\tau^2\sigma^2\le\frac{7}{48}$.
+$|z|\le1/2$에서 $|\log(1+z)-z|\le\sum_{k\ge2}|z|^k/k\le|z|^2$, 그리고
+$|z|^2\le\frac{49}{144}\tau^4\sigma^4\le\frac{49}{144}\tau^4b^2\sigma^2\le\frac{49}{288}|\tau|^3b\sigma^2$.
+따라서 $|r|\le(\frac16+\frac{49}{288})|\tau|^3b\sigma^2=\frac{97}{288}|\tau|^3b\sigma^2$.
+\end{proof}
+
+\paragraph{조건.} $n_0(y):=\frac{32}{c_2}(\log y)^2\log\log y$. $\eta'\in(0,1]$에 대해 $y_0(\eta')$를 다음이 모두 성립하도록 잡는다
+($y\ge y_0(\eta')$): Lemma~\ref{VKGAP:lem-pair}의 $v_y\ge v_0$; 그리고 모든 $n\ge n_0(y)$에 대해
+\begin{align*}
+&\text{(C1)}\ n\ge2\cdot10^4;\qquad
+\text{(C2)}\ \frac{c_2n}{4(\log y)^2}\ge\log\big(10^3\sqrt n\log y\big);\qquad
+\text{(C3)}\ \frac{\eta'n}{2}\ge\log\big(10^3\sqrt n\log y\big).
+\end{align*}
+이런 $y_0(\eta')$는 존재한다: 각 부등식에서 (좌변$-$우변)은 $n\ge\max(2(\log y)^2/c_2,\,1/\eta')$에서 $n$에 대해 증가하므로
+$n=n_0(y)$에서만 확인하면 된다. $n=K(\log y)^2$, $K=\frac{32}{c_2}\log\log y$로 쓰면 (C2)는
+$\frac{c_2K}{4}=8\log\log y\ge 6.91+\frac12\log K+2\log\log y$이고 이는 큰 $y$에서 참; (C3)의 좌변은 $\asymp_{\eta'}(\log y)^2\log\log y$, 우변은 $O(\log\log y)$.
+
+\begin{proposition}[핵심 명제: 비공명 $\Rightarrow$ 풀 로그합의 조밀성]\label{VKGAP:prop-core}
+\PROVED\ (Lemma~\ref{VKGAP:lem-pair}가 쓰는 (E1)을 제외하면 초등적)
+$\eta'\in(0,1]$, $y\ge y_0(\eta')$, $T'\ge8\pi$이고 다음을 가정하자:
+\[
+(\mathrm{NR}'_y(T',\eta'))\qquad \sum_{p\in P_y}(1-\cos(\tau\log p))\ge\eta'M_y\qquad(4\le|\tau|\le T').
+\]
+$q\in(0,1/2]$가 $n=q(1-q)M_y\ge n_0(y)$를 만족하고 $T:=\min\big(T'/(2\pi),\,e^{\eta'n/2}\big)$라 하자. 그러면
+$|s-q\theta_y|\le1$인 모든 실수 $s$에 대해 $|\log U(E)-s|\le2/T$인 $E\subseteq P_y$가 존재한다.
+\end{proposition}
+\begin{proof}
+$T\ge1$. $t:=s-\mu$ ($|t|\le1$), $\tau_1:=1/(2\log y)$, $b:=\log y$, $\tilde\varphi(\tau):=\mathbb{E}e^{i\tau(S-\mu)}$.
+(C1)과 \eqref{VKGAP:eq-V}에서 $\sqrt V\ge\sqrt{n/2}\,\log y\ge100\log y$, 따라서 $V\ge10^4$, $\tau_1\sqrt V\ge50$.
+(C2),(C3)와 $V\le n(\log y)^2$에서
+\begin{equation}\label{VKGAP:eq-C23}
+e^{-c_2n\tau_1^2}\le10^{-3}V^{-1/2},\qquad e^{-\eta'n/2}\le10^{-3}V^{-1/2}.
+\end{equation}
+
+\emph{1단계 (Fourier 표현).} Fejér 항등식에서 $F_T(S-s)=\int(1-|\xi|/T)_+e^{2\pi i\xi(S-s)}d\xi$; 기댓값(유한합)을 취하고 $\tau=2\pi\xi$로 치환하면
+\[
+\mathbb{E}F_T(S-s)=\frac1{2\pi}\int_{|\tau|\le2\pi T}\Big(1-\frac{|\tau|}{2\pi T}\Big)e^{-i\tau t}\tilde\varphi(\tau)\,d\tau .
+\]
+
+\emph{2단계 (가우스 근사).} $X_p=(\xi_p-q)\log p$는 독립, 평균 $0$, $|X_p|\le b$, $\sum\mathrm{Var}X_p=V$.
+$|\tau|\le\tau_1$이면 $|\tau|b=1/2$ 이하이므로 Lemma~\ref{VKGAP:lem-cumulant}을 각 $p$에 적용하여 합하면
+$\tilde\varphi(\tau)=\exp(-\tau^2V/2+\rho)$, $|\rho|\le\frac12|\tau|^3bV\le\frac14\tau^2V$. 따라서
+$|\tilde\varphi(\tau)-e^{-\tau^2V/2}|\le e^{-\tau^2V/2}|\rho|e^{|\rho|}\le\frac12|\tau|^3bV\,e^{-\tau^2V/4}$.
+
+\emph{3단계 (하한).} $G:=\frac1{2\pi}\int_\R e^{-i\tau t}e^{-\tau^2V/2}d\tau=(2\pi V)^{-1/2}e^{-t^2/(2V)}\ge0.3988\,V^{-1/2}$ ($|t|\le1$, $V\ge10^4$).
+1단계의 적분과 $G$의 차이는 다음 다섯 항으로 나뉜다:
+(a) $G$의 $|\tau|>\tau_1$ 부분: $\le\frac1\pi\int_{\tau_1}^\infty e^{-\tau^2V/2}d\tau\le\frac{e^{-\tau_1^2V/2}}{\pi\tau_1V}\le\frac{1}{50\pi}V^{-1/2}$;
+(b) 인자 $|\tau|/(2\pi T)$: $\le\frac1{2\pi}\int\frac{|\tau|}{2\pi T}e^{-\tau^2V/2}d\tau=\frac1{2\pi^2TV}\le\frac{1}{200\pi^2}V^{-1/2}\le0.0006\,V^{-1/2}$ ($T\ge1$, $\sqrt V\ge100$);
+(c) $|\tau|\le\tau_1$에서 $\tilde\varphi-e^{-\tau^2V/2}$: $\le\frac1{2\pi}\int_\R\frac12|\tau|^3bVe^{-\tau^2V/4}d\tau=\frac{4b}{\pi V}\le\frac{4}{100\pi}V^{-1/2}$;
+(d) $\tau_1<|\tau|\le4$: Lemma~\ref{VKGAP:lem-pair}에서 $\le\frac1\pi\int_{\tau_1}^4e^{-c_2n\tau^2}d\tau\le\frac4\pi e^{-c_2n\tau_1^2}\le0.0013\,V^{-1/2}$;
+(e) $4<|\tau|\le2\pi T$ ($2\pi T\le T'$): $(\mathrm{NR}')$와 \eqref{VKGAP:eq-phi-basic}에서 $|\tilde\varphi|\le e^{-\eta'n}$이므로
+$\le\frac1\pi\cdot2\pi T e^{-\eta'n}\le2e^{-\eta'n/2}\le0.002\,V^{-1/2}$ ($T\le e^{\eta'n/2}$).
+합: $0.0064+0.0006+0.0128+0.0013+0.002<0.0232$. 따라서 $\mathbb{E}F_T(S-s)\ge0.375\,V^{-1/2}$.
+
+\emph{4단계 (상한 국소 평가).} 임의의 $a\in\R$에 대해 $|x|\le1/(2T)$에서 $F_T(x)\ge4T/\pi^2$이므로
+\[
+\Pr(|S-a|\le\tfrac1{2T})\le\frac{\pi^2}{4T}\mathbb{E}F_T(S-a)\le\frac{\pi^2}{4T}\cdot\frac1{2\pi}\int_{|\tau|\le2\pi T}|\varphi(\tau)|d\tau .
+\]
+$|\tau|\le\tau_1$ ($\le\pi/\log y$)에서 Lemma~\ref{VKGAP:lem-phi1}: $\int_\R e^{-2\tau^2V/\pi^2}d\tau=\pi^{3/2}/\sqrt{2V}\le3.9375\,V^{-1/2}$;
+$\tau_1<|\tau|\le4$: $\le8e^{-c_2n\tau_1^2}\le0.008V^{-1/2}$; $4<|\tau|\le2\pi T$: $\le4\pi Te^{-\eta'n}\le4\pi e^{-\eta'n/2}\le0.0126V^{-1/2}$.
+따라서 $B:=\sup_a\Pr(|S-a|\le\frac1{2T})\le\frac{\pi}{8T}\cdot3.9581\,V^{-1/2}\le\frac{1.555}{T\sqrt V}$.
+
+\emph{5단계 (꼬리).} $|x|\ge k/T$이면 $F_T(x)\le1/(\pi^2Tx^2)\le T/(\pi^2k^2)$. $I_k=[k/T,(k+1)/T)$라 하면
+$\{|x|>2/T\}\subseteq\bigcup_{k\ge2}(I_k\cup-I_k)$이고 $s\pm I_k$는 길이 $1/T$인 구간이므로 $\Pr(S-s\in\pm I_k)\le B$. 따라서
+\[
+\mathbb{E}\big[F_T(S-s);\,|S-s|>2/T\big]\le\sum_{k\ge2}\frac{2BT}{\pi^2k^2}=\frac{2BT}{\pi^2}\Big(\frac{\pi^2}6-1\Big)\le\frac{2\cdot1.555\cdot0.6450}{\pi^2}V^{-1/2}\le0.2033\,V^{-1/2}.
+\]
+
+\emph{6단계.} $F_T\ge0$이고 $F_T\le T$이므로
+$T\cdot\Pr(|S-s|\le2/T)\ge\mathbb{E}[F_T(S-s);|S-s|\le2/T]\ge(0.375-0.2033)V^{-1/2}>0.17\,V^{-1/2}$.
+따라서 $\Pr(|S-s|\le2/T)>0$이고, \S\ref{VKGAP:sec-setup}의 주에 의해 원하는 $E$가 존재한다.
+\end{proof}
+
+\begin{remark}\label{VKGAP:rem-core-quant}
+\PROVED\ 6단계는 정량적 국소 하한 $\Pr(|S-s|\le 2/T)\ge 0.17/(T\sqrt V)$도 준다 ($F_T\le T$ 사용).
+\end{remark}
+
+%======================================================================
+\subsection{정리 A: $\Lam_L$의 약수 간격 (무조건적)}
+\label{VKGAP:sec-A}
+
+$\sigma(y):=4n_0(y)\log y+2=\frac{128}{c_2}(\log y)^3\log\log y+2$ ($\frac{128}{c_2}=\frac{64\pi^2}{v_0}<1.08\cdot10^5$),
+$q_0(y):=2n_0(y)/M_y$. $q_0(y)\theta_y+2\le\sigma(y)$ ($\theta_y\le M_y\log y$).
+
+\begin{theorem}[규모 $y$의 풀에 의한 양쪽 약수 간격]\label{VKGAP:thm-A-y}
+\COND{(E1)--(E4)}\ 절대상수 $y_2$가 있어 다음이 성립한다. $L\ge y\ge y_2$, $r_y:=4\pi/T_*(y)$라 하자.
+\begin{enumerate}[label=(\roman*)]
+\item $[q_0(y)\theta_y-1,\ \theta_y/2+1]$의 모든 실수 $s$에 대해 $|\log U(E)-s|\le r_y$인 $E\subseteq P_y$가 있다.
+\item $[\sigma(y),\ \log\Lam_L-\sigma(y)]$의 모든 실수 $\ell$에 대해 $\Lam_L$의 진약수 $d_-,d_+$가 있어
+$\log d_-\in[\ell-2r_y,\ell]$, $\log d_+\in[\ell,\ell+2r_y]$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$y_2\ge\max(y_0(1/15),y_1',16)$를 $q_0(y)\le1/2$, $n_0(y)/30\ge\log T_*(y)$, $T_*(y)\ge 8\pi$가 되도록 크게 잡는다.
+(i) $q:=\max(q_0,\min(1/2,s/\theta_y))$로 두면 $|s-q\theta_y|\le1$이고 $n=q(1-q)M_y\ge q_0(1-q_0)M_y\ge q_0M_y/2=n_0(y)$.
+Corollary~\ref{VKGAP:cor-NRuncond}에 의해 $(\mathrm{NR}'_y(T_*(y),1/15))$가 성립하므로 명제~\ref{VKGAP:prop-core}를
+$\eta'=1/15$, $T'=T_*(y)$로 적용한다. $e^{n/30}\ge e^{n_0/30}\ge T_*(y)$이므로 $T=T_*(y)/(2\pi)$, $2/T=r_y$.
+
+(ii) 먼저 $\ell\le\frac12\log\Lam_L+1$. $u\in\{\ell-r_y,\ell+r_y\}$와 $z:=u-q_0\theta_y$ ($\ge2-r_y>0$)에 대해:
+$z\le\log Q_y$이면 Lemma~\ref{VKGAP:lem-cofactor}로 $z-\log2<\log c\le z$인 $c\mid Q_y$를 잡고 $s:=u-\log c\in[q_0\theta_y,q_0\theta_y+\log2)$;
+$z>\log Q_y$이면 $c:=Q_y$, $s:=u-\log Q_y$. 후자에서 $s>q_0\theta_y$이고
+$s\le\frac12\log\Lam_L+1+r_y-(\log\Lam_L-\theta_y)=\theta_y-\frac12\log\Lam_L+1+r_y\le\frac12\theta_y+1$
+(왜냐하면 $\log\Lam_L=\psi(L)\ge\theta(y)=\theta_y+\theta(y/2)\ge\theta_y+2r_y$). 어느 경우든 $s$는 (i)의 범위에 있으므로
+$|\log U(E)-s|\le r_y$인 $E$가 있고, $d:=cU(E)$는 $\Lam_L$을 나누며 (주~\ref{VKGAP:rem-cofactor}) $\log d\in[u-r_y,u+r_y]$.
+$u=\ell-r_y$이면 $d_-:=d$, $u=\ell+r_y$이면 $d_+:=d$.
+다음 $\frac12\log\Lam_L+1<\ell\le\log\Lam_L-\sigma(y)$이면 $\ell^*:=\log\Lam_L-\ell\in[\sigma(y),\frac12\log\Lam_L-1]$에 앞의 결과를 적용해
+얻은 $e_\pm$로 $d_-:=\Lam_L/e_+$, $d_+:=\Lam_L/e_-$.
+진약수: $d_\pm\le e^{\ell+2r_y}\le\Lam_Le^{-\sigma(y)+2r_y}<\Lam_L$.
+\end{proof}
+
+\begin{theorem}[VKGAP-A: $\Lam_L$의 약수 간격]\label{VKGAP:thm-A}
+\COND{(E1)--(E4): 소수 정리, VK 영점 자유 영역, $\zeta'/\zeta$ 부분분수 --- 교과서 입력만}\
+$L\ge y_2$이고
+\[
+X_0:=\exp\!\Big(\tfrac{128}{c_2}(\log L)^3\log\log L+2\Big),\qquad
+\delta:=8\pi\exp\!\Big(-\frac{(\log L)^{3/2}}{(\log\log L)^{3}}\Big)
+\]
+이라 하자. 그러면 모든 실수 $x\in[X_0,\Lam_L/X_0]$에 대해 $[(1-\delta)x,x]$와 $[x,(1+2\delta)x]$에 각각 $\Lam_L$의 약수가 있다.
+특히 모든 $\eps>0$과 $L\ge L_0(\eps)$에 대해 $\delta\le\exp(-(\log L)^{3/2-\eps})$이고 $X_0\le\exp((\log L)^{3+\eps})$
+(DESIGN S4의 목표 $X_0=\exp(C(\log L)^4)$보다 강하다).
+\end{theorem}
+\begin{proof}
+정리~\ref{VKGAP:thm-A-y}(ii)를 $y=L$, $\ell=\log x$로 적용: $2r_L=\delta$, $e^{-\delta}\ge1-\delta$, $e^{\delta}\le1+2\delta$.
+\end{proof}
+
+\begin{remark}[무엇이 새로운가, 정직한 비교]\label{VKGAP:rem-A-new}
+p1p4 주~5.19(c)는 이 경로를 \HEUR/\OPEN{}으로 남겼다; 정리~\ref{VKGAP:thm-A}는 그것을 교과서 입력만으로 완성한다.
+$\delta$의 지수 $3/2$는 VK 영역의 지수 $2/3$에서 온다: $\log T$가 $(\log L)^{3/2-o(1)}$을 넘으면
+$\eta(T)\log L\to0$이 되어 소수합의 오차가 주항을 이기지 못한다.
+$n!$의 약수 간격에 관한 Berend--Harmse 형의 결과와의 정확한 비교는 문헌에 접근할 수 없어 하지 못했다 (recalled, unverified).
+\end{remark}
+
+%======================================================================
+\subsection{정리 B: $H(L)\le(1+o(1))L(\log\log L)^3/(\log L)^{3/2}$}
+\label{VKGAP:sec-B}
+
+\begin{theorem}[VKGAP-B]\label{VKGAP:thm-B}
+\COND{(E1)--(E4)}\ $L\to\infty$일 때
+\[
+H(L)\le\frac{\psi(L)}{(\log L)^{3/2}(\log\log L)^{-3}-\log(8\pi)}+O\big((\log L)^3\log\log L\big)
+=\big(1+O(\tfrac{(\log\log L)^3}{(\log L)^{3/2}})\big)\frac{L(\log\log L)^3}{(\log L)^{3/2}} .
+\]
+특히 모든 $\eps>0$과 $L\ge L_0(\eps)$에 대해 $H(L)\le L/(\log L)^{3/2-\eps}$. 결과적으로
+\[
+N(b)\le(2+o(1))\,\frac{\log b\,(\log\log\log b)^3}{(\log\log b)^{3/2}}\ \ll_\eps\ \frac{\log b}{(\log\log b)^{3/2-\eps}} .
+\]
+\end{theorem}
+\begin{proof}
+(K4)를 정리~\ref{VKGAP:thm-A}의 $X_0,\delta$로 적용한다: $\delta\le1/4$, $X_0\ge L$,
+$k=\lceil\log X_0/\log(L/2)\rceil=O((\log L)^2\log\log L)$이므로 $M\ge3k+1$ ((E1)에서 $M\asymp L/\log L$).
+\[
+H(L)\le\frac{\log X_0}{\log 2}+\frac{\psi(L)}{\log(1/\delta)}+\frac{\log X_0}{\log(L/2)}+5,
+\]
+$\log(1/\delta)=(\log L)^{3/2}(\log\log L)^{-3}-\log8\pi$, $\log X_0=O((\log L)^3\log\log L)$.
+(E1)에서 $\psi(L)=L(1+O(e^{-c\sqrt{\log L}}))$; $\frac{\log X_0}{L(\log\log L)^3(\log L)^{-3/2}}=O(\frac{(\log L)^{9/2}}{L})$.
+$o(1)$의 주된 부분은 $\log8\pi/\log(1/\delta)=O((\log\log L)^3(\log L)^{-3/2})$이다.
+$\eps$형: $(\log\log L)^3\le\frac12(\log L)^{\eps}$ ($L\ge L_0(\eps)$).
+$N(b)$: $L_b:=\min\{L:\Lam_L\ge b\}$이면 (K5)에서 $N(b)\le2H(L_b)$, 그리고 $\psi(L_b-1)<\log b$와 (E1)에서
+$L_b\le(1+o(1))\log b$. $f(L)=L(\log\log L)^3(\log L)^{-3/2}$은 큰 $L$에서 증가하고 $f((1+o(1))\log b)=(1+o(1))f(\log b)$.
+\end{proof}
+
+\begin{remark}[정직한 위치]\label{VKGAP:rem-B-honest}
+$N(b)$에 대해 정리~\ref{VKGAP:thm-B}는 Hughes의 계승 경계 $N(b)\le(4\log2+o(1))\log b/(\log\log b)^2$
+(arXiv:2609.10902, BRIEF에 따라 snippet-verified)보다 \emph{약하고}, Vose의 $N(b)\ll\sqrt{\log b}$와는 거리가 멀다.
+이 절의 가치는 (1) $\Lam_L$에 대한 약수 간격 정리 (정리~\ref{VKGAP:thm-A}), 그리고 $h(\Lam_L)=H(L)$에 대한 교과서 입력만의 $o(L/\log L)$ 경계
+(말뭉치에서 이보다 강한 $H(L)\ll L^{1-\delta}$는 문헌 입력에 조건부이다: baker Ch.~12--13), (2) 아래 \S\ref{VKGAP:sec-C}의 조건부 사다리에서 같은 기계가 그대로 쓰인다는 점이다.
+또한 $\log X_0$ 항은 정리~\ref{VKGAP:thm-A-y}의 다규모 적용으로 $O((\log L)^{3/2}(\log\log L)^4)$까지 줄일 수 있다
+(\S\ref{VKGAP:sec-C}의 보조정리~\ref{VKGAP:lem-smallzone}); 주항에는 영향이 없다.
+\end{remark}
+
+%======================================================================
+\subsection{규모별 간격의 greedy 사다리 (S3)}
+\label{VKGAP:sec-S3}
+
+$D(\ell):=\min(\ell,\log\Lam_L-\ell)$ (가장 가까운 끝까지의 로그 거리).
+
+\begin{lemma}[규모 의존 greedy 보조정리]\label{VKGAP:lem-greedy}
+\PROVED\ $1\le a\le\frac12\log\Lam_L$, $G:[a,\infty)\to(0,\infty)$가 비감소이고, 모든 $\ell\in[a,\log\Lam_L-a]$에 대해
+$[\ell-e^{-G(D(\ell))},\ell]$에 어떤 약수 $d\mid\Lam_L$의 $\log d$가 있다고 하자 (가설 $\mathrm{GAP}(a,G)$).
+$G_j:=G(\max(2^j,a))$, $J:=\lfloor\log_2(\frac12\log\Lam_L+1)\rfloor$라 하면, $R<\Lam_L$에서 시작한 greedy는
+$\log R\in[a,\log\Lam_L-a]$인 잔차에서 많아야 $2\sum_{j\le J,\,2^{j+1}>a}\big(2^j/G_j+1\big)$ 단계를 쓴다. 따라서 (K2),(K3)과 함께
+\[
+H(L)\le 2\!\!\sum_{j\le J,\ 2^{j+1}>a}\!\!\Big(\frac{2^j}{G_j}+1\Big)+\frac{a}{\log2}+\frac{a}{\log(L/2)}+5\qquad(M\ge 3\lceil a/\log(L/2)\rceil+1).
+\]
+\end{lemma}
+\begin{proof}
+greedy 한 단계 $R\to R'=R-d$ ($d$는 $R$ 이하 최대 약수). $\log R=\ell\in[a,\log\Lam_L-a]$이면 가설의 약수 $d_0\le R$에 대해
+$d\ge d_0\ge Re^{-e^{-G}}$, 따라서 $R'\le R(1-e^{-e^{-G}})\le Re^{-G(D(\ell))}$.
+(아래쪽) $\ell\le\frac12\log\Lam_L$이면 $D=\ell$이고 $\ell'\le\ell-G(\ell)$: $\ell\in[2^j,2^{j+1})$인 단계마다 $\ell$이 $G_j$ 이상 감소하므로
+($G$ 비감소) 그런 단계는 $\le 2^j/G_j+1$개.
+(위쪽) $\ell>\frac12\log\Lam_L$이면 $D=\ell^*:=\log\Lam_L-\ell$이고 $R'\le Re^{-G(\ell^*)}$에서 $\ell^*$가 $G(\ell^*)$ 이상 증가:
+$\ell^*\in[2^j,2^{j+1})$인 단계는 $\le2^j/G_j+1$개. 잔차는 엄격히 감소하므로 각 범위는 한 번씩만 지난다.
+$\log R>\log\Lam_L-a$인 단계는 (K2)의 절반 감소로 $\le a/\log2+1$개, $R<e^a$가 되면 (K3) ($k=\lceil a/\log(L/2)\rceil$)으로 $\le k+2$항
+($R\le2$이면 한 항). greedy 항과 마지막 표현의 항은 (K2)에 의해 서로 다르다.
+\end{proof}
+
+\begin{corollary}[S3의 세 영역]\label{VKGAP:cor-regimes}
+\PROVED\ (보조정리~\ref{VKGAP:lem-greedy}의 가설 아래, $c>0$ 고정, $L\to\infty$)
+\begin{enumerate}[label=(\alph*)]
+\item $G\equiv g_0$ (상수)이면 $H(L)\le\psi(L)/g_0+O(a)$ (직접 셈: 각 쪽 $\le\frac12\log\Lam_L/g_0+1$ 단계). $g_0\asymp\log L$ (짧은 구간의 소수 수준)이면
+$H\ll L/\log L$: 혼합 기수 대비 이득 없음.
+\item $G(D)=cD/\log L$이면 $H(L)\le\frac{2}{c\log2}(\log L)^2(1+o(1))+O(a)$.
+% AUD3: G must be nondecreasing on its whole domain in Lemma greedy; this G decreases for D>L. Only D<=psi(L)/2+1<L is ever used,
+%        so set G(D):=G(L) for D>=L (no change to the bound).
+\item (엔트로피 수준, DG) $G(D)=c\frac{D}{\log L}\log\frac{eL}{D}$ ($D\le L$에서 증가; AUD3: $D\ge L$에서는 $G(D):=G(L)$로 두어 비감소로 만든다 --- 보조정리에서 쓰이는 $D\le\frac12\psi(L)+1<L$에서는 차이가 없다)이면
+$H(L)\le\frac{2}{c\log2}\log L\log\log L\,(1+o(1))+O(a)$.
+\end{enumerate}
+greedy 장벽 (p1p4 Thm.~5.16: greedy는 어떤 $a$에서 $\ge(1-o(1))\log L\log\log L$ 단계)에 의해 (c)는 greedy의 한계이다.
+\end{corollary}
+\begin{proof}
+(b) 각 블록 $2^j/G_j\le\log L/c$ ($2^j\ge a$인 블록), 블록 수 $\le\log_2L+O(1)$; $2^j<a\le2^{j+1}$인 첫 블록은 $G_j=G(a)$, $2^j/G(a)\le\log L/c$.
+(c) $2^j/G(2^j)=\frac{\log L}{c\log(eL/2^j)}$이고 $k:=\lfloor\log_2L\rfloor-j\ge0$에 대해 $\log(eL/2^j)\ge1+k\log2$이므로
+$\sum_j\le\frac{\log L}{c}\sum_{k=0}^{\log_2L}\frac1{1+k\log2}\le\frac{\log L}{c}\big(1+\frac{\log(1+\log L)}{\log2}\big)$.
+\end{proof}
+
+\begin{lemma}[작은 영역: 무조건적 다규모 비용]\label{VKGAP:lem-smallzone}
+\COND{(E1)--(E4)}\ $\ell_{\min}:=\sigma(y_2)$ (절대상수), $\ell\ge\ell_{\min}$에 대해 $y(\ell):=\max\{y\in[y_2,L]:\sigma(y)\le\ell\}$,
+$g(\ell):=\log(T_*(y(\ell))/(8\pi))$라 하자. $\ell_1:=8n_0(L)\log L=\frac{256}{c_2}(\log L)^3\log\log L$. 그러면
+\begin{enumerate}[label=(\roman*)]
+\item $D(\ell)\ge\ell_{\min}$인 모든 $\ell$에서 $[\ell-e^{-g(D(\ell))},\ell]$과 $[\ell,\ell+e^{-g(D(\ell))}]$에 약수의 로그가 있다; $g$는 비감소;
+\item $\ell\in[\ell_{\min},\ell_1]$에서 $g(\ell)\ge c_5\,\ell^{1/2}(\log\ell)^{-7/2}$, $c_5:=\frac12(c_2/256)^{1/2}$;
+\item greedy가 $D(\log R)<\ell_1$인 잔차 $R$에서 쓰는 단계 수는 $\le\frac{2\ell_{\min}}{\log 2}+O(\sqrt{\ell_1}(\log\ell_1)^{7/2})=O((\log L)^{3/2}(\log\log L)^4)$이다
+(여기서 $\log R<\ell_{\min}$이면 $R<e^{\ell_{\min}}\le L$이므로 $R$ 자체가 약수: 한 항).
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(i) $\sigma$는 $y$에 대해 연속 증가이므로 $y(\ell)$은 잘 정의되고 비감소, $T_*$는 증가하므로 $g$ 비감소.
+$\sigma(y(D))\le D$이므로 정리~\ref{VKGAP:thm-A-y}(ii) ($y=y(D(\ell))$)가 적용되고 $2r_y=8\pi/T_*(y)=e^{-g}$.
+(ii) $\ell<\sigma(L)$이면 $\sigma(y)=\ell$ ($y=y(\ell)$). $\log\log y\le\log\ell$ ($\log y\le\ell$)이므로
+$(\log y)^3\ge\frac{c_2}{128}\frac{\ell-2}{\log\ell}\ge\frac{c_2}{256}\frac{\ell}{\log\ell}$, 따라서
+$\log T_*(y)\ge(c_2/256)^{1/2}\ell^{1/2}(\log\ell)^{-1/2}(\log\ell)^{-3}$이고 $y_2$를 크게 잡아 $\log8\pi\le\frac12\log T_*(y)$.
+$\sigma(L)\le\ell\le\ell_1$이면 $g=\log T_*(L)-\log8\pi$이고 $\log\ell\ge3\log\log L$, $\ell^{1/2}\le(256/c_2)^{1/2}(\log L)^{3/2}(\log\log L)^{1/2}$에서
+$c_5\ell^{1/2}(\log\ell)^{-7/2}\le\frac12(\log L)^{3/2}(\log\log L)^{-3}3^{-7/2}\le g(\ell)$.
+(iii) (i)로 보조정리~\ref{VKGAP:lem-greedy}의 증명을 $D\in[\ell_{\min},\ell_1)$ 범위에서 반복한다(아래쪽과 위쪽 모두; 위쪽에서는
+$\ell^*=D$에 대해 $[\ell-e^{-g(\ell^*)},\ell]$의 약수를 쓴다). 블록 $[2^j,2^{j+1})$에서 (ii)로
+$G_j\ge c_5 2^{j/2}((j+1)\log 2)^{-7/2}$, 따라서 단계 수 $\le2\sum_{j\le\log_2\ell_1}(c_5^{-1}2^{j/2}((j+1)\log2)^{7/2}+1)
+\le\frac{7}{c_5}\sqrt{\ell_1}(\log(2\ell_1))^{7/2}+2\log_2\ell_1+2$.
+$D<\ell_{\min}$인 위쪽 단계는 (K2)로 $\le\ell_{\min}/\log2+1$개.
+\end{proof}
+
+%======================================================================
+\subsection{비공명 $\Rightarrow$ 간격: 일반 전이와 세 가지 구체화}
+\label{VKGAP:sec-C}
+
+\begin{definition}[비공명]\label{VKGAP:def-NR}
+$T\ge1$, $\eta\in(0,1]$. $\mathrm{NR}_L(T,\eta)$: 모든 실수 $4\le|\tau|\le T$에 대해 $\big|\sum_{p\in P_L}p^{i\tau}\big|\le(1-\eta)M$.
+(하한 $4$는 필수적이다: 주~\ref{VKGAP:rem-cutoff} 참조. $|\tau|\le4$는 보조정리~\ref{VKGAP:lem-pair}가 무조건적으로 처리한다.)
+약한 형태 $\mathrm{NR}'_L(T,\eta)$: $4\le|\tau|\le T$에서 $\sum_{p\in P_L}(1-\cos(\tau\log p))\ge\eta M$.
+$M-\mathrm{Re}A\ge M-|A|$이므로 $\mathrm{NR}_L(T,\eta)\Rightarrow\mathrm{NR}'_L(T,\eta)$.
+가설 $\mathrm{NR}(c,\eta)$: 어떤 $L_1$이 있어 모든 $L\ge L_1$에서 $\mathrm{NR}_L(e^{cM_L},\eta)$.
+\end{definition}
+
+\begin{theorem}[일반 전이: $\mathrm{NR}\Rightarrow$ 규모별 간격 $\Rightarrow$ $H(L)$]\label{VKGAP:thm-transfer}
+\COND{(E1)--(E4) 및 $\mathrm{NR}'_L(T',\eta)$}\ $\eta\in(0,1]$, $L\ge L_0(\eta)$, $T'\ge e^5$이고 $\mathrm{NR}'_L(T',\eta)$라 하자.
+\begin{enumerate}[label=(\roman*)]
+\item 모든 $\ell\in[\ell_1,\log\Lam_L-\ell_1]$에 대해 $[\ell-\delta(\ell),\ell]$와 $[\ell,\ell+\delta(\ell)]$에 약수의 로그가 있고
+\[
+\log\frac1{\delta(\ell)}\ \ge\ \min\Big(\log T'-2,\ \frac{\eta\,D(\ell)}{16\log L}\Big)-2 .
+\]
+\item $H(L)\le\dfrac{\psi(L)}{\log T'-4}+\Big(\dfrac{64}{\eta\log2}+o(1)\Big)(\log L)^2$ ($o(1)$은 $T'$에 대해 균등).
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(i) 대칭 ($d\mapsto\Lam_L/d$, 정리~\ref{VKGAP:thm-A-y}(ii)의 증명 끝부분)에 의해 $\ell\le\frac12\log\Lam_L+1$만 보면 된다; 이때 $D(\ell)\le\ell$이다.
+$q:=\ell/(4\theta_P)$. (E1)에서 $\theta_P=(\frac12+o(1))L$, $\psi(L)=(1+o(1))L$이므로 큰 $L$에서 $q\le1/2$이고
+$n=q(1-q)M\ge qM/2=\ell M/(8\theta_P)\ge\ell/(8\log L)\ge n_0(L)$ ($\ell\ge\ell_1$). 명제~\ref{VKGAP:prop-core}의 $T=\min(T'/2\pi,e^{\eta n/2})$에 대해
+$u\in\{\ell\mp2/T\}$, $z:=u-q\theta_P=\frac34\ell\mp2/T$. $z>0$이고 $z\le\frac38\psi(L)+3\le\psi(L)-\theta_P=\log Q$ (큰 $L$).
+Lemma~\ref{VKGAP:lem-cofactor}로 $z-\log2<\log c\le z$인 $c\mid Q$, $s:=u-\log c\in[q\theta_P,q\theta_P+\log2)$; 명제로 $|\log U(E)-s|\le2/T$인 $E$;
+$d=cU(E)$는 $\log d\in[u-2/T,u+2/T]$. $\delta(\ell):=4/T$이고
+$\log(1/\delta)=\min(\log T'-\log2\pi,\eta n/2)-\log4\ge\min(\log T'-2,\eta\ell/(16\log L))-2$.
+(ii) 가장자리 $D<\ell_1$은 보조정리~\ref{VKGAP:lem-smallzone}(iii): $O((\log L)^{3/2}(\log\log L)^4)$ 단계. $D\ge\ell_1$에서는
+보조정리~\ref{VKGAP:lem-greedy}의 증명을 $G(D)=\min(\log T'-2,\eta D/(16\log L))-2$로 반복한다. $D_*:=\frac{16\log L}{\eta}(\log T'-2)$.
+$D\le D_*$인 블록에서는 $D\ge\ell_1\ge64\log L/\eta$이므로 $G(D)\ge\eta D/(32\log L)$, 블록당 $\le32\log L/\eta+1$ 단계, 블록 수 $\le\log_2L$ (각 쪽).
+$D\ge D_*$에서는 $G=\log T'-4$이고, 아래쪽 ($\ell$이 $\frac12\log\Lam_L$에서 $D_*$로 감소)과 위쪽 ($\ell^*$가 증가)을 직접 세면 각각
+$\le\frac{\frac12\log\Lam_L}{\log T'-4}+1$ 단계. 합하면 주장.
+\end{proof}
+
+\begin{corollary}[세 가지 구체화]\label{VKGAP:cor-three}
+\begin{enumerate}[label=(\arabic*)]
+\item \COND{(E1)--(E4)}\ (VK) $T'=T_*(L)$, $\eta=1/15$ (따름정리~\ref{VKGAP:cor-NRuncond}):
+$H(L)\le\frac{\psi(L)}{(\log L)^{3/2}(\log\log L)^{-3}-4}+O((\log L)^2)$. 이는 정리~\ref{VKGAP:thm-B}를 재현하며 하위항을 $O((\log L)^2)$로 개선한다.
+% AUD3: tag completed: the RH corollary also uses (E1),(E3),(E4) (Lemma RH) and the small-zone lemma (E1)-(E4); (E2) follows from RH.
+\item \COND{RH 및 (E1),(E3),(E4)}\ (보조정리~\ref{VKGAP:lem-RH}) $T'=T_{\rm RH}(L)=\exp(c_{\rm RH}\sqrt L/\log L)$, $\eta=1/15$:
+$H(L)\le(c_{\rm RH}^{-1}+o(1))\sqrt L\log L$, 따라서 $N(b)\le(2c_{\rm RH}^{-1}+o(1))\sqrt{\log b}\,\log\log b$ --- Vose ($\sqrt{\log b}$)보다 $\log\log b$배 약하다.
+\item \COND{$\mathrm{NR}(c,\eta)$}\ (VKGAP-C) $T'=e^{cM}$: $\psi(L)/(cM-4)=O(\log L/c)$이므로
+\[
+H(L)\le\Big(\frac{64}{\eta\log2}+o_{c,\eta}(1)\Big)(\log L)^2,
+\]
+따라서 $N(b)\ll_\eta(\log\log b)^2$ ((K5)와 $L_b\sim\log b$), 그리고 $h(\Lam_L)=H(L)\ll(\log\log\Lam_L)^2$이므로
+Erdős \#18 Q1 ($h(m)<(\log\log m)^{O(1)}$인 practical $m$이 무한히 많음)이 강한 형태 (지수 2, $m=\Lam_L$; $\Lam_L$은 혼합 기수 전개 p1p4 Thm.~5.4에 의해 practical)로 따른다.
+실제로는 더 약한 $\mathrm{NR}'_L(\exp(cL/(\log L)^2),\eta)$만으로 같은 $(\log L)^2$가 나온다 ($\psi(L)/\log T'=O((\log L)^2/c)$).
+\end{enumerate}
+또 (i)에서 $\mathrm{NR}(c,\eta)$ 아래 $\log(1/\delta(\ell))\ge c_4D(\ell)/\log L-4$, $c_4=\min(c/3,\eta/16)$ ($cM\ge c\,\ell/(3\log L)$)이다: DESIGN S3의 선형 엔트로피 간격.
+\end{corollary}
+\begin{proof}
+정리~\ref{VKGAP:thm-transfer}(ii)에 대입. (2): $\psi(L)/(c_{\rm RH}\sqrt L/\log L-4)=(1+o(1))\sqrt L\log L/c_{\rm RH}$이고 $(\log L)^2$ 항은 하위;
+$L_b=(1+o(1))\log b$. (3): (E1)에서 $M\ge L/(3\log L)$.
+\end{proof}
+
+\begin{remark}[절단 $|\tau|\ge4$가 필요한 이유]\label{VKGAP:rem-cutoff}
+\COND{(E1)}\ 고정된 $\tau$에 대해 $A_L(\tau)=M\,L^{i\tau}F(\tau)+O((1+|\tau|)L/\log^2L)$.
+증명: $\pi(t)=t/\log t+O(t/\log^2t)$를 $A_L(\tau)=\int_{L/2}^Lt^{i\tau}d\pi(t)=[t^{i\tau}\pi(t)]_{L/2}^L-i\tau\int_{L/2}^L\pi(t)t^{i\tau-1}dt$에 넣으면
+오차 $O((1+|\tau|)L/\log^2L)$로 $\int_{L/2}^Lt^{i\tau}d(t/\log t)=\frac1{\log L}\int_{L/2}^Lt^{i\tau}dt+O(L/\log^2L)=\frac{L^{1+i\tau}}{\log L}\cdot\frac{F(\tau)}{2}+O(L/\log^2L)$,
+그리고 $M=\frac{L}{2\log L}+O(L/\log^2L)$. 따라서 $|A_L(1)|/M\to|F(1)|=0.98057$ (주~\ref{VKGAP:rem-F}(c)).
+% AUD3: threshold corrected. 1-|F(1)| = 0.0194276...; for 0.0194 < eta <= 0.019427 the tau=1 argument does NOT refute NR
+%        (and sup_{|tau|>=1}|F| = |F(1)| numerically), so the refutation holds exactly for eta > 1-|F(1)|.
+즉 범위를 $|\tau|\ge1$에서 시작하는 비공명은 $\eta>1-|F(1)|=0.019427\ldots$에서 \REFUTED{} (큰 $L$)
+(AUD3 수정: 원문의 문턱 ``$\eta>0.0194$''는 너무 낮다. $0.0194<\eta\le0.019427$에서는 $1-\eta\ge|F(1)|$이므로 $\tau=1$ 논법이 반박을 주지 않는다). 반면 $\sup_{|\tau|\ge4}|F|\le3/\sqrt{17}=0.7276$이므로
+정의~\ref{VKGAP:def-NR}의 $\mathrm{NR}_L(T,\eta)$ ($|\tau|\ge4$)는 $\eta<0.2724$에서 소수 정리와 모순되지 않는다
+(수치: 따름정리~\ref{VKGAP:cor-NRuncond}의 확인에서 $\max_{4\le\tau\le2000}|A_L(\tau)|/M=0.716$, $L=10^5$).
+이 절의 모든 정리는 $|\tau|\ge4$ 부분만 가정한다.
+\end{remark}
+
+\begin{lemma}[RH 아래의 매끄러운 소수합]\label{VKGAP:lem-RH}
+\COND{RH 및 (E1),(E3),(E4)}\ 절대상수 $C_{\rm RH},y_3$이 있어 $y\ge y_3$, 모든 실수 $\tau$에 대해
+$|W_y(\tau)-y^{1+i\tau}\tilde w(1+i\tau)|\le C_{\rm RH}\sqrt y\,\log y\,\log(|\tau|+y)$.
+따라서 $c_{\rm RH}:=10^{-4}/C_{\rm RH}$, $T_{\rm RH}(y):=\exp(c_{\rm RH}\sqrt y/\log y)$라 두면 $\mathrm{NR}'_y(T_{\rm RH}(y),1/15)$가 성립한다.
+\end{lemma}
+\begin{proof}
+Lemma~\ref{VKGAP:lem-VK}의 증명을 $\sigma_1:=\frac12+\frac1{\log y}$, $Y:=|\tau|+y^3$으로 반복한다. RH에 의해 $\mathrm{Re}\,z>1/2$에 영점이 없으므로
+$[\sigma_1,2]\times[-Y,Y]$의 특이점은 $s=1-i\tau$뿐이다. 윤곽 위 $z=\sigma+iu$에서: $|u|\ge2$이면 (E3)과 $|z-\rho|\ge\sigma-\frac12\ge1/\log y$에서
+$|\zeta'/\zeta(z)|\le C\log(|u|+2)(\log y+1)$; $|u|\le2$ (왼쪽 변에서만)이면 $|z-1|\ge1-\sigma_1\ge1/3$과 (E3)의 마지막 문장에서 $\le B_0+3$.
+$|u|\le 2|\tau|+y^3$이고 $\log(2|\tau|+y^3+2)\le3\log(|\tau|+y)$이므로 $|G|\le Z_{\rm RH}:=C'\log y\log(|\tau|+y)$. 왼쪽 변 $\le\frac{36}{2\pi}y^{\sigma_1}Z_{\rm RH}=\frac{36e}{2\pi}\sqrt yZ_{\rm RH}$,
+수평 변 $\le2\cdot\frac{1}{2\pi}\cdot1.5\cdot80\,Z_{\rm RH}y^2Y^{-2}\le39Z_{\rm RH}y^{-4}$, 꼬리 $\le16/y$, 소수 거듭제곱 $\le3\sqrt y$. 합하면 첫 주장.
+$\mathrm{NR}'$: 따름정리~\ref{VKGAP:cor-NRuncond}의 증명에서 $|\tau|\le T_{\rm RH}(y)$ ($\ge y$)이면
+$2C_{\rm RH}\sqrt y\log y\log(|\tau|+y)\le 2C_{\rm RH}\sqrt y\log y\cdot 2c_{\rm RH}\sqrt y/\log y=4\cdot10^{-4}y$이므로
+$\sum_{p\in P_y}(1-\cos)\ge\frac{y}{\log y}(0.0361-0.0004)\ge M_y/15$.
+\end{proof}
+
+\begin{remark}[lead의 RH 계산의 검증]\label{VKGAP:rem-RH-check}
+lead는 절단 명시공식 $\psi(x,t)=x^{1-it}/(1-it)+O(x^{1/2}\log x\log(|t|+2))$ (RH, recalled)에서 $T_{\rm RH}=\exp(c\sqrt L/\log L)$와
+$H(L)\ll\sqrt L\log L$을 예상했다. 보조정리~\ref{VKGAP:lem-RH}와 따름정리~\ref{VKGAP:cor-three}(2)는 이를 (매끄러운 가중치로, 절단 공식 없이) 확인한다 \COND{RH}.
+% AUD3: caveat added on the lead's recalled formula (not used anywhere in the proofs).
+(AUD3 주: 확인되는 것은 \emph{귀결} $T_{\rm RH}$, $H(L)\ll\sqrt L\log L$뿐이다. lead가 기억한 절단 공식의 오차항
+$O(x^{1/2}\log x\log(|t|+2))$는 $t=0$에서 RH 아래 $\psi(x)-x\ll\sqrt x\log x$를 뜻하게 되는데, 이는 고전적 RH 경계
+$O(\sqrt x\log^2x)$ (von Koch)보다 강하여 알려진 결과가 아니다. 절단 명시공식 ($T=x$)에서 나오는 형태는 $O(x^{1/2}\log x\,\log(x(|t|+2)))$ 정도이며 (recalled, 감사자의 재유도),
+보조정리~\ref{VKGAP:lem-RH}의 매끄러운 오차 $C_{\rm RH}\sqrt y\log y\log(|\tau|+y)$와 같은 크기이다. 증명은 이 기억된 공식을 쓰지 않는다.)
+$\sqrt L\log L$의 $\log L$은 $\log T_{\rm RH}=c\sqrt L/\log L$의 $1/\log L$에서 오며, 이는 $\sigma_1-\frac12=1/\log y$로 윤곽을 둔 비용이다.
+\HEUR{} 따라서 이 간격 방법으로 Vose 수준 ($H\ll\sqrt L$)을 넘으려면 RH가 주는 것보다 높은 높이 ($\log T'\gg\sqrt L$)에서의 비공명이 필요하다.
+(RH 아래 다른 방법으로 더 나은 결과가 가능한지는 이 절에서 배제하지 않는다.)
+\end{remark}
+
+\begin{proposition}[Dirichlet: 지수 높이가 천장이다]\label{VKGAP:prop-dirichlet}
+\PROVED\ 모든 $L$과 $\eta\in(0,1]$에 대해, $K:=\lfloor2\pi/\eta\rfloor+1$이면 $T\ge4K^M$에서 $\mathrm{NR}_L(T,\eta)$는 거짓이고,
+$K':=\lfloor\pi\sqrt{2/\eta}\rfloor+1$이면 $T'\ge4K'^M$에서 $\mathrm{NR}'_L(T',\eta)$는 거짓이다.
+특히 $4K^M\le(8/\eta)^M$ ($M\ge15$)이므로 $\mathrm{NR}_L(T,\eta)$는 $T\ge(8/\eta)^M$에서 실패하고, $\mathrm{NR}(c,\eta)$는 $c<\log(8/\eta)$일 때만 가능하다.
+\end{proposition}
+\begin{proof}
+$\alpha_p:=4\log p/(2\pi)$, $x_t:=(\{t\alpha_p\})_{p\in P}\in[0,1)^M$ ($t=0,1,\dots,K^M$). $[0,1)^M$을 한 변 $1/K$인 $K^M$개의 상자로 나누면
+$K^M+1$개의 점 중 두 점 $x_{t_1},x_{t_2}$ ($t_1<t_2$)가 같은 상자에 있다. $t:=t_2-t_1\in[1,K^M]$이면 모든 $p$에서 $\|t\alpha_p\|<1/K$.
+$\tau:=4t\in[4,4K^M]$에서 $p^{i\tau}=e^{2\pi it\alpha_p}$, $|p^{i\tau}-1|=2|\sin(\pi\|t\alpha_p\|)|\le2\pi\|t\alpha_p\|<2\pi/K<\eta$이므로
+$|A_L(\tau)|\ge M-\sum_p|p^{i\tau}-1|>(1-\eta)M$. $\mathrm{NR}'$: $1-\cos(\tau\log p)=2\sin^2(\pi\|t\alpha_p\|)\le2\pi^2/K'^2<\eta$이므로 $\sum_p(1-\cos)<\eta M$.
+\end{proof}
+
+\begin{remark}[사다리의 해석]\label{VKGAP:rem-ladder}
+정리~\ref{VKGAP:thm-transfer}(ii)의 두 항: $\psi(L)/\log T'$ (해상도 항)과 $(\log L)^2/\eta$ (선형 엔트로피 항).
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+가정 & 높이 $\log T'$ & $H(L)$ \\
+\midrule
+고정 높이 (PNT형) & $O(1)$ & 정보 없음 ($\psi(L)/O(1)$) \\
+VK (무조건적) & $(\log L)^{3/2}(\log\log L)^{-3}$ & $(1+o(1))L(\log\log L)^3/(\log L)^{3/2}$ \\
+RH & $c\sqrt L/\log L$ & $\ll\sqrt L\log L$ \\
+$\mathrm{NR}'(e^{cL/(\log L)^2},\eta)$ & $cL/(\log L)^2$ & $\ll(\log L)^2$ \\
+$\mathrm{NR}(e^{cM},\eta)$ & $cM$ (Dirichlet 천장) & $\ll(\log L)^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\HEUR{} 단일 풀 Bernoulli 설계와 $L^1$-Fourier (Fejér) 방법은 $\log T\lesssim n$에서 멈춘다: 전형적인 $\tau$에서
+$|\varphi(\tau)|^2=\prod_p(1-2q(1-q)(1-\cos\theta_p))\approx e^{-2n}$이므로 $\int_{|\tau|\le T}|\varphi|\gtrsim Te^{-(1+o(1))n}$이고,
+이것이 $V^{-1/2}$보다 작으려면 $T\le e^{(1+o(1))n}$이어야 한다. 규모 $\ell$에서 $n\asymp\ell/\log L$이므로 이 방법의 천장은 정확히 선형 엔트로피 영역 (S3 (b), $H\ll(\log L)^2$)이고,
+엔트로피 수준 (S3 (c), $\log(1/\delta)\asymp(\ell/\log L)\log(eL/\ell)$; Bernoulli 설계의 엔트로피 $\approx n\log(eM/n)$과 일치)에는 $L^2$형 (충돌 확률) 논법이나
+다른 설계가 필요하다. 선택 과제인 엔트로피 수준 조건부 정리는 깨끗한 형태로 얻지 못했다 \OPEN.
+\end{remark}
+
+\begin{remark}[고정 크기 설계에 관한 lead의 제안]\label{VKGAP:rem-fixedsize}
+\HEUR{} lead의 제안: $E$를 균등한 $n$-부분집합으로 잡으면 $S=n\log L-W$, $W=\sum_{p\in E}u_p$이고 격자 공명이 사라져
+($|\mathbb{E}e^{i\tau S}|\le3\sqrt n\exp(-q(1-q)(M-|\sum_Pe^{-i\tau u_p}|))$, p1p4 주~5.19(b)) $n\ge C\log T$로 충분할 것이다;
+그러면 $X_0=\exp(C\log T\log L)$이고 작은 영역이 자동으로 처리된다. 원점 근방의 국소 극한은 비복원 추출의 CLT
+(예: $(\xi_p,\xi_pu_p)$의 2차원 국소 극한 정리) 가 필요하며 여기서는 완전히 쓰지 않았다.
+본 절의 Bernoulli 설계는 이 단계 없이 모든 정리를 증명하며, 대가는 $X_0=\exp(C(\log L)^3\log\log L)$과
+작은 영역의 비용 $O((\log L)^{3/2}(\log\log L)^4)$ (보조정리~\ref{VKGAP:lem-smallzone})뿐이다 --- 정리 B, C의 주항에는 영향이 없다.
+\end{remark}
+
+%======================================================================
+\subsection{수치 확인}
+\label{VKGAP:sec-num}
+
+모든 스크립트는 \texttt{\$R/agents/VKGAP/code/}, 출력은 \texttt{\$R/agents/VKGAP/out/} (\texttt{\$R}$=$\texttt{erdos304/round4}).
+\begin{enumerate}[label=(N\arabic*)]
+\item \NUMERIC{} \texttt{vk\_charfun.py} $\to$ \texttt{vk\_charfun.out}. $L=10^4,10^5,10^6$ ($M=560,4459,36960$):
+% AUD3: limit value corrected 0.03907 -> 0.039094 (same slip as in rem-lattice)
+$\mathrm{Var}_P(\log p)=0.03937,0.03932,0.03916$ (극한 $0.039094$; 증명은 $v_0=0.0059$만 사용);
+쌍 논법의 비 $\min_{0<\tau\le\pi/\log2}(M-|A|)/(\tau^2M)=0.0174,0.0173,0.0173$ ($\ge\frac2{\pi^2}\mathrm{Var}_P\approx0.0080$, Lemma~\ref{VKGAP:lem-pair}과 일치);
+격자 공명: $\tau=2\pi/\log L$에서 $1-|A|/M=0.0091,0.0059,0.0040\approx0.0196\,\tau^2$ (주~\ref{VKGAP:rem-lattice}의 $\Theta(1/(\log L)^2)$ 확인);
+$4\le\tau\le2000$ ($L=10^6$은 $\le400$), 간격 $0.05$: $\max|A|/M=0.714,0.715,0.716$ (모두 $\tau=4$ 근처; $3/\sqrt{17}=0.728$),
+$\max(|A|/M-3/\sqrt{1+\tau^2})=0.067,0.024,0.003$ ($\to0$, 주~\ref{VKGAP:rem-cutoff}와 일치);
+매끄러운 합 $\max|W(\tau)|/W(0)=0.763,0.765,0.766$ (증명의 상한 $0.9196+o(1)$);
+$\min\sum_{p}(1-\cos(\tau\log p))/M=0.327,0.362,0.324$ (증명은 $\ge1/15$만 필요).
+(격자 위의 계산이므로 $\sup$에 대한 증명은 아니다.)
+\item \NUMERIC{} \texttt{F\_check.py} $\to$ \texttt{F\_check.out}: 주~\ref{VKGAP:rem-F}(c) (mpmath 구간 산술 및 단조성 평가에 의한 인증된 확인).
+\item \NUMERIC{} \texttt{divgaps.py} $\to$ \texttt{divgaps.out}: $8\le L\le73$에서 $\Lam_L$의 모든 약수의 로그를 정렬하여,
+중앙 영역 $[\frac14\log\Lam_L,\frac34\log\Lam_L]$의 최대 연속 로그 간격 $G_{1/2}(L)$을 계산했다:
+\begin{center}\small
+\begin{tabular}{rrrrrrrrr}
+\toprule
+$L$ & 19 & 29 & 37 & 43 & 53 & 61 & 67 & 73\\
+$\tau(\Lam_L)$ & 960 & 7680 & 36864 & 147456 & 884736 & 3538944 & 8257536 & 33030144\\
+$1/G_{1/2}(L)$ & 16.4 & 56.5 & 146 & 412 & 976 & 3216 & 4819 & 11547\\
+\bottomrule
+\end{tabular}
+\end{center}
+작은 $L$에서 $\log(1/G_{1/2})\approx0.13L$로, 정리~\ref{VKGAP:thm-A}의 점근 예측 $\log(1/\delta)\approx(\log L)^{3/2}$보다 훨씬 좋다
+(이 범위에서는 약수의 수 $\tau(\Lam_L)=e^{(\log2+o(1))L/\log L}$가 지배하며, 점근 정리와의 정량 비교는 의미가 없다; \HEUR).
+$[L,\Lam_L/L]$ 전체의 최대 간격은 양 끝 ($x\approx L$ 부근, 정수 간격 $\approx1/L$)이 지배한다 (\texttt{divgaps.out}의 $G_{\rm mid}$ 열).
+\end{enumerate}
+
+%======================================================================
+\subsection{상태 원장 (요약)}
+\label{VKGAP:sec-ledger}
+
+\begin{center}\small
+\begin{longtable}{p{0.24\textwidth}p{0.52\textwidth}p{0.17\textwidth}}
+\toprule
+항목 & 내용 & 상태\\
+\midrule
+Lem.~\ref{VKGAP:lem-cofactor} & $Q_y$ ($Q=Q_L$ 포함)의 연속 약수 비 $\le2$ & \PROVED\\
+Lem.~\ref{VKGAP:lem-pair} & $|\tau|\le\pi/\log2$: $M-|A|\ge\frac{2}{\pi^2}\mathrm{Var}(\log p)\tau^2M$; $\mathrm{Var}\ge0.0059$ & \PROVED{} (+(E1))\\
+Lem.~\ref{VKGAP:lem-VK}, Cor.~\ref{VKGAP:cor-NRuncond} & VK $\Rightarrow$ $4\le|\tau|\le T_*(y)$에서 $\sum_{P_y}(1-\cos)\ge M_y/15$ & \COND{(E1)--(E4)}\\
+% AUD3: tag made consistent with the statement: step (d) uses Lemma pair, whose bound v_y>=v_0 needs (E1) for y>=y_0
+Prop.~\ref{VKGAP:prop-core} & $\mathrm{NR}'$ $\Rightarrow$ 로그합 조밀성 (Fejér 국소 극한, 명시 상수) & \PROVED{} (+(E1))\\
+Thm.~\ref{VKGAP:thm-A} (VKGAP-A) & $x\in[X_0,\Lam/X_0]$, $X_0=e^{C(\log L)^3\log\log L}$: $[(1-\delta)x,x]$에 약수, $\delta=8\pi e^{-(\log L)^{3/2}(\log\log L)^{-3}}$ & \COND{교과서 (E1)--(E4)}\\
+Thm.~\ref{VKGAP:thm-B} (VKGAP-B) & $H(L)\le(1+o(1))L(\log\log L)^3/(\log L)^{3/2}$; $N(b)\ll\log b/(\log\log b)^{3/2-\eps}$ (Hughes보다 약함) & \COND{교과서 (E1)--(E4)}\\
+Lem.~\ref{VKGAP:lem-greedy}, Cor.~\ref{VKGAP:cor-regimes} & 규모 의존 greedy; S3의 세 영역 & \PROVED\\
+Lem.~\ref{VKGAP:lem-smallzone} & 작은 영역의 무조건적 비용 $O((\log L)^{3/2}(\log\log L)^4)$ & \COND{(E1)--(E4)}\\
+Thm.~\ref{VKGAP:thm-transfer} & $\mathrm{NR}'(T',\eta)\Rightarrow\log\frac1{\delta(\ell)}\ge\min(\log T',\frac{\eta D}{16\log L})-4$, $H\le\frac{\psi(L)}{\log T'-4}+O(\frac{(\log L)^2}{\eta})$ & \COND{$\mathrm{NR}'$, (E1)--(E4)}\\
+Cor.~\ref{VKGAP:cor-three}(2), Lem.~\ref{VKGAP:lem-RH} & $H(L)\ll\sqrt L\log L$, $N(b)\ll\sqrt{\log b}\log\log b$ & \COND{RH}\\
+Cor.~\ref{VKGAP:cor-three}(3) (VKGAP-C) & $\mathrm{NR}(c,\eta)$ ($|\tau|\ge4$) $\Rightarrow H\le(\frac{64}{\eta\log2}+o(1))(\log L)^2$, $N(b)\ll(\log\log b)^2$, Erdős \#18 Q1 ($m=\Lam_L$) & \COND{$\mathrm{NR}(c,\eta)$}\\
+Prop.~\ref{VKGAP:prop-dirichlet} & $\mathrm{NR}_L(T,\eta)$는 $T\ge(8/\eta)^M$에서 거짓 & \PROVED\\
+% AUD3: threshold corrected (see rem-cutoff)
+Rem.~\ref{VKGAP:rem-cutoff} & $|\tau|\ge1$부터의 NR은 $\eta>1-|F(1)|=0.019427\ldots$에서 거짓 & \REFUTED{} (+(E1))\\
+Rem.~\ref{VKGAP:rem-F} & $\sup_{|\tau|\ge1}|F|\le0.9902$ (증명), $=0.98057$ (인증 수치) & \PROVED/\NUMERIC\\
+Rem.~\ref{VKGAP:rem-ladder} & $L^1$-Fourier/단일 풀 방법의 천장 = 선형 엔트로피 ($(\log L)^2$); 엔트로피 수준 정리 & \HEUR/\OPEN\\
+Rem.~\ref{VKGAP:rem-fixedsize} & 고정 크기 설계 ($X_0=e^{C\log T\log L}$) & \HEUR\\
+\bottomrule
+\end{longtable}
+\end{center}
+Erdős \#304 자체 ($N(b)\ll\log\log b$)와 SP1 ($H(L)\ll\log L$)은 \OPEN{}이며 이 절은 그것을 주장하지 않는다.

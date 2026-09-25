@@ -1,0 +1,4 @@
+# AUD1 Parseval lower bound check
+L=40 q=7*11*13*17=17017 N=#supp(c' mod q)=144 tau(Q')=144: 2^w*Bfrak=9.3843 >= 2^w*lower=0.6056 [OK]; 2^w*true max|mu-M|=4.7585; sqrt(q)/(2 tau(Q'))=0.453 [0.1s]
+L=60 q=11*13*17*19=46189 N=#supp(c' mod q)=864 tau(Q')=864: 2^w*Bfrak=4.3765 >= 2^w*lower=0.1815 [OK]; 2^w*true max|mu-M|=1.9433; sqrt(q)/(2 tau(Q'))=0.124 [0.1s]
+L=40 q=7*11*13*17*19=323323 N=#supp(c' mod q)=72 tau(Q')=72: 2^w*Bfrak=80.7377 >= 2^w*lower=5.0632 [OK]; 2^w*true max|mu-M|=26.6947; sqrt(q)/(2 tau(Q'))=3.949 [1.0s]

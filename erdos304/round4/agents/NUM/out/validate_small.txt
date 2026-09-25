@@ -1,0 +1,22 @@
+L= 2 Lam=         2 tau=   2 H=1 #max=1 a_H=1 lowermax=0 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 3 Lam=         6 tau=   4 H=2 #max=2 a_H=4 lowermax=1 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 4 Lam=        12 tau=   6 H=3 #max=1 a_H=11 lowermax=2 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 5 Lam=        60 tau=  12 H=4 #max=2 a_H=58 lowermax=3 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 6 Lam=        60 tau=  12 H=4 #max=2 a_H=58 lowermax=3 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 7 Lam=       420 tau=  24 H=5 #max=1 a_H=418 lowermax=4 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 8 Lam=       840 tau=  32 H=5 #max=9 a_H=769 lowermax=4 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L= 9 Lam=      2520 tau=  48 H=5 #max=94 a_H=2027 lowermax=4 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=10 Lam=      2520 tau=  48 H=5 #max=94 a_H=2027 lowermax=4 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=11 Lam=     27720 tau=  96 H=6 #max=22 a_H=26149 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=12 Lam=     27720 tau=  96 H=6 #max=22 a_H=26149 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=13 Lam=    360360 tau= 192 H=6 #max=7553 a_H=269323 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=14 Lam=    360360 tau= 192 H=6 #max=7553 a_H=269323 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=15 Lam=    360360 tau= 192 H=6 #max=7553 a_H=269323 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=16 Lam=    720720 tau= 240 H=6 #max=23748 a_H=528083 lowermax=5 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=17 Lam=  12252240 tau= 480 H=7 #max=1484 a_H=11540143 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=18 Lam=  12252240 tau= 480 H=7 #max=1484 a_H=11540143 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=19 Lam= 232792560 tau= 960 H=7 #max=1226590 a_H=186234043 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=20 Lam= 232792560 tau= 960 H=7 #max=1226590 a_H=186234043 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=21 Lam= 232792560 tau= 960 H=7 #max=1226590 a_H=186234043 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+L=22 Lam= 232792560 tau= 960 H=7 #max=1226590 a_H=186234043 lowermax=6 shift=True aH=Lam/2+a_(H-1):True old_tables_match=True
+mismatches with old tables: 0

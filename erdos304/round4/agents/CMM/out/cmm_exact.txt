@@ -1,0 +1,71 @@
+# CMM exact numerics: mu_i(b/q) vs main term M(q); see cmm_exact.py docstring
+Gauss expansion e(by/q')=(1/phi) sum conj(chi)(by) tau(chi): q'=15, max err=7.25e-15
+Gauss expansion e(by/q')=(1/phi) sum conj(chi)(by) tau(chi): q'=21, max err=7.25e-15
+Gauss expansion e(by/q')=(1/phi) sum conj(chi)(by) tau(chi): q'=35, max err=8.19e-15
+Gauss expansion e(by/q')=(1/phi) sum conj(chi)(by) tau(chi): q'=105, max err=2.19e-14
+Gauss expansion e(by/q')=(1/phi) sum conj(chi)(by) tau(chi): q'=143, max err=3.50e-14
+L=   60 q=           29*23=667       |Pi|=  4 t=2 M(q)=0.2301136364 2^w*M=0.92045455 max|mu-M|=3.133e-03 (2^w*max|mu-M|=1.253e-02)
+      exact-B bound on max|mu-M| = 2.325e-02 (ratio true/bound = 1.347e-01); B(S): (29,):7.41e-03, (23,):5.49e-03, (29, 23):7.96e-02; #bad prim chars (Re A>N1/2) over all S = 33   [0.0s]
+L=   60 q=           11*13=143       |Pi|=  4 t=2 M(q)=0.2062500000 2^w*M=0.82500000 max|mu-M|=1.335e-03 (2^w*max|mu-M|=5.339e-03)
+      exact-B bound on max|mu-M| = 7.825e-03 (ratio true/bound = 1.706e-01); B(S): (11,):6.62e-03, (13,):3.61e-03, (11, 13):2.02e-02; #bad prim chars (Re A>N1/2) over all S = 10   [0.0s]
+L=   60 q=           11*29=319       |Pi|=  7 t=3 M(q)=0.2169642857 2^w*M=0.86785714 max|mu-M|=5.481e-04 (2^w*max|mu-M|=2.193e-03)
+      exact-B bound on max|mu-M| = 1.243e-02 (ratio true/bound = 4.410e-02); B(S): (11,):5.15e-03, (29,):4.21e-03, (11, 29):3.98e-02; #bad prim chars (Re A>N1/2) over all S = 29   [0.0s]
+L=   60 q=        11*13*17=2431      |Pi|=  3 t=1 M(q)=0.0966796875 2^w*M=0.77343750 max|mu-M|=5.420e-03 (2^w*max|mu-M|=4.336e-02)
+      exact-B bound on max|mu-M| = 5.486e-02 (ratio true/bound = 9.881e-02); B(S): (11,):1.16e-02, (13,):4.17e-03, (17,):8.76e-03, (11, 13):3.26e-02, (11, 17):4.07e-02, (13, 17):6.07e-02, (11, 13, 17):2.65e-01; #bad prim chars (Re A>N1/2) over all S = 225   [0.0s]
+L=  100 q=           47*43=2021      |Pi|=  4 t=2 M(q)=0.2387422360 2^w*M=0.95496894 max|mu-M|=3.233e-04 (2^w*max|mu-M|=1.293e-03)
+      exact-B bound on max|mu-M| = 3.227e-03 (ratio true/bound = 1.002e-01); B(S): (47,):5.48e-04, (43,):7.16e-04, (47, 43):1.16e-02; #bad prim chars (Re A>N1/2) over all S = 36   [0.0s]
+L=  100 q=           11*13=143       |Pi|=  4 t=2 M(q)=0.2062500000 2^w*M=0.82500000 max|mu-M|=3.245e-04 (2^w*max|mu-M|=1.298e-03)
+      exact-B bound on max|mu-M| = 9.108e-04 (ratio true/bound = 3.562e-01); B(S): (11,):2.02e-19, (13,):2.19e-04, (11, 13):3.40e-03; #bad prim chars (Re A>N1/2) over all S = 2   [0.0s]
+L=  100 q=           11*47=517       |Pi|= 10 t=5 M(q)=0.2201086957 2^w*M=0.88043478 max|mu-M|=1.000e-05 (2^w*max|mu-M|=4.001e-05)
+      exact-B bound on max|mu-M| = 1.169e-03 (ratio true/bound = 8.555e-03); B(S): (11,):1.14e-19, (47,):1.30e-03, (11, 47):3.25e-03; #bad prim chars (Re A>N1/2) over all S = 4   [0.0s]
+L=  100 q=        11*13*17=2431      |Pi|=  3 t=1 M(q)=0.0966796875 2^w*M=0.77343750 max|mu-M|=7.154e-04 (2^w*max|mu-M|=5.723e-03)
+      exact-B bound on max|mu-M| = 3.486e-03 (ratio true/bound = 2.052e-01); B(S): (11,):6.22e-19, (13,):2.53e-04, (17,):9.27e-05, (11, 13):5.59e-03, (11, 17):2.55e-03, (13, 17):3.77e-03, (11, 13, 17):1.46e-02; #bad prim chars (Re A>N1/2) over all S = 50   [0.0s]
+L=  200 q=           97*89=8633      |Pi|=  4 t=2 M(q)=0.2445845170 2^w*M=0.97833807 max|mu-M|=3.669e-06 (2^w*max|mu-M|=1.468e-05)
+      exact-B bound on max|mu-M| = 1.896e-05 (ratio true/bound = 1.935e-01); B(S): (97,):9.76e-07, (89,):2.46e-06, (97, 89):7.24e-05; #bad prim chars (Re A>N1/2) over all S = 14   [0.0s]
+L=  200 q=           17*19=323       |Pi|=  4 t=2 M(q)=0.2213541667 2^w*M=0.88541667 max|mu-M|=3.366e-07 (2^w*max|mu-M|=1.346e-06)
+      exact-B bound on max|mu-M| = 1.632e-06 (ratio true/bound = 2.063e-01); B(S): (17,):1.27e-36, (19,):3.02e-23, (17, 19):6.53e-06; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  200 q=           17*97=1649      |Pi|= 21 t=10 M(q)=0.2319335938 2^w*M=0.92773438 max|mu-M|=5.642e-10 (2^w*max|mu-M|=2.257e-09)
+      exact-B bound on max|mu-M| = 3.917e-06 (ratio true/bound = 1.441e-04); B(S): (17,):1.34e-36, (97,):1.90e-06, (17, 97):1.37e-05; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  200 q=        17*19*23=7429      |Pi|=  3 t=1 M(q)=0.1056463068 2^w*M=0.84517045 max|mu-M|=1.825e-06 (2^w*max|mu-M|=1.460e-05)
+      exact-B bound on max|mu-M| = 1.553e-05 (ratio true/bound = 1.175e-01); B(S): (17,):2.67e-36, (19,):6.04e-23, (23,):1.70e-06, (17, 19):1.07e-05, (17, 23):1.17e-05, (19, 23):7.84e-06, (17, 19, 23):9.04e-05; #bad prim chars (Re A>N1/2) over all S = 10   [0.0s]
+L=  300 q=         149*139=20711     |Pi|=  4 t=2 M(q)=0.2465114571 2^w*M=0.98604583 max|mu-M|=2.035e-08 (2^w*max|mu-M|=8.139e-08)
+      exact-B bound on max|mu-M| = 1.422e-07 (ratio true/bound = 1.431e-01); B(S): (149,):2.06e-09, (139,):3.38e-09, (149, 139):5.63e-07; #bad prim chars (Re A>N1/2) over all S = 0   [0.1s]
+L=  300 q=           19*23=437       |Pi|=  4 t=2 M(q)=0.2253787879 2^w*M=0.90151515 max|mu-M|=1.147e-09 (2^w*max|mu-M|=4.587e-09)
+      exact-B bound on max|mu-M| = 6.911e-09 (ratio true/bound = 1.659e-01); B(S): (19,):5.78e-55, (23,):9.99e-11, (19, 23):2.75e-08; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  300 q=          19*149=2831      |Pi|= 27 t=13 M(q)=0.2345157658 2^w*M=0.93806306 max|mu-M|=1.739e-12 (2^w*max|mu-M|=6.956e-12)
+      exact-B bound on max|mu-M| = 3.027e-08 (ratio true/bound = 5.744e-05); B(S): (19,):3.96e-55, (149,):3.91e-09, (19, 149):1.17e-07; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  300 q=        19*23*29=12673     |Pi|=  3 t=1 M(q)=0.1086647727 2^w*M=0.86931818 max|mu-M|=3.616e-08 (2^w*max|mu-M|=2.893e-07)
+      exact-B bound on max|mu-M| = 1.312e-07 (ratio true/bound = 2.756e-01); B(S): (19,):1.29e-54, (23,):6.42e-10, (29,):1.63e-09, (19, 23):5.61e-08, (19, 29):4.85e-08, (23, 29):4.45e-08, (19, 23, 29):8.91e-07; #bad prim chars (Re A>N1/2) over all S = 0   [0.1s]
+L= 1000 q=         499*491=245009    |Pi|=  3 t=2 M(q)=0.2489888124 2^w*M=0.99595525 max|mu-M|=8.400e-16 (2^w*max|mu-M|=3.360e-15)
+      exact-B bound on max|mu-M| = 5.045e-21 (ratio true/bound = 1.665e+05); B(S): (499,):5.24e-24, (491,):2.75e-24, (499, 491):2.02e-20; #bad prim chars (Re A>N1/2) over all S = 0   [3.7s]
+L= 1000 q=           37*41=1517      |Pi|=  3 t=2 M(q)=0.2369791667 2^w*M=0.94791667 max|mu-M|=2.221e-16 (2^w*max|mu-M|=8.884e-16)
+      exact-B bound on max|mu-M| = 6.280e-24 (ratio true/bound = 3.537e+07); B(S): (37,):7.07e-55, (41,):2.58e-53, (37, 41):2.51e-23; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L= 1000 q=        37*41*43=65231     |Pi|=  2 t=1 M(q)=0.1156684028 2^w*M=0.92534722 max|mu-M|=1.256e-16 (2^w*max|mu-M|=1.005e-15)
+      exact-B bound on max|mu-M| = 4.699e-21 (ratio true/bound = 2.673e+04); B(S): (37,):1.00e-54, (41,):3.32e-53, (43,):1.10e-27, (37, 41):2.85e-23, (37, 43):1.16e-22, (41, 43):6.45e-22, (37, 41, 43):3.68e-20; #bad prim chars (Re A>N1/2) over all S = 0   [0.8s]
+L= 2000 q=         997*991=988027    |Pi|=  3 t=2 M(q)=0.2494967243 2^w*M=0.99798690 max|mu-M|=3.582e-15 (2^w*max|mu-M|=1.433e-14)
+      exact-B bound on max|mu-M| = 6.103e-38 (ratio true/bound = 5.869e+22); B(S): (997,):3.60e-45, (991,):2.28e-42, (997, 991):2.44e-37; #bad prim chars (Re A>N1/2) over all S = 0   [33.8s]
+L= 2000 q=           47*53=2491      |Pi|=  3 t=2 M(q)=0.2398620401 2^w*M=0.95944816 max|mu-M|=2.222e-16 (2^w*max|mu-M|=8.887e-16)
+      exact-B bound on max|mu-M| = 1.098e-44 (ratio true/bound = 2.022e+28); B(S): (47,):5.23e-50, (53,):4.56e-49, (47, 53):4.39e-44; #bad prim chars (Re A>N1/2) over all S = 0   [0.1s]
+L= 2000 q=        47*53*59=146969    |Pi|=  2 t=1 M(q)=0.1178632439 2^w*M=0.94290595 max|mu-M|=1.943e-16 (2^w*max|mu-M|=1.554e-15)
+      exact-B bound on max|mu-M| = 4.718e-39 (ratio true/bound = 4.118e+22); B(S): (47,):5.98e-50, (53,):2.60e-48, (59,):3.82e-50, (47, 53):9.76e-44, (47, 59):9.46e-43, (53, 59):4.00e-40, (47, 53, 59):3.73e-38; #bad prim chars (Re A>N1/2) over all S = 0   [3.4s]
+L=   60 q=             3*5=15        |Pi|=  3 t=2 M(q)=0.3645833333 2^w*M=1.45833333 max|mu-M|=1.124e-16 (2^w*max|mu-M|=4.495e-16)
+      exact-B bound on max|mu-M| = 1.866e-34 (ratio true/bound = 6.021e+17); B(S): (3,):7.45e-82, (5,):5.82e-34, (3, 5):2.02e-34; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=   60 q=          3*7*11=231       |Pi|=  3 t=2 M(q)=0.1718750000 2^w*M=1.37500000 max|mu-M|=2.411e-03 (2^w*max|mu-M|=1.929e-02)
+      exact-B bound on max|mu-M| = 2.849e-02 (ratio true/bound = 8.464e-02); B(S): (3,):4.06e-66, (7,):1.29e-32, (11,):4.06e-02, (3, 7):1.41e-32, (3, 11):3.10e-18, (7, 11):8.17e-02, (3, 7, 11):8.99e-02; #bad prim chars (Re A>N1/2) over all S = 6   [0.0s]
+L=   60 q=             9*5=45        |Pi|=  3 t=2 M(q)=0.2187500000 2^w*M=0.87500000 max|mu-M|=8.467e-17 (2^w*max|mu-M|=3.387e-16)   [0.0s]
+L=   60 q=             4*7=28        |Pi|=  3 t=2 M(q)=0.3055555556 2^w*M=1.22222222 max|mu-M|=1.111e-16 (2^w*max|mu-M|=4.446e-16)   [0.0s]
+L=   60 q=           8*9*5=360       |Pi|=  3 t=1 M(q)=0.0729166667 2^w*M=0.58333333 max|mu-M|=2.723e-03 (2^w*max|mu-M|=2.178e-02)   [0.0s]
+L=  100 q=             3*5=15        |Pi|=  3 t=2 M(q)=0.4083333333 2^w*M=1.63333333 max|mu-M|=5.572e-17 (2^w*max|mu-M|=2.229e-16)
+      exact-B bound on max|mu-M| = 3.743e-35 (ratio true/bound = 1.489e+18); B(S): (3,):6.52e-99, (5,):1.25e-34, (3, 5):2.65e-51; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  100 q=          3*7*11=231       |Pi|=  3 t=2 M(q)=0.1925000000 2^w*M=1.54000000 max|mu-M|=1.014e-04 (2^w*max|mu-M|=8.111e-04)
+      exact-B bound on max|mu-M| = 7.722e-04 (ratio true/bound = 1.313e-01); B(S): (3,):3.55e-83, (7,):3.22e-19, (11,):2.47e-04, (3, 7):8.86e-35, (3, 11):1.46e-19, (7, 11):3.76e-03, (3, 7, 11):3.86e-03; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  100 q=             9*5=45        |Pi|=  3 t=2 M(q)=0.2916666667 2^w*M=1.16666667 max|mu-M|=2.082e-17 (2^w*max|mu-M|=8.327e-17)   [0.0s]
+L=  100 q=             4*7=28        |Pi|=  3 t=2 M(q)=0.3492063492 2^w*M=1.39682540 max|mu-M|=5.575e-17 (2^w*max|mu-M|=2.230e-16)   [0.0s]
+L=  100 q=           8*9*5=360       |Pi|=  3 t=1 M(q)=0.1250000000 2^w*M=1.00000000 max|mu-M|=5.787e-05 (2^w*max|mu-M|=4.629e-04)   [0.0s]
+L=  300 q=             3*5=15        |Pi|=  3 t=2 M(q)=0.5156250000 2^w*M=2.06250000 max|mu-M|=1.106e-17 (2^w*max|mu-M|=4.423e-17)
+      exact-B bound on max|mu-M| = 5.345e-132 (ratio true/bound = 2.069e+114); B(S): (3,):6.82e-246, (5,):2.33e-131, (3, 5):8.41e-134; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  300 q=          3*7*11=231       |Pi|=  3 t=2 M(q)=0.2902777778 2^w*M=2.32222222 max|mu-M|=3.017e-10 (2^w*max|mu-M|=2.413e-09)
+      exact-B bound on max|mu-M| = 1.117e-09 (ratio true/bound = 2.702e-01); B(S): (3,):1.25e-261, (7,):4.08e-38, (11,):1.46e-09, (3, 7):3.32e-85, (3, 11):3.95e-55, (7, 11):4.42e-09, (3, 7, 11):1.85e-08; #bad prim chars (Re A>N1/2) over all S = 0   [0.0s]
+L=  300 q=             9*5=45        |Pi|=  3 t=2 M(q)=0.4010416667 2^w*M=1.60416667 max|mu-M|=5.786e-17 (2^w*max|mu-M|=2.314e-16)   [0.0s]
+L=  300 q=             4*7=28        |Pi|=  3 t=2 M(q)=0.4074074074 2^w*M=1.62962963 max|mu-M|=5.563e-17 (2^w*max|mu-M|=2.225e-16)   [0.0s]
+L=  300 q=           8*9*5=360       |Pi|=  3 t=1 M(q)=0.2228009259 2^w*M=1.78240741 max|mu-M|=5.757e-17 (2^w*max|mu-M|=4.605e-16)   [0.0s]

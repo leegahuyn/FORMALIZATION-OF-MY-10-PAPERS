@@ -1,0 +1,2 @@
+(i): max F_p / bound = 0.7265 (must be <= 1)
+(ii): max sum / (36 L^(-c1/2)) = 7.3377e-03 (must be <= 1)

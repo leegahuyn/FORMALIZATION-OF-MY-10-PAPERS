@@ -1,0 +1,43 @@
+# AUD1 exact audit of CMM Prop exact / Lemma good / Lemma moment / conjugation
+q'=15: max err conj version=1.61e-14, literal (no conj) version=1.902
+q'=77: max err conj version=8.45e-14, literal (no conj) version=1.996
+q'=45: max err conj version=5.38e-14, literal (no conj) version=1.989
+q'=28: max err conj version=3.34e-14, literal (no conj) version=1.950
+L=   60 q=       29*23=667     Pi=(4,2)  2^w M=0.920455  2^w max|mu-M|=1.253e-02
+      Prop-exact bound: 2^w*bound=9.301e-02  true/bound=1.347e-01 [OK]  N1=4  #bad prim(eta=0.5)=33  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=       29*23=667     Pi=(4,2) U FIXED  2^w M=0.920455  2^w max|mu-M|=2.421e-02
+      Prop-exact bound: 2^w*bound=9.301e-02  true/bound=2.603e-01 [OK]  N1=4  #bad prim(eta=0.5)=33  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=    11*13*17=2431    Pi=(3,1)  2^w M=0.773438  2^w max|mu-M|=4.336e-02
+      Prop-exact bound: 2^w*bound=4.388e-01  true/bound=9.881e-02 [OK]  N1=3  #bad prim(eta=0.5)=224  good-lemma violations=0  moment-bound violations=0  [0.2s]
+L=   60 q=    11*13*17=2431    Pi=(3,3) U FIXED  2^w M=0.773438  2^w max|mu-M|=1.087e-01
+      Prop-exact bound: 2^w*bound=4.388e-01  true/bound=2.477e-01 [OK]  N1=3  #bad prim(eta=0.5)=224  good-lemma violations=0  moment-bound violations=0  [0.2s]
+L=  100 q=       47*43=2021    Pi=(4,2)  2^w M=0.954969  2^w max|mu-M|=1.293e-03
+      Prop-exact bound: 2^w*bound=1.291e-02  true/bound=1.002e-01 [OK]  N1=9  #bad prim(eta=0.5)=36  good-lemma violations=0  moment-bound violations=0  [0.2s]
+L=  100 q=    11*13*17=2431    Pi=(3,1)  2^w M=0.773438  2^w max|mu-M|=5.723e-03
+      Prop-exact bound: 2^w*bound=2.789e-02  true/bound=2.052e-01 [OK]  N1=8  #bad prim(eta=0.5)=50  good-lemma violations=0  moment-bound violations=0  [0.3s]
+L=  100 q=      3*7*11=231     Pi=(3,2)  2^w M=1.540000  2^w max|mu-M|=8.111e-04
+      Prop-exact bound: 2^w*bound=6.178e-03  true/bound=1.313e-01 [OK]  N1=10  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=       8*9*5=360     Pi=(3,1)  2^w M=0.583333  2^w max|mu-M|=2.178e-02
+      Prop-exact bound: 2^w*bound=1.252e-01  true/bound=1.740e-01 [OK]  N1=6  #bad prim(eta=0.5)=1  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=  100 q=       8*9*5=360     Pi=(3,1)  2^w M=1.000000  2^w max|mu-M|=4.629e-04
+      Prop-exact bound: 2^w*bound=1.920e-03  true/bound=2.411e-01 [OK]  N1=11  #bad prim(eta=0.5)=1  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=         9*5=45      Pi=(3,2)  2^w M=0.875000  2^w max|mu-M|=1.283e-14
+      Prop-exact bound: 2^w*bound=0.000e+00  true/bound=nan [OK]  N1=6  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=         4*7=28      Pi=(3,2)  2^w M=1.222222  2^w max|mu-M|=1.143e-14
+      Prop-exact bound: 2^w*bound=0.000e+00  true/bound=nan [OK]  N1=6  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   60 q=        16*3=48      Pi=(3,2)  2^w M=0.416667  2^w max|mu-M|=1.173e-02
+      Prop-exact bound: 2^w*bound=4.861e-02  true/bound=2.413e-01 [OK]  N1=6  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=  100 q=       49*11=539     Pi=(4,2)  2^w M=0.500000  2^w max|mu-M|=5.590e-04
+      Prop-exact bound: 2^w*bound=4.240e-03  true/bound=1.319e-01 [OK]  N1=10  #bad prim(eta=0.5)=4  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=  100 q=       27*25=675     Pi=(4,2) U FIXED  2^w M=0.300000  2^w max|mu-M|=1.664e-03
+      Prop-exact bound: 2^w*bound=5.238e-03  true/bound=3.177e-01 [OK]  N1=11  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=  200 q=    17*19*23=7429    Pi=(3,1)  2^w M=0.845170  2^w max|mu-M|=1.460e-05
+      Prop-exact bound: 2^w*bound=1.242e-04  true/bound=1.175e-01 [OK]  N1=16  #bad prim(eta=0.5)=10  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=  300 q=    19*23*29=12673   Pi=(3,1)  2^w M=0.869318  2^w max|mu-M|=2.893e-07
+      Prop-exact bound: 2^w*bound=1.050e-06  true/bound=2.756e-01 [OK]  N1=25  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.1s]
+L=  300 q=     149*139=20711   Pi=(4,2)  2^w M=0.986046  2^w max|mu-M|=8.139e-08
+      Prop-exact bound: 2^w*bound=5.687e-07  true/bound=1.431e-01 [OK]  N1=26  #bad prim(eta=0.5)=0  good-lemma violations=0  moment-bound violations=0  [0.1s]
+L=   40 q=     2*3*5*7=210     Pi=(3,1)  2^w M=1.620370  2^w max|mu-M|=1.251e-01
+      Prop-exact bound: 2^w*bound=2.990e+00  true/bound=4.185e-02 [OK]  N1=4  #bad prim(eta=0.5)=2  good-lemma violations=0  moment-bound violations=0  [0.0s]
+L=   40 q=  7*11*13*17=17017   Pi=(2,1) U FIXED  2^w M=0.644531  2^w max|mu-M|=2.521e+00
+      Prop-exact bound: 2^w*bound=9.384e+00  true/bound=2.687e-01 [OK]  N1=1  #bad prim(eta=0.5)=3743  good-lemma violations=0  moment-bound violations=0  [0.1s]

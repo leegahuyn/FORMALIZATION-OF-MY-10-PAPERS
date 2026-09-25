@@ -1,0 +1,20 @@
+Lp=19 Lam=232792560 tau=960 H(Lp)=7
+hist: 1 959 223572 9407122 66150469 105761609 50022238 1226590
+Hres L=2 Lp=19 LamL=2 : max=1 first_argmax_x=1 count_at_max=1
+Hres L=3 Lp=19 LamL=6 : max=2 first_argmax_x=4 count_at_max=2
+Hres L=4 Lp=19 LamL=12 : max=3 first_argmax_x=11 count_at_max=1
+Hres L=5 Lp=19 LamL=60 : max=4 first_argmax_x=58 count_at_max=2
+Hres L=6 Lp=19 LamL=60 : max=4 first_argmax_x=58 count_at_max=2
+Hres L=7 Lp=19 LamL=420 : max=5 first_argmax_x=418 count_at_max=1
+Hres L=8 Lp=19 LamL=840 : max=5 first_argmax_x=769 count_at_max=9
+Hres L=9 Lp=19 LamL=2520 : max=5 first_argmax_x=2027 count_at_max=94
+Hres L=10 Lp=19 LamL=2520 : max=5 first_argmax_x=2027 count_at_max=94
+Hres L=11 Lp=19 LamL=27720 : max=6 first_argmax_x=26149 count_at_max=21
+Hres L=12 Lp=19 LamL=27720 : max=6 first_argmax_x=26149 count_at_max=21
+Hres L=13 Lp=19 LamL=360360 : max=6 first_argmax_x=269323 count_at_max=7230
+Hres L=14 Lp=19 LamL=360360 : max=6 first_argmax_x=269323 count_at_max=7230
+Hres L=15 Lp=19 LamL=360360 : max=6 first_argmax_x=269323 count_at_max=7230
+Hres L=16 Lp=19 LamL=720720 : max=6 first_argmax_x=528083 count_at_max=23292
+Hres L=17 Lp=19 LamL=12252240 : max=7 first_argmax_x=11551781 count_at_max=1392
+Hres L=18 Lp=19 LamL=12252240 : max=7 first_argmax_x=11551781 count_at_max=1392
+Hres L=19 Lp=19 LamL=232792560 : max=7 first_argmax_x=186234043 count_at_max=1226590

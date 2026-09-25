@@ -1,0 +1,179 @@
+\subsection{감사 AUD3: VKGAP 절과 NUM 절}\label{AUD3:sec}
+
+\paragraph{범위와 방법.}
+감사 대상은 \texttt{agents/VKGAP/frag.tex}(비공명 $\Rightarrow$ 약수 간격, VKGAP-A/B/C)와 \texttt{agents/NUM/frag.tex}(다중집합 BFS와 공명 높이 실험)이다.
+편집 전 원본은 각각 \texttt{frag.tex.orig\_before\_AUD3}로 보존하였다. NUM의 \texttt{frag.tex}는 원래 \texttt{frag\_src.tex}와
+\texttt{code/assemble\_frag.py}로 생성되지만, 지시에 따라 \texttt{frag.tex}를 직접 고쳤다(\texttt{frag\_src.tex}는 손대지 않음; 재생성하면 AUD3 수정이 사라진다).
+모든 편집은 \texttt{\% AUD3:} 주석(이유 포함)으로 표시하였고, 편집 후 두 파일 모두 \texttt{test\_frag.sh}에서 \texttt{COMPILE OK}이다.
+VKGAP의 \PROVED, \REFUTED{} 항목과 모든 조건부 함의를 처음부터 다시 유도하였다(각 부등식과 상수를 손으로, 그리고 아래 스크립트로 다시 계산).
+NUM의 알고리즘 정당성 논증을 다시 유도하였고, 주장된 값은 NUM 코드와 독립적으로 새로 작성한 코드로 점검하였다.
+스크립트는 \texttt{agents/AUD3/code/}, 출력은 \texttt{agents/AUD3/out/}에 있다.
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{aud3\_vkgap\_constants.py} $\to$ \texttt{aud3\_vkgap\_constants.txt}: VKGAP의 모든 명시 상수(분산 하한, $c_2$, $128/c_2$, Mellin 한계, $\int|\tilde w|$,
+ $-\zeta'(2)/\zeta(2)$, 핵심 명제의 다섯 오차항, $0.375$, $1.555$, $0.2033$, 누적량 나머지 $97/288$의 무작위 시험, (C2), Dirichlet 부등식 $4K^M\le(8/\eta)^M$, 조화합 한계).
+\item \texttt{aud3\_vkgap\_primes.py} $\to$ \texttt{aud3\_vkgap\_primes.txt}: $L=10^4,10^5,10^6$에서 $A_L(\tau)$, $\sum_P(1-\cos)$ (Lipschitz 인증서 포함), 쌍 논법 비, 매끄러운 합;
+ 공약수 보조정리의 정수 전수 검사; 작은 $L$의 약수 간격.
+\item \texttt{aud3\_num\_dp.py} $\to$ \texttt{aud3\_num\_dp.txt}: $L\le18$에서 서로 다른 약수 0/1 DP와 다중집합 BFS(둘 다 새 코드)의 점별 비교, $H$, 히스토그램, $a_c$, 이동 항등식; 최적 표현 검증.
+\item \texttt{aud3\_mitm.c} $\to$ \texttt{aud3\_mitm\_L23.txt}, \texttt{aud3\_mitm\_L25.txt}, \texttt{aud3\_mitm\_L25\_a8.txt}: $S_3$ 비트집합에 의한 소속 판정(새 코드).
+\item \texttt{aud3\_num\_res.py} $\to$ \texttt{aud3\_num\_res.txt}: 공명 높이 21칸 재계산, $K/M$, LLL 점 22개 재평가, $\tau_0(\eta)$; \texttt{aud3\_ratefn.py} $\to$ \texttt{aud3\_ratefn.txt}: $I(x)$, Dirichlet $Q$.
+\end{itemize}
+모든 작업은 \texttt{nice -n 10}, 메모리 3\,GB 이하(최대: $L=25$ 검사의 $2.84$\,GB 비트집합)로 수행하였고, 최종 실행은 모두 5분 이내이다(첫 소수합 시도 하나는 약 9분 뒤 중단하고 범위를 줄여 다시 실행). $L=23,25$ BFS는 다시 돌리지 않았다.
+
+\paragraph{총평.}
+\textbf{VKGAP}: 29개 항목 중 CONFIRMED 24, MINOR-FIX 5, GAP 0, WRONG 0.
+\textbf{NUM}: 15개 항목 중 CONFIRMED 14, MINOR-FIX 1, GAP 0, WRONG 0.
+VKGAP의 수학적 핵심(공약수 보조정리, 매끄러운 VK 소수합, 격자 공명 구간의 적분 처리, Fejér 국소 극한과 명시 상수, 전 구간 덮기, greedy 장부, 일반 전이, RH 판, Dirichlet 천장)은
+적대적으로 다시 유도해도 그대로 성립한다. 특히 정리 VKGAP-A (\texttt{VKGAP:thm-A})와 VKGAP-B (\texttt{VKGAP:thm-B})는 교과서 입력 (E1)--(E4)에 조건부인 완전한 증명으로 확인된다.
+수정은 모두 수치 오기, 반박 문턱, 태그 표기, 정의역 세부, 기억된 공식에 대한 단서에 관한 것이다.
+NUM의 알고리즘 정당성(중복 제거 $\Rightarrow$ 다중집합 BFS)과 계수 보조정리는 옳고, 독립 코드로 점검한 모든 수치가 일치한다.
+AUD3는 추가로 $\kappa_{25}(a_8)\ge8$ (즉 $H(25)\ge8$)을 BFS와 독립으로 확인하였다(명제~\ref{AUD3:prop-a8}).
+
+%----------------------------------------------------------------------
+\subsubsection{VKGAP 판정표}\label{AUD3:ssec-vk-table}
+\begin{center}\small
+\begin{longtable}{p{0.22\textwidth}p{0.11\textwidth}p{0.12\textwidth}p{0.47\textwidth}}
+\toprule
+항목 (VKGAP 라벨) & 원 태그 & 판정 & 이유\\\midrule
+\endhead
+Fejér 항등식, $F_T\ge4T/\pi^2$ ($|x|\le\frac1{2T}$) & PROVED & CONFIRMED & 직접 적분 $\frac{1-\cos2\pi Tx}{2\pi^2Tx^2}=F_T$; $\sin v/v\ge2/\pi$.\\
+\texttt{lem-cofactor} & PROVED & CONFIRMED & 홀수 $e$: $2^b<p^a<2^{b+1}$, $e'=e2^b/p^a\in(e/2,e)$, $2^b<p^a\le L\Rightarrow b\le a_2=v_2(Q_y)$ ($y\ge16\Rightarrow2\notin P_y$). $P_y$의 소수가 $Q_y$에 남는 경우($y\le\sqrt L$)도 논증은 $p^a\mid\Lam_L$만 쓴다. 수치: 정수 전수 검사 156개 $(L,y)$에서 위반 0.\\
+\texttt{lem-phi1} & PROVED & CONFIRMED & $(1-\cos x)/x^2$가 $(0,\pi]$에서 감소.\\
+\texttt{lem-pair} & PROVED (+E1) & CONFIRMED & $\sum_{p,p'}(x_p-x_{p'})^2=2M^2\mathrm{Var}$, $|\tau(\log p-\log p')|<\pi$ ($|\tau|\le\pi/\log2=4.532$), $0.19^2(\log1.5)^2=0.0059349$. 수치 비 $0.0173\ge\frac2{\pi^2}\mathrm{Var}=0.0080$.\\
+\texttt{lem-mellin} & PROVED & CONFIRMED & 부분적분식 재계산(직접 적분과 $10^{-17}$ 이내 일치), $4/(\kappa|s||s+1|)\le80/t^2$, $4\sqrt{80}=35.78$; $\int|w-1_{[1/2,1]}|=\kappa$. 격자 검사 최대비 $0.74\le1$.\\
+\texttt{lem-VK} & COND (E1)--(E4) & CONFIRMED & 아래 메모 (V1).\\
+\texttt{cor-NRuncond} & COND & CONFIRMED & $0.45-\frac{1.5}{\sqrt{17}}-0.05=0.03620$; $0.035/0.51=0.0686\ge1/15$. \emph{하한만} 필요하다는 주장 옳음 ($1-\cos\ge0$, $1_{P_y}(p)\ge w(p/y)\log p/\log y$). 수치: $L=10^4,10^5$에서 $[4,2000]$, $[4,600]$ 인증 하한 $\sum(1-\cos)/M\ge0.29$.\\
+\texttt{rem-F}(b) & PROVED & CONFIRMED & $5-4\cos x\le1+2x^2$; $\sqrt{(1+a)/2}=0.990178$; $(1-a)/2=0.019547$.\\
+\texttt{rem-F}(c) & NUMERIC & CONFIRMED & $|F(1)|=0.9805724$; 격자 최대 $=|F(1)|$; 단조성 인증 논법 점검.\\
+\texttt{lem-cumulant} & PROVED & CONFIRMED & $\frac16+\frac{49}{288}=\frac{97}{288}$, $|z|\le\frac7{48}$, $|\log(1+z)-z|\le|z|^2$; 무작위 시험 20000회 최대비 $0.49$.\\
+조건 (C1)--(C3) & PROVED & CONFIRMED & $n$에 대한 단조성($n\ge2(\log y)^2/c_2$, $n\ge1/\eta'$), $n=n_0$에서 $8\log\log y\ge6.91+\frac12\log K+2\log\log y$.\\
+\texttt{prop-core} & PROVED & MINOR-FIX & 모든 상수 재계산 일치(메모 (V3)). 다만 (d)가 쓰는 \texttt{lem-pair}의 $v_y\ge v_0$는 (E1)에 의존하므로 원장 태그를 ``\PROVED{} (+(E1))''로 맞춤(본문 진술은 이미 이를 밝힘).\\
+\texttt{rem-core-quant} & PROVED & CONFIRMED & $F_T\le T$에서 $\Pr\ge0.17/(T\sqrt V)$.\\
+\texttt{thm-A-y} & COND & CONFIRMED & 메모 (V4).\\
+\texttt{thm-A} (VKGAP-A) & COND (E1)--(E4) & CONFIRMED & $2r_L=\delta$, $e^{-\delta}\ge1-\delta$, $e^{\delta}\le1+2\delta$; $X_0=e^{\sigma(L)}$; $128/c_2=107060<1.08\cdot10^5$.\\
+\texttt{thm-B} (VKGAP-B), $N(b)$ & COND & CONFIRMED & 메모 (V5).\\
+\texttt{lem-greedy} & PROVED & CONFIRMED & $1-e^{-x}\le x$로 $R'\le Re^{-G}$; 블록당 $\le2^j/G_j+1$; 위쪽은 $\ell^*$ 증가; 끝단 $\le a/\log2+1$, (K3)로 $\le k+2$; 서로 다름은 (K2).\\
+\texttt{cor-regimes} & PROVED & MINOR-FIX & (a),(b),(c) 계산 옳음 ($\sum_{k\le K}\frac1{1+k\log2}\le1+\frac{\log(1+\log L)}{\log2}$ 수치 확인). (c)의 $G$는 $D>L$에서 감소하므로 보조정리의 ``비감소'' 가정을 위해 $G(D):=G(L)$ ($D\ge L$)로 둔다는 단서 추가(결과 불변).\\
+\texttt{lem-smallzone} & COND & CONFIRMED & $\sigma(y(\ell))=\ell$, $(\log y)^3\ge\frac{c_2}{256}\frac{\ell}{\log\ell}$, $\sigma(L)\le\ell\le\ell_1$에서의 비교, $2\sum_j2^{j/2}\le6.83\sqrt{\ell_1}$; 아래쪽 끝 $R<e^{\ell_{\min}}\le L$은 그 자체가 약수(큰 $L$).\\
+\texttt{def-NR} (NR$\Rightarrow$NR$'$) & PROVED & CONFIRMED & $M-\mathrm{Re}A\ge M-|A|$.\\
+\texttt{thm-transfer} & COND & CONFIRMED & 메모 (V6).\\
+\texttt{cor-three}(1) & COND & CONFIRMED & $D_*<\ell_1$이므로 실제 하위항은 $O((\log L)^{3/2}(\log\log L)^4)$ (주~\texttt{rem-B-honest}와 일치).\\
+\texttt{lem-RH}, \texttt{cor-three}(2) & COND RH & MINOR-FIX & 유도 옳음(메모 (V7)). 태그에 (E1),(E3),(E4) 추가; 주~\texttt{rem-RH-check}에 lead가 기억한 절단 공식의 오차항이 틀렸다는 단서 추가(증명에는 쓰이지 않음).\\
+\texttt{cor-three}(3) (VKGAP-C) & COND NR & CONFIRMED & $\psi(L)/(cM-4)=O(\log L/c)$; 약한 $\mathrm{NR}'(e^{cL/(\log L)^2},\eta)$로 충분; $c_4=\min(c/3,\eta/16)$.\\
+\texttt{rem-cutoff} & COND (E1) / REFUTED & MINOR-FIX & 점근식 옳음. 반박 문턱은 $\eta>1-|F(1)|=0.0194276$이어야 한다: $0.0194<\eta\le0.019427$이면 $1-\eta\ge|F(1)|$라 $\tau=1$ 논법이 반박을 주지 않는다. 본문과 원장 수정.\\
+\texttt{prop-dirichlet} & PROVED & CONFIRMED & 비둘기집, $|e^{2\pi i\theta}-1|\le2\pi\|\theta\|$, $2\sin^2(\pi\|\theta\|)\le2\pi^2\|\theta\|^2$; $K\le(2\pi+1)/\eta$이고 $(8/7.283)^{15}\ge4$. ($\eta$ 격자 수치로는 $M\ge13$에서 이미 성립.)\\
+\texttt{rem-lattice} & HEUR/NUMERIC & MINOR-FIX & 극한 분산 $2-\log^22-2\log2-(1-\log2)^2=0.039094$ (원문 $0.03907$은 오기; NUM 명제 \texttt{prop-var}와 일치하도록 수정). (N1)의 같은 값도 수정.\\
+(N1)--(N3) & NUMERIC & CONFIRMED & 독립 재계산: $\mathrm{Var}_P=0.03937/0.03932/0.03916$, 쌍 비 $0.0174/0.0173/0.0173$, $\max|A|/M=0.714/0.715/0.716$ ($\tau=4$), 격자 공명 $0.00914/0.00585$, $1/G_{1/2}$ 값 일치. 단 (N1)의 $\min\sum(1-\cos)/M$는 성긴 격자값이며 간격 $0.005$에서는 $0.316$ ($L=10^4$)로 조금 더 작다(주장된 용도에는 무관).\\
+\texttt{rem-ladder}, \texttt{rem-fixedsize}, \texttt{rem-A-new} & HEUR/OPEN & CONFIRMED & 태그대로(격상 없음). $L^1$-Fourier 천장 논증은 발견적으로 타당.\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsubsection{VKGAP 재유도 메모}\label{AUD3:ssec-vk-notes}
+
+\paragraph{(V1) 외부 입력과 \texttt{lem-VK}.}
+(E1) $\psi(x)=x+O(xe^{-c\sqrt{\log x}})$, $\pi(x)=x/\log x+O(x/\log^2x)$, $\theta(x)\le x\log4$; (E2) VK 영역 $\sigma\ge1-c_1(\log(|t|+3))^{-2/3}(\log\log(|t|+3))^{-1/3}$
+(작은 $|t|$로의 확장: $|\gamma|\le t_0$인 영점은 유한개, $\beta<1$, 실수축 $\zeta(\sigma)<0$); (E3) Titchmarsh 9.6(A)형 부분분수와 $N(t+1)-N(t)\ll\log t$,
+그리고 $\{1/2\le\sigma\le2,|t|\le2\}$에서 $\zeta'/\zeta+1/(s-1)$의 유계성(첫 영점 높이 $14.13$); (E4) Mellin 역변환 --- 모두 교과서 진술로서 정확하다 (recalled, \EXT).
+윤곽: $|{\rm Im}\,z|\le2|\tau|+y^3\le3T_*(y)$ ($T_*\ge y^3$), ${\rm Re}\,z\ge1-\eta_*/2>1-\eta(H+1)$이므로 영점 없음; 유수 $\tilde w(1-i\tau)y^{1-i\tau}$;
+$|z-\rho|\ge\sigma_1-\beta>\eta_*/2$; 상수 $36/2\pi=5.73$, $2\cdot1.05\cdot80/2\pi=26.7$, $0.6\cdot160/2\pi=15.3$, $-\zeta'(2)/\zeta(2)=0.5700$ 재계산.
+점근: $(2\lambda)^{2/3}=2^{2/3}\log y(\log\log y)^{-2}$에서 $\eta_*\log y\ge\frac{c_1}2(\log\log y)^{5/3}$, 손실 $Z_*\ll(\log y)^{5/2}=e^{\frac52\log\log y}$;
+지수 $5/3>1$이므로 $\eps_3(y)\to0$. (수렴은 매우 느리다: 지수가 음이 되려면 $(\log\log y)^{2/3}>10/c_1\ge100$이어야 한다 --- 정리는 존재 진술이므로 무관.)
+소수 거듭제곱 $\le\psi(y)-\theta(y)\le3\sqrt y$. 결론: 진술 그대로 옳다.
+
+\paragraph{(V2) 격자 공명 구간과 문턱.}
+$\tau_1=1/(2\log y)<|\tau|\le4$에서 $|\varphi|\le e^{-c_2n\tau^2}$ (\texttt{lem-pair}); Fejér 가중치 $\le1$이므로 기여는
+$\frac1\pi\int_{\tau_1}^4e^{-c_2n\tau^2}d\tau\le\frac4\pi e^{-c_2n\tau_1^2}$이고 높이 $T$의 인자는 \emph{붙지 않는다} --- 주장 옳음.
+이 항이 $10^{-3}V^{-1/2}$ 이하가 되려면 $\frac{c_2n}{4(\log y)^2}\ge\log(10^3\sqrt n\log y)$, 즉 $n\asymp(\log y)^2\log\log y$ ($n_0=\frac{32}{c_2}(\log y)^2\log\log y$)이면 충분하다.
+작은 $\tau$ 구간 $|\tau|\le\tau_1$에서는 $|\tau|b=1/2$이므로 누적량 보조정리가 적용된다.
+
+\paragraph{(V3) 국소 극한 상수.}
+$G\ge(2\pi)^{-1/2}e^{-1/(2\cdot10^4)}=0.398922$; 오차 (a) $\frac1{50\pi}=0.006366$, (b) $\frac1{200\pi^2}=0.000507$, (c) $\frac{4}{100\pi}=0.012732$
+($\int|\tau|^3e^{-\tau^2V/4}=16/V^2$), (d) $\frac4\pi10^{-3}=0.001273$, (e) $0.002$; 합 $0.022878$, 하한 $0.376044\ge0.375$.
+상한 국소 평가: $\int e^{-2\tau^2V/\pi^2}=\pi^{3/2}/\sqrt{2V}=3.93740V^{-1/2}$, 합 $3.95797$, $B\le\frac\pi8\cdot3.95797=1.55429\le1.555$.
+꼬리 $\frac{2\cdot1.555}{\pi^2}(\frac{\pi^2}6-1)=0.203224\le0.2033$; 여유 $0.375-0.2033=0.1717>0$. 모두 일치 (\texttt{aud3\_vkgap\_constants.txt}).
+
+\paragraph{(V4) 공약수 이동과 전 구간 덮기.}
+\texttt{thm-A-y}(i): $q=\max(q_0,\min(\frac12,s/\theta_y))$이면 $|s-q\theta_y|\le1$이고 $n\ge q_0M_y/2=n_0$ ($q(1-q)$는 $(0,\frac12]$에서 증가);
+$e^{n/30}\ge T_*$이므로 $T=T_*/2\pi$, $2/T=r_y$. (ii): $z=u-q_0\theta_y\ge2-r_y>0$ ($q_0\theta_y+2\le\sigma(y)$);
+$z\le\log Q_y$이면 $s\in[q_0\theta_y,q_0\theta_y+\log2)$, 아니면 $c=Q_y$이고 $s\le\frac12\theta_y+1$ ($\psi(L)\ge\theta_y+\theta(y/2)\ge\theta_y+2r_y$);
+위쪽 절반은 $\ell^*=\log\Lam-\ell$와 $d\mapsto\Lam/d$로 $d_-=\Lam/e_+$, $d_+=\Lam/e_-$; 진약수. $[X_0,\Lam/X_0]$ 전체가 덮인다. $\delta=8\pi/T_*(L)$, $X_0=e^{\sigma(L)}$ 확인.
+
+\paragraph{(V5) VKGAP-B 장부.}
+(K4) (p1p4 명제 5.18)의 증명을 다시 확인: 절반 감소 $\le\lceil\log_2X_0\rceil$, 중간 $\le\log\Lam/\log(1/\delta)+1$, 끝 $\le k+2$ (서로 다름은 (K2)).
+$\log(1/\delta)=(\log L)^{3/2}(\log\log L)^{-3}-\log8\pi$, $\log X_0=O((\log L)^3\log\log L)=o(L(\log\log L)^3(\log L)^{-3/2})$, $\psi(L)=L(1+O(e^{-c\sqrt{\log L}}))$이므로
+$H(L)\le(1+O(\frac{(\log\log L)^3}{(\log L)^{3/2}}))\frac{L(\log\log L)^3}{(\log L)^{3/2}}$. $N(b)\le2H(L_b)$, $L_b\le(1+o(1))\log b$, $f(x)=x(\log\log x)^3(\log x)^{-3/2}$의 증가성으로
+$N(b)\le(2+o(1))\log b(\log\log\log b)^3/(\log\log b)^{3/2}$. 옳다. (Hughes 경계보다 약하다는 VKGAP의 정직한 비교도 옳다.)
+
+\paragraph{(V6) 일반 전이와 VKGAP-C.}
+$q=\ell/(4\theta_P)\le\frac12$, $n\ge\ell/(8\log L)\ge n_0(L)$ ($\ell\ge\ell_1$), $z=\frac34\ell\mp2/T\le\frac38\psi(L)+3\le\log Q$; $\delta(\ell)=4/T$,
+$\log(1/\delta)=\min(\log T'-\log2\pi,\eta n/2)-\log4\ge\min(\log T'-2,\frac{\eta D}{16\log L})-2$ ($D\le\ell$).
+(ii): $D\in[\ell_1,D_*]$에서 $G\ge\eta D/(32\log L)$ ($\ell_1\ge64\log L/\eta$), 블록당 $\le32\log L/\eta+1$, 블록 수 $\le\log_2L$ (양쪽) $\Rightarrow\frac{64}{\eta\log2}(\log L)^2$;
+$D\ge D_*$에서 직접 셈 $\psi(L)/(\log T'-4)+2$; 가장자리는 \texttt{lem-smallzone}. VKGAP-C: $\log T'=cM\ge cL/(3\log L)$.
+Erdős \#18 Q1 귀결은 BRIEF의 $h(\Lam_L)=H(L)$와 $\Lam_L$의 practical성(p1p4 Thm.~5.4)에 기댄다. 옳다.
+
+\paragraph{(V7) RH 판.}
+$\sigma_1=\frac12+\frac1{\log y}$, RH로 ${\rm Re}\,z>\frac12$에 영점 없음, $|z-\rho|\ge1/\log y$, $|G|\ll\log y\log(|\tau|+y)$, 왼쪽 변 $\frac{36e}{2\pi}\sqrt y Z_{\rm RH}$, 수평 변 $38.2Z_{\rm RH}y^{-4}$.
+$|\tau|\le T_{\rm RH}$이면 $\log(|\tau|+y)\le2c_{\rm RH}\sqrt y/\log y$, 여유 $0.03580/0.51=0.0702\ge1/15$. 결과 $H(L)\le(c_{\rm RH}^{-1}+o(1))\sqrt L\log L$ 옳음.
+lead의 기억된 절단 공식 오차 $O(x^{1/2}\log x\log(|t|+2))$는 $t=0$에서 RH 아래 $\psi(x)-x\ll\sqrt x\log x$를 뜻하여 알려진 결과(von Koch의 $\sqrt x\log^2x$)보다 강하다; 올바른 크기는
+$\sqrt x\log x\log(x(|t|+2))$ 정도 (recalled). VKGAP의 증명은 이 공식을 쓰지 않으므로 결론에는 영향이 없다.
+
+\paragraph{VKGAP 수정 목록 (파일 내 \texttt{\% AUD3:}).}
+(1) \texttt{rem-lattice}와 (N1): 극한 분산 $0.03907\to0.039094$. (2) \texttt{rem-cutoff}와 원장: 반박 문턱 $\eta>0.0194\to\eta>1-|F(1)|=0.019427\ldots$.
+(3) 원장: \texttt{prop-core}를 ``\PROVED{} (+(E1))''로. (4) \texttt{cor-regimes}(c): $G(D):=G(L)$ ($D\ge L$) 단서. (5) \texttt{cor-three}(2): 태그 \COND{RH 및 (E1),(E3),(E4)}.
+(6) \texttt{rem-RH-check}: 기억된 공식에 대한 단서. VKGAP의 \texttt{summary.md}에도 문턱 ``$\eta>0.0194$''가 남아 있다(감사자는 .md를 쓸 수 없으므로 lead가 고칠 것).
+
+%----------------------------------------------------------------------
+\subsubsection{NUM 판정표}\label{AUD3:ssec-num-table}
+\begin{center}\small
+\begin{longtable}{p{0.22\textwidth}p{0.11\textwidth}p{0.12\textwidth}p{0.47\textwidth}}
+\toprule
+항목 (NUM 라벨) & 원 태그 & 판정 & 이유\\\midrule
+\endhead
+\texttt{prop-bfs} & PROVED (dedup) & CONFIRMED & 부분합 $\le a<\Lam$이므로 절단 무손실. 중복 제거 정리를 다시 유도: $2d\le a<\Lam$이면 $d\ne\Lam$이라 최소 결손 소수 $p$가 존재; $p=2$면 $2d\mid\Lam$; $p\ge3$면 $r=\frac{p+1}2$의 소인수는 $<p$이고 $q^{v_q(r)}\le r\le L$이므로 $r\mid d$, $pd/r+d/r=2d$, 둘 다 진약수, $\Phi=\sum d_i^2$가 $(u-v)^2/2\ge2$ 증가 (두 경우 모두 $\Phi$ 증가, $\Phi\le a^2$) $\Rightarrow$ 종료. 옳다.\\
+\texttt{lem-ac} (1)--(3) & PROVED & CONFIRMED & $1\in D^*$, $\Lam/2\in D^*$; $a_c=\min([0,\Lam)\setminus R_{c-1})$ 논증 옳음.\\
+\texttt{lem-shift} (계수 보조정리) & PROVED & CONFIRMED & $U_k\subseteq V_{k-1}$, 크기 일치 $\Rightarrow$ 모든 $k\ge1$에서 $U_k=V_{k-1}$ $\Rightarrow$ $\kappa(\Lam/2+b)=1+\kappa(b)$ ($m=\kappa(b)\ge1$이면 $k=m,m+1$을, $b=0$이면 $k=1$을 쓰면 된다). 표~\texttt{tab-L23}, \texttt{tab-L25}의 $Z^+_k=Z^-_{k-1}$ 직접 확인. AUD3 DP로 $L\le18$에서 점별 성립 확인.\\
+\texttt{prop-valid} & NUMERIC & CONFIRMED & AUD3 새 코드(0/1 DP와 다중집합 BFS)가 $L\le18$ (서로 다른 $\Lam$ 11개)에서 점별 일치하고 $H$, 히스토그램, $a_c$가 \texttt{H\_table\_bfs.csv}와 같다. $L=23$: $|S_3|=80\,181\,647=|R_3|$ 재현.\\
+\texttt{thm-H23} & NUMERIC & CONFIRMED & 7항 표현(합, $\Lam$의 진약수, 서로 다름) 검증; $a_7\notin S_3+S_3$ ($\kappa(a_7)\ge7$), $a_6\notin S_3+S_2$, $a_5\notin S_3+S_1$, $a_4\notin S_3$, 각 $a_c-1\in R_{c-1}$ --- 새 코드로 재확인. $H(23)\le7$ 자체는 BFS(두 구현)에만 근거.\\
+\texttt{thm-H25} & NUMERIC & CONFIRMED (보강) & 8항, 7항 표현 검증; $a_7\notin S_3+S_3$, 표본 6개 ($\kappa=8$인 수 $-\Lam/2$) $\notin S_3+S_3$, $a_6\notin S_3+S_2$, $|S_3\cap[0,\Lam/2)|=242\,846\,840$ (표의 $\Lam/2-Z^-_3$와 일치). 추가로 $\kappa(a_8)\ge8$을 BFS 독립 확인(명제~\ref{AUD3:prop-a8}); NUM 본문 (4),(8)과 원장에 반영.\\
+표 \texttt{tab-H}, \texttt{tab-frac} & NUMERIC & CONFIRMED & $L\le18$ 행 재현; $H/\ln L$, $\ln(\Lam-1)/\ln\tau$ 열 재계산 일치.\\
+\texttt{rem-H25}, \texttt{rem-H-trend} & HEUR & CONFIRMED & 수치 ($2.49$, $2.46$, $2.23$, $7/2.963=2.36$) 재계산 일치; 태그 적절.\\
+\texttt{prop-t1} & PROVED (EXT PNT) & CONFIRMED & 부분적분과 $1/\log u=1/\log L+O(1/\log^2L)$; $|F(1)|=0.9805724$; 문턱 $1-|F(1)|=0.019428$ 정확(VKGAP의 원래 $0.0194$보다 정확).\\
+\texttt{rem-t1} & NUMERIC & CONFIRMED & $\tau_0(0.1,0.2,0.3)=2.2988,3.3082,4.1293$ 재현; $g_L(1)/M$ 범위는 NUM 자료 및 AUD3 값($0.98043$, $0.98046$, $0.98054$)과 일치.\\
+\texttt{lem-grid} & PROVED & CONFIRMED & $|e^{ix}-1|\le|x|$, $||x|-|y||\le|x-y|$; $|\ell_p|\le\frac{\ln2}2$. 실측 $K/M=0.17$--$0.21$.\\
+\texttt{tab-res}, \texttt{prop-res} & NUMERIC & MINOR-FIX & ``격자'' 열 21칸($L\le101$, 세 $\eta$)을 새 코드로 재계산하여 모두 $10^{-3}$ 상대오차 이내 일치; LLL 점 22개 중 $t\le1.2\cdot10^{14}$인 21개는 60자리 재평가로 $g\ge(1-\eta)M$ 확인. 그러나 CSV는 $t$를 유효숫자 15자리로만 저장하여 $t\gtrsim10^{14}$의 LLL 점은 CSV에서 재현 불가($L=373$, $\eta=0.05$: 재계산 $g/M=0.21$). 상한 자체는 실행 중 90자리 평가로 타당하나 재현성 단서를 표 설명에 추가.\\
+\texttt{rem-res-heur} & HEUR & CONFIRMED & $I(0.7,0.8,0.9)=0.5760,0.8153,1.1963$ (기울기 $0.250,0.354,0.520$), $Q=8,10,14$ 재현; 태그 적절.\\
+\texttt{prop-F} & NUMERIC & CONFIRMED & $|\frac{d}{dt}|F|^2|\le\frac{4\ln2}{1+t^2}+\frac{18t}{(1+t^2)^2}\le5.89<6$ ($t\ge1$), $3/\sqrt{1+2.87^2}=0.98710$; VKGAP의 인증 수치와 일치.\\
+\texttt{prop-var} (1),(2) & PROVED (EXT) / NUMERIC & CONFIRMED & 밀도 $2e^{-u}$, 평균 $1-\ln2$, 이차 적률 $2-2\ln2-\ln^22$, 분산 $0.0390940$; 콤팩트 지지에서 약수렴 $\Rightarrow$ 적률 수렴. 쌍 부등식은 사실 증명된 부등식이며 수치 최소비 $2.42$는 $t\to0$ 극한 $\pi^2/4=2.47$과 부합.\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+%----------------------------------------------------------------------
+\subsubsection{NUM 재검증 메모}\label{AUD3:ssec-num-notes}
+
+\begin{proposition}[$H(25)\ge8$의 BFS 독립 확인]\label{AUD3:prop-a8}
+\NUMERIC\ (\texttt{agents/AUD3/code/aud3\_mitm.c} $\to$ \texttt{agents/AUD3/out/aud3\_mitm\_L25\_a8.txt}, 49\,s, 비트집합 $2.84$\,GB)
+$\Lam=\Lam_{25}=26\,771\,144\,400$, $a_8=26\,577\,893\,791$이라 하면 $a_8$은 $\Lam$의 진약수 $7$개 이하(반복 허용)의 합이 아니다. 따라서 $\kappa_{25}(a_8)\ge8$이고 $H(25)\ge8$이다.
+\end{proposition}
+\begin{proof}[논법]
+$a_8=d_1+\dots+d_k$ ($k\le7$, $d_1\ge\dots\ge d_k$)이면 $d_1\ge a_8/7$. $d_1=\Lam/m$이고 $m\le7\Lam/a_8=7.0509$이므로 $m\in\{2,\dots,7\}$ ($m=1$은 $\Lam>a_8$).
+나머지는 $6$개 이하 약수의 합, 즉 $a_8-\Lam/m\in S_3+S_3$ ($S_3$: $3$개 이하 진약수의 합). 새 코드로 $S_3\cap[0,a_8-\Lam/7]$ ($|\,\cdot\,|=244\,906\,542$)을 만들고
+여섯 수 $a_8-\Lam/m$ ($=13\,192\,321\,591$, $17\,654\,178\,991$, $19\,885\,107\,691$, $21\,223\,664\,911$, $22\,116\,036\,391$, $22\,753\,444\,591$) 각각에 대해
+모든 $s\in S_3$, $s\le x$에서 $x-s\notin S_3$임을 전수 확인하였다(대조: $22\,753\,444\,590\in S_3+S_3$).
+반복 허용 표현이 없으면 서로 다른 약수의 표현도 없으므로 중복 제거 정리조차 필요 없다.
+\end{proof}
+같은 방법으로 $L=23$에서 $\kappa(a_7)\ge7$ (BFS 독립, NUM의 \texttt{mitm23.c}와도 독립인 새 코드) 및 $\kappa(a_c)\ge c$ ($c=4,5,6$, $S_3+S_{c-4}$ 판정)와 $a_c-1\in R_{c-1}$을 확인하였다.
+$H(23)\le7$, $H(25)\le8$ (모든 $a$가 덮임)은 여전히 BFS 두 구현의 일치에만 근거한다(NUM이 이미 밝힌 대로).
+
+\paragraph{알고리즘 정당성.}
+명제 \texttt{NUM:prop-bfs}는 (i) 반복 허용 합의 부분합이 모두 $[0,\Lam)$ 안에 있다는 것(절단 무손실)과 (ii) 중복 제거 정리만 쓴다. (ii)를 위에서 다시 유도하였다.
+비트 이동 구현(\texttt{hbfs.c}, \texttt{hbfs2.c})은 감사자가 코드 수준으로 검증하지 않았으나, 결과는 AUD3의 독립 DP($L\le18$)와 독립 MITM($L=23,25$의 $R_3$ 크기와 표본 판정)으로 교차 확인된다.
+
+\paragraph{NUM 수정 목록 (파일 내 \texttt{\% AUD3:}).}
+(1) \texttt{prop-valid}(4)에 AUD3 독립 재검증 문장 추가. (2) \texttt{thm-H25}(4),(8)과 원장에 $\kappa(a_8)\ge8$의 BFS 독립 확인 추가.
+(3) \texttt{tab-res} 설명에 LLL 점의 재현성 단서(유효숫자 15자리 저장) 추가. \texttt{frag\_src.tex}와 생성 스크립트는 고치지 않았다.
+
+\paragraph{두 절 사이의 정합성.}
+VKGAP와 NUM은 같은 두 수치를 다르게 적고 있었다: 반박 문턱(VKGAP $0.0194$, NUM $0.019428$; 정답 $1-|F(1)|=0.0194276$)과 극한 분산(VKGAP $0.03907$, NUM $0.039094$; 정답 $0.0390940$).
+두 경우 모두 NUM 값이 옳고 VKGAP를 고쳤다. NUM 원장의 ``$\eta>0.0195$''는 (충분조건으로) 옳다. 두 절 모두 Erdős \#304와 SP1을 \OPEN{}으로 둔다.

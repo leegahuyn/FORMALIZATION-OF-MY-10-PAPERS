@@ -1,0 +1,64 @@
+\begin{titlepage}
+\centering
+{\large 다중 에이전트 연구 기록 · Round~4 · 중간판}\\[1.2cm]
+{\Huge\bfseries Erdős--Graham 문제 \#304}\\[0.5cm]
+{\LARGE 약수 합 덮개 $H(L)=h(\lcm(1,\dots,L))$에 대한}\\[0.2cm]
+{\LARGE 새 정리, 조건부 사다리, 정량적 장벽}\\[1.2cm]
+{\large 2026년 9월 25일}\\[1.5cm]
+\begin{tcolorbox}[colback=red!4,colframe=red!60!black,width=0.92\textwidth,title={\bfseries 문서의 지위 (먼저 읽어 주십시오)}]
+\small
+이 문서는 Erdős--Graham 문제 \#304의 \textbf{증명이 아니다}. \#304($N(b)\ll\log\log b$)는 \OPEN{}이며, 이 문서는 그 해결을 주장하지 않는다. 남은 단 하나의 핵심 명제 SP1($H(L)\ll\log L$)은 이번 라운드에서도 증명되지 않았다.
+
+이 문서가 담는 것은 (i) 이전 두 원고(2026-09-24 P1--P4 보고서, 2026-09-25 Baker 기록)에 이어 새로 얻은 정리들, (ii) 어떤 가설이 어떤 상계를 주는지 고정한 조건부 사다리, (iii) 알려진 방법이 어디서 왜 멈추는지에 대한 정량적 장벽, (iv) 확장된 정확 계산이다.
+
+모든 명제에는 태그가 하나씩 붙는다: \PROVED{} 본문에 완결된 증명, \COND{X} 가설 X로부터의 엄밀한 함의, \REFUTED{} 반례 또는 불가능성 증명, \NUMERIC{} 스크립트 경로가 있는 계산, \HEUR{} 추론만, \OPEN{} 미증명, \EXT{} 외부 정리. \textbf{중간판}: 일부 에이전트(VKGAP, CORE)는 작업 중이고, 적대적 감사(Stage~2)는 CMM 절부터 진행 중이다. 감사 전의 \PROVED{}는 ``작성자 판정''으로 읽어야 한다.
+\end{tcolorbox}
+\vfill
+{\small 참여 에이전트: STRUCT, VKGAP, CMM, CORE, NUM (증명·계산), AUD1 (감사). 총괄: 리드 에이전트.\\
+사용 자료: 사용자 제공 PDF 2편(요청에 언급된 5편 중 이 세션에 업로드된 것은 2편). 외부 문헌은 네트워크 정책상 검색 스니펫으로만 확인.}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section*{판정 요약}\addcontentsline{toc}{section}{판정 요약}
+\begin{tcolorbox}[colback=blue!3,colframe=blue!50!black,title={\bfseries 최종 판정 (중간판 기준)}]
+\begin{enumerate}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{\#304는 증명되지 않았다.} \OPEN{} 남은 입력은 여전히 SP1: $H(L)\ll\log L$ 하나이며, 이는 Erdős \#18 첫 질문(상금 \$250, 미해결)의 강한 형태를 함의한다.
+\item \textbf{새로 증명된 것(작성자 판정, 감사 진행 중).}
+ \begin{itemize}[leftmargin=1.2em]
+ \item 중복 제거 정리의 일반화와 다중집합 정식화; cascade 조립은 $\Lam_L$에서 서로소 조건 없이 성립 (STRUCT).
+ \item 기하적 블록 방식의 $(\log L)^2$ 장벽과 조건부 정리 $\mathrm{BC}^*\Rightarrow H(L)\ll(\log L)^2\Rightarrow N(b)\ll(\log\log b)^2$ (STRUCT).
+ \item 합성 법 혼합(CMM): $\omega(q)=o(\sqrt L/\log L)$에서 유효한 곱셈적 상계와 확대 특이급수의 수렴 ($s\ge(2+\delta)\log_2L$); 이전 보고서 (T3), 주의 4.21의 [HEURISTIC]을 이 범위에서 [PROVED]로 격상 (CMM).
+ \item 정확 계산: $H(23)=H(24)=7$, $H(25)=H(26)=8$ (이전 기록은 $L\le22$) (NUM).
+ \end{itemize}
+\item \textbf{작업 중.} VKGAP: 비공명 $\Rightarrow$ 약수 간격 정리와 무조건적 $H(L)\ll L/(\log L)^{3/2-\eps}$, RH 하의 $H(L)\ll\sqrt L\log L$, 지수 높이 비공명 하의 $(\log L)^2$. CORE: SP1 정면 시도와 방법 장벽.
+\item \textbf{장벽의 요지.} \HEUR{} 약수 간격 방법의 성능은 소수합 비공명이 성립하는 높이 $T$로 정해진다: VK 높이 $\Rightarrow L/(\log L)^{3/2}$, RH 높이 $\e^{c\sqrt L/\log L}\Rightarrow$ Vose 수준, $(\log L)^2$에는 RH를 넘는 지수 높이 $\e^{cM}$이 필요하다.
+\end{enumerate}
+\end{tcolorbox}
+
+\section*{상태표}\addcontentsline{toc}{section}{상태표}
+{\small
+\begin{longtable}{p{0.47\textwidth}p{0.22\textwidth}p{0.22\textwidth}}
+\toprule
+명제 & 상태 & 위치\\\midrule\endhead
+전달정리 $N(a,b)\le2H(L)$ ($b\le\Lam_L$) & \PROVED{} (이전) & P1--P4 8.5\\
+중복 제거 정리 (일반화) & \PROVED{} (감사 대기) & STRUCT S1\\
+cascade 조립에 서로소 조건 불필요 ($\Lam_L$) & \PROVED{} (감사 대기) & STRUCT, 교정 절\\
+$H(L)\le\pi^*(L)\sim L/\log L$ & \PROVED{} (이전) & P1--P4 5.4\\
+기하적 블록의 $(\log L)^2$ 장벽 & \PROVED{} (감사 대기) & STRUCT S2\\
+$\mathrm{BC}^*\Rightarrow H\ll(\log L)^2\Rightarrow N(b)\ll(\log\log b)^2$ & \COND{$\mathrm{BC}^*$} & STRUCT S2\\
+척도별 greedy 사다리 (A)(B)(C); DG에서 $c>1$은 거짓 & \COND{GH/DG}; \REFUTED & STRUCT S3\\
+매끄러운 수 경로 $\mathrm W_\Lam(K,C)\Rightarrow H\ll L^{1-1/C}$ & \COND{$\mathrm W_\Lam$} & STRUCT S6\\
+CMM 정확 전개 & \PROVED{} (감사 중) & CMM\\
+CMM 유효 곱셈적 상계, $\omega=o(\sqrt L/\log L)$ & \PROVED{} (감사 중) & CMM\\
+확대 특이급수의 수렴, $s\ge(2+\delta)\log_2L$ & \PROVED{}/\EXT{}(S--W) (감사 중) & CMM\\
+$\omega(q)>L^{1/2-\eps}$의 혼합 & \OPEN & CMM\\
+$H(23)=H(24)=7$, $H(25)=H(26)=8$ & \NUMERIC & NUM\\
+약수 간격 정리, $H\ll L/(\log L)^{3/2-\eps}$ & 작업 중 & VKGAP\\
+RH $\Rightarrow H\ll\sqrt L\log L$ & 작업 중 (\HEUR) & VKGAP\\
+SP1: $H(L)\ll\log L$ & \OPEN & 전체\\
+Erdős \#304 & \OPEN & 전체\\
+\bottomrule
+\end{longtable}}
+\clearpage

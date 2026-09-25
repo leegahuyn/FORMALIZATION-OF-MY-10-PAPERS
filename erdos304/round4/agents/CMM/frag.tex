@@ -1,0 +1,598 @@
+\section{합성 법 혼합(CMM): $2k$차 모멘트에 의한 증명과 확대 singular series}\label{CMM:sec}
+
+\paragraph{요약.}
+이 절은 p1p4 보고서의 ``다음 연구 목표 1''(주의~4.21, 명제~4.22 (T3), 주의~4.27(2)(d))인
+합성 법 혼합(composite-modulus mixing, CMM)을 $\omega(q)\le L^{1/2-\eps}$ 범위에서 증명한다.
+핵심은 (i) 소수 멱 성분별로 전개하는 \emph{정확 전개}(명제~\ref{CMM:prop-exact}),
+(ii) 원시 지표에 대한 좋은/나쁜 지표 분할과 $2k$차 모멘트에 의한 나쁜 지표의 계수(보조정리~\ref{CMM:lem-moment}),
+(iii) 모멘트 차수 $k=\lceil \log d/\log(L/2)\rceil$에서 생기는 $k!$ 인자를 소인수별로 흡수하는 곱셈적 상계(정리~\ref{CMM:thm-main})이다.
+결과는 다음과 같다(기호는 \S\ref{CMM:ssec-setup}).
+\begin{itemize}[leftmargin=1.5em]
+\item \PROVED\ 정확 전개: 모든 $q\mid Q$ (소수 멱 포함)에 대해 $\mu(a/q)=M(q)+R$,
+ $M(q)=\prod_j \frac{v_j+1-k_j-1/(p_j-1)}{v_j+1}$ (명제~\ref{CMM:prop-exact}). 제곱 인수가 없고 $p_j\in(\sqrt L,L/2]$이면
+ $M(q)=\prod_j\bigl(\tfrac12-\tfrac1{2(p_j-1)}\bigr)$.
+\item \PROVED\ (유효, Siegel--Walfisz 불필요) 제곱 인수 없는 $q$, $p_j\in(\sqrt L,L/2]$, $\omega\kappa_*\le (L/2)^{1/2}$에서
+ $|\mu(a/q)|\le\prod_j(\tfrac12+\eps_j)$, $\eps_j=\tfrac12\bigl(\tfrac1{p_j-1}+\beta_L(\omega)\bigr)$,
+ $\beta_L(\omega)=\max\{c_*\kappa_*L^{-1/4},\ \e\,(\omega\kappa_*)^{1/2}(L/2)^{-1/4}\}+\eta_L$ (따름정리~\ref{CMM:cor-large}).
+ $\kappa_*\asymp\log L$이므로 $\beta_L(\omega)\to0$ $\iff$ $\omega\log L=o(\sqrt L)$. 즉 곱셈적 상계의 범위는
+ lead가 예상한 $L^{1/4}/\log L$가 아니라 $o(\sqrt L/\log L)$이다.
+\item \PROVED\ (유효) 점근식: $p_j\in[y,L/2]$, $p_j>\sqrt L$, $y\ge\sqrt L$, $\omega\kappa_*\le\frac12\sqrt y$이면
+ $|\mu(a/q)-M(q)|\le 2^{-\omega}\e^{\omega/(y-1)}\bigl(4\omega\kappa_*/\sqrt y+\eta'_L\bigr)$ (정리~\ref{CMM:thm-asym}).
+ $y=\sqrt L$에서 상대오차 $O(\omega\log L\cdot L^{-1/4})$, 범위 $\omega\le cL^{1/4}/\log L$;
+ $y=L/3$에서 p1p4 (T3)가 $h'\le c\sqrt L/\log L$ 범위에서 \HEUR$\to$\PROVED\ (따름정리~\ref{CMM:cor-T3}).
+\item \PROVED\ (모든 $p_j>(\log L)^A$이면 유효; 일반 $q\mid Q$는 \EXT\ Siegel--Walfisz 사용)
+ $2\omega\kappa_*\le(L/2)^{1/2}$인 모든 $q\mid Q$에서 곱셈적 상계 $|\mu(a/q)|\le\prod_j \rho_{p_j^{k_j}}$ (정리~\ref{CMM:thm-main}).
+\item 확대 singular series (정리~\ref{CMM:thm-SS}), $s\ge(2+\delta)\log_2 L$개 window:
+ (a) \PROVED\ $(\sqrt L,L/2]$의 소수로 된 제곱 인수 없는 $q$, $\omega(q)=o(\sqrt L/\log L)$: $\Sigma=1+O(L^{-\delta/2}/\log L)$;
+ (b) \PROVED\ 모든 소인수 $>(\log L)^A$, $\omega(q)\le(L/2)^{1/2-\eps}/(2\kappa_*)$: $\Sigma=1+o(1)$;
+ (c) \PROVED\ (\EXT\ SW 사용) 모든 $q\mid Q$, $\omega(q)\le(L/2)^{1/2-\eps}/(2\kappa_*)$: $\Sigma=O_{\eps,\delta}(1)$이고 $P^+(q)>z$ 부분은 $o_{z\to\infty}(1)$.
+ 따라서 p1p4 주의~4.21, 주의~4.27(2)(d)의 해당 부분이 \HEUR$\to$\PROVED\ (따름정리~\ref{CMM:cor-upgrade}).
+ % AUD1: 4.27(2)(d)에서 격상된 것은 q <= L^{omega_0} << R_* 영역(무게 q/R_*가 이미 극히 작은 곳)뿐임을 명시.
+ (단 4.27(2)(d)에서 격상된 것은 $q\le L^{\omega_0}\ll R_*$인 부분뿐이며, 무게가 $1$인 $q\ge R_*$ 부분은 아래와 같이 \OPEN\ 이다.)
+\item \OPEN\ $\omega(q)>L^{1/2-\eps}$ (특히 무게가 1인 $q\ge R_*$ 전체, $\omega(q)\gg L/(\log L)^2$). 이 방법의 한계는
+ 정확히 이 지점이며(명제~\ref{CMM:prop-barrier}), $\omega(q)>N_1$이면 나쁜 원시 지표가 실제로 존재한다(명제~\ref{CMM:prop-badexist}).
+ % AUD1: 명제 badexist는 "모든 지표가 좋다" 경로만 막는다; 그 지표 하나의 기여는 <= q_S^{-1/2}라 모멘트 방법 자체의 장애는 아님.
+ (명제~\ref{CMM:prop-badexist}는 ``모든 원시 지표가 좋다''는 경로만 막는다. 그런 나쁜 지표 하나의 기여는 $B(S)$에서 $\le\sqrt{q_S}/\varphi(q_S)$로 무시할 만하므로
+ 그것만으로는 이 절의 방법의 장애가 아니다. 절댓값 전개 자체의 장애는 AUD1 감사 절의 Parseval 하한을 보라.)
+\item \NUMERIC\ 정확 DP+FFT로 $\omega=2,3$, $L\le2000$에서 주항 공식 확인(오차가 증명된 상계 이하; $L\ge1000$에서는 부동소수점 한계 이하);
+ 켤레 없는 지표 전개는 거짓임을 재확인(\S\ref{CMM:ssec-num}).
+\end{itemize}
+
+%======================================================================
+\subsection{설정, 기호, 외부 입력}\label{CMM:ssec-setup}
+
+\begin{definition}[window 모형; p1p4 정의 4.4의 균등지수 판]\label{CMM:def-window}
+$L\ge 8$, $P=\{p:\ L/2<p\le L\}$, $Q=\Lambda_L/\prod_{p\in P}p$. 소수 $p\le L/2$에 대해 $v_p:=v_p(Q)=\max\{v:p^v\le L\}\ge1$.
+하나의 window는 서로 독립인 $e_p\sim\mathrm{Unif}\{0,1,\dots,v_p\}$ ($p\mid Q$)와, 이들과 독립인 임의의 법칙을 갖는
+유한집합 $E\subseteq P$로 이루어지며 $c=\prod_{p\mid Q}p^{e_p}$, $U=U(E)=\prod_{p\in E}p$, $X=cU$,
+$\mu(\theta)=\mathbb E\,e(\theta X)$, $e(x)=\exp(2\pi i x)$이다.
+(p1p4 정의 4.4는 $E$가 $P_i$의 균등한 $t_i$-부분집합인 경우이다. 아래 모든 상계는 $E$의 법칙, $t_i$, $P_i$와 무관하다.)
+여러 window를 쓸 때는 $\mu_i$로 적는다. 오일러 수는 $\e$로 쓴다.
+\end{definition}
+
+\paragraph{법(modulus)과 주항.}
+$q=\prod_{j=1}^{\omega}p_j^{k_j}$ ($p_j$ 서로 다른 소수, $1\le k_j\le v_j:=v_{p_j}$), 따라서 $q\mid Q$. $(a,q)=1$.
+\[
+M(q):=\prod_{j=1}^{\omega}\frac{v_j+1-k_j-\frac1{p_j-1}}{v_j+1},\qquad
+\rho^0_j:=\frac{v_j+1-k_j+\frac1{p_j-1}}{v_j+1}.
+\]
+제곱 인수가 없으면($k_j=1$) $\pi_j:=v_j/(v_j+1)$로 $M(q)=\prod_j(\pi_j-\frac{1-\pi_j}{p_j-1})$이고, $p_j>\sqrt L$이면 $v_j=1$,
+$M(q)=\prod_j(\frac12-\frac1{2(p_j-1)})$이다 ($M$은 $a$, $E$의 법칙과 무관하다).
+
+\paragraph{혼합에 쓰는 무작위성.}
+$c':=\prod_{p\mid Q,\ p\notin\{p_1,\dots,p_\omega\}}p^{e_p}$,
+$P':=\{p:\ \sqrt L<p\le L/2\}\setminus\{p_1,\dots,p_\omega\}$, $N_1:=|P'|$.
+$d>1$의 소인수가 모두 $\{p_j\}$에 속하면 $P'$의 소수는 $d$와 서로소이고, 지표 $\chi \bmod d$에 대해
+$A(\chi):=\sum_{p\in P'}\chi(p)$로 둔다. 매개변수 $\eta\in(0,1)$ (좋은/나쁜 지표의 문턱)을 고정하고
+\[
+\kappa=\kappa_\eta:=\frac{L}{2(1-\eta)^2N_1},\qquad \kappa_*=\kappa_*(\eta):=\frac{3\log L}{2(1-\eta)^2},\qquad
+\eta_L:=\sqrt L\,\exp\!\Bigl(-\frac{\eta\sqrt L}{12}\Bigr).
+\]
+($\eta=\frac12$이면 $\kappa_*=6\log L$로 lead의 설계와 같은 문턱이다. $\eta\downarrow0$이면 $\kappa$가 최대 4배 작아진다.)
+
+\paragraph{외부 입력.}
+\begin{itemize}[leftmargin=1.5em]
+\item[(F1)] \EXT\ (Gauss 합; Montgomery--Vaughan, \emph{Multiplicative Number Theory I}, \S9.2; Iwaniec--Kowalski \S3.4; 교과서 사실)
+ $\psi$가 법 $p^m$ ($m\ge1$)의 원시 지표이면 $\tau(\psi):=\sum_{w\in(\Z/p^m)^\times}\psi(w)e(w/p^m)$는 $|\tau(\psi)|=p^{m/2}$를 만족한다.
+\item[(F2)] \EXT\ (Rosser--Schoenfeld 1962; recalled, unverified 수치 상수) $x\ge17$에서 $\pi(x)>x/\log x$, $x>1$에서 $\pi(x)<1.25506\,x/\log x$.
+\item[(F3)] \EXT\ (Siegel--Walfisz; Davenport \emph{Multiplicative Number Theory} 22장, MV Cor.~11.21; 비유효)
+ 모든 $B>0$에 대해 $c_B>0$, $x_0(B)$가 있어 $x\ge x_0(B)$, $1\le d\le(\log x)^B$, $(b,d)=1$이면
+ $|\pi(x;d,b)-\mathrm{li}(x)/\varphi(d)|\le x\exp(-c_B\sqrt{\log x})$.
+\end{itemize}
+
+\begin{lemma}[$N_1$의 하한]\label{CMM:lem-N1}
+\PROVED\ (F2 사용) $L\ge444$이고 $\omega\le\sqrt L/\log L$이면 $N_1\ge L/(3\log L)$, 따라서 $\kappa\le\kappa_*$.
+\end{lemma}
+\begin{proof}
+$N_1\ge\pi(L/2)-\pi(\sqrt L)-\omega$. (F2)에서 $L/2\ge17$이므로
+$\pi(L/2)>\frac{L}{2\log(L/2)}>\frac{L}{2\log L}$, $\pi(\sqrt L)<1.25506\frac{\sqrt L}{\log\sqrt L}=2.51012\frac{\sqrt L}{\log L}$.
+따라서 $N_1>\frac{L}{2\log L}-3.51012\frac{\sqrt L}{\log L}$이고, 이것이 $\ge\frac{L}{3\log L}$일 필요충분조건은
+$\sqrt L\ge 6\cdot3.51012=21.06\ldots$, 즉 $L\ge 444$이면 충분하다. 끝으로 $\kappa=\frac{L}{2(1-\eta)^2N_1}\le\frac{3\log L}{2(1-\eta)^2}$.
+\end{proof}
+(수치 확인: $444\le L\le2\cdot10^5$의 6567개 값에서 $\omega=\lfloor\sqrt L/\log L\rfloor$로 직접 계산, 실패 없음 \NUMERIC,
+\texttt{code/cmm\_constants.py}. 실제로는 $2L/N_1\approx3.4\text{--}3.6\log L$.)
+
+%======================================================================
+\subsection{정확 전개}\label{CMM:ssec-exact}
+
+\begin{lemma}[소수 멱 법의 단위 위 Fourier 전개]\label{CMM:lem-fourier}
+\PROVED\ (F1 사용) $p$ 소수, $m\ge1$, $p\nmid b$라 하자. $w\in(\Z/p^m)^\times$에 대해
+\[
+e\Bigl(\frac{bw}{p^m}\Bigr)=c_m+g(w),\qquad c_m:=\begin{cases}-\frac1{p-1},&m=1\\ 0,&m\ge2\end{cases},\qquad
+g(w)=\sum_{\psi\ \text{원시}\ \bmod p^m}\hat g(\psi)\psi(w),\quad |\hat g(\psi)|=\frac{p^{m/2}}{\varphi(p^m)}.
+\]
+\end{lemma}
+\begin{proof}
+유한 아벨군 $G=(\Z/p^m)^\times$ 위에서 $f(w)=e(bw/p^m)$의 Fourier 계수는
+$\hat f(\psi)=\frac1{\varphi(p^m)}\sum_{w\in G}f(w)\overline{\psi(w)}$이고 $f=\sum_\psi\hat f(\psi)\psi$이다.
+$w\mapsto b^{-1}w$로 치환하면 $\sum_w\overline\psi(w)e(bw/p^m)=\psi(b)\,\tau(\overline\psi)$.
+(i) $\psi=\psi_0$: $\tau(\psi_0)=\sum_{w\bmod p^m}e(w/p^m)-\sum_{u\bmod p^{m-1}}e(u/p^{m-1})$이고 첫 합은 $0$, 둘째 합은 $m=1$일 때 $1$,
+$m\ge2$일 때 $0$. 따라서 $\hat f(\psi_0)=c_m$.
+(ii) $\psi\ne\psi_0$가 비원시($m\ge2$에서만 가능): $\psi$는 부분군 $1+p^{m-1}\Z$ 위에서 자명하므로
+$\tau(\psi)=\sum_{w\in(\Z/p^{m-1})^\times}\psi(w)e(w/p^m)\sum_{h=0}^{p-1}e(h/p)=0$.
+(iii) $\psi$ 원시: (F1)로 $|\hat f(\psi)|=p^{m/2}/\varphi(p^m)$.
+$g:=f-c_m$으로 두면 $g$의 Fourier 전개에는 원시 지표만 남는다.
+\end{proof}
+
+\begin{remark}[켤레 표기]\label{CMM:rem-conj}
+명제~\ref{CMM:prop-exact}의 증명은 $\overline\psi$를 계수에 넣는 위 형태만 쓰므로 p1p4 주의~10.4에서 지적된 켤레 누락 문제가 생기지 않는다.
+lead 스케치의 형태로는 $(b,q')=1$, $y$ 단위일 때 $e(by/q')=\frac1{\varphi(q')}\sum_{\chi\bmod q'}\overline{\chi}(by)\,\tau(\chi)$가 옳고,
+켤레 없는 식은 거짓이다: $q'=15,77$에서 켤레 판의 오차 $\le3.5\cdot10^{-15}$, 켤레 없는 판의 오차 $1.9$--$2.0$ \NUMERIC\
+(\texttt{code/cmm\_constants.py}, \texttt{out/cmm\_constants.txt}).
+\end{remark}
+
+\begin{proposition}[정확 전개]\label{CMM:prop-exact}
+\PROVED\ 정의~\ref{CMM:def-window}의 window와 $q=\prod_j p_j^{k_j}\mid Q$, $(a,q)=1$에 대해
+공집합이 아닌 $S\subseteq\{1,\dots,\omega\}$와 $m=(m_j)_{j\in S}$ ($1\le m_j\le k_j$)마다 $d=d(S,m):=\prod_{j\in S}p_j^{m_j}$,
+\[
+B(S,m):=\frac{\sqrt d}{\varphi(d)}\sum_{\chi\ \text{원시}\ \bmod d}\bigl|\mathbb E\,\chi(c')\bigr|
+\]
+로 두면 $\mu(a/q)=M(q)+R$이고
+\[
+|R|\le\sum_{\emptyset\ne S}\ \sum_{m}B(S,m)\prod_{j\in S}\frac1{v_j+1}\prod_{j\notin S}\rho^0_j .
+\]
+\end{proposition}
+\begin{proof}
+\emph{부분분수.} $q$의 인수 $p_j^{k_j}$들이 서로소이므로 정수 $a_j$가 있어 $a=\sum_j a_j\,q/p_j^{k_j}+nq$, 즉
+$a/q\equiv\sum_j a_j/p_j^{k_j}\pmod 1$. 법 $p_j$로 보면 $a\equiv a_j\,q/p_j^{k_j}$이고 $p_j\nmid a$, $p_j\nmid q/p_j^{k_j}$이므로 $p_j\nmid a_j$.
+따라서 $e(aX/q)=\prod_j e(a_jX/p_j^{k_j})$.
+
+\emph{성분별 전개.} $X=c'\cdot\prod_l p_l^{e_l}\cdot U$. $J:=\{j:e_j\ge k_j\}$로 두면 $j\in J$에서 $p_j^{k_j}\mid X$라 인수가 $1$이다.
+$j\notin J$에서 $m_j:=k_j-e_j\in[1,k_j]$, $w_j:=X/p_j^{e_j}=c'U\prod_{l\ne j}p_l^{e_l}$로 두면 $p_j\nmid w_j$이다
+($c'$은 $p_j$를 포함하지 않고, $U$는 $(L/2,L]$의 소수들의 곱인데 $p_j\le L/2$). 보조정리~\ref{CMM:lem-fourier}로
+$e(a_jX/p_j^{k_j})=e(a_jw_j/p_j^{m_j})=c^{(j)}_{m_j}+g_j^{(m_j)}(w_j)$. 전개하면
+\[
+e(aX/q)=\sum_{S\subseteq J^c}\ \prod_{j\in J^c\setminus S}c^{(j)}_{m_j}\cdot G_S,\qquad G_S:=\prod_{j\in S}g^{(m_j)}_j(w_j\bmod p_j^{m_j}).
+\]
+\emph{조건부 기댓값.} $\mathbf e=(e_l)_{l\le\omega}$로 조건화하면 $J$, $m$이 고정된다. $n\in(\Z/d)^\times$를
+$n\equiv\prod_{l\ne j}p_l^{e_l}\pmod{p_j^{m_j}}$ ($j\in S$)인 CRT 원소로 두면 $(w_j\bmod p_j^{m_j})_{j\in S}$는 $c'Un\bmod d$에 대응한다.
+CRT로 $\chi=\prod_{j\in S}\psi_j$이고 $\chi$가 법 $d$에서 원시 $\iff$ 모든 $\psi_j$가 법 $p_j^{m_j}$에서 원시이므로,
+보조정리~\ref{CMM:lem-fourier}에서 $G_S(w)=\sum_{\chi\ \text{원시}\bmod d}\hat G(\chi)\chi(w)$, $|\hat G(\chi)|=\prod_{j\in S}p_j^{m_j/2}/\varphi(p_j^{m_j})=\sqrt d/\varphi(d)$.
+$c'$, $U$, $\mathbf e$는 서로 독립이므로
+$\mathbb E[G_S\mid\mathbf e]=\sum_\chi\hat G(\chi)\chi(n)\,\mathbb E\chi(c')\,\mathbb E\chi(U)$, 따라서 $|\mathbb E[G_S\mid\mathbf e]|\le B(S,m)$.
+
+\emph{주항.} $S=\emptyset$ 항의 기댓값은 $e_j$들의 독립성으로
+$\prod_j\mathbb E[\mathbf 1_{e_j\ge k_j}+\mathbf 1_{e_j<k_j}c^{(j)}_{k_j-e_j}]=\prod_j\bigl(\mathbb P(e_j\ge k_j)-\frac{\mathbb P(e_j=k_j-1)}{p_j-1}\bigr)=M(q)$
+($m\ge2$에서 $c_m=0$, $\mathbb P(e_j=t)=\frac1{v_j+1}$).
+
+\emph{나머지.} $|R|\le\mathbb E_{\mathbf e}\sum_{\emptyset\ne S\subseteq J^c}\prod_{j\in J^c\setminus S}|c^{(j)}_{m_j}|\,B(S,m(\mathbf e))$.
+$S$와 $m$을 먼저 고정하고 $\mathbf e$에 대해 합하면, 조건 ``$S\subseteq J^c$, $m_j=k_j-e_j$ ($j\in S$)''의 확률은 $\prod_{j\in S}\frac1{v_j+1}$이고,
+$j\notin S$의 인수의 기댓값은 $\mathbb P(e_j\ge k_j)+\mathbb E[\mathbf 1_{e_j<k_j}|c^{(j)}_{k_j-e_j}|]=\rho^0_j$이다. 독립성으로 곱이 된다.
+\end{proof}
+
+\begin{corollary}[곱셈적 형태]\label{CMM:cor-mult}
+\PROVED\ 모든 $S\ne\emptyset$, $m$에서 $B(S,m)\le\prod_{j\in S}\beta_j(m_j)$ ($\beta_j(\cdot)\ge0$)이면,
+$\Delta_j:=\frac1{v_j+1}\sum_{m=1}^{k_j}\beta_j(m)$에 대해
+\[
+|\mu(a/q)-M(q)|\le\prod_j(\rho^0_j+\Delta_j)-\prod_j\rho^0_j,\qquad |\mu(a/q)|\le\prod_j(\rho^0_j+\Delta_j).
+\]
+제곱 인수가 없으면 $\rho^0_j+\Delta_j=\pi_j+(1-\pi_j)\bigl(\frac1{p_j-1}+\beta_j(1)\bigr)$.
+\end{corollary}
+\begin{proof}
+$\prod_j(\rho^0_j+\Delta_j)=\sum_S\prod_{j\in S}\Delta_j\prod_{j\notin S}\rho^0_j$이고 $\prod_{j\in S}\Delta_j=\sum_m\prod_{j\in S}\frac{\beta_j(m_j)}{v_j+1}$이므로 명제~\ref{CMM:prop-exact}와 비교한다.
+둘째 식은 $|M(q)|\le\prod_j\rho^0_j$에서 나온다.
+\end{proof}
+
+%======================================================================
+\subsection{지표합: 좋은 지표와 나쁜 지표}\label{CMM:ssec-char}
+
+\begin{lemma}[좋은 지표]\label{CMM:lem-good}
+\PROVED\ $d>1$ (소인수는 $\{p_j\}$ 안)이고 $\chi$가 법 $d$의 원시 지표이면
+$|\mathbb E\chi(c')|\le\exp\bigl(-\tfrac14(N_1-\mathrm{Re}\,A(\chi))\bigr)$. 특히 $\mathrm{Re}\,A(\chi)\le(1-\eta)N_1$이면 $|\mathbb E\chi(c')|\le\e^{-\eta N_1/4}$.
+\end{lemma}
+\begin{proof}
+독립성으로 $\mathbb E\chi(c')=\prod_{p}\mathbb E\chi(p)^{e_p}$ (곱은 $p\mid Q$, $p\notin\{p_j\}$). 각 인수의 절댓값은 $\le1$이고,
+$p\in P'$이면 $v_p=1$이라 $\mathbb E\chi(p)^{e_p}=\frac{1+\chi(p)}2$, $|\chi(p)|=1$이다.
+$|z|=1$이면 $|\frac{1+z}2|^2=\frac{1+\mathrm{Re}z}2=1-\frac{1-\mathrm{Re}z}{2}\le\exp(-\frac{1-\mathrm{Re}z}2)$.
+\end{proof}
+
+\begin{lemma}[$2k$차 모멘트]\label{CMM:lem-moment}
+\PROVED\ $d\ge2$ (소인수는 $\{p_j\}$ 안), $k\ge1$이면
+\[
+\#\{\chi\bmod d:\ \mathrm{Re}\,A(\chi)>(1-\eta)N_1\}\le\varphi(d)\,(1-\eta)^{-2k}N_1^{-k}\,k!\Bigl(\frac{(L/2)^k}{d}+1\Bigr).
+\]
+\end{lemma}
+\begin{proof}
+그 집합에서 $|A(\chi)|^{2k}>((1-\eta)N_1)^{2k}$. 직교성( $P'$의 소수는 $d$와 서로소)으로
+$\sum_{\chi\bmod d}|A(\chi)|^{2k}=\varphi(d)\,\mathcal N_k$,
+$\mathcal N_k:=\#\{(p_1,\dots,p_k,p_1',\dots,p_k')\in P'^{2k}:\ p_1\cdots p_k\equiv p_1'\cdots p_k'\pmod d\}$.
+$(p_i')$를 고정하면(${}\le N_1^k$가지) $(p_i)$의 개수는 $\sum_{n\le(L/2)^k,\ n\equiv r\,(d)}\#\{n\text{의 길이 }k\text{ 순서 소인수분해}\}\le k!\,((L/2)^k/d+1)$
+(소인수분해의 유일성으로 $n$이 정하는 소수 다중집합은 하나이고 그 순서배열은 $\le k!$개).
+\end{proof}
+
+\begin{proposition}[$B(S,m)$의 상계]\label{CMM:prop-B}
+\PROVED\ $S\ne\emptyset$, $d=d(S,m)$, $x:=\log d/\log(L/2)$, $k:=\lceil x\rceil\ (\ge1)$이면
+\[
+B(S,m)\le\sqrt d\,\e^{-\eta N_1/4}+B_{\rm bad}(S,m),\qquad B_{\rm bad}(S,m)\le\frac{2\,k!\,\kappa^k}{\sqrt d},
+\]
+여기서 $B_{\rm bad}$는 $\mathrm{Re}A(\chi)>(1-\eta)N_1$인 원시 $\chi$들의 기여이며, 그런 원시 지표가 없으면 $B_{\rm bad}=0$.
+\end{proposition}
+\begin{proof}
+원시 지표를 $\mathrm{Re}A\le(1-\eta)N_1$ (좋음)과 나머지(나쁨)로 나눈다. 좋은 지표: 개수 $\le\varphi(d)$, 각각 $\le\e^{-\eta N_1/4}$
+(보조정리~\ref{CMM:lem-good}), 기여 $\le\frac{\sqrt d}{\varphi(d)}\varphi(d)\e^{-\eta N_1/4}$. 나쁜 지표: $|\mathbb E\chi(c')|\le1$이고
+보조정리~\ref{CMM:lem-moment}에서 $k=\lceil x\rceil$이면 $(L/2)^k\ge d$이므로
+$\frac{\sqrt d}{\varphi(d)}\cdot\varphi(d)(1-\eta)^{-2k}N_1^{-k}k!\cdot\frac{2(L/2)^k}{d}=\frac{2k!}{\sqrt d}\Bigl(\frac{L}{2(1-\eta)^2N_1}\Bigr)^k$.
+\end{proof}
+
+%======================================================================
+\subsection{주정리: 곱셈적 상계}\label{CMM:ssec-main}
+
+\begin{theorem}[CMM, 일반 $q\mid Q$]\label{CMM:thm-main}
+$A\ge4$, $\eta\in(0,1)$, $L\ge444$, $q=\prod_{j=1}^\omega p_j^{k_j}\mid Q$, $(a,q)=1$, $2\omega\kappa_*\le(L/2)^{1/2}$라 하자.
+\[
+\lambda:=\frac{\log(2\omega\kappa_*)}{\log(L/2)}\ (\le\tfrac12),\quad R_L:=\min\{r\in\Z_{\ge1}:\e^r\ge4r\kappa_*\},\quad Z:=(\log L)^A,
+\]
+\[
+\theta=\theta_A(L):=\frac{\log(2R_L\kappa_*)}{\log(L/2)}+\frac{\log(4R_L\kappa_*)}{\log Z},\qquad
+\beta(y):=\e\,y^{\lambda-1/2}+y^{\theta-1/2}+\eta_L\quad(y\ge1)
+\]
+로 두고, 다음 중 하나를 가정한다:
+(H$_Z$-i) 모든 $p_j>Z$; 또는 (H$_Z$-ii) $1<d\le Z$, $d\mid q$인 모든 $d$와 법 $d$의 모든 원시 지표 $\chi$에 대해 $\mathrm{Re}A(\chi)\le(1-\eta)N_1$.
+그러면 모든 $S\ne\emptyset$, $m$에 대해 $B(S,m)\le\prod_{j\in S}\beta(p_j^{m_j})$이고, 따름정리~\ref{CMM:cor-mult}에 의해
+\[
+|\mu(a/q)|\le\prod_{j}\rho_{p_j^{k_j}},\qquad \rho_{p^k}:=\frac{v_p+1-k+\frac1{p-1}+\sum_{m=1}^{k}\beta(p^m)}{v_p+1},\qquad
+|\mu(a/q)-M(q)|\le\prod_j\rho_{p_j^{k_j}}-\prod_j\rho^0_j .
+\]
+또한 \PROVED\ (F3 사용) $L\ge L_0(A,\eta)$ (비유효)이면 (H$_Z$-ii)가 항상 성립하고,
+\PROVED\ $R_L\le\lceil2\log(4\kappa_*)+2\rceil$, $\theta_A(L)\to1/A$ ($L\to\infty$).
+\end{theorem}
+\begin{proof}
+\PROVED\ $2\omega\kappa_*\le(L/2)^{1/2}$와 $\kappa_*\ge\frac32\log L$에서 $\omega\le\sqrt L/\log L$이므로 보조정리~\ref{CMM:lem-N1}이 적용되어 $\kappa\le\kappa_*$.
+$S\ne\emptyset$, $r=|S|\le\omega$, $d=d(S,m)$, $y_j:=p_j^{m_j}\le p_j^{v_j}\le L$로 두고 명제~\ref{CMM:prop-B}를 쓴다.
+
+\emph{좋은 부분.} $\sqrt d\,\e^{-\eta N_1/4}=\prod_{j\in S}\bigl(y_j^{1/2}\e^{-\eta N_1/(4r)}\bigr)\le\prod_{j\in S}\eta_L$,
+왜냐하면 $y_j\le L$이고 $\frac{N_1}{4r}\ge\frac{N_1}{4\omega}\ge\frac{L}{3\log L}\cdot\frac{\log L}{4\sqrt L}=\frac{\sqrt L}{12}$.
+
+\emph{나쁜 부분.} $d\le Z$이면 (H$_Z$-i) 아래에서는 불가능($d\ge p_j>Z$)하고 (H$_Z$-ii) 아래에서는 $B_{\rm bad}=0$. 이제 $d>Z$라 하자.
+$x_j:=\log y_j/\log(L/2)$, $x=\sum_{j\in S}x_j$. $L\ge8$이면 $\log L\le\frac32\log(L/2)$이므로 $x_j\le\frac32$, 따라서
+$k=\lceil x\rceil\le\min(x+1,\lceil 3r/2\rceil)\le\min(x+1,2r)$. $2r\kappa_*\ge1$이므로
+\[
+k!\,\kappa^k\le(k\kappa_*)^k\le(2r\kappa_*)^k\le(2r\kappa_*)^{x+1}=2r\kappa_*\prod_{j\in S}y_j^{\lambda_r},\qquad \lambda_r:=\frac{\log(2r\kappa_*)}{\log(L/2)}
+\]
+($(2r\kappa_*)^{x_j}=y_j^{\lambda_r}$). 따라서 $B_{\rm bad}\le4r\kappa_*\prod_{j\in S}y_j^{\lambda_r-1/2}$.
+(a) $r\ge R_L$: $f(r)=r-\log(4r\kappa_*)$는 $r\ge1$에서 비감소($f'=1-1/r$)이고 $f(R_L)\ge0$이므로 $4r\kappa_*\le\e^r$.
+또 $\lambda_r\le\lambda$ ($r\le\omega$), $y_j\ge1$. 따라서 $B_{\rm bad}\le\prod_{j\in S}\e\,y_j^{\lambda-1/2}$.
+(b) $r<R_L$: $4r\kappa_*<4R_L\kappa_*=Z^{\mu}<d^{\mu}$, $\mu:=\log(4R_L\kappa_*)/\log Z$, 그리고 $\lambda_r\le\lambda_{R_L}$. 따라서
+$B_{\rm bad}\le d^{\mu}\prod_j y_j^{\lambda_{R_L}-1/2}=\prod_{j\in S}y_j^{\theta-1/2}$.
+두 경우 모두 $B_{\rm bad}\le\prod_{j\in S}(\e y_j^{\lambda-1/2}+y_j^{\theta-1/2})$. 음이 아닌 수에 대해
+$\prod a_j+\prod b_j\le\prod(a_j+b_j)$이므로 $B(S,m)\le\prod_{j\in S}\beta(y_j)$.
+
+\emph{(H$_Z$-ii)의 성립.} 원시 $\chi\bmod d$, $1<d\le Z$. $A(\chi)=\sum_{\sqrt L<p\le L/2}\chi(p)-\sum_{j:\ p_j\in(\sqrt L,L/2]}\chi(p_j)$이고 둘째 합은
+절댓값 $\le\omega$. 첫째 합은 $\sum_{b\in(\Z/d)^\times}\chi(b)\bigl(\pi(L/2;d,b)-\pi(\sqrt L;d,b)\bigr)$이며 ($d$의 소인수에서 $\chi=0$),
+$\sum_b\chi(b)=0$이므로 $=\sum_b\chi(b)(\pi(L/2;d,b)-\mathrm{li}(L/2)/\varphi(d))-\sum_b\chi(b)\pi(\sqrt L;d,b)$.
+$L$이 커서 $Z=(\log L)^A\le(\log(L/2))^{A+1}$이면 (F3) ($B=A+1$, $x=L/2$)로 첫 부분은 $\le Z\cdot L\exp(-c_{A+1}\sqrt{\log(L/2)})$,
+둘째 부분은 $\le\pi(\sqrt L)\le\sqrt L$. 따라서 $|A(\chi)|\le(\log L)^AL\e^{-c\sqrt{\log(L/2)}}+2\sqrt L\le(1-\eta)\frac{L}{3\log L}\le(1-\eta)N_1$
+($L\ge L_0(A,\eta)$).
+
+\emph{$R_L$과 $\theta$.} $r_1:=2\log(4\kappa_*)+2$이면 $\log(4r_1\kappa_*)=\frac{r_1-2}2+\log r_1\le r_1$ ($\log t\le t/2+1$, $t>0$)이므로 $f(\lceil r_1\rceil)\ge0$.
+따라서 $4R_L\kappa_*\le4\kappa_*(2\log(4\kappa_*)+3)=(\log L)^{1+o(1)}$, 즉 $\log(4R_L\kappa_*)/\log Z=(1+o(1))/A$이고
+$\log(2R_L\kappa_*)/\log(L/2)=O(\log\log L/\log L)$.
+\end{proof}
+
+\begin{remark}[상수의 크기]\label{CMM:rem-size}
+\NUMERIC\ ($\texttt{code/cmm\_constants.py}$ (3)) $A=16$, $\eta=0.1$에서 $\theta_A(L)=0.458,\ 0.388,\ 0.327,\ 0.288,\ 0.238$
+($L=10^9,10^{12},10^{16},10^{20},10^{30}$). 정리~\ref{CMM:thm-main}은 점근적 정리이며, 작은 소수에 대한
+$\beta$는 $1$보다 작지 않을 수 있다(그래도 정리~\ref{CMM:thm-SS}(c)에는 충분하다). $(\sqrt L,L/2]$의 소수만 있을 때는
+다음 따름정리가 훨씬 좋은 상수를 준다.
+\end{remark}
+
+\begin{corollary}[{$(\sqrt L,L/2]$의 소수: 유효한 곱셈적 상계}]\label{CMM:cor-large}
+\PROVED\ (F2만 사용; 유효) $\eta\in(0,1)$, $L\ge444$, $q=p_1\cdots p_\omega$ 제곱 인수 없음, $\sqrt L<p_j\le L/2$, $(a,q)=1$,
+$\omega\kappa_*\le(L/2)^{1/2}$라 하자. $R':=\min\{r\ge1:\e^r\ge2r\kappa_*\}$, $c_*:=(2\cdot R'!)^{1/R'}$,
+\[
+\beta_L(\omega):=\max\bigl\{c_*\kappa_*L^{-1/4},\ \e\,(\omega\kappa_*)^{1/2}(L/2)^{-1/4}\bigr\}+\eta_L .
+\]
+그러면 모든 $S\ne\emptyset$에서 $B(S)\le\beta_L(\omega)^{|S|}$이고
+\[
+|\mu(a/q)|\le\prod_{j=1}^{\omega}\Bigl(\frac12+\eps_j\Bigr),\quad \eps_j:=\frac12\Bigl(\frac1{p_j-1}+\beta_L(\omega)\Bigr),\qquad
+\Bigl|\mu(a/q)-\prod_j\Bigl(\frac12-\frac1{2(p_j-1)}\Bigr)\Bigr|\le 2^{-\omega}\Bigl[\prod_j\Bigl(1+\tfrac1{p_j-1}+\beta_L(\omega)\Bigr)-\prod_j\Bigl(1+\tfrac1{p_j-1}\Bigr)\Bigr].
+\]
+$\kappa_*\asymp\log L$, $R'=O(\log\log L)$, $c_*\le R'$이므로 $\beta_L(\omega)\ll(\log L)(\log\log L)L^{-1/4}+(\omega\log L)^{1/2}L^{-1/4}$;
+특히 $\omega\log L=o(\sqrt L)$이면 $\eps_j\to0$ (모든 $j$에 균일).
+\end{corollary}
+\begin{proof}
+$\omega\kappa_*\le(L/2)^{1/2}$에서 $\omega\le\sqrt L/\log L$, 따라서 $\kappa\le\kappa_*$. 좋은 부분은 정리~\ref{CMM:thm-main}의 증명과 같다($\le\eta_L^r$).
+나쁜 부분: $p_j\le L/2$이므로 $x\le r$, $k\le r$.
+(a) $r<R'$: $c_r:=(2\,r!)^{1/r}$은 비감소이다($c_{r+1}\ge c_r\iff(r+1)^r\ge2\,r!$, 그리고
+$r!=1\cdot2\cdots r\le\frac{r+1}2(r+1)^{r-1}$). 따라서 $2k!\kappa^k\le2\,r!\,\kappa_*^r=(c_r\kappa_*)^r\le(c_*\kappa_*)^r$이고
+$\sqrt{q_S}>L^{r/4}$이므로 $B_{\rm bad}\le(c_*\kappa_*L^{-1/4})^r$.
+(b) $r\ge R'$: $k\le\min(r,x+1)$에서 $k!\kappa^k\le(r\kappa_*)^{x+1}\le r\kappa_*(\omega\kappa_*)^x$, 그리고 $2r\kappa_*\le\e^r$
+($r-\log(2r\kappa_*)$ 비감소). 따라서 $B_{\rm bad}\le\e^r\prod_{j\in S}p_j^{\lambda'-1/2}$, $\lambda':=\log(\omega\kappa_*)/\log(L/2)\le\frac12$.
+$p_j>\sqrt L>(L/2)^{1/2}$이고 $t\mapsto t^{\lambda'-1/2}$은 감소이므로 $p_j^{\lambda'-1/2}\le(L/2)^{(\lambda'-1/2)/2}=(\omega\kappa_*)^{1/2}(L/2)^{-1/4}$.
+두 경우를 합쳐 $B(S)\le\eta_L^r+\beta_{\rm bad}^r\le\beta_L(\omega)^r$. 나머지는 따름정리~\ref{CMM:cor-mult} ($v_j=1$, $\pi_j=\frac12$).
+$R'$의 크기는 정리~\ref{CMM:thm-main}의 $R_L$과 같은 논법, $c_*\le R'$은 $2R'!\le R'^{R'}$ ($R'\ge2$).
+\end{proof}
+
+\begin{remark}\label{CMM:rem-large-num}
+\NUMERIC\ $\eta=0.1$에서 $\kappa_*=1.852\log L$. 예: $L=10^{16}$, $\omega\le10$에서 $R'=7$, $c_*=3.73$, $\beta_L(\omega)\approx0.03$;
+$L=10^{12}$에서는 $\approx0.19$. 즉 증명된 상계는 $L\gtrsim10^{12}$에서 비로소 의미가 있다
+(실제 오차는 \S\ref{CMM:ssec-num}에서 보듯 훨씬 작다).
+\end{remark}
+
+%======================================================================
+\subsection{점근식과 (T3)의 격상}\label{CMM:ssec-asym}
+
+\begin{theorem}[점근식]\label{CMM:thm-asym}
+\PROVED\ (유효) $\eta\in(0,1)$, $L\ge444$, $\sqrt L\le y\le L/2$, $q=p_1\cdots p_\omega$ 제곱 인수 없음, $p_j>\sqrt L$, $y\le p_j\le L/2$, $(a,q)=1$,
+$\omega\kappa_*\le\frac12\sqrt y$이면
+\[
+\Bigl|\mu(a/q)-\prod_{j=1}^\omega\Bigl(\frac12-\frac1{2(p_j-1)}\Bigr)\Bigr|\le2^{-\omega}\,\e^{\omega/(y-1)}\Bigl(\frac{4\omega\kappa_*}{\sqrt y}+\eta'_L\Bigr),
+\qquad \eta'_L:=\exp\Bigl(\frac{\sqrt L}{3}-\frac{\eta L}{12\log L}\Bigr).
+\]
+특히 $y=\sqrt L$이면 상대오차(기준 $2^{-\omega}$)는 $O(\omega\log L\cdot L^{-1/4})$이고 범위는 $\omega\le\sqrt[4]L/(2\kappa_*)$.
+\end{theorem}
+\begin{proof}
+$\omega\le\sqrt{L/2}/(2\kappa_*)\le\sqrt L/(3\log L)$이므로 $\kappa\le\kappa_*$. 명제~\ref{CMM:prop-exact} ($v_j=1$, $\frac1{v_j+1}=\frac12$, $\rho^0_j=\frac12(1+\frac1{p_j-1})\le\frac12\e^{1/(y-1)}$)에서
+$|R|\le2^{-\omega}\e^{\omega/(y-1)}\sum_{S\ne\emptyset}B(S)$. 명제~\ref{CMM:prop-B}와 $k\le r$에서
+$B(S)\le\sqrt{q_S}\,\e^{-\eta N_1/4}+2\,r!\,\kappa_*^r\,y^{-r/2}$. 첫 항의 합은
+$\le\prod_j(1+\sqrt{p_j})\,\e^{-\eta N_1/4}\le\exp\bigl(\omega\log L-\frac{\eta L}{12\log L}\bigr)\le\eta'_L$
+($1+\sqrt{L/2}\le L$, $\omega\log L\le\sqrt L/3$). 둘째 항의 합은 $\binom\omega r r!\le\omega^r$로
+$\le2\sum_{r\ge1}(\omega\kappa_*/\sqrt y)^r\le4\omega\kappa_*/\sqrt y$ (비 $\le\frac12$).
+\end{proof}
+
+\begin{corollary}[p1p4 명제 4.22 (T3)의 격상]\label{CMM:cor-T3}
+\PROVED\ $Q'=q_1\cdots q_{h'}$, $q_j\in(L/3,L/2]$ 서로 다른 소수, $(a,Q')=1$, $L\ge444$, $h'\kappa_*\le\frac12\sqrt{L/3}$이면 모든 window에서 동시에
+\[
+\Bigl|\mu_i(a/Q')-\prod_{j=1}^{h'}\Bigl(\frac12-\frac1{2(q_j-1)}\Bigr)\Bigr|\le2^{-h'}\,\e^{3h'/(L-3)}\Bigl(\frac{4\sqrt3\,h'\kappa_*}{\sqrt L}+\eta'_L\Bigr).
+\]
+따라서 $h'=o(\sqrt L/\log L)$이면 $|\mu_i(a/Q')|\ge2^{-h'}(1-o(1))$이고, $h'\le c\sqrt L/\log L$이면 ($\eta=0.1$, $\kappa_*=1.852\log L$)
+$|\mu_i(a/Q')|\ge2^{-h'}(1-13c-o(1))$
+% AUD1: c의 범위 명시. 가정 h'kappa_* <= sqrt(L/3)/2 는 c <= 1/(2 sqrt3 * 1.852) = 0.156을 강제하고, 하한은 c < 1/12.83 = 0.078에서만 비자명.
+(가정 $h'\kappa_*\le\frac12\sqrt{L/3}$ 때문에 $c\le1/(2\sqrt3\cdot1.852)\approx0.156$이어야 하고, 이 하한이 비자명한 것은 $c<1/12.83\approx0.078$일 때이다)
+: 이 점들은 모든 window의 공유 공명점이며
+minor arc 도구가 아니다. p1p4 명제 4.22 (T3)의 ``$h'\ge2$ 공유 공명'' 부분과 주의~4.21의 해당 부분은 이 범위에서 \HEUR\ $\to$ \PROVED.
+\end{corollary}
+\begin{proof}
+정리~\ref{CMM:thm-asym}에 $y=L/3$ ($>\sqrt L$)을 넣는다. $\prod_j(\frac12-\frac1{2(q_j-1)})\ge2^{-h'}(1-\frac{3}{L-3})^{h'}$.
+\end{proof}
+
+%======================================================================
+\subsection{확대 singular series}\label{CMM:ssec-SS}
+
+\begin{lemma}[국소 인자]\label{CMM:lem-local}
+\PROVED\ $0<\delta\le1$, $L\ge444$, $s_0:=\lceil(2+\delta)\log_2L\rceil$, $\sigma:=s_0/\log L$ (따라서 $\frac{2+\delta}{\log2}\le\sigma\le4.5$).
+각 소수 $p\le L/2$에 $\Gamma_p\ge0$을 주고 $\rho_{p^k}:=\frac{v_p+1-k+\Gamma_p}{v_p+1}$ ($1\le k\le v_p$), $F_p:=\sum_{k=1}^{v_p}p^k\rho_{p^k}^{s_0}$로 두자.
+\begin{enumerate}[label=(\roman*)]
+\item $p\le L^{1/9}$이면 $F_p\le1.5\,p^{1+\sigma\Gamma_p-0.9\sigma}$.
+\item $c_1:=\min(\delta,0.089)$. 모든 $p\in(L^{1/9},L/2]$에서 $\sigma\Gamma_p\le c_1/2$이면 $\sum_{L^{1/9}<p\le L/2}F_p\le36\,L^{-c_1/2}$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+$\sigma\le\frac{3}{\log2}+\frac1{\log444}<4.5$. $v=v_p$이면 $p^v\le L<p^{v+1}$.
+(i) $\rho:=\rho_{p^k}=1-\frac{k-\Gamma_p}{v+1}>0$ ($v+1-k\ge1$)이고 $\log(1-x)\le-x$ ($x<1$)로 $\rho^{s_0}\le\exp(-s_0\frac{k-\Gamma_p}{v+1})$.
+$\frac{\log L}{\log p}<v+1\le\frac{\log L+\log p}{\log p}$와 $\log p\le\frac19\log L$에서 $0.9\sigma\log p\le\frac{s_0}{v+1}<\sigma\log p$.
+$k\ge\Gamma_p$이면 $\rho^{s_0}\le p^{-0.9\sigma(k-\Gamma_p)}\le p^{\sigma\Gamma_p-0.9\sigma k}$; $k<\Gamma_p$이면 $\rho^{s_0}\le p^{\sigma(\Gamma_p-k)}\le p^{\sigma\Gamma_p-0.9\sigma k}$.
+$0.9\sigma-1\ge\frac{1.8}{\log2}-1>1.596$이므로 $p^{1-0.9\sigma}<2^{-1.596}<0.331$이고
+$F_p\le p^{\sigma\Gamma_p}\sum_{k\ge1}p^{k(1-0.9\sigma)}\le\frac{p^{\sigma\Gamma_p+1-0.9\sigma}}{1-0.331}\le1.5\,p^{1+\sigma\Gamma_p-0.9\sigma}$.
+(ii) $p\in(L^{1/9},L/2]$이면 $v\in\{1,\dots,8\}$. $I_v:=\{p\in(L^{1/9},L/2]:v_p=v\}\subseteq(L^{1/(v+1)},L^{1/v}]$, $\#I_v\le L^{1/v}$.
+$\Gamma^*:=\max\Gamma_p$로 두면 $p\in I_v$에서 $p^k\le L^{k/v}$, $\rho_{p^k}\le\frac{v+1-k+\Gamma^*}{v+1}$, 그리고
+$\log\frac{v+1-k+\Gamma^*}{v+1}\le\log\frac{v+1-k}{v+1}+\Gamma^*$. 따라서
+$\sum_{p\in I_v}p^k\rho_{p^k}^{s_0}\le L^{E(k,v)}$, $E(k,v):=\frac{k+1}v+\sigma\log\frac{v+1-k}{v+1}+\sigma\Gamma^*$.
+$\sigma\log\frac{v+1-k}{v+1}$는 $\sigma$에 대해 감소한다. $(k,v)=(1,1)$: $2-\sigma\log2\le2-(2+\delta)=-\delta$.
+그 밖의 $1\le k\le v\le8$ (35쌍): $\sigma_0:=2/\log2$에서 $e(k,v):=\frac{k+1}v-\sigma_0\log\frac{v+1}{v+1-k}\le-0.0898$ (아래 표, 직접 계산,
+\texttt{code/cmm\_constants.py} (1); 최댓값 $-0.08985$는 $(k,v)=(1,8)$). 따라서 $E(k,v)\le-c_1+\sigma\Gamma^*\le-c_1/2$이고 36쌍을 더한다.
+\begin{center}\small
+\begin{tabular}{c|l}
+$v$ & $e(1,v),\dots,e(v,v)$\\\hline
+1 & $0$\\
+2 & $-0.1699,\ -1.6699$\\
+3 & $-0.1634,\ -1.0000,\ -2.6667$\\
+4 & $-0.1439,\ -0.7239,\ -1.6439,\ -3.3939$\\
+5 & $-0.1261,\ -0.5699,\ -1.2000,\ -2.1699,\ -3.9699$\\
+6 & $-0.1115,\ -0.4709,\ -0.9480,\ -1.6115,\ -2.6147,\ -4.4480$\\
+7 & $-0.0996,\ -0.4015,\ -0.7847,\ -1.2857,\ -1.9729,\ -3.0000,\ -4.8571$\\
+8 & $-0.0899,\ -0.3501,\ -0.6699,\ -1.0710,\ -1.5899,\ -2.2949,\ -3.3399,\ -5.2149$
+\end{tabular}
+\end{center}
+\end{proof}
+
+\begin{theorem}[확대 singular series의 유계성]\label{CMM:thm-SS}
+$0<\delta\le1$, $s\ge s_0=\lceil(2+\delta)\log_2L\rceil$, window $\mu_1,\dots,\mu_s$ (정의~\ref{CMM:def-window}; $U$의 법칙은 window마다 임의, window 사이의 독립성은 필요 없음).
+$1$을 포함하는 법의 집합 $\mathcal Q$ ($q\mid Q$)에 대해 $\mathcal S(\mathcal Q):=\sum_{q\in\mathcal Q}\sum_{a\bmod q,\,(a,q)=1}\prod_{i=1}^s|\mu_i(a/q)|$ ($q=1$ 항은 $1$).
+\begin{enumerate}[label=(\alph*)]
+\item \PROVED\ (유효) $\mathcal Q_1(\omega_0):=\{q\ \text{제곱 인수 없음}:\ p\mid q\Rightarrow\sqrt L<p\le L/2,\ \omega(q)\le\omega_0\}$.
+ $L\ge444$, $\omega_0\kappa_*\le(L/2)^{1/2}$, $\gamma_L:=\frac1{\sqrt L-1}+\beta_L(\omega_0)\le\frac{\delta\log2}{2(2+\delta)}$이면
+ $1\le\mathcal S(\mathcal Q_1(\omega_0))\le1+0.63\,L^{-\delta/2}/\log(L/2)$.
+ $\omega_0\log L=o(\sqrt L)$이면 가정은 $L\ge L_1(\delta,\eta)$에서 성립한다
+ % AUD1: L_1의 유효성은 o(.)의 속도가 명시적일 때만 (예: omega_0 = fixed power L^{1/2-eps'}/log L).
+ ($o(\cdot)$의 속도가 명시적이면 $L_1$은 유효하다).
+\item \PROVED\ (유효) $0<\eps<\frac12$, $A\ge4$, $\mathcal Q_2(\omega_0):=\{q\mid Q:\ q\text{의 모든 소인수}>(\log L)^A,\ \omega(q)\le\omega_0\}$,
+ $2\omega_0\kappa_*\le(L/2)^{1/2-\eps}$. 유효하게 계산 가능한 $L_2(A,\eps,\delta,\eta)$가 있어 $L\ge L_2$이면
+ $1\le\mathcal S(\mathcal Q_2(\omega_0))\le\exp\bigl(5((\log L)^A-1)^{-0.3}+36L^{-c_1/2}\bigr)$.
+\item \PROVED\ (F3 사용, $L_3$ 비유효) $\mathcal Q_3(\omega_0):=\{q\mid Q:\ \omega(q)\le\omega_0\}$, 같은 조건.
+ 유효 상수 $C(\eps)<\infty$, $p_*(\eps)$와 $L_3(A,\eps,\delta,\eta)$가 있어 $L\ge L_3$이면 $\mathcal S(\mathcal Q_3(\omega_0))\le C(\eps)$이고,
+ $z\ge p_*(\eps)$에 대해 소인수 $>z$를 갖는 $q\in\mathcal Q_3(\omega_0)$의 기여는 $\le C(\eps)\bigl(5(z-1)^{-0.3}+36L^{-c_1/2}\bigr)$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$|\mu_i|\le1$이므로 처음 $s_0$개 window만 남겨도 상계가 된다; $s=s_0$로 둔다.
+
+(a) $q\in\mathcal Q_1$이면 따름정리~\ref{CMM:cor-large} ($\beta_L$은 $\omega$에 대해 증가)로 모든 $i$, $a$에서
+$|\mu_i(a/q)|\le\prod_{p\mid q}\rho$, $\rho:=\frac{1+\gamma_L}2$. $a$의 개수는 $\varphi(q)=\prod_{p\mid q}(p-1)$이므로
+$\mathcal S\le\prod_{\sqrt L<p\le L/2}(1+p\rho^{s_0})\le\e^T$, $T:=\rho^{s_0}\sum_{p\le L/2}p$.
+$1+\gamma\le\e^\gamma$, $\gamma_L<\log2$, $s_0\ge(2+\delta)\log L/\log2$에서
+$\rho^{s_0}\le\exp(-s_0(\log2-\gamma_L))\le L^{-(2+\delta)(1-\gamma_L/\log2)}\le L^{-2-\delta/2}$.
+(F2)로 $\sum_{p\le L/2}p\le\frac L2\pi(\frac L2)\le0.3138\,L^2/\log(L/2)$. 따라서 $T\le0.3138\,L^{-\delta/2}/\log(L/2)\le1$, $\e^T-1\le2T$.
+마지막 주장은 따름정리~\ref{CMM:cor-large}의 $\beta_L(\omega_0)\to0$.
+
+(b), (c) $q\in\mathcal Q_2\cup\mathcal Q_3$, $\omega=\omega(q)\le\omega_0$이면 $\lambda(\omega)\le\lambda_0:=\frac{\log(2\omega_0\kappa_*)}{\log(L/2)}\le\frac12-\eps$이고 정리~\ref{CMM:thm-main}의
+$\beta$는 $\lambda$에 대해 증가하므로 $\beta_0(y):=\e y^{\lambda_0-1/2}+y^{\theta-1/2}+\eta_L$을 균일하게 쓸 수 있다
+($\mathcal Q_2$는 (H$_Z$-i), $\mathcal Q_3$는 $L\ge L_0(A,\eta)$에서 (H$_Z$-ii)). 따라서
+$|\mu_i(a/q)|\le\prod_{p^k\| q}\frac{v_p+1-k+\Gamma_p}{v_p+1}$, $\Gamma_p:=\frac1{p-1}+\sum_{m=1}^{v_p}\beta_0(p^m)$, 그리고
+$\varphi(p^k)\le p^k$로 $\mathcal S(\mathcal Q)\le\prod_{p\in\mathcal P}(1+F_p)$ ($\mathcal P$는 허용된 소수, $F_p$는 보조정리~\ref{CMM:lem-local}).
+$\Gamma^\flat(t):=\frac1{t-1}+\frac{\e\,t^{-\eps}}{1-t^{-\eps}}+\frac{t^{-1/6}}{1-t^{-1/6}}+0.0023$ ($t\ge2$, 감소, 극한 $0.0023$)와
+$p_*(\eps):=\min\{t\ge2:\ 4.5\,\Gamma^\flat(t')\le0.29\ \forall t'\ge t\}$로 두고, $L_2$를 다음이 성립하도록 잡는다:
+(1) $\theta_A(L)\le\frac13$; (2) $\frac{\log L}{\log2}\eta_L\le c_1/40$; (3) $\Gamma^\flat(L^{1/9})-0.0023+c_1/40\le c_1/9$; (4) $(\log L)^A\ge p_*(\eps)$, $p_*(\eps)<L^{1/9}$.
+(모두 유효; (3)은 $L^{-1/54}$ 항 때문에 천문학적으로 큰 $L$을 요구한다.) 그러면 $\sum_{m\ge1}p^{m(\lambda_0-1/2)}\le\frac{p^{-\eps}}{1-p^{-\eps}}$,
+$\sum_{m\ge1}p^{m(\theta-1/2)}\le\frac{p^{-1/6}}{1-p^{-1/6}}$, $v_p\eta_L\le c_1/40\le0.0023$에서 $\Gamma_p\le\Gamma^\flat(p)$.
+$p>L^{1/9}$에서 $\sigma\Gamma_p\le4.5(\Gamma^\flat(L^{1/9})-0.0023+c_1/40)\le c_1/2$이므로 보조정리~\ref{CMM:lem-local}(ii)로 그 부분의 합은 $\le36L^{-c_1/2}$.
+$p_*\le p\le L^{1/9}$에서 $\sigma\Gamma_p\le0.29$, $0.9\sigma\ge2.596$이므로 $F_p\le1.5p^{-1.3}$, 그리고 $\sum_{n>t}n^{-1.3}\le\int_{t-1}^\infty u^{-1.3}du=\frac{(t-1)^{-0.3}}{0.3}$.
+(b) 허용된 소수는 모두 $>(\log L)^A\ge p_*$이므로 $\mathcal S\le\exp(\sum F_p)\le\exp(5((\log L)^A-1)^{-0.3}+36L^{-c_1/2})$.
+(c) $p<p_*$에서는 (i)과 $1-0.9\sigma<0$, $\sigma\le4.5$로 $F_p\le1.5p^{4.5\Gamma^\flat(2)}$. $C_0(\eps):=\prod_{p<p_*}(1+1.5p^{4.5\Gamma^\flat(2)})$,
+$\sum_{p\ge p_*}1.5p^{-1.3}\le1.5(\zeta(1.3)-1)\le4.4$이므로 $C(\eps):=C_0(\eps)\exp(4.4+36)$로 두면 $\mathcal S\le C(\eps)$. 소인수 $>z$를 갖는 $q$의 기여는
+$\le\bigl(\sum_{p>z}F_p\bigr)\prod_{p}(1+F_p)\le C(\eps)(5(z-1)^{-0.3}+36L^{-c_1/2})$.
+\end{proof}
+
+\begin{remark}[문턱의 정확성]\label{CMM:rem-threshold}
+p1p4 따름정리~4.20(i) \PROVED\ 에 의해 $s\le(2-\delta)\log_2L$이면 소수 법만으로 $\mathcal S\to\infty$이다. 따라서 정리~\ref{CMM:thm-SS}의
+문턱 $s=(2+o(1))\log_2L$은 합성 법을 포함해도 바뀌지 않는다
+% AUD1: 이 주장은 정리 SS가 다루는 법의 족 Q_1--Q_3 (omega(q) <= omega_0) 안에서만 성립; 모든 q | Q에 대한 문턱은 OPEN.
+(단 정리~\ref{CMM:thm-SS}가 다루는 족 $\mathcal Q_1$--$\mathcal Q_3$, 즉 $\omega(q)\le\omega_0$ 안에서; 모든 $q\mid Q$를 포함한 절대합의 문턱은 \OPEN).
+또 정리~\ref{CMM:thm-asym}은 $\omega(q)=h$층의 기여가
+$\ge(1-o(1))\sum_{\omega(q)=h}\varphi(q)\prod_{p\mid q}(\frac12-\frac1{2(p-1)})^{s}$임을 보여준다 \PROVED\
+($p\mid q\Rightarrow p>\sqrt L$, $s=O(\log L)$, $h=o(L^{1/4}/(\log L)^2)$; 이때 상대오차 $E$가 $sE\to0$을 만족하므로
+$\prod_{i\le s}|\mu_i(a/q)|\ge M(q)^s(1-2E)^s=(1-o(1))M(q)^s$).
+\end{remark}
+
+\begin{corollary}[p1p4 주의~4.21, 4.27(2)(d)의 격상]\label{CMM:cor-upgrade}
+window들이 독립이어서 $\phi=\prod_i\mu_i$라 하고 $s\ge(2+\delta)\log_2L$, $\omega_0:=\lfloor(L/2)^{1/2-\eps}/(2\kappa_*)\rfloor$라 하자.
+\begin{enumerate}[label=(\arabic*)]
+\item \PROVED\ (F3 사용) p1p4 주의~4.21의 \HEUR\ 상계 $\sum_{q}\sum_a|\phi(a/q)|\lesssim\prod_p(1+(p-1)(\pi_p+\eps)^s)$는
+ $\omega(q)\le\omega_0$인 부분에서 $O_\eps(1)$로 성립한다 (정리~\ref{CMM:thm-SS}(c)). 모든 소인수 $>(\log L)^A$인 부분은 유효하게 $1+o(1)$ (정리~\ref{CMM:thm-SS}(b)).
+\item \PROVED\ (F3 사용, 정리~\ref{CMM:thm-SS}(c) 경유; 주의~4.27(2)(d)) $\sum_{q\in\mathcal Q_3(\omega_0),\,q>1}\sum_a\min(1,q/R_*)\prod_i|\mu_i(a/q)|\le C(\eps)\,L^{\omega_0}/R_*$.
+ P1top의 corpus 값 $\log R_*\ge c_RL/\log L$ 아래에서 이는 $\le C(\eps)\exp(\sqrt L\log L-c_RL/\log L)\to0$.
+ % AUD1: (F3 사용) 표기 추가. 또한 이 부분은 q <= L^{omega_0} = e^{O(sqrt L)} << R_* 이라 무게가 이미 극소인 영역이며, 4.27(2)(d)의 실질적 부분은 (3)이다.
+ (주의: 이 영역에서는 $q\le L^{\omega_0}=\e^{O(\sqrt L)}\ll R_*$라 무게 자체가 극소이다. 4.27(2)(d)의 실질적 내용은 아래 (3)에 남아 있다.)
+\item \OPEN\ $\omega(q)>\omega_0$인 $q$. 특히 무게 $\min(1,q/R_*)=1$인 영역 $q\ge R_*$는 $\omega(q)\ge\log R_*/\log L\gg L/(\log L)^2$을 강제하므로 전부 이 범위 밖에 있다.
+\end{enumerate}
+\end{corollary}
+\begin{proof}
+$q\mid Q$이면 $p^k\|q$에서 $p^k\le p^{v_p}\le L$이므로 $q\le L^{\omega(q)}$. (2)는 $\min(1,q/R_*)\le L^{\omega_0}/R_*$와 정리~\ref{CMM:thm-SS}(c),
+$\omega_0\le\sqrt L$. (3)의 부등식도 같은 사실에서 나온다. (1)은 정리~\ref{CMM:thm-SS}.
+\end{proof}
+
+%======================================================================
+\subsection{수치 검증}\label{CMM:ssec-num}
+
+\NUMERIC\ \texttt{code/cmm\_exact.py} $\to$ \texttt{out/cmm\_exact.txt}. $X\bmod q$의 법칙을 곱셈적 합성곱 DP로 \emph{정확히} 계산하고
+(지표 전개와 독립), FFT 한 번으로 모든 $b$에 대해 $\mu(b/q)$를 얻어 $\max_{(b,q)=1}|\mu(b/q)-M(q)|$를 잰다. 제곱 인수 없는 $q$에서는
+명제~\ref{CMM:prop-exact}의 상계를 정확한 $B(S)$ (지표 합으로 직접 계산)로 평가하고, $\mathrm{Re}A>N_1/2$인 원시 지표의 수(\#bad, $\eta=\frac12$)를 센다.
+window: $P_i$=pool의 처음 몇 개 소수, $t_i$는 표에 적은 값(명제의 상계는 $U$의 법칙과 무관).
+\begin{center}\small
+\begin{tabular}{rrrrrrr}
+\toprule
+$L$ & $q$ & $(|P_i|,t_i)$ & $2^\omega M(q)$ & $2^\omega\max|\mu-M|$ & $2^\omega\cdot$(명제 \ref{CMM:prop-exact} 상계) & \#bad\\
+\midrule
+60 & $29\cdot23$ & (4,2) & 0.9205 & $1.25\cdot10^{-2}$ & $9.3\cdot10^{-2}$ & 33\\
+% AUD1: #bad 225 -> 224: Re A = N_1/2 = 1.5 exactly for 2 characters (borderline, floating point); strict count is 224.
+60 & $11\cdot13\cdot17$ & (3,1) & 0.7734 & $4.34\cdot10^{-2}$ & $4.39\cdot10^{-1}$ & 224\\
+100 & $47\cdot43$ & (4,2) & 0.9550 & $1.29\cdot10^{-3}$ & $1.29\cdot10^{-2}$ & 36\\
+100 & $11\cdot47$ & (10,5) & 0.8804 & $4.0\cdot10^{-5}$ & $4.7\cdot10^{-3}$ & 4\\
+100 & $11\cdot13\cdot17$ & (3,1) & 0.7734 & $5.72\cdot10^{-3}$ & $2.79\cdot10^{-2}$ & 50\\
+200 & $97\cdot89$ & (4,2) & 0.9783 & $1.47\cdot10^{-5}$ & $7.6\cdot10^{-5}$ & 14\\
+200 & $17\cdot19\cdot23$ & (3,1) & 0.8452 & $1.46\cdot10^{-5}$ & $1.24\cdot10^{-4}$ & 10\\
+300 & $149\cdot139$ & (4,2) & 0.9860 & $8.14\cdot10^{-8}$ & $5.7\cdot10^{-7}$ & 0\\
+300 & $19\cdot149$ & (27,13) & 0.9381 & $7.0\cdot10^{-12}$ & $1.2\cdot10^{-7}$ & 0\\
+300 & $19\cdot23\cdot29$ & (3,1) & 0.8693 & $2.89\cdot10^{-7}$ & $1.05\cdot10^{-6}$ & 0\\
+1000 & $499\cdot491$ & (3,2) & 0.9960 & $<10^{-14}$ (FP) & $2.0\cdot10^{-20}$ & 0\\
+1000 & $37\cdot41\cdot43$ & (2,1) & 0.9253 & $<10^{-14}$ (FP) & $3.8\cdot10^{-20}$ & 0\\
+2000 & $997\cdot991$ & (3,2) & 0.9980 & $<10^{-13}$ (FP) & $2.4\cdot10^{-37}$ & 0\\
+2000 & $47\cdot53\cdot59$ & (2,1) & 0.9429 & $<10^{-14}$ (FP) & $3.8\cdot10^{-38}$ & 0\\
+\midrule
+100 & $3\cdot7\cdot11$ & (3,2) & 1.5400 & $8.1\cdot10^{-4}$ & $6.2\cdot10^{-3}$ & 0\\
+300 & $3\cdot7\cdot11$ & (3,2) & 2.3222 & $2.4\cdot10^{-9}$ & $8.9\cdot10^{-9}$ & 0\\
+% AUD1: 소수 멱 행의 명제 상계와 #bad를 AUD1 독립 코드(AUD1/code/aud1_exact.py)로 채움.
+60 & $8\cdot9\cdot5$ & (3,1) & 0.5833 & $2.18\cdot10^{-2}$ & $1.25\cdot10^{-1}$ (AUD1) & 1\\
+100 & $8\cdot9\cdot5$ & (3,1) & 1.0000 & $4.6\cdot10^{-4}$ & $1.92\cdot10^{-3}$ (AUD1) & 1\\
+300 & $8\cdot9\cdot5$ & (3,1) & 1.7824 & $<10^{-15}$ (FP) & -- & --\\
+\bottomrule
+\end{tabular}
+\end{center}
+관찰. (1) 모든 경우에서 참 오차 $\le$ 명제~\ref{CMM:prop-exact}의 상계(부동소수점 한계 위에서 비 $5.7\cdot10^{-5}$--$0.36$); 작은 소수와 소수 멱
+($3\cdot7\cdot11$, $8\cdot9\cdot5$, $9\cdot5$, $4\cdot7$)에서도 일반 주항 $M(q)=\prod_j\frac{v_j+1-k_j-1/(p_j-1)}{v_j+1}$이 성립한다.
+(2) 상대오차는 $L$과 함께 급격히 감소하며 $L\ge1000$에서는 부동소수점 해상도($\sim10^{-15}$) 아래이다(그때는 정확-$B$ 상계가 실제 크기를 준다).
+p1p4 감사(AUD1)의 $h'=2$, $L=300,1000$ 오차 $\le4.2\cdot10^{-8}$과 일치한다.
+(3) 나쁜 지표는 $L\le200$에서만 나타났고 $L\ge300$의 모든 시험에서 $0$개였다. 반면 증명된 모멘트 상계는 $L\gtrsim10^{12}$에서야 1보다 작아진다
+(주의~\ref{CMM:rem-large-num}). 즉 증명은 실제보다 매우 비관적이다.
+(4) 켤레 검사(주의~\ref{CMM:rem-conj})와 $N_1$ 하한 검사(보조정리~\ref{CMM:lem-N1})는 \texttt{out/cmm\_constants.txt}.
+(5) 보조정리~\ref{CMM:lem-local}의 부등식을 $L=10^4,\dots,10^{10}$, 여러 $\delta,\Gamma_p$에서 정확한 $F_p$로 점검: (i)의 비 $\le0.73$, (ii)의 비 $\le7.3\cdot10^{-3}$
+(\texttt{code/check\_local.py}, \texttt{out/check\_local.txt}).
+
+\begin{remark}[DESIGN S5 스케치의 검증]\label{CMM:rem-S5}
+lead 스케치(DESIGN.md S5)의 각 단계에 대한 판정.
+(1) $J=\{j:q_j\mid c_i\}$로의 조건화, 독립성: 옳다 (명제~\ref{CMM:prop-exact}; $c'$, $U$, $\mathbf e$의 독립성). $E_i$가 $q_j$를 포함할 수 없음도 옳다 ($q_j\le L/2<$ pool 소수).
+(2) Gauss 합 전개: 켤레를 넣으면 옳다(주의~\ref{CMM:rem-conj}); 이 절은 동치인 성분별 전개(보조정리~\ref{CMM:lem-fourier})를 썼다. 주 성분의 Ramanujan 합 $-1$도 옳다.
+(3) $|\mathbb E\chi(c')|\le\exp(-(N_1-\mathrm{Re}A)/4)$와 $2k$차 모멘트 식: 옳다 (보조정리~\ref{CMM:lem-good}, \ref{CMM:lem-moment}; $\eta=\frac12$).
+(4) support $S$의 오차 $\lesssim(Ck\log L)^k/\sqrt{q_S}+\sqrt{q_S}\e^{-N_1/8}$: 옳다 (명제~\ref{CMM:prop-B}).
+(5) 범위: lead의 $\omega\le cL^{1/4}/\log L$는 \emph{점근식}(상대오차 $o(1)$)의 범위로서 옳다(정리~\ref{CMM:thm-asym}); \emph{곱셈적 상계}와 singular series는 $k\le x+1$을 쓰는
+$k!$ 흡수(정리~\ref{CMM:thm-main}의 경우 (a))로 $o(\sqrt L/\log L)$ (큰 소수) / $L^{1/2-\eps}$ (일반)까지 간다. $\eps_L=O(L^{-1/4}(\log L)^2)$ 예상은 고정된 $\omega$에서
+$O(L^{-1/4}\log L\log\log L)$로 약간 개선된다 (따름정리~\ref{CMM:cor-large}).
+\end{remark}
+
+%======================================================================
+\subsection{남은 것과 정확한 장애}\label{CMM:ssec-open}
+
+\begin{proposition}[모멘트 방법의 한계]\label{CMM:prop-barrier}
+\PROVED\ (방법에 대한 진술) $d=d(S,m)$, $x=\log d/\log(L/2)>1$, $k_0:=\lceil x\rceil-1$, $k_0\kappa\le L/2$라 하자. 보조정리~\ref{CMM:lem-moment}와
+명제~\ref{CMM:prop-B}의 가중치로 얻는 상계 $\Phi_k(d):=\frac{\sqrt d}{\varphi(d)}\varphi(d)(1-\eta)^{-2k}N_1^{-k}k!\bigl(\frac{(L/2)^k}d+1\bigr)$는
+\[
+\min_{k\ge1}\Phi_k(d)\ge k_0!\,\kappa^{k_0}d^{-1/2}\ge\Bigl(\frac{(x-1)\kappa}{\e}\Bigr)^{x-1}(L/2)^{-x/2}
+\]
+를 만족한다 (둘째 부등식은 $(x-1)\kappa\ge1$일 때). 특히 $x\ge\log L+1$이고 $(x-1)\kappa\ge\e^{1.5}(L/2)^{1/2}$이면 $\min_k\Phi_k(d)\ge1$,
+즉 이 방법으로는 곱셈적 상계에 필요한 $B_{\rm bad}(S,m)<1$조차 얻을 수 없다. $\kappa\ge\log(L/2)/1.26$이므로 한계는 $x\asymp\sqrt L/\log L$ (소수 $\in(\sqrt L,L/2]$이면 $|S|\asymp\sqrt L/\log L$)에 있다.
+\end{proposition}
+\begin{proof}
+$\Phi_k(d)=k!\kappa^k\bigl(d^{-1/2}+d^{1/2}(L/2)^{-k}\bigr)$. $k\ge k_0$이면 $\Phi_k\ge k!\kappa^kd^{-1/2}\ge k_0!\kappa^{k_0}d^{-1/2}$ ($\kappa\ge L/(2N_1)\ge1$이므로 $k!\kappa^k$는 비감소).
+$1\le k<k_0$이면 $\Phi_k\ge k!\kappa^kd^{1/2}(L/2)^{-k}$이고
+$\frac{k!\kappa^kd^{1/2}(L/2)^{-k}}{k_0!\kappa^{k_0}d^{-1/2}}\ge\frac{(L/2)^{x-k}}{(k_0\kappa)^{k_0-k}}\ge\Bigl(\frac{L/2}{k_0\kappa}\Bigr)^{k_0-k}\ge1$
+($k_0!/k!\le k_0^{k_0-k}$, $x-k>k_0-k$). 둘째 부등식: $k_0!\ge(k_0/\e)^{k_0}$, $t\mapsto(t\kappa/\e)^t$는 $t\kappa\ge1$에서 비감소, $k_0\ge x-1$.
+끝으로 $x\ge\log L+1$이면 $(L/2)^{x/(2(x-1))}\le(L/2)^{1/2}\e^{\log(L/2)/(2\log L)}\le\e^{0.5}(L/2)^{1/2}$이므로
+$((x-1)\kappa/\e)^{x-1}\ge(L/2)^{x/2}$가 $(x-1)\kappa\ge\e^{1.5}(L/2)^{1/2}$에서 성립한다. $\kappa\ge L/(2N_1)$, $N_1\le\pi(L/2)\le1.26\frac{L/2}{\log(L/2)}$ (F2).
+\end{proof}
+손실의 원인은 비대각 해의 자명한 계수 $\mathcal N_k\le N_1^kk!\,(L/2)^k/d$이다; 기대값은 $\approx N_1^{2k}/\varphi(d)$로, 비 $\approx k!(2\log L)^k$만큼 작다 \HEUR.
+이를 개선하려면 $P'$의 $k$겹 곱이 법 $d\approx(L/2)^{k-O(1)}$에서 고르게 분포함을 보여야 하는데, 이는 Bombieri--Vinogradov 범위를 훨씬 넘는다 \HEUR.
+
+\begin{proposition}[나쁜 원시 지표의 존재]\label{CMM:prop-badexist}
+\PROVED\ $q=p_1\cdots p_\omega$, $p_j\in(\sqrt L,L/2]$, $L\ge9$이고 $\omega>N_1$ (즉 $\omega>\frac12(\pi(L/2)-\pi(\sqrt L))$)이면
+$\emptyset\ne S\subseteq\{1,\dots,\omega\}$와 법 $q_S$의 원시 이차 지표 $\chi$가 있어 모든 $p\in P'$에서 $\chi(p)=1$, 즉 $\mathrm{Re}A(\chi)=N_1$ (모든 $\eta$에 대해 나쁨).
+\end{proposition}
+\begin{proof}
+$\ell_j(p)\in\mathbb F_2$를 $\bigl(\frac p{p_j}\bigr)=(-1)^{\ell_j(p)}$로 정의하면 $\eps\mapsto(\sum_j\eps_j\ell_j(p))_{p\in P'}$는 $\mathbb F_2^\omega\to\mathbb F_2^{N_1}$ 선형사상이고 $\omega>N_1$이면 핵이 비자명하다.
+$\eps\ne0$이 핵에 있으면 $\chi:=\prod_{\eps_j=1}(\frac{\cdot}{p_j})$는 $S=\mathrm{supp}\,\eps$에서 각 성분이 법 $p_j$ ($\ge3$)의 비자명 지표이므로 법 $q_S$에서 원시이고 $\chi(p)=(-1)^{\sum_j\eps_j\ell_j(p)}=1$.
+\end{proof}
+
+\paragraph{\OPEN\ 목록 (정확한 장애와 함께).}
+\begin{enumerate}[label=(O\arabic*),leftmargin=2.5em]
+\item $\omega(q)>(L/2)^{1/2-\eps}/(2\kappa_*)$ (소수 $\in(\sqrt L,L/2]$이면 $\omega(q)\gg\sqrt L/\log L$)에서의 CMM; 특히 (T3)의 $h'\gg\sqrt L/\log L$ 부분. 장애: 명제~\ref{CMM:prop-barrier}.
+ $\omega(q)>N_1$에서는 나쁜 지표가 실제로 있으므로(명제~\ref{CMM:prop-badexist}) ``모든 지표가 좋다''는 경로 자체가 불가능하다.
+ % AUD1: 원문 "필요한 것은 B(S)들 사이의 상쇄"는 명제 badexist에서 따라나오지 않는다 (나쁜 이차 지표 하나의 기여는 <= q_S^{-1/2}; L=1000 예에서는 E chi(c')=0).
+ % AUD1: 절댓값 전개(명제 exact)가 원리적으로 실패하는 곳은 Parseval 하한 log q >~ 2 log tau(Q) = (log 2 + o(1)) L/log L (AUD1 감사 절, PROVED)이다.
+ 그러나 그런 지표 하나의 $B(S)$ 기여는 $\le\sqrt{q_S}/\varphi(q_S)$에 불과하므로 이것만으로 $B(S)$들 사이의 상쇄가 \emph{필요}해지지는 않는다
+ (AUD1 수치: $L=1000$, $\omega=43$의 예에서 그 지표는 작은 소수 때문에 $\mathbb E\chi(c')=0$).
+ 소인수가 모두 $(\sqrt L,L/2]$에 있는 $q$에 대해, 절댓값 전개(명제~\ref{CMM:prop-exact})의 오차 상계는 $\log q\ge2\log\tau(Q)+O(1)=(\log2+o(1))L/\log L$이면 $\ge2^{-\omega}$가 되어 원리적으로 쓸모없다(AUD1 감사 절의 Parseval 하한, \PROVED);
+ 그 영역에서는 지표들 사이의 상쇄, 즉 사실상 p1p4 보조정리~4.14의 전역 양 $Q\,\mathbb P(Y\equiv R\bmod Q)$의 제어가 필요하다 \HEUR\ (p1p4 주의~4.15, 4.30).
+ $\sqrt L/\log L\lesssim\omega\lesssim L/(\log L)^2$ 구간에서 절댓값 전개가 충분한지는 \OPEN.
+\item $L^{1/4}/\log L\lesssim\omega\lesssim\sqrt L/\log L$ (소수가 $\sqrt L$ 근처)에서의 \emph{점근식}. 상계는 증명되었으나 상대오차 $o(1)$은 단일 소수 항
+ $B(\{j\})\ll\kappa/\sqrt{p_j}$ (2차 모멘트)의 합 $\asymp\omega\log L\cdot L^{-1/4}$에 막힌다. 필요한 입력: $p\in(\sqrt L,L^{1/2+o(1)}]$의 모든 지표 $\chi\bmod p$에서
+ $\mathrm{Re}\sum_{p'\in P'}\chi(p')\le(1-\eta)N_1$ (Siegel--Walfisz 범위 밖; GRH에서는 성립할 것 \HEUR). 수치로는 $L\ge300$에서 나쁜 지표가 없었다.
+\item 정리~\ref{CMM:thm-SS}(c)의 유효판: 법 $\le(\log L)^A$에서 (F3)가 비유효. Page 정리(예외 영점 항이 음수)로 유효화할 수 있을 것으로 보이나 사용하지 않았다(recalled, unverified).
+\item 실용적 상수: 증명된 상계는 $L\gtrsim10^{12}$에서만 비자명하다(주의~\ref{CMM:rem-large-num}, \texttt{out/cmm\_constants.txt}).
+\item 크기창 조건부 window (p1p4 정의 4.4의 괄호): 지수의 독립성이 깨지므로 정리들은 적용되지 않는다.
+\item CMM은 major arc 정보일 뿐이며, p1p4 가설 RC (minor arc)와 SP1 ($H(L)\ll\log L$)은 그대로 \OPEN\ 이다. 이 절은 \#304를 풀지 않는다.
+\end{enumerate}
+
+%======================================================================
+\subsection{상태 원장}\label{CMM:ssec-ledger}
+\begin{center}\small
+\begin{longtable}{p{0.30\textwidth}p{0.44\textwidth}p{0.18\textwidth}}
+\toprule
+항목 & 내용 & 상태\\\midrule
+보조정리~\ref{CMM:lem-N1} & $L\ge444$, $\omega\le\sqrt L/\log L\Rightarrow N_1\ge L/(3\log L)$ & \PROVED\ (F2)\\
+보조정리~\ref{CMM:lem-fourier}, 주의~\ref{CMM:rem-conj} & 소수 멱 단위 위 전개, 켤레 표기 & \PROVED\ (F1) / \NUMERIC\\
+명제~\ref{CMM:prop-exact}, 따름정리~\ref{CMM:cor-mult} & 모든 $q\mid Q$에서 정확 전개와 곱셈적 형태 & \PROVED\\
+보조정리~\ref{CMM:lem-good}, \ref{CMM:lem-moment}, 명제~\ref{CMM:prop-B} & 좋은 지표, $2k$차 모멘트, $B\le\sqrt d\e^{-\eta N_1/4}+2k!\kappa^k/\sqrt d$ & \PROVED\\
+정리~\ref{CMM:thm-main} & 일반 $q\mid Q$, $2\omega\kappa_*\le\sqrt{L/2}$: 곱셈적 상계 & \PROVED\ (모든 $p_j>(\log L)^A$이면 유효; 아니면 F3)\\
+따름정리~\ref{CMM:cor-large} & $(\sqrt L,L/2]$, $\omega\log L=o(\sqrt L)$: $|\mu|\le\prod(\frac12+\eps_j)$, $\eps_j\to0$ & \PROVED\ (유효)\\
+정리~\ref{CMM:thm-asym} & 상대오차 $\le\e^{\omega/(y-1)}(4\omega\kappa_*/\sqrt y+\eta'_L)$ & \PROVED\ (유효)\\
+% AUD1: c 범위 명시 (c <= 0.156, 비자명은 c < 0.078).
+따름정리~\ref{CMM:cor-T3} & p1p4 (T3), $h'\le c\sqrt L/\log L$ ($c\le0.156$; 하한은 $c<0.078$에서 비자명) & \HEUR$\to$\PROVED\\
+보조정리~\ref{CMM:lem-local}, 정리~\ref{CMM:thm-SS}(a)(b) & singular series $=1+o(1)$ (큰 소수 / $(\log L)^A$-거친 $q$) & \PROVED\ (유효)\\
+정리~\ref{CMM:thm-SS}(c) & 모든 $q\mid Q$, $\omega(q)\le L^{1/2-\eps}$: $O_\eps(1)$ & \PROVED\ (F3)\\
+% AUD1: (1),(2)는 F3 사용; 4.27(2)(d)의 실질적 부분 (q >= R_*)은 (3) OPEN.
+따름정리~\ref{CMM:cor-upgrade} & p1p4 주의 4.21, 4.27(2)(d)의 $\omega(q)\le\omega_0$ 부분 ($q\ge R_*$ 부분은 (3) \OPEN) & \HEUR$\to$\PROVED\ (F3)\\
+명제~\ref{CMM:prop-barrier}, \ref{CMM:prop-badexist} & 모멘트 방법의 한계, $\omega>N_1$에서 나쁜 지표 존재 & \PROVED\\
+(O1)--(O6) & $\omega(q)>L^{1/2-\eps}$, 중간 범위 점근식, 유효성, 상수, 크기창, RC/SP1 & \OPEN\\
+\S\ref{CMM:ssec-num} & $\omega=2,3$, $L\le2000$ 정확 계산 & \NUMERIC\\
+\bottomrule
+\end{longtable}
+\end{center}

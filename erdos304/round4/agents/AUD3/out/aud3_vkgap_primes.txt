@@ -1,0 +1,36 @@
+--- L=10000 M=560 theta_P/L=0.4984 M logL/L=0.5158
+  Var_P(log p)=0.03937; v0=0.0059
+  |A(1)|/M=0.98043 (|F(1)|=0.980572)
+  min_(0,pi/log2] (M-|A|)/(tau^2 M) = 0.01736  vs (2/pi^2)Var = 0.00798
+  [4,2000.0] step 0.005: min sum(1-cos)/M = 0.3159 at tau=4.230; certified lower bound = 0.2937 (>1/15=0.0667: True)
+  max |A|/M on grid = 0.7143 at tau=4.000; 3/sqrt(17)=0.7276
+  smoothed: W(0)/L=0.4505 (tilde w(1)=0.45); max|W(tau)|/L=0.3437 (<= |tilde w(1+i tau)|+eps; bound 0.4138)
+  smoothed minorant (W(0)-Re W)/(M log L): min=0.2295 (>=1/15 needed asymptotically)
+  lattice tau=2pi/logL=0.6822: 1-|A|/M=0.00914, 0.0196 tau^2=0.00912
+  time 25.5s
+--- L=100000 M=4459 theta_P/L=0.4995 M logL/L=0.5134
+  Var_P(log p)=0.03932; v0=0.0059
+  |A(1)|/M=0.98046 (|F(1)|=0.980572)
+  min_(0,pi/log2] (M-|A|)/(tau^2 M) = 0.01732  vs (2/pi^2)Var = 0.00797
+  [4,600.0] step 0.01: min sum(1-cos)/M = 0.3493 at tau=4.480; certified lower bound = 0.2933 (>1/15=0.0667: True)
+  max |A|/M on grid = 0.7149 at tau=4.000; 3/sqrt(17)=0.7276
+  smoothed: W(0)/L=0.4499 (tilde w(1)=0.45); max|W(tau)|/L=0.3441 (<= |tilde w(1+i tau)|+eps; bound 0.4138)
+  smoothed minorant (W(0)-Re W)/(M log L): min=0.2533 (>=1/15 needed asymptotically)
+  lattice tau=2pi/logL=0.5458: 1-|A|/M=0.00585, 0.0196 tau^2=0.00584
+  time 28.7s
+--- L=1000000 M=36960 theta_P/L=0.4992 M logL/L=0.5106
+  Var_P(log p)=0.03916; v0=0.0059
+  |A(1)|/M=0.98054 (|F(1)|=0.980572)
+  min_(0,pi/log2] (M-|A|)/(tau^2 M) = 0.01725  vs (2/pi^2)Var = 0.00794
+  [4,60.0] step 0.002: min sum(1-cos)/M = 0.3079 at tau=4.184; certified lower bound = 0.2944 (>1/15=0.0667: True)
+  max |A|/M on grid = 0.7160 at tau=4.000; 3/sqrt(17)=0.7276
+  smoothed: W(0)/L=0.4495 (tilde w(1)=0.45); max|W(tau)|/L=0.3443 (<= |tilde w(1+i tau)|+eps; bound 0.4138)
+  smoothed minorant (W(0)-Re W)/(M log L): min=0.2236 (>=1/15 needed asymptotically)
+  lattice tau=2pi/logL=0.4548: 1-|A|/M=0.00404, 0.0196 tau^2=0.00405
+  time 114.1s
+--- cofactor lemma: max consecutive-divisor ratio of Q_y = Lam_L / prod_{y/2<p<=y} p
+  156 (L,y) cases, y in [4,L]: max ratio = 2.0  (<=2 required)
+--- max consecutive log-gap of divisors of Lam_L with log d in [0.25 logLam, 0.75 logLam]
+  L=19 tau=960 1/G_half=16.4
+  L=29 tau=7680 1/G_half=56.5
+  L=43 tau=147456 1/G_half=411.8

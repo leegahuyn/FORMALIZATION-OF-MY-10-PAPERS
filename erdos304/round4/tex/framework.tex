@@ -1,0 +1,32 @@
+\section{문제, 이전 상태, 그리고 Round~4의 설계}\label{LEAD:framework}
+
+\subsection{문제와 기호}
+$1\le a<b$에 대해 $N(a,b)$는 $a/b=1/n_1+\cdots+1/n_k$ ($n_i$ 서로 다름)를 만족하는 최소의 $k$이고, $N(b)=\max_{1\le a<b}N(a,b)$이다. Erdős–Graham 문제 \#304는 $N(b)\ll\log\log b$인가를 묻는다. 알려진 결과는
+\[
+\log\log b\ \ll\ N(b)\ \ll\ \sqrt{\log b}
+\]
+이다(하한 Erdős 1950, 상한 Vose 1985). 2026년 9월 25일의 웹 검색에서 이 문제는 여전히 미해결로 기록되어 있다 \EXT{}(검색 스니펫 확인; erdosproblems.com 본문은 이 환경에서 차단되어 직접 열람하지 못함).
+
+$\Lam_L=\lcm(1,\dots,L)$, $\log\Lam_L=\psi(L)=(1+o(1))L$, $D^*_L$을 $\Lam_L$의 진약수 집합, $g_L(a)$를 $a$를 서로 다른 진약수의 합으로 쓰는 최소 항수, $H(L)=\max_{0\le a<\Lam_L}g_L(a)$로 둔다. 풀(pool) $P=\{p\ \text{소수}: L/2<p\le L\}$, $M=|P|\sim L/(2\log L)$이고, $Q=\Lam_L/\prod_{p\in P}p$라 하면 모든 약수는 $c\,U(E)$ ($c\mid Q$, $E\subseteq P$, $U(E)=\prod_{p\in E}p$)로 유일하게 쓰인다.
+
+\subsection{이전 라운드까지의 상태 (코퍼스 요약)}
+사용자가 제공한 두 문서(2026-09-24 P1--P4 다중 에이전트 최종 보고서 76쪽, 2026-09-25 Baker--Matveev 연구기록 74쪽)를 전부 읽고 다음을 확인하였다. 쪽/행 번호는 추출 텍스트 \texttt{corpus/*.txt}의 행 번호이다.
+\begin{itemize}[leftmargin=1.5em]
+\item \PROVED{} 전달정리: $b\le\Lam_L\Rightarrow N(a,b)\le 2H(L)$. 따라서 $H(L)\ll\log L$이면 \#304가 성립한다 (P1--P4 5752--5819행).
+\item \PROVED{} 중복 제거 정리: $\Lam_L$의 약수 합에서는 반복을 허용한 최소 항수와 서로 다른 항의 최소 항수가 같다 (Baker 461--499행). 본 라운드에서 독립적으로 다시 증명하였다(STRUCT 절).
+\item \PROVED{} 고전적 상계 $H(L)\le\pi^*(L)\sim L/\log L$, 엔트로피 하한 $H(L)\ge(1/\log2-o(1))\log L$, 작은 잔차 정리($\exp(c(\log L)^2)$까지 $O(\log L)$항), 탐욕 장벽 $(1-o(1))\log L\log\log L$, 조건부 cascade 종결.
+\item \COND{문헌 정리(Drappeau--Shao, Harper)} $H(L)\ll L^{1-\delta}$ (Baker 12--13장).
+\item \OPEN{} 남은 단 하나의 핵심: $H(L)\ll\log L$ (SP1). 이는 Erdős 문제 \#18의 첫 질문(실용수 $m$에 대해 $h(m)<(\log\log m)^{O(1)}$가 무한히 많은가, 상금 \$250)을 강한 형태로 함의한다.
+\end{itemize}
+
+\subsection{Round~4의 설계}
+Round~4는 SP1의 증명을 약속하지 않는다. 목표는 (i) SP1을 향한 가장 강한 \emph{무조건적} 새 정리, (ii) 어떤 산술적 명제가 어떤 상계를 주는지 정확히 고정하는 \emph{조건부 사다리}, (iii) 정확 계산의 확장이다. 공통 틀(\texttt{BRIEF.md})과 설계(\texttt{DESIGN.md})에서 리드는 다음 구조적 관찰을 제시하고 각 에이전트에게 검증을 맡겼다.
+\begin{enumerate}[label=S\arabic*., leftmargin=2.2em]
+\item 중복 제거 정리 $\Rightarrow$ 다중집합(합집합) 정식화 $H(L)=\min\{k:k(D_L^*\cup\{0\})\supseteq[0,\Lam_L)\}$. cascade의 서로소 조건, Newton 보정, 라벨 분리가 모두 불필요해진다.
+\item 블록(묶음 혼합진법) 체계의 일반 정리와, 기하적 블록에 대한 $(\log L)^2$ 장벽.
+\item 규모 의존 간격 $\delta(\ell)$에 대한 탐욕 사다리: $\log(1/\delta)\asymp\log L\Rightarrow L/\log L$, $\gg\ell/\log L\Rightarrow(\log L)^2$, 엔트로피 수준 $\Rightarrow\log L\log\log L$.
+\item 비공명 $\Rightarrow$ 약수 간격: 독립 Bernoulli로 풀 소수를 고른 무작위 약수와 여인수 이동, Fejér 핵. Vinogradov--Korobov 영점 없는 영역으로 무조건적 간격 $\delta=\exp(-(\log L)^{3/2-\eps})$.
+\item 합성 법 혼합(CMM): $2k$차 모멘트로 나쁜 지표를 세는 방법.
+\item 매끄러운 수 경로의 정리(중복 제거로 단순화)와 Vose를 넘기 위한 정확한 문턱.
+\end{enumerate}
+에이전트 배치: VKGAP(S3--S4), CMM(S5), STRUCT(S1, S2, S3의 함의, S6, 사다리), NUM(정확 계산). 이어서 서로 다른 감사 에이전트가 모든 \PROVED{}/\REFUTED{} 항목을 처음부터 다시 유도하였다.

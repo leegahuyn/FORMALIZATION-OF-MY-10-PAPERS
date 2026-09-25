@@ -1,0 +1,436 @@
+\section{CORE: 핵심 명제 SP1에 대한 직접 공격과 방법 장벽}
+\label{CORE:sec}
+
+이 절은 남은 단 하나의 핵심 명제
+\[
+\text{SP1}\iff H(L)=h(\Lambda_L)\ll \log L
+\]
+에 대한 직접 공격(세 경로)과, 그 공격들이 멈추는 지점을 정확히 설명하는 방법 장벽 정리들을 담는다.
+결론을 먼저 적는다. \textbf{SP1은 이 절에서 증명되지 않았다} \OPEN. SP1보다 엄격히 약한 새 중간 단계(예: $H(L)\ll L^{1/2-c}$, 거의 모든 $a$에 대한 $O(\log L)$ 표현, 단일 top 단계의 $O(\log L)$ 피복)도 증명하지 못했다 \OPEN.
+대신 다음을 증명하였다 (모두 \PROVED, 상세는 \S\ref{CORE:ssec-ledger}의 원장):
+(i) 번역불변(위상맹) 모멘트 방법, 특히 모멘트+Montgomery–Vaughan 평균값 정리는 \emph{어떤 높이에서도} 점별 비공명을 인증할 수 없고, 참인 비공명은 높이 $e^{O(M\log(1/\eta))}$에서 끝난다(장벽 I);
+(ii) 약수의 간격/칸 개수 정보만 쓰는 논법은 해상도 $\rho$에서 $(1-o(1))L/\log(L/\rho)$보다 좋은 상계를 줄 수 없다. 따라서 p1p4 명제 5.18과 VKGAP-B는 각자의 입력에 대해 점근적으로 최적이고, SP1(및 단일 top 단계의 $O(\log L)$ 피복)은 상대 해상도 $e^{-\Theta(L/\log L)}$의 산술 정보를 필요로 한다(장벽 II);
+(iii) Fourier 증명서 장벽의 정리된 형태(점별 요구의 평균은 Shannon 개수 조건과 같고, 어려움은 균일성에 있음)와, 거의 모든 표적에는 저주파 $|\theta|\le1/(2R_*)$만 필요하다는 조대 피복 보조정리(장벽 III, 경로 c);
+(iv) SP1 $\Rightarrow$ 18번 Q1의 강한 형태, 실용수 전달 경로의 필요충분 조건 (과제문의 간격 조건 ``$\log\log M_{k+1}-\log\log M_k=O(1)$''을 ``$\log\log M_{k+1}=O(\log\log M_k)$''로 교정), 그리고 희소 수열 $L_{k+1}\le L_k^A$ 위의 SP1으로 304번이 충분함(장벽 IV);
+(v) 보조 법 $M$의 적응적 선택은 단조 극한 $N(a,b)=\lim_{L'}g_{\Lambda_{L'}}(a\Lambda_{L'}/b)$로 환원되어 평균화 메커니즘을 주지 않으며, $L\le19$에서 최악값을 전혀 줄이지 않는다(경로 b, \NUMERIC);
+(vi) 새 무조건 개수 하계: $O(\log L)$개의 약수합으로 표현되는 $a<\Lambda_L$은 $\exp((\frac12-o(1))L\log\log L/\log L)$개 이상 ($p$-진 단사성; 기존 $\exp(c(\log L)^2)$). 이것도 $\Lambda_L^{o(1)}$이므로 SP1과는 지수적 격차가 있다.
+
+\subsection{기호와 출발점}
+\label{CORE:ssec-setup}
+$\Lambda=\Lambda_L=\lcm(1,\dots,L)$, $\psi(L)=\log\Lambda_L$, $D^*_L$은 $\Lambda_L$의 진약수 전체, $\tau(\cdot)$는 약수 개수,
+$P=\{p:\ L/2<p\le L\}$, $M=|P|$이다. 유한집합 $A\subset\Z_{\ge1}$과 $k\ge1$에 대해
+$kA:=\{a_1+\dots+a_k: a_i\in A\}$ (반복 허용)로 쓰고
+\[
+\kappa(A):=\min\{k\ge 0:\ k(A\cup\{0\})\supseteq[0,\Lambda_L)\cap\Z\}\qquad(\text{없으면 }\infty)
+\]
+로 둔다. 중복 제거 정리(baker 정리 3.2; 증명의 핵심: $d$의 최소 부족 소수 $p\ge3$, $r=(p+1)/2$이면 $r\mid d$이고 $d+d=pd/r+d/r$, 제곱합이 $2(d-d/r)^2\ge2$만큼 증가)를 재확인하였다 \PROVED. 따라서
+\begin{equation}\label{CORE:eq-kappa}
+H(L)=\kappa(D^*_L).
+\end{equation}
+$g_n(x)$는 $x$를 $n$의 서로 다른 약수들의 합으로 쓸 때의 최소 항수($\infty$ 허용), $N(a,b)$, $N(b)$는 BRIEF의 기호이다.
+
+\subsection{장벽 I: 번역불변 모멘트 방법은 비공명을 증명할 수 없다}
+\label{CORE:ssec-barrier1}
+
+$P(\tau)=\sum_{p\in P}p^{i\tau}$로 두고, 비공명 $\mathrm{NR}(P,I,\eta)$를 ``모든 $\tau\in I$에서 $|P(\tau)|\le(1-\eta)M$''로 쓴다 (DESIGN S4의 $\mathrm{NR}(P,T,\eta)$는 $I=\{1\le|\tau|\le T\}$).
+$k\ge1$에 대해 $P(\tau)^k=\sum_{n\in\mathcal N_k}a_n n^{i\tau}$, 여기서 $\mathcal N_k$는 $P$의 원소 $k$개(중복 허용)의 곱 전체, $a_n\ge1$은 곱이 $n$인 순서 $k$-튜플의 수이다. $\sum_n a_n=M^k$이고 $\lambda_n:=\log n\in(k\log(L/2),k\log L]$ (길이 $\ell_k=k\log2$인 구간).
+
+\begin{lemma}[간격 합 부등식]\label{CORE:lem-spacing}
+\PROVED\ 실수 $\lambda_1<\dots<\lambda_N$ ($N\ge2$)가 길이 $\ell$인 구간에 있고 $\delta_n:=\min_{m\ne n}|\lambda_n-\lambda_m|$이면, 모든 복소수 $a_n$에 대해
+\[
+\sum_{n}\delta_n\le2\ell,\qquad \sum_n\frac{|a_n|^2}{\delta_n}\ \ge\ \frac{\bigl(\sum_n|a_n|\bigr)^2}{2\ell}.
+\]
+\end{lemma}
+\begin{proof}
+$\delta_1=\lambda_2-\lambda_1$이고 $n\ge2$에서 $\delta_n\le\lambda_n-\lambda_{n-1}$이므로 $\sum_n\delta_n\le(\lambda_2-\lambda_1)+\sum_{n=2}^N(\lambda_n-\lambda_{n-1})\le2\ell$. Cauchy–Schwarz로 $(\sum|a_n|)^2=(\sum|a_n|\delta_n^{-1/2}\cdot\delta_n^{1/2})^2\le\sum|a_n|^2\delta_n^{-1}\cdot\sum\delta_n$.
+\end{proof}
+
+\begin{lemma}[공명의 폭]\label{CORE:lem-width}
+\PROVED\ $0<\eta<1/2$, $h:=\eta/\log L$. $|P(\tau_1)|\ge(1-\eta)M$이면 $|\tau-\tau_1|\le h$인 모든 $\tau$에서 $|P(\tau)|\ge(1-2\eta)M$이다. 특히 ($\tau_1=0$) $|\tau|\le h$에서 $|P(\tau)|\ge(1-\eta)M$.
+\end{lemma}
+\begin{proof}
+$|P'(\tau)|=|\sum_p (\log p)p^{i\tau}|\le M\log L$이므로 $|P(\tau)-P(\tau_1)|\le hM\log L=\eta M$. $\tau_1=0$이면 $P(0)=M$이고 같은 계산으로 $|P(\tau)|\ge M-\eta M$.
+\end{proof}
+
+\emph{증명서의 형태.} 구간 $[T_0,T_0+T]$에서 $\mathrm{NR}(P,[T_0+h,T_0+T-h],\eta)$를 모멘트로 증명하는 표준 경로는 다음이다:
+Chebyshev로 $\mathrm{meas}\{\tau\in[T_0,T_0+T]:|P(\tau)|\ge(1-2\eta)M\}\le((1-2\eta)M)^{-2k}\int_{T_0}^{T_0+T}|P|^{2k}$를 얻고, 이 측도가 $2h$보다 작으면 보조정리~\ref{CORE:lem-width}에 의해 $[T_0+h,T_0+T-h]$에 $|P|\ge(1-\eta)M$인 점이 없다. 적분은 평균값 정리로 누른다.
+
+\begin{theorem}[외부 입력: Montgomery–Vaughan 평균값 정리]\label{CORE:ext-MV}
+\EXT\ 서로 다른 실수 $\lambda_n$과 $\sum|a_n|^2\delta_n^{-1}<\infty$인 복소수 $a_n$에 대해
+$\int_{T_0}^{T_0+T}|\sum_na_ne^{i\lambda_n t}|^2dt=\sum_n|a_n|^2(T+C_0\theta_n\delta_n^{-1})$, $|\theta_n|\le1$, $C_0>0$는 절대상수
+(H.~L.~Montgomery, R.~C.~Vaughan, \emph{Hilbert's inequality}, J.~London Math.~Soc.~(2) 8 (1974); recalled, unverified; 상수값은 아래 논증에 무관하며 임의의 $C_0>0$에 대해 성립한다).
+\end{theorem}
+
+\begin{theorem}[평균값 모멘트 증명서의 불가능성]\label{CORE:thm-MV-barrier}
+\PROVED\ 모든 $k\ge1$, $0<\eta<1/2$, $T_0\in\R$, $T>0$에 대해 평균값 정리가 주는 측도 상계
+\[
+\beta_k:=((1-2\eta)M)^{-2k}\sum_{n\in\mathcal N_k}a_n^2\bigl(T+C_0\delta_n^{-1}\bigr)
+\]
+는
+\[
+\beta_k\ \ge\ \frac{C_0}{2k\log 2}(1-2\eta)^{-2k}\ \ge\ \frac{2e\,C_0}{\log 2}\,\eta
+\]
+를 만족한다. 따라서 $\log L>\log2/(eC_0)$이면 $\beta_k<2h=2\eta/\log L$은 결코 성립하지 않으며, 모멘트+평균값 경로는 \emph{어떤 $k$, 어떤 높이 $T_0$, 어떤 길이 $T$에서도} $\mathrm{NR}(P,\cdot,\eta)$를 증명하지 못한다.
+\end{theorem}
+\begin{proof}
+$|\mathcal N_k|\ge2$ ($M\ge2$). 보조정리~\ref{CORE:lem-spacing}를 $\ell=k\log2$, $a_n$에 적용하면 $\sum a_n^2\delta_n^{-1}\ge M^{2k}/(2k\log2)$이므로 첫 부등식. $-\log(1-x)\ge x$에서 $(1-2\eta)^{-2k}\ge e^{4\eta k}$이고, $x=4\eta k>0$에 대해 $e^{4\eta k}/k=4\eta\,e^x/x\ge4e\eta$ ($e^x/x\ge e$). 따라서 $\beta_k\ge C_0\cdot4e\eta/(2\log 2)$. 마지막 주장은 $(2eC_0/\log2)\eta\ge2\eta/\log L\iff\log L\ge\log2/(eC_0)$.
+\end{proof}
+
+\begin{theorem}[번역불변 상계의 일반 장벽]\label{CORE:thm-TI-barrier}
+\PROVED\ $\mathfrak B_k(T)$가 $\sup_{T_0\in\R}\int_{T_0}^{T_0+T}|P(\tau)|^{2k}d\tau$의 임의의 상계라 하자 (예: $(|a_n|),(\lambda_n),T$에만 의존하는 모든 상계 --- 평균값 정리, 대체(large sieve)형, Gallagher/Sobolev형 등; 위상 $a_n\mapsto a_n n^{-iT_0}$는 $\tau$의 평행이동이므로 이런 상계는 자동으로 $T_0$에 균일하다). 그러면 $T\ge 2h$일 때
+\[
+\frac{\mathfrak B_k(T)}{((1-2\eta)M)^{2k}}\ \ge\ 2h\Bigl(\frac{1-\eta}{1-2\eta}\Bigr)^{2k}\ >\ 2h=\frac{2\eta}{\log L}.
+\]
+즉 번역불변 모멘트 상계는 인증 문턱 $2h$를 결코 밑돌지 않는다.
+\end{theorem}
+\begin{proof}
+$\mathfrak B_k(T)\ge\int_{-T/2}^{T/2}|P|^{2k}\ge\int_{-h}^{h}|P|^{2k}\ge2h((1-\eta)M)^{2k}$ (보조정리~\ref{CORE:lem-width}, $\tau_1=0$).
+\end{proof}
+
+\begin{proposition}[Dirichlet 공명: 지수 높이의 자연 한계]\label{CORE:prop-dirichlet}
+\PROVED\ $0<\eta\le1$, $N:=\lceil\pi\sqrt{2/\eta}\,\rceil$이면 $2\pi\le\tau\le2\pi N^M$인 $\tau$가 있어 $|P(\tau)|>(1-\eta)M$. 따라서 $\mathrm{NR}(P,T,\eta)$는 $T\ge2\pi N^M=\exp(M\log(\pi\sqrt{2/\eta}+1)+O(1))$에서 거짓이다 (DESIGN S4의 주장 ``$T\ge(C/\eta)^M$에서 실패''를 $(C/\sqrt\eta)^M$으로 강화하여 확인).
+\end{proposition}
+\begin{proof}
+$j=0,1,\dots,N^M$에 대해 점 $(\{j\log p\})_{p\in P}\in[0,1)^M$을 한 변 $1/N$인 $N^M$개 상자에 넣으면 두 $j<j'$가 같은 상자에 있다. $n=j'-j\in[1,N^M]$은 모든 $p$에서 $\|n\log p\|_{\R/\Z}<1/N$. $\tau=2\pi n$이면 $\mathrm{Re}\,p^{i\tau}=\cos(2\pi\|n\log p\|)>1-2\pi^2/N^2\ge1-\eta$ ($1-\cos y\le y^2/2$)이므로 $|P(\tau)|\ge\mathrm{Re}P(\tau)>(1-\eta)M$.
+\end{proof}
+
+\begin{remark}[의미와 교정]\label{CORE:rem-barrier1}
+(1) \PROVED\ 정리~\ref{CORE:thm-TI-barrier}에 의해, $\mathrm{NR}$의 모든 증명은 $\tau=0$의 위치를 아는, 즉 위상 $p^{i\tau}$의 산술을 쓰는 비번역불변 입력을 필요로 한다. Vinogradov–Korobov 경로(VKGAP)는 명시 공식의 주항 $x^{1-i\tau}/(1-i\tau)$가 $|\tau|$에 따라 감소한다는 비번역불변 정보를 쓰므로 이 장벽에 걸리지 않는다. Baker–Matveev는 비번역불변이지만 높이 $e^{cM}$에서의 절약이 지수적으로 약하다 (baker 명제 20.3, 검증 주석).
+(2) \PROVED\ 명제~\ref{CORE:prop-dirichlet}에 의해 참인 비공명 높이는 $e^{O(M\log(1/\eta))}$ 이하이다. VKGAP-C가 가정하는 $\mathrm{NR}(P,e^{cM},\eta)$는 이 한계와 양립하는 최대 규모이다.
+(3) (lead 스케치의 교정) lead는 ``$k$겹 곱의 최소 간격 $\gtrsim L^{-k}$ 때문에 평균값 방법은 $T\ge e^{c'L}$을 필요로 한다''고 적었다. 정확한 상황은 더 나쁘면서 동시에 다르다: 평균값 정리의 비대각항은 최소 간격이 아니라 $\sum a_n^2\delta_n^{-1}$로 들어가며, 이것은 보조정리~\ref{CORE:lem-spacing}에 의해 높이와 무관하게 $\ge M^{2k}/(2k\log2)$이다. 그 결과 \emph{점별} 비공명은 어떤 높이에서도 인증되지 않는다(정리~\ref{CORE:thm-MV-barrier}). 반면 ``거의 모든 $\tau$''(상대 측도) 형태에 대해 이 장벽은 $T\gtrsim e^{4\eta k}/k$ 이상의 높이를 배제하지 않는다 \HEUR.
+\end{remark}
+
+\subsection{장벽 II: 해상도 장벽 --- 간격/개수 정보만으로는 $L/\log(L/\rho)$를 넘을 수 없다}
+\label{CORE:ssec-barrier2}
+
+아래 정리들은 ``$D^*_L$에 대해 어떤 정보만 쓰는 논법이 원리적으로 얼마까지 갈 수 있는가''를 정량화한다. 형식적으로, 정보 $\mathcal I$를 쓰는 논법이 ``$H(L)\le k$''를 증명한다는 것은 그 논법이 $\mathcal I$를 만족하는 \emph{모든} 집합 $A\subset[1,\Lambda_L)$에 대해 $\kappa(A)\le k$를 증명한다는 뜻으로 읽는다. 따라서 $\mathcal I$를 만족하면서 $\kappa(A)>k$인 $A$ 하나가 그 논법의 한계를 증명한다.
+
+\begin{theorem}[간격 가설 정보의 장벽]\label{CORE:thm-GH-barrier}
+\PROVED\ $L\ge2$, $0<\delta\le1/2$, 정수 $X_0\ge2/\delta$, $k\ge1$이라 하고 $J:=\lfloor2\psi(L)/\delta\rfloor+1$로 둔다.
+$z_j:=\lfloor X_0(1-\delta/2)^{-j}\rfloor$ ($j\ge0$)와
+\[
+D':=\bigl(D^*_L\cap[1,X_0)\bigr)\ \cup\ \{z_j:\ j\ge0,\ z_j<\Lambda_L\}
+\]
+에 대해 다음이 성립한다.
+(i) $D'\cap[1,X_0)=D^*_L\cap[1,X_0)$, $D'\subset[1,\Lambda_L)$.
+(ii) 모든 실수 $x\in[X_0,\Lambda_L)$에 대해 $D'\cap[(1-\delta)x,x]\ne\emptyset$. 즉 $D'$은 p1p4 명제 5.18의 가설 $\mathrm{GH}(\delta,X_0)$를 (그보다 넓은 범위 $[X_0,\Lambda_L)$에서) 만족하고, $X_0$ 위에서 연속 원소의 비가 $\le2$이다.
+(iii) $|k(D'\cup\{0\})|\le\binom{J+k}{k}\,kX_0$.
+따라서 $\binom{J+k}{k}kX_0<\Lambda_L$이면 $\kappa(D')>k$이다.
+\end{theorem}
+\begin{proof}
+(i)은 정의. (ii) $x\in[X_0,\Lambda_L)$이 주어지면 $X_0(1-\delta/2)^{-j}\le x$인 최대의 $j\ge0$를 잡는다($j=0$은 허용). $y:=X_0(1-\delta/2)^{-j}$이면 최대성에서 $y>(1-\delta/2)x$. $z_j=\lfloor y\rfloor\le x<\Lambda_L$이고 $z_j>y-1>(1-\delta/2)x-1\ge(1-\delta)x$ ($\delta x/2\ge\delta X_0/2\ge1$). 비 $\le2$는 $\delta\le1/2$에서 따른다.
+(iii) $z_j<\Lambda_L$이면 $X_0(1-\delta/2)^{-j}<\Lambda_L$이므로 $j<\log(\Lambda_L/X_0)/(-\log(1-\delta/2))\le2\psi(L)/\delta$ ($-\log(1-u)\ge u$). 즉 쓰이는 지수는 $J$개 이하이다. $k(D'\cup\{0\})$의 원소는 $s_1+s_2$ 꼴이며, $s_1$은 크기 $m\le k$인 등비점 지수의 중복집합의 합, $s_2$는 $[1,X_0)$의 원소 $k-m$개 이하의 합이다. $s_1$의 값은 많아야 $\binom{J+k}{k}$가지(크기 $\le k$인 중복집합의 수), $s_2\in[0,k(X_0-1)]$는 많아야 $k(X_0-1)+1\le kX_0$가지.
+\end{proof}
+
+\begin{corollary}[명제 5.18의 점근적 최적성]\label{CORE:cor-GH-sharp}
+\PROVED\ $\delta=e^{-\lambda}$, $\lambda=\lambda(L)\ge\log 2$, $\log X_0=o(L)$라 하자. $\mathrm{GH}(\delta,X_0)$와 $D^*_L\cap[1,X_0)$만을 쓰는 논법이 $H(L)\le k$를 증명한다면
+\[
+k\ \ge\ \frac{\psi(L)-\log L-\log X_0}{\lambda+\log L+3}\ =\ (1-o(1))\frac{L}{\lambda+\log L}.
+\]
+한편 p1p4 명제 5.18은 같은 정보에서 $H(L)\le\log_2X_0+\psi(L)/\lambda+\log X_0/\log(L/2)+5$를 준다. 따라서 $\lambda/\log L\to\infty$이고 $\log X_0=o(L/\lambda)$이면 명제 5.18은 $(1+o(1))$배까지 최적이다.
+\end{corollary}
+\begin{proof}
+$k\ge L$이면 자명하므로 $k<L$. 큰 $L$에서 $J+k\le2\psi(L)e^\lambda+1+L\le4Le^\lambda$ (PNT의 Chebyshev 형 $\psi(L)\le1.1L$, 큰 $L$; \EXT\ textbook). $\binom{J+k}{k}\le(e(J+k)/k)^k$이므로 $\log\binom{J+k}{k}\le k(\lambda+\log L+3)$. 정리~\ref{CORE:thm-GH-barrier}의 $D'$은 두 정보를 모두 만족하므로 $\kappa(D')\le k$여야 하고, 그러면 (iii)에서 $k(\lambda+\log L+3)+\log(kX_0)\ge\psi(L)$.
+\end{proof}
+
+\begin{remark}[VKGAP-B의 최적성과 SP1이 요구하는 해상도]\label{CORE:rem-VK-sharp}
+(1) \PROVED\ VKGAP-A의 간격 정리($\delta=\exp(-(\log L)^{3/2-\eps})$, $X_0=\exp(C(\log L)^4)$)와 $X_0$ 아래의 완전한 정보만으로는 $(1-o(1))L/(\log L)^{3/2-\eps}$보다 좋은 상계가 나올 수 없다 (따름정리~\ref{CORE:cor-GH-sharp}). 즉 VKGAP-B는 그 입력에 대해 최적이다.
+(2) \PROVED\ 간격 정보로 $H(L)\le C\log L$을 얻으려면 $\lambda\ge(1-o(1))L/(C\log L)-\log L-3$, 즉 상대 해상도 $\delta\le\exp(-(1-o(1))L/(C\log L))=\exp(-(2-o(1))M/C)$가 필요하다. NR 언어로는 (해석, \HEUR) 높이 $e^{(2/C)M}$ 규모이며, 이는 명제~\ref{CORE:prop-dirichlet}의 Dirichlet 한계 $e^{O(M\log(1/\eta))}$ 안에 있다: 장벽 II는 SP1을 배제하지 않지만, SP1의 증명이 \emph{엔트로피 척도} $e^{-\Theta(L/\log L)}$에서의 약수 구조를 보아야 함을 증명한다.
+(3) \HEUR\ S3의 ``선형 엔트로피 간격'' 체제 $\log(1/\delta(\ell))\ge c\ell/\log L$에 대해 같은 계산(가변비 등비점)을 하면 개수 장벽은 $O(\log L)$만 주고 $(\log L)^2$를 주지 않는다. 따라서 S3/VKGAP-C의 $(\log L)^2$ 손실은 greedy 하강의 손실이며 정보 부족의 손실이 아닐 수 있다.
+(4) \PROVED\ 간격뿐 아니라 칸별 \emph{개수}(국소 밀도)까지 VK 해상도 $\rho=\exp(-(\log L)^{3/2-\eps})$에서 알아도 결론은 같다: 정리~\ref{CORE:thm-cell-barrier}와 따름정리~\ref{CORE:cor-cell}(a)에 의해 $(1-o(1))L/(\log L)^{3/2-\eps}$가 한계이다. 따라서 VK 입력을 약수의 국소 개수로만 쓰는 모든 논법은 VKGAP-B를 넘을 수 없고, 넘으려면 VK 높이 너머의 정보나 개수로 환원되지 않는 구조(여러 약수의 결합분포 등)가 필요하다.
+\end{remark}
+
+\begin{theorem}[칸 개수 정보의 장벽, 곱셈적 $\rho$-섭동]\label{CORE:thm-cell-barrier}
+\PROVED\ $0<\rho\le1$, $X_0\ge1$. 칸 $I_j:=[(1+\rho)^j,(1+\rho)^{j+1})\cap[X_0,\Lambda_L)\cap\Z$, $n_j:=|D^*_L\cap I_j|$, $y_j:=\min I_j$ (비어 있지 않을 때)라 하고
+\[
+D'':=\bigl(D^*_L\cap[1,X_0)\bigr)\cup\bigcup_{j:\,n_j>0}\{y_j,y_j+1,\dots,y_j+n_j-1\}
+\]
+로 둔다. 그러면 (i) $D''$과 $D^*_L$은 $[1,X_0)$에서 같고 모든 칸의 개수가 같다; 칸별 순서보존 전단사 $f:D^*_L\to D''$가 있어 $f(d)\le d<(1+\rho)f(d)$ (곱셈적 $\rho$-섭동); (ii) $J_\rho:=\#\{j:I_j\ne\emptyset\}\le\psi(L)/\log(1+\rho)+1$에 대해
+\[
+|k(D''\cup\{0\})|\ \le\ \binom{J_\rho+k}{k}\,k\,(\tau(\Lambda_L)+X_0);
+\]
+(iii) 더 강하게, 임의의 $R_*\ge1$에 대해 $|k(D''\cup\{0\})+[0,R_*)|\le\binom{J_\rho+k}{k}k(\tau(\Lambda_L)+X_0)R_*$.
+\end{theorem}
+\begin{proof}
+(i) $n_j\le|I_j|$이므로 블록 $\{y_j,\dots,y_j+n_j-1\}\subset I_j$; $f$는 $D^*_L\cap I_j$의 $i$번째 원소를 $y_j+i-1$로 보낸다. 같은 칸의 두 정수의 비는 $<1+\rho$. (ii) 원소 $s=s_1+s_2$에서 $s_2$는 $X_0$ 아래 원소들의 합으로 $[0,k(X_0-1)]$에 있고, $s_1$은 블록 원소 $m\le k$개의 합이다. 블록들의 중복집합 $\{j_1,\dots,j_m\}$을 고정하면 $s_1\in[\sum y_{j_i},\sum(y_{j_i}+n_{j_i}-1)]$, 따라서 $s$는 길이 $\le k(\tau(\Lambda_L)-1)+k(X_0-1)$인 정수 구간에 놓인다. 중복집합은 $\binom{J_\rho+k}{k}$개 이하. $J_\rho$의 상계는 $(1+\rho)^j<\Lambda_L$. (iii) 각 구간을 $R_*$만큼 늘린다.
+\end{proof}
+
+\begin{corollary}[개수 정보와 단일 top 단계]\label{CORE:cor-cell}
+\PROVED\ $\rho=e^{-\lambda}$, $\log X_0=o(L)$.
+(a) 칸 개수(해상도 $\rho$)와 $[1,X_0)$의 완전한 정보만으로 $H(L)\le k$를 증명하려면 $k\ge(1-o(1))L/(\lambda+\log L)$이어야 한다.
+(b) 같은 정보로 단일 top 단계 $\mathrm{Cov}([0,\Lambda_L)\to[0,\Lambda_L^{1-c}))$를 $k$항으로 증명하려면 $k\ge(c-o(1))L/(\lambda+\log L)$이어야 한다. 특히 $k=C\log L$개의 항으로 top 단계 하나를 처리하는 모든 증명은 상대 해상도 $\exp(-(c/C-o(1))L/\log L)$의 정보를 써야 한다.
+\end{corollary}
+\begin{proof}
+(a) $\log\tau(\Lambda_L)=(\log2+o(1))L/\log L=o(L)$ (baker 명제 1.5)이고 $\log(1+\rho)\ge\rho\log 2$ ($0<\rho\le1$)이므로 $\log\binom{J_\rho+k}{k}\le k(\lambda+\log L+3)$ (큰 $L$, $k<L$). 정리~\ref{CORE:thm-cell-barrier}(ii)에서 $\kappa(D'')\le k$이면 $k(\lambda+\log L+3)+\log(k(\tau+X_0))\ge\psi(L)$.
+(b) 덮개 명제는 $[\Lambda_L^{1-c},\Lambda_L)\subset k(A\cup\{0\})+[0,\Lambda_L^{1-c})$를 뜻하므로 (iii)에서 $k(\lambda+\log L+3)+o(L)+(1-c)\psi(L)\ge\psi(L)+\log(1-\Lambda_L^{-c})$.
+\end{proof}
+
+\begin{remark}[작은 $L$에서의 수치 점검: 장벽 II는 점근적이다]\label{CORE:rem-cluster-num}
+\NUMERIC\ $L=12$ ($\Lambda=27720$, $H(12)=6$)에서 칸 군집 집합 $D''$ (정리~\ref{CORE:thm-cell-barrier}, $X_0\in\{1,12\}$)의 $\kappa(D'')$는 $\rho=1,0.5,0.25,0.1,0.05,0.02$에 대해 $10,6,6,5,5,5$이고, 등비점 집합 $D'$ (정리~\ref{CORE:thm-GH-barrier})의 $\kappa$는 $3$–$6$이다 (\texttt{agents/CORE/code/cluster\_kappa.py}, 출력 \texttt{agents/CORE/out/cluster\_kappa\_12.txt}). 즉 작은 $L$에서는 거친 해상도($\rho=1$)에서만 $\kappa(D'')>H(L)$이고, 고운 군집(연속 정수 블록)은 오히려 피복에 유리하다. 이는 모순이 아니다: 장벽의 개수 조건 $\binom{J_\rho+k}{k}k\tau(\Lambda_L)<\Lambda_L$은 이런 $L$에서 성립하지 않으며 ($\rho=0.1$, $k=5$에서 좌변 $\approx7\cdot10^{10}$), 장벽 II는 $\log\tau(\Lambda_L)=o(L)$이 효과를 내는 점근 영역의 정리이다.
+\end{remark}
+
+\subsection{장벽 IV: 에르되시 18번과의 정확한 관계 (교정 포함)}
+\label{CORE:ssec-18}
+
+$m$이 실용적(practical)이라 함은 $0\le x\le\sigma(m)$인 모든 $x$가 $m$의 서로 다른 약수들의 합이라는 뜻이고, $h(m):=\max_{1\le x<m}g_m(x)$이다. 18번 Q1: ``$h(m)<(\log\log m)^{O(1)}$인 실용적 $m$이 무한히 많은가'' (erdosproblems.com/18, p1p4 주의 2.3 경유; 원문 미열람).
+
+\begin{proposition}[엔트로피 하한]\label{CORE:prop-h-lower}
+\PROVED\ 실용적 $m\ge3$에 대해 $m-1\le\tau(m)^{h(m)}$, 즉 $h(m)\ge\log(m-1)/\log\tau(m)$.
+\COND{Wigert: $\log\tau(m)\le(\log2+o(1))\log m/\log\log m$ (Hardy–Wright 정리 317; \EXT\ textbook)} 따라서 $h(m)\ge(1/\log2-o(1))\log\log m$ ($m\to\infty$).
+\end{proposition}
+\begin{proof}
+$1\le x<m$인 각 $x$는 크기 $\le h:=h(m)$인 진약수 부분집합의 합이므로 $m-1\le\sum_{j\le h}\binom{\tau(m)-1}{j}\le\tau(m)^h$ ($\binom{n}{j}\le n^j\le\binom hj n^j$, $\sum_j\binom hjn^j=(n+1)^h$).
+\end{proof}
+
+\begin{proposition}[SP1 $\Rightarrow$ 18번 Q1의 강한 형태]\label{CORE:prop-SP1-18}
+\PROVED\ 모든 $L\ge L_0$에서 $H(L)\le C\log L$이면, 모든 $L\ge L_0$에 대해 $m=\Lambda_L$은 실용적이고 $h(m)\le(C+o(1))\log\log m$이다. 따라서 $h(m)\ll\log\log m$인 실용적 $m$이 무한히 많다; 지수 $1$은 명제~\ref{CORE:prop-h-lower}에 의해 최적이다.
+\end{proposition}
+\begin{proof}
+$\Lambda_L$의 실용성은 p1p4 보조정리 8.3. $h(\Lambda_L)=H(L)$ (정의). PNT로 $\log\log\Lambda_L=\log\psi(L)=\log L+o(1)$.
+\end{proof}
+
+\begin{proposition}[실용수 전달]\label{CORE:prop-practical-transfer}
+\PROVED\ $M$이 실용적이고 $2\le b\le M$, $1\le a<b$이면 $N(a,b)\le2h(M)$.
+\end{proposition}
+\begin{proof}
+p1p4 정리 8.5의 증명에서 $\Lambda$를 $M$으로 바꾼다: $aM=Qb+R$, $0\le R<b$, $1\le Q\le M-1$; $Q=\sum d_i$, $R=\sum e_j$ (서로 다른 약수, $x<M$이므로 진약수)이면 $a/b=\sum1/(M/d_i)+\sum1/(bM/e_j)$이고 $M/d_i\le M<bM/e_j$ ($e_j\le R<b$).
+\end{proof}
+
+\begin{theorem}[전달 경로의 필요충분 조건]\label{CORE:thm-18-route}
+\PROVED\ (a) (필요) 실용수 집합 $\mathcal M$과 상수 $C$에 대해 모든 $b\ge b_0$에서 $2\min\{h(M):M\in\mathcal M,\ M\ge b\}\le C\log\log b$가 성립한다고 하자. 그러면 $\mathcal M_{\rm good}:=\{M\in\mathcal M: h(M)\le\frac C2\log\log M\}$은 무한집합이고(18번 Q1의 강한 형태), 충분히 큰 모든 $b$에 대해 $[b,\exp((\log b)^{A})]$에 원소를 가진다, $A:=\frac{C\log2}{2}+o(1)$. 즉 $\mathcal M_{\rm good}$의 연속 원소는 $\log\log M_{k+1}\le A\log\log M_k+o(\log\log M_k)$를 만족한다.
+(b) (충분) 실용수 $M_1<M_2<\cdots$가 $h(M_k)\le C'\log\log M_k$와 $\log\log M_{k+1}\le A\log\log M_k$ ($M_1\ge16$)를 만족하면 모든 $b>M_1$에서 $N(b)\le2C'A\log\log b$.
+(c) (교정) DESIGN/과제문의 조건 ``$\log\log M_{k+1}-\log\log M_k=O(1)$''은 충분하지만 필요하지 않다. 필요충분한 간격 조건은 $\log\log M_{k+1}=O(\log\log M_k)$, 즉 $\log_3M_{k+1}-\log_3M_k=O(1)$이다.
+\end{theorem}
+\begin{proof}
+(a) $b\ge b_0$에 대해 $M\in\mathcal M$, $M\ge b$, $2h(M)\le C\log\log b\le C\log\log M$을 택하면 $M\in\mathcal M_{\rm good}$이고 $M\to\infty$ ($b\to\infty$). 명제~\ref{CORE:prop-h-lower}로 $(1/\log2-o(1))\log\log M\le h(M)\le\frac C2\log\log b$, 따라서 $\log\log M\le A\log\log b$. 연속 원소 부등식은 $b=M_k+1$에 적용한다.
+(b) $b\in(M_k,M_{k+1}]$이면 명제~\ref{CORE:prop-practical-transfer}로 $N(b)\le2h(M_{k+1})\le2C'\log\log M_{k+1}\le2C'A\log\log M_k<2C'A\log\log b$.
+(c) (b)는 비율 조건만 쓰고, (a)는 비율 조건을 강제하지만 차이 조건은 강제하지 않는다 (예: $M_k=\Lambda_{L_k}$, $L_{k+1}=L_k^2$는 차이 조건을 어기지만 (b)를 만족).
+\end{proof}
+
+\begin{corollary}[희소한 수열 위의 SP1으로 충분]\label{CORE:cor-sparse-SP1}
+\PROVED\ $L_1<L_2<\cdots$가 $L_{k+1}\le L_k^{A}$이고 $H(L_k)\le C\log L_k$이면 $N(b)\ll_{A,C}\log\log b$. 역으로 $\Lambda$-전달 $N(b)\le2\min\{H(L):\Lambda_L\ge b\}$로 304번을 얻는 것은 이런 수열의 존재와 동치이다 (정리~\ref{CORE:thm-18-route}(a),(b)와 $\log\log\Lambda_L=\log L+o(1)$).
+\end{corollary}
+
+\begin{remark}\label{CORE:rem-18-converse}
+304번 자체가 18번 Q1을 함의하는지는 알지 못한다: $N(a,b)$는 분모가 자유로우므로 실용수의 $h$로 되돌리는 역전달이 없다 \OPEN. 따라서 정확한 진술은 ``304번을 실용수 전달로 증명하는 것은 18번 Q1의 강한 형태(밀도 조건 포함)를 증명하는 것과 같다''이다.
+\end{remark}
+
+\subsection{직접 시도 1 (경로 b): 보조 법 $M$의 적응적 선택}
+\label{CORE:ssec-routeb}
+
+p1p4 보조정리 8.2에 의해 $N(a,b)=\min_{M\ge1}g_{bM}(aM)$이다. 전달정리는 고정된 $M=\Lambda_L$을 쓴다. 표적 $(a,b)$마다 $M$을 고르는 자유가 최악 경우 피복을 평균/거의 모든 명제로 바꿀 수 있는가?
+
+\begin{lemma}[세분 단조성]\label{CORE:lem-refine}
+\PROVED\ $g_{bMM'}(aMM')\le g_{bM}(aM)$ (모든 $M,M'\ge1$).
+\end{lemma}
+\begin{proof}
+$aM=\sum d_i$ ($d_i\mid bM$ 서로 다름)이면 $aMM'=\sum M'd_i$, $M'd_i\mid bMM'$ 서로 다름.
+\end{proof}
+
+\begin{theorem}[적응적 법은 단조 극한이다]\label{CORE:thm-adaptive}
+\PROVED\ $b\ge2$, $1\le a<b$, $L_b:=\min\{L':b\mid\Lambda_{L'}\}$라 하자. 수열 $L'\mapsto g_{\Lambda_{L'}}(a\Lambda_{L'}/b)$ ($L'\ge L_b$)는 비증가이고
+\[
+N(a,b)=\lim_{L'\to\infty}g_{\Lambda_{L'}}\bigl(a\Lambda_{L'}/b\bigr)
+\]
+이다 (극한은 유한 단계에서 달성). 특히 $H^{(L')}(L):=\max_{1\le x<\Lambda_L}g_{\Lambda_{L'}}(x\Lambda_{L'}/\Lambda_L)$은 $L'\ge L$에서 비증가, $H^{(L)}(L)=H(L)$, 그리고
+\[
+N(\Lambda_L)=\lim_{L'\to\infty}H^{(L')}(L)\le H(L).
+\]
+\end{theorem}
+\begin{proof}
+비증가: $L''>L'$이면 $\Lambda_{L''}=\Lambda_{L'}M'$이므로 보조정리~\ref{CORE:lem-refine} ($M=\Lambda_{L'}/b$). 각 항 $\ge N(a,b)$ (보조정리 8.2). 역으로 최적 표현 $a/b=\sum_{i\le k}1/n_i$에서 $L'\ge\max(L_b,\max n_i)$이면 $n_i\mid\Lambda_{L'}$이고 $a\Lambda_{L'}/b=\sum\Lambda_{L'}/n_i$는 서로 다른 진약수 $k$개의 합 ($n_i\ge2$). 둘째 주장: $\{x/\Lambda_L\}$은 분모가 $\Lambda_L$을 나누는 모든 기약분수를 지나고, 유한개의 결국 상수인 정수 수열의 최댓값의 극한은 극한들의 최댓값이다.
+\end{proof}
+
+\begin{remark}[경로 b의 정확한 실패 지점]\label{CORE:rem-routeb-fail}
+\PROVED\ 보조정리~\ref{CORE:lem-refine}에 의해 허용 법들의 족은 나눗셈에 대해 유향(directed)이고 $g$는 그 위에서 단조이므로, ``여러 $M$ 중 하나는 성공한다''는 논법은 항상 ``극한 $M$ 하나에서 성공한다''와 같다. 평균화할 독립적인 선택족이 없다: 서로 다른 $M$에 대응하는 표적들은 모두 같은 유리수 $a/b$의 재척도 $x\Lambda_{L'}/\Lambda_L$이다. 따라서 $b\mid\Lambda_L$로 제한한 304번은 정확히 $N(\Lambda_L)\ll\log L$, 즉 \emph{유리 표적}에 대한 최악 경우 피복 문제이며, ``거의 모든 표적'' 정리와 탈상관(decorrelation)으로 대체할 수 없다. SP1과의 차이는 오직 $H(L)-N(\Lambda_L)\ge0$이다.
+\end{remark}
+
+\begin{proposition}[작은 $L$에서 적응적 법은 최악값을 줄이지 못한다]\label{CORE:prop-routeb-num}
+\NUMERIC\ BFS (중복 허용 합집합 반복, 중복 제거 정리로 $g$와 같음)로 $\Lambda_{L'}$, $L'\in\{2,3,4,5,7,8,9,11,13,16,17,19\}$의 모든 $g$값을 계산하였다
+(\texttt{agents/CORE/code/rescale\_bfs.c}; 출력 \texttt{agents/CORE/out/rescale\_small.txt}, \texttt{rescale\_16\_17.txt}, \texttt{rescale\_19.txt}). 모든 $2\le L\le L'\le19$에서 $H^{(L')}(L)=H(L)$이었다 (예: $H^{(19)}(17)=7$, $H^{(19)}(13)=6$). 최댓값을 갖는 $x$의 개수만 천천히 줄었다: $L=13$에서 $7553\ (L'=13)\to7332\ (16)\to7270\ (17)\to7230\ (19)$, $L=17$에서 $1484\to1392$. $H(L')$의 값 $1,2,3,4,5,5,5,6,6,6,7,7$은 기존 값과 일치한다. 부산물: $L=19$의 $g$-히스토그램 $(1,959,223572,9407122,66150469,105761609,50022238,1226590)$ (수준 $0$–$7$).
+\end{proposition}
+
+\begin{proposition}[$N(\Lambda_5)=H(5)=4$]\label{CORE:prop-N60}
+\PROVED\ $N(29,30)=4$; 따라서 $N(60)=4=H(5)$.
+\end{proposition}
+\begin{proof}
+$29/30=1/2+1/3+1/12+1/20$이고 $H(5)=4$ (\NUMERIC, 위)이므로 $N(60)\le4$. 세 항 이하가 불가능함을 보인다. 한 항은 불가능. 두 항 $1/x+1/y$ ($x<y$): $x=2$이면 $1/y=7/15$ (불가), $x\ge3$이면 합 $\le1/3+1/4<29/30$. 세 항 $x<y<z$: $1/x\ge29/90>1/4$이므로 $x\in\{2,3\}$. $x=3$이면 $1/y+1/z\le1/4+1/5<19/30$. $x=2$이면 $1/y+1/z=7/15$: $y=3$이면 $1/z=2/15$, $y=4$이면 $1/z=13/60$ (불가), $y\ge5$이면 합 $\le1/5+1/6<7/15$. 따라서 $N(29,30)=4$, $58/60=29/30$.
+\end{proof}
+
+\subsection{직접 시도 2 (경로 c): 조대 피복, 2차 모멘트, $p$-진 단사성}
+\label{CORE:ssec-routec}
+
+\begin{theorem}[조대 피복 보조정리: 저주파만 필요하다]\label{CORE:thm-coarse}
+\PROVED\ $Y$가 유한 지지의 정수값 확률변수, $Y'$은 독립 사본, $\varphi(\theta)=\mathbb E\,e(\theta Y)$, $R_*\ge1$ 정수, $\mathcal C:=\{R\in\Z:\ \mathbb P(R-R_*<Y\le R)>0\}=\mathrm{supp}\,Y+[0,R_*)$라 하자. 그러면
+\[
+|\mathcal C|\ \ge\ \frac{R_*}{\mathbb P(|Y-Y'|<R_*)}\ \ge\ \frac{2}{\pi^2\int_{|\theta|\le1/(2R_*)}|\varphi(\theta)|^2d\theta}.
+\]
+\end{theorem}
+\begin{proof}
+$m(R):=\mathbb P(R-R_*<Y\le R)$이면 $\sum_Rm(R)=R_*$이고 Cauchy–Schwarz로 $R_*^2\le|\mathcal C|\sum_Rm(R)^2$. 또
+$\sum_Rm(R)^2=\mathbb E\,\#\{R:\max(Y,Y')\le R<\min(Y,Y')+R_*\}=\mathbb E(R_*-|Y-Y'|)_+\le R_*\mathbb P(|Y-Y'|<R_*)$. 둘째 부등식: $\delta=1/(2R_*)\le1/2$, Fejér 핵 $F_\delta(x)=\delta(\sin\pi\delta x/(\pi\delta x))^2\ge0$, $\Phi_\delta(\theta)=(1-\|\theta\|/\delta)_+=\sum_nF_\delta(n)e(n\theta)$ (p1p4 보조정리 4.24). $|n|<R_*=1/(2\delta)$이면 $|\pi\delta n|\le\pi/2$이므로 $F_\delta(n)\ge4\delta/\pi^2$, 즉 $\mathbf 1_{|n|<R_*}\le(\pi^2R_*/2)F_\delta(n)$. $Z=Y-Y'$에 대해 $\mathbb EF_\delta(Z)=\int_{\T}\Phi_\delta(\theta)\,\mathbb Ee(-\theta Z)\,d\theta=\int_{\T}\Phi_\delta|\varphi|^2\le\int_{|\theta|\le\delta}|\varphi|^2$.
+\end{proof}
+
+\begin{corollary}[거의 모든 표적의 판정법]\label{CORE:cor-almostall}
+\PROVED\ $Y=X_1+\dots+X_s$ ($X_i$는 $D^*_L$ 값, 독립), $\mathrm{supp}\,Y\subset[0,\Lambda_L-R_*]$, $\eps>0$이라 하자. $\int_{|\theta|\le1/(2R_*)}|\varphi|^2\le2(1+\eps)/(\pi^2\Lambda_L)$이면 $\#\{0\le a<\Lambda_L:\ g_L(a)>s+\max_{r<R_*}g_L(r)\}\le\eps\Lambda_L$.
+\end{corollary}
+\begin{proof}
+정리~\ref{CORE:thm-coarse}로 $|\mathcal C|\ge\Lambda_L/(1+\eps)$, $\mathcal C\subset[0,\Lambda_L)$. $a\in\mathcal C$이면 어떤 실현에서 $0\le a-\sum X_i<R_*$; 따름정리 3.4형 결합(중복 제거 후)으로 $g_L(a)\le s+g_L(a-\sum X_i)$.
+\end{proof}
+
+\begin{remark}[이분법: 모든 표적 대 거의 모든 표적]\label{CORE:rem-dichotomy}
+\PROVED\ 정리~\ref{CORE:thm-coarse}는 ``거의 모든 표적''에 대해서는 원 방법의 major/minor 분할이 필요 없음을 보인다: $|\theta|\le1/(2R_*)$의 저주파만 들어간다. 반면 ``모든 표적''의 Fourier 증명서(장벽 III, p1p4 명제 4.12)는 모든 minor arc 점에서 지수적 절약을 요구한다. 그러나 저주파 조건도 쉽지 않다: $\int_{|\theta|\le1/(2R_*)}|\varphi|^2\ll1/\Lambda_L$은 조대 충돌 $\mathbb P(|Y-Y'|<R_*)\ll R_*/\Lambda_L$과 같은 크기이고, 이는 $s$겹 약수합이 상대 척도 $R_*/\Lambda_L=e^{-D_*}$에서 $L^2$-균등분포함을 뜻한다. 따름정리~\ref{CORE:cor-cell}(b)에 의해 이는 해상도 $e^{-\Theta(L/\log L)}$의 산술 정보 없이는 증명될 수 없다 (그 증명은 피복 집합의 크기만 세므로 ``거의 모든 표적''에도 그대로 적용된다). Mellin 변환으로 옮기면 $\mathbb E X_i^{i\tau}$를 높이 $\approx\Lambda_L/(sR_*)$까지 제어해야 하는데, top zone ($\log R_*\asymp L/\log L$)에서 이는 $e^{(1-o(1))L}$으로 Dirichlet 한계 $e^{O(M)}$을 넘는다 \HEUR. 저주파 경로는 공명점 $a/q$를 피하지만 aperiodic한 미세척도 균등분포라는 같은 난점으로 돌아온다.
+\end{remark}
+
+\paragraph{정확한 충돌과 국소 제약.} $R_*=1$이면 정리~\ref{CORE:thm-coarse}는 $|\mathrm{supp}\,Y|\ge1/\mathbb P(Y=Y')$이다. 임의의 $q\ge1$에 대해 $\mathbb P(Y=Y')\le\mathbb P(Y\equiv Y'\bmod q)=q^{-1}\sum_{q'\mid q}\sum_{(a,q')=1}|\varphi(a/q')|^2$ (p1p4 보조정리 4.14를 $Y-Y'$에 적용) \PROVED.
+
+\begin{theorem}[$p$-진 단사성: 서로 다른 약수합의 무조건 하계]\label{CORE:thm-padic}
+\PROVED\ $1\le s\le M$, $t:=\lfloor M/s\rfloor$, $P':=\{p:\sqrt L<p\le L/2\}$라 하자. $\Sigma_s:=\{d_1+\dots+d_s:\ d_i\in D^*_L\text{ 서로 다름}\}$이면
+\[
+|\Sigma_s|\ \ge\ \binom{|P'|}{t}^{s},\qquad\text{따라서}\quad \log\#\{0\le a<\Lambda_L:\ g_L(a)\le s\}\ \ge\ (1-o(1))\,M\log s\quad(s\to\infty,\ s=o(M)).
+\]
+특히 $s=C\log L$이면 $\#\{a<\Lambda_L: g_L(a)\le C\log L\}\ge\exp\bigl((\tfrac12-o(1))\,L\log\log L/\log L\bigr)$.
+\end{theorem}
+\begin{proof}
+$P$의 서로소인 $t$-부분집합 $E_1,\dots,E_s$를 고정하고, 각 $i$에 대해 $c_i$를 $P'$의 서로 다른 소수 $t$개의 곱으로 택한다 ($\binom{|P'|}{t}$가지; 서로 다른 $i$의 $c_i$는 소수를 공유해도 된다). $P\cup P'$의 소수는 $\Lambda_L$에서 지수 $1$이므로 $c_iU(E_i)\mid\Lambda_L$이고 $d_i:=\Lambda_L/(c_iU(E_i))$는 진약수이며, $E_i$가 서로 다르므로 $d_i$도 서로 다르다. $S=\sum_id_i$가 $(c_1,\dots,c_s)$를 결정함을 보인다. $p\in E_i$를 고정하자. $j\ne i$이면 $p\nmid c_jU(E_j)$ (\,$p\notin E_j$, $p\notin P'$)이고 $v_p(\Lambda_L)=1$이므로 $p\mid d_j$. 따라서 $S\equiv d_i=A_i/c_i\pmod p$, $A_i:=\Lambda_L/U(E_i)$. $v_p(A_i)=0$이고 $p\nmid c_i$이므로 $S\bmod p$는 $c_i\bmod p$를 결정한다. CRT로 $S\bmod U(E_i)$가 $c_i\bmod U(E_i)$를 결정하고, $c_i\le(L/2)^t<U(E_i)$이므로 $c_i$ 자체를 결정한다. 합은 $<\Lambda_L$이다 ($d_i<\Lambda_L/L^{t}$, $s<L^t$). 점근식: $|P'|=(1+o(1))M$ (PNT), $\log\binom{|P'|}{t}\ge t\log(|P'|/t)$, $st\ge M-s$.
+\end{proof}
+
+\begin{remark}[비교와 한계]\label{CORE:rem-padic}
+(1) corpus에 기록된 무조건 구성(작은 잔차 정리, p1p4 따름정리 5.8; 또는 $\sum_{p\in S}\Lambda_L/p$, $S\subset P$, $|S|=s$의 $p$-진 구별)이 주는 $O(\log L)$-표현 가능 정수의 개수는 $\exp(O((\log L)^2))$ 규모였다; 정리~\ref{CORE:thm-padic}는 이를 $\exp(cL\log\log L/\log L)$로 올린다 \PROVED. 그러나 여전히 $\Lambda_L^{o(1)}$이고 구간 피복이 아니다.
+(2) \PROVED\ (정보 상한) 이 논법이 쓰는 정보는 $S\bmod U(E_i)$ ($i\le s$)뿐이므로, 여인수 $c_i$의 선택폭을 어떻게 늘려도 구별되는 합은 $\prod_iU(E_i)\le U(P)=e^{(1/2+o(1))L}$개를 넘지 못한다.
+(3) \COND{여인수 혼합: 모든 $E\subset P$, $|E|\le 0.3L/(\log L)^2$에 대해 $Q$의 약수들이 $(\Z/U(E))^\times$의 $U(E)^{1-\eps}$개 이상의 류를 지남} 위 증명에서 $c_i$를 $Q$의 약수로 바꾸고 $t\approx0.3L/(\log L)^2$, $s\approx1.7\log L$로 두면 $|\Sigma_s|\ge\Lambda_L^{(1-\eps)/2-o(1)}$. 이 가정은 $\omega(q)\asymp L/(\log L)^2$인 합성 법에서의 CMM형(피복형) 명제로, S5의 목표 범위 $\omega\le cL^{1/4}/\log L$를 크게 넘는다 \OPEN.
+\end{remark}
+
+\begin{remark}[CMM이 이 개수에 주는 것]\label{CORE:rem-CMM-count}
+\COND{CMM, S5 목표형} (비교 자체는 \PROVED) DESIGN S5의 목표형 CMM ($\omega(q)\le cL^{1/4}/\log L$)을 가정하면 $\mathbb P(Y\equiv Y'\bmod q)\le q^{-1}\prod_{p\mid q}(1+(p-1)(\frac12+\eps_L)^{2s})$로부터 $s=O(\log L)$개 window의 합이 $\gg q\approx e^{cL^{1/4}}$개의 값을 가짐이 따른다. 이는 무조건 정리~\ref{CORE:thm-padic}의 $e^{cL\log\log L/\log L}$보다 \emph{약하다}: 개수 문제에서 $p$-진 단사성은 이미 $\log U(P)\approx L/2$ 크기의 법 정보를 무조건 쓰고 있고, 병목은 법의 크기가 아니라 여인수의 분포(주의~\ref{CORE:rem-padic}(3))이다.
+\end{remark}
+
+\begin{proposition}[2겹 덧셈 에너지]\label{CORE:prop-energy}
+\NUMERIC\ $E_2(A)=\#\{a_1+a_2=a_3+a_4\}$, 자명해 $2N^2-N$ ($N=|A|$). $A=D^*_L$에서 $(E_2-(2N^2-N))/N^2=3.13,5.11,7.13,9.14,9.94,11.84,13.66$ ($L=8,12,16,19,23,25,27$), 즉 대략 $(0.4\text{--}0.5)L$로 증가; $A=D^*_L\cap[\sqrt{\Lambda_L},\Lambda_L)$에서 $0.62,\dots,4.50$; $A=D^*_L\cap[\Lambda_L/64,\Lambda_L)$에서 $1.30\to0.41$로 감소. 중복 제거 항등식($a_1=a_2$) 기여는 $N^2$의 $2$–$15\%$ (\texttt{agents/CORE/code/energy2.c}, 출력 \texttt{agents/CORE/out/energy2.txt}).
+해석 \HEUR: 약수 집합은 Sidon형이 아니다(작은 항등식 $u_1+u_2=u_3+u_4$의 $g$배 등). 그러나 손실은 $L^{O(1)}$ 규모라서 $s=O(\log L)$겹에서 $e^{O((\log L)^2)}$로 누적될 뿐이고, 로그 척도의 개수 논법에는 무해하다. 경로 c의 진짜 장애는 에너지의 다항 손실이 아니라 아래의 지수적 격차이다.
+\end{proposition}
+
+\begin{remark}[법에 대한 평균화와 대체(large sieve)]\label{CORE:rem-largesieve}
+\HEUR\ 정리~\ref{CORE:thm-padic}의 병목(여인수 $c$의 $\bmod U(E)$ 류 수)을 $E$에 대해 평균하면 필요한 것은 $\mathbb E_E\,\#\{(c,c'):U(E)\mid c-c'\}\lesssim|\mathcal C|+|\mathcal C|^2/U(E)$, 즉 희소한 법 집합 $\mathcal Q=\{U(E):|E|=t\}$ 위의 대체 부등식이다. 고전적 대체 $\sum_{q\le Q}q\sum_b|Z(q,b)-Z/q|^2\le(N+Q^2)Z$를 그대로 쓰면 거의 전사를 얻기 위해 $|\mathcal Q|\,|\mathcal C|\gtrsim N+Q^2$가 필요한데, $|\mathcal Q|\le(eM/t)^t$, $Q\ge(L/2)^t$, 그리고 $L$-smooth 수의 밀도에 대한 Rankin 상계 $\Psi(N,L)\le N^{1/2}e^{O(\sqrt L/\log L)}$를 넣으면 $t\ge L^{0.4}$에서 이 조건은 성립할 수 없다 (계산은 직접적이나 법의 중복도 처리를 생략하였으므로 \HEUR{}로 둔다). 즉 법에 대한 평균화도 고전적 대체로는 격차를 메우지 못한다.
+\end{remark}
+
+\begin{remark}[경로 c의 정확한 실패 지점]\label{CORE:rem-routec-fail}
+거의 모든 $a$ (또는 양의 비율)에 대해 $g_L(a)\ll\log L$을 얻으려면 $s\asymp\log L$에서 $\mathbb P(|Y-Y'|<R_*)\le C R_*/\Lambda_L$이 필요하다 (정리~\ref{CORE:thm-coarse}). 현재 증명된 것은 $O(\log L)$-표현 가능한 정수가 $\exp((\frac12-o(1))L\log\log L/\log L)$개 이상이라는 개수 하계(정리~\ref{CORE:thm-padic})뿐이다. 필요량 $e^{-(1-o(1))L}$과 가용량 사이의 지수 격차는 (i) 여인수의 합성 법 혼합 (ω가 $L/(\log L)^2$까지), 또는 (ii) 상대 척도 $e^{-\Theta(L)}$의 archimedean 균등분포 중 하나를 요구한다 \OPEN. 두 번째 모멘트를 소인수분해의 유일성으로 계산하는 방법은 정확한 곱셈적 일치만 다루고, 덧셈 근접일치 $\sum(d_i-d_i')\in(-R_*,R_*)$는 계수 $\pi(L)$인 $S$-단위 방정식이다; 알려진 $S$-단위 개수 상계는 $\exp(c_n\pi(L))$ 꼴로 상수가 커서 자명한 상계보다 나쁘다 (Evertse; Evertse–Schlickewei–Schmidt; recalled, unverified) \HEUR. 합-곱 이론(Chang형 $E_h(A)\le(2h^2-h)^{hr}|A|^h$, recalled, unverified)은 ``적은 소수, 많은 원소'' 체제의 도구로, 지수가 $0/1$인 우리 체제($|A|=2^r$)에서는 자명한 상계보다 약하다 \HEUR.
+\end{remark}
+
+\subsection{직접 시도 3 (경로 a): 모듈러 단계, 자리올림, 정확한 항등식}
+\label{CORE:ssec-routea}
+
+착상: top zone의 archimedean 단계 대신 ``$a$와 합동인 짧은 합 $S$를 빼서 $a-S$를 큰 약수 $q$의 배수로 만든다''(p1p4 주의 4.30의 modular stage). 중복 제거 덕분에 이후 단계의 약수가 $S$의 약수와 겹쳐도 된다.
+
+\begin{lemma}[모듈러 단계]\label{CORE:lem-modstage}
+\PROVED\ $q\mid\Lambda_L$, $\gcd(q,\Lambda_L/q)=1$, $k\ge1$, $B\ge0$이고 모든 류 $b\bmod q$가 $k(D^*_L\cup\{0\})\cap[0,B]$의 원소를 포함한다고 하자. 그러면 $B\le a<\Lambda_L$에 대해 $g_L(a)\le k+g_{\Lambda_L/q}(c)$, 여기서 $a=S+qc$, $0\le c<\Lambda_L/q$.
+\end{lemma}
+\begin{proof}
+$S\equiv a$, $S\le B\le a$를 택하면 $a-S=qc$. $c=\sum e_j$ ($e_j\mid\Lambda_L/q$ 서로 다름)이면 $qe_j\mid\Lambda_L$이고, 두 표현을 합친 뒤 중복 제거 정리를 쓴다.
+\end{proof}
+
+\begin{proposition}[자리올림은 개수 장벽을 바꾸지 않는다; 기하 모듈러 사슬의 $(\log L)^2$ 장벽]\label{CORE:prop-carry}
+(a) \PROVED\ 보조정리~\ref{CORE:lem-modstage}의 가정은 $(1+\tau(\Lambda_L))^k\ge q$를 함의한다. 더 일반적으로 사슬 $\Lambda_L=N^{(1)}$, $N^{(j+1)}=N^{(j)}/q_j$ ($q_j$는 $N^{(j)}$의 단위약수)에서 단계 $j$가 $N^{(j)}$의 약수 $K_j$개 이하의 합(자리올림 허용, 크기 제한 없음)으로 모든 류 $\bmod q_j$를 맞히려면 $(1+\tau(N^{(j)}))^{K_j}\ge q_j$.
+(b) \COND{Wigert: $\log\tau(n)\le(\log2+o(1))\log n/\log\log n$; \EXT\ textbook} $0<\theta<1$를 고정하고 $\ell_j:=\log N^{(j)}$가 $\ell_j\ge\sqrt L$인 모든 단계에서 $\ell_{j+1}\ge\theta\ell_j$ (기하 사슬)라 하자. 사슬이 $\ell\le\sqrt L$까지 내려가면
+\[
+\sum_jK_j\ \ge\ \Bigl(\frac{3f(\theta)}{8\log2}-o(1)\Bigr)(\log L)^2,\qquad f(\theta):=\frac{1-\theta}{\log(1/\theta)}.
+\]
+즉 자리올림을 허용해도 기하 사슬은 $(\log L)^2$에 머문다 (STRUCT의 블록 장벽의 모듈러판; 블록 판은 STRUCT 참조).
+\end{proposition}
+\begin{proof}
+(a) $q_j$개의 류가 서로 다른 합으로 맞혀지고, $N^{(j)}$의 약수 또는 $0$을 $K_j$번 고르는 방법은 $\le(1+\tau(N^{(j)}))^{K_j}$가지.
+(b) $\ell_j\ge\sqrt L$인 단계에서 (a)와 Wigert로 $K_j\ge(\ell_j-\ell_{j+1})/\log(1+\tau(N^{(j)}))\ge(1-o(1))(\ell_j-\ell_{j+1})\log\ell_j/(\ell_j\log2)$. $x_j:=\ell_{j+1}/\ell_j\in[\theta,1)$에서 $f$는 증가하므로 $1-x_j\ge f(\theta)\log(1/x_j)$. 또 $[\ell_{j+1},\ell_j]$에서 $\log\ell\le\log\ell_j$이므로 $\log(\ell_j/\ell_{j+1})\log\ell_j\ge\int_{\ell_{j+1}}^{\ell_j}\frac{\log\ell}{\ell}d\ell$. 합하면 $\sum K_j\ge(1-o(1))\frac{f(\theta)}{\log2}\int_{\sqrt L}^{\psi(L)}\frac{\log\ell}{\ell}d\ell=(1-o(1))\frac{f(\theta)}{2\log2}\bigl((\log\psi(L))^2-\tfrac14(\log L)^2\bigr)$ (마지막 단계가 $\sqrt L$을 가로지르는 부분은 버림). $\log\psi(L)=\log L+o(1)$.
+\end{proof}
+
+\begin{lemma}[부분곱의 군 피복: 지표 판정법]\label{CORE:lem-charcover}
+\PROVED\ $q$가 제곱인수 없고 $P''$이 $q$를 나누지 않는 서로 다른 소수 $r$개의 집합, $A(\chi):=\sum_{p\in P''}\chi(p)$라 하자. $\sum_{\chi\ne\chi_0\bmod q}\exp(-(r-\mathrm{Re}A(\chi))/4)<1$이면 모든 $b\in(\Z/q)^\times$에 대해 $\prod_{p\in E}p\equiv b$인 $E\subseteq P''$가 있다.
+\end{lemma}
+\begin{proof}
+균등 무작위 $E$에서 $\mathbb P(U(E)\equiv b)=\varphi(q)^{-1}\sum_\chi\bar\chi(b)\mathbb E\chi(U(E))$이고 $|\mathbb E\chi(U(E))|=\prod_p|1+\chi(p)|/2\le\exp(-(r-\mathrm{Re}A(\chi))/4)$ ($|(1+z)/2|^2=(1+\mathrm{Re}z)/2\le e^{-(1-\mathrm{Re}z)/2}$, $|z|=1$). 따라서 $\mathbb P\ge\varphi(q)^{-1}(1-\sum_{\chi\ne\chi_0}|\cdot|)>0$.
+\end{proof}
+
+\begin{remark}[경로 a의 정확한 실패 지점]\label{CORE:rem-routea-fail}
+(1) \PROVED\ 모듈러 단계 하나가 $\Lambda_L$의 크기를 엔트로피 한도까지 줄이려면 ($q\approx\tau(\Lambda_L)^{k(1-\eps)}$, 명제~\ref{CORE:prop-carry}) $\Lambda_L$의 모든 소수거듭제곱이 $\le L$이므로 $\omega(q)\ge\log q/\log L\asymp kL/(\log L)^2$이어야 한다. 보조정리~\ref{CORE:lem-charcover}형 판정은 \emph{모든} 비주지표 $\chi\bmod q$에서 $\mathrm{Re}A(\chi)\le r-4\log\varphi(q)-O(1)$을 요구한다: 이는 $\omega(q)\asymp L/(\log L)^2$에서의 ``모든 지표'' CMM으로, S5의 목표(대부분의 지표, $\omega\le cL^{1/4}/\log L$)를 크게 넘는다 \OPEN.
+(2) \PROVED\ (모멘트는 동어반복) $2k$차 모멘트는 나쁜 지표 수를 $(\varphi(q)C_k(q)-r^{2k})/(\beta r)^{2k}$로 누르며, $C_k(q)=\#\{\prod_{i\le k}p_i\equiv\prod_{i\le k}p_i'\bmod q\}$이다. 이 값이 $<1$이라는 것은 직교성에 의해 $\sum_{\chi\ne\chi_0}|A(\chi)|^{2k}<(\beta r)^{2k}$, 즉 $k$겹 소수곱이 $\bmod q$에서 상대오차 $\beta^{2k}$로 $L^2$-균등분포한다는 것과 동치이다. 대각해 $C_k(q)\ge r(r-1)\cdots(r-k+1)$ 때문에 $\varphi(q)\lesssim 2r^k$ ($k\ge\log q/\log r$)가 필요하며, $q>L^k$이면 합동이 등식이 되어 불가능하다. 즉 모멘트 방법은 필요한 혼합을 재진술할 뿐 증명하지 않는다.
+(3) \COND{Wigert} 모듈러 단계를 사슬로 이으면 매 단계가 소수를 소모하고, 비율 고정 사슬은 $(\log L)^2$에 머문다 (명제~\ref{CORE:prop-carry}(b)). 따라서 모듈러 단계는 $O(1)$번만 전력으로 쓸 수 있고, 나머지는 소수를 소모하지 않는 archimedean 단계여야 한다.
+(4) \HEUR\ 정확한 이집트 분수 항등식($1=\frac12+\frac13+\frac16$, $d+d=pd/r+d/r$ 등)은 표현을 바꿀 뿐 도달 집합 $k(D^*_L\cup\{0\})$를 키우지 않는다 (그 자체로 자명); 이들을 쓰는 top 근방의 구성(예: $\Lambda-r=\Lambda/2+\Lambda/3+(\Lambda/6-r)$의 반복)은 항 2개당 $\log6$ 비트의 선형 체제만 준다. 장벽 II(따름정리~\ref{CORE:cor-cell}(b))에 의해 $O(\log L)$항의 top 단계는 해상도 $e^{-\Theta(L/\log L)}$의 정보를 써야 하는데, 항등식은 해상도 $L^{-O(1)}$의 정보이다.
+\end{remark}
+
+\subsection{장벽 III: Fourier 증명서 장벽 (정리된 형태)}
+\label{CORE:ssec-barrier3}
+
+\begin{theorem}[Fourier 증명서 장벽]\label{CORE:thm-fourier}
+\PROVED\ 독립 window $X_1,\dots,X_s$ (양의 정수값, 유한 지지, 법칙 $\mu_i$), $Y=\sum X_i$, $\varphi=\prod\widehat\mu_i$, $2\le R_*\le R$, $D_*(R)=\log(R/R_*)$, 가측 $\mathfrak M\subset\T$, $\mathfrak m=\T\setminus\mathfrak M$라 하자. p1p4 명제 4.12(c)의 Route A 증명서, 즉 $(1+\log R_*)\sup_{\mathfrak m}|\varphi|\le\frac c2e^{-D_*(R)}$ ($0<c\le1$)가 성립한다고 하자. $B:=D_*(R)+\log(2(1+\log R_*)/c)$로 두면:
+\begin{enumerate}[label=(\alph*)]
+\item (점별 요구) 모든 $\theta\in\mathfrak m$에서 $\frac1s\sum_i\log\frac1{|\widehat\mu_i(\theta)|}\ge\frac Bs$.
+\item (평균 요구 = 개수 조건) $\sum_i\min\bigl(\log\frac1{\mu_i(\min\mathrm{supp})},\log\frac1{\mu_i(\max\mathrm{supp})}\bigr)\ge(1-|\mathfrak M|)B$. 균등 window이면 $\sum_i\log|\mathrm{supp}\,\mu_i|\ge(1-|\mathfrak M|)B$.
+\item ($L^2$ 요구) $|\mathfrak M|\le\frac12e^{-\sum_iH_2(\mu_i)}$이면 $\sum_iH_2(\mu_i)\ge2B-\log2$.
+\item (top zone 수치) $\mathrm{supp}\,\mu_i\subset D^*_L$, $D_*(R)\ge(1-\eps)L$, $s=\sigma\log L$이면 (a)는 모든 $\theta\in\mathfrak m$에서 기하평균 $\prod_i|\widehat\mu_i(\theta)|^{1/s}\le\exp(-(1-\eps)L/(\sigma\log L))$을, (c)의 가정 아래 (c)는 $\sigma\ge(2/\log2)(1-\eps)(1-o(1))$을 강제한다.
+\item (공유 공명은 major arc로 가야 한다) 균등지수 window(p1p4 정의 4.4)에서 $s\log2<B-s\cdot o(1)$이면 모든 $a/p$ ($p\in(L/4,L/2]$ 소수, $p\nmid a$)는 $\mathfrak M$에 속해야 한다.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(a) $\theta\in\mathfrak m$이면 $\prod_i|\widehat\mu_i(\theta)|=|\varphi(\theta)|\le e^{-B}$.
+(b) $\widehat\mu_i(\theta)=e(n_0\theta)f(e(\theta))$, $f(z)=\sum_n\mu_i(n)z^{n-n_0}$ ($n_0=\min\mathrm{supp}$)는 $f(0)=\mu_i(n_0)\ne0$인 다항식이므로 Jensen 공식으로 $\int_{\T}\log|\widehat\mu_i|\ge\log\mu_i(n_0)$; 역다항식으로 $\ge\log\mu_i(\max\mathrm{supp})$. $\log(1/|\widehat\mu_i|)\ge0$이므로 $\sum_i\int_{\T}\log\frac1{|\widehat\mu_i|}\ge\int_{\mathfrak m}\sum_i\log\frac1{|\widehat\mu_i|}\ge|\mathfrak m|B$.
+(c) p1p4 명제 4.12(a): $e^{-\sum H_2}\le\mathrm{Coll}(\nu)\le\int_{\mathfrak M}|\varphi|^2+e^{-2B}\le|\mathfrak M|+e^{-2B}$.
+(d) (a)에 대입; (c)와 $H_2(\mu_i)\le\log|\mathrm{supp}\,\mu_i|\le\log\tau(\Lambda_L)=(\log2+o(1))L/\log L$.
+(e) p1p4 정리 4.19로 $|\widehat\mu_i(a/p)|\ge\frac12-\frac1{2(p-1)}-\frac{19}{2}(\log L)^{-1/2}$이므로 $|\varphi(a/p)|\ge2^{-s}e^{-s\cdot o(1)}>e^{-B}$; (a)에 모순이므로 $a/p\notin\mathfrak m$.
+\end{proof}
+
+\begin{remark}[장벽 III의 내용]\label{CORE:rem-fourier}
+(b)는 점별 요구 (a)가 평균적으로는 개수(Shannon) 조건과 같음을 보인다 \PROVED: 따라서 증명서의 어려움은 평균이 아니라 \emph{균일성}, 즉 $\mathfrak m$ 안에 절약이 평균보다 작은 점(공명)이 하나도 없어야 한다는 데 있다. 알려진 점별 도구의 절약은 window당 $L^{O(1)}$ (로그 척도 $O(\log L)$)이고 필요량은 $(1-\eps)L/(\sigma\log L)$이다 (p1p4 따름정리 4.23) \PROVED\ (나열된 도구에 한한 비교). 조대 피복 보조정리(정리~\ref{CORE:thm-coarse})는 거의 모든 표적에 대해서는 이 균일성 요구 자체가 사라짐을 보이지만, 대신 저주파의 미세척도 균등분포가 필요하다 (주의~\ref{CORE:rem-dichotomy}).
+\end{remark}
+
+\subsection{판정: 무엇이 증명되었고 무엇이 필요한가}
+\label{CORE:ssec-verdict}
+
+\paragraph{증명되지 않은 것.} SP1 ($H(L)\ll\log L$) \OPEN. 엄격한 중간 단계 --- $H(L)\ll L^{1/2-c}$ (Vose 개선), 양의 비율 또는 거의 모든 $a<\Lambda_L$에 대한 $g_L(a)\ll\log L$, 단일 top 단계 $[0,\Lambda_L)\to[0,\Lambda_L^{1-c})$의 $O(\log L)$항 피복 --- 모두 \OPEN. 세 경로는 각각 다음 부등식에서 멈춘다.
+\begin{itemize}
+\item 경로 b (적응적 $M$): 평균화할 독립적 선택이 없다 (정리~\ref{CORE:thm-adaptive}, 주의~\ref{CORE:rem-routeb-fail}). 남는 것은 유리 표적에 대한 최악 경우 $N(\Lambda_L)\ll\log L$이며, $L\le19$에서 $N$-상계 $H^{(L')}(L)$은 $H(L)$에서 전혀 내려가지 않는다 \NUMERIC.
+\item 경로 c (2차 모멘트): 필요 $\mathbb P(|Y-Y'|<R_*)\le CR_*/\Lambda_L$ (즉 $e^{-(1-o(1))L}$ 규모의 조대 충돌), 가용 $O(\log L)$-표현 가능 정수 $\ge\exp((\frac12-o(1))L\log\log L/\log L)$ (정리~\ref{CORE:thm-padic}); 격차는 여인수의 합성 법 혼합($\omega\asymp L/(\log L)^2$) 또는 상대척도 $e^{-\Theta(L)}$ archimedean 균등분포이다.
+\item 경로 a (모듈러 단계): 필요 ``모든 지표'' CMM ($\omega(q)\gtrsim L/(\log L)^2$), 가용 소수 법 공유공명(p1p4 정리 4.19)과 S5 범위; 사슬은 소수를 소모하여 $(\log L)^2$에 머문다.
+\end{itemize}
+
+\paragraph{필요한 새로운 수학의 가장 날카로운 형태.} 장벽 I–III을 합치면, SP1의 증명은 다음 세 조건을 동시에 만족하는 입력을 가져야 한다.
+\begin{enumerate}[label=(N\arabic*)]
+\item \PROVED\ (해상도) 상대 척도 $\exp(-(1-o(1))L/(C\log L))$ 이하에서의 약수 구조를 본다 (따름정리~\ref{CORE:cor-cell}); 간격/개수 정보만으로는 $(1-o(1))L/\log(L/\rho)$가 한계이고, 이 한계는 명제 5.18과 VKGAP-B에서 이미 달성된다.
+\item \PROVED\ (비번역불변) Mellin 변수 $\tau$에서 번역불변인 모멘트 상계는 쓸 수 없다 (정리~\ref{CORE:thm-TI-barrier}); 영점 정보(VK)는 이 조건을 만족하지만 높이 $\exp((\log L)^{3/2-\eps})$에 머물고, Baker–Matveev는 지수적으로 약하며, 참인 비공명은 높이 $e^{O(M\log(1/\eta))}$를 넘지 못한다 (명제~\ref{CORE:prop-dirichlet}).
+\item \PROVED\ (균일성 또는 저주파) 모든 표적을 Fourier 증명서로 다루려면 $\mathfrak m$ 전체에서 window당 $\exp(-(1-\eps)L/(\sigma\log L))$의 \emph{균일한} 절약이 필요하다 (정리~\ref{CORE:thm-fourier}); 이를 피하는 유일한 방법으로 찾은 것은 거의 모든 표적으로 후퇴한 뒤 저주파 미세척도 균등분포 $\int_{|\theta|\le1/(2R_*)}|\varphi|^2\ll1/\Lambda_L$을 증명하는 것이다 (정리~\ref{CORE:thm-coarse}); 이것조차 \OPEN{}이며, 거의 모든 표적에서 모든 표적으로 가는 단계는 별도로 필요하다.
+\end{enumerate}
+요약하면 \HEUR: SP1은 ``$(L/2,L]$ 소수들의 $O(\log L)$겹 부분곱 합이 상대척도 $e^{-\Theta(L/\log L)}$ (단일 단계) 내지 $e^{-\Theta(L)}$ (top zone 전체)에서 균등분포한다''는 종류의, 현재 해석적 정수론의 어떤 도구(영점밀도, 대체, 합-곱, $S$-단위, Baker)도 주지 않는 정리를 요구한다. 가장 싸 보이는 다음 목표는 (i) 희소 수열 $L_{k+1}\le L_k^A$ 위의 SP1 (따름정리~\ref{CORE:cor-sparse-SP1}; 304번에는 충분), (ii) 조대 충돌 $\mathbb P(|Y-Y'|<R_*)$의 비자명 상계 (거의 모든 표적), (iii) VKGAP-C의 $(\log L)^2$을 비탐욕 단계로 $\log L\log\log L$ 이하로 낮추기 (장벽 II는 이를 배제하지 않음, 주의~\ref{CORE:rem-VK-sharp}(3)) 이다.
+
+\subsection{상태 원장 (CORE)}
+\label{CORE:ssec-ledger}
+\begin{longtable}{p{0.34\textwidth}p{0.44\textwidth}p{0.14\textwidth}}
+\toprule
+항목 & 내용 & 상태\\
+\midrule
+보조정리~\ref{CORE:lem-spacing} & $\sum|a_n|^2/\delta_n\ge(\sum|a_n|)^2/(2\ell)$ & \PROVED\\
+정리~\ref{CORE:thm-MV-barrier} & 모멘트+평균값: 어떤 높이에서도 NR 인증 불가 & \PROVED\\
+정리~\ref{CORE:thm-TI-barrier} & 번역불변 모멘트 상계 $\ge$ 인증 문턱 & \PROVED\\
+명제~\ref{CORE:prop-dirichlet} & NR은 $T\ge2\pi\lceil\pi\sqrt{2/\eta}\rceil^M$에서 거짓 (S4 주장 확인·강화) & \PROVED\\
+주의~\ref{CORE:rem-barrier1}(3) & lead의 ``$T\ge e^{c'L}$'' 교정 & \PROVED/\HEUR\\
+정리~\ref{CORE:thm-GH-barrier}, 따름정리~\ref{CORE:cor-GH-sharp} & GH 정보의 한계 $(1-o(1))L/(\lambda+\log L)$; 명제 5.18 점근 최적 & \PROVED\\
+주의~\ref{CORE:rem-VK-sharp} & VKGAP-B는 그 입력에 대해 최적; SP1은 해상도 $e^{-\Theta(M)}$ 필요 & \PROVED\ ((3)은 \HEUR)\\
+정리~\ref{CORE:thm-cell-barrier}, 따름정리~\ref{CORE:cor-cell} & 칸 개수($\rho$-섭동) 장벽, 단일 top 단계 포함 & \PROVED\\
+명제~\ref{CORE:prop-h-lower} & $h(m)\ge\log(m-1)/\log\tau(m)$; Wigert로 $(1/\log2-o(1))\log\log m$ & \PROVED/\COND{Wigert}\\
+명제~\ref{CORE:prop-SP1-18}, \ref{CORE:prop-practical-transfer} & SP1 $\Rightarrow$ 18번 Q1 강한 형태; 실용수 전달 & \PROVED\\
+정리~\ref{CORE:thm-18-route} & 전달 경로의 필요충분 조건; 간격 조건 교정 ($\log\log$ 비율) & \PROVED\\
+따름정리~\ref{CORE:cor-sparse-SP1} & $L_{k+1}\le L_k^A$ 위의 SP1으로 304번 충분 (동치) & \PROVED\\
+주의~\ref{CORE:rem-18-converse} & 304번 $\Rightarrow$ 18번? & \OPEN\\
+정리~\ref{CORE:thm-adaptive}, 주의~\ref{CORE:rem-routeb-fail} & 적응적 $M$ = 단조 극한, $N(\Lambda_L)\le H(L)$, 평균화 불가 & \PROVED\\
+명제~\ref{CORE:prop-routeb-num} & $H^{(L')}(L)=H(L)$, $2\le L\le L'\le19$ & \NUMERIC\\
+명제~\ref{CORE:prop-N60} & $N(60)=4=H(5)$ & \PROVED\\
+정리~\ref{CORE:thm-coarse}, 따름정리~\ref{CORE:cor-almostall} & 조대 피복: 저주파만 필요 & \PROVED\\
+정리~\ref{CORE:thm-padic} & $\#\{a:g_L(a)\le s\}\ge\binom{|P'|}{\lfloor M/s\rfloor}^s$ & \PROVED\\
+주의~\ref{CORE:rem-padic}(3) & 여인수 혼합 $\Rightarrow$ $\Lambda^{1/2-\eps}$개 & \COND{여인수 혼합}\\
+명제~\ref{CORE:prop-energy} & $E_2(D^*_L)$ 비자명해 $\approx(0.4\text{--}0.5)LN^2$ & \NUMERIC\\
+보조정리~\ref{CORE:lem-modstage}, 명제~\ref{CORE:prop-carry}(a), 보조정리~\ref{CORE:lem-charcover} & 모듈러 단계, 자리올림 개수, 지표 판정 & \PROVED\\
+명제~\ref{CORE:prop-carry}(b) & 기하 모듈러 사슬 $\ge(3f(\theta)/(8\log2)-o(1))(\log L)^2$ & \COND{Wigert}\\
+주의~\ref{CORE:rem-cluster-num} & $L=12$에서 군집 집합의 $\kappa$ (장벽 II는 점근적) & \NUMERIC\\
+주의~\ref{CORE:rem-largesieve} & 법 평균 + 고전적 대체로도 경로 c 격차 불가 & \HEUR\\
+정리~\ref{CORE:thm-fourier} & Fourier 증명서 장벽 (점별·평균·$L^2$·공유공명) & \PROVED\\
+SP1; $H\ll L^{1/2-c}$; 거의 모든 $a$; top 단계 $O(\log L)$ & 직접 공격 & \OPEN\\
+\bottomrule
+\end{longtable}

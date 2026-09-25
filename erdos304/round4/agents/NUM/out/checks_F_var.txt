@@ -1,0 +1,17 @@
+(iii) max_(1<=t<=2.87) |F(t)| on grid: 0.98057238 at t=1.000000; certified sup <= 0.98057391
+      |F(1)| = 0.98057238; tail bound 3/sqrt(1+2.87^2) = 0.987093
+      last t>=1 with |F(t)| >= 0.9: t = 2.2988
+      last t>=1 with |F(t)| >= 0.8: t = 3.3082
+      last t>=1 with |F(t)| >= 0.7: t = 4.1293
+(ii) PNT limit: E u = 0.306853, Var u = 0.039094, sd = 0.197722
+   L=      31 M=     5 mean u=0.29110 Var u=0.05409  pair ineq on (0,1]: True (min lhs/rhs=2.419)  |f(1)|/M=0.97313 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.97313 at t=1.000
+   L=      61 M=     8 mean u=0.29481 Var u=0.04773  pair ineq on (0,1]: True (min lhs/rhs=2.419)  |f(1)|/M=0.97632 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.97632 at t=1.000
+   L=     100 M=    10 mean u=0.32835 Var u=0.03292  pair ineq on (0,1]: True (min lhs/rhs=2.434)  |f(1)|/M=0.98363 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98363 at t=1.000
+   L=     173 M=    17 mean u=0.30499 Var u=0.04174  pair ineq on (0,1]: True (min lhs/rhs=2.427)  |f(1)|/M=0.97925 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.97925 at t=1.000
+   L=     251 M=    24 mean u=0.31507 Var u=0.04214  pair ineq on (0,1]: True (min lhs/rhs=2.426)  |f(1)|/M=0.97907 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.97907 at t=1.000
+   L=     353 M=    31 mean u=0.31474 Var u=0.04146  pair ineq on (0,1]: True (min lhs/rhs=2.426)  |f(1)|/M=0.97940 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.97940 at t=1.000
+   L=    1000 M=    73 mean u=0.30925 Var u=0.03787  pair ineq on (0,1]: True (min lhs/rhs=2.430)  |f(1)|/M=0.98118 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98118 at t=1.000
+   L=   10000 M=   560 mean u=0.30981 Var u=0.03937  pair ineq on (0,1]: True (min lhs/rhs=2.428)  |f(1)|/M=0.98043 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98043 at t=1.000
+   L=  100000 M=  4459 mean u=0.31011 Var u=0.03932  pair ineq on (0,1]: True (min lhs/rhs=2.428)  |f(1)|/M=0.98046 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98046 at t=1.000
+   L= 1000000 M= 36960 mean u=0.30994 Var u=0.03916  pair ineq on (0,1]:  (min lhs/rhs=nan)  |f(1)|/M=0.98054 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98054 at t=1.000
+   L=10000000 M=316066 mean u=0.30935 Var u=0.03917  pair ineq on (0,1]:  (min lhs/rhs=nan)  |f(1)|/M=0.98053 (|F(1)|=0.98057)  max_[1,10]|f|/M=0.98053 at t=1.000

@@ -1,0 +1,21 @@
+L=12 Lam=27720 |D*|=95 H(L)=kappa(D*)=6
+  cell-clustered X0=1 rho=1.0: |D''|=95 kappa=10
+  cell-clustered X0=1 rho=0.5: |D''|=95 kappa=6
+  cell-clustered X0=1 rho=0.25: |D''|=95 kappa=6
+  cell-clustered X0=1 rho=0.1: |D''|=95 kappa=5
+  cell-clustered X0=1 rho=0.05: |D''|=95 kappa=5
+  cell-clustered X0=1 rho=0.02: |D''|=95 kappa=5
+  cell-clustered X0=12 rho=1.0: |D''|=95 kappa=10
+  cell-clustered X0=12 rho=0.5: |D''|=95 kappa=6
+  cell-clustered X0=12 rho=0.25: |D''|=95 kappa=6
+  cell-clustered X0=12 rho=0.1: |D''|=95 kappa=5
+  cell-clustered X0=12 rho=0.05: |D''|=95 kappa=5
+  cell-clustered X0=12 rho=0.02: |D''|=95 kappa=5
+  GH-set X0=8 delta=0.5: |D'|=36 kappa=6
+  GH-set X0=8 delta=0.25: |D'|=69 kappa=4
+  GH-set X0=16 delta=0.5: |D'|=40 kappa=6
+  GH-set X0=16 delta=0.25: |D'|=70 kappa=4
+  GH-set X0=64 delta=0.5: |D'|=54 kappa=5
+  GH-set X0=64 delta=0.25: |D'|=78 kappa=4
+  GH-set X0=64 delta=0.1: |D'|=151 kappa=4
+  GH-set X0=64 delta=0.05: |D'|=272 kappa=3

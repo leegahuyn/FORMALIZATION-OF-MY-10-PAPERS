@@ -1,0 +1,8 @@
+proper divisors + 0: 1920
+|S3| by triple enumeration = 80181647  (4.0s)
+S3 vs checkpoint R_3: 0 differing bits
+a=3716552837 BFS kappa<=6:0  MITM (S3+S3) witness:0  agree
+a=3716552837 BFS kappa<=6:0  MITM (S3+S3) witness:0  agree
+a=4173048986 BFS kappa<=6:1  MITM (S3+S3) witness:1  agree
+a=4588518877 BFS kappa<=6:0  MITM (S3+S3) witness:0  agree
+samples: 22 with BFS kappa=7 (no MITM witness expected), 19 with kappa<=6; disagreements: 0
