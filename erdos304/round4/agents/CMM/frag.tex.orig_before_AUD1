@@ -27,13 +27,8 @@
  (b) \PROVED\ 모든 소인수 $>(\log L)^A$, $\omega(q)\le(L/2)^{1/2-\eps}/(2\kappa_*)$: $\Sigma=1+o(1)$;
  (c) \PROVED\ (\EXT\ SW 사용) 모든 $q\mid Q$, $\omega(q)\le(L/2)^{1/2-\eps}/(2\kappa_*)$: $\Sigma=O_{\eps,\delta}(1)$이고 $P^+(q)>z$ 부분은 $o_{z\to\infty}(1)$.
  따라서 p1p4 주의~4.21, 주의~4.27(2)(d)의 해당 부분이 \HEUR$\to$\PROVED\ (따름정리~\ref{CMM:cor-upgrade}).
- % AUD1: 4.27(2)(d)에서 격상된 것은 q <= L^{omega_0} << R_* 영역(무게 q/R_*가 이미 극히 작은 곳)뿐임을 명시.
- (단 4.27(2)(d)에서 격상된 것은 $q\le L^{\omega_0}\ll R_*$인 부분뿐이며, 무게가 $1$인 $q\ge R_*$ 부분은 아래와 같이 \OPEN\ 이다.)
 \item \OPEN\ $\omega(q)>L^{1/2-\eps}$ (특히 무게가 1인 $q\ge R_*$ 전체, $\omega(q)\gg L/(\log L)^2$). 이 방법의 한계는
  정확히 이 지점이며(명제~\ref{CMM:prop-barrier}), $\omega(q)>N_1$이면 나쁜 원시 지표가 실제로 존재한다(명제~\ref{CMM:prop-badexist}).
- % AUD1: 명제 badexist는 "모든 지표가 좋다" 경로만 막는다; 그 지표 하나의 기여는 <= q_S^{-1/2}라 모멘트 방법 자체의 장애는 아님.
- (명제~\ref{CMM:prop-badexist}는 ``모든 원시 지표가 좋다''는 경로만 막는다. 그런 나쁜 지표 하나의 기여는 $B(S)$에서 $\le\sqrt{q_S}/\varphi(q_S)$로 무시할 만하므로
- 그것만으로는 이 절의 방법의 장애가 아니다. 절댓값 전개 자체의 장애는 AUD1 감사 절의 Parseval 하한을 보라.)
 \item \NUMERIC\ 정확 DP+FFT로 $\omega=2,3$, $L\le2000$에서 주항 공식 확인(오차가 증명된 상계 이하; $L\ge1000$에서는 부동소수점 한계 이하);
  켤레 없는 지표 전개는 거짓임을 재확인(\S\ref{CMM:ssec-num}).
 \end{itemize}
@@ -336,10 +331,7 @@ $\le2\sum_{r\ge1}(\omega\kappa_*/\sqrt y)^r\le4\omega\kappa_*/\sqrt y$ (비 $\le
 \Bigl|\mu_i(a/Q')-\prod_{j=1}^{h'}\Bigl(\frac12-\frac1{2(q_j-1)}\Bigr)\Bigr|\le2^{-h'}\,\e^{3h'/(L-3)}\Bigl(\frac{4\sqrt3\,h'\kappa_*}{\sqrt L}+\eta'_L\Bigr).
 \]
 따라서 $h'=o(\sqrt L/\log L)$이면 $|\mu_i(a/Q')|\ge2^{-h'}(1-o(1))$이고, $h'\le c\sqrt L/\log L$이면 ($\eta=0.1$, $\kappa_*=1.852\log L$)
-$|\mu_i(a/Q')|\ge2^{-h'}(1-13c-o(1))$
-% AUD1: c의 범위 명시. 가정 h'kappa_* <= sqrt(L/3)/2 는 c <= 1/(2 sqrt3 * 1.852) = 0.156을 강제하고, 하한은 c < 1/12.83 = 0.078에서만 비자명.
-(가정 $h'\kappa_*\le\frac12\sqrt{L/3}$ 때문에 $c\le1/(2\sqrt3\cdot1.852)\approx0.156$이어야 하고, 이 하한이 비자명한 것은 $c<1/12.83\approx0.078$일 때이다)
-: 이 점들은 모든 window의 공유 공명점이며
+$|\mu_i(a/Q')|\ge2^{-h'}(1-13c-o(1))$: 이 점들은 모든 window의 공유 공명점이며
 minor arc 도구가 아니다. p1p4 명제 4.22 (T3)의 ``$h'\ge2$ 공유 공명'' 부분과 주의~4.21의 해당 부분은 이 범위에서 \HEUR\ $\to$ \PROVED.
 \end{corollary}
 \begin{proof}
@@ -393,9 +385,7 @@ $1$을 포함하는 법의 집합 $\mathcal Q$ ($q\mid Q$)에 대해 $\mathcal S
 \item \PROVED\ (유효) $\mathcal Q_1(\omega_0):=\{q\ \text{제곱 인수 없음}:\ p\mid q\Rightarrow\sqrt L<p\le L/2,\ \omega(q)\le\omega_0\}$.
  $L\ge444$, $\omega_0\kappa_*\le(L/2)^{1/2}$, $\gamma_L:=\frac1{\sqrt L-1}+\beta_L(\omega_0)\le\frac{\delta\log2}{2(2+\delta)}$이면
  $1\le\mathcal S(\mathcal Q_1(\omega_0))\le1+0.63\,L^{-\delta/2}/\log(L/2)$.
- $\omega_0\log L=o(\sqrt L)$이면 가정은 $L\ge L_1(\delta,\eta)$에서 성립한다
- % AUD1: L_1의 유효성은 o(.)의 속도가 명시적일 때만 (예: omega_0 = fixed power L^{1/2-eps'}/log L).
- ($o(\cdot)$의 속도가 명시적이면 $L_1$은 유효하다).
+ $\omega_0\log L=o(\sqrt L)$이면 가정은 $L\ge L_1(\delta,\eta)$ (유효)에서 성립한다.
 \item \PROVED\ (유효) $0<\eps<\frac12$, $A\ge4$, $\mathcal Q_2(\omega_0):=\{q\mid Q:\ q\text{의 모든 소인수}>(\log L)^A,\ \omega(q)\le\omega_0\}$,
  $2\omega_0\kappa_*\le(L/2)^{1/2-\eps}$. 유효하게 계산 가능한 $L_2(A,\eps,\delta,\eta)$가 있어 $L\ge L_2$이면
  $1\le\mathcal S(\mathcal Q_2(\omega_0))\le\exp\bigl(5((\log L)^A-1)^{-0.3}+36L^{-c_1/2}\bigr)$.
@@ -435,10 +425,7 @@ $\le\bigl(\sum_{p>z}F_p\bigr)\prod_{p}(1+F_p)\le C(\eps)(5(z-1)^{-0.3}+36L^{-c_1
 
 \begin{remark}[문턱의 정확성]\label{CMM:rem-threshold}
 p1p4 따름정리~4.20(i) \PROVED\ 에 의해 $s\le(2-\delta)\log_2L$이면 소수 법만으로 $\mathcal S\to\infty$이다. 따라서 정리~\ref{CMM:thm-SS}의
-문턱 $s=(2+o(1))\log_2L$은 합성 법을 포함해도 바뀌지 않는다
-% AUD1: 이 주장은 정리 SS가 다루는 법의 족 Q_1--Q_3 (omega(q) <= omega_0) 안에서만 성립; 모든 q | Q에 대한 문턱은 OPEN.
-(단 정리~\ref{CMM:thm-SS}가 다루는 족 $\mathcal Q_1$--$\mathcal Q_3$, 즉 $\omega(q)\le\omega_0$ 안에서; 모든 $q\mid Q$를 포함한 절대합의 문턱은 \OPEN).
-또 정리~\ref{CMM:thm-asym}은 $\omega(q)=h$층의 기여가
+문턱 $s=(2+o(1))\log_2L$은 합성 법을 포함해도 바뀌지 않는다. 또 정리~\ref{CMM:thm-asym}은 $\omega(q)=h$층의 기여가
 $\ge(1-o(1))\sum_{\omega(q)=h}\varphi(q)\prod_{p\mid q}(\frac12-\frac1{2(p-1)})^{s}$임을 보여준다 \PROVED\
 ($p\mid q\Rightarrow p>\sqrt L$, $s=O(\log L)$, $h=o(L^{1/4}/(\log L)^2)$; 이때 상대오차 $E$가 $sE\to0$을 만족하므로
 $\prod_{i\le s}|\mu_i(a/q)|\ge M(q)^s(1-2E)^s=(1-o(1))M(q)^s$).
@@ -449,10 +436,8 @@ window들이 독립이어서 $\phi=\prod_i\mu_i$라 하고 $s\ge(2+\delta)\log_2
 \begin{enumerate}[label=(\arabic*)]
 \item \PROVED\ (F3 사용) p1p4 주의~4.21의 \HEUR\ 상계 $\sum_{q}\sum_a|\phi(a/q)|\lesssim\prod_p(1+(p-1)(\pi_p+\eps)^s)$는
  $\omega(q)\le\omega_0$인 부분에서 $O_\eps(1)$로 성립한다 (정리~\ref{CMM:thm-SS}(c)). 모든 소인수 $>(\log L)^A$인 부분은 유효하게 $1+o(1)$ (정리~\ref{CMM:thm-SS}(b)).
-\item \PROVED\ (F3 사용, 정리~\ref{CMM:thm-SS}(c) 경유; 주의~4.27(2)(d)) $\sum_{q\in\mathcal Q_3(\omega_0),\,q>1}\sum_a\min(1,q/R_*)\prod_i|\mu_i(a/q)|\le C(\eps)\,L^{\omega_0}/R_*$.
+\item \PROVED\ (주의~4.27(2)(d)) $\sum_{q\in\mathcal Q_3(\omega_0),\,q>1}\sum_a\min(1,q/R_*)\prod_i|\mu_i(a/q)|\le C(\eps)\,L^{\omega_0}/R_*$.
  P1top의 corpus 값 $\log R_*\ge c_RL/\log L$ 아래에서 이는 $\le C(\eps)\exp(\sqrt L\log L-c_RL/\log L)\to0$.
- % AUD1: (F3 사용) 표기 추가. 또한 이 부분은 q <= L^{omega_0} = e^{O(sqrt L)} << R_* 이라 무게가 이미 극소인 영역이며, 4.27(2)(d)의 실질적 부분은 (3)이다.
- (주의: 이 영역에서는 $q\le L^{\omega_0}=\e^{O(\sqrt L)}\ll R_*$라 무게 자체가 극소이다. 4.27(2)(d)의 실질적 내용은 아래 (3)에 남아 있다.)
 \item \OPEN\ $\omega(q)>\omega_0$인 $q$. 특히 무게 $\min(1,q/R_*)=1$인 영역 $q\ge R_*$는 $\omega(q)\ge\log R_*/\log L\gg L/(\log L)^2$을 강제하므로 전부 이 범위 밖에 있다.
 \end{enumerate}
 \end{corollary}
@@ -474,8 +459,7 @@ window: $P_i$=pool의 처음 몇 개 소수, $t_i$는 표에 적은 값(명제�
 $L$ & $q$ & $(|P_i|,t_i)$ & $2^\omega M(q)$ & $2^\omega\max|\mu-M|$ & $2^\omega\cdot$(명제 \ref{CMM:prop-exact} 상계) & \#bad\\
 \midrule
 60 & $29\cdot23$ & (4,2) & 0.9205 & $1.25\cdot10^{-2}$ & $9.3\cdot10^{-2}$ & 33\\
-% AUD1: #bad 225 -> 224: Re A = N_1/2 = 1.5 exactly for 2 characters (borderline, floating point); strict count is 224.
-60 & $11\cdot13\cdot17$ & (3,1) & 0.7734 & $4.34\cdot10^{-2}$ & $4.39\cdot10^{-1}$ & 224\\
+60 & $11\cdot13\cdot17$ & (3,1) & 0.7734 & $4.34\cdot10^{-2}$ & $4.39\cdot10^{-1}$ & 225\\
 100 & $47\cdot43$ & (4,2) & 0.9550 & $1.29\cdot10^{-3}$ & $1.29\cdot10^{-2}$ & 36\\
 100 & $11\cdot47$ & (10,5) & 0.8804 & $4.0\cdot10^{-5}$ & $4.7\cdot10^{-3}$ & 4\\
 100 & $11\cdot13\cdot17$ & (3,1) & 0.7734 & $5.72\cdot10^{-3}$ & $2.79\cdot10^{-2}$ & 50\\
@@ -491,9 +475,8 @@ $L$ & $q$ & $(|P_i|,t_i)$ & $2^\omega M(q)$ & $2^\omega\max|\mu-M|$ & $2^\omega\
 \midrule
 100 & $3\cdot7\cdot11$ & (3,2) & 1.5400 & $8.1\cdot10^{-4}$ & $6.2\cdot10^{-3}$ & 0\\
 300 & $3\cdot7\cdot11$ & (3,2) & 2.3222 & $2.4\cdot10^{-9}$ & $8.9\cdot10^{-9}$ & 0\\
-% AUD1: 소수 멱 행의 명제 상계와 #bad를 AUD1 독립 코드(AUD1/code/aud1_exact.py)로 채움.
-60 & $8\cdot9\cdot5$ & (3,1) & 0.5833 & $2.18\cdot10^{-2}$ & $1.25\cdot10^{-1}$ (AUD1) & 1\\
-100 & $8\cdot9\cdot5$ & (3,1) & 1.0000 & $4.6\cdot10^{-4}$ & $1.92\cdot10^{-3}$ (AUD1) & 1\\
+60 & $8\cdot9\cdot5$ & (3,1) & 0.5833 & $2.18\cdot10^{-2}$ & -- & --\\
+100 & $8\cdot9\cdot5$ & (3,1) & 1.0000 & $4.6\cdot10^{-4}$ & -- & --\\
 300 & $8\cdot9\cdot5$ & (3,1) & 1.7824 & $<10^{-15}$ (FP) & -- & --\\
 \bottomrule
 \end{tabular}
@@ -554,14 +537,8 @@ $\eps\ne0$이 핵에 있으면 $\chi:=\prod_{\eps_j=1}(\frac{\cdot}{p_j})$는 $S
 \paragraph{\OPEN\ 목록 (정확한 장애와 함께).}
 \begin{enumerate}[label=(O\arabic*),leftmargin=2.5em]
 \item $\omega(q)>(L/2)^{1/2-\eps}/(2\kappa_*)$ (소수 $\in(\sqrt L,L/2]$이면 $\omega(q)\gg\sqrt L/\log L$)에서의 CMM; 특히 (T3)의 $h'\gg\sqrt L/\log L$ 부분. 장애: 명제~\ref{CMM:prop-barrier}.
- $\omega(q)>N_1$에서는 나쁜 지표가 실제로 있으므로(명제~\ref{CMM:prop-badexist}) ``모든 지표가 좋다''는 경로 자체가 불가능하다.
- % AUD1: 원문 "필요한 것은 B(S)들 사이의 상쇄"는 명제 badexist에서 따라나오지 않는다 (나쁜 이차 지표 하나의 기여는 <= q_S^{-1/2}; L=1000 예에서는 E chi(c')=0).
- % AUD1: 절댓값 전개(명제 exact)가 원리적으로 실패하는 곳은 Parseval 하한 log q >~ 2 log tau(Q) = (log 2 + o(1)) L/log L (AUD1 감사 절, PROVED)이다.
- 그러나 그런 지표 하나의 $B(S)$ 기여는 $\le\sqrt{q_S}/\varphi(q_S)$에 불과하므로 이것만으로 $B(S)$들 사이의 상쇄가 \emph{필요}해지지는 않는다
- (AUD1 수치: $L=1000$, $\omega=43$의 예에서 그 지표는 작은 소수 때문에 $\mathbb E\chi(c')=0$).
- 절댓값 전개(명제~\ref{CMM:prop-exact}) 자체는 $\log q\ge2\log\tau(Q)+O(1)=(\log2+o(1))L/\log L$에서 원리적으로 쓸모없다(AUD1 감사 절의 Parseval 하한, \PROVED);
- 그 영역에서는 지표들 사이의 상쇄, 즉 사실상 p1p4 보조정리~4.14의 전역 양 $Q\,\mathbb P(Y\equiv R\bmod Q)$의 제어가 필요하다 \HEUR\ (p1p4 주의~4.15, 4.30).
- $\sqrt L/\log L\lesssim\omega\lesssim L/(\log L)^2$ 구간에서 절댓값 전개가 충분한지는 \OPEN.
+ $\omega(q)>N_1$에서는 나쁜 지표가 실제로 있으므로(명제~\ref{CMM:prop-badexist}) ``모든 지표가 좋다''는 경로 자체가 불가능하고, 필요한 것은 $B(S)$들 사이의 상쇄,
+ 즉 사실상 p1p4 보조정리~4.14의 전역 양 $Q\,\mathbb P(Y\equiv R\bmod Q)$의 제어이다(p1p4 주의~4.15, 4.30).
 \item $L^{1/4}/\log L\lesssim\omega\lesssim\sqrt L/\log L$ (소수가 $\sqrt L$ 근처)에서의 \emph{점근식}. 상계는 증명되었으나 상대오차 $o(1)$은 단일 소수 항
  $B(\{j\})\ll\kappa/\sqrt{p_j}$ (2차 모멘트)의 합 $\asymp\omega\log L\cdot L^{-1/4}$에 막힌다. 필요한 입력: $p\in(\sqrt L,L^{1/2+o(1)}]$의 모든 지표 $\chi\bmod p$에서
  $\mathrm{Re}\sum_{p'\in P'}\chi(p')\le(1-\eta)N_1$ (Siegel--Walfisz 범위 밖; GRH에서는 성립할 것 \HEUR). 수치로는 $L\ge300$에서 나쁜 지표가 없었다.
@@ -584,12 +561,10 @@ $\eps\ne0$이 핵에 있으면 $\chi:=\prod_{\eps_j=1}(\frac{\cdot}{p_j})$는 $S
 정리~\ref{CMM:thm-main} & 일반 $q\mid Q$, $2\omega\kappa_*\le\sqrt{L/2}$: 곱셈적 상계 & \PROVED\ (모든 $p_j>(\log L)^A$이면 유효; 아니면 F3)\\
 따름정리~\ref{CMM:cor-large} & $(\sqrt L,L/2]$, $\omega\log L=o(\sqrt L)$: $|\mu|\le\prod(\frac12+\eps_j)$, $\eps_j\to0$ & \PROVED\ (유효)\\
 정리~\ref{CMM:thm-asym} & 상대오차 $\le\e^{\omega/(y-1)}(4\omega\kappa_*/\sqrt y+\eta'_L)$ & \PROVED\ (유효)\\
-% AUD1: c 범위 명시 (c <= 0.156, 비자명은 c < 0.078).
-따름정리~\ref{CMM:cor-T3} & p1p4 (T3), $h'\le c\sqrt L/\log L$ ($c\le0.156$; 하한은 $c<0.078$에서 비자명) & \HEUR$\to$\PROVED\\
+따름정리~\ref{CMM:cor-T3} & p1p4 (T3), $h'\le c\sqrt L/\log L$ & \HEUR$\to$\PROVED\\
 보조정리~\ref{CMM:lem-local}, 정리~\ref{CMM:thm-SS}(a)(b) & singular series $=1+o(1)$ (큰 소수 / $(\log L)^A$-거친 $q$) & \PROVED\ (유효)\\
 정리~\ref{CMM:thm-SS}(c) & 모든 $q\mid Q$, $\omega(q)\le L^{1/2-\eps}$: $O_\eps(1)$ & \PROVED\ (F3)\\
-% AUD1: (1),(2)는 F3 사용; 4.27(2)(d)의 실질적 부분 (q >= R_*)은 (3) OPEN.
-따름정리~\ref{CMM:cor-upgrade} & p1p4 주의 4.21, 4.27(2)(d)의 $\omega(q)\le\omega_0$ 부분 ($q\ge R_*$ 부분은 (3) \OPEN) & \HEUR$\to$\PROVED\ (F3)\\
+따름정리~\ref{CMM:cor-upgrade} & p1p4 주의 4.21, 4.27(2)(d) 해당 부분 & \HEUR$\to$\PROVED\\
 명제~\ref{CMM:prop-barrier}, \ref{CMM:prop-badexist} & 모멘트 방법의 한계, $\omega>N_1$에서 나쁜 지표 존재 & \PROVED\\
 (O1)--(O6) & $\omega(q)>L^{1/2-\eps}$, 중간 범위 점근식, 유효성, 상수, 크기창, RC/SP1 & \OPEN\\
 \S\ref{CMM:ssec-num} & $\omega=2,3$, $L\le2000$ 정확 계산 & \NUMERIC\\
