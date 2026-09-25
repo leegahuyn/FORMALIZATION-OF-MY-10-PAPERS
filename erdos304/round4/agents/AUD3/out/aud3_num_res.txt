@@ -1,0 +1,48 @@
+L=31 M=5 K/M=0.2143 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=60.0853  NUM grid tau*=60.08541  log10 AUD3=1.78  agree(rel 1e-3)=True
+L=31 M=5 K/M=0.2143 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=102.4200  NUM grid tau*=102.420038  log10 AUD3=2.01  agree(rel 1e-3)=True
+L=31 M=5 K/M=0.2143 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=104.0843  NUM grid tau*=104.084385  log10 AUD3=2.02  agree(rel 1e-3)=True
+L=43 M=6 K/M=0.1979 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=108.4152  NUM grid tau*=108.415253  log10 AUD3=2.04  agree(rel 1e-3)=True
+L=43 M=6 K/M=0.1979 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=380.0790  NUM grid tau*=380.079002  log10 AUD3=2.58  agree(rel 1e-3)=True
+L=43 M=6 K/M=0.1979 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=671.8622  NUM grid tau*=671.862178  log10 AUD3=2.83  agree(rel 1e-3)=True
+L=53 M=7 K/M=0.1799 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=361.6088  NUM grid tau*=361.608896  log10 AUD3=2.56  agree(rel 1e-3)=True
+L=53 M=7 K/M=0.1799 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=363.0368  NUM grid tau*=363.036809  log10 AUD3=2.56  agree(rel 1e-3)=True
+L=53 M=7 K/M=0.1799 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=3303.5004  NUM grid tau*=3303.500517  log10 AUD3=3.52  agree(rel 1e-3)=True
+L=61 M=8 K/M=0.1861 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=360.2934  NUM grid tau*=360.293416  log10 AUD3=2.56  agree(rel 1e-3)=True
+L=61 M=8 K/M=0.1861 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=361.9148  NUM grid tau*=361.914825  log10 AUD3=2.56  agree(rel 1e-3)=True
+L=61 M=8 K/M=0.1861 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=31280.2706  NUM grid tau*=31280.270694  log10 AUD3=4.50  agree(rel 1e-3)=True
+L=71 M=9 K/M=0.1971 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=537.3500  NUM grid tau*=537.350084  log10 AUD3=2.73  agree(rel 1e-3)=True
+L=71 M=9 K/M=0.1971 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=2814.9203  NUM grid tau*=2814.920335  log10 AUD3=3.45  agree(rel 1e-3)=True
+L=71 M=9 K/M=0.1971 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=7904.1130  NUM grid tau*=7904.11304  log10 AUD3=3.90  agree(rel 1e-3)=True
+L=73 M=10 K/M=0.2093 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=1292.3812  NUM grid tau*=1292.381272  log10 AUD3=3.11  agree(rel 1e-3)=True
+L=73 M=10 K/M=0.2093 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=3809.5722  NUM grid tau*=3809.57223  log10 AUD3=3.58  agree(rel 1e-3)=True
+L=73 M=10 K/M=0.2093 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=7904.5297  NUM grid tau*=7904.529806  log10 AUD3=3.90  agree(rel 1e-3)=True
+L=101 M=11 K/M=0.1693 (<= ln2/2=0.3466) eta=0.3: AUD3 tau*=642.7302  NUM grid tau*=642.730297  log10 AUD3=2.81  agree(rel 1e-3)=True
+L=101 M=11 K/M=0.1693 (<= ln2/2=0.3466) eta=0.2: AUD3 tau*=1527.7397  NUM grid tau*=1527.739729  log10 AUD3=3.18  agree(rel 1e-3)=True
+L=101 M=11 K/M=0.1693 (<= ln2/2=0.3466) eta=0.1: AUD3 tau*=384681.5476  NUM grid tau*=384681.547709  log10 AUD3=5.59  agree(rel 1e-3)=True
+--- LLL points: recheck g(t)/M >= 1-eta in 60-digit arithmetic (first 12 rows + random rows)
+  L=31 M=5 eta=0.3 t=61.7259189833286 g/M=0.747227 (NUM 0.747227) >=1-eta: True
+  L=31 M=5 eta=0.2 t=104.495864972214 g/M=0.904234 (NUM 0.904234) >=1-eta: True
+  L=31 M=5 eta=0.1 t=104.495864972214 g/M=0.904234 (NUM 0.904234) >=1-eta: True
+  L=31 M=5 eta=0.05 t=1411.7816771249 g/M=0.981321 (NUM 0.981321) >=1-eta: True
+  L=43 M=6 eta=0.3 t=109.363304291358 g/M=0.715603 (NUM 0.715603) >=1-eta: True
+  L=43 M=6 eta=0.2 t=381.774687551965 g/M=0.863233 (NUM 0.863233) >=1-eta: True
+  L=43 M=6 eta=0.1 t=672.912580683728 g/M=0.923206 (NUM 0.923206) >=1-eta: True
+  L=43 M=6 eta=0.05 t=2630.66479312144 g/M=0.978199 (NUM 0.978199) >=1-eta: True
+  L=53 M=7 eta=0.3 t=364.274033278924 g/M=0.828606 (NUM 0.828606) >=1-eta: True
+  L=53 M=7 eta=0.2 t=364.274033278924 g/M=0.828606 (NUM 0.828606) >=1-eta: True
+  L=53 M=7 eta=0.1 t=3303.90218712626 g/M=0.903030 (NUM 0.903030) >=1-eta: True
+  L=53 M=7 eta=0.05 t=39845.1601216745 g/M=0.972908 (NUM 0.972908) >=1-eta: True
+  L=181 M=18 eta=0.2 t=2162983.6330277 g/M=0.801663 (NUM 0.801663) >=1-eta: True
+  L=103 M=12 eta=0.05 t=66388408.2671791 g/M=0.969425 (NUM 0.969425) >=1-eta: True
+  L=193 M=20 eta=0.1 t=791202633313.745 g/M=0.934367 (NUM 0.934367) >=1-eta: True
+  L=373 M=32 eta=0.05 t=9.86162451229678e+26 g/M=0.212600 (NUM 0.956945) >=1-eta: False
+  L=71 M=9 eta=0.1 t=7905.41958835602 g/M=0.937480 (NUM 0.937480) >=1-eta: True
+  L=73 M=10 eta=0.2 t=3809.9215088057 g/M=0.802662 (NUM 0.802662) >=1-eta: True
+  L=349 M=30 eta=0.2 t=121953926166067.0 g/M=0.809770 (NUM 0.810105) >=1-eta: True
+  L=269 M=25 eta=0.3 t=16423460.7888394 g/M=0.716994 (NUM 0.716994) >=1-eta: True
+  L=101 M=11 eta=0.3 t=643.734481786948 g/M=0.714583 (NUM 0.714583) >=1-eta: True
+  L=191 M=19 eta=0.1 t=39591646000.5419 g/M=0.909128 (NUM 0.909128) >=1-eta: True
+--- tau_0(eta): last t>=1 with |F(t)| >= 1-eta (grid 1e-5 on [1,30])
+  eta=0.1: last t = 2.2988
+  eta=0.2: last t = 3.3082
+  eta=0.3: last t = 4.1293

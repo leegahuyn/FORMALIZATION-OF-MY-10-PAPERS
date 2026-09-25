@@ -1,0 +1,10 @@
+L=25 Lam=26771144400 tau=2880 |D* u {0}|=2880 A=22753444591
+|S3 cap [0,A]| = 244906542
+test: a=13192321591 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=17654178991 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=19885107691 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=21223664911 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=22116036391 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=22753444591 in S3+S3 ? NO  (=> kappa(a) >= 7)
+test: a=22753444590 in S3+S3 ? YES  (=> kappa(a) <= 6)  witness parts 19218790 22734225800 0
+elapsed 49 s

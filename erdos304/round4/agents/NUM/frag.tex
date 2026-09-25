@@ -90,6 +90,10 @@ $a_c$ (p1p4 표~7, $\Lam=27720$, $12252240$, $232792560$) 가 모두 이전 0/1 
 (\texttt{data/bfs/hbfs\_L23\_*.csv}, \texttt{data/bfs/hbfs2\_L23\_*.csv}).
 \item $L=23$ 의 독립 부분검사 (\texttt{code/mitm23.c} $\to$ \texttt{out/mitm23.txt}):
 세 약수 합을 직접 나열한 $S_3=\{d_1+d_2+d_3<\Lam: d_i\in D^*\cup\{0\}\}$ 는 $|S_3|=80181647$ 이고 BFS 의 $R_3$ 와 비트 단위로 같다 (다른 비트 0개). $\kappa(a)\le6\iff a\in S_3+S_3$ 를 전수 대조하여 $a_7=3\,716\,552\,837$ 이 $S_3+S_3$ 에 없음 (즉 $\kappa(a_7)\ge7$) 을 BFS 와 독립으로 확인하였고, $a_7$ 과 표본 40개 (20개는 BFS 가 $\kappa=7$ 로 판정한 수에서, 20개는 균등 무작위; 합계 $\kappa=7$ 판정 22개 --- 일부는 $a_7$ 과 겹침 --- , $\kappa\le6$ 판정 19개) 에서 BFS 의 $R_6$ 판정과 불일치 0개.
+% AUD3: independent re-check (own code agents/AUD3/code/aud3_mitm.c, aud3_num_dp.py)
+(AUD3 독립 재검증: 새로 작성한 \texttt{agents/AUD3/code/aud3\_mitm.c} $\to$ \texttt{agents/AUD3/out/aud3\_mitm\_L23.txt} 로 $|S_3|=80\,181\,647$,
+$a_7\notin S_3+S_3$, $a_7-1\in S_3+S_3$, $a_6\notin S_3+S_2$, $a_5\notin S_3+S_1$, $a_4\notin S_3$ 및 각 $a_c-1$ 의 소속을 재확인;
+\texttt{aud3\_num\_dp.py} 의 서로 다른 약수 0/1 DP 와 다중집합 BFS (둘 다 새 코드) 가 $L\le18$ 에서 점별로 일치하고 $H$, 히스토그램, $a_c$, 이동 항등식이 이 절의 값과 같다.)
 \end{enumerate}
 \end{proposition}
 
@@ -150,7 +154,9 @@ $\Lam_{25}=\Lam_{26}=26\,771\,144\,400$, $\tau=2880$ 에 대하여 $H(25)=H(26)=
 \item $a_c$ ($c=1,\dots,8$) $=1,\ 27,\ 10\,103,\ 5\,959\,627,\ 381\,174\,281,\ 3\,805\,051\,219,\ 13\,192\,321\,591,\ 26\,577\,893\,791$.
 \item $Z^-_6=1\,158$, $Z^-_7=0$ 이므로 $\max_{a<\Lam/2}\kappa(a)=7$, $H(25)=1+\max_{a<\Lam/2}\kappa(a)$; $\kappa=8$ 인 $a$ 는 모두 $[\Lam/2,\Lam)$ 에 있다.
 또 모든 $k\ge1$ 에서 $Z^+_k=Z^-_{k-1}$ 이므로 (보조정리~\ref{NUM:lem-shift}) 모든 $b<\Lam_{25}/2$ 에서 $\kappa(\Lam/2+b)=1+\kappa(b)$.
-\item 최적 표현 (모두 서로 다른 약수; 합·약수성 검증; $\kappa(a_8)\ge8$ 은 BFS 의 $a_8\notin R_7$):
+\item 최적 표현 (모두 서로 다른 약수; 합·약수성 검증; $\kappa(a_8)\ge8$ 은 BFS 의 $a_8\notin R_7$; AUD3 가 BFS 와 독립으로도 확인, 아래 (8)):
+% AUD3: kappa(a_8)>=8 now also verified independently of BFS (see item (8))
+
 \[
 a_8=26\,577\,893\,791=\tfrac{\Lam}{2}+\tfrac{\Lam}{3}+\tfrac{\Lam}{7}+\tfrac{\Lam}{63}+\tfrac{\Lam}{1400}+\tfrac{\Lam}{278\,460}+\tfrac{\Lam}{66\,927\,861}+\tfrac{\Lam}{5\,354\,228\,880}
 \]
@@ -163,6 +169,11 @@ $\Lam-a<10^3$ 인 것이 8개 ($\Lam-a=223,293,307,337,397,433,491,883$, 모두 
 \item BFS 와 독립인 부분검사 (\texttt{code/mitm.c} $\to$ \texttt{out/mitm25.txt}; 시험값 \texttt{out/mitm25\_tests.txt}): 세 약수 합의 직접 나열로
 $|S_3|=244\,906\,585=|R_3|$; $a_7=13\,192\,321\,591\notin S_3+S_3$ (즉 $\kappa(a_7)\ge7$); BFS 가 $\kappa=7$ 로 판정한 아래쪽 절반의 수 ($\kappa=8$ 인 수 $-\Lam/2$) 중 무작위 20개 모두 $\notin S_3+S_3$;
 $a_7-1$, $a_6$, $a_6-1\in S_3+S_3$. 모두 BFS 와 일치. ($\kappa(a_8)\ge8$ 자체의 BFS 독립 검사는 $|R_4|\approx4.2\cdot10^9$ 이라 하지 않았다; 두 BFS 구현의 일치가 그 근거이다.)
+% AUD3: BFS-independent proof-by-computation of kappa(a_8)>=8 added.
+(AUD3 추가: $\kappa(a_8)\ge8$ 의 BFS 독립 확인. $a_8$ 이 $\le7$ 개 약수(반복 허용)의 합이면 가장 큰 항 $d_1\ge a_8/7$ 이고
+$7\Lam/a_8=7.051$ 이므로 $d_1=\Lam/m$, $2\le m\le7$ 이다. 여섯 수 $a_8-\Lam/m$ ($m=2,\dots,7$) 가 모두 $S_3+S_3$ ($=R_6$) 에 없음을
+새 코드 \texttt{agents/AUD3/code/aud3\_mitm.c} ($S_3\cap[0,a_8-\Lam/7]$ 비트집합) 로 확인하였다 (\texttt{agents/AUD3/out/aud3\_mitm\_L25\_a8.txt}, 49\,s).
+하한 방향이므로 중복 제거 정리도 필요 없다. 따라서 $H(25)\ge8$ 은 BFS 와 독립이고, $H(25)\le8$ 만 두 BFS 구현에 의존한다.)
 \end{enumerate}
 \end{theorem}
 
@@ -341,7 +352,11 @@ $L$ & $M$ & 격자 & LLL & 격자 & LLL & 격자 & LLL\\
 \end{tabular}
 \caption{첫 공명 높이 $\log_{10}\tau^*_{10}(L,\eta)$. ``격자'' 열: 인증된 값 (\texttt{code/resscan.c}; 정밀도 $10^{-3}$ 이하) 또는
 $L$ 당 120\,s 안에 공명이 없을 때의 인증된 하한 ``$>$''. ``LLL'' 열: \texttt{code/lll\_res.py} 가 찾은 점 $t$ ($g_L(t)\ge(1-\eta)M$ 을 mpmath 로 확인) 의
-$\log_{10}t$ --- 즉 $\tau^*_{10}\le t$ 의 상한. $L$ 은 각 $M$ 을 처음 달성하는 소수. \NUMERIC\
+$\log_{10}t$ --- 즉 $\tau^*_{10}\le t$ 의 상한. $L$ 은 각 $M$ 을 처음 달성하는 소수.
+% AUD3: reproducibility caveat for large LLL points.
+(AUD3 주: \texttt{data/lll\_res.csv} 는 $t$ 를 유효숫자 15자리로만 저장한다. $t\gtrsim10^{14}$ 이면 이 반올림된 값에서 $g_L(t)$ 를 다시 계산할 수 없다
+(예: $L=373$, $\eta=0.05$, $t\approx9.86\cdot10^{26}$ 에서 CSV 값으로 재계산하면 $g/M=0.21$). 상한은 실행 중 90자리로 $t=n_1/|y_1|+s$ 를 정확히 평가한 결과에 근거하며,
+재현하려면 $n_1,s$ 를 저장하거나 \texttt{lll\_res.py} 를 다시 실행해야 한다. 22개 표본 중 $t\le1.2\cdot10^{14}$ 인 21개는 AUD3 가 CSV 값에서 60자리로 재계산하여 $g_L(t)\ge(1-\eta)M$ 을 재확인: \texttt{agents/AUD3/out/aud3\_num\_res.txt}.) \NUMERIC\
 (\texttt{out/resscan\_A.txt}, \texttt{out/resscan\_B.txt}, \texttt{out/lll\_res.txt}, \texttt{data/resonance.csv}, \texttt{code/res\_analyze.py})}\label{NUM:tab-res}
 \end{table}
 
@@ -436,7 +451,8 @@ $a_c=\min([0,\Lam)\setminus R_{c-1})$; $\kappa(\Lam/2+b)\le1+\kappa(b)$ & \PROVE
 이동 항등식 $\iff$ $Z^+_k=Z^-_{k-1}$ ($\forall k$) & \PROVED & 보조정리~\ref{NUM:lem-shift}\\
 $L\le22$: p1p4 표 5--7 재현 (불일치 0); $\kappa$ 배열 전체가 0/1 DP 와 일치 ($L\le19$, 따라서 $L\le22$) --- 중복 제거 정리의 수치 확인 & \NUMERIC & 명제~\ref{NUM:prop-valid}\\
 $H(23)=H(24)=7$, $\#\{\kappa=7\}=167\,987\,582$, $a_7=3\,716\,552\,837$ (7항 표현) & \NUMERIC & 정리~\ref{NUM:thm-H23}\\
-$H(25)=H(26)=8$, $\#\{\kappa=8\}=1\,158$, $a_8=26\,577\,893\,791$ (8항 표현); 두 BFS 구현 일치 & \NUMERIC & 정리~\ref{NUM:thm-H25}\\
+% AUD3: ledger updated (lower bound H(25)>=8 verified independently of BFS)
+$H(25)=H(26)=8$, $\#\{\kappa=8\}=1\,158$, $a_8=26\,577\,893\,791$ (8항 표현); 두 BFS 구현 일치; $H(25)\ge8$ 은 AUD3 가 BFS 독립 확인 & \NUMERIC & 정리~\ref{NUM:thm-H25}\\
 $L\le26$ 모두에서 $H=1+\max_{a<\Lam/2}\kappa$ 이고 $\kappa(\Lam/2+b)=1+\kappa(b)$ ($\forall b$) & \NUMERIC & 정리~\ref{NUM:thm-H23}, \ref{NUM:thm-H25}\\
 이동 항등식의 일반 $L$ 증명 & \OPEN & 주의~\ref{NUM:rem-H-trend}\\
 $g_L(1)/M\to|F(1)|=0.98057$; $\eta>0.0195$ 이면 $\mathrm{NR}(P,T,\eta)$ (절단 $|\tau|\ge1$) 는 큰 $L$ 에서 거짓 & \PROVED\ (\EXT\ PNT) & 명제~\ref{NUM:prop-t1}\\
