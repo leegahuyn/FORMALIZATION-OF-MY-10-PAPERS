@@ -554,7 +554,7 @@ $H(L)\le(c_{\rm RH}^{-1}+o(1))\sqrt L\log L$, 따라서 $N(b)\le(2c_{\rm RH}^{-1
 H(L)\le\Big(\frac{64}{\eta\log2}+o_{c,\eta}(1)\Big)(\log L)^2,
 \]
 따라서 $N(b)\ll_\eta(\log\log b)^2$ ((K5)와 $L_b\sim\log b$), 그리고 $h(\Lam_L)=H(L)\ll(\log\log\Lam_L)^2$이므로
-Erdős \#18 Q1 ($h(m)<(\log\log m)^{O(1)}$인 practical $m$이 무한히 많음)이 강한 형태 (지수 2, $m=\Lam_L$)로 따른다.
+Erdős \#18 Q1 ($h(m)<(\log\log m)^{O(1)}$인 practical $m$이 무한히 많음)이 강한 형태 (지수 2, $m=\Lam_L$; $\Lam_L$은 혼합 기수 전개 p1p4 Thm.~5.4에 의해 practical)로 따른다.
 실제로는 더 약한 $\mathrm{NR}'_L(\exp(cL/(\log L)^2),\eta)$만으로 같은 $(\log L)^2$가 나온다 ($\psi(L)/\log T'=O((\log L)^2/c)$).
 \end{enumerate}
 또 (i)에서 $\mathrm{NR}(c,\eta)$ 아래 $\log(1/\delta(\ell))\ge c_4D(\ell)/\log L-4$, $c_4=\min(c/3,\eta/16)$ ($cM\ge c\,\ell/(3\log L)$)이다: DESIGN S3의 선형 엔트로피 간격.
@@ -584,8 +584,8 @@ $|W_y(\tau)-y^{1+i\tau}\tilde w(1+i\tau)|\le C_{\rm RH}\sqrt y\,\log y\,\log(|\t
 Lemma~\ref{VKGAP:lem-VK}의 증명을 $\sigma_1:=\frac12+\frac1{\log y}$, $Y:=|\tau|+y^3$으로 반복한다. RH에 의해 $\mathrm{Re}\,z>1/2$에 영점이 없으므로
 $[\sigma_1,2]\times[-Y,Y]$의 특이점은 $s=1-i\tau$뿐이다. 윤곽 위 $z=\sigma+iu$에서: $|u|\ge2$이면 (E3)과 $|z-\rho|\ge\sigma-\frac12\ge1/\log y$에서
 $|\zeta'/\zeta(z)|\le C\log(|u|+2)(\log y+1)$; $|u|\le2$ (왼쪽 변에서만)이면 $|z-1|\ge1-\sigma_1\ge1/3$과 (E3)의 마지막 문장에서 $\le B_0+3$.
-$|u|\le 2|\tau|+y^3$이므로 $|G|\le Z_{\rm RH}:=C'\log y\log(|\tau|+y)$. 왼쪽 변 $\le\frac{36}{2\pi}y^{\sigma_1}Z_{\rm RH}=\frac{36e}{2\pi}\sqrt yZ_{\rm RH}$,
-수평 변 $\le26Z_{\rm RH}y^{-4}$, 꼬리 $\le16/y$, 소수 거듭제곱 $\le3\sqrt y$. 합하면 첫 주장.
+$|u|\le 2|\tau|+y^3$이고 $\log(2|\tau|+y^3+2)\le3\log(|\tau|+y)$이므로 $|G|\le Z_{\rm RH}:=C'\log y\log(|\tau|+y)$. 왼쪽 변 $\le\frac{36}{2\pi}y^{\sigma_1}Z_{\rm RH}=\frac{36e}{2\pi}\sqrt yZ_{\rm RH}$,
+수평 변 $\le2\cdot\frac{1}{2\pi}\cdot1.5\cdot80\,Z_{\rm RH}y^2Y^{-2}\le39Z_{\rm RH}y^{-4}$, 꼬리 $\le16/y$, 소수 거듭제곱 $\le3\sqrt y$. 합하면 첫 주장.
 $\mathrm{NR}'$: 따름정리~\ref{VKGAP:cor-NRuncond}의 증명에서 $|\tau|\le T_{\rm RH}(y)$ ($\ge y$)이면
 $2C_{\rm RH}\sqrt y\log y\log(|\tau|+y)\le 2C_{\rm RH}\sqrt y\log y\cdot 2c_{\rm RH}\sqrt y/\log y=4\cdot10^{-4}y$이므로
 $\sum_{p\in P_y}(1-\cos)\ge\frac{y}{\log y}(0.0361-0.0004)\ge M_y/15$.
@@ -618,7 +618,7 @@ $|A_L(\tau)|\ge M-\sum_p|p^{i\tau}-1|>(1-\eta)M$. $\mathrm{NR}'$: $1-\cos(\tau\l
 \toprule
 가정 & 높이 $\log T'$ & $H(L)$ \\
 \midrule
-PNT ($|F|<1$만) & $O(1)$ & $\ll L$ (자명보다 나쁨) \\
+고정 높이 (PNT형) & $O(1)$ & 정보 없음 ($\psi(L)/O(1)$) \\
 VK (무조건적) & $(\log L)^{3/2}(\log\log L)^{-3}$ & $(1+o(1))L(\log\log L)^3/(\log L)^{3/2}$ \\
 RH & $c\sqrt L/\log L$ & $\ll\sqrt L\log L$ \\
 $\mathrm{NR}'(e^{cL/(\log L)^2},\eta)$ & $cL/(\log L)^2$ & $\ll(\log L)^2$ \\
