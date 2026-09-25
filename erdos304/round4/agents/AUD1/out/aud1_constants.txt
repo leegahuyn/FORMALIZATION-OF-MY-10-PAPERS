@@ -1,0 +1,32 @@
+# AUD1 constants audit
+(1) Lemma N1: L in [444,200000]: failures=0; min ratio N1/(L/(3logL)) = 1.4800 at L=445; largest failing L below 444: 81
+(2) e(k,v) at sigma0=2/log2:
+    v=1: +0.0000
+    v=2: -0.1699 -1.6699
+    v=3: -0.1634 -1.0000 -2.6667
+    v=4: -0.1439 -0.7239 -1.6439 -3.3939
+    v=5: -0.1261 -0.5699 -1.2000 -2.1699 -3.9699
+    v=6: -0.1115 -0.4709 -0.9480 -1.6115 -2.6147 -4.4480
+    v=7: -0.0996 -0.4015 -0.7847 -1.2857 -1.9729 -3.0000 -4.8571
+    v=8: -0.0899 -0.3501 -0.6699 -1.0710 -1.5899 -2.2949 -3.3399 -5.2149
+    max over (k,v)!=(1,1): -0.08985 at (1, 8)
+(3) L=1e12 eta=0.1 w=2: kappa*=51.17 (=1.852 logL) R'=7 c*=3.732 beta_L=0.1910
+(3) L=1e12 eta=0.1 w=10: kappa*=51.17 (=1.852 logL) R'=7 c*=3.732 beta_L=0.1910
+(3) L=1e16 eta=0.1 w=2: kappa*=68.22 (=1.852 logL) R'=7 c*=3.732 beta_L=0.0255
+(3) L=1e16 eta=0.1 w=10: kappa*=68.22 (=1.852 logL) R'=7 c*=3.732 beta_L=0.0255
+(3) theta_A: L=1e9: R_L=7 (<= ceil(2log(4k*)+2)=13) theta=0.4578
+(3) theta_A: L=1e12: R_L=8 (<= ceil(2log(4k*)+2)=13) theta=0.3884
+(3) theta_A: L=1e16: R_L=8 (<= ceil(2log(4k*)+2)=14) theta=0.3268
+(3) theta_A: L=1e20: R_L=8 (<= ceil(2log(4k*)+2)=14) theta=0.2883
+(3) theta_A: L=1e30: R_L=9 (<= ceil(2log(4k*)+2)=15) theta=0.2377
+(4) max sigma (delta=1) over 444<=L<2e5: 4.4870; asymptotic bound 3/log2+1/log444=4.4921
+    0.9*2/log2 - 1 = 1.59685; 2^-1.596=0.33079; 1/(1-0.331)=1.4948
+    zeta(1.3)=3.93195; 1.5(zeta(1.3)-1)=4.3979
+    4*sqrt3*1.852=12.831; 1.25506/4=0.31377; 3/(2*0.81)=1.8519
+    Cor T3 hypothesis allows c <= 1/(2 sqrt3 *1.852) = 0.1559; nontrivial lower bound needs c < 1/12.83 = 0.0779
+(5) barrier L=1e6: N1=41370 kappa_min=12.09 first integer x with min_k Phi_k>=1: 155; sqrt(L)/logL=72.4; ratio=2.14
+(5) barrier L=1e8: N1=2999905 kappa_min=16.67 first integer x with min_k Phi_k>=1: 1149; sqrt(L)/logL=542.9; ratio=2.12
+(5) barrier L=1e10: N1=234944631 kappa_min=21.28 first integer x with min_k Phi_k>=1: 9031; sqrt(L)/logL=4342.9; ratio=2.08
+(6) L=1000: #primes in (sqrtL,L/2]=84, omega=43, N1=41
+    kernel dim >= 2; found S of size 20 with chi(p)=1 for all 41 p in P' (Re A = N1)
+    |E chi(c')| for this 'bad' chi = 0.000e+00 (first small prime killing it: 7); its contribution to B(S) is <= sqrt(q_S)/phi(q_S) ~ q_S^(-1/2) = 10^-21.1

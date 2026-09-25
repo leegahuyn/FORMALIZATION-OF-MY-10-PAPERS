@@ -94,7 +94,7 @@ def summary_rows():
         ('이동 항등식 $\\iff$ $Z^+_k=Z^-_{k-1}$ ($\\forall k$)', '\\PROVED', '보조정리~\\ref{NUM:lem-shift}'),
         ('$L\\le22$: p1p4 표 5--7 재현 (불일치 0); $\\kappa$ 배열 전체가 0/1 DP 와 일치 ($L\\le19$, 따라서 $L\\le22$) --- 중복 제거 정리의 수치 확인', '\\NUMERIC', '명제~\\ref{NUM:prop-valid}'),
         ('$H(23)=H(24)=7$, $\\#\\{\\kappa=7\\}=167\\,987\\,582$, $a_7=3\\,716\\,552\\,837$ (7항 표현)', '\\NUMERIC', '정리~\\ref{NUM:thm-H23}'),
-        ('$H(25)=H(26)=8$, $\\#\\{\\kappa=8\\}=1\\,158$, $a_8=26\\,577\\,893\\,791$ (8항 표현)', '\\NUMERIC', '정리~\\ref{NUM:thm-H25}'),
+        ('$H(25)=H(26)=8$, $\\#\\{\\kappa=8\\}=1\\,158$, $a_8=26\\,577\\,893\\,791$ (8항 표현); 두 BFS 구현 일치', '\\NUMERIC', '정리~\\ref{NUM:thm-H25}'),
         ('$L\\le26$ 모두에서 $H=1+\\max_{a<\\Lam/2}\\kappa$ 이고 $\\kappa(\\Lam/2+b)=1+\\kappa(b)$ ($\\forall b$)', '\\NUMERIC', '정리~\\ref{NUM:thm-H23}, \\ref{NUM:thm-H25}'),
         ('이동 항등식의 일반 $L$ 증명', '\\OPEN', '주의~\\ref{NUM:rem-H-trend}'),
         ('$g_L(1)/M\\to|F(1)|=0.98057$; $\\eta>0.0195$ 이면 $\\mathrm{NR}(P,T,\\eta)$ (절단 $|\\tau|\\ge1$) 는 큰 $L$ 에서 거짓', '\\PROVED\\ (\\EXT\\ PNT)', '명제~\\ref{NUM:prop-t1}'),

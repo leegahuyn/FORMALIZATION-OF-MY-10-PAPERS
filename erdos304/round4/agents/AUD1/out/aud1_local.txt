@@ -1,0 +1,13 @@
+# AUD1 check of Lemma CMM:lem-local
+L=1e5 delta=0.05: sigma=3.040  (i) max F_p/bound=0.7021  (ii) sum/(36L^(-c1/2))=3.794e-03
+L=1e5 delta=0.3: sigma=3.387  (i) max F_p/bound=0.6447  (ii) sum/(36L^(-c1/2))=2.289e-03
+L=1e5 delta=1.0: sigma=4.343  (i) max F_p/bound=0.5450  (ii) sum/(36L^(-c1/2))=3.931e-04
+L=1e6 delta=0.05: sigma=2.968  (i) max F_p/bound=0.7107  (ii) sum/(36L^(-c1/2))=4.770e-03
+L=1e6 delta=0.3: sigma=3.330  (i) max F_p/bound=0.6486  (ii) sum/(36L^(-c1/2))=2.815e-03
+L=1e6 delta=1.0: sigma=4.343  (i) max F_p/bound=0.5426  (ii) sum/(36L^(-c1/2))=4.048e-04
+L=1e7 delta=0.05: sigma=2.978  (i) max F_p/bound=0.7280  (ii) sum/(36L^(-c1/2))=2.941e-03
+L=1e7 delta=0.3: sigma=3.350  (i) max F_p/bound=0.6647  (ii) sum/(36L^(-c1/2))=1.522e-03
+L=1e7 delta=1.0: sigma=4.343  (i) max F_p/bound=0.5625  (ii) sum/(36L^(-c1/2))=1.610e-04
+L=1e8 delta=0.05: sigma=2.986  (i) max F_p/bound=0.7177  (ii) sum/(36L^(-c1/2))=1.873e-03
+L=1e8 delta=0.3: sigma=3.366  (i) max F_p/bound=0.6509  (ii) sum/(36L^(-c1/2))=8.270e-04
+L=1e8 delta=1.0: sigma=4.343  (i) max F_p/bound=0.5461  (ii) sum/(36L^(-c1/2))=5.596e-05
