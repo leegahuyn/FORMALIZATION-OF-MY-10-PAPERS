@@ -1,0 +1,169 @@
+\subsection{감사 AUD2: STRUCT 절}
+\label{AUD2:sec}
+
+감사자 AUD2는 STRUCT 절(\texttt{\$R/agents/STRUCT/frag.tex})에서 \PROVED, \REFUTED, \COND{..}가 붙은 모든 항목을 말뭉치에 기대지 않고 처음부터 다시 유도했다. 적대적 관점에서 검토했고, 수치 확인은 AUD2가 따로 작성한 코드로 했으며, 문헌 꼬리표는 WebSearch snippet으로 다시 확인했다.
+원본 백업은 \texttt{\$R/agents/STRUCT/frag.tex.orig\_before\_AUD2}에 있다. STRUCT 조각의 모든 수정은 \texttt{\% AUD2:} (이유) 형식의 주석으로 표시했고, 수정 후 조각은 \texttt{test\_frag.sh} 검사에서 \texttt{COMPILE OK}(14쪽)이다.
+(\texttt{\$R} $=$ \texttt{/home/user/FORMALIZATION-OF-MY-10-PAPERS/erdos304/round4}.)
+
+\paragraph{총평.}
+판정 대상 42개 항목(\PROVED/\REFUTED/\COND{..})의 결과는 CONFIRMED 32, MINOR-FIX 9, GAP 1, WRONG 0이다.
+이와 별도로 \NUMERIC\ 항목 2개는 독립 코드로 재현되었고, \EXT\ 항목 2개 가운데 하나는 CONFIRMED, 하나는 MINOR-FIX이다.
+S1(중복 제거와 $(\star)$에 의한 특징짓기), 블록 장벽과 상수 $c(w)$, 척도별 greedy와 세 체제, $c>1$에서의 DG 반박, 묶음 혼합진법 상수 $KC/(C-1)$, 엔트로피 문턱 $C\ge K/(K-1)$은 모두 수학적으로 옳다.
+유일한 GAP는 주의~\ref{STRUCT:rem-smooth-honest}(2)이다. 이 항목은 ``매끄러운 수 $+$ 삭제는 원리적으로 Vose를 넘지 못한다''를 \PROVED\ 로 적었다. 그러나 실제로 증명된 것은 \emph{사용한 삭제 상한}이 $\alpha\le1/2$에서 공허하다는 사실뿐이다. 원리적 불가능성을 말하려면 $\beta\gg\Psi$라는 하한이 필요한데, 이것은 증명되지 않았다. AUD2는 이 항목을 \PROVED/\EXT/\HEUR\ 부분으로 나누었다.
+가장 실질적인 MINOR-FIX는 (E3)의 적용 범위이다. de la Bretèche--Tenenbaum 추정은 snippet 기준으로 $1\le d\le x/y$에서만 서술되어 있으므로, AUD2는 (E3)을 이 범위로 좁히고 증명에 $y<n<y^3$ 경우를 추가했다.
+
+%----------------------------------------------------------------------
+\subsubsection{판정표}
+\label{AUD2:table}
+
+{\small
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}p{0.135\textwidth}p{0.425\textwidth}}
+\toprule
+항목 (STRUCT 라벨) & 원래 태그 & 판정 & 이유\\
+\midrule
+\endhead
+\texttt{lem-star-examples} & \PROVED & CONFIRMED & $p\mid\Lam_L\Rightarrow r_p\le L$; $n!$도 같음; $2^n$은 자명; $r_5=3\nmid10$.\\
+\texttt{lem-swap} & \PROVED & CONFIRMED & $r\mid d$ (최소 부족 소수의 최소성), $u,v\mid N$, $u^2+v^2-2d^2=2(d-v)^2\ge2$, $uv/d^2=4p/(p+1)^2\le3/4$ ($(3p-1)(p-3)\ge0$) 모두 재유도.\\
+\texttt{thm-dedup} & \PROVED & CONFIRMED & 두 종료 논증(제곱합 $\Phi\le a^2$, 곱 $\Pi\ge1$ 및 병합 $\le s-1$)과 불변식 모두 옳음. 독립 수치: 선택 규칙 max/min/random, 적대적 입력 2500회.\\
+\texttt{thm-char} & \PROVED & CONFIRMED & $a^*=2N/p$: $f=N/m$, $p/2<m<p$, $j=2m-p$, $j\mid m\Rightarrow j\mid p\Rightarrow m=r$. 빈틈 없음. $N\le6000$에서 283/5716, 9286쌍을 독립 재현.\\
+\texttt{cex-10} & \REFUTED & CONFIRMED & $\{1,2,5\}$의 부분합에 4와 9가 없음; $4=2+2$, $9=5+2+2$.\\
+\texttt{cor-practical} & \PROVED & CONFIRMED & $a=1+\dots+1$에 중복 제거 적용 (``이 의미에서''의 실용수).\\
+\texttt{cor-sumset} (a)(b)(c) & \PROVED & CONFIRMED & 0 채우기와 중복 제거; Bellman 양방향; 계수 해석.\\
+\texttt{thm-cascade} & \PROVED & CONFIRMED & 족이 겹쳐도 반복 표현이 되고 $a<N$에서 중복 제거 가능. $(\star)$ 가정은 필수: $N=10$ 예로 확인.\\
+\texttt{rem-8-12} & \PROVED & CONFIRMED & $g_6(4)$: $4=3+1$; $N=10$에서는 단계성질이 성립하지만 $g_{10}(4)=\infty$; p1p4 정리 8.20은 (SP1-disj) 없이 성립.\\
+\texttt{cor-newton} & \PROVED & CONFIRMED & 순서 튜플은 반복 표현. Newton 항등식 $24e_4=p_1^4-6p_1^2p_2+3p_2^2+8p_1p_3-6p_4$는 수치로도 확인.\\
+\texttt{rem-not-preserved} & \PROVED & CONFIRMED & $N=6$, $\mathcal D=\{2\}$ 예가 옳음.\\
+\texttt{thm-block} & \PROVED & CONFIRMED & 혼합진법 $c_j<b_j$; $e W_j\mid\Lam$, $eW_j\le a<\Lam$; 마지막에 중복 제거.\\
+\texttt{cor-selfsim} & \PROVED & CONFIRMED & $D(N_j)$와 $D^*(N_j)$의 차이는 $c<N_j$라 무관; 최소 예산 $H(y_1)$, $T(y_j,y_{j-1})$.\\
+\texttt{prop-block-count} & \PROVED & CONFIRMED & 크기 $K$ 다중집합의 수 $\binom{D+K}{K}\le(1+D)^K$.\\
+\texttt{lem-divcount} & \PROVED & CONFIRMED & $\eta\le1/2$이면 $e_2$가 제곱인수 없음; 실수 $k$에 대해서도 $\sum_{m\le k}\binom nm\le(\e n/k)^k$. 정확한 약수 개수와 비교해 24개 경우 모두 부등식 성립(AUD2 수치).\\
+\texttt{lem-perblock} & \PROVED & CONFIRMED & $\kappa(y)\to1$ (PNT로 $\rho\to1$, $E(y)\le y^{1-\eta}$, $\nu_*=y^{-\eta/2}$); $\kappa\ge1$에서 $G_\kappa$ 감소 ($\log\frac1{1-\nu}\le\frac{\nu}{1-\nu}$); 경우 B도 옳음.\\
+\texttt{thm-barrier} & \PROVED & MINOR-FIX & 결론은 옳음. 적분 하한 $A=\log\psi(y_{j_*-1})$에서 $A-\log2<0$일 수 있는데 $(A-\log2)^2\le(\log Z)^2$의 근거가 빠져 있었음 ($A\ge\log\log2$, $Y_1\ge3$으로 보완).\\
+\texttt{cor-geometric} & \PROVED & CONFIRMED & $y_1\le Y(w')$; $c$의 연속성과 $\psi(y)/y\to1$. 수치 $c(1/4)=0.7283$, $c(1/2)=0.4260$, $c(3/4)=0.2801$, $c(0.9)=0.1964$ 재계산 일치; 두 점근식도 확인.\\
+\texttt{prop-escape} & \PROVED & MINOR-FIX & (a)(b)(c)의 내용은 옳음. (c)(3)에서 $y_0$가 한정되지 않았음 ($\exists A,y_0$로 수정). (d)의 ``counting은 막지 않는다''에는 최선의 counting 하한이 $O(\log y_j)$라는 반대 방향이 필요함 ($D\ge\tau(\Lam_y)/2-1$ 추가).\\
+\texttt{rem-general-chain} & \PROVED & CONFIRMED & 표시된 하한은 옳음. ``만 준다''는 이 두 보조정리가 주는 값에 대한 서술로 읽어야 함.\\
+\texttt{thm-BC} & \COND{$\mathrm{BC}^*$} & MINOR-FIX & 함의와 상수 $C/(2\log\frac1{1-w})$는 옳음. $\sum_{i\le\Lambda^\dagger/\beta}(\Lambda^\dagger-i\beta)\le\Lambda^\dagger+(\Lambda^\dagger)^2/(2\beta)$는 $\beta\le4\Lambda^\dagger$에서만 성립 (큰 $L$; 극한에는 영향 없음).\\
+\texttt{cor-BC-conseq} & \COND{$\mathrm{BC}^*$} & CONFIRMED & 전달 $2H(L_b)$; \#18 Q1의 진술과 \$250은 AUD2 snippet으로 확인.\\
+\texttt{rem-BC} & \PROVED & CONFIRMED & $\nu=w$에서의 counting으로 $C\ge(1-o(1))/(1+\log\frac1w)$; 이를 넣으면 상수가 $c(w)$와 정확히 같음 (counting 수준의 최적성).\\
+\texttt{lem-ratio2} & \PROVED & CONFIRMED & $e'=e2^b/p^a$ 구성.\\
+\texttt{lem-small} & \PROVED & CONFIRMED & $q_j^2>L$, $\gcd(c_i,P_i)=1$, 구간 $[P_i,P_{i+1})$로 구별.\\
+\texttt{thm-greedy} & \PROVED & CONFIRMED & $\lambda_*$ 비감소이므로 구간마다 적분 $\ge1$; $a=c_1W+c_2$ 분할로 상단 halving 대신 $H(y_0)$만 듦.\\
+\texttt{thm-regimes} (A)(B)(C) & \PROVED & CONFIRMED & 세 적분(특히 (C)의 치환 $s=1+\log(L/\ell)$)과 $H(y_0)$, $k$의 크기 모두 재계산.\\
+\texttt{prop-DG-sharp} & \REFUTED & CONFIRMED & Rankin: $\sigma=\log4/\log L$에서 $\log F\le(\frac14+o(1))L/\log L$; 비둘기집 $X<1+X/4$; $\log(x/r)\le\frac{L}{4\log L}(1+\log4+o(1))$, $\phi_L(\log x)\ge(1-o(1))\frac{L}{4\log L}(1+\log4)$. 반박 성립.\\
+\texttt{cor-greedy-theta} (i) & \PROVED\ (인용) & CONFIRMED & p1p4 정리 5.16 (BRIEF에서 \PROVED).\\
+\texttt{cor-greedy-theta} (ii) & \COND{DG} & CONFIRMED & halving $\le\lceil\log_2X_0\rceil$을 두 번, 중간은 (C)의 적분.\\
+\texttt{rem-S3-meaning} (1) & \PROVED & MINOR-FIX & ``어떤 간격 가설도 단계당 $(1+o(1))\phi_L$보다 줄일 수 없다''는 명제 DG-sharp에서 척도 $\ell\approx L/4$에서만 증명됨. 범위를 한정함 (p1p4 5.16의 Rankin으로 $\ell=vL$, $L^{-1/\log\log L}\le v\le0.6$까지 확장; 더 작은 척도는 미증명).\\
+\texttt{rem-S3-meaning} (3) & \COND{VKGAP} & CONFIRMED & $k=O((\log L)^3)$, $H(y_0)=O((\log L)^4/\log\log L)$.\\
+\texttt{thm-smooth-bundle} & \COND{$\mathrm W_\Lam$} & CONFIRMED & 문턱 블록은 띠당 $\le(\rho-1+\eps)Y^{1-\delta}/(1-\eps)$개, $\sum_i(\rho^{i-1}Y_0)^{1-\delta}\le L^{1-\delta}/(1-\rho^{\delta-1})$, $\lim_{\rho\to1}(\rho-1)/(1-\rho^{\delta-1})=1/(1-\delta)$. baker의 $\rho=2$ 상수 $2/(1-2^{\delta-1})$도 (다소 느슨하지만) 옳음.\\
+\texttt{rem-smooth-count} & \PROVED & CONFIRMED & $\sum_{j\ge2}\log b_j=\psi(L)-\psi(y_1)$.\\
+\texttt{prop-entropy-W} & \PROVED & MINOR-FIX & Rankin에는 $\sigma>0$이 필요한데 $C\le1$이면 $1-1/C\le0$이므로 $\sigma\in(\max(0,1-1/C),1/K)$로 수정. 나머지는 옳음.\\
+\texttt{lem-deletion} (i)(ii)(iii) & \PROVED & CONFIRMED & (ii)의 $2^{2\alpha-1}y^{1/2-\alpha}=(4/y)^{\alpha-1/2}\le4^{\eps_0}y^{-\eps_0}\le2y^{-\eps_0}$는 모든 $\alpha\ge\frac12+\eps_0$에서 성립. (iii)은 \emph{그 상한}이 공허하다는 명제로 옳음.\\
+\texttt{thm-smooth-to-Lam} & \COND{(E1)--(E4)} & MINOR-FIX & Hölder와 삭제 논증은 옳음. 다만 (E3) ``$1\le k\le n$''은 문헌 범위($d\le x/y$)를 넘었음. $k\le n/y$로 좁히고, $n\ge y^3$에서는 $p^{a_p+1}\le y^2\le n/y$, $y<n<y^3$에서는 보조정리~\ref{STRUCT:lem-small} ($k=4$, $R_4=29$)을 쓰도록 보완.\\
+\texttt{rem-smooth-honest} (1) & \PROVED & MINOR-FIX & 산술은 옳음. Vose의 $N(b)\ll(\log b)^{1/2}$ 출처 표기를 바로잡음 (\#18 snippet은 $h(m)\ll(\log m)^{1/2}$이고, $N(b)$ 형태는 \#304와 Bloom--Elsholtz의 서술).\\
+\texttt{rem-smooth-honest} (2) & \PROVED & \textbf{GAP} & ``원리적으로 Vose를 넘지 못함''은 미증명: 보조정리 deletion(iii)은 \emph{사용한 상한}이 공허하다는 것만 보이고, $\alpha<1/2$에서의 하한 $\beta\gg\Psi$는 없음. 또 $\alpha\to1-1/C$는 원래 recalled였음. \PROVED(상한의 공허성)/\EXT(Hildebrand, AUD2 snippet)/\HEUR(원리적 불가능)로 분리.\\
+\texttt{rem-smooth-honest} (4) & \PROVED & MINOR-FIX & ``창 $(K/(K-1),2)$가 counting으로 배제되지 않음''의 근거가 없었음. $(y/2,y]$ 소수 $m$개의 곱으로 $\#\{e\mid\Lam_y:e\le x\}\ge x^{1-1/C-o(1)}$를 추가. 문턱은 $\mathrm W_\Lam$에 대해서도 정확함.\\
+\texttt{rem-smooth-honest} (6) & \PROVED & CONFIRMED & 따름정리~\ref{STRUCT:cor-newton}.\\
+사다리 표, $\mathrm W_\Lam$ 행 & \OPEN/\COND{..} & MINOR-FIX & ``삭제 경로로는 불가능''을 ``이 삭제 상한으로는 불가, 원리적 불가능은 \HEUR''으로 한정.\\
+\midrule
+\texttt{rem-num-dedup} & \NUMERIC & 재현 & AUD2 독립 코드(큰 정수 bitset)로 $L\le13$ 모든 수준집합, $N\le6000$ 전부, 교환 상계를 재현.\\
+\texttt{rem-num-block} & \NUMERIC & 재현 & 정확한 약수 개수(meet-in-the-middle)로 DP를 다시 계산: $L=50$: 15/11/8/7, $L=100$: 20/13/11/9. STRUCT 값과 정확히 일치.\\
+\texttt{ext-pnt} & \EXT & CONFIRMED & $\psi-\theta\le\sqrt y(\log y)^2$: 초등 논증은 $y\ge\e^2$에서 성립하고 작은 $y$는 자명. $y\le2\cdot10^6$에서 수치 확인.\\
+\texttt{ext-smooth-lit} & \EXT & MINOR-FIX & 꼬리표는 정직함. AUD2 snippet으로 (a)(b)(d)를 재확인하고, (c)에 (E3)의 범위와 Hildebrand 안장점 공식을 추가함(아래).\\
+\bottomrule
+\end{longtable}
+}
+
+%----------------------------------------------------------------------
+\subsubsection{핵심 재유도 요약}
+\label{AUD2:rederive}
+
+\paragraph{S1: 중복 제거와 특징짓기.} \PROVED\ (AUD2 재유도)
+보조정리~\ref{STRUCT:lem-swap}(ii)에서 $r=(p+1)/2$의 소인수 $q$는 모두 $q<p$이다. 따라서 $p$의 최소성으로 $v_q(d)=v_q(N)\ge v_q(r)$이고 $r\mid d$이다. 이 논증에서 $(\star)$는 정확히 $r\mid N$을 얻는 데에만 쓰인다.
+정리~\ref{STRUCT:thm-char}의 역방향 증명에도 빈틈이 없다. $a^*=2N/p=e+f$ ($e<f$)이면 $m=N/f\in(p/2,p)$이고 $e=Nj/(pm)$ ($j=2m-p$)이다. $e\mid N$에서 $j\mid pm$이 나오고, $\gcd(j,p)=1$이므로 $j\mid m$, 따라서 $j\mid 2m-j=p$이다. 그러면 $j=1$, 즉 $m=r\mid N$이 되어 모순이다.
+두 종료 논증도 옳다. 곱 논증은 병합이 $\Pi$에 $2/d\le2$를 곱하고 병합 횟수가 $s-1$ 이하라는 두 사실만 쓴다.
+정리~\ref{STRUCT:thm-cascade}와 따름정리~\ref{STRUCT:cor-newton}은 ``반복 표현이면 충분하다''는 사실의 직접적 귀결이다. 따라서 $\Lam_L$에 대해 (SP1-disj), 라벨 설계, $u$-강건성, Newton/$E_4$ 보정은 논리적으로 불필요하다. 이 판단을 확인한다.
+
+\paragraph{S2: 장벽 상수.} \PROVED\ (PNT 사용; AUD2 재유도)
+블록 $j$에서 $\nu=\log b_j/\psi(y)$이면 counting으로
+\[
+K_j\ \ge\ \frac{(1-\eta)\log y}{\log\frac1\nu+\kappa(y)}\ =\ (1-\eta)\,s_j\log y\cdot G_{\kappa}(\nu),\qquad s_j=\log\tfrac1{1-\nu}
+\]
+를 얻는다. 여기서 $\kappa(y)\to1$에는 PNT가 필요하다: $\rho(y)=\pi(y)\log y/\psi(y)\to1$. Chebyshev만 쓰면 $\kappa$가 유계일 뿐이어서 상수가 달라진다.
+$G_\kappa$는 감소하므로 가장 약한 경우는 $\nu=w$이다. 이어서 $s_j\log y_j\ge\int_{\log\psi(y_{j-1})}^{\log\psi(y_j)}(\tau-\log2)\,d\tau$를 합하면 $\frac12(\log L)^2$이 나온다. 그래서 $c(w)=G(w)/2$이다.
+PNT가 쓰이는 곳을 전부 점검했다: 보조정리~\ref{STRUCT:lem-perblock}의 $\rho\to1$과 $\theta/\psi\to1$, 정리~\ref{STRUCT:thm-barrier}의 $\psi(L)\ge2L/\e$, 따름정리~\ref{STRUCT:cor-geometric}의 $\psi(y)/y\to1$, 명제~\ref{STRUCT:prop-escape}(d), 세 체제의 $\psi(L)\sim L$과 $\pi^*(y)\sim y/\log y$, 정리~\ref{STRUCT:thm-smooth-bundle}의 $\psi(\rho Y)-\psi(Y)\le(\rho-1+\eps)Y$. 모두 표준 PNT(\EXT)의 범위 안이다.
+정리~\ref{STRUCT:thm-BC}는 Chebyshev만으로도 성립한다.
+
+\paragraph{S3: DG 반박.} \REFUTED\ 확인.
+$\sigma=\log4/\log L$로 두고 $X=(4rF(\sigma))^{1/(1-\sigma)}$로 잡는다. 그러면 약수 개수는 $\le X/(4r)$이고, 모든 간격이 $\le r$라면 $X<1+X/4$가 되어 모순이다. 따라서 $x=d+r$에서
+\begin{align*}
+\log\frac{x}{r}&\le\frac{\log4+\sigma\log r+\log F(\sigma)}{1-\sigma}+\log2=\frac{L}{4\log L}\bigl(1+\log4+o(1)\bigr),\\
+\phi_L(\log x)&\ge(1-o(1))\frac{L}{4\log L}(1+\log4)
+\end{align*}
+이다. 그러므로 $c\le1+o(1)$이어야 한다.
+여기서 쓰인 $\pi(t)\le3t/\log t$ ($t\ge2$)는 AUD2가 $t\le2\cdot10^6$에서 수치로 확인했다 (최댓값 $\pi(t)\log t/t=1.2551$). 명제 DG-sharp는 $c>1$에서의 DG만 반박하므로, 정리~\ref{STRUCT:thm-regimes}(C)는 $c\le1$에서만 의미가 있다. 이 점은 STRUCT가 따름정리~\ref{STRUCT:cor-greedy-theta}에서 정직하게 적었다.
+
+\paragraph{S6: 묶음 수와 문턱.}
+\COND{$\mathrm W_\Lam(K,C)$} $\limsup H/L^{1-1/C}\le KC/(C-1)$은 옳다.
+명제~\ref{STRUCT:prop-entropy-W}의 문턱 $C\ge K/(K-1)$도 옳다 ($\sigma>0$ 수정 후).
+AUD2의 보완으로 이 문턱은 $\mathrm W_\Lam$에 대해서도 정확하다: $\#\{e\mid\Lam_y:e\le x\}=x^{1-1/C+o(1)}$이고, 하한은 풀 소수 곱으로, 상한은 Rankin으로 얻는다.
+삭제 단계에 대해 증명된 것은 다음뿐이다: 상한 $\beta\ll\Psi\sum_pp^{-\alpha(a_p+1)}$은 $\alpha\ge\frac12+\eps_0$에서 $O(y^{-\eps_0})\Psi$를 주고, $\alpha\le\frac12$에서는 $o(\Psi)$를 주지 못한다.
+여기에 Hildebrand 공식(snippet)의 $\alpha\to1-1/C$를 합치면, 이 논증은 $C>2$, 곧 $N(b)\ll(\log b)^{1-1/C}$ ($1-1/C>1/2$)만 준다.
+``어떤 방법으로도 $C<2$에 도달할 수 없다''는 주장은 \HEUR\ 이다.
+
+%----------------------------------------------------------------------
+\subsubsection{STRUCT 조각에 가한 수정 (모두 \texttt{\% AUD2:} 표시)}
+\label{AUD2:fixes}
+\begin{enumerate}[label=(F\arabic*)]
+\item \textbf{정리~\ref{STRUCT:thm-barrier} 증명}: $A-\log2<0$인 경우에도 $(A-\log2)^2\le(\log Z)^2$이 성립함을 보이는 한 줄을 추가했다.
+\item \textbf{명제~\ref{STRUCT:prop-escape}(c)(3)}: 한정되지 않았던 $y_0$를 ``$\exists A,\,y_0\ge2$''로 한정했다. \textbf{(d) 증명}: 최선의 counting 하한이 $\le(1/\log2+o(1))\log y$라는 반대 방향을 추가했다 ($\sqrt{\Lam_y}<b$, 약수의 절반은 $\le\sqrt{\Lam_y}$).
+\item \textbf{정리~\ref{STRUCT:thm-BC} 증명}: 합의 상계가 $\beta\le4\Lambda^\dagger$에서 성립한다는 주석을 달았다.
+\item \textbf{주의~\ref{STRUCT:rem-S3-meaning}(1)}: 증명된 척도($\ell\approx L/4$)와 확장 가능한 범위를 명시했다.
+\item \textbf{명제~\ref{STRUCT:prop-entropy-W}}: $\sigma\in(\max(0,1-1/C),1/K)$로 고쳤다.
+\item \textbf{정리~\ref{STRUCT:thm-smooth-to-Lam}}: (E3)의 범위를 $1\le k\le n/y$로 좁혔다. $y<n<y^3$ 경우는 보조정리~\ref{STRUCT:lem-small} ($k=4$; $y\ge29$에서 $(y/2,y]$에 소수 $\ge4$개, Ramanujan 소수 $R_4=29$, AUD2가 $y\le2\cdot10^6$에서 수치 확인)로 처리하고, $n\ge y^3$에서 $p^{a_p+1}\le y^2\le n/y$임을 확인했다.
+\item \textbf{정리~\ref{STRUCT:ext-smooth-lit}(c)}: AUD2 snippet을 기록했다 ((E3)의 범위, Hildebrand 안장점 공식).
+\item \textbf{주의~\ref{STRUCT:rem-smooth-honest}}: (1)의 출처 표기를 정정했다. (2)는 \textbf{GAP}이므로 \PROVED/\EXT/\HEUR{}로 분리했다. (4)에는 ``counting으로 배제되지 않음''의 증명을 추가했다.
+\item \textbf{사다리 표와 원장}: $\mathrm W_\Lam$ 행의 불가능성 주장을 한정하고, 원장에 \texttt{rem-smooth-honest} 행을 추가했다.
+\end{enumerate}
+STRUCT의 \texttt{summary.md}는 AUD2가 수정할 수 없다 (\texttt{.md} 쓰기 불가). 그 요약의 ``Deletion needs $\alpha>1/2$ \ldots\ Beating Vose \ldots\ impossible via smooth numbers $+$ deletion''은 위 (F8)에 따라 ``사용한 삭제 상한으로는 불가(\PROVED$+$\EXT), 원리적 불가능은 \HEUR''으로 읽어야 한다.
+
+%----------------------------------------------------------------------
+\subsubsection{AUD2 독립 수치}
+\label{AUD2:numerics}
+\NUMERIC\ 모든 스크립트는 \texttt{\$R/agents/AUD2/code/}에 있고, 출력은 \texttt{\$R/agents/AUD2/out/}에 있다 (각 실행 5분 미만, \texttt{nice -n 10}).
+\begin{itemize}
+\item \texttt{aud2\_dedup.py} $\to$ \texttt{aud2\_dedup.out}. STRUCT의 numpy int16 DP와 다른 알고리즘(큰 정수 bitset, 항 수별 층)을 썼다.
+(A) $2\le L\le13$에서 구별 최소와 반복 최소의 \emph{모든 수준집합}이 일치하며, $H(L)=1,2,3,4,4,5,5,5,5,6,6,6$.
+(B) $2\le N\le6000$에서 $(\star)$ 참이고 중복 제거 성질 참인 $N$이 283개, 둘 다 거짓인 $N$이 5716개이며 예외는 없다. $(\star)$가 깨지는 9286쌍 $(N,p)$ 모두에서 $a^*=2N/p$가 반복 최소 2, 구별 최소 $\ge3$이다.
+(C) 교환 규칙 max/min/random과 적대적 입력(같은 약수 최대 60개, $L\le120$)으로 2500회 실행했다. 합, 구별성, 항 수 비증가, 두 교환 상계 모두 성립했다 (분할 수/곱 상계의 최댓값 0.138, 최대 교환 수 122). 1을 500개 넣은 입력은 $L=10,30,60$에서 각각 7, 6, 5개의 구별 항으로 줄었다.
+(D) Newton 항등식이 무작위 집합 200개에서 성립했다.
+\item \texttt{aud2\_block.py} $\to$ \texttt{aud2\_block.out}.
+(1) $c(w)$ 값을 재계산했다. $\kappa\in\{1,1.5,3\}$에서 $G_\kappa$가 격자 위에서 순감소함을 확인했고, 두 점근식도 확인했다.
+(2) 보조정리~\ref{STRUCT:lem-divcount}를 정확한 개수와 비교했다 ($y\in\{30,50,80,100\}$, $\eta\in\{0.3,0.5\}$, $v\in\{0.1,0.25,0.5\}$): 모두 성립.
+(3) 정확한 약수 개수(meet-in-the-middle 상계 개수)로 $\Lam$형 방식 DP를 다시 계산했다: $L=50$: $15,11,8,7$; $L=100$: $20,13,11,9$ ($w=1/4,1/2,3/4,0.9$). STRUCT와 일치한다.
+(4) $\pi(t)\le3t/\log t$와 $\psi-\theta\le\sqrt y(\log y)^2$를 $2\cdot10^6$까지 확인했다.
+\item \texttt{aud2\_ramanujan.py} $\to$ \texttt{aud2\_ramanujan.out}. $29\le x\le2\cdot10^6$에서 $\pi(x)-\pi(x/2)\ge4$이고, $x=28$에서는 3이다.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\subsubsection{문헌 꼬리표 점검 (AUD2 WebSearch, 2026-09-25)}
+\label{AUD2:lit}
+\EXT\ 각 항목의 상태는 snippet 수준이며, 전문은 읽지 않았다.
+\begin{itemize}
+\item Harper, arXiv:1408.1662 (Compositio 152 (2016) 1121--1158): snippet은 ``sharp upper bounds for the $p$-th moment of (possibly weighted) sums, for any real $p>2$ and $\log^{C(p)}x\le y\le x$''와 ``asymptotic for the number of solutions of $a+b=c$ in $y$-smooth integers \ldots\ whenever $\log^Cx\le y\le x$''를 적는다. STRUCT의 서술과 일치한다.
+\item Drappeau--Shao, arXiv:1602.07885 (Acta Arith. 176 (2016) 249--299): snippet은 ``$y=(\log x)^C$ for a large constant $C$'', 주호 점근식, 부차호 상계, 평균값, Waring 문제를 적는다. 일치한다. baker가 인용한 정리 2.4와 보조정리 3.2의 정확한 진술은 여전히 recalled이다.
+\item de la Bretèche--Tenenbaum: snippet은 ``$\Psi(x/d,y)\ll d^{-\alpha}\Psi(x,y)$ uniformly for \ldots\ $(\log x)^2<y\le x$ and $1\le d\le x/y$''를 적는다. 범위 $d\le x/y$가 핵심이므로 (F6)에서 (E3)을 이에 맞췄다.
+\item Hildebrand: snippet은 ``$\alpha(x,y)=1-\log(u\log(u+1))/\log y+O(1/\log y)$, $u=\log x/\log y$, $\log x<y\le x$''를 적는다. 따라서 $y=(\log x)^C$에서 $\alpha\to1-1/C$이고, 이 부분은 recalled에서 snippet-verified로 올라간다.
+\item Lagarias--Soundararajan, arXiv:1102.4911 (Proc. LMS 104 (2012) 770--798): GRH 하에서 $\kappa>8$. arXiv:0911.4147 (JTNB 23 (2011) 209--234): abc 추측이면 $\kappa<1$에서 해가 유한개. 둘 다 일치한다.
+\item erdosproblems.com/18: snippet은 실용수의 정의, Q1 ``$h(m)<(\log\log m)^{O(1)}$ for infinitely many practical $m$'', \$250, Vose의 $h(m)\ll(\log m)^{1/2}$를 적는다. \#304의 $N(b)\ll\sqrt{\log b}$ (Vose)와 $\log\log b\ll N(b)$ (Erdős)는 Bloom--Elsholtz 개관과 Conlon--Fox 등의 snippet에서 확인된다.
+\end{itemize}
+URL: \texttt{arxiv.org/abs/1408.1662}, \texttt{arxiv.org/abs/1602.07885}, \texttt{arxiv.org/abs/1102.4911}, \texttt{arxiv.org/abs/0911.4147}, \texttt{www.erdosproblems.com/18}, \texttt{arxiv.org/pdf/2210.04496} (Bloom--Elsholtz).
+
+%----------------------------------------------------------------------
+\subsubsection{남는 주의 사항 (판정에는 영향 없음)}
+\label{AUD2:remarks}
+\begin{enumerate}[label=(R\arabic*)]
+\item 정리~\ref{STRUCT:thm-barrier}의 대상은 $\Lam$형 사슬뿐이다. STRUCT 자신이 주의~\ref{STRUCT:rem-general-chain}에서 적었듯이, 풀 소수로 만든 사슬이나 첫 블록이 큰 사슬($y_1\ge L\e^{-O(1)}$, 곧 척도 $L$의 SP1)은 이 장벽 밖에 있다. 따라서 이 장벽은 방법론적 장벽이며, $H(L)$ 자체의 하한은 아니다.
+\item 주의~\ref{STRUCT:rem-BC}(2)의 ``counting 수준에서 최적''은 정확하다. 다만 $\mathrm{BC}^*(w,C_{\min})$ 자체는 \OPEN\ 이므로, 상수 $c(w)$를 실제로 달성하는 방식이 존재한다는 뜻은 아니다.
+\item 따름정리~\ref{STRUCT:cor-practical}의 ``실용수''는 ``모든 $a<N$''의 의미이다. 이는 erdosproblems \#18의 정의(snippet)와 같다.
+\item STRUCT의 수치 주장은 모두 재현되었다. STRUCT의 DP 하한은 반올림 때문에 약할 수 있었지만, 정확한 개수로 다시 계산해도 값이 같았다.
+\end{enumerate}

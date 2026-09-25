@@ -33,3 +33,9 @@ Files: `frag.tex` (13 pp., COMPILE OK), `code/dedup_check.py` -> `out/dedup_chec
 - (E1)-(E4) & C>2 => W_Λ(K,C) [COND]. Beating Vose needs C<2: impossible via smooth numbers + deletion.
 - Literature: Harper (p>2 moments, log^{C(p)}x<=y; a+b=c count for log^C x<=y) snippet-verified; Drappeau–Shao abstract snippet-verified,
   baker's Thm 2.4/Lemma 3.2 recalled; L–S GRH κ>8 snippet-verified. Literature gives only L^{1-δ}, small δ (weaker than Vose).
+
+## Stage-2 audit (AUD2): 42 items — CONFIRMED 32, MINOR-FIX 9, GAP 1, WRONG 0
+- GAP (tag downgraded): rem-smooth-honest (2) "smooth numbers + deletion can in principle never beat Vose" was tagged PROVED; only the narrower statement is proved (the specific deletion upper bound is useless for α ≤ 1/2). The "in principle" claim needs a lower bound nobody proved → split into PROVED / EXT / HEUR; ladder row qualified. **This summary's earlier wording on the deletion claim is superseded.**
+- Main minor fix: (E3) (de la Bretèche–Tenenbaum ratio bound) narrowed to k ≤ n/y as in the snippet; proof patched (n ≥ y^3 direct; y < n < y^3 via STRUCT's small-residue lemma with 4 primes in (y/2, y], y ≥ 29, Ramanujan; checked to 2·10^6).
+- Other minor fixes: prop-escape (c)(3) y_0 quantified, (d) missing direction added; thm-barrier justification line; thm-BC sum bound for large L; rem-S3-meaning (1) scope limited to ℓ ≈ L/4; prop-entropy-W σ > 0; rem-smooth-honest (4) count added (threshold K/(K−1) exact for divisors of Λ_y); Vose citation page fixed. Hildebrand's saddle-point formula upgraded to snippet-verified (α → 1 − 1/C).
+- All 15 edits marked `% AUD2:` in frag.tex; backup frag.tex.orig_before_AUD2.

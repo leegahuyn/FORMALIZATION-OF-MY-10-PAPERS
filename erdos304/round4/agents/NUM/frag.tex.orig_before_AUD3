@@ -1,0 +1,450 @@
+\section{NUM: 다중집합 BFS 에 의한 정확한 $H(L)$ ($L\le 26$) 과 공명 높이 실험}\label{NUM:sec}
+
+이 절의 모든 수치는 \texttt{\$R/agents/NUM/code/} 의 프로그램으로 계산하였고, 로그는
+\texttt{\$R/agents/NUM/out/}, 원자료(CSV)는 \texttt{\$R/agents/NUM/data/} 에 있다
+(\texttt{\$R}$=$\texttt{/home/user/FORMALIZATION-OF-MY-10-PAPERS/erdos304/round4}).
+표는 \texttt{code/make\_tables.py} 가 CSV 에서 직접 생성한 것을 옮겼다.
+계산 범위를 넘는 외삽은 모두 \HEUR 로 표시한다.
+기호는 BRIEF \S1 을 따른다: $\Lam=\Lam_L$, $D^*=D^*_L$ (진약수), $\kappa(a)=\kappa_L(a)=g_L(a)$,
+$H(L)=\max_{0\le a<\Lam}\kappa(a)$, $a_c=\min\{a:\kappa(a)=c\}$.
+
+\subsection{방법: 중복 제거 정리에 의한 다중집합 BFS}\label{NUM:ssec-method}
+
+\begin{definition}\label{NUM:def-Rk}
+$R_0=\{0\}$, $R_k=\bigl(R_{k-1}+(D^*\cup\{0\})\bigr)\cap[0,\Lam)$ ($k\ge1$).
+즉 $R_k$ 는 $k$ 개 이하의 진약수(반복 허용)의 합으로 쓸 수 있는 $a\in[0,\Lam)$ 의 집합이다.
+\end{definition}
+
+\begin{proposition}\label{NUM:prop-bfs}
+\PROVED\ (입력: baker Thm~3.2 의 중복 제거 정리, BRIEF \S2 표의 ``Dedup theorem'')
+$0\le a<\Lam$ 에 대하여 $\kappa(a)=\min\{k: a\in R_k\}$ 이고, $H(L)=\min\{k: R_k=[0,\Lam)\}$ 이다.
+\end{proposition}
+\begin{proof}
+$a\in R_k$ 는 $a=d_1+\dots+d_j$ ($j\le k$, $d_i\in D^*$, 반복 허용) 와 동치이다: 합의 부분합은 모두
+$\le a<\Lam$ 이므로 매 단계의 $\cap[0,\Lam)$ 절단은 어떤 표현도 잃지 않는다.
+따라서 $\min\{k:a\in R_k\}$ 는 반복을 허용한 최소 항수 $\tilde g_L(a)$ 이고, 중복 제거 정리에 의해
+$\tilde g_L(a)=g_L(a)=\kappa(a)$ 이다. 두 번째 주장은 첫 번째에서 바로 나온다.
+\end{proof}
+
+\begin{lemma}\label{NUM:lem-ac}
+\PROVED\ (1) $0\le a<\Lam-1$ 이면 $\kappa(a+1)\le\kappa(a)+1$.
+(2) 따라서 $1\le c\le H(L)$ 인 모든 $c$ 에 대해 $a_c$ 가 존재하고 $a_c=\min\bigl([0,\Lam)\setminus R_{c-1}\bigr)$ 이다.
+(3) $L\ge2$, $0\le b<\Lam/2$ 이면 $\kappa(\Lam/2+b)\le 1+\kappa(b)$.
+\end{lemma}
+\begin{proof}
+(1) $1\in D^*$ 이므로 $a$ 의 반복 허용 표현에 $1$ 을 붙이면 $a+1$ 의 표현이 되고, 명제~\ref{NUM:prop-bfs} 에 의해
+반복 허용 최소 항수가 $\kappa$ 이다.
+(2) $A=\min([0,\Lam)\setminus R_{c-1})$ 은 $c\le H$ 이면 존재하고 $\kappa(A)\ge c$ 이다. $A\ge1$ 이고
+$A-1\in R_{c-1}$ 이므로 (1) 에서 $\kappa(A)\le\kappa(A-1)+1\le c$. 따라서 $\kappa(A)=c$ 이고,
+$a<A$ 이면 $\kappa(a)\le c-1$ 이므로 $A=a_c$.
+(3) $\Lam/2\in D^*$ ($\Lam$ 은 짝수) 이므로 $b$ 의 반복 허용 표현에 $\Lam/2$ 를 붙이면 된다 (명제~\ref{NUM:prop-bfs}).
+\end{proof}
+
+\begin{lemma}[이동 항등식의 계수 판정]\label{NUM:lem-shift}
+\PROVED\ $Z^-_k=\#\bigl([0,\Lam/2)\setminus R_k\bigr)$, $Z^+_k=\#\bigl([\Lam/2,\Lam)\setminus R_k\bigr)$ 로 두자.
+그러면 모든 $k\ge1$ 에서 $Z^+_k\le Z^-_{k-1}$ 이고, 다음은 동치이다.
+(a) 모든 $0\le b<\Lam/2$ 에서 $\kappa(\Lam/2+b)=1+\kappa(b)$;
+(b) 모든 $k\ge1$ 에서 $Z^+_k=Z^-_{k-1}$.
+(a) 가 성립하면 $H(L)=1+\max_{a<\Lam/2}\kappa(a)$, $a_{H}=\Lam/2+a_{H-1}$ 이고, $\kappa=H$ 인 $a$ 는 모두 $[\Lam/2,\Lam)$ 에 있다.
+\end{lemma}
+\begin{proof}
+$U_k=\{b<\Lam/2:\kappa(\Lam/2+b)>k\}$, $V_{k}=\{b<\Lam/2:\kappa(b)>k\}$ 로 두면 $Z^+_k=|U_k|$, $Z^-_k=|V_k|$ 이다.
+보조정리~\ref{NUM:lem-ac}(3) 에서 $b\notin V_{k-1}\Rightarrow b\notin U_k$, 즉 $U_k\subseteq V_{k-1}$ 이므로
+$Z^+_k\le Z^-_{k-1}$. (b) 이면 유한집합의 포함과 크기 일치로 $U_k=V_{k-1}$ ($\forall k\ge1$) 이고, 이는
+``$\kappa(\Lam/2+b)>k\iff\kappa(b)>k-1$'' ($\forall k\ge 1$) 즉 (a) 이다. (a)$\Rightarrow$(b) 는 자명하다.
+(a) 에서 $\max_{b<\Lam/2}\kappa(\Lam/2+b)=1+\max_{b<\Lam/2}\kappa(b)$ 이고, $\kappa(\Lam/2+b)\ge\kappa(b)+1>\kappa(b)$ 이므로
+최댓값은 위쪽 절반에서만 나오며 그 최솟값 위치가 $\Lam/2+a_{H-1}$ 이다.
+\end{proof}
+
+\paragraph{구현 (\texttt{code/hbfs.c}).}
+$R_k$ 를 길이 $\Lam$ 의 비트집합(64비트 워드, 비트 $a$ $\leftrightarrow$ 정수 $a$)으로 두고
+$R_k=R_{k-1}\,\big|\,\bigvee_{d\in D^*}(R_{k-1}\ll d)$ 를 계산한다. 각 $d=64w+s$ 에 대해
+$\mathrm{dst}[j]\mathrel{|}=(\mathrm{src}[j-w]\ll s)\,|\,(\mathrm{src}[j-w-1]\gg(64-s))$ 이다.
+목적지를 $2^{15}$ 워드 블록으로 나누어 OpenMP 2 스레드에 배분하고(쓰기 경합 없음), 블록마다 약수를 오름차순으로 처리한다.
+결과를 바꾸지 않는 두 가지 생략을 쓴다: (i) 목적지 블록이 전부 1 이면 중단,
+(ii) 원천 창이 전부 0 이면 (4096비트 덩어리별 비영(非零) 누적개수로 판정) 그 이동을 생략.
+매 단계 $R_k$ 를 디스크에 기록(체크포인트)하고, $|R_k|$, $a_k$ (보조정리~\ref{NUM:lem-ac}(2)), $Z^\pm_k$,
+이진 척도 $[2^j,2^{j+1})$ 별 $R_k$ 의 여집합 크기를 기록한다.
+\texttt{code/hbfs2.c} 는 비트집합 하나로 제자리 갱신하는 독립 구현이다
+(목적지 블록을 내림차순으로 처리; 이동량 $w\le$ 블록 크기인 원천은 블록 수정 전에 복사해 둔 버퍼에서,
+$w>$ 블록 크기인 원천은 아직 수정되지 않은 아래쪽에서 읽는다; 스레드는 같은 블록을 나누어 맡고 블록마다 장벽 동기화).
+$L=25$ 는 메모리 한도(7\,GB) 때문에 먼저 \texttt{hbfs2} 로 계산하였고 (비트집합 3.35\,GB), 이어서 \texttt{hbfs} (6.7\,GB, 마지막 체크포인트만 보존) 로 다시 계산하였다.
+실행 시간 예측: $L=19$ 는 2 스레드로 2.3\,s 였고, 작업량 $\propto\Lam\tau$ 가 $46$ 배이며 캐시 밖으로 나가므로 $L=23$ 을 $2$--$6$ 분으로 예측하였다 (실제 108\,s).
+$L=25$ 는 $\Lam\tau$ 가 다시 $7.5$ 배이므로 약 10--15 분으로 예측하였다 (실제 609\,s 및 659\,s).
+빌드 명령은 \texttt{code/build.sh}. 체크포인트 비트집합 (최대 3.35\,GB/단계) 은 디스크 절약을 위해 계산 후 삭제하였다 (재계산 가능).
+
+\subsection{검증}\label{NUM:ssec-valid}
+
+\begin{proposition}[교차검증]\label{NUM:prop-valid}
+\NUMERIC\ (\texttt{code/validate\_small.py} $\to$ \texttt{out/validate\_small.txt}, \texttt{data/H\_table\_bfs.csv};
+\texttt{code/dp01.c}, \texttt{out/compare\_kappa.txt}, \texttt{out/hbfs2\_validation.txt})
+\begin{enumerate}[label=(\arabic*)]
+\item $2\le L\le 22$ 모든 $L$ 에서 다중집합 BFS 의 $H(L)$, $\#\{\kappa=H\}$, $a_H$ (p1p4 표~5), $\kappa$ 비율 분포 (p1p4 표~6, 소수점 5자리),
+$a_c$ (p1p4 표~7, $\Lam=27720$, $12252240$, $232792560$) 가 모두 이전 0/1 DP 값과 일치한다 (불일치 0).
+특히 $H(L)=1,2,3,4,4,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7$ ($L=2,\dots,22$).
+\item 새로 독립 작성한 0/1 배낭 DP (\texttt{code/dp01.c}; \emph{서로 다른} 약수, 내림차순 제자리 갱신) 의 $\kappa$ 배열 전체가
+다중집합 BFS 의 $\kappa$ 배열과 $L\in\{2,3,4,5,7,8,9,11,13,16,17,19\}$ 에서 모든 $a<\Lam_L$ 에 대해 바이트 단위로 같다
+($L=19$: $232\,792\,560$ 개). \texttt{hbfs} 의 희소(scatter) 경로와 조밀 경로, \texttt{hbfs2} 의 블록 크기 $1,2,5,2^{15}$ 워드 모두 같은 결과를 준다.
+이는 $L\le 22$ 에서 중복 제거 정리 (반복 허용 최소 항수 $=$ 서로 다른 약수 최소 항수) 의 \emph{모든} $a$ 에 대한 수치 확인이다.
+\item $L=23$: 두 구현 \texttt{hbfs} (두 비트집합) 와 \texttt{hbfs2} (제자리) 의 단계별 표와 이진 척도 표가 완전히 같다
+(\texttt{data/bfs/hbfs\_L23\_*.csv}, \texttt{data/bfs/hbfs2\_L23\_*.csv}).
+\item $L=23$ 의 독립 부분검사 (\texttt{code/mitm23.c} $\to$ \texttt{out/mitm23.txt}):
+세 약수 합을 직접 나열한 $S_3=\{d_1+d_2+d_3<\Lam: d_i\in D^*\cup\{0\}\}$ 는 $|S_3|=80181647$ 이고 BFS 의 $R_3$ 와 비트 단위로 같다 (다른 비트 0개). $\kappa(a)\le6\iff a\in S_3+S_3$ 를 전수 대조하여 $a_7=3\,716\,552\,837$ 이 $S_3+S_3$ 에 없음 (즉 $\kappa(a_7)\ge7$) 을 BFS 와 독립으로 확인하였고, $a_7$ 과 표본 40개 (20개는 BFS 가 $\kappa=7$ 로 판정한 수에서, 20개는 균등 무작위; 합계 $\kappa=7$ 판정 22개 --- 일부는 $a_7$ 과 겹침 --- , $\kappa\le6$ 판정 19개) 에서 BFS 의 $R_6$ 판정과 불일치 0개.
+\end{enumerate}
+\end{proposition}
+
+\subsection{결과: $H(23)=H(24)=7$}\label{NUM:ssec-H23}
+
+\begin{theorem}[수치 결과]\label{NUM:thm-H23}
+\NUMERIC\ (\texttt{code/hbfs.c}, \texttt{code/hbfs2.c}; \texttt{out/hbfs\_L23.log};
+\texttt{data/bfs/hbfs\_L23\_levels.csv}, \texttt{data/bfs/hbfs\_L23\_dyadic.csv};
+표현: \texttt{code/bt\_repr.py} $\to$ \texttt{out/bt\_repr\_L23.txt})
+$\Lam_{23}=\Lam_{24}=5\,354\,228\,880$, $\tau=1920$ 에 대하여 $H(23)=H(24)=7$ 이다. 더 자세히:
+\begin{enumerate}[label=(\arabic*)]
+\item $\kappa$ 의 분포와 $a_k$ 는 표~\ref{NUM:tab-L23} 와 같다. $\#\{a:\kappa(a)=7\}=167\,987\,582$ ($\Lam$ 의 $3.14\%$).
+\item $a_c$ ($c=1,\dots,7$) $=1,\ 25,\ 5\,671,\ 2\,486\,867,\ 110\,265\,329,\ 1\,039\,438\,397,\ 3\,716\,552\,837$.
+\item $Z^-_6=0$ 이므로 $\max_{a<\Lam/2}\kappa(a)=6$ 이고 $H(23)=1+\max_{a<\Lam/2}\kappa(a)$; $\kappa=7$ 인 $a$ 는 모두 $[\Lam/2,\Lam)$ 에 있다.
+\item 모든 $k\ge1$ 에서 $Z^+_k=Z^-_{k-1}$ 이므로, 보조정리~\ref{NUM:lem-shift} 에 의해
+\emph{모든} $0\le b<\Lam_{23}/2$ 에서 $\kappa(\Lam/2+b)=1+\kappa(b)$ 이다. 특히 $a_7=\Lam/2+a_6$.
+\item 최적 표현 (Bellman 역추적, 각 단계에서 가능한 가장 큰 약수; 합·약수성·항수 검증, 모두 서로 다름):
+\[
+a_7=3\,716\,552\,837=\tfrac{\Lam}{2}+\tfrac{\Lam}{6}+\tfrac{\Lam}{38}+\tfrac{\Lam}{874}+\tfrac{\Lam}{134\,596}+\tfrac{\Lam}{20\,996\,976}+\tfrac{\Lam}{2\,677\,114\,440}
+\]
+$=2677114440+892371480+140900760+6126120+39780+255+2$.
+그 밖의 $a_c$: $25=24+1$; $5671=5610+60+1$; $2486867=2451570+35190+105+2$;
+$110265329=104984880+5249244+31122+80+3$; $1039438397=892371480+140900760+6126120+39780+255+2$.
+\item 이진 척도별 최대 $\kappa$: $a\in[2^j,2^{j+1})$ 에서 $\max\kappa$ 는
+$j=0$--$3$ 에서 $1$, $j=4$--$11$ 에서 $2$, $j=12$--$20$ 에서 $3$, $j=21$--$25$ 에서 $4$, $j=26$--$28$ 에서 $5$, $j=29$--$30$ 에서 $6$, $j=31$--$32$ 에서 $7$.
+\item 실행 시간: 2 스레드로 108\,s (체크포인트 기록 포함), 제자리 구현 77\,s.
+\end{enumerate}
+\end{theorem}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrr}
+\toprule
+$k$ & $|R_k|$ & $\#\{a:\kappa(a)=k\}$ & $a_k$ & $\#([0,\frac{\Lambda}{2})\setminus R_k)$ & $\#([\frac{\Lambda}{2},\Lambda)\setminus R_k)$\\
+\midrule
+0 & 1 & 1 & 0 & 2\,677\,114\,439 & 2\,677\,114\,440\\
+1 & 1\,920 & 1\,919 & 1 & 2\,677\,112\,521 & 2\,677\,114\,439\\
+2 & 937\,823 & 935\,903 & 25 & 2\,676\,178\,536 & 2\,677\,112\,521\\
+3 & 80\,181\,647 & 79\,243\,824 & 5\,671 & 2\,597\,868\,697 & 2\,676\,178\,536\\
+4 & 1\,075\,633\,815 & 995\,452\,168 & 2\,486\,867 & 1\,680\,726\,368 & 2\,597\,868\,697\\
+5 & 3\,505\,514\,930 & 2\,429\,881\,115 & 110\,265\,329 & 167\,987\,582 & 1\,680\,726\,368\\
+6 & 5\,186\,241\,298 & 1\,680\,726\,368 & 1\,039\,438\,397 & 0 & 167\,987\,582\\
+7 & 5\,354\,228\,880 & 167\,987\,582 & 3\,716\,552\,837 & 0 & 0\\
+\bottomrule
+\end{tabular}
+\caption{$L=23$ ($\Lam=5\,354\,228\,880$): BFS 단계별 자료. $a_k=\min([0,\Lam)\setminus R_{k-1})$,
+$Z^\pm_k$ 는 아래/위 절반에서 $R_k$ 에 없는 수의 개수. \NUMERIC\ (\texttt{data/bfs/hbfs\_L23\_levels.csv})}\label{NUM:tab-L23}
+\end{table}
+
+\subsection{결과: $H(25)=H(26)=8$}\label{NUM:ssec-H25}
+
+\begin{theorem}[수치 결과]\label{NUM:thm-H25}
+\NUMERIC\ (\texttt{code/hbfs2.c}; \texttt{out/hbfs2\_L25.log}; \texttt{data/bfs/hbfs2\_L25\_levels.csv}, \texttt{data/bfs/hbfs2\_L25\_dyadic.csv};
+$\kappa=8$ 목록 \texttt{code/extract\_top.py} $\to$ \texttt{data/L25\_kappa8.csv}, \texttt{out/extract\_top\_L25.txt};
+표현 \texttt{code/repr\_dfs.py} $\to$ \texttt{out/repr\_L25.txt})
+$\Lam_{25}=\Lam_{26}=26\,771\,144\,400$, $\tau=2880$ 에 대하여 $H(25)=H(26)=8$ 이다.
+\begin{enumerate}[label=(\arabic*)]
+\item 단계별 자료는 표~\ref{NUM:tab-L25}. $\#\{a:\kappa(a)=8\}=1\,158$ (비율 $4.3\cdot10^{-8}$) 뿐이다.
+\item $a_c$ ($c=1,\dots,8$) $=1,\ 27,\ 10\,103,\ 5\,959\,627,\ 381\,174\,281,\ 3\,805\,051\,219,\ 13\,192\,321\,591,\ 26\,577\,893\,791$.
+\item $Z^-_6=1\,158$, $Z^-_7=0$ 이므로 $\max_{a<\Lam/2}\kappa(a)=7$, $H(25)=1+\max_{a<\Lam/2}\kappa(a)$; $\kappa=8$ 인 $a$ 는 모두 $[\Lam/2,\Lam)$ 에 있다.
+또 모든 $k\ge1$ 에서 $Z^+_k=Z^-_{k-1}$ 이므로 (보조정리~\ref{NUM:lem-shift}) 모든 $b<\Lam_{25}/2$ 에서 $\kappa(\Lam/2+b)=1+\kappa(b)$.
+\item 최적 표현 (모두 서로 다른 약수; 합·약수성 검증; $\kappa(a_8)\ge8$ 은 BFS 의 $a_8\notin R_7$):
+\[
+a_8=26\,577\,893\,791=\tfrac{\Lam}{2}+\tfrac{\Lam}{3}+\tfrac{\Lam}{7}+\tfrac{\Lam}{63}+\tfrac{\Lam}{1400}+\tfrac{\Lam}{278\,460}+\tfrac{\Lam}{66\,927\,861}+\tfrac{\Lam}{5\,354\,228\,880}
+\]
+$=13385572200+8923714800+3824449200+424938800+19122246+96140+400+5$; $a_7$ 은 첫 항을 뺀 7항.
+(표현 탐색: 큰 항은 깊이우선 탐색, 나머지 $r<2^{30}$ 은 BFS 가 함께 저장한 $\kappa(r)$ 표로 Bellman 역추적. $\kappa(r)$ 표는 $L=23$ 에서 체크포인트 $R_k$ 와 $[0,2^{30})$ 전체가 일치함을 확인.)
+\item $\kappa=8$ 인 $1158$ 개는 $\Lam$ 바로 아래에 몰려 있다: $a/\Lam\ge0.99278$, 중앙값 $0.99996$;
+$\Lam-a<10^3$ 인 것이 8개 ($\Lam-a=223,293,307,337,397,433,491,883$, 모두 소수), $\Lam-a<10^6$ 인 것이 586개; $1158$ 개 중 $1095$ 개에서 $\Lam-a$ 는 $\Lam$ 과 서로소이다.
+\item 이진 척도별 최대 $\kappa$: $j=0$--$3$ 에서 $1$, $j=4$--$12$ 에서 $2$, $j=13$--$21$ 에서 $3$, $j=22$--$27$ 에서 $4$, $j=28$--$30$ 에서 $5$, $j=31$--$32$ 에서 $6$, $j=33$ 에서 $7$, $j=34$ 에서 $8$.
+\item 실행: \texttt{hbfs2} 2 스레드 609\,s, 메모리 4.4\,GB. 두 번째 구현 \texttt{hbfs} (두 비트집합, 6.7\,GB; \texttt{out/hbfs\_L25.log}, \texttt{data/bfs/hbfs\_L25\_*.csv}) 으로 다시 계산한 단계별 표와 이진 척도 표가 완전히 일치한다.
+\item BFS 와 독립인 부분검사 (\texttt{code/mitm.c} $\to$ \texttt{out/mitm25.txt}; 시험값 \texttt{out/mitm25\_tests.txt}): 세 약수 합의 직접 나열로
+$|S_3|=244\,906\,585=|R_3|$; $a_7=13\,192\,321\,591\notin S_3+S_3$ (즉 $\kappa(a_7)\ge7$); BFS 가 $\kappa=7$ 로 판정한 아래쪽 절반의 수 ($\kappa=8$ 인 수 $-\Lam/2$) 중 무작위 20개 모두 $\notin S_3+S_3$;
+$a_7-1$, $a_6$, $a_6-1\in S_3+S_3$. 모두 BFS 와 일치. ($\kappa(a_8)\ge8$ 자체의 BFS 독립 검사는 $|R_4|\approx4.2\cdot10^9$ 이라 하지 않았다; 두 BFS 구현의 일치가 그 근거이다.)
+\end{enumerate}
+\end{theorem}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrr}
+\toprule
+$k$ & $|R_k|$ & $\#\{a:\kappa(a)=k\}$ & $a_k$ & $\#([0,\frac{\Lambda}{2})\setminus R_k)$ & $\#([\frac{\Lambda}{2},\Lambda)\setminus R_k)$\\
+\midrule
+0 & 1 & 1 & 0 & 13\,385\,572\,199 & 13\,385\,572\,200\\
+1 & 2\,880 & 2\,879 & 1 & 13\,385\,569\,321 & 13\,385\,572\,199\\
+2 & 2\,062\,624 & 2\,059\,744 & 27 & 13\,383\,512\,455 & 13\,385\,569\,321\\
+3 & 244\,906\,585 & 242\,843\,961 & 10\,103 & 13\,142\,725\,360 & 13\,383\,512\,455\\
+4 & 4\,205\,881\,648 & 3\,960\,975\,063 & 5\,959\,627 & 9\,422\,537\,392 & 13\,142\,725\,360\\
+5 & 15\,909\,571\,823 & 11\,703\,690\,175 & 381\,174\,281 & 1\,439\,035\,185 & 9\,422\,537\,392\\
+6 & 25\,332\,108\,057 & 9\,422\,536\,234 & 3\,805\,051\,219 & 1\,158 & 1\,439\,035\,185\\
+7 & 26\,771\,143\,242 & 1\,439\,035\,185 & 13\,192\,321\,591 & 0 & 1\,158\\
+8 & 26\,771\,144\,400 & 1\,158 & 26\,577\,893\,791 & 0 & 0\\
+\bottomrule
+\end{tabular}
+\caption{$L=25$ ($\Lam=26\,771\,144\,400$): BFS 단계별 자료 (표~\ref{NUM:tab-L23} 과 같은 기호). \NUMERIC\ (\texttt{data/bfs/hbfs2\_L25\_levels.csv})}\label{NUM:tab-L25}
+\end{table}
+
+\begin{remark}\label{NUM:rem-H25}
+\HEUR\ $H$ 가 처음으로 $k$ 가 되는 $L$ 은 $k=1,\dots,8$ 에 대해 $2,3,4,5,7,11,17,25$ 이다. $L=25$ 에서의 증가는 소수거듭제곱 $5^2$ 에서 일어나며
+($\tau$ 는 $1.5$ 배만 증가), $\kappa=8$ 인 수가 $4.3\cdot10^{-8}$ 비율밖에 없어 ``아슬아슬한'' 증가이다. $H/\ln L$ 은 $L=25$ 에서 $2.49$, $L=26$ 에서 $2.46$ 으로
+$L\le22$ 의 범위 $[2.16,2.57]$ 안에 있다.
+\end{remark}
+
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrrrrr}
+\toprule
+$L$ & $\Lambda_L$ & $\tau(\Lambda_L)$ & $H(L)$ & $\#\{\kappa=H\}$ & $a_H$ & $a_H/\Lambda_L$ & $H/\ln L$ & $\frac{\ln(\Lambda_L-1)}{\ln\tau}$\\
+\midrule
+2 & 2 & 2 & 1 & 1 & 1 & 0.5000 & 1.443 & 0.000\\
+3 & 6 & 4 & 2 & 2 & 4 & 0.6667 & 1.820 & 1.161\\
+4 & 12 & 6 & 3 & 1 & 11 & 0.9167 & 2.164 & 1.338\\
+5--6 & 60 & 12 & 4 & 2 & 58 & 0.9667 & 2.232 & 1.641\\
+7 & 420 & 24 & 5 & 1 & 418 & 0.9952 & 2.569 & 1.900\\
+8 & 840 & 32 & 5 & 9 & 769 & 0.9155 & 2.404 & 1.943\\
+9--10 & 2\,520 & 48 & 5 & 94 & 2\,027 & 0.8044 & 2.171 & 2.023\\
+11--12 & 27\,720 & 96 & 6 & 22 & 26\,149 & 0.9433 & 2.415 & 2.241\\
+13--15 & 360\,360 & 192 & 6 & 7\,553 & 269\,323 & 0.7474 & 2.216 & 2.434\\
+16 & 720\,720 & 240 & 6 & 23\,748 & 528\,083 & 0.7327 & 2.164 & 2.461\\
+17--18 & 12\,252\,240 & 480 & 7 & 1\,484 & 11\,540\,143 & 0.9419 & 2.422 & 2.644\\
+19--22 & 232\,792\,560 & 960 & 7 & 1\,226\,590 & 186\,234\,043 & 0.8000 & 2.265 & 2.806\\
+23--24 & 5\,354\,228\,880 & 1920 & 7 & 167\,987\,582 & 3\,716\,552\,837 & 0.6941 & 2.203 & 2.963\\
+25--26 & 26\,771\,144\,400 & 2880 & 8 & 1\,158 & 26\,577\,893\,791 & 0.9928 & 2.455 & 3.014\\
+\bottomrule
+\end{tabular}
+\caption{정확한 $H(L)$, $L\le 26$. \NUMERIC\ (\texttt{code/hbfs.c}, \texttt{code/hbfs2.c}; \texttt{data/H\_table\_bfs.csv}, \texttt{data/bfs/}).
+$L\le 22$ 는 p1p4 표~5 와 일치. $H/\ln L$ 은 같은 $\Lam$ 을 갖는 $L$ 범위의 최댓값에서 계산. 마지막 열은 엔트로피 하한 $\ln(\Lam-1)/\ln\tau$.}\label{NUM:tab-H}
+\end{table}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrrrrr}
+\toprule
+$L$ & $k=1$ & $k=2$ & $k=3$ & $k=4$ & $k=5$ & $k=6$ & $k=7$ & $k=8$\\
+\midrule
+11 & 0.00343 & 0.07338 & 0.34669 & 0.42581 & 0.14990 & 0.00079 &  & \\
+13 & 0.00053 & 0.02360 & 0.21928 & 0.45544 & 0.28020 & 0.02096 &  & \\
+16 & 0.00033 & 0.01778 & 0.19200 & 0.44927 & 0.30767 & 0.03295 &  & \\
+17 & 0.00004 & 0.00439 & 0.09409 & 0.38243 & 0.40575 & 0.11319 & 0.00012 & \\
+19 & $4.1\cdot10^{-6}$ & 0.00096 & 0.04041 & 0.28416 & 0.45432 & 0.21488 & 0.00527 & \\
+23 & $3.6\cdot10^{-7}$ & 0.00017 & 0.01480 & 0.18592 & 0.45382 & 0.31391 & 0.03137 & \\
+25 & $1.1\cdot10^{-7}$ & 0.00008 & 0.00907 & 0.14796 & 0.43718 & 0.35197 & 0.05375 & $4.3\cdot10^{-8}$\\
+\bottomrule
+\end{tabular}
+\caption{$\kappa(a)=k$ 인 $a\in[1,\Lam)$ 의 비율. $L\le 19$ 는 p1p4 표~6 과 소수점 5자리까지 일치. \NUMERIC\ (\texttt{data/bfs/})}\label{NUM:tab-frac}
+\end{table}
+
+\begin{remark}\label{NUM:rem-H-trend}
+\HEUR\ $H$ 는 $L=17$ 부터 24 까지 $7$ 에 머문다. $L=23$ 에서 $H/\ln L=2.23$ (범위 최댓값 $L=24$ 에서 $2.20$) 로
+$L\le22$ 의 범위 $[2.16,2.57]$ 안에 있고, 엔트로피 하한 $\ln\Lam/\ln\tau$ 과의 비는 $7/2.963=2.36$ 으로 $L=19$ 의 $2.49$ 보다 작다.
+평균 $\mathbb{E}_{1\le a<\Lam}\kappa(a)$ 는 $L=19,23,25$ 에서 $4.858$, $5.161$, $5.293$ 이다 (\NUMERIC, \texttt{out/mean\_kappa.txt}; $L=19$ 값은 p1p4 표~8 의 $\mathbb{E}\,\mathrm{opt}=4.858$ 과 일치).
+$\ln L\le 3.3$ 인 이 범위에서는 여전히 $\log L$, $\log L\log\log L$ 등을 구별할 수 없다 (p1p4 주의~9.4 와 같은 유보).
+이동 항등식 $\kappa(\Lam/2+b)=1+\kappa(b)$ 는 $L\le 26$ 의 모든 $b$ 에서 성립하지만 일반 $L$ 에 대한 증명은 없다 \OPEN.
+이것이 모든 $L$ 에서 성립하면 $H(L)=1+\max_{a<\Lam/2}\kappa(a)$ 가 된다 (p1p4 명제~9.2 의 역부등식).
+\end{remark}
+
+\subsection{비공명 실험 (DESIGN S4/VKGAP-C)}\label{NUM:ssec-res}
+
+$P=P_L=\{p: L/2<p\le L\}$, $M=|P|$, $f_L(t)=\sum_{p\in P}p^{it}$, $g_L(t)=|f_L(t)|$ 로 둔다.
+
+\begin{proposition}[하한 절단 $|t|\ge1$ 에서의 자명한 공명]\label{NUM:prop-t1}
+\PROVED\ (입력: \EXT\ 소수정리 $\pi(x)=\mathrm{li}(x)+O(x\e^{-c\sqrt{\log x}})$, Montgomery--Vaughan I, Thm~6.9)
+고정된 $t\in\R$ 에 대하여 $L\to\infty$ 일 때 $f_L(t)/M = L^{it}F(t)+o(1)$, $F(t)=\dfrac{2-2^{-it}}{1+it}$.
+특히 $g_L(1)/M\to|F(1)|=\sqrt{(5-4\cos\ln2)/2}=0.980572\ldots$ 이다. 따라서 임의의 $\eta>1-|F(1)|=0.019428\ldots$ 와 $T\ge1$ 에 대해
+$\mathrm{NR}(P_L,T,\eta)$ (DESIGN S4: $1\le|\tau|\le T$ 에서 $|\sum p^{i\tau}|\le(1-\eta)M$) 는 충분히 큰 모든 $L$ 에서 \emph{거짓}이다.
+\end{proposition}
+\begin{proof}
+부분적분: $f_L(t)=\int_{L/2}^{L}u^{it}\,d\pi(u)=\int_{L/2}^{L}\frac{u^{it}}{\log u}\,du+\Bigl[u^{it}E(u)\Bigr]_{L/2}^{L}-it\int_{L/2}^{L}u^{it-1}E(u)\,du$,
+$E(u)=\pi(u)-\mathrm{li}(u)=O(u\e^{-c\sqrt{\log u}})$. 뒤의 두 항은 $O((1+|t|)L\e^{-c'\sqrt{\log L}})=o(L/\log L)$.
+$[L/2,L]$ 에서 $\frac1{\log u}=\frac1{\log L}+O(\frac1{\log^2L})$ 이므로
+$\int_{L/2}^{L}\frac{u^{it}}{\log u}du=\frac{1}{\log L}\cdot\frac{L^{1+it}-(L/2)^{1+it}}{1+it}+O\bigl(\frac{L}{\log^2L}\bigr)
+=\frac{L^{1+it}}{\log L}\cdot\frac{1-2^{-1-it}}{1+it}+O\bigl(\frac{L}{\log^2L}\bigr)$.
+같은 계산 ($t=0$) 으로 $M=\frac{L}{2\log L}(1+o(1))$. 나누면 $f_L(t)/M=L^{it}\cdot\frac{2(1-2^{-1-it})}{1+it}+o(1)=L^{it}F(t)+o(1)$.
+$|2-2^{-it}|^2=5-4\cos(t\ln2)$ 이므로 $|F(1)|^2=(5-4\cos\ln 2)/2$. $\eta>1-|F(1)|$ 이면 큰 $L$ 에서 $g_L(1)>(1-\eta)M$ 이다.
+\end{proof}
+
+\begin{remark}\label{NUM:rem-t1}
+\NUMERIC\ (\texttt{code/checks\_F\_var.py} $\to$ \texttt{out/checks\_F\_var.txt}, \texttt{data/var\_u.csv})
+유한 $L$ 에서도 $g_L(1)/M\in[0.973,0.984]$ ($L=31,\dots,10^7$) 이고, $[1,10]$ 에서의 $\max g_L/M$ 은 항상 $t=1$ 에서 나온다.
+따라서 DESIGN S4/VKGAP-C 의 가설 $\mathrm{NR}(P,\e^{cM},\eta)$ 는 \emph{$\eta<0.0194$} (예: S4(iv) 의 $\eta=0.01$) 로 쓰거나,
+하한 절단을 $|\tau|\ge\tau_0(\eta)$ ($|F(t)|<1-\eta$ 가 $t>\tau_0$ 에서 성립하는 값; $\tau_0(0.1)=2.30$, $\tau_0(0.2)=3.31$, $\tau_0(0.3)=4.13$) 로
+올려야 한다. $\eta\in\{0.3,0.2,0.1\}$ 에 대해 과제의 문자 그대로의 정의 $\min\{\tau\ge1:g\ge(1-\eta)M\}$ 은 항상 $1$ 이 되어 정보가 없으므로,
+아래에서는 S4(iv) 의 범위 시작점 $10$ 을 절단으로 쓴다:
+\[
+\tau^*_{10}(L,\eta)=\min\{t\ge10:\ g_L(t)\ge(1-\eta)M\}.
+\]
+$\{g\ge0.99M\}\subseteq\{g\ge0.9M\}$ 이므로 $\tau^*_{10}(L,0.01)\ge\tau^*_{10}(L,0.1)$ 이고, 따라서 $\tau^*_{10}(L,0.1)$ 에 대한 하한은
+$\mathrm{NR}(P,T,0.01)$ 의 $[10,T]$ 부분에 대한 수치 증거가 된다.
+\end{remark}
+
+\begin{lemma}[격자 인증서]\label{NUM:lem-grid}
+\PROVED\ $c_L=\log L-\frac{\log 2}{2}$, $\ell_p=\log p-c_L$ ($|\ell_p|\le\frac{\log2}{2}$), $K=\sum_{p\in P}|\ell_p|\le\frac{\log2}{2}M$ 라 하면
+$|g_L(t)-g_L(s)|\le K|t-s|$. 따라서 간격 $h$ 의 격자점 $t_i$ 에서 모두 $g_L(t_i)<(1-\eta)M-Kh/2$ 이면
+그 격자가 덮는 구간에는 $g_L\ge(1-\eta)M$ 인 $t$ 가 없다.
+\end{lemma}
+\begin{proof}
+$g_L(t)=|\sum_p \e^{it\ell_p}|$ (공통 위상 $\e^{itc_L}$ 는 절댓값을 바꾸지 않는다) 이고
+$|\sum_p\e^{it\ell_p}-\sum_p\e^{is\ell_p}|\le\sum_p|\e^{i(t-s)\ell_p}-1|\le\sum_p|\ell_p||t-s|$, 그리고 $\bigl||x|-|y|\bigr|\le|x-y|$.
+모든 $t$ 는 어떤 격자점에서 $h/2$ 이내에 있다.
+\end{proof}
+
+\paragraph{방법 (\texttt{code/resscan.c}).}
+보조정리~\ref{NUM:lem-grid} 에서 $Kh/2=0.02M$ 이 되도록 $h=0.04M/K\approx0.19$--$0.24$ 로 잡는다
+(BRIEF 의 조잡한 상수 $M\log L$ 대신 $K\le 0.347M$ 을 써서 격자가 약 16배 성기다).
+$g\ge(1-\eta-0.02)M$ 인 격자점은 후보이고, 후보 구간 $[t_i-h/2,t_i+h/2]$ 를 간격 $h/2000$ 으로 long double 정확 계산하여
+(같은 인증서) 처음으로 $g\ge(1-\eta)M$ 인 점을 $\tau^*$ 로 기록한다 (정밀도 $\sim10^{-4}$). 위상 $\e^{it\ell_p}$ 는 회전 곱으로 갱신하고
+4096 단계마다 long double 범위축소로 다시 맞춘다. 판정 불가(ambiguous) 후보는 별도로 국소 최대화하여 판정한다 (아래).
+시간 상한은 $L$ 당 120\,s; 상한 안에 공명이 없으면 ``$\tau^*>T$'' (인증된 하한) 로 보고한다.
+독립 검사: $M\le10$ 에서 numpy 전수 격자 (간격 $2\cdot10^{-4}$) 와 모든 $\tau^*$ 가 $2\cdot10^{-4}$ 이내로 일치
+(\texttt{code/check\_resscan.py} $\to$ \texttt{out/check\_resscan.txt}).
+\emph{상한}은 LLL 동시근사로 얻는다 (\texttt{code/lll\_res.py}; sympy LLL, mpmath 90자리 재계산):
+$p_0=\max P$, $p_1=\min P$ 에 대해 $t=n_1/y_1$, $y_j=(\log p_j-\log p_0)/2\pi$ 로 $p_1$ 의 위상을 맞추고,
+나머지 상대위상 $2\pi(n_1y_j/y_1-n_j)$ 를 격자 $\{(n_1w,\,S(n_1y_j/y_1-n_j))_j\}$ 의 짧은 벡터로 작게 만든 뒤, $|s|\le3$ 에서 국소 최대화한다.
+찾은 점 $t$ 는 $g_L(t)\ge(1-\eta)M$ 을 직접 확인한 것이므로 $\tau^*_{10}(L,\eta)\le t$ 이다.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrrrr}
+\toprule
+& & \multicolumn{2}{c}{$\eta=0.3$} & \multicolumn{2}{c}{$\eta=0.2$} & \multicolumn{2}{c}{$\eta=0.1$}\\
+$L$ & $M$ & 격자 & LLL & 격자 & LLL & 격자 & LLL\\
+\midrule
+31 & 5 & 1.78 & 1.79 & 2.01 & 2.02 & 2.02 & 2.02\\
+43 & 6 & 2.04 & 2.04 & 2.58 & 2.58 & 2.83 & 2.83\\
+53 & 7 & 2.56 & 2.56 & 2.56 & 2.56 & 3.52 & 3.52\\
+61 & 8 & 2.56 & 2.56 & 2.56 & 2.56 & 4.50 & 4.50\\
+71 & 9 & 2.73 & 2.73 & 3.45 & 3.45 & 3.90 & 3.90\\
+73 & 10 & 3.11 & 3.11 & 3.58 & 3.58 & 3.90 & 3.90\\
+101 & 11 & 2.81 & 2.81 & 3.18 & 3.18 & 5.59 & 5.59\\
+103 & 12 & 2.81 & 2.81 & 4.23 & 4.23 & 5.85 & 5.85\\
+109 & 13 & 2.81 & 2.81 & 4.61 & 4.61 & 6.64 & 6.94\\
+113 & 14 & 3.73 & 3.73 & 4.94 & 4.94 & 7.04 & 7.04\\
+139 & 15 & 4.41 & 4.41 & 5.11 & 5.11 & 7.86 & 7.86\\
+157 & 16 & 4.24 & 4.24 & 5.38 & 5.38 & 7.32 & 7.32\\
+173 & 17 & 3.42 & 5.22 & 6.30 & 6.52 & 8.87 & 9.28\\
+181 & 18 & 3.42 & 3.42 & 6.34 & 6.34 & $>9.10$ & 10.77\\
+191 & 19 & 4.87 & 4.87 & 6.81 & 7.83 & $>9.08$ & 10.60\\
+193 & 20 & 4.78 & 4.78 & 6.81 & 6.81 & 9.14 & 11.90\\
+199 & 21 & 4.78 & 4.78 & 6.81 & 8.73 & $>9.08$ & 12.70\\
+239 & 22 & 5.79 & 6.16 & 8.41 & 8.41 & $>9.08$ & 11.19\\
+241 & 23 & 6.20 & 6.79 & 8.55 & 9.67 & $>9.05$ & 11.77\\
+251 & 24 & 6.15 & 6.15 & 8.55 & 8.58 & $>9.15$ & 12.89\\
+269 & 25 & 5.75 & 7.22 & 7.35 & 9.31 & $>9.07$ & 14.79\\
+271 & 26 & 5.75 & 10.10 & 7.35 & 14.62 & $>9.02$ & 15.72\\
+283 & 27 & 5.75 & 11.16 & $>8.99$ & 11.85 & $>8.99$ & 16.07\\
+293 & 28 & 5.75 & 10.70 & $>9.08$ & 11.26 & $>9.08$ & 15.13\\
+313 & 29 & 7.49 & 11.13 & 8.70 & 11.55 & $>9.02$ & 18.01\\
+349 & 30 & 7.28 & 12.78 & $>9.01$ & 14.09 & $>9.01$ & 22.16\\
+353 & 31 & 7.28 & 11.68 & $>8.98$ & 14.72 & $>8.98$ & 17.19\\
+373 & 32 & 6.84 & 11.24 & $>9.05$ & 15.69 & $>9.05$ & 18.45\\
+379 & 33 & 7.99 & 13.95 & $>8.99$ & 17.41 & $>8.99$ & 18.68\\
+\bottomrule
+\end{tabular}
+\caption{첫 공명 높이 $\log_{10}\tau^*_{10}(L,\eta)$. ``격자'' 열: 인증된 값 (\texttt{code/resscan.c}; 정밀도 $10^{-3}$ 이하) 또는
+$L$ 당 120\,s 안에 공명이 없을 때의 인증된 하한 ``$>$''. ``LLL'' 열: \texttt{code/lll\_res.py} 가 찾은 점 $t$ ($g_L(t)\ge(1-\eta)M$ 을 mpmath 로 확인) 의
+$\log_{10}t$ --- 즉 $\tau^*_{10}\le t$ 의 상한. $L$ 은 각 $M$ 을 처음 달성하는 소수. \NUMERIC\
+(\texttt{out/resscan\_A.txt}, \texttt{out/resscan\_B.txt}, \texttt{out/lll\_res.txt}, \texttt{data/resonance.csv}, \texttt{code/res\_analyze.py})}\label{NUM:tab-res}
+\end{table}
+
+\begin{proposition}[공명 높이 자료]\label{NUM:prop-res}
+\NUMERIC\ (\texttt{code/resscan.c}, \texttt{code/lll\_res.py}, \texttt{code/resolve\_amb.py}, \texttt{code/res\_analyze.py} $\to$ \texttt{out/res\_fit.txt}, \texttt{data/resonance.csv})
+\begin{enumerate}[label=(\arabic*)]
+\item 표~\ref{NUM:tab-res} 의 모든 ``격자'' 항목은 보조정리~\ref{NUM:lem-grid} 의 인증서로 얻었다. 판정 불가 후보는 한 번 ($L=193$, $\eta=0.3$, $t\approx60322.49$) 나왔고,
+국소 최대화 (\texttt{out/resolve\_amb.txt}) 로 그 칸에는 공명이 없고 첫 교차가 $t_c=60322.5932$ 임을 확인하였다 (\texttt{resscan} 의 보고값과 일치).
+\item LLL 이 찾은 점은 인증된 공명 없는 구간 안에 한 번도 들어가지 않았다 (모순 없음). 두 값이 모두 있는 66 경우 중 43 경우에서
+LLL 점은 격자의 첫 교차점과 $3$ 이내 (같은 공명 봉우리) 이고, $M\le16$ 에서는 36 경우 중 35 경우가 그렇다 (LLL 이 사실상 \emph{첫} 공명을 찾는다).
+$M\ge17$ 에서는 LLL 점이 격자의 $\tau^*$ 보다 흔히 수 자리 (최대 약 $10^{7}$ 배) 높아, 단지 상한일 뿐이다. 따라서 $\eta=0.1$, $M\ge21$ 에서
+$\tau^*_{10}$ 는 $(10^{9},\,t_{\mathrm{LLL}}]$ 로만 묶인다 (예: $M=33$: $10^{8.99}<\tau^*_{10}\le10^{18.68}$).
+\item 최소제곱 기울기 (상용로그, 소수 하나당):
+\begin{itemize}
+\item $\eta=0.3$: 격자 $\tau^*$ (29개, $M\in[5,33]$) $\log_{10}\tau^*\approx0.73+0.206M$; LLL 점 (29개, $M\le33$) $\log_{10}t\approx-1.70+0.412M$; 무작위 위상 모형 기울기 0.250
+\item $\eta=0.2$: 격자 $\tau^*$ (23개, $M\in[5,29]$) $\log_{10}\tau^*\approx0.59+0.304M$; LLL 점 (29개, $M\le33$) $\log_{10}t\approx-1.79+0.507M$; 무작위 위상 모형 기울기 0.354
+\item $\eta=0.1$: 격자 $\tau^*$ (14개, $M\in[5,20]$) $\log_{10}\tau^*\approx-0.13+0.496M$; LLL 점 (29개, $M\le33$) $\log_{10}t\approx-1.54+0.641M$; 무작위 위상 모형 기울기 0.520
+\end{itemize}
+\item $\eta=0.1$ 에서 격자는 $M\in\{18,19,21,22,23,24,25,26,27,28,29,30,31,32,33\}$ 에서 120\,s 안에 공명을 찾지 못한다; 따라서 그 $M$ 들에서 $\tau^*_{10}(L,0.1)>9.47\cdot10^{8}$ (인증된 하한들의 최솟값).
+\end{enumerate}
+\end{proposition}
+
+\begin{remark}[해석]\label{NUM:rem-res-heur}
+\HEUR\ (\texttt{code/ratefn.py} $\to$ \texttt{out/ratefn.txt})
+(i) 위상 $t\log p$ ($p\in P$) 를 독립 균등으로 보는 무작위 위상 모형에서는 $\Pr(|\frac1M\sum\e^{i\theta_p}|\ge x)=\e^{-M I(x)+O(\log M)}$,
+$I(x)=\sup_\lambda(\lambda x-\log I_0(\lambda))$ (Cramér; 2차원 벡터 $(\cos\theta,\sin\theta)$ 의 로그적률함수가 $\log I_0(|\lambda|)$), 상관 길이는 $O(1)$ 이므로
+$\log\tau^*\approx M I(1-\eta)$ 가 예측된다: $I(0.7)=0.576$, $I(0.8)=0.815$, $I(0.9)=1.196$ (상용로그 기울기 $0.250,0.354,0.520$).
+인증된 $\tau^*$ 의 기울기 ($0.21$, $0.30$, $0.50$) 는 이 예측 ($0.25$, $0.35$, $0.52$) 과 같은 크기이다. 다만 $\eta=0.3$ 에서는 중첩된 풀들이 같은 공명을 공유하여
+계단 모양이 되고 (예: $L=53,61$ 은 $t\approx360$, $L=101,103,109$ 는 $t\approx642$, $M=25$--$28$ 은 모두 $t\approx5.6\cdot10^5$), $\eta=0.2$ 의 적합은
+$M\ge27$ 의 미발견값 (하한 $>10^{9}$) 을 빼고 한 것이라 아래로 치우쳐 있다. LLL 점의 기울기 ($0.41,0.51,0.64$) 는 상한들의 포락선일 뿐이다.
+(ii) Dirichlet 동시근사는 $\tau^*\lesssim Q^M$, $Q=\lceil2\pi/\arccos(1-\eta)\rceil=8,10,14$ ($\log_{10}Q=0.90,1.00,1.15$) 를 주는데, 인증된 기울기는 그 $1/4$--$1/2$ 로
+Dirichlet 상한은 지수에서 날카롭지 않다. DESIGN S4 의 ``$T\ge(C/\eta)^M$ 이면 NR 실패'' 는 지수 높이가 자연스러운 한계라는 점에서 자료와 부합한다.
+(iii) VKGAP-C 에 대한 함의: 자료는 $\log\tau^*_{10}(L,\eta)\asymp M$ (선형 증가) 과 부합하고, 따라서 $\mathrm{NR}(P,\e^{cM},\eta)$ 는 $c<c(\eta)$ 로
+기대할 수 있다 (인증된 자료의 기울기로는 $c(0.1)\approx0.50\ln10\approx1.1$, $c(0.3)\approx0.21\ln10\approx0.48$ 정도; $M\le33$ 에서의 추정일 뿐). 단 명제~\ref{NUM:prop-t1} 에 의해 절단은 $|\tau|\ge1$ 이 아니라
+$\eta<0.0194$ 또는 $|\tau|\ge\tau_0(\eta)$ 여야 한다. $\eta=0.01$ 의 높이는 $\tau^*(0.1)$ 보다 크므로 (주의~\ref{NUM:rem-t1}) 위 하한은 $\eta=0.01$ 에도 유효하다.
+이 모든 것은 $M\le33$, $\ln L\le6$ 의 자료에 근거한 외삽이며 증명이 아니다.
+\end{remark}
+
+
+\subsection{S4(ii),(iii) 의 작은 검사}\label{NUM:ssec-checks}
+
+\begin{proposition}\label{NUM:prop-F}
+\NUMERIC\ (\texttt{code/checks\_F\_var.py} $\to$ \texttt{out/checks\_F\_var.txt})
+$\sup_{|t|\ge1}|F(t)|=|F(1)|=0.9805724$ ($<0.99$). 근거: $|F|$ 는 짝함수이고 $t\ge2.87$ 에서 $|F(t)|\le3/\sqrt{1+t^2}\le0.9871$;
+$[1,2.87]$ 에서는 간격 $10^{-6}$ 격자의 최댓값 $0.98057238$ ($t=1$) 에
+$|\frac{d}{dt}|F|^2|\le\frac{4\ln2}{1+t^2}+\frac{18t}{(1+t^2)^2}<6$ ($t\ge1$) 에서 오는 오차 $3\cdot10^{-6}$ 을 더해 $\sup\le0.9805739$.
+또한 $|F(t)|\ge0.9$ (각각 $0.8$, $0.7$) 인 마지막 $t\ge1$ 은 $2.299$ ($3.308$, $4.129$) 이다.
+\end{proposition}
+
+\begin{proposition}\label{NUM:prop-var}
+(1) \PROVED\ (입력: \EXT\ 소수정리) $u_p=\log L-\log p$ ($p\in P_L$) 의 경험분포는 $[0,\ln2)$ 위의 밀도 $2\e^{-u}$ 로 약수렴하고,
+그 평균은 $1-\ln2=0.306853$, 분산은 $2-2\ln2-\ln^22-(1-\ln2)^2=0.039094$ 이다.
+(2) \NUMERIC\ 유한 $L$ 의 $\mathrm{Var}(u)$ 는 표~\ref{NUM:tab-var} 와 같고, 쌍 부등식
+$1-g_L(t)^2/M^2\ge\frac{4}{\pi^2}t^2\mathrm{Var}(u)$ 가 $0<t\le1$ 격자 $2000$ 점에서 모두 성립한다 (최소비 $\approx2.42$; $L\le10^5$).
+\end{proposition}
+\begin{proof}[(1) 의 증명]
+구간 $[x,y]\subseteq(L/2,L]$ 의 소수 개수는 소수정리로 $\int_x^y\frac{du}{\log u}+o(L/\log L)=\frac{y-x}{\log L}(1+o(1))+o(\frac L{\log L})$ 이므로
+$p/L$ 의 경험분포는 $[1/2,1]$ 위의 균등분포 (밀도 2) 로 약수렴하고, $u=-\ln(p/L)$ 로 옮기면 밀도 $2\e^{-u}$ ($0\le u\le\ln2$) 이다.
+$\int_0^{\ln2}2u\e^{-u}du=2-2\cdot\frac{1+\ln2}{2}=1-\ln2$, $\int_0^{\ln2}2u^2\e^{-u}du=4-(\ln^22+2\ln2+2)=2-2\ln2-\ln^22$.
+유계 연속함수에 대한 약수렴이므로 평균과 분산도 수렴한다.
+\end{proof}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rrrrrr}
+\toprule
+$L$ & $M$ & 평균 $u$ & $\mathrm{Var}(u)$ & $g_L(1)/M$ & 쌍 부등식 최소비\\
+\midrule
+31 & 5 & 0.29110 & 0.05409 & 0.97313 & 2.419\\
+61 & 8 & 0.29481 & 0.04773 & 0.97632 & 2.419\\
+100 & 10 & 0.32835 & 0.03292 & 0.98363 & 2.434\\
+173 & 17 & 0.30499 & 0.04174 & 0.97925 & 2.427\\
+251 & 24 & 0.31507 & 0.04214 & 0.97907 & 2.426\\
+353 & 31 & 0.31474 & 0.04146 & 0.97940 & 2.426\\
+1000 & 73 & 0.30925 & 0.03787 & 0.98118 & 2.430\\
+10000 & 560 & 0.30981 & 0.03937 & 0.98043 & 2.428\\
+100000 & 4459 & 0.31011 & 0.03932 & 0.98046 & 2.428\\
+1000000 & 36960 & 0.30994 & 0.03916 & 0.98054 & --\\
+10000000 & 316066 & 0.30935 & 0.03917 & 0.98053 & --\\
+\bottomrule
+\end{tabular}
+\caption{$u_p=\log L-\log p$ 의 평균·분산과 $g_L(1)/M$. 극한값: 평균 $0.306853$, 분산 $0.039094$, $|F(1)|=0.980572$. \NUMERIC\ (\texttt{data/var\_u.csv})}\label{NUM:tab-var}
+\end{table}
+
+\subsection{요약}\label{NUM:ssec-summary}
+\begin{center}\small
+\begin{longtable}{p{0.62\textwidth}p{0.14\textwidth}p{0.16\textwidth}}
+\toprule
+진술 & 태그 & 위치\\
+\midrule
+중복 제거 $\Rightarrow$ $\kappa(a)=\min\{k:a\in R_k\}$, $H=\min\{k:R_k=[0,\Lam)\}$ & \PROVED & 명제~\ref{NUM:prop-bfs}\\
+$a_c=\min([0,\Lam)\setminus R_{c-1})$; $\kappa(\Lam/2+b)\le1+\kappa(b)$ & \PROVED & 보조정리~\ref{NUM:lem-ac}\\
+이동 항등식 $\iff$ $Z^+_k=Z^-_{k-1}$ ($\forall k$) & \PROVED & 보조정리~\ref{NUM:lem-shift}\\
+$L\le22$: p1p4 표 5--7 재현 (불일치 0); $\kappa$ 배열 전체가 0/1 DP 와 일치 ($L\le19$, 따라서 $L\le22$) --- 중복 제거 정리의 수치 확인 & \NUMERIC & 명제~\ref{NUM:prop-valid}\\
+$H(23)=H(24)=7$, $\#\{\kappa=7\}=167\,987\,582$, $a_7=3\,716\,552\,837$ (7항 표현) & \NUMERIC & 정리~\ref{NUM:thm-H23}\\
+$H(25)=H(26)=8$, $\#\{\kappa=8\}=1\,158$, $a_8=26\,577\,893\,791$ (8항 표현); 두 BFS 구현 일치 & \NUMERIC & 정리~\ref{NUM:thm-H25}\\
+$L\le26$ 모두에서 $H=1+\max_{a<\Lam/2}\kappa$ 이고 $\kappa(\Lam/2+b)=1+\kappa(b)$ ($\forall b$) & \NUMERIC & 정리~\ref{NUM:thm-H23}, \ref{NUM:thm-H25}\\
+이동 항등식의 일반 $L$ 증명 & \OPEN & 주의~\ref{NUM:rem-H-trend}\\
+$g_L(1)/M\to|F(1)|=0.98057$; $\eta>0.0195$ 이면 $\mathrm{NR}(P,T,\eta)$ (절단 $|\tau|\ge1$) 는 큰 $L$ 에서 거짓 & \PROVED\ (\EXT\ PNT) & 명제~\ref{NUM:prop-t1}\\
+격자 인증서 (립시츠 상수 $K\le\frac{\ln2}{2}M$) & \PROVED & 보조정리~\ref{NUM:lem-grid}\\
+공명 높이 $\tau^*_{10}(L,\eta)$ 표와 기울기 & \NUMERIC & 표~\ref{NUM:tab-res}\\
+$\log\tau^*\asymp M$ 의 점근 및 무작위 위상 모형 기울기 $I(1-\eta)$ & \HEUR & 주의~\ref{NUM:rem-res-heur}\\
+$\sup_{|t|\ge1}|F(t)|=|F(1)|=0.980572<0.99$ & \NUMERIC & 명제~\ref{NUM:prop-F}\\
+$\mathrm{Var}(u)\to0.039094$ (밀도 $2\e^{-u}$), 유한 $L$ 값, 쌍 부등식 & \PROVED\ (\EXT)/\NUMERIC & 명제~\ref{NUM:prop-var}\\
+\bottomrule
+\end{longtable}
+\end{center}
