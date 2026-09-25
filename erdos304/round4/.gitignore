@@ -7,3 +7,7 @@
 *.bits
 *.chk
 agents/NUM/data/*.bitset
+agents/*/code/*
+!agents/*/code/*.*
+!agents/*/code/*/
+__pycache__/

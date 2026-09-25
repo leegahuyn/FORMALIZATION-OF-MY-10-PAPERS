@@ -1,0 +1,14 @@
+L=23 a=1 kappa=1 (a notin R_0: True) repr: 1   distinct=True dedup_steps=0
+      as Lam/m: Lam/5354228880
+L=23 a=25 kappa=2 (a notin R_1: True) repr: 24 + 1   distinct=True dedup_steps=0
+      as Lam/m: Lam/223092870 + Lam/5354228880
+L=23 a=5671 kappa=3 (a notin R_2: True) repr: 5610 + 60 + 1   distinct=True dedup_steps=0
+      as Lam/m: Lam/954408 + Lam/89237148 + Lam/5354228880
+L=23 a=2486867 kappa=4 (a notin R_3: True) repr: 2451570 + 35190 + 105 + 2   distinct=True dedup_steps=0
+      as Lam/m: Lam/2184 + Lam/152152 + Lam/50992656 + Lam/2677114440
+L=23 a=110265329 kappa=5 (a notin R_4: True) repr: 104984880 + 5249244 + 31122 + 80 + 3   distinct=True dedup_steps=0
+      as Lam/m: Lam/51 + Lam/1020 + Lam/172040 + Lam/66927861 + Lam/1784742960
+L=23 a=1039438397 kappa=6 (a notin R_5: True) repr: 892371480 + 140900760 + 6126120 + 39780 + 255 + 2   distinct=True dedup_steps=0
+      as Lam/m: Lam/6 + Lam/38 + Lam/874 + Lam/134596 + Lam/20996976 + Lam/2677114440
+L=23 a=3716552837 kappa=7 (a notin R_6: True) repr: 2677114440 + 892371480 + 140900760 + 6126120 + 39780 + 255 + 2   distinct=True dedup_steps=0
+      as Lam/m: Lam/2 + Lam/6 + Lam/38 + Lam/874 + Lam/134596 + Lam/20996976 + Lam/2677114440

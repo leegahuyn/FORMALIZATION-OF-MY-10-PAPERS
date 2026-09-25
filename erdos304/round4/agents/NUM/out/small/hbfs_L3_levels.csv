@@ -1,0 +1,4 @@
+L,Lambda,tau,k,ones_Rk,new_k,a_k_first_zero_of_Rkm1,lowerhalf_zeros_Rk,upperhalf_zeros_Rk,first_zero_Rk,seconds
+3,6,4,0,1,1,0,2,3,1,0
+3,6,4,1,4,3,1,0,2,4,0.00
+3,6,4,2,6,2,4,0,0,6,0.00

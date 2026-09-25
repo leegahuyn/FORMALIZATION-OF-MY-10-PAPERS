@@ -1,0 +1,20 @@
+# full kappa-array comparison: hbfs (multiset BFS; dense path hbfsD with -s 0, else default) vs dp01 (0/1 DP, distinct divisors)
+L=2 kap_bfs_L2.bin vs kap_dp_L2.bin: IDENTICAL (2 entries)
+L=3 kap_bfs_L3.bin vs kap_dp_L3.bin: IDENTICAL (6 entries)
+L=4 kap_bfs_L4.bin vs kap_dp_L4.bin: IDENTICAL (12 entries)
+L=5 kap_bfs_L5.bin vs kap_dp_L5.bin: IDENTICAL (60 entries)
+L=7 kap_bfs_L7.bin vs kap_dp_L7.bin: IDENTICAL (420 entries)
+L=8 kap_bfs_L8.bin vs kap_dp_L8.bin: IDENTICAL (840 entries)
+L=9 kap_bfs_L9.bin vs kap_dp_L9.bin: IDENTICAL (2520 entries)
+L=11 kap_bfs_L11.bin vs kap_dp_L11.bin: IDENTICAL (27720 entries)
+L=13 kap_bfs_L13.bin vs kap_dp_L13.bin: IDENTICAL (360360 entries)
+L=16 kap_bfsD_L16.bin vs kap_dp_L16.bin: IDENTICAL (720720 entries)
+L=17 kap_bfsD_L17.bin vs kap_dp_L17.bin: IDENTICAL (12252240 entries)
+L=19 kap_bfs_L19.bin vs kap_dp_L19.bin: IDENTICAL (232792560 entries)
+L=5 dense-path kap_bfsD vs dp: IDENTICAL
+L=7 dense-path kap_bfsD vs dp: IDENTICAL
+L=9 dense-path kap_bfsD vs dp: IDENTICAL
+L=11 dense-path kap_bfsD vs dp: IDENTICAL
+L=13 dense-path kap_bfsD vs dp: IDENTICAL
+L=16 dense-path kap_bfsD vs dp: IDENTICAL
+L=17 dense-path kap_bfsD vs dp: IDENTICAL
