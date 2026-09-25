@@ -12,3 +12,8 @@ Fragment: `frag.tex` (573 lines, 10 pp., compile OK). Pending Stage-2 audit.
 8. [NUMERICAL] exact DP+FFT checks ω = 2,3, L = 60–2000, small primes and prime powers (3·7·11, 8·9·5): main term confirmed; true error below Prop-exact bound by factors 0.36–5.7e−5; no bad characters for L ≥ 300. Proved constants non-trivial only for L ≳ 10^12–10^16.
 
 Files: code/cmm_exact.py → out/cmm_exact.txt; code/cmm_constants.py → out/cmm_constants.txt; code/check_local.py → out/check_local.txt.
+
+## Stage-2 audit (AUD1): CONFIRMED 19, MINOR-FIX 6, GAP 0, WRONG 0
+- Core mathematics confirmed (exact expansion incl. prime powers/2-powers, conjugates, moment count, multiplicative bound, asymptotic, effective claims avoid S–W except (H_Z-ii), SS(c), upgrade corollary; singular series; both barriers).
+- Fixes (marked `% AUD1:` in frag.tex): (1) bad-character proposition true, but "cancellation between B(S) terms needed" does not follow; (2) new PROVED Parseval lower bound (AUD1 file): RHS of Prop exact ≥ 2^{−ω} q^{−1/2}(φ(q)/τ(Q') − 1), so the absolute-value expansion is useless once log q ≥ (log 2+o(1))L/log L; range √L/log L … L/(log L)^2 OPEN; (3) Remark 4.27(2)(d) upgrade only covers q ≤ L^{ω_0} ≪ R_*; q ≥ R_* stays OPEN; (4) Cor T3 needs c ≤ 0.156 (non-trivial for c < 0.078); SS(a) "effective" only with explicit o(·); "threshold unchanged" only for ω(q) ≤ ω_0; table #bad 225 → 224; missing 8·9·5 bounds filled.
+- Numerics independently reproduced; conjugate formula error ≤ 8.5e−14 vs literal 1.90–2.00.
