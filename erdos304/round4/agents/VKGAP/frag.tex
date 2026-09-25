@@ -254,6 +254,186 @@ $\ge\frac{y}{\log y}\big(\tilde w(1)-|\tilde w(1+i\tau)|-2\eps_3(y)\big)\ge\frac
 ($1-\cos x\le x^2/2$ 사용). 따라서 $\sup_{|\tau|\ge1}|F|\le\sqrt{(1+a)/2}=0.99018\ldots$이고
 $1-|F(\tau)|\ge\frac{1-|F|^2}{2}\ge\frac{(1-a)\tau^2}{2(1+\tau^2)}\ge 0.01954\,\frac{\tau^2}{1+\tau^2}$.
 (c) \NUMERIC\ (구간 산술, \texttt{code/F\_check.py}, 출력 \texttt{out/F\_check.out}) $\sup_{|\tau|\ge1}|F(\tau)|=|F(1)|=0.98057\ldots$,
-$1-|F(\tau)|\ge0.0194\,\tau^2$ ($0.02\le\tau\le1$; $\tau<0.02$에서는 (b)가 $0.01953\tau^2$를 준다). lead의 수치 주장과 일치한다.
+$1-|F(\tau)|\ge0.0194\,\tau^2$ ($0<\tau\le1$; $(0,0.08]$은 (b)의 형태로, $[0.08,1]$은 20000개 소구간의 단조성 평가로 확인; $\tau=1$에서 $1-|F(1)|=0.019428$이므로 상수는 거의 최선). lead의 수치 주장과 일치한다.
 (d) 본 증명에서는 $|\tau|\le4$를 Lemma~\ref{VKGAP:lem-pair}로, $|\tau|\ge4$를 $|F|\le3/\sqrt{17}$로 처리하므로 (b),(c)는 필요 없다.
+\end{remark}
+
+%======================================================================
+\subsection{Fejér 핵에 의한 국소 극한: 핵심 명제}
+\label{VKGAP:sec-core}
+
+\begin{lemma}[누적량 전개, 삼차 나머지]\label{VKGAP:lem-cumulant}
+\PROVED\ $X$가 평균 $0$, $|X|\le b$, 분산 $\sigma^2$인 확률변수이고 $|\tau|b\le1/2$이면
+$\mathbb{E}e^{i\tau X}=1+z$, $|z|<1/2$이고 $\log(1+z)=-\tau^2\sigma^2/2+r$, $|r|\le\frac12|\tau|^3b\sigma^2$.
+\end{lemma}
+\begin{proof}
+$|e^{ix}-1-ix+x^2/2|\le|x|^3/6$와 $\mathbb{E}X=0$에서 $z=-\tau^2\sigma^2/2+r_1$, $|r_1|\le|\tau|^3\mathbb{E}|X|^3/6\le|\tau|^3b\sigma^2/6$.
+$\sigma^2\le b^2$이므로 $|z|\le\tau^2\sigma^2(\frac12+\frac{|\tau|b}{6})\le\frac7{12}\tau^2\sigma^2\le\frac{7}{48}$.
+$|z|\le1/2$에서 $|\log(1+z)-z|\le\sum_{k\ge2}|z|^k/k\le|z|^2$, 그리고
+$|z|^2\le\frac{49}{144}\tau^4\sigma^4\le\frac{49}{144}\tau^4b^2\sigma^2\le\frac{49}{288}|\tau|^3b\sigma^2$.
+따라서 $|r|\le(\frac16+\frac{49}{288})|\tau|^3b\sigma^2=\frac{97}{288}|\tau|^3b\sigma^2$.
+\end{proof}
+
+\paragraph{조건.} $n_0(y):=\frac{32}{c_2}(\log y)^2\log\log y$. $\eta'\in(0,1]$에 대해 $y_0(\eta')$를 다음이 모두 성립하도록 잡는다
+($y\ge y_0(\eta')$): Lemma~\ref{VKGAP:lem-pair}의 $v_y\ge v_0$; 그리고 모든 $n\ge n_0(y)$에 대해
+\begin{align*}
+&\text{(C1)}\ n\ge2\cdot10^4;\qquad
+\text{(C2)}\ \frac{c_2n}{4(\log y)^2}\ge\log\big(10^3\sqrt n\log y\big);\qquad
+\text{(C3)}\ \frac{\eta'n}{2}\ge\log\big(10^3\sqrt n\log y\big).
+\end{align*}
+이런 $y_0(\eta')$는 존재한다: 각 부등식에서 (좌변$-$우변)은 $n\ge\max(2(\log y)^2/c_2,\,1/\eta')$에서 $n$에 대해 증가하므로
+$n=n_0(y)$에서만 확인하면 된다. $n=K(\log y)^2$, $K=\frac{32}{c_2}\log\log y$로 쓰면 (C2)는
+$\frac{c_2K}{4}=8\log\log y\ge 6.91+\frac12\log K+2\log\log y$이고 이는 큰 $y$에서 참; (C3)의 좌변은 $\asymp_{\eta'}(\log y)^2\log\log y$, 우변은 $O(\log\log y)$.
+
+\begin{proposition}[핵심 명제: 비공명 $\Rightarrow$ 풀 로그합의 조밀성]\label{VKGAP:prop-core}
+\PROVED\ (Lemma~\ref{VKGAP:lem-pair}가 쓰는 (E1)을 제외하면 초등적)
+$\eta'\in(0,1]$, $y\ge y_0(\eta')$, $T'\ge8\pi$이고 다음을 가정하자:
+\[
+(\mathrm{NR}'_y(T',\eta'))\qquad \sum_{p\in P_y}(1-\cos(\tau\log p))\ge\eta'M_y\qquad(4\le|\tau|\le T').
+\]
+$q\in(0,1/2]$가 $n=q(1-q)M_y\ge n_0(y)$를 만족하고 $T:=\min\big(T'/(2\pi),\,e^{\eta'n/2}\big)$라 하자. 그러면
+$|s-q\theta_y|\le1$인 모든 실수 $s$에 대해 $|\log U(E)-s|\le2/T$인 $E\subseteq P_y$가 존재한다.
+\end{proposition}
+\begin{proof}
+$T\ge1$. $t:=s-\mu$ ($|t|\le1$), $\tau_1:=1/(2\log y)$, $b:=\log y$, $\tilde\varphi(\tau):=\mathbb{E}e^{i\tau(S-\mu)}$.
+(C1)과 \eqref{VKGAP:eq-V}에서 $\sqrt V\ge\sqrt{n/2}\,\log y\ge100\log y$, 따라서 $V\ge10^4$, $\tau_1\sqrt V\ge50$.
+(C2),(C3)와 $V\le n(\log y)^2$에서
+\begin{equation}\label{VKGAP:eq-C23}
+e^{-c_2n\tau_1^2}\le10^{-3}V^{-1/2},\qquad e^{-\eta'n/2}\le10^{-3}V^{-1/2}.
+\end{equation}
+
+\emph{1단계 (Fourier 표현).} Fejér 항등식에서 $F_T(S-s)=\int(1-|\xi|/T)_+e^{2\pi i\xi(S-s)}d\xi$; 기댓값(유한합)을 취하고 $\tau=2\pi\xi$로 치환하면
+\[
+\mathbb{E}F_T(S-s)=\frac1{2\pi}\int_{|\tau|\le2\pi T}\Big(1-\frac{|\tau|}{2\pi T}\Big)e^{-i\tau t}\tilde\varphi(\tau)\,d\tau .
+\]
+
+\emph{2단계 (가우스 근사).} $X_p=(\xi_p-q)\log p$는 독립, 평균 $0$, $|X_p|\le b$, $\sum\mathrm{Var}X_p=V$.
+$|\tau|\le\tau_1$이면 $|\tau|b=1/2$ 이하이므로 Lemma~\ref{VKGAP:lem-cumulant}을 각 $p$에 적용하여 합하면
+$\tilde\varphi(\tau)=\exp(-\tau^2V/2+\rho)$, $|\rho|\le\frac12|\tau|^3bV\le\frac14\tau^2V$. 따라서
+$|\tilde\varphi(\tau)-e^{-\tau^2V/2}|\le e^{-\tau^2V/2}|\rho|e^{|\rho|}\le\frac12|\tau|^3bV\,e^{-\tau^2V/4}$.
+
+\emph{3단계 (하한).} $G:=\frac1{2\pi}\int_\R e^{-i\tau t}e^{-\tau^2V/2}d\tau=(2\pi V)^{-1/2}e^{-t^2/(2V)}\ge0.3988\,V^{-1/2}$ ($|t|\le1$, $V\ge10^4$).
+1단계의 적분과 $G$의 차이는 다음 다섯 항으로 나뉜다:
+(a) $G$의 $|\tau|>\tau_1$ 부분: $\le\frac1\pi\int_{\tau_1}^\infty e^{-\tau^2V/2}d\tau\le\frac{e^{-\tau_1^2V/2}}{\pi\tau_1V}\le\frac{1}{50\pi}V^{-1/2}$;
+(b) 인자 $|\tau|/(2\pi T)$: $\le\frac1{2\pi}\int\frac{|\tau|}{2\pi T}e^{-\tau^2V/2}d\tau=\frac1{2\pi^2TV}\le10^{-4}V^{-1/2}$;
+(c) $|\tau|\le\tau_1$에서 $\tilde\varphi-e^{-\tau^2V/2}$: $\le\frac1{2\pi}\int_\R\frac12|\tau|^3bVe^{-\tau^2V/4}d\tau=\frac{4b}{\pi V}\le\frac{4}{100\pi}V^{-1/2}$;
+(d) $\tau_1<|\tau|\le4$: Lemma~\ref{VKGAP:lem-pair}에서 $\le\frac1\pi\int_{\tau_1}^4e^{-c_2n\tau^2}d\tau\le\frac4\pi e^{-c_2n\tau_1^2}\le0.0013\,V^{-1/2}$;
+(e) $4<|\tau|\le2\pi T$ ($2\pi T\le T'$): $(\mathrm{NR}')$와 \eqref{VKGAP:eq-phi-basic}에서 $|\tilde\varphi|\le e^{-\eta'n}$이므로
+$\le\frac1\pi\cdot2\pi T e^{-\eta'n}\le2e^{-\eta'n/2}\le0.002\,V^{-1/2}$ ($T\le e^{\eta'n/2}$).
+합: $0.0064+0.0001+0.0128+0.0013+0.002<0.0226$. 따라서 $\mathbb{E}F_T(S-s)\ge0.376\,V^{-1/2}$.
+
+\emph{4단계 (상한 국소 평가).} 임의의 $a\in\R$에 대해 $|x|\le1/(2T)$에서 $F_T(x)\ge4T/\pi^2$이므로
+\[
+\Pr(|S-a|\le\tfrac1{2T})\le\frac{\pi^2}{4T}\mathbb{E}F_T(S-a)\le\frac{\pi^2}{4T}\cdot\frac1{2\pi}\int_{|\tau|\le2\pi T}|\varphi(\tau)|d\tau .
+\]
+$|\tau|\le\tau_1$ ($\le\pi/\log y$)에서 Lemma~\ref{VKGAP:lem-phi1}: $\int_\R e^{-2\tau^2V/\pi^2}d\tau=\pi^{3/2}/\sqrt{2V}\le3.9375\,V^{-1/2}$;
+$\tau_1<|\tau|\le4$: $\le8e^{-c_2n\tau_1^2}\le0.008V^{-1/2}$; $4<|\tau|\le2\pi T$: $\le4\pi Te^{-\eta'n}\le4\pi e^{-\eta'n/2}\le0.0126V^{-1/2}$.
+따라서 $B:=\sup_a\Pr(|S-a|\le\frac1{2T})\le\frac{\pi}{8T}\cdot3.9581\,V^{-1/2}\le\frac{1.555}{T\sqrt V}$.
+
+\emph{5단계 (꼬리).} $|x|\ge k/T$이면 $F_T(x)\le1/(\pi^2Tx^2)\le T/(\pi^2k^2)$. $I_k=[k/T,(k+1)/T)$라 하면
+$\{|x|>2/T\}\subseteq\bigcup_{k\ge2}(I_k\cup-I_k)$이고 $s\pm I_k$는 길이 $1/T$인 구간이므로 $\Pr(S-s\in\pm I_k)\le B$. 따라서
+\[
+\mathbb{E}\big[F_T(S-s);\,|S-s|>2/T\big]\le\sum_{k\ge2}\frac{2BT}{\pi^2k^2}=\frac{2BT}{\pi^2}\Big(\frac{\pi^2}6-1\Big)\le\frac{2\cdot1.555\cdot0.6450}{\pi^2}V^{-1/2}\le0.2033\,V^{-1/2}.
+\]
+
+\emph{6단계.} $F_T\ge0$이고 $F_T\le T$이므로
+$T\cdot\Pr(|S-s|\le2/T)\ge\mathbb{E}[F_T(S-s);|S-s|\le2/T]\ge(0.376-0.2033)V^{-1/2}>0$.
+따라서 $\Pr(|S-s|\le2/T)>0$이고, \S\ref{VKGAP:sec-setup}의 주에 의해 원하는 $E$가 존재한다.
+\end{proof}
+
+\begin{remark}\label{VKGAP:rem-core-quant}
+\PROVED\ 6단계는 정량적 국소 하한 $\Pr(|S-s|\le 2/T)\ge 0.17/(T\sqrt V)$도 준다 ($F_T\le T$ 사용).
+\end{remark}
+
+%======================================================================
+\subsection{정리 A: $\Lam_L$의 약수 간격 (무조건적)}
+\label{VKGAP:sec-A}
+
+$\sigma(y):=4n_0(y)\log y+2=\frac{128}{c_2}(\log y)^3\log\log y+2$ ($\frac{128}{c_2}=\frac{64\pi^2}{v_0}<1.08\cdot10^5$),
+$q_0(y):=2n_0(y)/M_y$. $q_0(y)\theta_y+2\le\sigma(y)$ ($\theta_y\le M_y\log y$).
+
+\begin{theorem}[규모 $y$의 풀에 의한 양쪽 약수 간격]\label{VKGAP:thm-A-y}
+\COND{(E1)--(E4)}\ 절대상수 $y_2$가 있어 다음이 성립한다. $L\ge y\ge y_2$, $r_y:=4\pi/T_*(y)$라 하자.
+\begin{enumerate}[label=(\roman*)]
+\item $[q_0(y)\theta_y-1,\ \theta_y/2+1]$의 모든 실수 $s$에 대해 $|\log U(E)-s|\le r_y$인 $E\subseteq P_y$가 있다.
+\item $[\sigma(y),\ \log\Lam_L-\sigma(y)]$의 모든 실수 $\ell$에 대해 $\Lam_L$의 진약수 $d_-,d_+$가 있어
+$\log d_-\in[\ell-2r_y,\ell]$, $\log d_+\in[\ell,\ell+2r_y]$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$y_2\ge\max(y_0(1/15),y_1',16)$를 $q_0(y)\le1/2$, $n_0(y)/30\ge\log T_*(y)$, $T_*(y)\ge 8\pi$가 되도록 크게 잡는다.
+(i) $q:=\max(q_0,\min(1/2,s/\theta_y))$로 두면 $|s-q\theta_y|\le1$이고 $n=q(1-q)M_y\ge q_0(1-q_0)M_y\ge q_0M_y/2=n_0(y)$.
+Corollary~\ref{VKGAP:cor-NRuncond}에 의해 $(\mathrm{NR}'_y(T_*(y),1/15))$가 성립하므로 명제~\ref{VKGAP:prop-core}를
+$\eta'=1/15$, $T'=T_*(y)$로 적용한다. $e^{n/30}\ge e^{n_0/30}\ge T_*(y)$이므로 $T=T_*(y)/(2\pi)$, $2/T=r_y$.
+
+(ii) 먼저 $\ell\le\frac12\log\Lam_L+1$. $u\in\{\ell-r_y,\ell+r_y\}$와 $z:=u-q_0\theta_y$ ($\ge2-r_y>0$)에 대해:
+$z\le\log Q_y$이면 Lemma~\ref{VKGAP:lem-cofactor}로 $z-\log2<\log c\le z$인 $c\mid Q_y$를 잡고 $s:=u-\log c\in[q_0\theta_y,q_0\theta_y+\log2)$;
+$z>\log Q_y$이면 $c:=Q_y$, $s:=u-\log Q_y$. 후자에서 $s>q_0\theta_y$이고
+$s\le\frac12\log\Lam_L+1+r_y-(\log\Lam_L-\theta_y)=\theta_y-\frac12\log\Lam_L+1+r_y\le\frac12\theta_y+1$
+(왜냐하면 $\log\Lam_L=\psi(L)\ge\theta(y)=\theta_y+\theta(y/2)\ge\theta_y+2r_y$). 어느 경우든 $s$는 (i)의 범위에 있으므로
+$|\log U(E)-s|\le r_y$인 $E$가 있고, $d:=cU(E)$는 $\Lam_L$을 나누며 (주~\ref{VKGAP:rem-cofactor}) $\log d\in[u-r_y,u+r_y]$.
+$u=\ell-r_y$이면 $d_-:=d$, $u=\ell+r_y$이면 $d_+:=d$.
+다음 $\frac12\log\Lam_L+1<\ell\le\log\Lam_L-\sigma(y)$이면 $\ell^*:=\log\Lam_L-\ell\in[\sigma(y),\frac12\log\Lam_L-1]$에 앞의 결과를 적용해
+얻은 $e_\pm$로 $d_-:=\Lam_L/e_+$, $d_+:=\Lam_L/e_-$.
+진약수: $d_\pm\le e^{\ell+2r_y}\le\Lam_Le^{-\sigma(y)+2r_y}<\Lam_L$.
+\end{proof}
+
+\begin{theorem}[VKGAP-A: $\Lam_L$의 약수 간격]\label{VKGAP:thm-A}
+\COND{(E1)--(E4): 소수 정리, VK 영점 자유 영역, $\zeta'/\zeta$ 부분분수 --- 교과서 입력만}\
+$L\ge y_2$이고
+\[
+X_0:=\exp\!\Big(\tfrac{128}{c_2}(\log L)^3\log\log L+2\Big),\qquad
+\delta:=8\pi\exp\!\Big(-\frac{(\log L)^{3/2}}{(\log\log L)^{3}}\Big)
+\]
+이라 하자. 그러면 모든 실수 $x\in[X_0,\Lam_L/X_0]$에 대해 $[(1-\delta)x,x]$와 $[x,(1+2\delta)x]$에 각각 $\Lam_L$의 약수가 있다.
+특히 모든 $\eps>0$과 $L\ge L_0(\eps)$에 대해 $\delta\le\exp(-(\log L)^{3/2-\eps})$이고 $X_0\le\exp((\log L)^{3+\eps})$
+(DESIGN S4의 목표 $X_0=\exp(C(\log L)^4)$보다 강하다).
+\end{theorem}
+\begin{proof}
+정리~\ref{VKGAP:thm-A-y}(ii)를 $y=L$, $\ell=\log x$로 적용: $2r_L=\delta$, $e^{-\delta}\ge1-\delta$, $e^{\delta}\le1+2\delta$.
+\end{proof}
+
+\begin{remark}[무엇이 새로운가, 정직한 비교]\label{VKGAP:rem-A-new}
+p1p4 주~5.19(c)는 이 경로를 \HEUR/\OPEN으로 남겼다; 정리~\ref{VKGAP:thm-A}는 그것을 교과서 입력만으로 완성한다.
+$\delta$의 지수 $3/2$는 VK 영역의 지수 $2/3$에서 온다: $\log T$가 $(\log L)^{3/2-o(1)}$을 넘으면
+$\eta(T)\log L\to0$이 되어 소수합의 오차가 주항을 이기지 못한다.
+$n!$의 약수 간격에 관한 Berend--Harmse 형의 결과와의 정확한 비교는 문헌에 접근할 수 없어 하지 못했다 (recalled, unverified).
+\end{remark}
+
+%======================================================================
+\subsection{정리 B: $H(L)\le(1+o(1))L(\log\log L)^3/(\log L)^{3/2}$}
+\label{VKGAP:sec-B}
+
+\begin{theorem}[VKGAP-B]\label{VKGAP:thm-B}
+\COND{(E1)--(E4)}\ $L\to\infty$일 때
+\[
+H(L)\le\frac{\psi(L)}{(\log L)^{3/2}(\log\log L)^{-3}-\log(8\pi)}+O\big((\log L)^3\log\log L\big)
+=\big(1+O(\tfrac{(\log\log L)^3}{(\log L)^{3/2}})\big)\frac{L(\log\log L)^3}{(\log L)^{3/2}} .
+\]
+특히 모든 $\eps>0$과 $L\ge L_0(\eps)$에 대해 $H(L)\le L/(\log L)^{3/2-\eps}$. 결과적으로
+\[
+N(b)\le(2+o(1))\,\frac{\log b\,(\log\log\log b)^3}{(\log\log b)^{3/2}}\ \ll_\eps\ \frac{\log b}{(\log\log b)^{3/2-\eps}} .
+\]
+\end{theorem}
+\begin{proof}
+(K4)를 정리~\ref{VKGAP:thm-A}의 $X_0,\delta$로 적용한다: $\delta\le1/4$, $X_0\ge L$,
+$k=\lceil\log X_0/\log(L/2)\rceil=O((\log L)^2\log\log L)$이므로 $M\ge3k+1$ ((E1)에서 $M\asymp L/\log L$).
+\[
+H(L)\le\frac{\log X_0}{\log 2}+\frac{\psi(L)}{\log(1/\delta)}+\frac{\log X_0}{\log(L/2)}+5,
+\]
+$\log(1/\delta)=(\log L)^{3/2}(\log\log L)^{-3}-\log8\pi$, $\log X_0=O((\log L)^3\log\log L)$.
+(E1)에서 $\psi(L)=L(1+O(e^{-c\sqrt{\log L}}))$; $\frac{\log X_0}{L(\log\log L)^3(\log L)^{-3/2}}=O(\frac{(\log L)^{9/2}}{L})$.
+$o(1)$의 주된 부분은 $\log8\pi/\log(1/\delta)=O((\log\log L)^3(\log L)^{-3/2})$이다.
+$\eps$형: $(\log\log L)^3\le\frac12(\log L)^{\eps}$ ($L\ge L_0(\eps)$).
+$N(b)$: $L_b:=\min\{L:\Lam_L\ge b\}$이면 (K5)에서 $N(b)\le2H(L_b)$, 그리고 $\psi(L_b-1)<\log b$와 (E1)에서
+$L_b\le(1+o(1))\log b$. $f(L)=L(\log\log L)^3(\log L)^{-3/2}$은 큰 $L$에서 증가하고 $f((1+o(1))\log b)=(1+o(1))f(\log b)$.
+\end{proof}
+
+\begin{remark}[정직한 위치]\label{VKGAP:rem-B-honest}
+$N(b)$에 대해 정리~\ref{VKGAP:thm-B}는 Hughes의 계승 경계 $N(b)\le(4\log2+o(1))\log b/(\log\log b)^2$
+(arXiv:2609.10902, BRIEF에 따라 snippet-verified)보다 \emph{약하고}, Vose의 $N(b)\ll\sqrt{\log b}$와는 거리가 멀다.
+이 절의 가치는 (1) $\Lam_L$에 대한 약수 간격 정리 (정리~\ref{VKGAP:thm-A}; $\Lam_L$ 자체의 $h(\Lam_L)=H(L)$의
+첫 $o(L/\log L)$ 경계), (2) 아래 \S\ref{VKGAP:sec-C}의 조건부 사다리에서 같은 기계가 그대로 쓰인다는 점이다.
+또한 $\log X_0$ 항은 정리~\ref{VKGAP:thm-A-y}의 다규모 적용으로 $O((\log L)^{3/2}(\log\log L)^4)$까지 줄일 수 있다
+(\S\ref{VKGAP:sec-C}의 보조정리~\ref{VKGAP:lem-smallzone}); 주항에는 영향이 없다.
 \end{remark}

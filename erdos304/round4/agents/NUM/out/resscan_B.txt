@@ -31,3 +31,6 @@ L=353 M=31 eta=0.10 tau*>9.467898e+08 (no resonance in [10,9.467898e+08]) max g/
 L=373 M=32 eta=0.30 tau*=6963009.314654 g/M=0.700001  h=0.22891 K=5.5917 cand=5 amb=0 time=120.0s
 L=373 M=32 eta=0.20 tau*>1.120848e+09 (no resonance in [10,1.120848e+09]) max g/M on grid=0.759954 at t=709478230.6604  h=0.22891 K=5.5917 cand=5 amb=0 time=120.0s
 L=373 M=32 eta=0.10 tau*>1.120848e+09 (no resonance in [10,1.120848e+09]) max g/M on grid=0.759954 at t=709478230.6604  h=0.22891 K=5.5917 cand=5 amb=0 time=120.0s
+L=379 M=33 eta=0.30 tau*=98016349.926664 g/M=0.700002  h=0.22470 K=5.8745 cand=2 amb=0 time=120.0s
+L=379 M=33 eta=0.20 tau*>9.698259e+08 (no resonance in [10,9.698259e+08]) max g/M on grid=0.749821 at t=435176522.9002  h=0.22470 K=5.8745 cand=2 amb=0 time=120.0s
+L=379 M=33 eta=0.10 tau*>9.698259e+08 (no resonance in [10,9.698259e+08]) max g/M on grid=0.749821 at t=435176522.9002  h=0.22470 K=5.8745 cand=2 amb=0 time=120.0s
