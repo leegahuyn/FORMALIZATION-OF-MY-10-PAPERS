@@ -1,0 +1,25 @@
+\section{CORE: 핵심 명제 SP1에 대한 직접 공격과 방법 장벽}
+\label{CORE:sec}
+
+이 절은 남은 단 하나의 핵심 명제
+\[
+\text{SP1}\iff H(L)=h(\Lambda_L)\ll \log L
+\]
+에 대한 직접 공격(세 경로)과, 그 공격들이 멈추는 지점을 정확히 설명하는 방법 장벽 정리들을 담는다.
+결론을 먼저 적는다. \textbf{SP1은 이 절에서 증명되지 않았다} \OPEN. SP1보다 엄격히 약한 새 중간 단계(예: $H(L)\ll L^{1/2-c}$, 거의 모든 $a$에 대한 $O(\log L)$ 표현, 단일 top 단계의 $O(\log L)$ 피복)도 증명하지 못했다 \OPEN.
+대신 다음을 증명하였다: (i) 번역불변(위상맹) 모멘트 방법은 어떤 높이에서도 비공명을 증명할 수 없다(장벽 I); (ii) 약수의 \emph{개수/간격 정보}만 쓰는 논법은 해상도 $\rho$에서 $(1-o(1))L/\log(L/\rho)$보다 좋은 상계를 줄 수 없으며, 따라서 p1p4 명제 5.18(간격 가설 $\Rightarrow$ 상계)은 점근적으로 최적이다(장벽 II); (iii) Fourier 증명서 장벽의 정리된 형태와 ``모든 표적''과 ``거의 모든 표적''의 이분법(장벽 III, 조대 피복 보조정리); (iv) 18번 문제와의 정확한 관계(교정 포함, 장벽 IV); (v) 보조 법 $M$의 적응적 선택은 단조 극한으로 환원되어 평균화 메커니즘을 주지 않는다(경로 b).
+
+\subsection{기호와 출발점}
+\label{CORE:ssec-setup}
+$\Lambda=\Lambda_L=\lcm(1,\dots,L)$, $\psi(L)=\log\Lambda_L$, $D^*_L$은 $\Lambda_L$의 진약수 전체, $\tau(\cdot)$는 약수 개수,
+$P=\{p:\ L/2<p\le L\}$, $M=|P|$이다. 유한집합 $A\subset\Z_{\ge1}$과 $k\ge1$에 대해
+$kA:=\{a_1+\dots+a_k: a_i\in A\}$ (반복 허용)로 쓰고
+\[
+\kappa(A):=\min\{k\ge 0:\ k(A\cup\{0\})\supseteq[0,\Lambda_L)\cap\Z\}\qquad(\text{없으면 }\infty)
+\]
+로 둔다. 중복 제거 정리(baker 정리 3.2; 증명의 핵심: $d$의 최소 부족 소수 $p\ge3$, $r=(p+1)/2$이면 $r\mid d$이고 $d+d=pd/r+d/r$, 제곱합이 $2(d-d/r)^2\ge2$만큼 증가)를 재확인하였다 \PROVED. 따라서
+\begin{equation}\label{CORE:eq-kappa}
+H(L)=\kappa(D^*_L).
+\end{equation}
+$g_n(x)$는 $x$를 $n$의 서로 다른 약수들의 합으로 쓸 때의 최소 항수($\infty$ 허용), $N(a,b)$, $N(b)$는 BRIEF의 기호이다.
+

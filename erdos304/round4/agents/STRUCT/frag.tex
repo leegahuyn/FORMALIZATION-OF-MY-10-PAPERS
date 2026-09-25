@@ -258,7 +258,9 @@ $j\ge j_*$에 대해 합하면 적분구간이 이어져
 \[
 \sum_{j\ge j_*}K_j\ge(1-\tfrac\eps2)G(w)\int_{\log\psi(y_{j_*-1})}^{\log\psi(L)}(\tau-\log2)\,d\tau .
 \]
-$j_*=2$이면 $y_{j_*-1}=y_1$, 아니면 $y_{j_*-1}<Y_1$이므로 $Z:=\max(y_1,Y_1)$에 대해 $\psi(y_{j_*-1})\le\psi(Z)$이고, $\log\psi(Z)-\log2\le\log Z$, 또 큰 $L$에서 $\log\psi(L)-\log2\ge\log L-1$. 따라서 적분 $\ge\frac12[(\log L-1)^2-(\log Z)^2]\ge\frac12[(\log L)^2-2\log L-(\log y_1)^2-(\log Y_1)^2]$.
+$j_*=2$이면 $y_{j_*-1}=y_1$, 아니면 $y_{j_*-1}<Y_1$이므로 $Z:=\max(y_1,Y_1)$에 대해 $\psi(y_{j_*-1})\le\psi(Z)$이고, $\log\psi(Z)-\log2\le\log Z$, 또 큰 $L$에서 $\log\psi(L)-\log2\ge\log L-1$.
+% AUD2: exposition fix -- the lower limit A:=log psi(y_{j*-1}) may give A-log2<0; the square bound still holds.
+(AUD2 보완: $A:=\log\psi(y_{j_*-1})$에 대해 $\int_A^B(\tau-\log2)d\tau=\frac12[(B-\log2)^2-(A-\log2)^2]$이고 $y_{j_*-1}\ge2$에서 $A\ge\log\log2>-0.37$이므로 $-1.07<A-\log2\le\log Z$; $Y_1\ge3$이면 $(A-\log2)^2\le(\log Z)^2$.) 따라서 적분 $\ge\frac12[(\log L-1)^2-(\log Z)^2]\ge\frac12[(\log L)^2-2\log L-(\log y_1)^2-(\log Y_1)^2]$.
 그러므로 $\sum_jK_j\ge H(y_1)+(1-\frac\eps2)c(w)[(\log L)^2-(\log y_1)^2]-c(w)[2\log L+(\log Y_1)^2]$이고, $L$이 크면 마지막 괄호 $\le\frac\eps2(\log L)^2$이므로 주장이 따른다.
 \end{proof}
 
@@ -280,7 +282,8 @@ $\psi(y)/y\to1$이므로 $Y(w')$가 있어 $y>Y(w')$이면 $\psi(y)>w'y$. $\log 
 (c) (초지수 블록) $0<\lambda<1$을 고정하면 다음은 동치이다:
 (1) SP1, 곧 $\exists C\ \forall y\ge2:\ H(y)\le C\log y$;
 (2) $\exists C',y_0\ \forall y\ge y_0:\ T(y,\lfloor y^\lambda\rfloor)\le C'\log y$;
-(3) $\exists A$: 모든 $L$에서 사슬 $y_t=L$, $y_{j-1}=\lfloor y_j^\lambda\rfloor$ ($y_1<y_0$까지; $\nu_j\to1$)의 최적 비용 $H(y_1)+\sum_{j\ge2}T(y_j,y_{j-1})$이 $\le A\log L+A$.
+% AUD2: quantifier fix -- y_0 was unbound in (3); it must be existentially quantified together with A.
+(3) $\exists A,\ y_0\ge2$: 모든 $L$에서 사슬 $y_t=L$, $y_{j-1}=\lfloor y_j^\lambda\rfloor$ (처음으로 $y_1<y_0$가 될 때까지; $\nu_j\to1$)의 최적 비용 $H(y_1)+\sum_{j\ge2}T(y_j,y_{j-1})$이 $\le A\log L+A$.
 즉 초지수 블록이 $O(\log L)$ 비용을 가지는 것은 각 블록이 자기 척도에서 SP1인 것과 같다.
 (d) counting은 초지수 블록을 막지 않는다: $T(y,\lfloor y^\lambda\rfloor)\ge(1/\log2-o(1))\log y$이고, 이 counting 하한들의 사슬 합은 $\sum_j(1/\log 2)\log y_j\le\frac{\log L}{(1-\lambda)\log2}$ 이하이다.
 \end{proposition}
@@ -290,6 +293,8 @@ $\sum_{j\ge2}K_j\ge(1-\eps)G(w)\int_{\log\psi(y_1)}^{\log\psi(L)}(\tau-\log2)d\t
 그러므로 $\log(\psi(L)/\psi(y_1))\le A/((1-2\eps)c(w))$이고 $\psi(y)\sim y$에서 $y_1\ge L\e^{-A/c(w)-o(1)}$; 또 $H(y_1)\le K_1\le A\log L$.
 (c) (1)$\Rightarrow$(2): $T\le H$. (2)$\Rightarrow$(3): $\log y_j\le\lambda^{t-j}\log L$이므로 $\sum_{j\ge2}T(y_j,y_{j-1})\le C'\sum_{i\ge0}\lambda^i\log L=\frac{C'}{1-\lambda}\log L$, 그리고 $H(y_1)\le\max_{z<y_0}H(z)$. (3)$\Rightarrow$(1): 따름정리~\ref{STRUCT:cor-selfsim}로 $H(L)\le H(y_1)+\sum_{j\ge2}T(y_j,y_{j-1})\le A\log L+A$.
 (d) $c<\Lam_y/\Lam_{\lfloor y^\lambda\rfloor}$를 덮으려면 $(1+\tau(\Lam_y))^K\ge\Lam_y/\Lam_{\lfloor y^\lambda\rfloor}=\e^{(1-o(1))y}$이고 $\log\tau(\Lam_y)\le\pi(y)\log2+\pi(\sqrt y)\log(1+\log_2y)=(\log2+o(1))y/\log y$ (PNT). 합은 $\log y_j\le\lambda^{t-j}\log L$에서.
+% AUD2: added the missing upper side -- "counting does not block" needs that the best counting bound is itself O(log y_j).
+(AUD2 보완) 반대 방향: 큰 $y$에서 $\psi(\lfloor y^\lambda\rfloor)<\psi(y)/2$이므로 $\sqrt{\Lam_y}<b:=\Lam_y/\Lam_{\lfloor y^\lambda\rfloor}$이고, $e\leftrightarrow\Lam_y/e$ 짝짓기로 $\#\{e\mid\Lam_y:e\le\sqrt{\Lam_y}\}\ge\tau(\Lam_y)/2$. 따라서 명제~\ref{STRUCT:prop-block-count}의 $D$는 $\ge\tau(\Lam_y)/2-1$이고, counting이 줄 수 있는 최선의 하한 $\log b/\log(1+D)$는 $\le\psi(y)/\log(\tau(\Lam_y)/2)=(1/\log2+o(1))\log y$ (PNT, $\log\tau(\Lam_y)=(\log2+o(1))y/\log y$). 이로써 사슬 합이 $\le(1+o(1))\frac{\log L}{(1-\lambda)\log2}+O(1)$인 것이 counting의 한계임이 증명된다.
 \end{proof}
 
 \begin{remark}[일반 사슬에는 이 장벽이 없다]\label{STRUCT:rem-general-chain}
@@ -314,7 +319,9 @@ $z_0=L$로 두고 $z_i\ge Y$인 동안 $z_{i+1}:=\min\{z\in\Z_{\ge1}:\psi(z)\ge(
 \[
 H(L)\le H_Y+C\sum_{i<m}\log z_i .
 \]
-$i<m$에서 $\psi(z_i)\le(1-w+\eps)^i\psi(L)$, $\log z_i\le\log(2\psi(z_i))\le\Lambda^\dagger-i\beta$ ($\Lambda^\dagger:=\log(2\psi(L))$, $\beta:=\log\frac1{1-w+\eps}$), 그리고 $\log z_i>0$. 따라서 $\sum_{i<m}\log z_i\le\sum_{0\le i\le\Lambda^\dagger/\beta}(\Lambda^\dagger-i\beta)\le\Lambda^\dagger+\frac{(\Lambda^\dagger)^2}{2\beta}$. $\Lambda^\dagger=\log L+O(1)$이므로 $\limsup H(L)/(\log L)^2\le C/(2\beta)$. $\eps\to0$.
+$i<m$에서 $\psi(z_i)\le(1-w+\eps)^i\psi(L)$, $\log z_i\le\log(2\psi(z_i))\le\Lambda^\dagger-i\beta$ ($\Lambda^\dagger:=\log(2\psi(L))$, $\beta:=\log\frac1{1-w+\eps}$), 그리고 $\log z_i>0$. 따라서 $\sum_{i<m}\log z_i\le\sum_{0\le i\le\Lambda^\dagger/\beta}(\Lambda^\dagger-i\beta)\le\Lambda^\dagger+\frac{(\Lambda^\dagger)^2}{2\beta}$.
+% AUD2: the last inequality holds only for beta<=4*Lambda^dagger (true for large L); exact max is (Ld)^2/(2b)+Ld/2+b/8.
+(AUD2 주: 정확히는 $\le\frac{(\Lambda^\dagger)^2}{2\beta}+\frac{\Lambda^\dagger}2+\frac\beta8$이고, 이는 $\beta\le4\Lambda^\dagger$ (큰 $L$)에서 위 상계 이하이다. 극한에는 영향 없음.) $\Lambda^\dagger=\log L+O(1)$이므로 $\limsup H(L)/(\log L)^2\le C/(2\beta)$. $\eps\to0$.
 \end{proof}
 
 \begin{corollary}[$N(b)$와 Erdős \#18]\label{STRUCT:cor-BC-conseq}
@@ -413,7 +420,9 @@ $G(L)$을 순수 greedy (매번 $R$ 이하의 최대 약수를 뺌)의 최대 �
 \end{proof}
 
 \begin{remark}[사다리에서의 의미]\label{STRUCT:rem-S3-meaning}
-(1) \PROVED\ 정리~\ref{STRUCT:thm-regimes}(C)의 $\log L\log\log L$은 순수 greedy가 결코 넘을 수 없는 선이다 (따름정리~\ref{STRUCT:cor-greedy-theta}(i)); 명제~\ref{STRUCT:prop-DG-sharp}에 의해 어떤 간격 가설도 greedy 단계당 $(1+o(1))\phi_L(\ell)$보다 많이 $\log R$을 줄일 수 없다. 따라서 SP1 ($H\ll\log L$)의 증명은 greedy가 아닌 다중 약수 단계를 포함해야 하고, S2의 정리~\ref{STRUCT:thm-barrier}에 의해 그 단계들은 유계 비율의 $\Lam$형 블록일 수도 없다: 넓은(초지수) 단계 또는 $\Lam$형이 아닌 사슬(풀 소수 설계, cascade)이 필요하다. ``필요하다''는 위 두 증명된 장벽의 결합이라는 뜻이며 모든 가능한 방식에 대한 불가능성 정리는 아니다 (\HEUR).
+(1) \PROVED\ 정리~\ref{STRUCT:thm-regimes}(C)의 $\log L\log\log L$은 순수 greedy가 결코 넘을 수 없는 선이다 (따름정리~\ref{STRUCT:cor-greedy-theta}(i)); 명제~\ref{STRUCT:prop-DG-sharp}에 의해 어떤 간격 가설도 greedy 단계당 $(1+o(1))\phi_L(\ell)$보다 많이 $\log R$을 줄일 수 없다
+% AUD2: scope fix -- prop-DG-sharp proves this only at one scale log x ~ L/4, not at every scale.
+(AUD2 한정: 이 절에서 증명된 것은 척도 $\ell\approx L/4$ 한 곳뿐이다. 같은 Rankin 논법(p1p4 정리 5.16의 2단계, $\sigma=\log(1/v)/\log L$)은 $\ell=vL$, $L^{-1/\log\log L}\le v\le0.6$ 전체로 확장되지만, 더 작은 척도 (예: $\ell\le(\log L)^{O(1)}$)에서는 증명되지 않았다). 따라서 SP1 ($H\ll\log L$)의 증명은 greedy가 아닌 다중 약수 단계를 포함해야 하고, S2의 정리~\ref{STRUCT:thm-barrier}에 의해 그 단계들은 유계 비율의 $\Lam$형 블록일 수도 없다: 넓은(초지수) 단계 또는 $\Lam$형이 아닌 사슬(풀 소수 설계, cascade)이 필요하다. ``필요하다''는 위 두 증명된 장벽의 결합이라는 뜻이며 모든 가능한 방식에 대한 불가능성 정리는 아니다 (\HEUR).
 (2) \HEUR\ (A)의 규모 $\log(1/\delta)\asymp\log L$은 풀 소수 교환 $d\mapsto dp/q$와 짧은 구간의 소수에서 오는 간격 규모이며, 이득이 없다(혼합진법이 이미 $(1+o(1))L/\log L$). (B)는 설계 S4의 VKGAP-C형 비공명 가설이 주는 규모이다.
 (3) \COND{VKGAP 에이전트가 증명 중인 약수 간격 정리: $\delta=\exp(-(\log L)^{3/2-\eps})$, $X_0=\exp(C(\log L)^4)$} 정리~\ref{STRUCT:thm-greedy}로 $H(L)\le H(y_0)+1+\psi(L)/(\log L)^{3/2-\eps}+k$, $H(y_0)=O((\log L)^4/\log\log L)$, $k=O((\log L)^3)$이므로 $H(L)\le(1+o(1))L/(\log L)^{3/2-\eps}$.
 \end{remark}
@@ -451,7 +460,7 @@ t\le1+\sum_{i=1}^I\Bigl[\frac{\rho-1+\eps}{1-\eps}(\rho^{i-1}Y_0)^{1-\delta}+1\B
 \PROVED\ $K\ge2$이고 충분히 큰 모든 $x$에서 $y=\lceil(\log x)^C\rceil$에 대해 모든 $0\le n\le x$가 $y$-매끄러운 수 $K$개 이하의 합이라면 (특히 $\mathrm W_\Lam(K,C)$이면) $C\ge K/(K-1)$.
 \end{proposition}
 \begin{proof}
-$C<K/(K-1)$이라 가정하면 $1-1/C<1/K$이므로 $1-1/C<\sigma<1/K$인 $\sigma$가 있다. Rankin: $\Psi(x,y)\le\sum_{P^+(d)\le y}(x/d)^\sigma=x^\sigma\prod_{p\le y}(1-p^{-\sigma})^{-1}$이고
+$C<K/(K-1)$이라 가정하면 $1-1/C<1/K$이므로 $\max(0,1-1/C)<\sigma<1/K$인 $\sigma$가 있다. % AUD2: sigma>0 is needed for Rankin (the case C<=1 would allow sigma<=0). Rankin: $\Psi(x,y)\le\sum_{P^+(d)\le y}(x/d)^\sigma=x^\sigma\prod_{p\le y}(1-p^{-\sigma})^{-1}$이고
 $\log\prod_{p\le y}(1-p^{-\sigma})^{-1}\le\frac{1}{1-2^{-\sigma}}\sum_{n\le y}n^{-\sigma}\le\frac{y^{1-\sigma}}{(1-2^{-\sigma})(1-\sigma)}$.
 $y^{1-\sigma}\le2(\log x)^{C(1-\sigma)}$이고 $C(1-\sigma)<1$이므로 $\log\Psi(x,y)\le\sigma\log x+o(\log x)$. 모든 $0\le n\le x$가 $\{0\}\cup S(x,y)$에서 뽑은 크기 $K$의 다중집합의 합이므로 $x+1\le(1+\Psi(x,y))^K$, 곧 $\log x\le K(\log2+\sigma\log x+o(\log x))$. $K\sigma<1$이므로 큰 $x$에서 모순.
 \end{proof}
