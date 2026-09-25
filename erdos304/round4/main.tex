@@ -4,11 +4,11 @@
 \input{tex/front.tex}      % title, honesty declaration, verdict box, status table
 \input{tex/framework.tex}  % problem, prior state, Round 4 design
 \input{tex/corrections.tex}% corrections and simplifications of prior material
-\input{agents/STRUCT/frag.tex}
-\input{agents/VKGAP/frag.tex}
-\input{agents/CMM/frag.tex}
-\input{agents/CORE/frag.tex}
-\input{agents/NUM/frag.tex}
+\IfFileExists{agents/STRUCT/frag.tex}{\input{agents/STRUCT/frag.tex}}{\section{STRUCT 절 (작업 중)}\label{LEAD:pending-STRUCT}이 에이전트는 아직 작업 중이다. 최종판에 포함된다.}
+\IfFileExists{agents/VKGAP/DONE}{\input{agents/VKGAP/frag.tex}}{\section{VKGAP 절 (작업 중)}\label{LEAD:pending-VKGAP}이 에이전트는 아직 작업 중이다. 최종판에 포함된다.}
+\IfFileExists{agents/CMM/frag.tex}{\input{agents/CMM/frag.tex}}{\section{CMM 절 (작업 중)}\label{LEAD:pending-CMM}이 에이전트는 아직 작업 중이다. 최종판에 포함된다.}
+\IfFileExists{agents/CORE/DONE}{\input{agents/CORE/frag.tex}}{\section{CORE 절 (작업 중)}\label{LEAD:pending-CORE}이 에이전트는 아직 작업 중이다. 최종판에 포함된다.}
+\IfFileExists{agents/NUM/frag.tex}{\input{agents/NUM/frag.tex}}{\section{NUM 절 (작업 중)}\label{LEAD:pending-NUM}이 에이전트는 아직 작업 중이다. 최종판에 포함된다.}
 \input{tex/audit.tex}      % Stage 2 audit summary
 \input{tex/opencore.tex}   % open core, quantified barriers, next targets
 \input{tex/references.tex}

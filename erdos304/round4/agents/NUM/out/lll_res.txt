@@ -98,3 +98,48 @@ L=251 M=24 eta=0.2: resonance at t=377703670.153127 (log10=8.577) |f|/M=0.81878
 L=251 M=24 eta=0.1: resonance at t=7818833271909.68 (log10=12.893) |f|/M=0.92799
 L=251 M=24 eta=0.05: resonance at t=6.54817229893323e+16 (log10=16.816) |f|/M=0.96095
    (2129 candidates, 38.4s)
+L=269 M=25 eta=0.3: resonance at t=16423460.7888394 (log10=7.215) |f|/M=0.71699
+L=269 M=25 eta=0.2: resonance at t=2048745632.1666 (log10=9.311) |f|/M=0.83056
+L=269 M=25 eta=0.1: resonance at t=622379531040202.0 (log10=14.794) |f|/M=0.90641
+L=269 M=25 eta=0.05: resonance at t=1.35424057938568e+17 (log10=17.132) |f|/M=0.96565
+   (2018 candidates, 40.0s)
+L=271 M=26 eta=0.3: resonance at t=12584247267.3945 (log10=10.100) |f|/M=0.78270
+L=271 M=26 eta=0.2: resonance at t=415040605848064.0 (log10=14.618) |f|/M=0.84233
+L=271 M=26 eta=0.1: resonance at t=5.28617291924464e+15 (log10=15.723) |f|/M=0.91299
+L=271 M=26 eta=0.05: resonance at t=1.19949226157416e+19 (log10=19.079) |f|/M=0.95844
+   (1909 candidates, 44.2s)
+L=283 M=27 eta=0.3: resonance at t=143726958918.23 (log10=11.158) |f|/M=0.72517
+L=283 M=27 eta=0.2: resonance at t=711902612505.901 (log10=11.852) |f|/M=0.81161
+L=283 M=27 eta=0.1: resonance at t=1.1637593723916e+16 (log10=16.066) |f|/M=0.91570
+L=283 M=27 eta=0.05: resonance at t=3.38088499407085e+20 (log10=20.529) |f|/M=0.95061
+   (1952 candidates, 47.8s)
+L=293 M=28 eta=0.3: resonance at t=50380601808.8796 (log10=10.702) |f|/M=0.71163
+L=293 M=28 eta=0.2: resonance at t=182930804571.947 (log10=11.262) |f|/M=0.82450
+L=293 M=28 eta=0.1: resonance at t=1.36192806094104e+15 (log10=15.134) |f|/M=0.90254
+L=293 M=28 eta=0.05: resonance at t=1.15457978799771e+21 (log10=21.062) |f|/M=0.95014
+   (1842 candidates, 49.9s)
+L=313 M=29 eta=0.3: resonance at t=135936747190.418 (log10=11.133) |f|/M=0.73557
+L=313 M=29 eta=0.2: resonance at t=354270762427.201 (log10=11.549) |f|/M=0.80852
+L=313 M=29 eta=0.1: resonance at t=1.01632851624407e+18 (log10=18.007) |f|/M=0.92331
+L=313 M=29 eta=0.05: resonance at t=7.54008604298896e+23 (log10=23.877) |f|/M=0.95710
+   (1776 candidates, 51.6s)
+L=349 M=30 eta=0.3: resonance at t=6053310149067.68 (log10=12.782) |f|/M=0.78257
+L=349 M=30 eta=0.2: resonance at t=121953926166067.0 (log10=14.086) |f|/M=0.81010
+L=349 M=30 eta=0.1: resonance at t=1.43027393630935e+22 (log10=22.155) |f|/M=0.94971
+L=349 M=30 eta=0.05: resonance at t=1.51290157801199e+22 (log10=22.180) |f|/M=0.95008
+   (1837 candidates, 56.1s)
+L=353 M=31 eta=0.3: resonance at t=478807975527.529 (log10=11.680) |f|/M=0.78614
+L=353 M=31 eta=0.2: resonance at t=519794586598780.0 (log10=14.716) |f|/M=0.81161
+L=353 M=31 eta=0.1: resonance at t=1.53667673866121e+17 (log10=17.187) |f|/M=0.90944
+L=353 M=31 eta=0.05: resonance at t=7.1040303911562e+22 (log10=22.852) |f|/M=0.95070
+   (1820 candidates, 59.1s)
+L=373 M=32 eta=0.3: resonance at t=173909082229.772 (log10=11.240) |f|/M=0.76336
+L=373 M=32 eta=0.2: resonance at t=4.89100945580063e+15 (log10=15.689) |f|/M=0.85971
+L=373 M=32 eta=0.1: resonance at t=2.79026552122206e+18 (log10=18.446) |f|/M=0.92400
+L=373 M=32 eta=0.05: resonance at t=9.86162451229678e+26 (log10=26.994) |f|/M=0.95694
+   (1606 candidates, 64.5s)
+L=379 M=33 eta=0.3: resonance at t=88234953621985.7 (log10=13.946) |f|/M=0.74901
+L=379 M=33 eta=0.2: resonance at t=2.5881706516244e+17 (log10=17.413) |f|/M=0.87476
+L=379 M=33 eta=0.1: resonance at t=4.76135421530205e+18 (log10=18.678) |f|/M=0.91520
+L=379 M=33 eta=0.05: resonance at t=4.4803716173796e+28 (log10=28.651) |f|/M=0.95491
+   (1503 candidates, 63.7s)

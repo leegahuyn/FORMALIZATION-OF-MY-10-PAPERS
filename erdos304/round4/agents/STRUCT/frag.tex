@@ -165,6 +165,8 @@ $R_0=a$에서 시작하여 $R_{k+1}=R_k-\sum S_k$로 진행하면 $R_{K+1}=0$이
 \subsection{S2: 블록(묶음 혼합진법) 방식}
 \label{STRUCT:sec-S2}
 
+이 소절과 S3, S6은 짧은 구간의 소수 분포를 쓰지 않는다. 쓰는 소수 정보는 정리~\ref{STRUCT:ext-pnt} (PNT)와 Chebyshev형 상계뿐이다.
+
 \begin{definition}[블록 방식]\label{STRUCT:def-block}
 $\Lam=\Lam_L$에 대한 블록 방식은 약수 사슬 $1=N_0\mid N_1\mid\dots\mid N_t=\Lam$ ($t\ge1$, $b_j:=N_j/N_{j-1}\ge2$)과 예산 $K_1,\dots,K_t\in\Z_{\ge0}$로서, $W_j:=\Lam/N_j$라 할 때 다음 단계성질을 만족하는 것이다.
 \[
@@ -210,6 +212,7 @@ $e\mid\Lam_y$를 $e=e_1e_2$로 쓴다: $e_1$은 $p\le y^{1-\eta}$ 부분, $e_2$�
 $e_1$의 선택 수는 $\prod_{p\le y^{1-\eta}}(a_p+1)\le(1+\log_2y)^{\pi(y^{1-\eta})}$ ($a_p\le\log_2y$).
 $e_2$가 $m\ge1$개의 소수를 가지면 $e_2>y^{(1-\eta)m}$이고 $e_2\le e\le\e^u$이므로 $m<m_0$. 따라서 $e_2$의 선택 수는 $\sum_{0\le m\le m_0}\binom{\pi(y)}{m}$ 이하이다.
 $0<k\le n$ (실수 $k$)에 대해 $\sum_{m\le k}\binom nm\le(\e n/k)^k$: $m\le k$에서 $(k/n)^k\le(k/n)^m$이므로 $(k/n)^k\sum_{m\le k}\binom nm\le\sum_m\binom nm(k/n)^m=(1+k/n)^n\le\e^k$. $n=\pi(y)$, $k=m_0$로 쓰면 결론.
+p1p4 보조정리 8.34는 $y=L$, $u=vL$인 경우이고, 그 둘째 부등식은 $\pi(L)\le C_\pi L/\log L$에서 $\log(\e\pi(L)/m_0)\le\log(1/v)+1+\log C_\pi$로 따른다; 그곳의 조건 $m_0\ge1$은 위 논증에서 필요 없다. 재검증 결과 오류는 없다.
 \end{proof}
 
 \begin{lemma}[$\Lam$형 블록 하나의 비용]\label{STRUCT:lem-perblock}
@@ -388,7 +391,7 @@ $\phi_L$의 비감소성: $\ell\le L$에서 $\phi_L=\frac{\ell}{\log L}(1+\log\f
 \end{proposition}
 \begin{proof}
 $\sigma:=\log4/\log L$ ($L^{1-\sigma}=L/4$), $r:=\lfloor\e^{L/4}\rfloor$, $F(\sigma):=\prod_{p\le L}\sum_{j=0}^{a_p}p^{-j\sigma}$로 둔다.
-\emph{Rankin.} $\Psi_\Lam(X):=\#\{d\mid\Lam_L:d\le X\}\le\sum_{d\mid\Lam_L}(X/d)^\sigma=X^\sigma F(\sigma)$. $L\ge7$이면 $p\le\sqrt L$의 인수는 $\le a_p+1\le1+\log_2L\le2\log L$, $p>\sqrt L$의 인수는 $1+p^{-\sigma}\le\exp(p^{-\sigma})$이므로 $\log F(\sigma)\le\sqrt L\log(2\log L)+\sum_{p\le L}p^{-\sigma}$. 부분합과 $\pi(t)\le3t/\log t$ ($t\ge2$; Chebyshev형, 초등적), $\pi(L)\le(1+\eps_L)L/\log L$ (PNT, $\eps_L\to0$)로
+\emph{Rankin.} $\Psi_\Lam(X):=\#\{d\mid\Lam_L:d\le X\}\le\sum_{d\mid\Lam_L}(X/d)^\sigma=X^\sigma F(\sigma)$. $L\ge7$이면 $p\le\sqrt L$의 인수는 $\le a_p+1\le1+\log_2L\le2\log L$, $p>\sqrt L$의 인수는 $1+p^{-\sigma}\le\exp(p^{-\sigma})$이므로 $\log F(\sigma)\le\sqrt L\log(2\log L)+\sum_{p\le L}p^{-\sigma}$. 부분합과 $\pi(t)\le3t/\log t$ ($t\ge2$; Rosser--Schoenfeld의 $\pi(t)<1.25506\,t/\log t$ ($t>1$)에서, \EXT\ recalled, 상수는 중요하지 않음), $\pi(L)\le(1+\eps_L)L/\log L$ (PNT, $\eps_L\to0$)로
 $\sum_{p\le L}p^{-\sigma}=\pi(L)L^{-\sigma}+\sigma\int_2^L\pi(t)t^{-\sigma-1}dt\le(1+\eps_L)\frac{L^{1-\sigma}}{\log L}+3\sigma\Bigl[\frac{\sqrt L}{\log2}+\frac{2}{\log L}\frac{L^{1-\sigma}}{1-\sigma}\Bigr]$
 ($\int_2^{\sqrt L}t^{-\sigma}dt/\log t\le\sqrt L/\log 2$, $\int_{\sqrt L}^L t^{-\sigma}dt/\log t\le\frac{2}{\log L}\frac{L^{1-\sigma}}{1-\sigma}$). 따라서 $\log F(\sigma)\le(\frac14+o(1))L/\log L$.
 \emph{큰 간격의 존재.} $X:=(4rF(\sigma))^{1/(1-\sigma)}\ge4r$. $\log X=\frac{\log4+\log r+\log F(\sigma)}{1-\sigma}\le\frac L4+\frac{L}{4\log L}(1+\log4+o(1))$ ($\frac1{1-\sigma}=1+\sigma+O(\sigma^2)$, $\sigma L/4=\frac{L\log4}{4\log L}$); 특히 $X<\Lam_L/2$. $\Lam_L$의 약수 $1=e_1<\dots<e_s\le X$ ($s\le X^\sigma F(\sigma)=X/(4r)$)의 모든 간격과 $e_s$에서 다음 약수까지의 간격이 $\le r$이면 $X<e_s^+\le1+sr\le1+X/4$, 모순. 따라서 어떤 약수 $d\le X$의 다음 약수 $d^+$가 $d^+-d>r$.
@@ -414,3 +417,158 @@ $G(L)$을 순수 greedy (매번 $R$ 이하의 최대 약수를 뺌)의 최대 �
 (2) \HEUR\ (A)의 규모 $\log(1/\delta)\asymp\log L$은 풀 소수 교환 $d\mapsto dp/q$와 짧은 구간의 소수에서 오는 간격 규모이며, 이득이 없다(혼합진법이 이미 $(1+o(1))L/\log L$). (B)는 설계 S4의 VKGAP-C형 비공명 가설이 주는 규모이다.
 (3) \COND{VKGAP 에이전트가 증명 중인 약수 간격 정리: $\delta=\exp(-(\log L)^{3/2-\eps})$, $X_0=\exp(C(\log L)^4)$} 정리~\ref{STRUCT:thm-greedy}로 $H(L)\le H(y_0)+1+\psi(L)/(\log L)^{3/2-\eps}+k$, $H(y_0)=O((\log L)^4/\log\log L)$, $k=O((\log L)^3)$이므로 $H(L)\le(1+o(1))L/(\log L)^{3/2-\eps}$.
 \end{remark}
+
+%======================================================================
+\subsection{S6: 매끄러운 수 경로 (baker 12--13장을 중복 제거로 다시 쓰기)}
+\label{STRUCT:sec-S6}
+
+$S(n,y)=\{1\le d\le n:\ P^+(d)\le y\}$, $\Psi(n,y)=|S(n,y)|$ ($P^+$는 최대 소인수)로 둔다.
+
+\begin{hypothesis}[$\mathrm W_\Lam(K,C)$: 목표 표현 명제]\label{STRUCT:hyp-WLam}
+$x_0$가 있어 모든 실수 $x\ge x_0$, 모든 정수 $y\ge(\log x)^C$, 모든 정수 $0\le n\le x$에 대해 $n$은 $D(\Lam_y)$의 원소 많아야 $K$개의 합이다 (반복 허용). \OPEN
+\end{hypothesis}
+
+\begin{theorem}[묶음 혼합진법]\label{STRUCT:thm-smooth-bundle}
+\COND{$\mathrm W_\Lam(K,C)$, $C>1$}\ $\displaystyle\limsup_{L\to\infty}\frac{H(L)}{L^{1-1/C}}\le\frac{KC}{C-1}$, 따라서 $N(b)\le\bigl(\frac{2KC}{C-1}+o(1)\bigr)(\log_2b)^{1-1/C}$.
+\end{theorem}
+\begin{proof}
+$\delta=1/C$, $\rho>1$, $0<\eps<1$을 고정한다. PNT로 $Y_0$를 크게 잡아 $Y_0\ge(\log x_0)^C$이고 $Y\ge Y_0$에서 $\theta_Y:=Y^\delta-\log(\rho Y)\ge(1-\eps)Y^\delta$, $\psi(\rho Y)-\psi(Y)\le(\rho-1+\eps)Y$가 되게 한다. 띠 $B_i=(\rho^{i-1}Y_0,\rho^iY_0]$ ($1\le i\le I$, $\rho^{I-1}Y_0<L\le\rho^IY_0$)로 나눈다.
+$(\lfloor Y_0\rfloor,L]$의 소수거듭제곱 $m$을 증가 순으로 훑으며 현재 블록에 $\log p(m)$을 누적한다. 띠 $B_i$ ($Y=\rho^{i-1}Y_0$) 안에서 누적합이 처음 $\theta_Y$ 이상이 되면 그 $m$에서 블록을 닫고, 띠의 끝에서도 (비어 있지 않으면) 닫는다. 블록 $j$의 끝점을 $y_j$라 하면 $N_j=\Lam_{y_j}$, 첫 블록은 $N_1=\Lam_{\lfloor Y_0\rfloor}$ (예산 $H(\lfloor Y_0\rfloor)$).
+닫기 직전의 누적합은 $<\theta_Y$이고 각 증분은 $\log p(m)\le\log(\rho Y)$이므로 $\log b_j<Y^\delta\le y_j^\delta$. $x:=\max(b_j,x_0)$라 하면 $y_j\ge(\log x)^C$ ($(\log b_j)^C<y_j$, $(\log x_0)^C\le Y_0\le y_j$)이므로 $\mathrm W_\Lam$에 의해 모든 $c<b_j$는 $D(\Lam_{y_j})$의 원소 $\le K$개의 합이다: $(\mathrm B_j)$가 $K_j=K$로 성립한다.
+띠 $B_i$에서 문턱으로 닫힌 블록은 $\log b_j\ge\theta_Y$이므로 그 수는 $\le(\rho-1+\eps)Y/((1-\eps)Y^\delta)$이고 띠 끝에서 닫힌 블록은 하나 이하이다. 따라서
+\[
+t\le1+\sum_{i=1}^I\Bigl[\frac{\rho-1+\eps}{1-\eps}(\rho^{i-1}Y_0)^{1-\delta}+1\Bigr]\le\frac{\rho-1+\eps}{(1-\eps)(1-\rho^{\delta-1})}L^{1-\delta}+O(\log L),
+\]
+($\sum_i(\rho^{i-1}Y_0)^{1-\delta}\le L^{1-\delta}\sum_{k\ge0}\rho^{-k(1-\delta)}$). 정리~\ref{STRUCT:thm-block}로 $H(L)\le H(\lfloor Y_0\rfloor)+Kt$. $\eps\to0$ 다음 $\rho\to1$: $(\rho-1)/(1-\rho^{\delta-1})\to1/(1-\delta)$. 전달은 p1p4 따름정리 8.6 ($L_b\le\log_2b+1$).
+(baker 정리 13.1의 계산은 $\rho=2$, 문턱 $Y^\delta/2$인 판으로, 띠당 블록 수 $\le2Y^{1-\delta}(1+o(1))+1$, 합 $t\le(\frac{2}{1-2^{\delta-1}}+o(1))L^{1-\delta}$을 주며 올바르다; 띠를 잘게 하면 상수가 $\frac{1}{1-\delta}$로 개선된다.)
+\end{proof}
+
+\begin{remark}[이 입력으로는 블록 수가 강제된다]\label{STRUCT:rem-smooth-count}
+\PROVED\ $j\ge2$에서 $\log b_j\le y_j^{1/C}$인 모든 $\Lam$형 방식은 $t-1\ge(\psi(L)-\psi(y_1))/L^{1/C}$ ($\sum_{j\ge2}\log b_j=\psi(L)-\psi(y_1)$). 따라서 $\mathrm W_\Lam(K,C)$만 쓰는 블록 방식의 비용은 $L^{1-1/C}$ 규모를 벗어날 수 없다.
+\end{remark}
+
+\begin{proposition}[엔트로피 문턱: $C\ge K/(K-1)$]\label{STRUCT:prop-entropy-W}
+\PROVED\ $K\ge2$이고 충분히 큰 모든 $x$에서 $y=\lceil(\log x)^C\rceil$에 대해 모든 $0\le n\le x$가 $y$-매끄러운 수 $K$개 이하의 합이라면 (특히 $\mathrm W_\Lam(K,C)$이면) $C\ge K/(K-1)$.
+\end{proposition}
+\begin{proof}
+$C<K/(K-1)$이라 가정하면 $1-1/C<1/K$이므로 $1-1/C<\sigma<1/K$인 $\sigma$가 있다. Rankin: $\Psi(x,y)\le\sum_{P^+(d)\le y}(x/d)^\sigma=x^\sigma\prod_{p\le y}(1-p^{-\sigma})^{-1}$이고
+$\log\prod_{p\le y}(1-p^{-\sigma})^{-1}\le\frac{1}{1-2^{-\sigma}}\sum_{n\le y}n^{-\sigma}\le\frac{y^{1-\sigma}}{(1-2^{-\sigma})(1-\sigma)}$.
+$y^{1-\sigma}\le2(\log x)^{C(1-\sigma)}$이고 $C(1-\sigma)<1$이므로 $\log\Psi(x,y)\le\sigma\log x+o(\log x)$. 모든 $0\le n\le x$가 $\{0\}\cup S(x,y)$에서 뽑은 크기 $K$의 다중집합의 합이므로 $x+1\le(1+\Psi(x,y))^K$, 곧 $\log x\le K(\log2+\sigma\log x+o(\log x))$. $K\sigma<1$이므로 큰 $x$에서 모순.
+\end{proof}
+
+\begin{lemma}[삭제 한계의 재검증; baker 1838--1864]\label{STRUCT:lem-deletion}
+\PROVED\ (i) $y$-매끄러운 $d$가 $\Lam_y$를 나누지 않으면 어떤 $p\le y$에서 $p^{a_p+1}\mid d$이고 $p^{a_p+1}>y$ ($a_p=\lfloor\log y/\log p\rfloor$).
+(ii) $\alpha\ge\frac12+\eps_0$ ($\eps_0\in(0,\frac12]$)이면 $\sum_{p\le y}p^{-\alpha(a_p+1)}\le y^{1/2-\alpha}+\frac{(\sqrt y-1)^{1-2\alpha}}{2\alpha-1}\le(1+\eps_0^{-1})\,y^{-\eps_0}$ ($y\ge16$).
+(iii) $0<\alpha<\frac12$이면 $\sum_{\sqrt y<p\le y}p^{-2\alpha}\ge(\pi(y)-\pi(\sqrt y))y^{-2\alpha}\to\infty$. 곧 삭제 상한 $\sum_p\Psi(n/p^{a_p+1},y)\ll\Psi(n,y)\sum_pp^{-\alpha(a_p+1)}$은 $\alpha<1/2$에서 쓸모가 없다.
+\end{lemma}
+\begin{proof}
+(i) $d\nmid\Lam_y$이면 어떤 $p$에서 $v_p(d)>a_p=v_p(\Lam_y)$이고 $d$가 $y$-매끄러우므로 $p\le y$; $a_p$의 정의로 $p^{a_p+1}>y$.
+(ii) $p\le\sqrt y$: $p^{-\alpha(a_p+1)}<y^{-\alpha}$이고 그런 $p$는 $\le\sqrt y$개. $p>\sqrt y$: $a_p=1$이므로 항은 $p^{-2\alpha}$이고 $\sum_{m>\sqrt y}m^{-2\alpha}\le\int_{\sqrt y-1}^\infty t^{-2\alpha}dt$. $y\ge16$이면 $\sqrt y-1\ge\sqrt y/2$이므로 $(\sqrt y-1)^{1-2\alpha}\le2^{2\alpha-1}y^{1/2-\alpha}\le2y^{-\eps_0}$이고 $2\alpha-1\ge2\eps_0$.
+(iii) PNT (또는 Chebyshev)로 $\pi(y)-\pi(\sqrt y)\ge y/(2\log y)$ (큰 $y$), 따라서 합 $\ge y^{1-2\alpha}/(2\log y)\to\infty$.
+\end{proof}
+
+\begin{theorem}[매끄러운 수 입력 $\Rightarrow\mathrm W_\Lam$]\label{STRUCT:thm-smooth-to-Lam}
+다음 외부 입력을 가정한다 ($K\ge4$, $C>2$; 모든 $n\ge n_0$, $(\log n)^C\le y\le n$에서):
+\begin{enumerate}[label=(E\arabic*)]
+\item $r_K(n;y):=\#\{(d_1,\dots,d_K)\in S(n,y)^K:\sum d_i=n\}\ge c_0\Psi(n,y)^K/n$ ($c_0>0$);
+\item $|a_d|\le1$인 모든 계수에 대해 $\int_0^1|\sum_{d\in S(n,y)}a_de(d\theta)|^{K-1}d\theta\le C_1\Psi(n,y)^{K-1}/n$;
+\item $1\le k\le n$에서 $\Psi(n/k,y)\le C_2k^{-\alpha(n,y)}\Psi(n,y)$, $\alpha(n,y)$는 안장점;
+\item $\alpha(n,y)\ge\frac12+\eps_0$, $\eps_0>0$ 고정.
+\end{enumerate}
+\COND{(E1)--(E4)}\ 그러면 $\mathrm W_\Lam(K,C)$가 성립한다 (표현은 순서 있는 $K$-튜플). 따라서 정리~\ref{STRUCT:thm-smooth-bundle}로 $H(L)\le(\frac{KC}{C-1}+o(1))L^{1-1/C}$.
+\end{theorem}
+\begin{proof}
+$x\ge x_0$, $y\ge(\log x)^C$, $0\le n\le x$. $n\le y$이면 $n\mid\Lam_y$이므로 ($n\ge1$) 한 항이다. $n>y$이면 $(\log n)^C\le(\log x)^C\le y<n$이고, $x_0$를 크게 잡아 $y\ge(\log x_0)^C\ge\max(n_0,y_1)$ ($y_1$은 아래)로 둔다.
+$S(\theta)=\sum_{d\in S(n,y)}e(d\theta)$, $T(\theta)=\sum_{d\in S(n,y),\,d\mid\Lam_y}e(d\theta)$, $B=S-T$, $\beta:=\#\{d\in S(n,y):d\nmid\Lam_y\}$로 두면 $|B(\theta)|\le\beta$. $S^K-T^K=B\sum_{j=0}^{K-1}S^{K-1-j}T^j$와 Hölder ($\frac{K-1-j}{K-1}+\frac j{K-1}=1$), (E2) (계수 $1$ 또는 지시함수)로
+\[
+\int_0^1|S^K-T^K|\le\beta\sum_{j=0}^{K-1}\Bigl(\int|S|^{K-1}\Bigr)^{\frac{K-1-j}{K-1}}\Bigl(\int|T|^{K-1}\Bigr)^{\frac{j}{K-1}}\le KC_1\beta\,\frac{\Psi(n,y)^{K-1}}{n}.
+\]
+보조정리~\ref{STRUCT:lem-deletion}(i), (E3), (E4), (ii)로 $\beta\le\sum_{p\le y}\Psi(n/p^{a_p+1},y)\le C_2\Psi(n,y)(1+\eps_0^{-1})y^{-\eps_0}$ ($p^{a_p+1}>n$인 항은 $0$). $y\ge y_1$이면 $KC_1C_2(1+\eps_0^{-1})y^{-\eps_0}\le c_0/2$. 따라서
+$\#\{(d_i)\in\{d\in S(n,y): d\mid\Lam_y\}^K:\sum d_i=n\}=\int_0^1T^Ke(-n\theta)d\theta\ge r_K(n;y)-\int|S^K-T^K|\ge\frac{c_0}2\frac{\Psi(n,y)^K}{n}>0$.
+\end{proof}
+
+\begin{theorem}[외부 입력의 상태]\label{STRUCT:ext-smooth-lit}
+\EXT\ (WebSearch 2026-09-25)
+\begin{enumerate}[label=(\alph*)]
+\item Harper, arXiv:1408.1662 (Compositio 152 (2016)) — \emph{snippet-verified}: $\log^3x\le y\le x^{1/3}$에서 부차호 추정; 임의의 실수 $p>2$와 $\log^{C(p)}x\le y\le x$에서 (가중) 합의 $p$차 모멘트의 날카로운 상계 (곧 (E2), $K-1=p>2$); Drappeau의 주호 추정과 결합하여 $\log^Cx\le y\le x$에서 $y$-매끄러운 $a+b=c$ ($<x$) 해의 개수의 점근식 ($C$는 큰 상수, 명시 안 됨). 이는 3변수의 \emph{해의 개수}이며 고정된 $n$의 표현이 아니다.
+\item Drappeau--Shao, arXiv:1602.07885 (Acta Arith. 176 (2016)) — \emph{snippet-verified (초록 수준)}: $y=(\log x)^C$ ($C$ 큰 상수)에서 매끄러운 수 Weyl 합의 주호 점근식, 부차호 상계, 평균값 추정; 고전적 경우와 본질적으로 같은 변수 수의 매끄러운 수 Waring 문제. baker가 쓴 ``정리 2.4의 $k=1$, 4변수 경우''와 ``보조정리 3.2'' (곧 (E1), (E3))의 정확한 진술: \emph{recalled, unverified}.
+\item de la Bretèche--Tenenbaum 비율 추정 (E3): 넓은 범위에서 $\Psi(x/d,y)/\Psi(x,y)$의 추정이 존재한다는 것은 snippet-verified, 정확한 형태 $\ll d^{-\alpha}$: recalled, unverified. Hildebrand--Tenenbaum의 $\alpha(x,y)=(1+o(1))\log(1+y/\log x)/\log y$ (곧 $y=(\log x)^C$에서 $\alpha\to1-1/C$): recalled, unverified.
+\item Lagarias--Soundararajan, arXiv:1102.4911 (Proc. LMS 104 (2012)) — \emph{snippet-verified}: GRH 하에서 모든 $\kappa>8$에 대해 모든 소인수가 $(\log H)^\kappa$ 이하인 원시해 $A+B=C$가 무한히 많고 가중 개수의 점근식이 성립; arXiv:0911.4147 (JTNB 23 (2011)): abc 추측 $\Rightarrow$ $\kappa<1$이면 원시해는 유한개 (snippet-verified).
+\end{enumerate}
+\end{theorem}
+
+\begin{remark}[정직한 결론: 이 경로로 Vose를 넘으려면 $C<2$가 필요하다]\label{STRUCT:rem-smooth-honest}
+(1) \PROVED\ 정리~\ref{STRUCT:thm-smooth-bundle}의 $N(b)\ll(\log b)^{1-1/C}$가 Vose의 $N(b)\ll(\log b)^{1/2}$ (\EXT; BRIEF의 2026-09-25 검색, erdosproblems.com/18 snippet)를 넘는 것은 $C<2$일 때뿐이다.
+(2) \PROVED\ 그러나 정리~\ref{STRUCT:thm-smooth-to-Lam}의 삭제 단계는 $\alpha>1/2$를 요구하고 (보조정리~\ref{STRUCT:lem-deletion}(iii)), (E4)가 $y=(\log n)^C$에서 성립하려면 $\alpha\to1-1/C$ (\EXT\ recalled)이므로 $C>2$가 필요하다. 즉 ``매끄러운 수 정리 $+$ 삭제''는 원리적으로 Vose를 넘지 못한다.
+(3) \HEUR\ $C<2$에서는 안장점 모형 ($P(p^2\mid d)\approx p^{-2\alpha}$, $\sum_{p>\sqrt y}p^{-2\alpha}\to\infty$)으로 $\Lam_y$의 약수가 $S(n,y)$의 사라지는 비율을 이룬다. 필요한 것은 큰 소수에서 제곱인수가 없는 얇은 집합 $D(\Lam_y)\cap[1,n]$에 대한 원방법 정리이다.
+(4) \PROVED\ 명제~\ref{STRUCT:prop-entropy-W}에 의해 $\mathrm W_\Lam(K,C)$에는 $C\ge K/(K-1)$이 필요하다; $K\ge3$이면 창 $(K/(K-1),2)$는 counting으로 배제되지 않지만 (\HEUR: 성립할 것으로 기대), 어떤 방법도 알려져 있지 않다 (\OPEN).
+(5) \COND{(E1)--(E4)를 문헌의 ``큰 $C$''로; 정확한 진술은 recalled} 문헌이 주는 것은 어떤 작은 $\delta>0$에 대한 $H(L)\ll L^{1-\delta}$, $N(b)\ll(\log b)^{1-\delta}$이다. 이는 VKGAP 규모의 $L/(\log L)^{3/2-\eps}$보다 강하고 Hughes의 $\log b/(\log\log b)^2$보다 강하지만 Vose보다 약하다. 알려진 지수 ($\kappa>8$ GRH, 3항 방정식; 무조건적 ``큰 $C$'')는 $2$에서 멀다.
+(6) \PROVED\ 중복 제거 (따름정리~\ref{STRUCT:cor-newton}) 덕분에 순서 있는 튜플 수 $\int T^Ke(-n\theta)>0$만으로 충분하며, baker 12.3절의 Newton 보정, 금지집합 $U$, 구별성 복원은 모두 필요 없다.
+\end{remark}
+
+%======================================================================
+\subsection{조건부 정리의 사다리}
+\label{STRUCT:sec-ladder}
+
+아래 표의 모든 함의는 이 절에서 증명되었거나 (표시된 곳) 말뭉치의 \PROVED\ 결과를 인용한다. 전달 $N(b)\le2H(L_b)$, $\log L_b=\log\log b+O(1)$ (p1p4 정리 8.5, 따름정리 8.6)로 $H$의 상계를 $N(b)$의 상계로 옮긴다. 다른 에이전트의 결과는 말로만 언급한다.
+
+{\small
+\begin{longtable}{p{0.25\textwidth}p{0.21\textwidth}p{0.19\textwidth}p{0.23\textwidth}}
+\toprule
+가설/입력 & $H(L)$ & $N(b)$ & 상태와 근거\\
+\midrule
+\endhead
+없음 (혼합진법) & $\le\pi^*(L)\sim L/\log L$ & $\ll\log b/\log\log b$ & \PROVED\ p1p4 정리 5.4\\
+없음 (엔트로피) & $\ge(\frac1{\log2}-o(1))\log L$ & $\gg\log\log b$ (Erdős) & $H$의 하한은 \PROVED\ (baker 명제 1.5), $N(b)$의 하한은 \EXT\ (BRIEF)\\
+VKGAP 에이전트가 증명 중인 약수 간격 정리 ($\delta=\e^{-(\log L)^{3/2-\eps}}$, $X_0=\e^{C(\log L)^4}$) & $\le(1+o(1))\frac{L}{(\log L)^{3/2-\eps}}$ & $\ll\frac{\log b}{(\log\log b)^{3/2-\eps}}$ & 함의 \PROVED\ (주의~\ref{STRUCT:rem-S3-meaning}(3)); 간격 정리 자체는 그 에이전트의 목표\\
+Hughes ($n!$) & --- & $\le(4\log2+o(1))\frac{\log b}{(\log\log b)^2}$ & \EXT\ (BRIEF, snippet-verified)\\
+(E1)--(E4), 문헌의 큰 $C$ (Drappeau--Shao, Harper, dBT) & $\ll L^{1-1/C}$ (작은 $\delta=1/C$) & $\ll(\log b)^{1-1/C}$ & \COND{문헌 진술; 일부 recalled} 정리~\ref{STRUCT:thm-smooth-to-Lam}, \ref{STRUCT:thm-smooth-bundle}\\
+Vose & --- & $\ll(\log b)^{1/2}$ & \EXT\ (erdosproblems.com/18 snippet)\\
+$\mathrm W_\Lam(K,C)$, $\frac K{K-1}\le C<2$ & $\ll L^{1-1/C}=o(L^{1/2})$ & Vose를 넘음 & \OPEN; 함의 \COND{$\mathrm W_\Lam$}; 삭제 경로로는 불가능 (주의~\ref{STRUCT:rem-smooth-honest})\\
+(A) $\log\frac1\delta\ge c\log L$ & $\le(\frac1c+o(1))\frac L{\log L}$ & $\ll\log b/\log\log b$ & \COND{GH} 정리~\ref{STRUCT:thm-regimes}(A)\\
+$\mathrm{BC}^*(w,C)$ & $\le(\frac{C}{2\log\frac1{1-w}}+o(1))(\log L)^2$ & $\ll(\log\log b)^2$; Erdős \#18 Q1 (지수 2) & \COND{$\mathrm{BC}^*$} 정리~\ref{STRUCT:thm-BC}, 따름정리~\ref{STRUCT:cor-BC-conseq}\\
+(B) $\log\frac1\delta\ge c\ell/\log L$ (VKGAP-C형 비공명이 주는 규모) & $\le(\frac1c+o(1))(\log L)^2$ & $\ll(\log\log b)^2$ & \COND{GH} 정리~\ref{STRUCT:thm-regimes}(B)\\
+장벽: 유계 비율 $\Lam$형 블록 & $\sum K_j\ge(c(w)-\eps)(\log L)^2$ & --- & \PROVED\ 정리~\ref{STRUCT:thm-barrier}; 상수는 $\mathrm{BC}^*$와 일치\\
+(C) $\mathrm{DG}(c)$: $\log\frac1\delta\ge c\phi_L(\ell)$ & $\le(\frac1c+o(1))\log L\log\log L$ & $\ll\log\log b\cdot\log\log\log b$ & \COND{DG} 정리~\ref{STRUCT:thm-regimes}(C); $c>1$은 \REFUTED\ (명제~\ref{STRUCT:prop-DG-sharp})\\
+장벽: 순수 greedy & $G(L)\ge(1-o(1))\log L\log\log L$ & --- & \PROVED\ p1p4 정리 5.16; DG 하에서 $\Theta$ (따름정리~\ref{STRUCT:cor-greedy-theta})\\
+SP1 $\iff$ 초지수 블록 $T(y,\lfloor y^\lambda\rfloor)\ll\log y$ & $\ll\log L$ & $\ll\log\log b$ (\#304) & \OPEN; 동치는 \PROVED\ (명제~\ref{STRUCT:prop-escape}(c))\\
+\bottomrule
+\end{longtable}
+}
+
+%======================================================================
+\subsection{상태 원장 (STRUCT)}
+\label{STRUCT:sec-ledger}
+
+{\small
+\begin{longtable}{p{0.24\textwidth}p{0.42\textwidth}p{0.24\textwidth}}
+\toprule
+라벨 & 내용 & 상태\\
+\midrule
+\endhead
+\texttt{lem-swap},\newline \texttt{thm-dedup} & $(\star)$이면 반복 허용 최소 $=$ 구별 최소; 교환 횟수 상계 두 가지 & \PROVED\\
+\texttt{thm-char} & 중복 제거 성질 $\iff(\star)$; 깨지면 $a^*=2N/p$ & \PROVED\\
+\texttt{cex-10} & $N=10$, $a=4$ ($a=9$도) & \REFUTED\\
+\texttt{rem-num-dedup} & $L\le16$ 전수, $N\le6000$에서 $(\star)\iff$ 성질, 무작위 교환 & \NUMERIC\\
+\texttt{cor-practical},\newline \texttt{cor-sumset} & 실용성; $H(L)=\min\{k:kA_L\supseteq[0,\Lam_L)\}$; Bellman; 부분가법성 & \PROVED\\
+\texttt{thm-cascade},\newline \texttt{rem-8-12} & 겹치는 족의 cascade; SP1-disj·라벨 설계·$u$-강건성 불필요 & \PROVED\\
+\texttt{cor-newton} & 순서 튜플 수 $>0$이면 충분; Newton/E4 불필요 & \PROVED\\
+\texttt{thm-block},\newline \texttt{cor-selfsim} & $H\le\sum K_j$; $H(L)\le H(y)+T(L,y)$ & \PROVED\\
+\texttt{prop-block-count},\newline \texttt{lem-divcount} & 블록 counting; 약수 개수 상계 (p1p4 8.34 재검증) & \PROVED\\
+\texttt{lem-perblock},\newline \texttt{thm-barrier},\newline \texttt{cor-geometric} & 기하적 $\Lam$형 방식 $\sum K_j\ge(c(w)-\eps)(\log L)^2$, $c(w)=\frac1{2(1+\log\frac1w)\log\frac1{1-w}}$ & \PROVED\ (PNT)\\
+\texttt{rem-num-block} & 최적 $\Lam$형 방식 하한 ($L\le5000$) & \NUMERIC\\
+\texttt{prop-escape} & 한 블록/초지수 블록은 각 척도의 SP1일 때만 장벽을 피함 & \PROVED\\
+\texttt{hyp-BC},\newline \texttt{thm-BC},\newline \texttt{cor-BC-conseq} & $\mathrm{BC}^*\Rightarrow(\log L)^2\Rightarrow(\log\log b)^2$, \#18 Q1 & \COND{$\mathrm{BC}^*$}; 가설은 \OPEN\\
+\texttt{lem-small},\newline \texttt{lem-ratio2} & 작은 영역 ($M\ge k$면 $k$항); 비 $\le2$ & \PROVED\\
+\texttt{thm-greedy} & 척도별 greedy 보조정리 & \PROVED\ (환원)\\
+\texttt{thm-regimes} & (A) $L/\log L$, (B) $(\log L)^2$, (C) $\log L\log\log L$ & \PROVED\ (환원)\\
+\texttt{prop-DG-sharp} & $c>1$이면 DG 거짓 & \REFUTED\\
+\texttt{cor-greedy-theta} & DG 하에서 greedy $\Theta(\log L\log\log L)$ & \PROVED\ (i),\newline \COND{DG} (ii),\newline \HEUR\ (iii)\\
+\texttt{thm-smooth-bundle} & $\mathrm W_\Lam(K,C)\Rightarrow H\le(\frac{KC}{C-1}+o(1))L^{1-1/C}$ & \COND{$\mathrm W_\Lam$}\\
+\texttt{prop-entropy-W} & $\mathrm W$에는 $C\ge K/(K-1)$ 필요 & \PROVED\\
+\texttt{lem-deletion} & 삭제 한계; $\alpha<1/2$에서 실패 & \PROVED\\
+\texttt{thm-smooth-to-Lam} & (E1)--(E4), $C>2$ $\Rightarrow\mathrm W_\Lam(K,C)$ & \COND{(E1)--(E4)}\\
+\texttt{ext-smooth-lit} & Harper, Drappeau--Shao, dBT, Lagarias--Soundararajan & \EXT\\
+\bottomrule
+\end{longtable}
+}

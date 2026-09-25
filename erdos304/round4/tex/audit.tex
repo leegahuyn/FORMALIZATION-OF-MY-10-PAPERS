@@ -1,0 +1,6 @@
+\section{적대적 감사 (Stage~2)}\label{LEAD:audit}
+모든 \PROVED{}와 \REFUTED{} 항목은 작성자와 다른 감사 에이전트가 처음부터 다시 유도하고, 수치로 확인할 수 있는 것은 독립 코드로 다시 계산한다. 판정은 CONFIRMED / MINOR-FIX / GAP(태그 강등) / WRONG이다. 감사자는 원문을 직접 고칠 수 있으며 수정 위치는 원천 파일에 \texttt{\% AUDn:} 주석으로 남고 원본은 \texttt{*.orig\_before\_AUDn}로 보존된다.
+
+\medskip\noindent\textbf{중간판 상태.} AUD1이 CMM 절을 감사하는 중이다. STRUCT, VKGAP, CORE, NUM 절의 감사는 해당 에이전트가 끝난 뒤 시작한다. 따라서 이 판의 \PROVED{} 태그는 모두 작성자 판정이다.
+\IfFileExists{agents/AUD1/audit_CMM.tex}{\input{agents/AUD1/audit_CMM.tex}}{}
+\IfFileExists{agents/AUD2/audit.tex}{\input{agents/AUD2/audit.tex}}{}

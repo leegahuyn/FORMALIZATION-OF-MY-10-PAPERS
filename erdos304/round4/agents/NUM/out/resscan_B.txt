@@ -16,3 +16,15 @@ L=271 M=26 eta=0.10 tau*>1.059054e+09 (no resonance in [10,1.059054e+09]) max g/
 L=283 M=27 eta=0.30 tau*=558031.447942 g/M=0.700000  h=0.21753 K=4.9649 cand=12 amb=0 time=120.0s
 L=283 M=27 eta=0.20 tau*>9.811117e+08 (no resonance in [10,9.811117e+08]) max g/M on grid=0.785000 at t=783407036.4348  h=0.21753 K=4.9649 cand=12 amb=0 time=120.0s
 L=283 M=27 eta=0.10 tau*>9.811117e+08 (no resonance in [10,9.811117e+08]) max g/M on grid=0.785000 at t=783407036.4348  h=0.21753 K=4.9649 cand=12 amb=0 time=120.0s
+L=293 M=28 eta=0.30 tau*=558031.437806 g/M=0.700001  h=0.21508 K=5.2072 cand=7 amb=0 time=120.0s
+L=293 M=28 eta=0.20 tau*>1.201486e+09 (no resonance in [10,1.201486e+09]) max g/M on grid=0.781589 at t=1187692928.2509  h=0.21508 K=5.2072 cand=7 amb=0 time=120.0s
+L=293 M=28 eta=0.10 tau*>1.201486e+09 (no resonance in [10,1.201486e+09]) max g/M on grid=0.781589 at t=1187692928.2509  h=0.21508 K=5.2072 cand=7 amb=0 time=120.0s
+L=313 M=29 eta=0.30 tau*=31196010.478730 g/M=0.700001  h=0.21992 K=5.2746 cand=22 amb=0 time=120.0s
+L=313 M=29 eta=0.20 tau*=505042317.308360 g/M=0.800000  h=0.21992 K=5.2746 cand=22 amb=0 time=120.0s
+L=313 M=29 eta=0.10 tau*>1.035219e+09 (no resonance in [10,1.035219e+09]) max g/M on grid=0.801676 at t=505042317.6146  h=0.21992 K=5.2746 cand=22 amb=0 time=120.0s
+L=349 M=30 eta=0.30 tau*=18877368.910357 g/M=0.700003  h=0.23128 K=5.1885 cand=7 amb=0 time=120.0s
+L=349 M=30 eta=0.20 tau*>1.012808e+09 (no resonance in [10,1.012808e+09]) max g/M on grid=0.782407 at t=656417672.9554  h=0.23128 K=5.1885 cand=7 amb=0 time=120.0s
+L=349 M=30 eta=0.10 tau*>1.012808e+09 (no resonance in [10,1.012808e+09]) max g/M on grid=0.782407 at t=656417672.9554  h=0.23128 K=5.1885 cand=7 amb=0 time=120.0s
+L=353 M=31 eta=0.30 tau*=18877368.931312 g/M=0.700004  h=0.22589 K=5.4895 cand=2 amb=0 time=120.0s
+L=353 M=31 eta=0.20 tau*>9.467898e+08 (no resonance in [10,9.467898e+08]) max g/M on grid=0.749524 at t=435176523.9526  h=0.22589 K=5.4895 cand=2 amb=0 time=120.0s
+L=353 M=31 eta=0.10 tau*>9.467898e+08 (no resonance in [10,9.467898e+08]) max g/M on grid=0.749524 at t=435176523.9526  h=0.22589 K=5.4895 cand=2 amb=0 time=120.0s
