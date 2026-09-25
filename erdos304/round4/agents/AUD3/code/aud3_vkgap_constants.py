@@ -108,7 +108,7 @@ P(" step5 tail =", tail, " (claimed <=0.2033); pi^2/6-1 =", pi**2/6-1)
 P(" step6 margin =", mpf('0.375')-tail)
 # F_T lower bound on |x|<=1/(2T): sin v/v >= 2/pi on |v|<=pi/2
 P(" 4/pi^2 =", 4/pi**2, " F_T identity check at T=3,x=0.123:",
-  quad(lambda xi: (1-abs(xi)/3)*cos(2*pi*xi*mpf('0.123')), [-3, 3]), 3*(sin(pi*3*mpf('0.123'))/(pi*3*mpf('0.123')))**2)
+  quad(lambda xi: (1-abs(xi)/3)*cos(2*pi*xi*mpf("0.123")), [-3, 0, 3]), 3*(sin(pi*3*mpf('0.123'))/(pi*3*mpf('0.123')))**2)
 
 P("== (C2) at n=n0 ==")
 for LL in [6, 8, 10, 20, 50]:   # loglog y
