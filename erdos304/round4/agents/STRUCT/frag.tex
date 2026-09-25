@@ -326,3 +326,91 @@ $i<m$에서 $\psi(z_i)\le(1-w+\eps)^i\psi(L)$, $\log z_i\le\log(2\psi(z_i))\le\L
 \PROVED\ (1) SP1 ($H(y)\le C\log y$)은 모든 $w$에 대해 $\mathrm{BC}^*(w,C)$를 준다. $\mathrm{BC}^*$는 $(\log L)^2$만 주므로 형식적으로 더 약한 가설이지만, 길이 $\e^{w\psi(y)}$의 구간을 $O(\log y)$개의 약수로 덮으라는 지수적으로 세밀한 덮개 명제이며 \OPEN 이다 (알려진 무조건적 결과, 곧 작은 잔차 정리는 $\e^{O((\log y)^2)}$까지만 덮는다).
 (2) counting (보조정리~\ref{STRUCT:lem-perblock}의 경우 A를 $\nu=w$에 적용): $\mathrm{BC}^*(w,C)$이면 $C\ge(1-o(1))/(1+\log\frac1w)$. 이 최소 $C$를 정리~\ref{STRUCT:thm-BC}에 넣으면 상수는 $\frac{1}{2(1+\log\frac1w)\log\frac1{1-w}}=c(w)$로 정리~\ref{STRUCT:thm-barrier}의 장벽 상수와 정확히 같다. 즉 기하적 방식 안에서 $(\log L)^2$와 그 상수는 counting 수준에서 최적이다.
 \end{remark}
+
+%======================================================================
+\subsection{S3: greedy와 척도별 간격 사다리}
+\label{STRUCT:sec-S3}
+
+\begin{lemma}[연속 약수 비 $\le2$; p1p4 보조정리 5.2 재증명]\label{STRUCT:lem-ratio2}
+\PROVED\ $L\ge2$, $d\in D^*_L$이면 $d$ 다음의 약수 $d^+$는 $d^+\le2d$. 따라서 $1\le R<\Lam_L$에서 $R$ 이하의 최대 약수 $d$는 $R-d<R/2$를 만족한다.
+\end{lemma}
+\begin{proof}
+$e\mid\Lam_L$, $e>1$에 대해 $e/2\le e'<e$인 약수 $e'$가 있음을 보인다. $2\mid e$이면 $e'=e/2$. $e$가 홀수이면 홀수 소수 $p\mid e$, $p^a\,\|\,e$를 잡고 $2^b<p^a<2^{b+1}$인 $b$를 잡아 $e'=e2^b/p^a$로 두면 $e/2<e'<e$이고 $2^b<p^a\le L$이므로 $e'\mid\Lam_L$. $d<\Lam_L$이면 $e=\Lam_L/d>1$에 적용하여 $\Lam_L/e'\in(d,2d]$가 약수이다. 마지막 주장: $d\le R<d^+\le2d$.
+\end{proof}
+
+\begin{lemma}[작은 영역; p1p4 정리 5.7의 $U=\emptyset$ 판의 단순화]\label{STRUCT:lem-small}
+\PROVED\ $L\ge4$, $1\le k\le M$이고 $q_1>\dots>q_k$가 $P$의 가장 큰 $k$개 소수, $P_i=q_1\cdots q_i$라 하자. 모든 정수 $0\le R<\min(P_k,\Lam_L)$ (특히 $R<\min((L/2)^k,\Lam_L)$)은 $D^*_L$의 서로 다른 원소 많아야 $k$개의 합이다.
+\end{lemma}
+\begin{proof}
+기수 $q_1,\dots,q_k$의 혼합진법으로 $R=c_0+\sum_{i=1}^{k-1}c_iP_i$, $0\le c_0<q_1$, $0\le c_i<q_{i+1}$. $c_0<q_1\le L$이므로 $c_0\ge1$이면 $c_0\mid\Lam_L$. $1\le c_i<q_{i+1}<q_j$ ($j\le i$)이므로 $q_j\nmid c_i$이고, $L\ge4$에서 $q_j^2>L^2/4\ge L$이므로 $v_{q_j}(\Lam_L)=1$; 따라서 $c_iP_i\mid\Lam_L$. 비영 항은 구간 $[P_i,P_{i+1})$ ($P_0=1$)에 하나씩 놓여 서로 다르고, 모두 $\le R<\Lam_L$.
+\end{proof}
+
+\begin{definition}[척도별 간격 가설]\label{STRUCT:def-GH}
+$2\le X_0$, $X_0^2<\Lam_L$, $\Xi:=[\ell_-,\ell_+]:=[\log X_0,\log(\Lam_L/X_0)]$, $\delta:\Xi\to(0,1)$에 대해
+$\mathrm{GH}(\delta,X_0)$: 모든 실수 $x$ ($\log x\in\Xi$)에 대해 $[(1-\delta(\log x))x,\,x]$에 $\Lam_L$의 약수가 있다.
+$\lambda(\ell):=\max(\log2,\log(1/\delta(\ell)))$, $\lambda_*(\ell):=\inf_{t\in[\ell,\ell_+]}\lambda(t)$ (비감소, $\ge\log2$)로 둔다.
+\end{definition}
+
+\begin{theorem}[척도별 greedy 보조정리]\label{STRUCT:thm-greedy}
+\PROVED\ (환원) $L\ge4$이고 $\mathrm{GH}(\delta,X_0)$가 성립한다고 하자. $k:=\lceil\log X_0/\log(L/2)\rceil\le M$, $y_0:=\min\{y\ge1:\psi(y)\ge\log X_0\}$로 두면
+\[
+H(L)\ \le\ H(y_0)\ +\ 1+\int_{\ell_-}^{\ell_+}\frac{d\ell}{\lambda_*(\ell)}\ +\ k .
+\]
+또 $X_0\to\infty$일 때 $H(y_0)\le\pi^*(y_0)\le(1+o(1))\log X_0/\log\log X_0$ (PNT; $\pi^*$는 소수거듭제곱 개수).
+\end{theorem}
+\begin{proof}
+$\psi(y_0-1)<\log X_0<\psi(L)/2$이므로 $y_0\le L$. $0\le a<\Lam_L$, $W:=\Lam_L/\Lam_{y_0}$로 두고 $a=c_1W+c_2$, $0\le c_1<\Lam_{y_0}$, $0\le c_2<W$로 나눈다. $c_1$은 $\Lam_{y_0}$의 약수 $\le H(y_0)$개의 합이고 각 항에 $W$를 곱하면 $D^*_L$의 원소이다(합 $\le a<\Lam_L$).
+$c_2<W\le\Lam_L/X_0$ ($\Lam_{y_0}\ge X_0$). $R_0=c_2$에서 $R_i\ge X_0$인 동안 $d_i$ $=$ $R_i$ 이하의 최대 약수, $R_{i+1}=R_i-d_i$로 둔다. $\log R_i\in\Xi$이므로 가설로 $d_i\ge(1-\delta(\ell_i))R_i$, 즉 $R_{i+1}\le\delta(\ell_i)R_i$; 보조정리~\ref{STRUCT:lem-ratio2}로 $R_{i+1}<R_i/2$. 따라서 $\ell_{i+1}\le\ell_i-\lambda(\ell_i)$ ($\ell_i=\log R_i$).
+$R_{i+1}\ge X_0$인 걸음 (마지막이 아닌 걸음)에서는 $[\ell_{i+1},\ell_i]\subseteq\Xi$이고 $\lambda_*$가 비감소이므로
+$\int_{\ell_{i+1}}^{\ell_i}d\ell/\lambda_*(\ell)\ge(\ell_i-\ell_{i+1})/\lambda_*(\ell_i)\ge\lambda(\ell_i)/\lambda_*(\ell_i)\ge1$. 이 구간들은 겹치지 않으므로 그런 걸음의 수는 $\le\int_\Xi d\ell/\lambda_*$이고, 마지막 걸음이 하나 더 있다.
+남은 $R<X_0\le(L/2)^k$는 보조정리~\ref{STRUCT:lem-small}로 $\le k$개의 약수의 합이다. 모든 항을 모은 반복 표현에 정리~\ref{STRUCT:thm-dedup}를 적용한다.
+끝으로 $\psi(y_0-1)<\log X_0$와 PNT로 $y_0\le(1+o(1))\log X_0$이고 $H(y_0)\le\pi^*(y_0)$ (혼합진법, p1p4 정리 5.4), $\pi^*(y)=(1+o(1))y/\log y$.
+\end{proof}
+
+\begin{theorem}[세 체제]\label{STRUCT:thm-regimes}
+\PROVED\ (환원; 정리~\ref{STRUCT:ext-pnt} 사용) $c>0$을 고정하고 $L\to\infty$라 하자. $\phi_L(\ell):=\frac{\ell}{\log L}\log\frac{\e L}{\min(\ell,L)}$ (비감소)로 둔다.
+\begin{enumerate}[label=(\Alph*)]
+\item $2\le X_0\le\exp(L/\log L)$이고 $\Xi$ 위에서 $\log(1/\delta(\ell))\ge c\log L$이면 $H(L)\le(1/c+o(1))\,L/\log L$.
+\item $2\le X_0\le\exp((\log L)^2)$이고 $\Xi$ 위에서 $\log(1/\delta(\ell))\ge c\,\ell/\log L$ (선형 엔트로피 간격)이면 $H(L)\le(1/c+o(1))(\log L)^2$.
+\item ($\mathrm{DG}(c,X_0)$) $2\le X_0\le\exp(\log L\log\log L)$이고 $\Xi$ 위에서 $\log(1/\delta(\ell))\ge c\,\phi_L(\ell)$ (엔트로피 수준 간격)이면 $H(L)\le(1/c+o(1))\log L\log\log L$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+세 경우 모두 하한 함수 $f$ ($f=c\log L$, $c\ell/\log L$, $c\phi_L(\ell)$)가 비감소이므로 $\lambda_*\ge f$이고 정리~\ref{STRUCT:thm-greedy}를 쓴다. $\ell_+\le\psi(L)=(1+o(1))L$.
+$\phi_L$의 비감소성: $\ell\le L$에서 $\phi_L=\frac{\ell}{\log L}(1+\log\frac L\ell)$, $\frac{d}{d\ell}\phi_L=\frac{\log(L/\ell)}{\log L}\ge0$; $\ell\ge L$에서 $\phi_L=\ell/\log L$; $\ell=L$에서 연속.
+(A) $\int_\Xi\le\psi(L)/(c\log L)=(1/c+o(1))L/\log L$; $H(y_0)\le(1+o(1))\frac{L/\log L}{\log(L/\log L)}=o(L/\log L)$ ($X_0$가 유계이면 $O(1)$); $k\le\frac{L/\log L}{\log(L/2)}+1=o(L/\log L)$, 또 $k\le M$ (큰 $L$).
+(B) $\int_\Xi\le\frac{\log L}c\log\frac{\ell_+}{\ell_-}\le\frac{\log L}{c}\log\frac{2L}{\log2}=(1/c+o(1))(\log L)^2$; $H(y_0)=O((\log L)^2/\log\log L)$; $k=O(\log L)$.
+(C) $s=1+\log(L/\ell)$로 치환하면 $\int_{\ell_-}^{L}\frac{\log L\,d\ell}{c\,\ell(1+\log(L/\ell))}=\frac{\log L}{c}\log\bigl(1+\log\frac{L}{\ell_-}\bigr)\le\frac{\log L}{c}\log\log\frac{\e L}{\log 2}$, 그리고 $\int_L^{\ell_+}\frac{\log L\,d\ell}{c\ell}\le\frac{\log L}c\log\frac{\psi(L)}{L}=o(\log L)$. $H(y_0)\le(1+o(1))\frac{\log L\log\log L}{\log(\log L\log\log L)}\le(1+o(1))\log L$; $k=O(\log\log L)$.
+\end{proof}
+
+\begin{proposition}[엔트로피 수준 간격은 상수까지 최적: $c>1$이면 DG는 거짓]\label{STRUCT:prop-DG-sharp}
+\REFUTED\ (정리~\ref{STRUCT:ext-pnt} 사용) $c>1$이고 $2\le X_0\le\exp(\sqrt L)$이면, 충분히 큰 모든 $L$에서 $\mathrm{DG}(c,X_0)$는 거짓이다. 더 정확히, 참 간격 $\delta_{\rm true}(x):=(x-\max\{d\mid\Lam_L:d\le x\})/x$는 어떤 $x$, $\log x\in[L/4-1,\ L/4+O(L/\log L)]$에서 $\log(1/\delta_{\rm true}(x))\le(1+o(1))\phi_L(\log x)$를 만족한다.
+\end{proposition}
+\begin{proof}
+$\sigma:=\log4/\log L$ ($L^{1-\sigma}=L/4$), $r:=\lfloor\e^{L/4}\rfloor$, $F(\sigma):=\prod_{p\le L}\sum_{j=0}^{a_p}p^{-j\sigma}$로 둔다.
+\emph{Rankin.} $\Psi_\Lam(X):=\#\{d\mid\Lam_L:d\le X\}\le\sum_{d\mid\Lam_L}(X/d)^\sigma=X^\sigma F(\sigma)$. $L\ge7$이면 $p\le\sqrt L$의 인수는 $\le a_p+1\le1+\log_2L\le2\log L$, $p>\sqrt L$의 인수는 $1+p^{-\sigma}\le\exp(p^{-\sigma})$이므로 $\log F(\sigma)\le\sqrt L\log(2\log L)+\sum_{p\le L}p^{-\sigma}$. 부분합과 $\pi(t)\le3t/\log t$ ($t\ge2$; Chebyshev형, 초등적), $\pi(L)\le(1+\eps_L)L/\log L$ (PNT, $\eps_L\to0$)로
+$\sum_{p\le L}p^{-\sigma}=\pi(L)L^{-\sigma}+\sigma\int_2^L\pi(t)t^{-\sigma-1}dt\le(1+\eps_L)\frac{L^{1-\sigma}}{\log L}+3\sigma\Bigl[\frac{\sqrt L}{\log2}+\frac{2}{\log L}\frac{L^{1-\sigma}}{1-\sigma}\Bigr]$
+($\int_2^{\sqrt L}t^{-\sigma}dt/\log t\le\sqrt L/\log 2$, $\int_{\sqrt L}^L t^{-\sigma}dt/\log t\le\frac{2}{\log L}\frac{L^{1-\sigma}}{1-\sigma}$). 따라서 $\log F(\sigma)\le(\frac14+o(1))L/\log L$.
+\emph{큰 간격의 존재.} $X:=(4rF(\sigma))^{1/(1-\sigma)}\ge4r$. $\log X=\frac{\log4+\log r+\log F(\sigma)}{1-\sigma}\le\frac L4+\frac{L}{4\log L}(1+\log4+o(1))$ ($\frac1{1-\sigma}=1+\sigma+O(\sigma^2)$, $\sigma L/4=\frac{L\log4}{4\log L}$); 특히 $X<\Lam_L/2$. $\Lam_L$의 약수 $1=e_1<\dots<e_s\le X$ ($s\le X^\sigma F(\sigma)=X/(4r)$)의 모든 간격과 $e_s$에서 다음 약수까지의 간격이 $\le r$이면 $X<e_s^+\le1+sr\le1+X/4$, 모순. 따라서 어떤 약수 $d\le X$의 다음 약수 $d^+$가 $d^+-d>r$.
+\emph{결론.} $x:=d+r$이면 $x$ 이하의 최대 약수는 $d$이므로 $\delta_{\rm true}(x)=r/x$. $r\le x\le2X$이므로 $\log x\in\Xi$ (큰 $L$; $\log r\ge L/4-1\ge\sqrt L\ge\log X_0$, $\log(2X)<\psi(L)-\sqrt L$). 또
+\[
+\log\frac1{\delta_{\rm true}(x)}=\log x-\log r\le\log2+\log X-\log r\le\frac{L}{4\log L}(1+\log4+o(1)),
+\]
+반면 $\phi_L(\log x)\ge\phi_L(\log r)\ge\phi_L(L/4-1)=(1-o(1))\frac{L}{4\log L}(1+\log4)$. 이로써 두 번째 주장. $\mathrm{DG}(c,X_0)$가 성립하면 $x$에서 $r/x\le\delta(\log x)\le\exp(-c\phi_L(\log x))$이므로 $c(1+\log4)(1-o(1))\le(1+\log4)(1+o(1))$, 곧 $c\le1+o(1)$: 큰 $L$에서 모순.
+\end{proof}
+
+\begin{corollary}[엔트로피 수준 간격에서 greedy는 $\Theta(\log L\log\log L)$]\label{STRUCT:cor-greedy-theta}
+$G(L)$을 순수 greedy (매번 $R$ 이하의 최대 약수를 뺌)의 최대 단계 수라 하자.
+(i) \PROVED\ (p1p4 정리 5.16, 증명은 그곳; 한 걸음 부등식은 위 명제의 Rankin 논법과 같다) $G(L)\ge(1-o(1))\log L\log\log L$.
+(ii) \COND{$\mathrm{DG}(c,X_0)$, $\log X_0=o(\log L\log\log L)$} $G(L)\le(1/c+o(1))\log L\log\log L$. 따라서 $1-o(1)\le G(L)/(\log L\log\log L)\le1/c+o(1)$ (이는 $c\le1$과만 양립하며 명제~\ref{STRUCT:prop-DG-sharp}와 일치한다).
+(iii) \HEUR\ 무작위 모형은 $\mathrm{DG}(1-o(1),X_0)$ (Rankin 상계가 거의 등호)를 예측하며, 그 경우 $G(L)\sim\log L\log\log L$.
+\end{corollary}
+\begin{proof}
+(ii) $a<\Lam_L$에서 순수 greedy: $R>\Lam_L/X_0$인 동안 보조정리~\ref{STRUCT:lem-ratio2}로 매 걸음 $R$이 절반 미만이 되므로 $\le\lceil\log_2X_0\rceil$ 걸음; $\log R\in\Xi$인 동안 정리~\ref{STRUCT:thm-greedy}의 증명과 같이 $\le1+\int_\Xi d\ell/\lambda_*$ 걸음이며 정리~\ref{STRUCT:thm-regimes}(C)의 계산으로 $\le(1/c+o(1))\log L\log\log L$; $R<X_0$에서 다시 절반씩 줄어 $\le\lceil\log_2X_0\rceil$ 걸음 후 $R=0$. $\log_2X_0=o(\log L\log\log L)$.
+\end{proof}
+
+\begin{remark}[사다리에서의 의미]\label{STRUCT:rem-S3-meaning}
+(1) \PROVED\ 정리~\ref{STRUCT:thm-regimes}(C)의 $\log L\log\log L$은 순수 greedy가 결코 넘을 수 없는 선이다 (따름정리~\ref{STRUCT:cor-greedy-theta}(i)); 명제~\ref{STRUCT:prop-DG-sharp}에 의해 어떤 간격 가설도 greedy 단계당 $(1+o(1))\phi_L(\ell)$보다 많이 $\log R$을 줄일 수 없다. 따라서 SP1 ($H\ll\log L$)의 증명은 greedy가 아닌 다중 약수 단계를 포함해야 하고, S2의 정리~\ref{STRUCT:thm-barrier}에 의해 그 단계들은 유계 비율의 $\Lam$형 블록일 수도 없다: 넓은(초지수) 단계 또는 $\Lam$형이 아닌 사슬(풀 소수 설계, cascade)이 필요하다. ``필요하다''는 위 두 증명된 장벽의 결합이라는 뜻이며 모든 가능한 방식에 대한 불가능성 정리는 아니다 (\HEUR).
+(2) \HEUR\ (A)의 규모 $\log(1/\delta)\asymp\log L$은 풀 소수 교환 $d\mapsto dp/q$와 짧은 구간의 소수에서 오는 간격 규모이며, 이득이 없다(혼합진법이 이미 $(1+o(1))L/\log L$). (B)는 설계 S4의 VKGAP-C형 비공명 가설이 주는 규모이다.
+(3) \COND{VKGAP 에이전트가 증명 중인 약수 간격 정리: $\delta=\exp(-(\log L)^{3/2-\eps})$, $X_0=\exp(C(\log L)^4)$} 정리~\ref{STRUCT:thm-greedy}로 $H(L)\le H(y_0)+1+\psi(L)/(\log L)^{3/2-\eps}+k$, $H(y_0)=O((\log L)^4/\log\log L)$, $k=O((\log L)^3)$이므로 $H(L)\le(1+o(1))L/(\log L)^{3/2-\eps}$.
+\end{remark}

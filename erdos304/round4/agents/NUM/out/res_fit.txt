@@ -1,4 +1,4 @@
 consistency (LLL point below a grid-certified range): none
-eta=0.3: grid tau*: n=20, M in [5,24], log10 tau* = 0.675 + 0.2120 M; LLL points: n=12, M in [5,16], log10 t = 0.851 + 0.2015 M; random-phase model slope 0.250
-eta=0.2: grid tau*: n=20, M in [5,24], log10 tau* = 0.017 + 0.3532 M; LLL points: n=12, M in [5,16], log10 t = 0.435 + 0.3094 M; random-phase model slope 0.354
-eta=0.1: grid tau*: n=14, M in [5,20], log10 tau* = -0.130 + 0.4956 M; LLL points: n=12, M in [5,16], log10 t = -0.330 + 0.5175 M; random-phase model slope 0.520
+eta=0.3: grid tau*: n=23, M in [5,27], log10 tau* = 0.833 + 0.1985 M; LLL points: n=19, M in [5,23], log10 t = 0.566 + 0.2288 M; random-phase model slope 0.250
+eta=0.2: grid tau*: n=22, M in [5,26], log10 tau* = 0.453 + 0.3152 M; LLL points: n=19, M in [5,23], log10 t = -0.462 + 0.4033 M; random-phase model slope 0.354
+eta=0.1: grid tau*: n=14, M in [5,20], log10 tau* = -0.130 + 0.4956 M; LLL points: n=19, M in [5,23], log10 t = -0.991 + 0.5950 M; random-phase model slope 0.520

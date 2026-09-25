@@ -88,3 +88,13 @@ L=239 M=22 eta=0.2: resonance at t=259381511.488266 (log10=8.414) |f|/M=0.81660
 L=239 M=22 eta=0.1: resonance at t=153402959390.51 (log10=11.186) |f|/M=0.90289
 L=239 M=22 eta=0.05: resonance at t=1.57702156912135e+16 (log10=16.198) |f|/M=0.96141
    (2116 candidates, 34.3s)
+L=241 M=23 eta=0.3: resonance at t=6191538.8713343 (log10=6.792) |f|/M=0.73650
+L=241 M=23 eta=0.2: resonance at t=4628007359.93448 (log10=9.665) |f|/M=0.80513
+L=241 M=23 eta=0.1: resonance at t=584538338846.885 (log10=11.767) |f|/M=0.90755
+L=241 M=23 eta=0.05: resonance at t=5.890401192885e+17 (log10=17.770) |f|/M=0.96169
+   (2173 candidates, 37.5s)
+L=251 M=24 eta=0.3: resonance at t=1421208.73772736 (log10=6.153) |f|/M=0.70723
+L=251 M=24 eta=0.2: resonance at t=377703670.153127 (log10=8.577) |f|/M=0.81878
+L=251 M=24 eta=0.1: resonance at t=7818833271909.68 (log10=12.893) |f|/M=0.92799
+L=251 M=24 eta=0.05: resonance at t=6.54817229893323e+16 (log10=16.816) |f|/M=0.96095
+   (2129 candidates, 38.4s)

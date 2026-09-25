@@ -19,3 +19,7 @@ a=13385425717  in S3+S3 (kappa<=6): NO
 a=13385435681  in S3+S3 (kappa<=6): NO
 a=13385478149  in S3+S3 (kappa<=6): NO
 a=13385486033  in S3+S3 (kappa<=6): NO
+a=13385489537  in S3+S3 (kappa<=6): NO
+a=13385506499  in S3+S3 (kappa<=6): NO
+a=13385516279  in S3+S3 (kappa<=6): NO
+a=13385519339  in S3+S3 (kappa<=6): NO
