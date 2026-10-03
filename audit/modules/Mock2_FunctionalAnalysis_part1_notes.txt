@@ -1,0 +1,78 @@
+# FA audit notes (running)
+COVERAGE: 1-1899 read.
+- Header 1-208: paper "Global Poincare Matching and Kloosterman-Compatible Test Kernels for Half-Integral Weight Mock-Theta Gauge Objects"; claims 9 items (Gamma(2) cusp geometry, fixed-phase raising/lowering, Green identity, graph/Sobolev completion, compact potential, Fredholm alt, explicit Delta potential, closed realization/resolvent, corrections/firewall). Nonclaims listed (no elliptic regularity, compact resolvent, Kuznetsov...). Header line 15-16 says "#print axioms at end" -- check.
+- 297-313 cauchy_schwarz/dual_holder/lax_milgram = direct Mathlib wrappers (honestly labelled "not paper Lemma 1.1").
+- 332-603 dual norm sup forms (dual_norm_eq_sSup_unit, dual_norm_eq_coreRatioNorm_of_dense, dual_norm_eq_iSup_coreRatio) genuine but elementary.
+- 636-697 UnitaryAutomorphyFactor structure (data+laws) genuine.
+- 875 linear_and_conjugate_scalar_laws_force_zero genuine small.
+- 952-1500 Bochner core pairing: CoreBochnerRegular/CoreBochnerPairing are Prop defs used as hypotheses (honest obligations); compactExhaustion results genuine elementary.
+- 1517-1900 ComplexLaxMilgram: realification; solveWith via Mathlib IsCoercive.continuousLinearEquivOfBilin; solveWith_spec/unique genuine (U). heartbeats 800000 @1615,1623,1674,1783; 4000000 @1631,1689,1795 (local, small proofs: likely elaboration of semilinear map smul).
+COVERAGE: 1900-3899 read.
+- 1903-2002 solveWith_norm_le (‖u‖ ≤ α⁻¹‖F‖) genuine; solve API.
+- 2015-2193 shiftedForm & shift residual: honest (shiftedForm_solution_is_unshifted_iff_mass_zero).
+- 2282 CuspTailCompactApproximation (structure, data: compact truncations + op-norm convergence) -> isCompactOperator via Mathlib isCompactOperator_of_tendsto. SUBSTANTIVE-type cert, honest.
+- 2360 SesquilinearCuspTailControl structure.
+- 2427-2557 fredholmDefect / one_mem_resolventSet via Mathlib hasEigenvalue_or_mem_resolventSet; fredholmEquiv. genuine wrapper.
+- 2563 ShiftedCompactDecomposition structure (shiftedEquiv, lowerOrder, shifted_eq, lowerOrder_isCompact): factorization A = S(I-K) proved (2630).
+- 2683 FredholmBypassData extends + unshiftedKernel : HasTrivialKernel A.
+- 2833-3050 coerciveFormEquiv, shiftedFredholmData, solveOfShiftedForm_spec (C: needs hShift coercive, hmass compact, hker).
+- 3127 fredholmDefectKernelComplementRestriction_antilipschitz: GENUINE nontrivial proof (compactness subseq argument) -> 3241 fredholmDefect_range_isClosed (closed range of I-K, K compact) -- upstreamable to Mathlib! 
+- 3287 NontrivialKernelFredholmData (structure w/o extra fields), range_eq_orthogonal_adjointKernel (3433), solvable_iff_mem_orthogonal_adjointKernel (3441) genuine Fredholm alternative (U given decomposition).
+- 3512-3900 P0.x "obstructions": toy models (discretePotential n = n, dotTwo, shifted_not_unshifted_counterexample on ℝ, halfWeight constants norm_num). T (trivial) but honestly labelled as models. bounded_closedBall_not_precompact uses Mathlib Riesz lemma (fine).
+COVERAGE: 3900-4899 read.
+- 3906 claimed_damping_inequality_fails (norm_num, T). 3927-3975 gammaTwoHyperbolic [[3,2],[4,3]] in Gamma(2); qParam_not_GammaTwo_invariant genuine small counterexample (U).
+- 4031 HalfIntegralMultiplier structure (nu, sqrtFactor, sqrtFactor_sq = denom, factor_cocycle). 4215 shiftByFour genuine.
+- 4285-4475 eta phase: etaPhaseRatio^24=1 from Mathlib discriminant slash invariance (CuspForm.discriminant), constant by connectedness (isPreconnected_univ.constant_of_mapsTo) -> eta_transform (4457): REAL eta transformation law with explicit constant phase. GENUINE, nontrivial, upstream-worthy.
+- 4525 inverseEtaPowerMultiplier: concrete REAL multiplier (factor = (eta z/eta(γz))^k). Not degenerate.
+- 4678 weightSectionSubmodule; 4860 inverseEtaPowerSection = eta^{-k} nonzero section (genuine; notes no compact support claim).
+COVERAGE: 4900-5899 read.
+- 4975-5028 inverseEtaExponentMultiplier raise shift picks up etaPhase^4 (genuine "phase defect" result, matches header item 2).
+- 5034 InvariantFiberMetric (scale, covariance); weightFiberMetric/halfWeightFiberMetric constructed (genuine); pointwiseInnerDensity_smul invariance (U).
+- 5229 PaperHalfWeightCertificate (multiplier on Gamma(2) + effective_on_action_kernel) INHABITED by inverseEtaPaperCertificate (5264) with REAL eta multiplier -> DISCHARGED, not degenerate. inverseEtaSection = 1/eta genuine.
+- 5313+ GammaTwoQuotientGeometry: effective action via MulAction.toPermHom range; Countable; ProperSMul from closed embedding into SL(2,R) (Mathlib properSMul_of_isClosedEmbedding); ProperlyDiscontinuous for effective; T2 quotient; sigma-compact; hyperbolicMeasure = Mathlib volume on ℍ; SMulInvariantMeasure (U genuine).
+- 5675 GammaTwoFundamentalDomain structure (carrier, measurable, IsFundamentalDomain, frontier null). 5686-5754 modularBoundary_null genuine. 5795 gammaTwoOpenCarrier from right cosets.
+COVERAGE: 5900-6899 read.
+- 5889 gammaTwoOpenCarrier_disjoint (uses Mathlib eq_one_or_neg_one_of_mem_fdo_mem_fdo) ; 6097 gammaTwoOpenCarrier_isFundamental: REAL IsFundamentalDomain for effective Gamma(2) on ℍ (U, genuine). 6140 frontier null; 6197 chosenGammaTwoFundamentalDomain INHABITS GammaTwoFundamentalDomain genuinely (DISCHARGED).
+- 6209 quotientMeasure; quotientMeasure_isOpenPosMeasure, isLocallyFinite, quotientMeasure_eq (independence) genuine.
+- 6480 GammaTwoCusp inductive (3 cusps), scaling matrices 1,S,TS; width 2 + minimality (6558) genuine small.
+- 6642-6899 standard ideal quadrilateral, edges, boundary null, half-open ae eq open. genuine.
+COVERAGE: 6900-8899 read.
+- 6900-7105 explicit pairing matrices T^2 and [[1,0],[2,1]] map edge params (genuine computations).
+- 7134-7343 closed/half-open six-tile carriers; IsFundamentalDomain for half-open carrier (7298), frontier null (U).
+- 7358-8133 modular tile edges, explicit parametrizations with exact ranges, S/T pairing on params, transported pairings (decompositionElement via Classical.choose of a proved ∃ -- legit).
+- 8138 GammaTwoExplicitFundamentalPolygon structure: ALL fields are "formula" equalities pinned to concrete defs; instantiated 8179 by rfl/genuine proofs -> not degenerate (carries real object).
+- 8221 chosenGammaTwoHalfOpenFundamentalDomain; 8327 quotient integral = integral over half-open carrier.
+- 8593 gammaTwoThreeCuspTruncation (F_Y); compact (8788) via Mathlib truncatedFundamentalDomain compactness; 8831 modular_im_smul_le_heightEnvelope ((g z).im ≤ max y 1/y) genuine; 8863 compact_uniform_modularHeight.
+COVERAGE: 8900-9899 read.
+- 8907-9019 compact capture in one F_Y, relative interior capture, orbit exhaustion (U genuine).
+- 9024-9237 horocycle null, frontier of F_Y ⊆ sides ∪ horocycles (genuine topological proof).
+- 9244-9334 finite typed boundary pieces. 9345-9544 endpoint deletion (setIntegral_diff_finset_eq) -- elementary (finite set null). GammaTwoBoundaryParametrization structure (data only).
+- 9599-9899 corner incidence: set-level identities (mostly unfolding/rewriting), genuine but scaffolding-heavy.
+COVERAGE: 9900-11899 read.
+- 10068-10495 corner finiteness via explicit nonzero polynomials (vertical: deg≤2; circular: leading coeff -1/4-L^2B^2<0) -> gammaTwoLiteralFrontierCorners_finite (10455) GENUINE.
+- 10514-10576 Prop defs GammaTwoGeometricCompactCofinal / GammaTwoThreeCuspFiniteTileCofinal / GammaTwoThreeCuspCompactCofinal used as hypotheses, then DISCHARGED: gammaTwoThreeCuspFiniteTileCofinal (10532), gammaTwoGeometricCompactCofinal_unconditional (10710), gammaTwoThreeCuspCompactCofinal_unconditional (10725). Pattern: "_of_X" + "_unconditional".
+- 10591 compact_has_compact_upstairs_lift; 10653 gammaTwoClosedCarrier_inter_preimage_isCompact (genuine properness).
+- 10916 GammaTwoOrbitTruncationExhaustion structure INHABITED (10926, 10937) genuinely. 11738 GammaTwoTruncationExhaustion inhabited by chosenGammaTwoThreeCuspTruncationExhaustion (11777) with proved fields.
+- 10956+ SmoothCompactCoreGeometry: RealSmooth = ContDiffOn ℝ ∞ on upperHalfPlaneSet of lift (faithful; uses real smoothness, not complex manifold). HasQuotientCompactSupport. smoothCompactCoreSubmodule (Submodule of WeightSection). inverseEtaQuotientLinear injective into C_c(quotient). quotientNormSq integrable (11666) genuine.
+- 11859+ HalfWeightDifferentialOperators: d1 = fderiv ℝ of lift, d2 = iteratedFDeriv 2.
+COVERAGE: 11900-13899 read.
+- d1/d2 calculus: product/inverse/conj rules, mixedDerivative_comm (Schwarz via isSymmSndFDerivAt) genuine.
+- 12197 raiseRaw R_q = i∂x+∂y+q/y; 12216 lowerRaw L=-i y^2∂x + y^2 ∂y; laplaceRaw. paperDisplayedRaiseRaw / paperDisplayedLaplaceRaw record paper's displayed (sign-incorrect) formulas + defect identities (correction layer; trivial ring).
+- 12623 RealJetChainRuleCertificate (Prop structure) DISCHARGED by realJetChainRuleCertificate (12646) for any RealSmooth f.
+- 12703 lower_raise_factorization: -Δ_a f = L_{a+4} R_a f + (a/2) f; 12712 raise_lower_factorization; 12719 averaged_factorization. GENUINE (U).
+- 12765-13066 raise/lower/laplace as linear endomorphisms of smooth (quotient-compact) domain; support preservation genuine.
+- 13072-13102 paperDisplayedRaising_defect (trivial algebra; labelled correction).
+- 13150 inverseEtaPaperOrbitMultiplier; 13245 FixedPhaseDifferentialWord inductive + eval.
+- 13424 etaSqrtFactor_realSmooth; 13577 inverseEtaPaperOrbitFactor_realSmooth via holomorphy (Mathlib differentiableAt_eta) -> restrictScalars; 13810 d1_inverseEtaPaperOrbitFactor exact log derivative (genuine).
+COVERAGE: 13900-14899 read.
+- 13951 Möbius derivative 1/j^2 (Mathlib hasStrictDerivAt_smul); 14019 d1_comp_gammaTwo_smul real Fréchet chain rule; Wirtinger chain rules (genuine).
+- 14332 set_option maxHeartbeats 3000000 in lower_covariance_algebra (pure field_simp algebra).
+- 14370 raiseRaw_covariance_of_inverseEtaPaperOrbitCovariant & 14431 lowerRaw_covariance_...: GENUINE one-step covariance of R/L for the eta multiplier (header item 2) (U).
+- 14513 eval_covariant (induction over words); 14533 inverseEtaFixedPhaseStableCoreSubmodule; 14559 membership iff zeroth covariance (U).
+- 14696 instance Inhabited (InverseEtaFixedPhaseCore n) := ⟨0⟩ (harmless zero vector).
+- 14777 raise/lower typed linear maps on core.
+COVERAGE: 14900-15899 read.
+- 14943-15021 factorizations on typed fixed-phase core (U).
+- 15039 ExponentIndexedDifferentialCore (legacy certificate interface, all-integer exponents; explicitly NOT inhabited per doc) & 15129 PaperExponentIndexedDifferentialCore -- CHECK usage as hypotheses (grep later).
+- 15153 GreenIdentity R L ↔ R.IsFormalAdjoint (-L) (LinearPMap) trivial equivalence.
+- 15189+ HalfWeightCompactCoordinateGreen: Core := 𝓓(upperPlaneOpen, ℂ) Mathlib test functions (FAITHFUL). rpowMul, localizeLeft; compactPair_directionalDerivative_right via Mathlib integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable (genuine IBP). integral_d1_mul_test_eq_neg one-sided IBP. 15861 weightedConjugate_raise_eq_flux; 15894 compact_green_identity (U, genuine).

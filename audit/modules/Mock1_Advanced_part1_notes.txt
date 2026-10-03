@@ -1,0 +1,54 @@
+# Mock1_Advanced audit running notes (survive compaction)
+Structure: 1-2126 basic layers; 2126-20011 Advanced aggregation/Checklist/Ledger (MockCert); 20013-20050 Mock1Adv compat ns;
+20052-22176 release envelope/paper infra; 22176-84628 Integrated paper-layer + Mock1Advanced ns (Paper tables, Exact coeff, Instances H, AdvancedClaimsII...);
+84629-90615 = 5985 `#print axioms` lines only.
+set_option: L3 maxRecDepth 200000; L70578 maxHeartbeats 800000 in.
+## Coverage log
+- L1-2200 READ. Header L5-16 "Mock1_Integrated.lean ... unconditional certificate-style formalization toward mock/partial theta and Jacobi objects; no global axiom; deep input carried as proof fields".
+  Defs: UpperHalfPlanePoint (ad hoc, not Mathlib ℍ), nome = exp(2πiτ) genuine; ModularMatrix ad hoc (a,b,c,d,det=1) not Mathlib SL(2,Z); T,S.
+  CuspTransport/HalfWeightSlashAction: slash is ARBITRARY function with field slash_T/slash_S (no automorphy factor); MultiplierCharacter value arbitrary + value_T_spec := by rfl (tautological fields).
+  AppellLerchAnalyticData L325: mu, R, unaryThetaShadow ARBITRARY functions (no actual μ(u,v;τ) definition!). XiOperator L402: arbitrary additive map (not ξ_k = 2i y^k conj(∂/∂τbar)).
+  QSeries = Nat->R (not PowerSeries). Kloosterman L1422: KloostermanSum := sum of arbitrary multiplier : Fin modulus -> C (no exp(2πi(ad+...)/c)!). BesselIHalfModel L1448 = sqrt(2/(πx)) sinh x (genuine I_{1/2} closed form but not proven = Mathlib Bessel; no Bessel in Mathlib).
+  RademacherExpansionCertificate L1670: coeff n = (expansion n).truncation (cutoff n) + remainder n, expansion depends on n => trivially satisfiable.
+  Genuine small proofs: arithmeticEqualizer_iff_lcm_dvd L875, IntCongruent symm/trans/add, entropy_intercept L1907, entropy_beta_unique L1920 (uniqueness of limit; real but easy), exactEntropyCoeff_growth L2084 (exact model coeff exp(α√n - ½log n+β) satisfies growth: tautological model).
+  entropyGrowthLittleOOne_iff_epsilonN := rfl (definitionally same).
+  TorFiniteSurrogate L1142: Tor proxied by Nat quotientOrder = gcd (no Mathlib Tor). CyclicQuotientModel = just Nat modulus.
+  AbstractCertificate L2161: bundles all; object : PaperObject {name:String, kind, coeff : Nat->Real} arbitrary. Pieces not interlinked except coeff.
+- L2200-3900 READ. AbstractCertificate accessors L2190-2494 (A). AbstractProofPayload L2496 = Prop-structure restating same fields; proof_payload L2603 re-packages (T). ConcreteCertificate L2633 extends Abstract + principal part, linear systems, SPT, CRT, Tor surrogate, padic overlap, Mahler, rational OLS, String metadata (paperFamilyName nonempty etc.). Accessors L2690-3004. ConcreteProofPayload L3006 restatement; CertificateProofPayload L3157.
+  REFERENCE INSTANCE L3187-3761 (VERIFIED): referenceObject L3189 name "Mock1" kind .model coeff := exactEntropyCoeff 1 0 (= exp(√n - ½log n), NOT a mock theta fn).
+   referenceAnalyticData L3218 mu=R=unaryTheta=0; AppellLerchSpecialization S=0, F±=0; referenceXiOperator L3240 xi:=0; BruinierFunke completedObject=shadow=0 scale 0;
+   referenceMultiplier L3259 value≡1; referenceSlashAction L3264 slash f A tau = 1*f(tau+1) for ALL A, transportS := translateOne (S acts as τ+1 !!); referenceSlashGenerator L3294 transportS := referenceTTransportCertificate (T used for S; mathematically wrong S).
+   Tail C=0 cutoff 0; Kloosterman modulus 1 multiplier 0; referenceRademacherExpansionData L3399 term _ := coeff n, cutoff 1, remainder 0 (expansion = coefficient itself); referenceRademacher main:=coeff remainder 0.
+   referencePadic p=2,k=1 raw=normalized=0; PAdicOverlap M=1 zeros; OLS window [1,1] alphaHat=1 betaHat=0 residual 0 (exact model by construction); SPT M=1,p=2,k=1, equalizerElement 0; CRT portfolio moduliCount 0 (Fin.elim0); TorSurrogate (1,2,1); Mahler length 0; principal part order 0; linear systems 0x0; RationalOLS points 0.
+   referenceConcreteCertificate L3687: assembles all above. paperFamilyName "mock-partial-theta-jacobi". → ALL DEGENERATE.
+  FormalizationChecklist L3772: structure with ~60 witness fields (qFormula restates nome def etc.).
+- coverage: 1-3900 read
+- L3900-7600 READ (accessor runs skimmed via one-line summaries: 3903-4527 FormalizationChecklist accessors; 5300-5703 ObjectiveCoverage accessors; 6096-6607 DefinitionCoverage accessors; 6897-7015; 7272-7484).
+  Pattern: Prop-structure RESTATEMENT layers: InfrastructureComplete L4530 (~85 fields), ObjectiveCoverage L4992 (85 fields), DefinitionCoverage L5812 (81 fields), ProofFieldDischargeMatrix L6842, CertificationRequirementAudit L7055 (49 fields) — each field = a field/consequence of FormalizationChecklist; proved by FormalizationChecklist.complete L4872 / objective_coverage L5708 / definition_coverage L6612 / requirement_audit L7489 via `:= C.xxx_at` assigns (T/A).
+  UnconditionalCertificationBundle L6718: {abstract, concrete, checklist, links, infrastructure : InfrastructureComplete checklist, objective, definitions} — carries as FIELDS Props already provable from checklist (redundant). Name "Unconditional" misleading: it's a bundle of certificates.
+  RequirementKey L7548 inductive (14 keys) + Covered L7567 = conjunction restatements.
+# Mock1_Advanced audit running notes (survive compaction)
+Structure: 1-2126 basic layers; 2126-20011 Advanced aggregation/Checklist/Ledger (MockCert); 20013-20050 Mock1Adv compat ns;
+20052-22176 release envelope/paper infra; 22176-84628 Integrated paper-layer + Mock1Advanced ns (Paper tables, Exact coeff, Instances H, AdvancedClaimsII...);
+84629-90615 = 5985 `#print axioms` lines only.
+set_option: L3 maxRecDepth 200000; L70578 maxHeartbeats 800000 in.
+## Coverage log
+- L1-2200 READ. Header L5-16 "Mock1_Integrated.lean ... unconditional certificate-style formalization toward mock/partial theta and Jacobi objects; no global axiom; deep input carried as proof fields".
+  Defs: UpperHalfPlanePoint (ad hoc, not Mathlib ℍ), nome = exp(2πiτ) genuine; ModularMatrix ad hoc (a,b,c,d,det=1) not Mathlib SL(2,Z); T,S.
+  CuspTransport/HalfWeightSlashAction: slash is ARBITRARY function with field slash_T/slash_S (no automorphy factor); MultiplierCharacter value arbitrary + value_T_spec := by rfl (tautological fields).
+  AppellLerchAnalyticData L325: mu, R, unaryThetaShadow ARBITRARY functions (no actual μ(u,v;τ) definition!). XiOperator L402: arbitrary additive map (not ξ_k = 2i y^k conj(∂/∂τbar)).
+  QSeries = Nat->R (not PowerSeries). Kloosterman L1422: KloostermanSum := sum of arbitrary multiplier : Fin modulus -> C (no exp(2πi(ad+...)/c)!). BesselIHalfModel L1448 = sqrt(2/(πx)) sinh x (genuine I_{1/2} closed form but not proven = Mathlib Bessel; no Bessel in Mathlib).
+  RademacherExpansionCertificate L1670: coeff n = (expansion n).truncation (cutoff n) + remainder n, expansion depends on n => trivially satisfiable.
+  Genuine small proofs: arithmeticEqualizer_iff_lcm_dvd L875, IntCongruent symm/trans/add, entropy_intercept L1907, entropy_beta_unique L1920 (uniqueness of limit; real but easy), exactEntropyCoeff_growth L2084 (exact model coeff exp(α√n - ½log n+β) satisfies growth: tautological model).
+  entropyGrowthLittleOOne_iff_epsilonN := rfl (definitionally same).
+  TorFiniteSurrogate L1142: Tor proxied by Nat quotientOrder = gcd (no Mathlib Tor). CyclicQuotientModel = just Nat modulus.
+  AbstractCertificate L2161: bundles all; object : PaperObject {name:String, kind, coeff : Nat->Real} arbitrary. Pieces not interlinked except coeff.
+- L2200-3900 READ. AbstractCertificate accessors L2190-2494 (A). AbstractProofPayload L2496 = Prop-structure restating same fields; proof_payload L2603 re-packages (T). ConcreteCertificate L2633 extends Abstract + principal part, linear systems, SPT, CRT, Tor surrogate, padic overlap, Mahler, rational OLS, String metadata (paperFamilyName nonempty etc.). Accessors L2690-3004. ConcreteProofPayload L3006 restatement; CertificateProofPayload L3157.
+  REFERENCE INSTANCE L3187-3761 (VERIFIED): referenceObject L3189 name "Mock1" kind .model coeff := exactEntropyCoeff 1 0 (= exp(√n - ½log n), NOT a mock theta fn).
+   referenceAnalyticData L3218 mu=R=unaryTheta=0; AppellLerchSpecialization S=0, F±=0; referenceXiOperator L3240 xi:=0; BruinierFunke completedObject=shadow=0 scale 0;
+   referenceMultiplier L3259 value≡1; referenceSlashAction L3264 slash f A tau = 1*f(tau+1) for ALL A, transportS := translateOne (S acts as τ+1 !!); referenceSlashGenerator L3294 transportS := referenceTTransportCertificate (T used for S; mathematically wrong S).
+   Tail C=0 cutoff 0; Kloosterman modulus 1 multiplier 0; referenceRademacherExpansionData L3399 term _ := coeff n, cutoff 1, remainder 0 (expansion = coefficient itself); referenceRademacher main:=coeff remainder 0.
+   referencePadic p=2,k=1 raw=normalized=0; PAdicOverlap M=1 zeros; OLS window [1,1] alphaHat=1 betaHat=0 residual 0 (exact model by construction); SPT M=1,p=2,k=1, equalizerElement 0; CRT portfolio moduliCount 0 (Fin.elim0); TorSurrogate (1,2,1); Mahler length 0; principal part order 0; linear systems 0x0; RationalOLS points 0.
+   referenceConcreteCertificate L3687: assembles all above. paperFamilyName "mock-partial-theta-jacobi". → ALL DEGENERATE.
+  FormalizationChecklist L3772: structure with ~60 witness fields (qFormula restates nome def etc.).
+- coverage: 1-3900 read

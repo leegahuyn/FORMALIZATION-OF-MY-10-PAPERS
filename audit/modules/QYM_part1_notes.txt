@@ -1,0 +1,98 @@
+# QYM audit running notes (coverage + findings)
+Structure: imports 1-135; header comments 136-472; namespace QYM 480-1630; 1023 `#print axioms` lines (32552.. and per-extension AxiomAudit namespaces)
+Heartbeats: synthInstance.maxHeartbeats 100000 @49026,49032,49038; maxHeartbeats 2000000 @49389,49431,49451,49465; 8000000 @49552
+local instances: 22836-22845 (RCLike->real inner), 25125-25128, 45180, 45524/45529 (conditionalChartedSpace!), 46542, 47060, 50181, 59614
+## Read 1-2185
+- Header 137-465: paper "Modular q-Yang--Mills on Admissible Gauge Slices, Modular Flow, and a Spectral Mass--Gap Mechanism". HONEST disclaimer L436-453: "does not claim that the paper's concrete Hamiltonian satisfies the abstract compact-resolvent hypotheses or that its advertised mass gap has been established." Lists missing: Gaffney/Rellich, H1->H^1/2 trace, Green identity, Coulomb op, mock/Poincare RS functional, modular flow, uniform Weyl.
+- Header L456-462 claims dependency on Mock2 (25,761 lines SHA E37A..) and Mock2_FA_Integrated (24,498 lines SHA 65B7...). CHECK line counts.
+- 490-598 legacy: gconj, qbr, qCurv (dA supplied, not differential), trace_cyclic_of_untwisted, coercive_bound (le_div), lowlying_gap (lt_of_lt_of_le) — trivial (T), docstrings honest.
+- 602-835 AlgebraNoGo: |q|<1 on H (Mathlib), scalar q automorphism forces q=1, scalar q-cyclic trace =0 for q≠1 (genuine small no-go: kills paper's q-cyclic trace), ungraded qbr self = (1-q)A^2 -> classical curvature loses A^2; gradedQbr fix; 2D -Δ sign toy; minusLinear_plus_bounded_not_boundedBelow.
+- 845-1038 AffineGauge: Maurer–Cartan & affine curvature covariance as noncomm_ring identities with supplied dg,dA (no DGA). qbr not affine covariant for q≠1.
+- 1048-1178 WeightedTraceCore: weighted matrix trace Tr(ρX), twisted cyclicity (real, small); counterexample to "Thm 4.5 skew identity" with diag(2,1) 2x2 (theorem_4_5_skew_identity_fails L1168).
+- 1187-1432 SpectralFlowCore: gap_lower_bound_of_exact_ground (linarith), OriginalGapCounterexample (100 vs 100.5 -> refutes paper's α c ≤ gap inference), gap stability (linarith), flow dissipation <g,-g>=-|g|^2.
+- 1439-1571 NoGo: qCoordinate |q|<1 so |q|=1 interface empty (refutes paper chart), Bool coordinatewise min ≠ global, λ<1/4 no real t.
+- 1579-1628 #print axioms.
+- 1650-1830 FiniteHamiltonian: 2x2 diag(100, 100.5); first_excited_gap = 1/2 by norm_num. TOY "mass gap".
+- 1848-2171 FiniteCover: Boolean 3-point model, glue unique, local minimizers glue not global (coupled energy chosen ad hoc; docstring honest).
+## Read 2186-3085
+- 2193-2220 posDef diag(2,1) (Matrix.posDef_diagonal_iff) — fine.
+- 2237-2351 Corrected.FiniteCover: assembled additive energy => glue minimizes (Nat.add_le_add). trivial-ish but correct.
+- 2363-2427 FiniteVariational: exists_globalMin on Fintype (Finset.exists_min_image). Trivial.
+- 2445-2572 InfiniteDiagonalHamiltonian: ℕ→ℝ diagonal -n+v n, not bounded below (exists_nat_gt). HasEigenvalueLowerBound only over algebraic eigenpairs.
+- 2591-2691 DiagonalSpectralDirectionNoGo: -n+c → -∞ (Tendsto). Refutes paper's sign (Prop 4.15, Lemma 4.17/4.18, A.1, A.2).
+- 2708- Registry: ClaimId 58 ctors; plannedClass: provedCandidate 2 (def4_2, def4_8), corrected 21, refuted 13 (incl theorem4_3, theorem4_5, prop4_14, prop4_15, prop4_23, theoremA_7, lemmaA_1/2...), blockedExternal 22 (all axioms A3M/V/R/T, assumptions 3.5/3.6/3.8/4.8, hyp4_20/22/24, thm4_26, cor4_28...). supportingDeclarations: List String (metadata). `decide` on lists of 58 — small.
+- KEY: paper's main mass gap results (Prop 4.23, Thm A.7) are planned 'refuted' (ground multiplicity counterexample) -> corrected version.
+## Read 3086-3985
+- Registry supportingDeclarations continues (List String). earnedTerminal := none (L3373) for all. currentMaturity = sourceCandidate if nonempty string list. Honest metadata.
+- 3419-3530 FiniteDualRieszFlow: Fin 2 primal/dual raise/lower, dissipation. Trivial-correct.
+- 3542-3656 FiniteHamiltonian.DiagonalPerturbation: perturbedGap ≥ 1/2-2ε (linarith).
+- 3674-3770 modularTwistRingEquiv (inner automorphism), e01 eigenvalue 1/2; concrete_nontrivial_innerModular_certificate (2x2).
+- 3784-3840 SpectralParameter: λ = 1/4 ± κ² via sqrt (trivial).
+- 3846-3880 corrected diag eigenvalue lower bound.
+- 3897- ConstantTwoDimensionalDGA: d0 = 0, d1 = 0 (ZERO differentials!) so d_squared_zero, leibniz trivial; DEGENERATE model, docstring honest ("constant forms").
+## Read 3986-4935
+- DGA curvature = wedge11 A A (d=0); MatrixWitness ℤ 2x2 e01,e10 curvature diag(1,-1)≠0. Fine but toy.
+- 4139-4332 Projection: 2x2 coordinate projection, Rayleigh bounds. Trivial.
+- 4345-4441 FiniteGalerkinDissipation: 2-mode vector field -H x + |x|^2 rot x; dissipation; trivial-correct.
+- 4459-4734 weightedHermitianSquare/Pairing 2x2 positivity, sesquilinearity (coordinate proofs).
+- 4755-4882 FinsuppDiagonalQuadraticForm on ℕ→₀ℝ: wrong-sign energy not bounded below; corrected bounded below. Simple.
+- 4894- SpectralWindowStability: abs triangle window inclusion.
+## Read 4936-5885
+- SpectralWindowStability card bounds via Finset.card_le_card. trivial-correct.
+- 5003-5223 FunctionalLogic: InvariantUnder sums (rfl/rw), IsWeakCriticalAt_iff := Iff.rfl (T), tripleProduct_bound (hypotheses HasDualityBound+HasBilinearSizeBound → product: 3-line calc) (C, but hyps are the estimate itself almost), lowLyingGap_pos_of_lower_bound = lt_of_lt_of_le (T), groundMass := sqrt(eigenvalue 0) (T), correctedEigenvalue_error (A-ish), realWindowCount_le_smoothedCount (sum_le_sum).
+- 5245-5428 AbstractFormSign: order algebra on forms; wrong-sign not bounded below given unit sequence with large kinetic (correct, elementary).
+- 5510-5629 GroundMultiplicityCounterexample Fin 3 diag(0,0,1): adjacent gap 0 but off-ground gap 1 -> refutes paper Prop 4.23/Thm A.7 index-inference (genuine conceptual point, trivial proof).
+- 5649-5736 FinsuppStrongNormNoGo: weak (L2) bound doesn't imply weighted (H1) bound on basis. Correct.
+- 5773- FiniteSpectralFamilyStability: docstring maps to Thm 4.31(B1), Cor 4.32, 4.33 PDF p.44-45; UniformError hypothesis = paper's conclusion (honestly stated as hypothesis).
+## Read 5886-6835
+- FiniteSpectralFamilyStability rest: linarith gap lemmas; many accessor-ish (individual_eigenvalue_error := herror i).
+- 6076-6276 DirectMethod: real Mathlib use — LowerSemicontinuousOn.exists_isMinOn, WeakDual.isCompact_of_bounded_of_closed (Banach–Alaoglu), WeakDual.isSeqCompact_of_isBounded_of_isClosed, Convex.toWeakSpace_closure, NormedSpace.isCompact_closure_of_isBounded (bidual range hypothesis explicit). Thin wrappers but correct & honest.
+- 6293-6689 FormSmallPerturbationCore: relative bound |p| ≤ a k + b n; lower bound transfer (1-a)c-b. Order algebra. Many accessor projections (formSmall_relativeCoefficient_nonneg := hsmall.1 etc).
+- 6721- RelativeSpectralB2NoGo: B2 relative interval => pointwise error; countermodel reference n=n corrected (1+a)n refutes uniform additive error (paper Thm 4.31 B2 inference). Genuine conceptual catch, trivial proof.
+## Read 6836-7785
+- B2NoGo rest: quadratic n^2 countermodel to uniform adjacent gap error (Cor 4.32 B2). correctedGap_lower_bound etc (linarith). fine.
+- 7278-7451 AsymptoticGapLiminf: ℝ≥0∞ liminf ≥ δ (le_liminf_of_le); Cor 4.25 core. ennreal_liminf_gap_pos_of_coercivityProduct_forall_ge: hypotheses = pointwise gap ≥ product ≥ δ (C; hypotheses do the work). Trivial-ish.
+- 7490- PaperNormalized: StatementFidelity 6 values; fidelity table: literal 2 (def2_1, axiom2_3), algebraic 10, arithmetic 2, finiteSurrogate 12, conditionalSupplier 19, countermodelAudit 13 (incl prop4_23, theoremA_7 — mass gap theorems!).
+- def2_1_matrixStatement_holds := rfl (T). def2_2 rfl (T). axiom2_3_literalMatrixStatement_holds witnessed by Tr = 0 (DEGENERATE witness, but docstring says so explicitly: "literal existential is satisfied by the zero linear map"). def4_2_weakCriticalStatement_holds := rfl (T).
+- lemma3_2_affineBracketStatement_refuted: paper's Lemma 3.2 refuted at q=exp(2πiτ).
+## Read 7786-8735
+- PaperNormalized cont.: theorem4_5 finite refuted; prop4_14 Finsupp wrong-sign refuted; def4_7 rfl (T); theorem4_31_finiteEigenvalueErrorStatement on 2x2 (T); def4_8 rfl (T); lemma4_30 lower bound core (C/arith); cor4_25 ennreal; theorem4_31_B2UniformInferenceStatement_refuted (a=1/2).
+- 8177- TypedEvidence: EvidenceId 53 ctors; EvidenceStatement restates propositions; evidenceSound by cases re-invoking theorems. PURE SCAFFOLDING (duplicates statements). Certificate structure (id, proof).
+## Read 8736-9735
+- TypedEvidence: evidenceForClaim links 30/58 claims, 90 pairs (decide); not_all_claims_have_typed_evidence (lemma4_13 empty); typedTerminalStatus := none. honest scaffolding.
+- 8943-9246 TypedEvidenceB2DirectExtension: 11 tags, same pattern (pure re-statement scaffolding).
+- 9261-9351 cor4_32 B2 energy-dependent gap; uniform adjacent gap refuted (quadratic).
+- 9367-9699 TestKernelTailCore: ℝ≥0∞ tsum smoothed counts; windowCount ≤ smoothedCount (ENNReal.tsum_le_tsum); total = trunc + tail (ENNReal.tsum_add); geometric tail (ENNReal.tsum_geometric). Correct, light; Cor 4.28/Lemma 4.29 cores are conditional on explicit majorant/decay hypotheses (hypothesis ≈ conclusion modulo one inequality).
+- COORDINATOR FYI: .github/qym-frontier/GB0_TRUE_PASS/ records direct-Lean compile of QYM.lean (blob 7afb309d) exit 0, 0 errors, 345 warnings, 1011 #print axioms lines all within {propext, Classical.choice, Quot.sound}. (verify file existence later)
+## Read 9736-10735
+- Prop 4.15/Lemma 4.17/4.18/A.1/A.2 paper-sign refutations via diagonal model (honest: "concrete sign countermodel").
+- 9833-10364 QuadraticFirstVariationCore: bilinear form quadratic expansion, skew parts, sumFour; ring/linarith. Clean, correct, elementary; potentially generic.
+- 10384-10463 prop4_1/def4_2 normalized (algebraic).
+- def4_6_testFamilyArityStatement_holds: ZERO witness (family=0) — docstring honest "without ... claiming that the zero witness is paper-admissible". Degenerate but labeled. def4_7 rfl.
+- cor4_28/lemma4_29 conditional cores.
+- 10597-10698 KernelTailUniformityNoGo: moving spike at T+(log T)^2 refutes pointwise→uniform tail inference (nice small ENNReal argument).
+## Read 10736-11735
+- TypedEvidenceVariationTailSignExtension 16 tags: scaffolding.
+- 11187-11482 OperatorFormCompactnessCore: sequentially closed ⇒ graph complete (cauchySeq_tendsto_of_complete), form representative uniqueness (ext_inner_right), compact∩closed; no-gos: punctured ℝ dense ∩ {0} slice; reciprocal ∘ zero projection not closed (nonlinear; honestly flagged). Small genuine proofs.
+- 11501-11669 PaperNormalized Lemma 4.13/4.16/4.18 normalized (conditional/refuted).
+- 11692- RootExpWeylLogicCore start: Thm 4.26 envelope C/sqrt n exp(α sqrt n); accessor projections.
+## Read 11736-12735
+- RootExpWeylLogicCore: one-term remainder + prefix → all-index law (real but small); initial spike: eventual ≠ all-index; drifting profile: pointwise ≠ uniform Weyl constant.
+- PaperNormalized thm4_26 / prop4_27 / cor4_28 normalized.
+- 12173-12514 LocalityCore (curvature commutes w/ restriction given d,∧,+ commute: rw), InvariantFeatureCore (Bool perm no-go for A3.T), AdmissibilityCore (accessors), StructuralSkewCore (ad-invariance ⇒ skew; plane counterexample for Cor 4.7).
+- 12529-12734 MassAbsorptionTruncationCore: no-gos refute UNIVERSAL inferences ("∀ energy, nonneg → ∃ coercive const") with zero energy — STRAW-MAN pattern: refuting the over-general schema, not the paper's specific A3.M/A3.V/Hyp 4.20/4.22/4.24 claims. Docstrings say "refutes ... inference" (honest), but Registry plannedClass labels these rows blockedExternal (not refuted) — OK.
+## Read 12736-13735
+- PaperNormalized: prop2_2 locality (rw); axiomA3T refuted as universal schema (Bool perm); lemma3_3; def3_1/def4_1; cor4_7 skew.
+- axiomA3M/A3V/A3R/hyp4_20/4_22/4_24/hypA_4/A_6 "refuted" = universal-schema refutations with zero/ℕ toy models (honestly docstring'd "overstrong inferences").
+- 13111-13232: prop3_1 compact direct method (wrapper); theorem4_4 finite; theorem4_9 abstract triple product (hyp ⇒ concl calc); def4_5/defA_1 ground mass sqrt (T); prop4_23/theoremA_7 = Fin 3 ground multiplicity countermodel + corrected off-ground gap 1 ≤ e2-e0 on toy (T). => paper's MAIN mass-gap theorem (Thm A.7) is only addressed by a 3x3 toy countermodel + corrected toy statement here.
+- 13260- SobolevGaugeSupplierNoGo: Option-valued partial action; coercivity from block suppliers (nlinarith); weak premises countermodel on ℕ; inverse-linear bound ⇒ tends to 0 (cusp IBP); Unit constant boundary countermodel; Sobolev bilinear estimates as hypotheses; unit arity countermodel. Elementary.
+## Read 13736-14735
+- SobolevGaugeSupplierNoGo end: retraction ⇒ density; Bool density countermodel.
+- 13822-14181 PaperNormalized assumption3_5/3_6/3_8/axiom4_4/4_8/lemma4_16 normalized (implication + universal/instance refutations). All toy (Unit/Bool/ℕ).
+- 14204-14613 TypedEvidenceFullClaimExtension 23 tags (scaffolding; 58/58 coverage claim formed by 4 registries).
+- 14642- HilbertOperatorFormExtension begins: real bounded operators, toSesqForm, IsPositive.isSelfAdjoint (thin Mathlib wrappers).
+## Read 14736-15735
+- HilbertOperatorFormExtension: quadratic lower bound ⇒ injective, antilipschitz (ContinuousLinearMap.antilipschitz_of_forall_le_inner_map), closed range, IsUnit (isUnit_of_forall_le_norm_inner_map = Lax–Milgram-type), 0 ∉ spectrum; perturbation c-ε; invariant restriction positive/compact (IsCompactOperator.restrict); finite-dim compact. Genuine Mathlib use, thin wrappers. Bounded only.
+- 15082-15226 PaperNormalized bounded statements.
+- 15245- ComplexRootExponentialExtension: finitePrefixRootExponentialConstant recursive max; eventual ⇒ global with enlarged constant (genuine small); complex spike countermodel.
+- Coordinator: be economical; skim registry/TypedEvidence/PaperNormalized/AxiomAudit via grep (log ranges).
