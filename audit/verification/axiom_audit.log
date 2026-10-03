@@ -1,0 +1,7 @@
+PSV constants audited: 68681; tainted by non-standard axioms: 0; by axiom: []; first 30: []
+AuditScratch/AxiomAudit.lean:59:8: warning: declaration uses `sorry`
+canary: some (some (sorryAx)); control Nat.add_comm: some (none)
+
+real	8m14.447s
+user	1m6.033s
+sys	0m15.578s

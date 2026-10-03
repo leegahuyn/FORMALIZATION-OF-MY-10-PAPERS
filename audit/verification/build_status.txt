@@ -1,0 +1,20 @@
+mathlib exit=0 2026-10-02T05:20:22Z
+mathlib start 2026-10-02T09:42:21Z
+mathlib exit=0 2026-10-02T09:47:28Z
+Spt3 exit=0 errors=0 warnings=28 sorry_warnings=0 secs=116 maxrss_kb=NA
+Spt2 exit=0 errors=0 warnings=39 sorry_warnings=0 secs=137 maxrss_kb=NA
+Spt4 exit=0 errors=0 warnings=27 sorry_warnings=0 secs=115 maxrss_kb=NA
+Spt5 exit=0 errors=0 warnings=26 sorry_warnings=0 secs=119 maxrss_kb=NA
+Spt6 exit=0 errors=0 warnings=23 sorry_warnings=0 secs=54 maxrss_kb=NA
+Mock1 exit=0 errors=0 warnings=66 sorry_warnings=0 secs=60 maxrss_kb=NA
+Spt7 exit=0 errors=0 warnings=18 sorry_warnings=0 secs=106 maxrss_kb=NA
+Spt1 exit=0 errors=0 warnings=20 sorry_warnings=0 secs=134 maxrss_kb=NA
+Mock2 exit=0 errors=0 warnings=341 sorry_warnings=0 secs=194 maxrss_kb=NA
+Mock2_Advanced exit=0 errors=0 warnings=786 sorry_warnings=0 secs=442 maxrss_kb=NA
+Mock2_FunctionalAnalysis exit=0 errors=0 warnings=466 sorry_warnings=0 secs=771 maxrss_kb=NA
+Mock2_FunctionalAnalysis_Integrated exit=0 errors=0 warnings=0 sorry_warnings=0 secs=7 maxrss_kb=NA
+QYM exit=0 errors=0 warnings=345 sorry_warnings=0 secs=1178 maxrss_kb=NA
+Mock3 exit=0 errors=0 warnings=0 sorry_warnings=0 secs=7 maxrss_kb=NA
+Mock1_Advanced exit=0 errors=0 warnings=112 sorry_warnings=0 secs=590 maxrss_kb=NA
+BuildAll exit=0 errors=0 warnings=0 sorry_warnings=0 secs=10 maxrss_kb=NA
+ALL DONE 2026-10-02T10:46:32Z
