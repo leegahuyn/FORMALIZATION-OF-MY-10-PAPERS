@@ -1,0 +1,208 @@
+# 순환 후보 체크리스트 (자동 탐지 191개)
+
+분류: A 10 (수정 필수) · B 131 (삭제/격리) · C 46 (유지) · D 4 (유지+무조건 따름정리)
+
+처리 후 각 줄을 `- [x] … — 결과: FIXED/DELETED/ISOLATED/KEPT (방법)` 형식으로 갱신하세요.
+
+## A. 순환·동어반복 — 수정 필수
+
+- [ ] **C001** `Spt1.lean:2378` `ec_hasse` := `hHasse` — 가설 `SatisfiesHasse` (Spt1:2370) — Hasse 한계 자체를 가정해 `ec_hasse`로 제시(독스트링은 조건부임을 명시). 래퍼 정리 삭제 또는 외부 입력으로만 남기고 원장 표기 수정.
+- [ ] **C003** `Spt1.lean:3088` `ECStepCertificate.sound_of_GK` := `hGK C hr hrprime` — 가설 `GoldwasserKilianPropagationTheorem` (Spt1:3082) — GK 전파 정리를 가정. 게다가 `ECStepCertificate E X` 필드가 X를 제약하지 않아 진술이 거짓일 가능성(감사 보고 Spt1). 진술을 바로잡거나 삭제. 거짓 가설을 남기지 말 것.
+- [ ] **C005** `Spt1.lean:3980` `rmk2_2_uniform_remainder` := `hlog` — 가설 `MtALogInput` (Spt1:3912) — 정의가 결론 `k ≤ v_p(Λ−u)` 그 자체(Remark 2.2로 표기). 파일의 `padicLog1p` 결과로 해소 시도, 불가하면 래퍼 삭제.
+- [ ] **C007** `Spt3.lean:785` `prime_iff_section_of_complete` := `hFEC X` — 가설 `AKSIsComplete` (Spt3:781) — `∀ X, X.Prime ↔ FEC X`를 가정해 `X.Prime ↔ FEC X`를 결론(Theorem 18로 표기). 삭제 또는 `_of_assumed_complete`로 개명하고 인증 목록·경계 레코드에서 제거.
+- [ ] **C009** `Spt3.lean:6079` `theorem18_of_any_complete` := `h X` — 가설 `AKSIsComplete` (Spt3:781) — `∀ X, X.Prime ↔ FEC X`를 가정해 `X.Prime ↔ FEC X`를 결론(Theorem 18로 표기). 삭제 또는 `_of_assumed_complete`로 개명하고 인증 목록·경계 레코드에서 제거.
+- [ ] **C010** `Spt4.lean:2280` `thm836_part2` := `h a q hcop` — 가설 `DirichletDensityAP` (Spt4:2274) — 디리클레 밀도 정리를 가정해 `thm836_part2`로 제시(독스트링은 조건부 명시). Mathlib로 해소 가능한지 확인, 불가하면 래퍼 삭제.
+- [ ] **C011** `Spt5.lean:2784` `claim91_necessary` := `h` — 가설 `goodReduction` (Spt5:506) — `goodReduction := ¬ p ∣ Δ`의 정의 동어반복을 'Claim 9.1 (necessary)'로 표기. `goodReduction_iff` 같은 정의 API로 개명하고 논문 라벨 제거.
+- [ ] **C013** `Spt6.lean:5043` `goodOpen_to_etalePiece` := `h` — 가설 `goodOpen` (Spt2:641) — `etalePiece := goodOpen`으로 정의해 놓고 étale 다리로 제시(정의 동어반복). 프록시 정의 제거 또는 '모델'로 명시.
+- [ ] **C014** `Spt6.lean:6036` `ext_of_coeffAgreement` := `h` — 가설 `CoeffAgreement` (Spt6:6031) — `CoeffAgreement p q := p = q`로 '계수 강성'을 제시(동어반복, 원장이 unconditional로 표기). 정의 삭제, 사용처를 `p = q`로 대체, 원장 수정.
+- [ ] **C156** `Mock2.lean:13584` `modularCovariance_restrict` := `hMC hUV hA` — 가설 `ModularCovarianceRestrictionStable` (Mock2:13572) — 추상 Lemma 6.1을 가정 그 자체로 제시. 기하판 `lemma6_1`(Mock2 17325, 실제 증명)로 대체하거나 삭제.
+
+## B. 재진술 분해 — 삭제 또는 격리
+
+- [ ] **C002** `Spt1.lean:2706` `gateECRegularData_forces_deltaShadow` := `_h.2.2` — 가설 `gateECRegularData` (Spt1:2674) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C004** `Spt1.lean:3178` `gateECRegularModelData_forces_deltaShadow` := `_h.2.2` — 가설 `gateECRegularModelData` (Spt1:3166) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C016** `Spt7.lean:11885` `weightPurityGate_pure` := `hB.1` — 가설 `WeightPurityGate` (Spt7:11878) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C017** `Spt7.lean:11893` `weightPurityGate_detTraceExpansion` := `hB.2` — 가설 `WeightPurityGate` (Spt7:11878) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C018** `Spt7.lean:11926` `equivalenceCGate_arithmetic` := `h.1` — 가설 `EquivalenceCGate` (Spt7:11919) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C019** `Spt7.lean:11934` `equivalenceCGate_weightPurity` := `h.2` — 가설 `EquivalenceCGate` (Spt7:11919) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C020** `Spt7.lean:12509` `GlobalRiemannHypothesisGate.zeroPoleCircle` := `h.1` — 가설 `GlobalRiemannHypothesisGate` (Spt7:12501) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C021** `Spt7.lean:12517` `GlobalRiemannHypothesisGate.eulerProduct` := `h.2.1` — 가설 `GlobalRiemannHypothesisGate` (Spt7:12501) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C022** `Spt7.lean:12525` `GlobalRiemannHypothesisGate.noCancellation` := `h.2.2` — 가설 `GlobalRiemannHypothesisGate` (Spt7:12501) — 논문 주장·인증서를 묶은 Prop의 분해/재진술. 내용 없음. 삭제하거나 API로 격리하고 증거로 세지 말 것.
+- [ ] **C034** `Mock1_Advanced.lean:36171` `coeff_eq_object_at` := `H.1` — 가설 `PaperInstancesHRlfCoefficientStatement` (Mock1_Advanced:35834) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C035** `Mock1_Advanced.lean:36177` `coefficientAt_eq_object_at` := `H.2.1` — 가설 `PaperInstancesHRlfCoefficientStatement` (Mock1_Advanced:35834) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C036** `Mock1_Advanced.lean:36183` `rademacher_decomposition_at` := `H.2.2` — 가설 `PaperInstancesHRlfCoefficientStatement` (Mock1_Advanced:35834) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C037** `Mock1_Advanced.lean:36194` `t1t5_cutoff_at` := `H.1` — 가설 `PaperInstancesHRlfTailStatement` (Mock1_Advanced:35843) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C038** `Mock1_Advanced.lean:36200` `analytic_cutoff_at` := `H.2` — 가설 `PaperInstancesHRlfTailStatement` (Mock1_Advanced:35843) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C039** `Mock1_Advanced.lean:36210` `principal_laurent_at` := `H.1 i` — 가설 `PaperInstancesHRlfLerchPrincipalStatement` (Mock1_Advanced:35849) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C040** `Mock1_Advanced.lean:36218` `polar_negative_at` := `H.2.1 i` — 가설 `PaperInstancesHRlfLerchPrincipalStatement` (Mock1_Advanced:35849) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C041** `Mock1_Advanced.lean:36224` `order_one_at` := `H.2.2` — 가설 `PaperInstancesHRlfLerchPrincipalStatement` (Mock1_Advanced:35849) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C042** `Mock1_Advanced.lean:36233` `integer_solve_at` := `H.1 i` — 가설 `PaperInstancesHRlfFiniteSolveStatement` (Mock1_Advanced:35858) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C043** `Mock1_Advanced.lean:36241` `rational_solve_at` := `H.2.1 i` — 가설 `PaperInstancesHRlfFiniteSolveStatement` (Mock1_Advanced:35858) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C044** `Mock1_Advanced.lean:36249` `complex_residual_zero_at` := `H.2.2 i` — 가설 `PaperInstancesHRlfFiniteSolveStatement` (Mock1_Advanced:35858) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C045** `Mock1_Advanced.lean:36259` `equalizer_at` := `H.1` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C046** `Mock1_Advanced.lean:36267` `tor_order_gcd_at` := `H.2.1` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C047** `Mock1_Advanced.lean:36275` `crt_pairwise_at` := `H.2.2.1 i j` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C048** `Mock1_Advanced.lean:36285` `prime_gate_two_at` := `H.2.2.2.1` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C049** `Mock1_Advanced.lean:36290` `precision_one_at` := `H.2.2.2.2.1` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C050** `Mock1_Advanced.lean:36295` `obstruction_one_at` := `H.2.2.2.2.2` — 가설 `PaperInstancesHRlfSPTCRTTorStatement` (Mock1_Advanced:35870) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C051** `Mock1_Advanced.lean:36304` `overlap_mod_m_at` := `H.1.1` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C052** `Mock1_Advanced.lean:36311` `overlap_prime_power_at` := `H.1.2` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C053** `Mock1_Advanced.lean:36320` `mahler_congruence_at` := `H.2.1` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C054** `Mock1_Advanced.lean:36329` `mahler_expansion_at` := `H.2.2.1` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C055** `Mock1_Advanced.lean:36338` `binomial_congruence_at` := `H.2.2.2.1` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C056** `Mock1_Advanced.lean:36346` `binomial_expansion_at` := `H.2.2.2.2` — 가설 `PaperInstancesHRlfPAdicMahlerStatement` (Mock1_Advanced:35889) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C057** `Mock1_Advanced.lean:36359` `prediction_formula_at` := `H.1` — 가설 `PaperInstancesHRlfOlsRowStatement` (Mock1_Advanced:35918) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C058** `Mock1_Advanced.lean:36370` `residual_decomposition_at` := `H.2.1` — 가설 `PaperInstancesHRlfOlsRowStatement` (Mock1_Advanced:35918) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C059** `Mock1_Advanced.lean:36378` `residual_bound_at` := `H.2.2` — 가설 `PaperInstancesHRlfOlsRowStatement` (Mock1_Advanced:35918) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C060** `Mock1_Advanced.lean:36389` `entropy_limit_at` := `H.1` — 가설 `PaperInstancesHRlfEntropyCardyStatement` (Mock1_Advanced:35932) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C061** `Mock1_Advanced.lean:36399` `alpha_interval_at` := `H.2.1` — 가설 `PaperInstancesHRlfEntropyCardyStatement` (Mock1_Advanced:35932) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C062** `Mock1_Advanced.lean:36405` `ceff_interval_at` := `H.2.2` — 가설 `PaperInstancesHRlfEntropyCardyStatement` (Mock1_Advanced:35932) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C063** `Mock1_Advanced.lean:36415` `object_name_at` := `H.1` — 가설 `PaperInstancesHRlfFinalInstanceStatement` (Mock1_Advanced:35944) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C064** `Mock1_Advanced.lean:36421` `principal_order_one_at` := `H.2.1` — 가설 `PaperInstancesHRlfFinalInstanceStatement` (Mock1_Advanced:35944) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C065** `Mock1_Advanced.lean:36426` `alpha_interval_at` := `H.2.2.1` — 가설 `PaperInstancesHRlfFinalInstanceStatement` (Mock1_Advanced:35944) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C066** `Mock1_Advanced.lean:36432` `beta_interval_at` := `H.2.2.2` — 가설 `PaperInstancesHRlfFinalInstanceStatement` (Mock1_Advanced:35944) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C067** `Mock1_Advanced.lean:36442` `tail_at` := `H.1` — 가설 `PaperInstancesHRlfChannelStatement` (Mock1_Advanced:35953) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C068** `Mock1_Advanced.lean:36447` `lerch_principal_at` := `H.2.1` — 가설 `PaperInstancesHRlfChannelStatement` (Mock1_Advanced:35953) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C069** `Mock1_Advanced.lean:36452` `finite_solve_at` := `H.2.2.1` — 가설 `PaperInstancesHRlfChannelStatement` (Mock1_Advanced:35953) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C070** `Mock1_Advanced.lean:36457` `spt_crt_tor_at` := `H.2.2.2` — 가설 `PaperInstancesHRlfChannelStatement` (Mock1_Advanced:35953) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C071** `Mock1_Advanced.lean:36474` `coefficient_at` := `H.1` — 가설 `PaperInstancesHRlfSpineRowStatement` (Mock1_Advanced:35959) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C072** `Mock1_Advanced.lean:36480` `padic_mahler_at` := `H.2.1` — 가설 `PaperInstancesHRlfSpineRowStatement` (Mock1_Advanced:35959) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C073** `Mock1_Advanced.lean:36486` `ols_row_at` := `H.2.2.1` — 가설 `PaperInstancesHRlfSpineRowStatement` (Mock1_Advanced:35959) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C074** `Mock1_Advanced.lean:36492` `entropy_cardy_at` := `H.2.2.2.1` — 가설 `PaperInstancesHRlfSpineRowStatement` (Mock1_Advanced:35959) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C075** `Mock1_Advanced.lean:36498` `final_instance_at` := `H.2.2.2.2` — 가설 `PaperInstancesHRlfSpineRowStatement` (Mock1_Advanced:35959) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C076** `Mock1_Advanced.lean:45249` `claim_registry_at` := `P.1 claim` — 가설 `AdvancedClaimsIIObjectSchemaPromptObjective` (Mock1_Advanced:44914) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C077** `Mock1_Advanced.lean:45256` `coefficient_schema_at` := `P.2.1 n` — 가설 `AdvancedClaimsIIObjectSchemaPromptObjective` (Mock1_Advanced:44914) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C078** `Mock1_Advanced.lean:45263` `paper_object_data_instance_at` := `P.2.2.1` — 가설 `AdvancedClaimsIIObjectSchemaPromptObjective` (Mock1_Advanced:44914) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C079** `Mock1_Advanced.lean:45279` `scalar_jacobi_degeneracy_at` := `P.2.2.2 n` — 가설 `AdvancedClaimsIIObjectSchemaPromptObjective` (Mock1_Advanced:44914) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C080** `Mock1_Advanced.lean:45291` `principal_part_rational_solve_at` := `P.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C081** `Mock1_Advanced.lean:45301` `completion_shadow_holomorphic_at` := `P.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C082** `Mock1_Advanced.lean:45310` `cusp_transport_at` := `P.2.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C083** `Mock1_Advanced.lean:45321` `appell_lerch_block_formula_at` := `P.2.2.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C084** `Mock1_Advanced.lean:45335` `principal_exponent_formula_at` := `P.2.2.2.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C085** `Mock1_Advanced.lean:45347` `paper_matrix_rhs_solution_at` := `P.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C086** `Mock1_Advanced.lean:45357` `fixed_shadow_unary_theta_at` := `P.2.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C087** `Mock1_Advanced.lean:45368` `inside_outside_qseries_at` := `P.2.2.2.2.2.2.2 n` — 가설 `AdvancedClaimsIIT1T5PromptObjective` (Mock1_Advanced:44935) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C088** `Mock1_Advanced.lean:45384` `nat_gcd_lcm_at` := `P.1` — 가설 `AdvancedClaimsIISPTPromptObjective` (Mock1_Advanced:44987) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C089** `Mock1_Advanced.lean:45399` `primewise_thickness_at` := `P.2.1` — 가설 `AdvancedClaimsIISPTPromptObjective` (Mock1_Advanced:44987) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C090** `Mock1_Advanced.lean:45409` `valuation_certificate_at` := `P.2.2.1` — 가설 `AdvancedClaimsIISPTPromptObjective` (Mock1_Advanced:44987) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C091** `Mock1_Advanced.lean:45426` `obstruction_failure_at` := `P.2.2.2.1` — 가설 `AdvancedClaimsIISPTPromptObjective` (Mock1_Advanced:44987) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C092** `Mock1_Advanced.lean:45437` `base_change_at` := `P.2.2.2.2` — 가설 `AdvancedClaimsIISPTPromptObjective` (Mock1_Advanced:44987) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C093** `Mock1_Advanced.lean:45454` `kernel_selection_at` := `P.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C094** `Mock1_Advanced.lean:45465` `multiplier_phase_at` := `P.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C095** `Mock1_Advanced.lean:45476` `cusp_convergence_at` := `P.2.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C096** `Mock1_Advanced.lean:45486` `transport_family_at` := `P.2.2.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C097** `Mock1_Advanced.lean:45497` `kernel_table_at` := `P.2.2.2.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C098** `Mock1_Advanced.lean:45509` `multiplier_input_at` := `P.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C099** `Mock1_Advanced.lean:45519` `cusp_input_at` := `P.2.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C100** `Mock1_Advanced.lean:45529` `transport_across_cusps_at` := `P.2.2.2.2.2.2.2` — 가설 `AdvancedClaimsIIKernelPromptObjective` (Mock1_Advanced:45031) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C101** `Mock1_Advanced.lean:45544` `coefficient_separation_at` := `P.1 n` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C102** `Mock1_Advanced.lean:45554` `theta_character_at` := `P.2.1` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C103** `Mock1_Advanced.lean:45565` `spectral_kloosterman_at` := `P.2.2.1` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C104** `Mock1_Advanced.lean:45577` `local_euler_at` := `P.2.2.2.1` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C105** `Mock1_Advanced.lean:45585` `root_filter_at` := `P.2.2.2.2.1` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C106** `Mock1_Advanced.lean:45593` `exact_formula_at` := `P.2.2.2.2.2.1 n` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C107** `Mock1_Advanced.lean:45605` `paper_formula_fields_at` := `P.2.2.2.2.2.2` — 가설 `AdvancedClaimsIIExactPromptObjective` (Mock1_Advanced:45080) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C108** `Mock1_Advanced.lean:45624` `normalization_at` := `P.1 n` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C109** `Mock1_Advanced.lean:45636` `overlap_at` := `P.2.1 n` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C110** `Mock1_Advanced.lean:45647` `mahler_at` := `P.2.2.1 n` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C111** `Mock1_Advanced.lean:45664` `tail_zero_at` := `P.2.2.2.1 n hn` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C112** `Mock1_Advanced.lean:45674` `face_tracking_at` := `P.2.2.2.2.1` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C113** `Mock1_Advanced.lean:45689` `denominator_data_at` := `P.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C114** `Mock1_Advanced.lean:45699` `chart_vectors_at` := `P.2.2.2.2.2.2.1 n` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C115** `Mock1_Advanced.lean:45708` `mahler_table_at` := `P.2.2.2.2.2.2.2.1 n` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C116** `Mock1_Advanced.lean:45725` `analytic_range_predicate_at` := `P.2.2.2.2.2.2.2.2.1 n hn` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C117** `Mock1_Advanced.lean:45734` `obstruction_failure_at` := `P.2.2.2.2.2.2.2.2.2` — 가설 `AdvancedClaimsIIPAdicPromptObjective` (Mock1_Advanced:45124) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C118** `Mock1_Advanced.lean:45747` `regression_cardy_at` := `P.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C119** `Mock1_Advanced.lean:45757` `rademacher_tail_at` := `P.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C120** `Mock1_Advanced.lean:45768` `entropy_cardy_wrapper_at` := `P.2.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C121** `Mock1_Advanced.lean:45780` `alpha_extraction_at` := `P.2.2.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C122** `Mock1_Advanced.lean:45788` `degeneracy_at` := `P.2.2.2.2.1 n` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C123** `Mock1_Advanced.lean:45797` `ols_interval_at` := `P.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C124** `Mock1_Advanced.lean:45809` `growth_stability_at` := `P.2.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C125** `Mock1_Advanced.lean:45821` `reproducibility_schema_at` := `P.2.2.2.2.2.2.2.1` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C126** `Mock1_Advanced.lean:45832` `external_rows_at` := `P.2.2.2.2.2.2.2.2` — 가설 `AdvancedClaimsIIEntropyPromptObjective` (Mock1_Advanced:45196) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C127** `Mock1_Advanced.lean:60099` `coeff_eq_object_at` := `H.1` — 가설 `AdvancedClaimsIIRlfCoefficientMathStatement` (Mock1_Advanced:60018) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C128** `Mock1_Advanced.lean:60105` `coefficientAt_eq_object_at` := `H.2.1` — 가설 `AdvancedClaimsIIRlfCoefficientMathStatement` (Mock1_Advanced:60018) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C129** `Mock1_Advanced.lean:60111` `rademacher_decomposition_at` := `H.2.2` — 가설 `AdvancedClaimsIIRlfCoefficientMathStatement` (Mock1_Advanced:60018) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C130** `Mock1_Advanced.lean:60133` `tail_at` := `H.1` — 가설 `AdvancedClaimsIIRlfFiniteArithmeticStatement` (Mock1_Advanced:60027) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C131** `Mock1_Advanced.lean:60138` `lerch_principal_at` := `H.2.1` — 가설 `AdvancedClaimsIIRlfFiniteArithmeticStatement` (Mock1_Advanced:60027) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C132** `Mock1_Advanced.lean:60143` `finite_solve_at` := `H.2.2.1` — 가설 `AdvancedClaimsIIRlfFiniteArithmeticStatement` (Mock1_Advanced:60027) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C133** `Mock1_Advanced.lean:60148` `spt_crt_tor_at` := `H.2.2.2` — 가설 `AdvancedClaimsIIRlfFiniteArithmeticStatement` (Mock1_Advanced:60027) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C134** `Mock1_Advanced.lean:60153` `channel_statement_at` := `H` — 가설 `AdvancedClaimsIIRlfFiniteArithmeticStatement` (Mock1_Advanced:60027) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C135** `Mock1_Advanced.lean:60162` `overlap_mod_m_at` := `H.1.1` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C136** `Mock1_Advanced.lean:60169` `overlap_prime_power_at` := `H.1.2` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C137** `Mock1_Advanced.lean:60178` `overlap_pair_at` := `H.1` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C138** `Mock1_Advanced.lean:60190` `mahler_congruence_at` := `H.2.1` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C139** `Mock1_Advanced.lean:60199` `mahler_expansion_at` := `H.2.2.1` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C140** `Mock1_Advanced.lean:60222` `binomial_congruence_at` := `H.2.2.2.1` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C141** `Mock1_Advanced.lean:60230` `binomial_expansion_at` := `H.2.2.2.2` — 가설 `AdvancedClaimsIIRlfPAdicMahlerMathStatement` (Mock1_Advanced:60033) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C142** `Mock1_Advanced.lean:60256` `entropy_limit_at` := `H.1` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C143** `Mock1_Advanced.lean:60266` `ols_row_at` := `H.2.1 i` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C144** `Mock1_Advanced.lean:60282` `ols_prediction_formula_at` := `(H.ols_row_at i).1` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C145** `Mock1_Advanced.lean:60293` `ols_residual_decomposition_at` := `(H.ols_row_at i).2.1` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C146** `Mock1_Advanced.lean:60301` `ols_residual_bound_at` := `(H.ols_row_at i).2.2` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C147** `Mock1_Advanced.lean:60308` `alpha_interval_at` := `H.2.2.1` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C148** `Mock1_Advanced.lean:60314` `ceff_interval_at` := `H.2.2.2` — 가설 `AdvancedClaimsIIRlfEntropyRegressionMathStatement` (Mock1_Advanced:60062) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C149** `Mock1_Advanced.lean:60324` `final_detail_at` := `H.1` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C150** `Mock1_Advanced.lean:60329` `final_instance_at` := `H.2.1` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C151** `Mock1_Advanced.lean:60334` `object_name_at` := `H.2.2.1` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C152** `Mock1_Advanced.lean:60340` `principal_order_one_at` := `H.2.2.2.1` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C153** `Mock1_Advanced.lean:60345` `alpha_interval_at` := `H.2.2.2.2.1` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C154** `Mock1_Advanced.lean:60351` `beta_interval_at` := `H.2.2.2.2.2` — 가설 `AdvancedClaimsIIRlfFinalMathStatement` (Mock1_Advanced:60086) — 퇴화 reference 객체에 대한 '논문 진술' 묶음의 분해(재진술 층). 삭제 또는 축소 권장.
+- [ ] **C173** `QYM.lean:5791` `individual_eigenvalue_error` := `herror i` — 가설 `UniformError` (QYM:5780) — 가설 `UniformError`가 논문 Thm 4.31의 결론(정직하게 가설로 표기). 분해 정리 자체는 무해하나 이를 소비하는 정리가 '증명'으로 집계되지 않게 할 것.
+
+## D. 조건부이나 해소됨 — 유지 + 무조건 따름정리
+
+- [ ] **C027** `Mock1.lean:4770` `finiteMahlerEval_finiteDifferenceCoeff_eq_of_binomial_inversion` := `H samples n` — 가설 `FiniteMahlerBinomialInversion` (Mock1:4766) — Mock1 4826에서 해소됨. 가설 없는 무조건 따름정리 추가 권장.
+- [ ] **C028** `Mock1.lean:4783` `finiteMahler_coefficients_unique` := `H samples coeffs₁ coeffs₂ h₁ h₂` — 가설 `FiniteMahlerInterpolationUnique` (Mock1:4778) — Mock1 4853에서 해소됨. 가설 없는 무조건 따름정리 추가 권장.
+- [ ] **C029** `Mock1.lean:4791` `finiteMahler_interpolating_coeffs_eq_finiteDifferenceCoeff` := `Huniq samples coeffs (finiteDifferenceCoeff samples) hcoeffs (Hbinv samples)` — 가설 `FiniteMahlerInterpolationUnique` (Mock1:4778) — Mock1 4853에서 해소됨. 가설 없는 무조건 따름정리 추가 권장.
+- [ ] **C165** `Mock2_FunctionalAnalysis.lean:11493` `SmoothCompactCore.exists_quotientSupport_subset_threeCuspTruncation_of_compactCofinal` := `hCofinal _ (SmoothCompactCore.quotientCompact u)` — 가설 `GammaTwoThreeCuspCompactCofinal` (Mock2_FunctionalAnalysis:10545) — Mock2_FA 10532/10710에서 해소됨(`gammaTwoGeometricCompactCofinal_unconditional`). 무조건 따름정리 추가 권장.
+
+## C. 정상 API / 탐지 오탐 — 유지(확인만)
+
+- [ ] **C006** `Spt1.lean:3990` `Hk_phiTerm_bound` := `hHk j hj` — 가설 `Hk` (Spt1:460) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C008** `Spt3.lean:4926` `FnumWindow_imp_Fnum_layer` := `h.1` — 가설 `FnumWindow` (Spt3:4918) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C012** `Spt6.lean:778` `IsGammaAcyclic.h1_subsingleton` := `h 0` — 가설 `IsGammaAcyclic` (Spt6:771) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C015** `Spt7.lean:6699` `exists_weaklyRegular_of_hasWeakRegularSequenceLength` := `h` — 가설 `HasWeakRegularSequenceLength` (Spt7:6681) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C023** `Spt7.lean:15120` `prime` := `h.1` — 가설 `IsNthPrime` (Spt7:15115) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C024** `Spt7.lean:15123` `card_primes_lt` := `h.2` — 가설 `IsNthPrime` (Spt7:15115) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C025** `Mock1.lean:3901` `PIntegralOn.denominator_coprime` := `ha n` — 가설 `PIntegralOn` (Mock1:3898) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C026** `Mock1.lean:4734` `FiniteMahlerInterpolates.apply` := `h n` — 가설 `FiniteMahlerInterpolates` (Mock1:4730) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C030** `Mock1.lean:5777` `integerGlobalLiftModLcm_apply` := `h i` — 가설 `IntegerGlobalLiftModLcm` (Mock1:5773) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C031** `Mock1.lean:6046` `finiteWeightSupport_apply` := `h l hl` — 가설 `HasFiniteWeightSupport` (Mock1:6043) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C032** `Mock1.lean:6409` `lower_le_of_mem` := `hx.1` — 가설 `Mem` (Mock1:6406) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C033** `Mock1.lean:6413` `le_upper_of_mem` := `hx.2` — 가설 `Mem` (Mock1:6406) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C155** `Mock2.lean:9085` `curvature_eq_zero` := `A.2` — 가설 `FlatSector` (Mock2:13916) — 정의가 `QCurvature x = x`로 되어 있어 의도(=0?) 확인 필요.
+- [ ] **C157** `Mock2.lean:13909` `gauge_covariance_formula` := `hg U x` — 가설 `GaugeCovariant` (Mock2:13905) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C158** `Mock2_Advanced.lean:1563` `MassConditionAt.mass_pos` := `h.1.trans_le (h.2.2 m hm)` — 가설 `MassConditionAt` (Mock2_Advanced:1520) — 한 단계 `trans_le` 유도(정상).
+- [ ] **C159** `Mock2_FunctionalAnalysis.lean:1537` `alpha_pos` := `hB.1` — 가설 `ComplexCoerciveWith` (Mock2_FunctionalAnalysis:1528) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C160** `Mock2_FunctionalAnalysis.lean:1540` `diagonal` := `hB.2 u` — 가설 `ComplexCoerciveWith` (Mock2_FunctionalAnalysis:1528) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C161** `Mock2_FunctionalAnalysis.lean:11014` `measurable` := `hu.continuous.measurable` — 가설 `RealSmooth` (Mock2_FunctionalAnalysis:10972) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C162** `Mock2_FunctionalAnalysis.lean:11066` `add` := `(hu.union hv).of_isClosed_subset isClosed_closure (quotientTSupport_add_subset u v)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C163** `Mock2_FunctionalAnalysis.lean:11073` `smul` := `hu.of_isClosed_subset isClosed_closure (quotientTSupport_smul_subset c u)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C164** `Mock2_FunctionalAnalysis.lean:11081` `mul_right` := `hu.of_isClosed_subset isClosed_closure (quotientTSupport_mul_subset_left_general u v)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C166** `Mock2_FunctionalAnalysis.lean:12973` `HasQuotientCompactSupport.raiseRaw` := `hf.of_isClosed_subset isClosed_closure (quotientTSupport_raiseRaw_subset a f)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C167** `Mock2_FunctionalAnalysis.lean:12979` `HasQuotientCompactSupport.lowerRaw` := `hf.of_isClosed_subset isClosed_closure (quotientTSupport_lowerRaw_subset a f)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C168** `Mock2_FunctionalAnalysis.lean:12985` `HasQuotientCompactSupport.laplaceRaw` := `hf.of_isClosed_subset isClosed_closure (quotientTSupport_laplaceRaw_subset a hs)` — 가설 `HasQuotientCompactSupport` (Mock2_FunctionalAnalysis:11026) — 실제 보조정리를 쓰는 짧은 증명(탐지 오탐).
+- [ ] **C169** `Mock2_FunctionalAnalysis.lean:46204` `IsPlanarAffineWeakGraph.friedrichs_raising_identity` := `hWeak.friedrichs_identity j w` — 가설 `IsPlanarAffineWeakGraph` (Mock2_FunctionalAnalysis:44319) — 보조정리 `friedrichs_identity` 경유(탐지 오탐).
+- [ ] **C170** `Mock2_FunctionalAnalysis.lean:46218` `IsPlanarAffineWeakGraph.friedrichs_loweringFromSucc_identity` := `hWeak.friedrichs_identity j w` — 가설 `IsPlanarAffineWeakGraph` (Mock2_FunctionalAnalysis:44319) — 보조정리 `friedrichs_identity` 경유(탐지 오탐).
+- [ ] **C171** `QYM.lean:692` `upperHalfPlaneQ_trace_eq_zero` := `hcyc.eq_zero_of_ne_one (upperHalfPlaneQ_ne_one τ)` — 가설 `IsScalarQCyclic` (QYM:665) — 보조정리 `eq_zero_of_ne_one` 경유(탐지 오탐).
+- [ ] **C172** `QYM.lean:5072` `IsWeakCriticalAt.firstVariation_eq_zero` := `hcritical.2 variation hvariation` — 가설 `IsWeakCriticalAt` (QYM:5054) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C174** `QYM.lean:6365` `formSmall_relativeCoefficient_nonneg` := `hsmall.1` — 가설 `FormSmall` (QYM:6312) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C175** `QYM.lean:6371` `formSmall_relativeCoefficient_lt_one` := `hsmall.2.1` — 가설 `FormSmall` (QYM:6312) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C176** `QYM.lean:6377` `formSmall_remainderCoefficient_nonneg` := `hsmall.2.2.1` — 가설 `FormSmall` (QYM:6312) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C177** `QYM.lean:6383` `formSmall_relativeBound` := `hsmall.2.2.2` — 가설 `FormSmall` (QYM:6312) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C178** `QYM.lean:11725` `abs_le_rootExponentialEnvelope` := `hbound.2.2 n hn` — 가설 `HasRootExponentialBound` (QYM:11709) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C179** `QYM.lean:12356` `admissibleVariation_base` := `h.1` — 가설 `IsAdmissibleVariation` (QYM:12346) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C180** `QYM.lean:12367` `admissibleVariation_tangent` := `h.2.1` — 가설 `IsAdmissibleVariation` (QYM:12346) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C181** `QYM.lean:12378` `admissibleVariation_update` := `h.2.2 t` — 가설 `IsAdmissibleVariation` (QYM:12346) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C182** `QYM.lean:12541` `coerciveOn_constant_pos` := `h.1` — 가설 `CoerciveOn` (QYM:12534) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C183** `QYM.lean:12548` `coerciveOn_bound` := `h.2 state hstate` — 가설 `CoerciveOn` (QYM:12534) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C184** `QYM.lean:15303` `coefficient_norm_le_of_complexRootExponentialBound` := `hbound.2.2 n hn` — 가설 `HasComplexRootExponentialBound` (QYM:15288) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C185** `QYM.lean:20766` `IsPositiveCoerciveShift.shift_pos` := `h.1` — 가설 `IsPositiveCoerciveShift` (QYM:20761) — 20766/23293에 같은 이름 분해 정리 중복 — 하나로 합칠 것.
+- [ ] **C186** `QYM.lean:20772` `IsPositiveCoerciveShift.coercivityConstant_pos` := `h.2.1` — 가설 `IsPositiveCoerciveShift` (QYM:20761) — 20766/23293에 같은 이름 분해 정리 중복 — 하나로 합칠 것.
+- [ ] **C187** `QYM.lean:23293` `IsPositiveCoerciveShift.shift_pos` := `h.1` — 가설 `IsPositiveCoerciveShift` (QYM:20761) — 20766/23293에 같은 이름 분해 정리 중복 — 하나로 합칠 것.
+- [ ] **C188** `QYM.lean:23299` `IsPositiveCoerciveShift.constant_pos` := `h.2.1` — 가설 `IsPositiveCoerciveShift` (QYM:20761) — 20766/23293에 같은 이름 분해 정리 중복 — 하나로 합칠 것.
+- [ ] **C189** `QYM.lean:30902` `IsGaugeDeckPullbackRepresentation.one` := `hDeck.1 a` — 가설 `IsGaugeDeckPullbackRepresentation` (QYM:30893) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C190** `QYM.lean:30911` `IsGaugeDeckPullbackRepresentation.mul` := `hDeck.2 gamma delta a` — 가설 `IsGaugeDeckPullbackRepresentation` (QYM:30893) — 실제 정의의 표준 분해(API) 보조정리. 유지.
+- [ ] **C191** `QYM.lean:50947` `quotientSectionToActualStageL2_coeFn_ae` := `hs.coeFn_toLp` — 가설 `IsSquareIntegrableOnActualStage` (QYM:50917) — Mathlib `coeFn_toLp` 경유(탐지 오탐).
