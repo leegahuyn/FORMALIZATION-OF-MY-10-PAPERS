@@ -40,8 +40,9 @@ variable {B : Type*} [CommRing B] [Algebra K B]
 
 private theorem evaluate_equation (x y : B) (h : y ^ 2 = x ^ 3) :
     (cuspPlaneEquation K).eval₂ (Polynomial.aeval x).toRingHom y = 0 := by
-  have hx : (Polynomial.aeval x : Polynomial K →ₐ[K] B).toRingHom Polynomial.X = x :=
-    Polynomial.aeval_X
+  have hx : (Polynomial.aeval x : Polynomial K →ₐ[K] B).toRingHom Polynomial.X = x := by
+    change (Polynomial.aeval x : Polynomial K →ₐ[K] B) Polynomial.X = x
+    exact Polynomial.aeval_X (R := K) x
   simpa only [cuspPlaneEquation, Polynomial.eval₂_sub, Polynomial.eval₂_pow,
     Polynomial.eval₂_X, Polynomial.eval₂_C, map_pow, hx] using sub_eq_zero.mpr h
 
@@ -55,7 +56,7 @@ private theorem evaluateCusp_x (x y : B) (h : y ^ 2 = x ^ 3) :
     _ = (Polynomial.aeval x : Polynomial K →ₐ[K] B) Polynomial.X :=
       AdjoinRoot.liftAlgHom_of (cuspPlaneEquation K) (Polynomial.aeval x) y
         (evaluate_equation K x y h) Polynomial.X
-    _ = x := Polynomial.aeval_X
+    _ = x := Polynomial.aeval_X (R := K) x
 
 private theorem evaluateCusp_y (x y : B) (h : y ^ 2 = x ^ 3) :
     evaluateCusp K x y h (yCoord K) = y :=

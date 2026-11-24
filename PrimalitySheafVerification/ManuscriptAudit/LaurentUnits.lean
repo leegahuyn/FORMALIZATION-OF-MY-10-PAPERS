@@ -215,7 +215,7 @@ private theorem unitResidue_surjective (d : ℕ) :
   rw [unitExponent_of_monomial K u (isUnit_one : IsUnit (1 : K)) hmon, hn] <;> rfl
 
 /-- The subgroup of actual \(d\)-th powers of Laurent polynomial units. -/
-abbrev unitPowerSubgroup (d : ℕ) : Subgroup ((LaurentPolynomial K)ˣ) :=
+noncomputable abbrev unitPowerSubgroup (d : ℕ) : Subgroup ((LaurentPolynomial K)ˣ) :=
   (powMonoidHom (α := (LaurentPolynomial K)ˣ) d).range
 
 private theorem unitResidue_ker [IsAlgClosed K] {d : ℕ} (hd : 0 < d) :
@@ -258,3 +258,4 @@ run_cmd do
     logInfo m!"{name} uses {dependencies}"
 
 end ManuscriptAudit.LaurentUnits
+

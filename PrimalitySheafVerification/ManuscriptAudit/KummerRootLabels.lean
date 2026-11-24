@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.GroupWithZero.Idempotent
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 import Mathlib.RingTheory.Spectrum.Prime.Topology
@@ -134,26 +135,59 @@ theorem locallyConstantRootTag_natural [Algebra K B] (f : A →ₐ[K] B)
   rw [map_sub, f.commutes] at h
   exact h
 
-/-- On a reduced algebra, the labels determine the original root of unity. -/
-theorem locallyConstantRootTag_injective [IsReduced A] :
+/-- A coefficient root has its own label at all primes of the algebra. -/
+theorem locallyConstantRootTag_coeff (ζ : rootsOfUnity d K) (P : PrimeSpectrum A) :
+    locallyConstantRootTag (mapRoots d (algebraMap K A) ζ) P = ζ := by
+  change rootTag (mapRoots d (algebraMap K A) ζ) P = ζ
+  apply (rootTag_eq_iff _ _ _).mpr
+  change algebraMap K A (rootValue ζ) - algebraMap K A (rootValue ζ) ∈ P.asIdeal
+  rw [sub_self]
+  exact P.asIdeal.zero_mem
+
+/-- The labels determine the original root of unity. For roots with the same
+labels, the geometric sum of their quotient is a unit since it is congruent
+to the degree modulo the nilradical. -/
+theorem locallyConstantRootTag_injective :
     Function.Injective (locallyConstantRootTag (K := K) (A := A) (d := d)) := by
-  intro a b h
-  apply Subtype.ext
-  apply Units.ext
-  apply sub_eq_zero.mp
-  apply IsNilpotent.eq_zero
-  apply nilpotent_iff_mem_prime.mpr
-  intro I hI
-  let P : PrimeSpectrum A := ⟨I, hI⟩
-  have heq : rootTag (K := K) a P = rootTag (K := K) b P :=
-    DFunLike.congr_fun h P
-  have ha := rootTag_residue (K := K) a P
-  rw [heq] at ha
-  exact Ideal.Quotient.eq.mp (ha.symm.trans (rootTag_residue (K := K) b P))
+  intro a b hab
+  have hdiv : locallyConstantRootTag (K := K) (a / b) = 1 := by
+    rw [map_div, hab, div_self]
+  let t := rootValue (a / b)
+  have htres (P : PrimeSpectrum A) : Ideal.Quotient.mk P.asIdeal t = 1 := by
+    have hlabel : rootTag (K := K) (a / b) P = 1 := DFunLike.congr_fun hdiv P
+    have h := (rootTag_residue (K := K) (a / b) P).symm
+    rw [hlabel] at h
+    simpa [rootValue] using h
+  let s : A := ∑ i ∈ Finset.range d, t ^ i
+  have hnil : IsNilpotent (s - (d : A)) := by
+    apply nilpotent_iff_mem_prime.mpr
+    intro I hI
+    let P : PrimeSpectrum A := ⟨I, hI⟩
+    let q := Ideal.Quotient.mk P.asIdeal
+    apply Ideal.Quotient.eq.mp
+    change q (∑ i ∈ Finset.range d, t ^ i) = q (d : A)
+    rw [map_sum, map_natCast]
+    simp only [map_pow, htres P, one_pow, Finset.sum_const, Finset.card_range, nsmul_one]
+  have hd : IsUnit (d : A) := by
+    have hk : IsUnit (d : K) := isUnit_iff_ne_zero.mpr (NeZero.ne _)
+    simpa only [map_natCast] using hk.map (algebraMap K A)
+  have hs : IsUnit s := by
+    have h := hnil.isUnit_add_right_of_commute hd (show Commute (s - (d : A)) (d : A) from mul_comm _ _)
+    simpa only [sub_add_cancel] using h
+  have ht : t ^ d = 1 := (mem_rootsOfUnity' d ((a / b : rootsOfUnity d A) : Aˣ)).mp (a / b).prop
+  have hgeom : (t - 1) * s = 0 := by
+    simpa only [s, ht, sub_self] using mul_geom_sum t d
+  obtain ⟨u, hu⟩ := hs
+  have hsub : t - 1 = 0 := calc
+    t - 1 = ((t - 1) * s) * ↑u⁻¹ := by rw [mul_assoc, ← hu, Units.mul_inv, mul_one]
+    _ = 0 := by rw [hgeom, zero_mul]
+  apply div_eq_one.mp
+  apply rootsOfUnity.coe_injective
+  exact sub_eq_zero.mp hsub
 
 /-- Each locally constant coefficient-root label comes from a root of unity
-on a reduced algebra. Clopen fibers supply its idempotent coordinates. -/
-theorem locallyConstantRootTag_surjective [IsReduced A] :
+on any algebra. Clopen fibers supply its orthogonal idempotent coordinates. -/
+theorem locallyConstantRootTag_surjective :
     Function.Surjective (locallyConstantRootTag (K := K) (A := A) (d := d)) := by
   classical
   intro w
@@ -161,9 +195,29 @@ theorem locallyConstantRootTag_surjective [IsReduced A] :
   choose e he hFiber using fun ζ : rootsOfUnity d K =>
     PrimeSpectrum.exists_idempotent_basicOpen_eq_of_isClopen
       (w.isLocallyConstant.isClopen_fiber ζ)
-  let z : A := ∑ ζ : rootsOfUnity d K, e ζ * algebraMap K A (rootValue ζ)
-  have hzres (P : PrimeSpectrum A) :
-      Ideal.Quotient.mk P.asIdeal z = coefficientResidue P (rootValue (w P)) := by
+  have horth (ξ η : rootsOfUnity d K) (hne : ξ ≠ η) : e ξ * e η = 0 := by
+    apply PrimeSpectrum.basicOpen_injOn_isIdempotentElem
+      (show IsIdempotentElem (e ξ * e η) from (he ξ).mul (he η)) IsIdempotentElem.zero
+    rw [PrimeSpectrum.basicOpen_mul, PrimeSpectrum.basicOpen_zero]
+    apply bot_unique
+    intro P hP
+    have hξ : P ∈ (PrimeSpectrum.basicOpen (e ξ) : Set (PrimeSpectrum A)) := hP.1
+    have hη : P ∈ (PrimeSpectrum.basicOpen (e η) : Set (PrimeSpectrum A)) := hP.2
+    rw [← hFiber ξ] at hξ
+    rw [← hFiber η] at hη
+    exact (hne (hξ.symm.trans hη)).elim
+  have hWeighted (ξ : rootsOfUnity d K) (g : rootsOfUnity d K → A) :
+      e ξ * (∑ η, e η * g η) = e ξ * g ξ := by
+    rw [Finset.mul_sum]
+    refine (Finset.sum_eq_single ξ ?_ ?_).trans ?_
+    · intro η _ hη
+      rw [← mul_assoc, horth ξ η hη.symm, zero_mul]
+    · intro h
+      exact (h (Finset.mem_univ _)).elim
+    · rw [← mul_assoc, he ξ]
+  have hqWeighted (g : rootsOfUnity d K → A) (P : PrimeSpectrum A) :
+      Ideal.Quotient.mk P.asIdeal (∑ ζ, e ζ * g ζ) =
+        Ideal.Quotient.mk P.asIdeal (g (w P)) := by
     letI : IsDomain (A ⧸ P.asIdeal) :=
       (Ideal.Quotient.isDomain_iff_prime _).mpr P.isPrime
     let q := Ideal.Quotient.mk P.asIdeal
@@ -183,8 +237,7 @@ theorem locallyConstantRootTag_surjective [IsReduced A] :
       change P ∈ (PrimeSpectrum.basicOpen (e ζ) : Set (PrimeSpectrum A)) at hP
       rw [← hFiber] at hP
       exact hζ hP.symm
-    change q (∑ ζ : rootsOfUnity d K, e ζ * algebraMap K A (rootValue ζ)) =
-      q (algebraMap K A (rootValue (w P)))
+    change q (∑ ζ : rootsOfUnity d K, e ζ * g ζ) = q (g (w P))
     rw [map_sum]
     refine (Finset.sum_eq_single (w P) ?_ ?_).trans ?_
     · intro ζ _ hζ
@@ -192,25 +245,55 @@ theorem locallyConstantRootTag_surjective [IsReduced A] :
     · intro h
       exact (h (Finset.mem_univ _)).elim
     · rw [map_mul, heone, one_mul]
-  have hz : z ^ d = 1 := by
-    apply sub_eq_zero.mp
-    apply IsNilpotent.eq_zero
-    apply nilpotent_iff_mem_prime.mpr
-    intro I hI
-    let P : PrimeSpectrum A := ⟨I, hI⟩
-    have hpow : rootValue (w P) ^ d = 1 :=
-      (mem_rootsOfUnity' d (w P : Kˣ)).mp (w P).prop
-    apply Ideal.Quotient.eq.mp
-    change Ideal.Quotient.mk P.asIdeal (z ^ d) = Ideal.Quotient.mk P.asIdeal 1
-    rw [map_pow, hzres P, ← map_pow, hpow, map_one, map_one]
+  have hsumIdem : IsIdempotentElem (∑ ζ, e ζ) := by
+    change (∑ ζ, e ζ) * (∑ ζ, e ζ) = ∑ ζ, e ζ
+    rw [Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    intro ζ _
+    simpa only [mul_one] using hWeighted ζ (fun _ => 1)
+  have hsum : (∑ ζ, e ζ) = 1 := by
+    apply PrimeSpectrum.basicOpen_injOn_isIdempotentElem hsumIdem IsIdempotentElem.one
+    rw [PrimeSpectrum.basicOpen_one]
+    apply top_unique
+    intro P _
+    apply (PrimeSpectrum.mem_basicOpen _ _).mpr
+    intro hmem
+    letI : IsDomain (A ⧸ P.asIdeal) :=
+      (Ideal.Quotient.isDomain_iff_prime _).mpr P.isPrime
+    have hzero := Ideal.Quotient.eq_zero_iff_mem.mpr hmem
+    have hone : Ideal.Quotient.mk P.asIdeal (∑ ζ, e ζ) = 1 := by
+      simpa only [mul_one, map_one] using hqWeighted (fun _ => 1) P
+    exact zero_ne_one (hzero.symm.trans hone)
+  let c : rootsOfUnity d K → A := fun ζ => algebraMap K A (rootValue ζ)
+  let z : A := ∑ ζ, e ζ * c ζ
+  have hpower (ζ : rootsOfUnity d K) (n : ℕ) : e ζ * z ^ n = e ζ * c ζ ^ n := by
+    induction n with
+    | zero => simp only [pow_zero, mul_one]
+    | succ n ih =>
+      simp only [pow_succ, ← mul_assoc, ih]
+      calc
+        e ζ * c ζ ^ n * z = c ζ ^ n * (e ζ * z) := by ac_rfl
+        _ = c ζ ^ n * (e ζ * c ζ) := congrArg (fun y => c ζ ^ n * y) (hWeighted ζ c)
+        _ = e ζ * c ζ ^ n * c ζ := by ac_rfl
+  have hz : z ^ d = 1 := calc
+    z ^ d = (∑ ζ, e ζ) * z ^ d := by rw [hsum, one_mul]
+    _ = ∑ ζ, e ζ * z ^ d := Finset.sum_mul _ _ _
+    _ = ∑ ζ, e ζ := by
+      apply Finset.sum_congr rfl
+      intro ζ _
+      have hc : c ζ ^ d = 1 := by
+        change (algebraMap K A (rootValue ζ)) ^ d = 1
+        rw [← map_pow, (mem_rootsOfUnity' d (ζ : Kˣ)).mp ζ.prop, map_one]
+      rw [hpower, hc, mul_one]
+    _ = 1 := hsum
   refine ⟨rootsOfUnity.mkOfPowEq z hz, LocallyConstant.ext fun P => ?_⟩
   change rootTag (rootsOfUnity.mkOfPowEq z hz) P = w P
   apply (rootTag_eq_iff _ _ _).mpr
-  exact Ideal.Quotient.eq.mp (hzres P)
+  exact Ideal.Quotient.eq.mp (hqWeighted c P)
 
-/-- Roots of unity on a reduced affine algebra are exactly the locally
-constant maps from its prime spectrum to coefficient roots. -/
-def locallyConstantRootsEquiv [IsReduced A] :
+/-- Roots of unity on an affine algebra are exactly the locally constant
+maps from its prime spectrum to coefficient roots. -/
+def locallyConstantRootsEquiv :
     rootsOfUnity d A ≃* LocallyConstant (PrimeSpectrum A) (rootsOfUnity d K) :=
   MulEquiv.ofBijective locallyConstantRootTag
     ⟨locallyConstantRootTag_injective, locallyConstantRootTag_surjective⟩
@@ -224,6 +307,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.KummerRootLabels.locallyConstantRootTag_idempotent,
       ``ManuscriptAudit.KummerRootLabels.locallyConstantRootTag_natural,
+      ``ManuscriptAudit.KummerRootLabels.locallyConstantRootTag_coeff,
       ``ManuscriptAudit.KummerRootLabels.locallyConstantRootTag_injective,
       ``ManuscriptAudit.KummerRootLabels.locallyConstantRootTag_surjective,
       ``ManuscriptAudit.KummerRootLabels.locallyConstantRootsEquiv] do

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.FieldSimp
@@ -18,7 +19,7 @@ variation identity. The resulting dissipation rates are different.
 
 namespace ManuscriptAudit.EnergyDissipationModal
 
-def mode (t : ℝ) : ℝ := Real.exp (-2 * t)
+noncomputable def mode (t : ℝ) : ℝ := Real.exp (-2 * t)
 
 def energy (a : ℝ) : ℝ := a ^ 2
 
@@ -32,7 +33,7 @@ theorem modal_dual_norm_isLeast (v : ℝ) :
   · intro a
     apply le_of_eq
     rw [abs_mul]
-    field_simp [h.ne'] <;> ring
+    field_simp [h.ne']
   · intro C hC
     exact (div_le_iff₀ h).2 (by simpa using hC 1)
 
@@ -44,19 +45,29 @@ theorem modal_first_variation (a v : ℝ) :
     HasDerivAt (fun ε => energy (a + ε * v)) (firstVariation a * v) 0 := by
   have h : HasDerivAt (fun ε : ℝ => a + ε * v) v 0 := by
     simpa using ((hasDerivAt_id (0 : ℝ)).mul_const v).const_add a
-  convert h.pow 2 using 1 <;> simp [energy, firstVariation] <;> ring
+  simpa [energy, firstVariation] using h.pow 2
 
 theorem modal_flow_equation (t : ℝ) :
     HasDerivAt mode (-firstVariation (mode t)) t := by
   have hLin : HasDerivAt (fun s : ℝ => -2 * s) (-2) t := by
     simpa using (hasDerivAt_id t).const_mul (-2 : ℝ)
-  convert (Real.hasDerivAt_exp (-2 * t)).comp t hLin using 1 <;>
-    unfold mode firstVariation <;> ring
+  have h : HasDerivAt mode (Real.exp (-2 * t) * (-2)) t :=
+    (Real.hasDerivAt_exp (-2 * t)).comp t hLin
+  have hEq : Real.exp (-2 * t) * (-2) = -firstVariation (mode t) := by
+    unfold firstVariation mode
+    ring
+  exact hEq ▸ h
 
 theorem modal_energy_derivative (t : ℝ) :
     HasDerivAt (fun s => energy (mode s)) (-4 * (mode t) ^ 2) t := by
-  convert (modal_flow_equation t).pow 2 using 1 <;>
-    simp [energy, firstVariation] <;> ring
+  have h := (modal_flow_equation t).pow 2
+  change HasDerivAt (fun s => energy (mode s))
+    ((2 : ℝ) * mode t ^ ((2 : ℕ) - 1) * (-firstVariation (mode t))) t at h
+  have hEq : (2 : ℝ) * mode t ^ ((2 : ℕ) - 1) * (-firstVariation (mode t)) =
+      -4 * (mode t) ^ 2 := by
+    simp [firstVariation]
+    ring
+  exact hEq ▸ h
 
 /-- The first-variation evolution can be smooth and still fail the
 dissipation rate obtained by replacing its pairing by the dual norm. -/

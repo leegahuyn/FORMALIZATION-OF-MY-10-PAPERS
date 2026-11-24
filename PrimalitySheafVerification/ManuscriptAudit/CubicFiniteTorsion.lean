@@ -46,9 +46,12 @@ theorem paper5_projective_count_cast_eq_one {F : Type*} [Field F] [Fintype F]
   have h := shortCubic_zero_count_cast_eq_one_sub_coeff hchar
     Fintype.one_lt_card (shortCubic_zero_discriminant_ne_zero p hp hA)
   obtain ⟨r, _, hrank⟩ := FiniteField.card F p
-  rw [hrank, CubicHasse.paper5_cubic_prime_power_coefficient_zero A hp hr r.2,
-    sub_zero] at h
-  exact h
+  have hCoeff : (((Polynomial.X : Polynomial F) ^ 3 + Polynomial.C A) ^
+        ((p ^ (r : ℕ) - 1) / 2)).coeff (p ^ (r : ℕ) - 1) = 0 :=
+    CubicHasse.paper5_cubic_prime_power_coefficient_zero (p := p) (r := (r : ℕ))
+      A hp hr r.2
+  rw [hrank] at h
+  exact h.trans ((congrArg (fun x : F => 1 - x) hCoeff).trans (sub_zero 1))
 
 /-- In every finite characteristic-p field, the projective point group
 of the printed reduction has trivial p-torsion. -/

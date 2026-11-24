@@ -176,11 +176,15 @@ private theorem length_eq_top_of_nonnilpotent_maximal {A : Type*} [CommRing A]
   have hm : x ∈ Ideal.jacobson (⊥ : Ideal A) :=
     IsLocalRing.maximalIdeal_le_jacobson _ hx
   have hp := Ideal.pow_mem_pow hm n
-  rw [hJ, Ideal.mem_bot] at hp
+  rw [hJ, Ideal.zero_eq_bot, Ideal.mem_bot] at hp
   exact hn ⟨n, hp⟩
 
+/-- The length of the ideal quotient as a module over the ambient ring. -/
+def idealQuotientLength {A : Type*} [CommRing A] (J : Ideal A) : ENat :=
+  Module.length A (A ⧸ J)
+
 private theorem length_ringQuotient_eq_of_eq_bot {A : Type*} [CommRing A]
-    (J : Ideal A) (hJ : J = ⊥) : Module.length A (A ⧸ J) = Module.length A A := by
+    (J : Ideal A) (hJ : J = ⊥) : idealQuotientLength J = Module.length A A := by
   subst J
   exact (AlgEquiv.quotientBot A A).toLinearEquiv.length_eq
 
@@ -192,7 +196,7 @@ theorem paper2_originLocalRing_length_eq_top : Module.length OriginLocalRing Ori
 set_option maxHeartbeats 3000000 in
 /-- The actual Jacobian quotient has infinite length over the local ring at the origin. -/
 theorem paper2_localJacobianQuotient_local_length_eq_top :
-    Module.length OriginLocalRing (OriginLocalRing ⧸ localJacobianIdeal) = ⊤ := by
+    idealQuotientLength localJacobianIdeal = ⊤ := by
   calc
     _ = Module.length OriginLocalRing OriginLocalRing :=
       length_ringQuotient_eq_of_eq_bot localJacobianIdeal paper2_localJacobianIdeal_eq_bot
@@ -200,7 +204,7 @@ theorem paper2_localJacobianQuotient_local_length_eq_top :
 
 /-- The local-ring length differs from the printed finite value pₙA=4. -/
 theorem paper2_localJacobianQuotient_local_length_ne_four :
-    Module.length OriginLocalRing (OriginLocalRing ⧸ localJacobianIdeal) ≠ 4 := by
+    idealQuotientLength localJacobianIdeal ≠ 4 := by
   rw [paper2_localJacobianQuotient_local_length_eq_top]
   exact ENat.top_ne_ofNat 4
 
@@ -211,6 +215,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper2_localJacobianIdeal_eq_bot, ``paper2_localJacobianSubmodule_mem_iff,
       ``paper2_originLocalRing_not_finite, ``paper2_originLocalRing_length_eq_top,
+      ``idealQuotientLength,
       ``paper2_localJacobianQuotient_local_length_eq_top,
       ``paper2_localJacobianQuotient_local_length_ne_four] do
     let dependencies ← collectAxioms name

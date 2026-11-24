@@ -114,8 +114,8 @@ theorem printed_positive_majorant_not_summable
     intro j
     exact harmonic_minorant B _ _ hB (hcast j) (hw _ (hj j))
   have hH : Summable (fun j : ℕ => 1 / (↑(j + (K + 1)) : ℝ)) := by
-    convert hN.mul_left C⁻¹ using 1
-    ext j
+    refine (hN.mul_left C⁻¹).congr fun j => ?_
+    change C⁻¹ * (C / (↑(j + (K + 1)) : ℝ)) = 1 / (↑(j + (K + 1)) : ℝ)
     rw [← mul_div_assoc, inv_mul_cancel₀ hC.ne']
   exact Real.not_summable_one_div_natCast
     ((summable_nat_add_iff (f := fun j : ℕ => 1 / (j : ℝ)) (K + 1)).mp hH)
