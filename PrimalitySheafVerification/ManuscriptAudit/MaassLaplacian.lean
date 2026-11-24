@@ -46,14 +46,14 @@ def maassDelta (k : ℝ) (F : ℝ → ℝ → ℂ) (x y : ℝ) : ℂ :=
 
 private theorem ofReal_derivative (r : ℝ) :
     HasDerivAt (fun t : ℝ => (t : ℂ)) (1 : ℂ) r := by
-  simpa only [Complex.ofReal_one] using (hasDerivAt_id r).ofReal_comp
+  simpa only [id_eq, Complex.ofReal_one] using! (hasDerivAt_id r).ofReal_comp
 
 private theorem horizontal_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
     (h : HasDerivAt f d (complexPoint x y)) :
     HasDerivAt (fun t => f (complexPoint t y)) d x := by
   have hl : HasDerivAt (fun t => complexPoint t y) (1 : ℂ) x :=
     (ofReal_derivative x).add_const ((y : ℂ) * Complex.I)
-  simpa only [Function.comp_apply, one_smul] using h.scomp x hl
+  simpa only [Function.comp, one_smul] using! h.scomp x hl
 
 private theorem vertical_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
     (h : HasDerivAt f d (complexPoint x y)) :
@@ -61,11 +61,13 @@ private theorem vertical_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
   have hl : HasDerivAt (fun t => complexPoint x t) Complex.I y := by
     simpa only [complexPoint, one_mul] using
       ((ofReal_derivative y).mul_const Complex.I).const_add (x : ℂ)
-  simpa only [Function.comp_apply, smul_eq_mul] using h.scomp y hl
+  simpa only [Function.comp, smul_eq_mul] using! h.scomp y hl
 
 private theorem heightPower_derivative (a : ℝ) {y : ℝ} (hy : 0 < y) :
     HasDerivAt (heightPower a) ((a : ℂ) * heightPower (a - 1) y) y := by
-  simpa only [heightPower, Complex.ofReal_mul] using
+  change HasDerivAt (fun t : ℝ => ((t ^ a : ℝ) : ℂ))
+    ((a : ℂ) * ((y ^ (a - 1) : ℝ) : ℂ)) y
+  simpa only [Complex.ofReal_mul] using!
     (Real.hasDerivAt_rpow_const (p := a) (Or.inl hy.ne')).ofReal_comp
 
 private theorem shiftHeight_one (a : ℝ) {y : ℝ} (hy : 0 < y) :
@@ -77,7 +79,7 @@ private theorem shiftHeight_one (a : ℝ) {y : ℝ} (hy : 0 < y) :
 private theorem shiftHeight_two (a : ℝ) {y : ℝ} (hy : 0 < y) :
     (y : ℂ) ^ 2 * heightPower (a - 2) y = heightPower a y := by
   have h := Real.rpow_add hy 2 (a - 2)
-  rw [show (2 : ℝ) + (a - 2) = a by ring, Real.rpow_natCast y 2] at h
+  rw [show (2 : ℝ) + (a - 2) = a by ring, Real.rpow_two] at h
   simpa only [heightPower, Complex.ofReal_mul, Complex.ofReal_pow] using
     congrArg Complex.ofReal h.symm
 
@@ -107,8 +109,9 @@ theorem delta_weighted (f : ℂ → ℂ) (a x y : ℝ) (hy : 0 < y)
       heightPower a t * (Complex.I * deriv f (complexPoint x t))
   have eh : (fun t => partialY (weighted a f) x t) =ᶠ[𝓝 y] e := by
     filter_upwards [Ioi_mem_nhds hy] with t ht
-    exact ((heightPower_derivative a ht).mul
-      (vertical_derivative (hf (complexPoint x t) (by simpa only [complexPoint_im] using ht)).hasDerivAt)).deriv
+    have ht' : 0 < t := Set.mem_Ioi.mp ht
+    exact ((heightPower_derivative a ht').mul
+      (vertical_derivative (hf (complexPoint x t) (by simpa only [complexPoint_im] using ht')).hasDerivAt)).deriv
   have hd : HasDerivAt (fun t => (a : ℂ) * heightPower (a - 1) t)
       ((a : ℂ) * ((a - 1 : ℝ) : ℂ) * heightPower (a - 2) y) y := by
     simpa only [show a - 1 - 1 = a - 2 by ring, mul_assoc] using

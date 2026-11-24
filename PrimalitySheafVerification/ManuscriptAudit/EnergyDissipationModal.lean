@@ -45,7 +45,10 @@ theorem modal_first_variation (a v : ℝ) :
     HasDerivAt (fun ε => energy (a + ε * v)) (firstVariation a * v) 0 := by
   have h : HasDerivAt (fun ε : ℝ => a + ε * v) v 0 := by
     simpa using ((hasDerivAt_id (0 : ℝ)).mul_const v).const_add a
-  simpa [energy, firstVariation] using h.pow 2
+  have h' := h.pow 2
+  change HasDerivAt (fun ε => energy (a + ε * v))
+    ((2 : ℝ) * (a + (0 : ℝ) * v) ^ ((2 : ℕ) - 1) * v) 0 at h'
+  simpa only [zero_mul, add_zero, Nat.reduceSub, pow_one, firstVariation] using h'
 
 theorem modal_flow_equation (t : ℝ) :
     HasDerivAt mode (-firstVariation (mode t)) t := by

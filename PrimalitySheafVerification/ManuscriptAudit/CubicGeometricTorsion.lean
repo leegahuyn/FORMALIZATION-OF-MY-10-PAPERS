@@ -28,10 +28,9 @@ private theorem printed_cubic_baseChange_eq_zero (p : ℕ) {L : Type*} [Field L]
     ZMod.natCast_self]
 
 private theorem finite_affine_no_p_torsion {p : ℕ} [Fact p.Prime] {L : Type*} [Field L]
-    [Fintype L] [Algebra (ZMod p) L] (hp : 5 ≤ p) (hr : p % 3 = 2)
+    [Fintype L] [DecidableEq L] [Algebra (ZMod p) L] (hp : 5 ≤ p) (hr : p % 3 = 2)
     {A : ZMod p} (hA : A ≠ 0) :
     ∀ Q : ((paper5TraceCurve p A).baseChange L).toAffine.Point, p • Q = 0 → Q = 0 := by
-  classical
   letI : CharP L p := charP_of_injective_algebraMap (algebraMap (ZMod p) L).injective p
   rw [printed_cubic_baseChange_eq_zero p A]
   intro Q hQ
@@ -61,6 +60,7 @@ theorem paper5_no_geometric_p_torsion {p : ℕ} [Fact p.Prime] {L : Type*} [Fiel
   · intro E hE
     letI : Finite E := hE
     letI := Fintype.ofFinite E
+    letI : DecidableEq E := inferInstanceAs (DecidableEq {x : L // x ∈ E})
     exact finite_affine_no_p_torsion (L := E) hp hr hA
   · rw [← map_nsmul, hP, map_zero]
 

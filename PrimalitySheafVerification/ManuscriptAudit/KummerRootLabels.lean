@@ -151,13 +151,16 @@ theorem locallyConstantRootTag_injective :
     Function.Injective (locallyConstantRootTag (K := K) (A := A) (d := d)) := by
   intro a b hab
   have hdiv : locallyConstantRootTag (K := K) (a / b) = 1 := by
-    rw [map_div, hab, div_self]
+    rw [map_div, hab]
+    apply LocallyConstant.ext
+    intro P
+    exact div_self (locallyConstantRootTag (K := K) b P)
   let t := rootValue (a / b)
   have htres (P : PrimeSpectrum A) : Ideal.Quotient.mk P.asIdeal t = 1 := by
     have hlabel : rootTag (K := K) (a / b) P = 1 := DFunLike.congr_fun hdiv P
     have h := (rootTag_residue (K := K) (a / b) P).symm
     rw [hlabel] at h
-    simpa [rootValue] using h
+    simpa [t, rootValue] using h
   let s : A := ∑ i ∈ Finset.range d, t ^ i
   have hnil : IsNilpotent (s - (d : A)) := by
     apply nilpotent_iff_mem_prime.mpr
@@ -166,8 +169,9 @@ theorem locallyConstantRootTag_injective :
     let q := Ideal.Quotient.mk P.asIdeal
     apply Ideal.Quotient.eq.mp
     change q (∑ i ∈ Finset.range d, t ^ i) = q (d : A)
+    have hqt : q t = 1 := htres P
     rw [map_sum, map_natCast]
-    simp only [map_pow, htres P, one_pow, Finset.sum_const, Finset.card_range, nsmul_one]
+    simp only [map_pow, hqt, one_pow, Finset.sum_const, Finset.card_range, nsmul_one]
   have hd : IsUnit (d : A) := by
     have hk : IsUnit (d : K) := isUnit_iff_ne_zero.mpr (NeZero.ne _)
     simpa only [map_natCast] using hk.map (algebraMap K A)

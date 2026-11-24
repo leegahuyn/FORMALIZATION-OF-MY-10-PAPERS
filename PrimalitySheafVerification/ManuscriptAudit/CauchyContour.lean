@@ -45,6 +45,8 @@ theorem finiteLaurent_contour_eq (s : Finset ℤ) (a : ℤ → ℂ) {R : ℝ} (h
     apply circleIntegral.integral_congr hR.le
     intro z hz
     have hz0 : z ≠ 0 := fun he => hCenter (he ▸ hz)
+    change (∑ k ∈ s, a k * z ^ k) / z ^ (n + 1) =
+      ∑ k ∈ s, a k * z ^ (k - (n + 1))
     rw [div_eq_mul_inv, ← zpow_neg, Finset.sum_mul]
     refine Finset.sum_congr rfl fun k _ => ?_
     rw [mul_assoc, ← zpow_add₀ hz0, ← sub_eq_add_neg]

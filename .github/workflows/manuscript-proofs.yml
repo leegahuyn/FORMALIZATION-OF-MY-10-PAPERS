@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian LaurentEtaleCohomology TentRegularity
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian LaurentEtaleCohomology TentRegularity FourierPositiveSigned
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -233,26 +233,78 @@ jobs:
             echo "Upstream cache was unavailable. Building required modules." | tee -a "$log"
           fi
           lake build "${modules[@]}" 2>&1 | tee -a "$log"
+      - name: Restore checked Lean proof files
+        id: upstream-checked-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/manuscript-proof-modules
+          key: manuscript-upstream-checked-linux-arm64-79d0395a-v1-${{ github.sha }}
+          restore-keys: manuscript-upstream-checked-linux-arm64-79d0395a-v1-
       - name: Check the proofs with upstream Mathlib
+        id: upstream-check
         shell: bash
         working-directory: upstream-mathlib
         run: |
           set -euo pipefail
-          proof_dir=../PrimalitySheafVerification/ManuscriptAudit
           status=0
           compiled="${RUNNER_TEMP}/manuscript-proof-modules"
           package_path="PrimalitySheafVerification/ManuscriptAudit"
-          mkdir -p "$compiled/$package_path"
+          records="$compiled/checks"
+          output="${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+          mkdir -p "$compiled/$package_path" "$records"
+          : > "$output"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"
           read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
           for proof in "${proofs[@]}"; do
-            echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
-            lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/$proof.olean" \
-                "$GITHUB_WORKSPACE/$package_path/$proof.lean" 2>&1 |
-              tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
+            source="$GITHUB_WORKSPACE/$package_path/$proof.lean"
+            stamp="$records/$proof.sha256"
+            proof_log="$records/$proof.log"
+            object="$compiled/$package_path/$proof.olean"
+            echo "Checking $package_path/$proof.lean" | tee -a "$output"
+            deps=()
+            missing=0
+            while IFS= read -r prerequisite; do
+              if [[ ! -s "$records/$prerequisite.sha256" ||
+                    ! -f "$compiled/$package_path/$prerequisite.olean" ]]; then
+                echo "Missing checked import $prerequisite" | tee -a "$output"
+                missing=1
+              else
+                deps+=("$records/$prerequisite.sha256")
+              fi
+            done < <(awk '$1 == "import" && $2 ~ /^PrimalitySheafVerification\.ManuscriptAudit\./ {sub(/^.*\./,"",$2); print $2}' "$source")
+            if [[ "$missing" == 1 ]]; then
+              status=1
+              rm -f "$object" "$stamp" "$proof_log"
+              continue
+            fi
+            fingerprint="$({
+              sha256sum < "$source"
+              for dep in "${deps[@]}"; do cat "$dep"; done
+            } | sha256sum | cut -d ' ' -f 1)"
+            if [[ -f "$object" && -f "$proof_log" && -f "$stamp" &&
+                  "$(cat "$stamp")" == "$fingerprint" ]]; then
+              echo "Reused checked source and imports: $fingerprint" | tee -a "$output"
+              cat "$proof_log" | tee -a "$output"
+              continue
+            fi
+            rm -f "$object" "$stamp" "$proof_log"
+            if lean --root="$GITHUB_WORKSPACE" -o "$object" "$source" 2>&1 |
+                tee "$proof_log" | tee -a "$output"; then
+              printf '%s\n' "$fingerprint" > "$stamp"
+            else
+              status=1
+              rm -f "$object" "$stamp" "$proof_log"
+            fi
           done
           exit "$status"
+      - name: Keep checked Lean proof files on GitHub
+        if: ${{ !cancelled() && steps.upstream-check.outcome != 'skipped' && steps.upstream-checked-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/manuscript-proof-modules
+          key: ${{ steps.upstream-checked-cache.outputs.cache-primary-key }}
       - name: Keep the upstream compatibility log on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

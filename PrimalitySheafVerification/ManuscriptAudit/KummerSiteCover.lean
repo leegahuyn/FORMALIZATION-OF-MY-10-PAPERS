@@ -63,8 +63,7 @@ theorem unit_lifts_on_affine_etale_cover (g : Spec (CommRingCat.of A) ⟶ X) [Et
   constructor
   · apply singleton_mem_smallEtaleTopology
     change Function.Surjective (rootMap d a)
-    exact AlgebraicGeometry.surjective_iff.mp
-      (KummerEtale.kummer_spec_finite_etale_cover hpos hd a.isUnit).2.2
+    exact (KummerEtale.kummer_spec_finite_etale_cover hpos hd a.isUnit).2.2.surj
   · obtain ⟨v, hv⟩ := KummerEtale.kummer_root_isUnit hpos a.isUnit
     refine ⟨v, ?_⟩
     rw [hv]

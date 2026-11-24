@@ -57,7 +57,7 @@ theorem paper7_dirichlet_local_log_hasDeriv
     (hα : ‖α‖ ≤ (p : ℝ) ^ W) :
     HasDerivAt (fun z : ℂ => -Complex.log (1 - scaledRoot p α z))
       (localLogDerivative p α s) s := by
-  have hp : (1 : ℝ) < p := Nat.cast_lt.mpr p.prop.one_lt
+  have hp : (1 : ℝ) < p := by exact_mod_cast p.prop.one_lt
   have hNorm := (scaledRoot_norm_le p hα).trans_lt
     (Real.rpow_lt_one_of_one_lt_of_neg hp (by linarith : W - s.re < 0))
   have hpC : (p : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr p.prop.ne_zero
@@ -104,8 +104,9 @@ theorem paper7_dirichlet_log_derivatives_abs_summable
       _ ≤ _ := by simpa using (norm_sub_norm_le (1 : ℂ) z)
   have hNormLog : ‖Complex.log (p : ℂ)‖ = Real.log (p : ℝ) := by
     rw [← Complex.natCast_log, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg hlog₀]
-  change ‖localLogDerivative p (α p) s‖ ≤ (p : ℝ) ^ (e + δ) / (δ * (1 - u))
-  rw [localLogDerivative, norm_neg, norm_div, norm_mul, hNormLog]
+  change ‖-(Complex.log (p : ℂ) * z / (1 - z))‖ ≤
+    (p : ℝ) ^ (e + δ) / (δ * (1 - u))
+  rw [norm_neg, norm_div, norm_mul, hNormLog]
   calc
     _ ≤ (Real.log (p : ℝ) * (p : ℝ) ^ e) / (1 - u) :=
       (div_le_div_of_nonneg_right (mul_le_mul_of_nonneg_left hZ hlog₀) (norm_nonneg _)).trans

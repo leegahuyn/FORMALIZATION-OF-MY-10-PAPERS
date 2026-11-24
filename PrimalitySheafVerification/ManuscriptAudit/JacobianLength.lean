@@ -194,17 +194,22 @@ theorem paper2_originLocalRing_length_eq_top : Module.length OriginLocalRing Ori
     firstCoordinate_not_nilpotent
 
 set_option maxHeartbeats 3000000 in
+set_option backward.isDefEq.respectTransparency false in
 /-- The actual Jacobian quotient has infinite length over the local ring at the origin. -/
 theorem paper2_localJacobianQuotient_local_length_eq_top :
-    idealQuotientLength localJacobianIdeal = ⊤ := by
+    @idealQuotientLength OriginLocalRing (inferInstance : CommRing OriginLocalRing)
+      localJacobianIdeal = ⊤ := by
   calc
     _ = Module.length OriginLocalRing OriginLocalRing :=
-      length_ringQuotient_eq_of_eq_bot localJacobianIdeal paper2_localJacobianIdeal_eq_bot
+      @length_ringQuotient_eq_of_eq_bot OriginLocalRing (inferInstance : CommRing OriginLocalRing)
+        localJacobianIdeal paper2_localJacobianIdeal_eq_bot
     _ = ⊤ := paper2_originLocalRing_length_eq_top
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The local-ring length differs from the printed finite value pₙA=4. -/
 theorem paper2_localJacobianQuotient_local_length_ne_four :
-    idealQuotientLength localJacobianIdeal ≠ 4 := by
+    @idealQuotientLength OriginLocalRing (inferInstance : CommRing OriginLocalRing)
+      localJacobianIdeal ≠ 4 := by
   rw [paper2_localJacobianQuotient_local_length_eq_top]
   exact ENat.top_ne_ofNat 4
 

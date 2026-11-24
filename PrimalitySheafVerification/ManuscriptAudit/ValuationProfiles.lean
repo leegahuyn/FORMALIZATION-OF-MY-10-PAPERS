@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Tactic.NormNum
 
@@ -100,11 +101,35 @@ theorem paper6_lte_T_zero_refutation :
     padicValInt.eq_zero_of_not_dvd (by decide)
   simp [h₁, h₂, h₇, padicValInt.one]
 
+/-- Paper 1, p. 8, equation (7). At p=p₂=3, n=2, A=10 and y=1,
+the plus-sign modulus is 12 and has order one. The printed minimum is two. -/
+theorem paper1_indexed_ultrametric_estimate_refutation :
+    Nat.nth Nat.Prime 1 = 3 ∧ Nat.Coprime 10 3 ∧
+      padicValRat 3 ((3 : ℚ) * 1 + (10 - 1)) <
+        min (2 + padicValRat 3 (1 : ℚ)) (padicValRat 3 (10 - 1 : ℚ)) := by
+  letI : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
+  refine ⟨Nat.nth_prime_one_eq_three, by decide, ?_⟩
+  have h₃ : padicValRat 3 (3 : ℚ) = 1 := padicValRat.self (by decide)
+  have h₄ : padicValRat 3 (4 : ℚ) = 0 := by
+    change padicValRat 3 ((4 : ℕ) : ℚ) = 0
+    simp only [padicValRat.of_nat,
+      padicValNat.eq_zero_of_not_dvd (by decide : ¬ (3 : ℕ) ∣ 4), Nat.cast_zero]
+  have h₁ : padicValRat 3 (1 : ℚ) = 0 := by simp
+  have hM : padicValRat 3 ((3 : ℚ) * 1 + (10 - 1)) = 1 := by
+    rw [show (3 : ℚ) * 1 + (10 - 1) = 3 * 4 by norm_num,
+      padicValRat.mul (p := 3) (by norm_num : (3 : ℚ) ≠ 0) (by norm_num : (4 : ℚ) ≠ 0),
+      h₃, h₄, add_zero]
+  have hA : padicValRat 3 (10 - 1 : ℚ) = 2 := by
+    rw [show (10 - 1 : ℚ) = (3 : ℚ) ^ 2 by norm_num, padicValRat.pow (p := 3), h₃]
+    norm_num
+  rw [hM, h₁, hA]
+  decide
+
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper4_remark8_2_3_cancellation, ``paper4_remark8_2_3_refutation,
-      ``paper6_lte_T_zero_refutation] do
+      ``paper6_lte_T_zero_refutation, ``paper1_indexed_ultrametric_estimate_refutation] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
@@ -112,3 +137,4 @@ run_cmd do
     logInfo m!"{name} uses {dependencies}"
 
 end PrimalitySheafVerification.ManuscriptAudit
+

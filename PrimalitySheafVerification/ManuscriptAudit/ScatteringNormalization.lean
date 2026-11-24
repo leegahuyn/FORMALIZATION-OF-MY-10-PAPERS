@@ -44,8 +44,9 @@ theorem paper9_displayed_scattering_densities_eq_iff_zero (trace : ℂ) :
 
 theorem paper9_real_trace_over_i_has_zero_real_part (trace : ℝ) :
     (criticalLineDensity (trace : ℂ)).re = 0 := by
-  rw [criticalLineDensity, analyticDensity, ← Complex.ofReal_div, div_eq_mul_inv,
-    Complex.inv_I]
+  have h : analyticDensity (trace : ℂ) = ((trace / (4 * Real.pi) : ℝ) : ℂ) := by
+    simp only [analyticDensity, Complex.ofReal_div]
+  rw [criticalLineDensity, h, div_eq_mul_inv, Complex.inv_I]
   simp [Complex.mul_re]
 
 /-- A nonzero holomorphic scalar family satisfying the scalar
@@ -61,9 +62,7 @@ theorem analyticUnitaryExample_functional_equation (s : ℂ) :
 
 theorem analyticUnitaryExample_unitary (t : ℝ) :
     ‖analyticUnitaryExample (1 / 2 + Complex.I * (t : ℂ))‖ = 1 := by
-  have h : (1 / 2 : ℂ) - (1 / 2 + Complex.I * (t : ℂ)) =
-      -(Complex.I * (t : ℂ)) := by ring
-  simp [analyticUnitaryExample, h, Complex.norm_exp, Complex.mul_re]
+  simp [analyticUnitaryExample, Complex.norm_exp, Complex.mul_re]
 
 /-- Holomorphic differentiation can yield a negative real normalized
 logarithmic derivative even with both scattering symmetries above. -/
@@ -71,9 +70,11 @@ theorem paper9_unitary_analytic_example_log_derivative_negative (s : ℂ) :
     deriv analyticUnitaryExample s * (analyticUnitaryExample s)⁻¹ = -1 := by
   have hLin : HasDerivAt (fun z : ℂ => 1 / 2 - z) (-1) s := by
     simpa using (hasDerivAt_id s).const_sub (1 / 2 : ℂ)
-  have h : HasDerivAt analyticUnitaryExample (-analyticUnitaryExample s) s := by
-    simpa only [analyticUnitaryExample, Function.comp_def, mul_neg, mul_one] using
-      (Complex.hasDerivAt_exp (1 / 2 - s)).comp s hLin
+  have h0 := (Complex.hasDerivAt_exp (1 / 2 - s)).comp s hLin
+  change HasDerivAt analyticUnitaryExample (Complex.exp (1 / 2 - s) * (-1)) s at h0
+  have hEq : Complex.exp (1 / 2 - s) * (-1) = -analyticUnitaryExample s := by
+    simp [analyticUnitaryExample]
+  have h := hEq ▸ h0
   have hne : analyticUnitaryExample s ≠ 0 := Complex.exp_ne_zero _
   rw [h.deriv, neg_mul, mul_inv_cancel₀ hne]
 

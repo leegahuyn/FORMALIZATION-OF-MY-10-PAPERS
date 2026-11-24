@@ -68,8 +68,12 @@ private theorem derivativePairing_of_relation :
       (2 : CuspRing K) * AdjoinRoot.root (CuspDelta.cuspPlaneEquation K) := by
   rw [Algebra.Extension.cotangentComplex_mk]
   unfold derivativePairing
-  rw [LinearMap.liftBaseChange_one_tmul, LinearMap.comp_apply,
-    Derivation.liftKaehlerDifferential_comp_D]
+  rw [LinearMap.liftBaseChange_one_tmul, LinearMap.comp_apply]
+  let D : Derivation K (E K).Ring (E K).Ring :=
+    (Polynomial.derivative' (R := Polynomial K)).restrictScalars K
+  let x : (E K).Ring := (relationInKer K : (E K).ker)
+  have hEval := D.liftKaehlerDifferential_comp_D x
+  refine (congrArg (Algebra.linearMap (E K).Ring (CuspRing K)) hEval).trans ?_
   change AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K)
     (Polynomial.derivative (CuspDelta.cuspPlaneEquation K)) =
       (2 : CuspRing K) * AdjoinRoot.root (CuspDelta.cuspPlaneEquation K)

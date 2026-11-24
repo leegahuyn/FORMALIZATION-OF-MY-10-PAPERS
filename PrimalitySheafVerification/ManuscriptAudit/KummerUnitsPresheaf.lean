@@ -68,8 +68,7 @@ theorem power_isLocallySurjective (d : ℕ) (hpos : 0 < d)
       rw [Sieve.functorPushforward_ofArrows]
       apply KummerSiteCover.singleton_mem_smallEtaleTopology
       change Function.Surjective e
-      exact AlgebraicGeometry.surjective_iff.mp
-        (KummerEtale.kummer_spec_finite_etale_cover hpos (hd U) a.isUnit).2.2
+      exact (KummerEtale.kummer_spec_finite_etale_cover hpos (hd U) a.isUnit).2.2.surj
     apply (Scheme.AffineEtale.topology X).superset_covering _ hS
     change Sieve.generate (Presieve.ofArrows (fun _ : Unit => V) (fun _ => f)) ≤ _
     rw [Sieve.generate_le_iff, Presieve.ofArrows_le_iff]
