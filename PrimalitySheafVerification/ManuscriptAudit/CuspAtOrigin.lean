@@ -131,12 +131,14 @@ private def intoU : CuspRing →ₐ[k] U :=
     (by
       intro g hg
       obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hg
-      simp only [map_mul, intoU_equation, zero_mul])
+      rw [map_mul, intoU_equation]
+      first
+      | exact zero_mul ((qP.comp firstCoordinate) a)
+      | ring)
 
 private theorem intoU_mk (g : Plane) :
     intoU (Ideal.Quotient.mk equationIdeal g) = qP (firstCoordinate g) := by
-  simp only [intoU, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk,
-    AlgHom.coe_toRingHom, AlgHom.comp_apply]
+  rfl
 
 private theorem intoU_x : intoU (coord 0) = qU t := by
   calc
@@ -161,7 +163,11 @@ private theorem qP_isUnit (g : P) (h : g.coeff 0 ≠ 0) : IsUnit (qP g) := by
     rw [he]
     calc
       (qP Polynomial.X * qP a) ^ 2 = (qP Polynomial.X) ^ 2 * (qP a) ^ 2 := by ring
-      _ = 0 := by rw [qP_X_square, zero_mul]
+      _ = 0 := by
+        rw [qP_X_square]
+        first
+        | exact zero_mul ((qP a) ^ 2)
+        | ring
   have hc : IsUnit (qP (Polynomial.C (g.coeff 0))) :=
     ((isUnit_iff_ne_zero.mpr h).map Polynomial.C).map qP.toRingHom
   have hcomm : Commute (qP g - qP (Polynomial.C (g.coeff 0)))
@@ -188,8 +194,7 @@ private def localMap : CuspLocal →ₐ[k] U :=
 
 private theorem localMap_on_ring (a : CuspRing) :
     localMap (algebraMap CuspRing CuspLocal a) = intoU a := by
-  simp only [localMap, IsLocalization.liftAlgHom_apply, IsLocalization.lift_eq,
-    AlgHom.coe_toRingHom]
+  simp only [localMap, IsLocalization.liftAlgHom_apply, IsLocalization.lift_eq] <;> rfl
 
 /-- Paper 2, PDF pp. 29 and 44–49. The cusp \(x^2+y^3\) remains
 non-smooth at the actual origin of its fiber over \(\mathbb F_5\).

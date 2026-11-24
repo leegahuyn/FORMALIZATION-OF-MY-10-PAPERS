@@ -136,8 +136,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean PrimalitySheafVerification/ManuscriptAudit/PadicRemainder.lean 2>&1 |
-            tee "${RUNNER_TEMP}/manuscript-spt1-proof.log"
+          status=0
+          for proof in PadicRemainder PadicCertificates PadicLipschitz; do
+            lake env lean "PrimalitySheafVerification/ManuscriptAudit/$proof.lean" 2>&1 |
+              tee -a "${RUNNER_TEMP}/manuscript-spt1-proof.log" || status=1
+          done
+          exit "$status"
       - name: Keep the Spt1 check logs on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

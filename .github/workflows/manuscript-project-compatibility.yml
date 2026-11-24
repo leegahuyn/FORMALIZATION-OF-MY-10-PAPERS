@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/manuscript-project-compatibility.yml'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicRemainder.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicCertificates.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicLipschitz.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/NodalCotangent.lean'
       - 'PrimalitySheafVerification/Spt1.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
@@ -59,14 +61,19 @@ jobs:
           mkdir -p "$compiled/$project"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           status=0
-          for pair in Spt1:PadicRemainder Spt5:NodalCotangent; do
-            source="${pair%:*}"
-            proof="${pair#*:}"
+          for source in Spt1 Spt5; do
+            if [[ "$source" == Spt1 ]]; then
+              proofs=(PadicRemainder PadicCertificates PadicLipschitz)
+            else
+              proofs=(NodalCotangent)
+            fi
             if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$source.olean" \
                 "$GITHUB_WORKSPACE/$project/$source.lean" > "$logs/$source.log" 2>&1; then
-              LEAN_PATH="$compiled:$audit_lean_path" \
-                lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |
-                tee "$logs/$proof.log" || status=1
+              for proof in "${proofs[@]}"; do
+                LEAN_PATH="$compiled:$audit_lean_path" \
+                  lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |
+                  tee "$logs/$proof.log" || status=1
+              done
             else
               tail -n 80 "$logs/$source.log"
               status=1
