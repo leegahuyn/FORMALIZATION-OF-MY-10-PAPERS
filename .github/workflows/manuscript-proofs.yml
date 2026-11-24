@@ -9,6 +9,8 @@ on:
       - 'PrimalitySheafVerification/Spt1.lean'
 permissions:
   contents: read
+env:
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -35,8 +37,10 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent,PadicRemainder}.lean |
-            sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent"
+          for proof in "${proofs[@]}"; do
+            awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
+          done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           test -s "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           printf 'hash=%s\n' "$(sha256sum "${RUNNER_TEMP}/manuscript-proof-imports.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Restore compiled modules
@@ -68,9 +72,10 @@ jobs:
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
           status=0
-          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent,PadicRemainder}.lean; do
-            echo "Checking $proof" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
-            lake env lean "$proof" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent"
+          for proof in "${proofs[@]}"; do
+            echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
+            lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
           done
           exit "$status"
       - name: Keep the vendored-build logs on GitHub
@@ -81,6 +86,64 @@ jobs:
           path: |
             ${{ runner.temp }}/manuscript-dependencies.log
             ${{ runner.temp }}/manuscript-proofs.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  padic:
+    name: Vendored Mathlib and Spt1
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 200
+    concurrency:
+      group: manuscript-padic-vendored-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Restore already compiled modules
+        id: padic-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: manuscript-spt1-0e026509-linux-arm64-${{ hashFiles('PrimalitySheafVerification/Spt1.lean') }}
+          restore-keys: manuscript-lean-imports-0e026509-linux-arm64-
+      - name: Build Spt1 and its imports
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/manuscript-spt1-build.log"
+          status=0
+          lake build PrimalitySheafVerification.Spt1 > "$log" 2>&1 || status=$?
+          tail -n 60 "$log"
+          exit "$status"
+      - name: Cache compiled Spt1 on GitHub
+        if: steps.padic-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: ${{ steps.padic-cache.outputs.cache-primary-key }}
+      - name: Check the actual logarithm series proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean PrimalitySheafVerification/ManuscriptAudit/PadicRemainder.lean 2>&1 |
+            tee "${RUNNER_TEMP}/manuscript-spt1-proof.log"
+      - name: Keep the Spt1 check logs on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-padic-vendored-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/manuscript-spt1-build.log
+            ${{ runner.temp }}/manuscript-spt1-proof.log
           if-no-files-found: warn
           retention-days: 30
 
@@ -116,7 +179,12 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          mapfile -t modules < <(awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean | sort -u)
+          read -ra proofs <<< "$CORE_PROOFS"
+          mapfile -t modules < <(
+            for proof in "${proofs[@]}"; do
+              awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
+            done | sort -u
+          )
           test "${#modules[@]}" -gt 0
           log="${RUNNER_TEMP}/manuscript-upstream-dependencies.log"
           if ! lake exe cache get "${modules[@]}" 2>&1 | tee "$log"; then
@@ -130,9 +198,10 @@ jobs:
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
           status=0
-          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean; do
-            echo "Checking $proof" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
-            lake env lean "$proof" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
+          read -ra proofs <<< "$CORE_PROOFS"
+          for proof in "${proofs[@]}"; do
+            echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+            lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
           done
           exit "$status"
       - name: Keep the upstream compatibility log on GitHub

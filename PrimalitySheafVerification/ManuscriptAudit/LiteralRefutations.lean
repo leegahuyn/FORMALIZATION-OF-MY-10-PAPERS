@@ -495,6 +495,26 @@ theorem paper7_rank_one_koszul_injectivity_fails_after_reduction :
   have hEq : (0 : IsLocalRing.ResidueField ZAtThree) = 1 := hInj (by simp [hRes])
   exact zero_ne_one hEq
 
+/-- Paper 1, p. 17, Example 4.5. This finite computation uses Lean's
+kernel reduction for the actual multiplication map on ZMod 9. -/
+theorem paper1_worked_tor_kernel_count :
+    Fintype.card {x : ZMod 9 // (12 : ZMod 9) * x = 0} = 3 := by
+  decide
+
+
+/-- The reverse Hensel implication without a separate derivative
+hypothesis fails at every prime. The root of X² above residue zero is unique. -/
+theorem unique_padic_residue_lift_does_not_imply_unit_derivative
+    (p : ℕ) [Fact (Nat.Prime p)] :
+    (∃! z : ℤ_[p], ((Polynomial.X : Polynomial ℤ_[p]) ^ 2).eval z = 0 ∧
+      PadicInt.toZMod (p := p) z = 0) ∧
+    ¬ IsUnit (((Polynomial.X : Polynomial ℤ_[p]) ^ 2).derivative.eval 0) := by
+  refine ⟨⟨0, ⟨by simp, map_zero _⟩, ?_⟩, ?_⟩
+  · rintro z ⟨hz, _⟩
+    have hz' : z ^ 2 = 0 := by simpa using hz
+    exact (pow_eq_zero_iff (by decide : (2 : ℕ) ≠ 0)).mp hz'
+  · simp
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -522,7 +542,9 @@ run_cmd do
     ``ManuscriptAudit.paper2_repeated_geometric_root_without_rational_root,
     ``ManuscriptAudit.paper3_prime_power_printed_generator_misses_kernel,
     ``ManuscriptAudit.paper4_free_abelianization_fails_terminal_object,
-    ``ManuscriptAudit.paper7_rank_one_koszul_injectivity_fails_after_reduction] do
+    ``ManuscriptAudit.paper7_rank_one_koszul_injectivity_fails_after_reduction,
+    ``ManuscriptAudit.paper1_worked_tor_kernel_count,
+    ``ManuscriptAudit.unique_padic_residue_lift_does_not_imply_unit_derivative] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
