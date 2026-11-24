@@ -61,6 +61,15 @@ theorem paper_theta_denominator_has_no_reciprocal (τ : ℂ) (hτ : 0 < τ.im) :
   rw [(hasSum_paper_theta_denominator_zero τ hτ).tsum_eq]
   simp
 
+/-- Even Lean's totalized division, with arbitrary numerator and
+scalar prefactor, yields zero for the literal printed denominator. -/
+theorem paper_theta_printed_quotient_totalized_zero (τ : ℂ) (hτ : 0 < τ.im)
+    (prefactor numerator : ℂ) :
+    prefactor * (numerator / (∑' n : ℤ,
+      Complex.exp ((Real.pi : ℂ) * Complex.I * (n : ℂ) ^ 2 * τ +
+        2 * (Real.pi : ℂ) * Complex.I * (n : ℂ) * (1 / 2 + τ / 2)))) = 0 := by
+  rw [(hasSum_paper_theta_denominator_zero τ hτ).tsum_eq, div_zero, mul_zero]
+
 end ManuscriptAudit.ThetaHalfPeriod
 
 open Lean Elab Command in
@@ -69,7 +78,8 @@ run_cmd do
   for name in [
     ``ManuscriptAudit.ThetaHalfPeriod.paper_theta_halfPeriod_eq_zero,
     ``ManuscriptAudit.ThetaHalfPeriod.hasSum_paper_theta_denominator_zero,
-    ``ManuscriptAudit.ThetaHalfPeriod.paper_theta_denominator_has_no_reciprocal] do
+    ``ManuscriptAudit.ThetaHalfPeriod.paper_theta_denominator_has_no_reciprocal,
+    ``ManuscriptAudit.ThetaHalfPeriod.paper_theta_printed_quotient_totalized_zero] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

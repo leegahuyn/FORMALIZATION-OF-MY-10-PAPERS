@@ -1,3 +1,4 @@
+import Lean.Elab.Tactic.Omega
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Nth
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
@@ -125,11 +126,33 @@ theorem paper1_indexed_ultrametric_estimate_refutation :
   rw [hM, h₁, hA]
   decide
 
+/-- Paper 1, p. 10, Proposition 2.4(b). For p=p₂=3, A=10,
+n=2, t=2, and σ=3, the displayed plus-branch residue class is 2 modulo
+3. Every member of that class misses divisibility by 27. -/
+theorem paper1_indexed_prime_design_congruence_fails (y : ℤ) (hy : y % 3 = 2) :
+    ¬ (3 : ℤ) ^ (3 : ℕ) ∣ 3 * y + (10 - 1) := by
+  change ¬ (27 : ℤ) ∣ 3 * y + 9
+  rintro ⟨z, hz⟩
+  omega
+
+/-- The actual congruence class at the same indexed-prime profile. -/
+theorem paper1_indexed_prime_design_actual_congruence (y : ℤ) :
+    (3 : ℤ) ^ (3 : ℕ) ∣ 3 * y + (10 - 1) ↔ y % 9 = 6 := by
+  change (27 : ℤ) ∣ 3 * y + 9 ↔ y % 9 = 6
+  constructor
+  · rintro ⟨z, hz⟩
+    omega
+  · intro hy
+    refine ⟨y / 9 + 1, ?_⟩
+    omega
+
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper4_remark8_2_3_cancellation, ``paper4_remark8_2_3_refutation,
-      ``paper6_lte_T_zero_refutation, ``paper1_indexed_ultrametric_estimate_refutation] do
+      ``paper6_lte_T_zero_refutation, ``paper1_indexed_ultrametric_estimate_refutation,
+      ``paper1_indexed_prime_design_congruence_fails,
+      ``paper1_indexed_prime_design_actual_congruence] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
