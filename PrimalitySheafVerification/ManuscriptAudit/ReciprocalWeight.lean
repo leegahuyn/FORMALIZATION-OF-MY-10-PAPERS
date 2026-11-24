@@ -1,4 +1,5 @@
 import Lean.Elab.BuiltinEvalCommand
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Analysis.Calculus.Deriv.Inv
@@ -84,6 +85,64 @@ theorem page280_local_rational_factor_holomorphic_small_disk {A B : Type*}
     Finset.prod_ne_zero_iff.mpr (fun b _ => hNonzero b)
   exact (hNum.div hDen hDenNonzero).differentiableWithinAt
 
+section MatrixDeterminants
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- The actual reverse characteristic polynomial evaluates to the
+local determinant, without a chosen list of eigenvalues. -/
+theorem charpolyRev_eval_det (A : Matrix ι ι ℂ) (z : ℂ) :
+    A.charpolyRev.eval z = (1 - z • A).det := by
+  rw [Matrix.charpolyRev, ← Polynomial.coe_evalRingHom, RingHom.map_det]
+  congr 1
+  ext i j
+  by_cases hij : i = j <;>
+    simp [Matrix.one_apply, Matrix.map_apply, Matrix.sub_apply, Matrix.smul_apply,
+      hij, smul_eq_mul]
+
+/-- Each actual determinant zero is exactly the inverse of a nonzero
+root of the characteristic polynomial. -/
+theorem charpolyRev_isRoot_iff (A : Matrix ι ι ℂ) (z : ℂ) :
+    A.charpolyRev.IsRoot z ↔ z ≠ 0 ∧ A.charpoly.IsRoot z⁻¹ := by
+  by_cases hz : z = 0
+  · subst z
+    simp [Polynomial.IsRoot.def]
+  have hScalar : Matrix.scalar ι z⁻¹ = z⁻¹ • (1 : Matrix ι ι ℂ) := by
+    ext i j
+    by_cases hij : i = j <;>
+      simp [Matrix.scalar_apply, Matrix.diagonal_apply, Matrix.one_apply,
+        Matrix.smul_apply, hij, smul_eq_mul]
+  have hScale : z • (Matrix.scalar ι z⁻¹ - A) = 1 - z • A := by
+    rw [hScalar, smul_sub, smul_smul, mul_inv_cancel₀ hz, one_smul]
+  rw [Polynomial.IsRoot.def, charpolyRev_eval_det, ← hScale, Matrix.det_smul,
+    ← Matrix.eval_charpoly, mul_eq_zero]
+  rw [or_iff_right (pow_ne_zero (Fintype.card ι) hz), and_iff_right hz,
+    Polynomial.IsRoot.def]
+
+/-- A uniform radius condition on the actual characteristic roots
+is equivalent to the reciprocal radius of the actual local determinant
+when the characteristic roots are all nonzero. -/
+theorem charpolyRev_roots_on_reciprocal_circle (A : Matrix ι ι ℂ)
+    (hzero : ¬ A.charpoly.IsRoot 0) (R : ℝ) :
+    (∀ a, A.charpoly.IsRoot a → ‖a‖ = R) ↔
+      ∀ z, A.charpolyRev.IsRoot z → ‖z‖ = R⁻¹ := by
+  constructor
+  · intro h z hz
+    have hNorm := h z⁻¹ ((charpolyRev_isRoot_iff A z).mp hz).2
+    rw [norm_inv] at hNorm
+    simpa only [inv_inv] using congrArg (fun x : ℝ => x⁻¹) hNorm
+  · intro h a ha
+    have ha₀ : a ≠ 0 := by
+      rintro rfl
+      exact hzero ha
+    have hRoot : A.charpolyRev.IsRoot a⁻¹ :=
+      (charpolyRev_isRoot_iff A a⁻¹).mpr ⟨inv_ne_zero ha₀, by simpa only [inv_inv] using ha⟩
+    have hNorm := h a⁻¹ hRoot
+    rw [norm_inv] at hNorm
+    simpa only [inv_inv] using congrArg (fun x : ℝ => x⁻¹) hNorm
+
+end MatrixDeterminants
+
 end ManuscriptAudit.Paper07
 
 open Lean Elab Command in
@@ -92,7 +151,10 @@ run_cmd do
   for name in [
     ``ManuscriptAudit.Paper07.page282_printed_mixed_reciprocal_bound_false,
     ``ManuscriptAudit.Paper07.page282_mixed_reciprocal_lower_bound,
-    ``ManuscriptAudit.Paper07.page280_local_rational_factor_holomorphic_small_disk] do
+    ``ManuscriptAudit.Paper07.page280_local_rational_factor_holomorphic_small_disk,
+      ``ManuscriptAudit.Paper07.charpolyRev_eval_det,
+      ``ManuscriptAudit.Paper07.charpolyRev_isRoot_iff,
+      ``ManuscriptAudit.Paper07.charpolyRev_roots_on_reciprocal_circle] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

@@ -42,7 +42,7 @@ theorem exists_mahler_cutoff (f : C(ℤ_[p], ℤ_[p])) (k minCutoff : ℕ) :
   have hError := (NormedAddGroup.tendsto_nhds_zero.mp hApprox) threshold hThreshold
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hCoeff.and hError)
   have hDvd (x : ℤ_[p]) (hx : ‖x‖ ≤ threshold) : (p : ℤ_[p]) ^ k ∣ x :=
-    Ideal.mem_span_singleton.mp ((PadicInt.norm_le_pow_iff_mem_span_pow x k).mpr hx)
+    Ideal.mem_span_singleton.mp ((PadicInt.norm_le_pow_iff_mem_span_pow x k).mp hx)
   refine ⟨max minCutoff N, le_max_left _ _, ?_, ?_⟩
   · intro j hj
     exact hDvd _ (hN j ((le_max_right _ _).trans hj)).1.le

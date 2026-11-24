@@ -25,6 +25,7 @@ namespace ManuscriptAudit.FixedCoverCechCounterexample
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Abelian Opposite TopologicalSpace
 open ManuscriptAudit.TwoOpenDerivedComparison
+open scoped ZeroObject
 
 noncomputable section
 
@@ -71,7 +72,7 @@ private theorem sky_obj_of_mem {p : X} {U : (Opens X)ᵒᵖ} (hp : p ∈ unop U)
 private def sky_obj_isTerminal {p : X} {U : (Opens X)ᵒᵖ} (hp : p ∉ unop U) :
     IsTerminal ((sky p).obj.obj U) := by
   classical
-  exact isTerminalSkyscraperSheafObjObjOfNotMem p A hp
+  exact isTerminalSkyscraperSheafObjObjOfNotMem (p₀ := p) (A := A) hp
 
 private def skyMapApp {p q : X} (h : Specializes p q) (U : (Opens X)ᵒᵖ) :
     (sky p).obj.obj U ⟶ (sky q).obj.obj U := by
@@ -88,6 +89,7 @@ private theorem sky_map_of_target_mem {p : X} {U V : (Opens X)ᵒᵖ} (f : U ⟶
   classical
   change (skyscraperPresheaf p A).map f = _
   rw [skyscraperPresheaf_map, dif_pos hp]
+  rfl
 
 private def skyMap {p q : X} (h : Specializes p q) : sky p ⟶ sky q :=
   ObjectProperty.homMk
@@ -158,7 +160,7 @@ private theorem eval_kernel_subsingleton {p q : X} {U : Opens X} (h : p ∈ U �
       rw [← eval_diagonal_snd p q U, ← Category.assoc, ← Category.assoc, he]
   letI := hg
   have hz : IsZero (kernel g) :=
-    KernelFork.IsLimit.isZero_of_mono (kernelIsKernel g)
+    (isZero_zero G).of_iso (kernel.ofMono g)
   exact AddCommGrpCat.subsingleton_of_isZero
     (hz.of_iso (PreservesKernel.iso (ev U) (diagonalToClosedPair p q)))
 
@@ -214,11 +216,14 @@ private def overlap_57_sections_iso :
   · exact ⟨generic_mem_basicOpen (by norm_num), generic_mem_basicOpen (by norm_num)⟩
 
 
+private def boundaryInclusion : boundarySheaf ⟶ sky genericPoint :=
+  kernel.ι (diagonalToClosedPair (closedPoint 5) (closedPoint 7))
+
 /-- On a nonempty open, embed the boundary sections into the common
 generic coefficient group. -/
 def sectionsIntoCoefficients (U : Opens X) (hU : (U : Set X).Nonempty) :
     boundarySheaf.obj.obj (op U) ⟶ A :=
-  (kernel.ι (diagonalToClosedPair (closedPoint 5) (closedPoint 7))).hom.app (op U) ≫
+  boundaryInclusion.hom.app (op U) ≫
     eqToHom (sky_obj_of_mem (by
       obtain ⟨p, hp⟩ := hU
       exact (generic_specializes p).mem_open U.isOpen hp))
@@ -234,10 +239,15 @@ theorem sectionsIntoCoefficients_injective (U : Opens X) (hU : (U : Set X).Nonem
   haveI : Mono ((ev U).map (kernel.ι f)) := by
     rw [← hEq]
     infer_instance
-  apply (AddCommGrpCat.mono_iff_injective _).mp
-  unfold sectionsIntoCoefficients
-  change Mono ((ev U).map (kernel.ι f) ≫ eqToHom _)
-  infer_instance
+  have hInc : Function.Injective ((ev U).map (kernel.ι f)) :=
+    (AddCommGrpCat.mono_iff_injective _).mp inferInstance
+  obtain ⟨p, hp⟩ := hU
+  let hG : genericPoint ∈ U := (generic_specializes p).mem_open U.isOpen hp
+  let i := eqToIso (sky_obj_of_mem (U := op U) hG)
+  have hIso : Function.Injective i.hom := i.addCommGroupIsoToAddEquiv.injective
+  intro a b hab
+  change i.hom ((ev U).map (kernel.ι f) a) = i.hom ((ev U).map (kernel.ι f) b) at hab
+  exact hInc (hIso hab)
 
 /-- After embedding both section groups in the same coefficients,
 restriction is the inclusion of their images. -/
@@ -245,9 +255,8 @@ theorem sectionRestriction_commutes_with_coefficients {U V : Opens X}
     (h : V ≤ U) (hV : (V : Set X).Nonempty) :
     boundarySheaf.obj.map (homOfLE h).op ≫ sectionsIntoCoefficients V hV =
       sectionsIntoCoefficients U (hV.mono h) := by
-  unfold sectionsIntoCoefficients
-  rw [← Category.assoc, (kernel.ι (diagonalToClosedPair
-    (closedPoint 5) (closedPoint 7))).hom.naturality, Category.assoc]
+  dsimp only [sectionsIntoCoefficients]
+  rw [← Category.assoc, boundaryInclusion.hom.naturality, Category.assoc]
   have hp : genericPoint ∈ V := by
     obtain ⟨p, hp⟩ := hV
     exact (generic_specializes p).mem_open V.isOpen hp
@@ -259,7 +268,7 @@ theorem boundarySheaf_restriction_injective {U V : Opens X} (h : V ≤ U)
   intro a b hab
   apply sectionsIntoCoefficients_injective U (hV.mono h)
   rw [← sectionRestriction_commutes_with_coefficients h hV]
-  simp only [AddCommGrpCat.comp_apply, hab]
+  exact congrArg (fun c : boundarySheaf.obj.obj (op V) => sectionsIntoCoefficients V hV c) hab
 
 theorem boundarySheaf_global_sections_subsingleton :
     Subsingleton (boundarySheaf.obj.obj (op (⊤ : Opens X))) :=
@@ -324,7 +333,7 @@ theorem boundarySheaf_derivedH1_nontrivial :
     (degreeZeroEquiv boundarySheaf s.X₂).injective.subsingleton
   letI : Subsingleton (boundarySheaf.H' 0 s.X₃) :=
     (degreeZeroEquiv boundarySheaf s.X₃).injective.subsingleton
-  letI : Subsingleton (boundarySheaf.H' 0 s.X₂ ⊞ boundarySheaf.H' 0 s.X₃) :=
+  letI : Subsingleton ((boundarySheaf.H' 0 s.X₂ ⊞ boundarySheaf.H' 0 s.X₃ : AddCommGrpCat.{0})) :=
     (AddCommGrpCat.biprodIsoProd _ _).addCommGroupIsoToAddEquiv.injective.subsingleton
   letI : Nontrivial (boundarySheaf.obj.obj (op s.X₁)) :=
     overlap_57_sections_iso.symm.addCommGroupIsoToAddEquiv.injective.nontrivial

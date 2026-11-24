@@ -29,17 +29,23 @@ private def affineTerminal (R : CommRingCat.{0}) : (Spec R).AffineEtale :=
 
 private def affineTerminalArrow (R : CommRingCat.{0}) (U : (Spec R).AffineEtale) :
     U ⟶ affineTerminal R :=
-  MorphismProperty.CostructuredArrow.homMk (Scheme.Spec.preimage U.hom) trivial
-    (by simp [affineTerminal])
+  MorphismProperty.CostructuredArrow.homMk
+    (Scheme.Spec.preimage U.hom : U.left ⟶ op R) trivial (by
+      change Scheme.Spec.map (Scheme.Spec.preimage U.hom : U.left ⟶ op R) ≫
+        𝟙 (Spec R) = U.hom
+      exact Eq.trans (Category.comp_id _) (Scheme.Spec.map_preimage U.hom))
 
 private def affineTerminal_isTerminal (R : CommRingCat.{0}) : IsTerminal (affineTerminal R) := by
   refine IsTerminal.ofUniqueHom (affineTerminalArrow R) ?_
   intro U f
   apply MorphismProperty.CostructuredArrow.Hom.ext
   apply Scheme.Spec.map_injective
-  have hf : Scheme.Spec.map f.left ≫ 𝟙 (Spec R) = U.hom := by
-    simpa [affineTerminal] using f.w
-  simpa [affineTerminalArrow] using hf
+  have hw := f.w
+  change Scheme.Spec.map f.left ≫ 𝟙 (Spec R) = U.hom ≫ 𝟙 (Spec R) at hw
+  have hf : Scheme.Spec.map f.left = U.hom := by
+    simpa only [Category.comp_id] using hw
+  change Scheme.Spec.map f.left = Scheme.Spec.map (Scheme.Spec.preimage U.hom : U.left ⟶ op R)
+  exact Eq.trans hf (Scheme.Spec.map_preimage U.hom).symm
 
 private def nativePower (R : CommRingCat.{0}) (d : ℕ) :
     coordinateUnitSheaf (Spec R) ⟶ coordinateUnitSheaf (Spec R) :=
@@ -63,18 +69,29 @@ theorem degreeZeroUnits_power (R : CommRingCat.{0}) (d : ℕ)
   let n := nativePower R d
   let g := sheafPower (Spec R) d
   have hn : n ≫ e.hom = e.hom ≫ g := by
-    simpa only [Functor.id_map] using
-      (sheafificationNatIso (affineTopology R) AddCommGrpCat.{0}).hom.naturality n
+    have h := (sheafificationNatIso (affineTopology R) AddCommGrpCat.{0}).hom.naturality n
+    rw [Functor.id_map] at h
+    change n ≫ e.hom = e.hom ≫ g at h
+    exact h
   have hm : g ≫ e.inv = e.inv ≫ n := by
     apply (cancel_mono e.hom).mp
     calc
       (g ≫ e.inv) ≫ e.hom = g := by simp
       _ = e.inv ≫ e.hom ≫ g := by simp
       _ = (e.inv ≫ n) ≫ e.hom := by rw [Category.assoc, hn]
-  let ev := Sheaf.H.equiv₀ (coordinateUnitSheaf (Spec R)) (affineTerminal_isTerminal R)
+  let ev : Sheaf.H (coordinateUnitSheaf (Spec R)) 0 ≃+ Additive Rˣ :=
+    Sheaf.H.equiv₀ (coordinateUnitSheaf (Spec R)) (affineTerminal_isTerminal R)
   change ev (Sheaf.H.map e.inv 0 (Sheaf.H.map g 0 x)) =
     Additive.ofMul ((ev (Sheaf.H.map e.inv 0 x)).toMul ^ d)
-  rw [← Sheaf.H.map_comp_apply, hm, Sheaf.H.map_comp_apply, ← Sheaf.H.equiv₀_naturality] <;> rfl
+  have hMap : Sheaf.H.map e.inv 0 (Sheaf.H.map g 0 x) =
+      Sheaf.H.map n 0 (Sheaf.H.map e.inv 0 x) := by
+    rw [← Sheaf.H.map_comp_apply, hm, Sheaf.H.map_comp_apply]
+  rw [hMap]
+  have hEval := Sheaf.H.equiv₀_naturality (hT := affineTerminal_isTerminal R) n
+    (Sheaf.H.map e.inv 0 x)
+  change Additive.ofMul ((ev (Sheaf.H.map e.inv 0 x)).toMul ^ d) =
+    ev (Sheaf.H.map n 0 (Sheaf.H.map e.inv 0 x)) at hEval
+  exact hEval.symm
 
 /-- The source of the degree-one Kummer sequence is actual cohomology of the
 constant sheaf of coefficient roots. -/
@@ -120,7 +137,7 @@ theorem unitBoundary_eq_zero_iff {K : Type} [Field K] [IsAlgClosed K]
     have hp := degreeZeroUnits_power R d (E.symm (Additive.ofMul x))
     change E (P (E.symm (Additive.ofMul x))) =
       Additive.ofMul ((E (E.symm (Additive.ofMul x))).toMul ^ d) at hp
-    simpa only [E.apply_symm_apply, Additive.toMul_ofMul, hx, Additive.ofMul_toMul] using hp
+    simpa only [E.apply_symm_apply, toMul_ofMul, hx, ofMul_toMul] using hp
 
 end
 

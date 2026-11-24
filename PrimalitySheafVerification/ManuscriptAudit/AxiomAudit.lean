@@ -11,7 +11,7 @@ run_cmd do
   let projectNamespace := "PrimalitySheafVerification."
   let allowed := #[`propext, `Classical.choice, `Quot.sound]
   let mut counts : Std.HashMap Name Nat := {}
-  let mut flagged := 0
+  let mut flagged : Nat := 0
   liftIO <| IO.println "kind\tmodule\tdeclaration\taxioms\tunexpected"
   for (name, _) in env.constants.toList do
     if let some idx := env.getModuleIdxFor? name then

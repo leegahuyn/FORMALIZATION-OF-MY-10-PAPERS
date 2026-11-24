@@ -2,6 +2,7 @@ import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
@@ -136,6 +137,64 @@ theorem no_eventual_positive_mass_floor :
   obtain ⟨m, hmlt, hm₀⟩ := (hlt.and (eventually_ge_atTop m₀)).exists
   exact (not_le_of_gt hmlt) (hlow m hm₀)
 
+/-- A positive interior margin supplies the missing lower bound for a
+nonnegative spectral density. The upper estimate also shows that a lower
+weighted mass forces interior activity if total unweighted mass is bounded. -/
+theorem tent_mass_interior_bounds (μ : Measure ℝ) (ρ : ℝ → ℝ)
+    (hρ : ∀ t, 0 ≤ ρ t) (hIntegrable : Integrable ρ μ) {δ : ℝ} (hδ : 0 ≤ δ) :
+    δ * (∫ t in Icc (-(1 - δ)) (1 - δ), ρ t ∂μ) ≤
+        (∫ t, unitTent t * ρ t ∂μ) ∧
+      (∫ t, unitTent t * ρ t ∂μ) ≤
+        (∫ t in Icc (-(1 - δ)) (1 - δ), ρ t ∂μ) + δ * (∫ t, ρ t ∂μ) := by
+  let I : Set ℝ := Icc (-(1 - δ)) (1 - δ)
+  have hI : MeasurableSet I := measurableSet_Icc
+  have hTentCont : Continuous unitTent := by
+    change Continuous (fun t : ℝ => max 0 (1 - |t|))
+    exact continuous_const.max (continuous_const.sub continuous_abs)
+  have hTentNonneg (t : ℝ) : 0 ≤ unitTent t := le_max_left _ _
+  have hTent_le_one (t : ℝ) : unitTent t ≤ 1 :=
+    max_le (by norm_num) (sub_le_self _ (abs_nonneg t))
+  have hWeighted : Integrable (fun t => unitTent t * ρ t) μ := by
+    apply hIntegrable.mono' (hTentCont.aestronglyMeasurable.mul hIntegrable.aestronglyMeasurable)
+    filter_upwards [] with t
+    rw [Real.norm_eq_abs, abs_of_nonneg (mul_nonneg (hTentNonneg t) (hρ t))]
+    exact (mul_le_mul_of_nonneg_right (hTent_le_one t) (hρ t)).trans_eq (one_mul _)
+  constructor
+  · change δ * (∫ t in I, ρ t ∂μ) ≤ _
+    calc
+      _ = ∫ t, I.indicator (fun z => δ * ρ z) t ∂μ := by
+        rw [integral_indicator hI, integral_const_mul]
+      _ ≤ _ := by
+        apply integral_mono_of_nonneg _ hWeighted
+        · filter_upwards [] with t
+          by_cases ht : t ∈ I
+          · simpa only [Set.indicator_of_mem ht] using mul_nonneg hδ (hρ t)
+          · simp [Set.indicator_of_notMem ht]
+        · filter_upwards [] with t
+          by_cases ht : t ∈ I
+          · have hAbs : |t| ≤ 1 - δ := abs_le.mpr ht
+            have hMargin : δ ≤ unitTent t := by
+              exact (by linarith : δ ≤ 1 - |t|).trans (le_max_right _ _)
+            simpa only [Set.indicator_of_mem ht] using
+              mul_le_mul_of_nonneg_right hMargin (hρ t)
+          · simpa only [Set.indicator_of_notMem ht] using mul_nonneg (hTentNonneg t) (hρ t)
+  · change _ ≤ (∫ t in I, ρ t ∂μ) + δ * (∫ t, ρ t ∂μ)
+    have hUpper := integral_mono hWeighted ((hIntegrable.indicator hI).add (hIntegrable.const_mul δ))
+      (fun t => show unitTent t * ρ t ≤ I.indicator ρ t + δ * ρ t from by
+        by_cases ht : t ∈ I
+        · rw [Set.indicator_of_mem ht]
+          calc
+            _ ≤ 1 * ρ t := mul_le_mul_of_nonneg_right (hTent_le_one t) (hρ t)
+            _ ≤ _ := by rw [one_mul]; exact le_add_of_nonneg_right (mul_nonneg hδ (hρ t))
+        · have hAbs : 1 - δ < |t| :=
+            lt_of_not_ge fun h => ht (abs_le.mp h)
+          have hMargin : unitTent t ≤ δ := max_le hδ (by linarith)
+          rw [Set.indicator_of_notMem ht, zero_add]
+          exact mul_le_mul_of_nonneg_right hMargin (hρ t))
+    rw [integral_add (hIntegrable.indicator hI) (hIntegrable.const_mul δ),
+      integral_indicator hI, integral_const_mul] at hUpper
+    exact hUpper
+
 end ManuscriptAudit.TentBoundaryActivity
 
 open Lean Elab Command in
@@ -147,7 +206,8 @@ run_cmd do
     ``ManuscriptAudit.TentBoundaryActivity.endpointCoeff_weighted_mass,
     ``ManuscriptAudit.TentBoundaryActivity.unit_activity_for_all,
     ``ManuscriptAudit.TentBoundaryActivity.weighted_mass_tendsto_zero,
-    ``ManuscriptAudit.TentBoundaryActivity.no_eventual_positive_mass_floor] do
+    ``ManuscriptAudit.TentBoundaryActivity.no_eventual_positive_mass_floor,
+    ``ManuscriptAudit.TentBoundaryActivity.tent_mass_interior_bounds] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

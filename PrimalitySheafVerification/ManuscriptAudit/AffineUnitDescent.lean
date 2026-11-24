@@ -14,6 +14,7 @@ flat descent, a basis supplies a coboundary over a PID.
 namespace ManuscriptAudit.AffineUnitDescent
 
 open CategoryTheory ModuleCat TensorProduct
+open ModuleCat.ChangeOfRings
 open UnitCocycleTensor
 
 universe u
@@ -38,44 +39,61 @@ def coalgebraOfUnitCocycle (f : R →+* B)
   let N := ModuleCat.of B B
   let T₂ := (C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).obj N
   let T₃ := (C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).obj T₂
-  let a : N ⟶ T₂ := ModuleCat.ofHom (twistedCoaction R B u)
+  let a : N ⟶ T₂ :=
+    ConcreteCategory.ofHom (C := ModuleCat.{u} B) (X := N) (Y := T₂)
+      (show N →ₗ[B] T₂ from twistedCoaction R B u)
   let e₂ : ((restrictScalars f).obj T₂) ≃ₗ[R] (B ⊗[R] B) :=
     { Equiv.refl _ with
       map_add' := fun _ _ => rfl
       map_smul' := fun r z => by
-        change f r • z = r • z
-        exact IsScalarTower.algebraMap_smul B r z }
+        let z' : B ⊗[R] B := z
+        change f r • z' = r • z'
+        exact IsScalarTower.algebraMap_smul B r z' }
+  let L := (restrictScalars f).obj (ModuleCat.of B B)
+  letI : IsScalarTower R B L := IsScalarTower.of_algebraMap_smul fun _ _ => rfl
+  let e₀ : L ≃ₗ[B] B := LinearEquiv.refl B B
   let e₃ : T₃ ≃ₗ[B] (B ⊗[R] (B ⊗[R] B)) :=
-    TensorProduct.AlgebraTensorModule.congr (LinearEquiv.refl B B) e₂
-  have hCounit (z : B ⊗[R] B) : C.ε.app N z = diagonal R B z := by
+    TensorProduct.AlgebraTensorModule.congr e₀ e₂
+  have hCounit (z : B ⊗[R] B) : (C.ε.app N).hom z = diagonal R B z := by
     induction z using TensorProduct.induction_on with
     | zero => simp only [map_zero]
     | tmul x y => rfl
     | add x y hx hy => simp only [map_add, hx, hy]
-  have hComult (z : B ⊗[R] B) : e₃ (C.δ.app N z) = pull13 R B z := by
+  have hComult (z : B ⊗[R] B) : e₃ ((C.δ.app N).hom z) = pull13 R B z := by
     induction z using TensorProduct.induction_on with
     | zero => simp only [map_zero]
-    | tmul x y => rfl
+    | tmul x y =>
+      change e₃ ((extendScalars f).map
+        ((extendRestrictScalarsAdj f).unit.app ((restrictScalars f).obj N))
+        (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = _
+      rw [ExtendScalars.map_tmul, extendRestrictScalarsAdj_unit_app_apply,
+        pull13_tmul] <;> rfl
     | add x y hx hy => simp only [map_add, hx, hy]
   have hMap (z : B ⊗[R] B) :
-      e₃ ((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a z) = tensorCoaction R B u z := by
+      e₃ (((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a).hom z) =
+        tensorCoaction R B u z := by
     induction z using TensorProduct.induction_on with
     | zero => simp only [map_zero]
-    | tmul x y => rfl
+    | tmul x y =>
+      change e₃ ((extendScalars f).map ((restrictScalars f).map a)
+        (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = _
+      rw [ExtendScalars.map_tmul] <;> rfl
     | add x y hx hy => simp only [map_add, hx, hy]
   refine { A := N, a := a, counit := ?_, coassoc := ?_ }
   · apply ModuleCat.hom_ext
     apply LinearMap.ext
     intro b
-    change C.ε.app N (twistedCoaction R B u b) = b
+    simp only [ModuleCat.hom_comp, ModuleCat.hom_id, LinearMap.comp_apply, LinearMap.id_apply]
+    change (C.ε.app N).hom (twistedCoaction R B u b) = b
     rw [hCounit]
     exact twistedCoaction_counit R B u hε b
   · apply ModuleCat.hom_ext
     apply LinearMap.ext
     intro b
     apply e₃.injective
-    change e₃ (C.δ.app N (twistedCoaction R B u b)) =
-      e₃ ((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a (twistedCoaction R B u b))
+    simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
+    change e₃ ((C.δ.app N).hom (twistedCoaction R B u b)) =
+      e₃ (((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a).hom (twistedCoaction R B u b))
     rw [hComult, hMap]
     exact (twistedCoaction_coassoc R B u hδ b).symm
 
