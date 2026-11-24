@@ -4,7 +4,8 @@ on:
     branches: [codex/overleaf-bundle-formalization]
     paths:
       - '.github/workflows/manuscript-proofs.yml'
-      - 'PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/*.lean'
+      - 'PrimalitySheafVerification/Spt5.lean'
 permissions:
   contents: read
 jobs:
@@ -27,18 +28,28 @@ jobs:
           test: false
           use-github-cache: false
           use-mathlib-cache: false
+      - name: Record vendored proof imports
+        id: vendored-inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          proof_dir=PrimalitySheafVerification/ManuscriptAudit
+          awk '/^import / {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent}.lean |
+            sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
+          test -s "${RUNNER_TEMP}/manuscript-proof-imports.txt"
+          printf 'hash=%s\n' "$(sha256sum "${RUNNER_TEMP}/manuscript-proof-imports.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Restore compiled modules
         id: compiled
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: .lake
-          key: manuscript-lean-imports-0e026509-linux-arm64-v1
+          key: manuscript-lean-imports-0e026509-linux-arm64-${{ steps.vendored-inputs.outputs.hash }}
+          restore-keys: manuscript-lean-imports-0e026509-linux-arm64-
       - name: Build the required vendored modules
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t modules < <(awk '/^import / {print $2}' PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean)
-          test "${#modules[@]}" -gt 0
+          mapfile -t modules < "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           : > "${RUNNER_TEMP}/manuscript-dependencies.log"
           status=0
           lake build "${modules[@]}" > "${RUNNER_TEMP}/manuscript-dependencies.log" 2>&1 || status=$?
@@ -54,7 +65,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean 2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs.log"
+          proof_dir=PrimalitySheafVerification/ManuscriptAudit
+          status=0
+          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent}.lean; do
+            echo "Checking $proof" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
+            lake env lean "$proof" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
+          done
+          exit "$status"
       - name: Keep the vendored-build logs on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -97,7 +114,8 @@ jobs:
         working-directory: upstream-mathlib
         run: |
           set -euo pipefail
-          mapfile -t modules < <(awk '/^import / {print $2}' ../PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean)
+          proof_dir=../PrimalitySheafVerification/ManuscriptAudit
+          mapfile -t modules < <(awk '/^import / {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean | sort -u)
           test "${#modules[@]}" -gt 0
           lake exe cache get "${modules[@]}"
           lake build "${modules[@]}"
@@ -106,7 +124,13 @@ jobs:
         working-directory: upstream-mathlib
         run: |
           set -euo pipefail
-          lake env lean ../PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean 2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+          proof_dir=../PrimalitySheafVerification/ManuscriptAudit
+          status=0
+          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean; do
+            echo "Checking $proof" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+            lake env lean "$proof" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
+          done
+          exit "$status"
       - name: Keep the upstream compatibility log on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

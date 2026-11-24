@@ -383,9 +383,10 @@ theorem paper1_coprime_kernel_support_ne_gcd_support :
     rw [← h]
     exact Set.mem_univ _
   have hOne : (1 : ℤ) ∈ p.asIdeal := by
-    apply (PrimeSpectrum.mem_zeroLocus.mp hp)
+    apply (PrimeSpectrum.mem_zeroLocus p _).mp hp
+    change (1 : ℤ) = ((Nat.gcd 2 3 : ℕ) : ℤ)
     decide
-  exact p.isPrime.ne_top (Ideal.eq_top_iff_one.mpr hOne)
+  exact p.isPrime.ne_top ((Ideal.eq_top_iff_one _).mpr hOne)
 
 /-- Paper 1, p. 17. In the case M=p=3 and k=1, the Tor term is Z/3.
 It cannot inject additively into the printed integral intersection ideal. -/
@@ -394,7 +395,7 @@ theorem paper1_no_additive_injection_to_integral_intersection
     ¬ Function.Injective f := by
   intro hf
   have hZero : 3 • (1 : ZMod 3) = 0 := by decide
-  have h := map_nsmul f (1 : ZMod 3) 3
+  have h := map_nsmul f 3 (1 : ZMod 3)
   rw [hZero, map_zero] at h
   have hInt : (0 : ℤ) = 3 * (f 1 : ℤ) := by
     have h' : (0 : ℤ) = 3 • (f 1 : ℤ) := congrArg Subtype.val h
@@ -433,7 +434,7 @@ theorem paper1_optional_congruence_requires_compatibility :
   exact (by decide : ¬ ((0 : ZMod 3) = 1 ∨ (0 : ZMod 3) = -1)) hy
 
 open Polynomial in
-private def residuePolynomial3 : Polynomial (ZMod 3) := X ^ 2 + C 1
+private noncomputable def residuePolynomial3 : Polynomial (ZMod 3) := X ^ 2 + C 1
 
 open Polynomial in
 /-- Paper 2, pp. 29–30, Theorem 2.1. This non-squarefree polynomial
@@ -444,7 +445,9 @@ theorem paper2_repeated_geometric_root_without_rational_root :
         (residuePolynomial3 ^ 2).derivative.eval a = 0 := by
   refine ⟨?_, ?_⟩
   · intro h
-    have hUnit := h residuePolynomial3 (by simpa only [pow_two] using dvd_refl (residuePolynomial3 ^ 2))
+    have hDiv : residuePolynomial3 * residuePolynomial3 ∣ residuePolynomial3 ^ 2 :=
+      ⟨1, (pow_two _).trans (mul_one _).symm⟩
+    have hUnit := h residuePolynomial3 hDiv
     have hDegree := Polynomial.natDegree_eq_zero_of_isUnit hUnit
     rw [residuePolynomial3, Polynomial.natDegree_X_pow_add_C] at hDegree
     exact (by decide : (2 : ℕ) ≠ 0) hDegree
