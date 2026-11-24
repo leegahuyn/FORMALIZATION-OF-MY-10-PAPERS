@@ -53,15 +53,19 @@ private theorem affine_isPullback_of_scheme {X : Scheme.{u}} {P U V W : X.Affine
     change (Scheme.Etale.forget X ⋙ Over.forget X).map (E.map (E.preimage lo)) = l
     rw [E.map_preimage] <;> rfl
   refine ⟨m, F.map_injective ?_, F.map_injective ?_, ?_⟩
-  · rw [Functor.map_comp, hm, h₁]
-  · rw [Functor.map_comp, hm, h₂]
+  · change F.map (m ≫ r₁) = F.map s.fst
+    rw [Functor.map_comp, hm, h₁]
+  · change F.map (m ≫ r₂) = F.map s.snd
+    rw [Functor.map_comp, hm, h₂]
   · intro n hn₁ hn₂
     apply F.map_injective
     rw [hm]
     apply h.hom_ext
-    · rw [h₁]
+    · change n ≫ r₁ = s.fst at hn₁
+      rw [h₁]
       simpa only [Functor.map_comp] using F.congr_map hn₁
-    · rw [h₂]
+    · change n ≫ r₂ = s.snd at hn₂
+      rw [h₂]
       simpa only [Functor.map_comp] using F.congr_map hn₂
 
 variable (R : Type u) [CommRing R]
@@ -153,7 +157,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem double_isPullback :
     IsPullback (firstProjection R B) (secondProjection R B) (coverArrow R B) (coverArrow R B) := by
   apply affine_isPullback_of_scheme
-  exact Scheme.isPullback_SpecMap_of_isPushout _ _ _ _
+  exact isPullback_SpecMap_of_isPushout _ _ _ _
     ⟨⟨(CommRingCat.pushoutCocone R B B).condition⟩,
       ⟨CommRingCat.pushoutCoconeIsColimit R B B⟩⟩
 

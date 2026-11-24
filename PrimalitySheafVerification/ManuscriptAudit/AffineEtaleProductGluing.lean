@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
@@ -19,6 +20,8 @@ namespace ManuscriptAudit.AffineEtaleProductGluing
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 
 universe u v
+
+noncomputable section
 
 variable {X : Scheme.{u}}
 
@@ -42,11 +45,12 @@ private theorem sections_subsingleton_of_empty
     (W : X.AffineEtale) [IsEmpty ((underlying X).obj W)] :
     Subsingleton (I.obj.obj (op W)) := by
   let V : PEmpty → X.AffineEtale := PEmpty.elim
-  let f : ∀ i, V i ⟶ W := PEmpty.elim
+  let f : ∀ i, V i ⟶ W := fun i => PEmpty.elim i
   have hCov := cover_of_jointly_surjective V f (fun x => isEmptyElim x)
   let P := I.obj ⋙ forget AddCommGrpCat.{u}
   have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P :=
-    (isSheaf_iff_isSheaf_of_type _ P).mp ((sheafCompose _ (forget AddCommGrpCat.{u})).obj I).property
+    (isSheaf_iff_isSheaf_of_type (Scheme.AffineEtale.topology X) P).mp
+      (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{u}) I.property)
   obtain ⟨t, _, ht⟩ :=
     (Presieve.isSheafFor_arrows_iff (P := P) f).mp (hI.isSheafFor _ hCov)
       (fun i => PEmpty.elim i) (fun i => PEmpty.elim i)
@@ -82,14 +86,14 @@ private theorem component_cover :
   apply cover_of_jointly_surjective
   intro x
   change ↑(Spec (productRing B)) at x
-  have hs : Function.Surjective (Scheme.sigmaSpec B) :=
-    (inferInstance : Surjective (Scheme.sigmaSpec B)).surj
+  have hs : Function.Surjective (sigmaSpec B) :=
+    (inferInstance : Surjective (sigmaSpec B)).surj
   obtain ⟨z, rfl⟩ := hs x
-  obtain ⟨⟨i, y⟩, rfl⟩ := (Scheme.sigmaMk (fun i => Spec (B i))).surjective z
+  obtain ⟨⟨i, y⟩, rfl⟩ := (sigmaMk (fun i => Spec (B i))).surjective z
   refine ⟨i, y, ?_⟩
   change componentMap B i y =
-    Scheme.sigmaSpec B (Scheme.sigmaMk (fun i => Spec (B i)) ⟨i, y⟩)
-  rw [Scheme.sigmaMk_mk, ← Scheme.Hom.comp_apply, Scheme.ι_sigmaSpec]
+    sigmaSpec B (sigmaMk (fun i => Spec (B i)) ⟨i, y⟩)
+  rw [sigmaMk_mk, ← Scheme.Hom.comp_apply, ι_sigmaSpec]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Sections on the affine open components of a finite product glue uniquely. -/
@@ -100,13 +104,15 @@ theorem glue_sections
       ∀ i, I.obj.map (componentArrow B g i).op z = s i := by
   let P := I.obj ⋙ forget AddCommGrpCat.{u}
   have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P :=
-    (isSheaf_iff_isSheaf_of_type _ P).mp ((sheafCompose _ (forget AddCommGrpCat.{u})).obj I).property
+    (isSheaf_iff_isSheaf_of_type (Scheme.AffineEtale.topology X) P).mp
+      (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{u}) I.property)
   have hs : Presieve.Arrows.Compatible P (componentArrow B g) s := by
     intro i j W p q hpq
     change I.obj.map p.op (s i) = I.obj.map q.op (s j)
+    have hm (k : ι) : (underlying X).map (componentArrow B g k) = componentMap B k := rfl
     have hw : (underlying X).map p ≫ componentMap B i =
         (underlying X).map q ≫ componentMap B j := by
-      simpa only [Functor.map_comp] using (underlying X).congr_map hpq
+      simpa only [Functor.map_comp, hm] using (underlying X).congr_map hpq
     by_cases hij : i = j
     · subst j
       have hpq' : p = q :=
@@ -114,10 +120,10 @@ theorem glue_sections
       rw [hpq']
     · have hw' : (underlying X).map p ≫ Sigma.ι (fun i => Spec (B i)) i =
           (underlying X).map q ≫ Sigma.ι (fun i => Spec (B i)) j := by
-        apply (cancel_mono (Scheme.sigmaSpec B)).mp
-        simpa only [Category.assoc, Scheme.ι_sigmaSpec] using hw
+        apply (cancel_mono (sigmaSpec B)).mp
+        simpa only [Category.assoc, ι_sigmaSpec] using hw
       letI : IsEmpty ((underlying X).obj W) :=
-        Scheme.isEmpty_of_commSq_sigmaι_of_ne ⟨hw'⟩ hij
+        isEmpty_of_commSq_sigmaι_of_ne ⟨hw'⟩ hij
       exact (sections_subsingleton_of_empty I W).elim _ _
   exact (Presieve.isSheafFor_arrows_iff (P := P) (componentArrow B g)).mp
     (hI.isSheafFor _ (component_cover B g)) s hs
@@ -140,6 +146,8 @@ theorem exists_lift_from_component_lifts
     intro i
     rw [← NatTrans.naturality_apply, hy, hs]
   exact (hz _ hqy).trans (hz x (fun _ => rfl)).symm
+
+end
 
 end ManuscriptAudit.AffineEtaleProductGluing
 

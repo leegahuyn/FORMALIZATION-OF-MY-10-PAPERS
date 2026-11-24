@@ -1,0 +1,131 @@
+import Lean.Elab.BuiltinEvalCommand
+import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.AddCommGrpImageFactorization
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleLiftingCover
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleProductGluing
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleUnitCocycle
+import PrimalitySheafVerification.ManuscriptAudit.KummerAffineCohomology
+
+/-!
+# Degree-one cohomology of affine étale units over a PID
+
+A section of the cokernel of the injective embedding lifts on a
+finite affine étale family. The ring product gives one faithfully flat
+étale cover. Its lifted section is corrected by the actual unit
+cocycle on tensor overlaps, then descends to the base scheme.
+-/
+
+namespace ManuscriptAudit.AffineEtaleProductDescent
+
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
+open AffineEtaleTensorOverlap KummerUnitsSheaf
+
+noncomputable section
+
+attribute [local instance] KummerCohomologySequence.affineSiteHasExt
+
+variable (R : Type) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
+private abbrev X := Spec (CommRingCat.of R)
+private abbrev J := Scheme.AffineEtale.topology (X R)
+private abbrev G := coordinateUnitSheaf (X R)
+
+set_option maxHeartbeats 1200000 in
+set_option backward.isDefEq.respectTransparency false in
+/-- The actual unit sheaf on the small affine étale site of a PID has
+trivial first cohomology. -/
+theorem affineUnitH1_subsingleton :
+    Subsingleton (Sheaf.H (G R) 1) := by
+  let C := Sheaf (J R) AddCommGrpCat.{0}
+  letI : IsGrothendieckAbelian.{0} C :=
+    Scheme.isGrothendieckAbelian_sheaf_affineEtaleTopology (X R) AddCommGrpCat.{0}
+  letI : EnoughInjectives C := IsGrothendieckAbelian.enoughInjectives.{0} (C := C)
+  letI : HasExt.{0} C := KummerCohomologySequence.affineSiteHasExt (CommRingCat.of R)
+  letI : ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{0} :=
+    AddCommGrpImageFactorization.functorialSurjectiveInjectiveFactorization
+  let I : C := Injective.under (G R)
+  let i : G R ⟶ I := Injective.ι (G R)
+  letI : Injective I := inferInstance
+  letI : Mono i := inferInstance
+  let Q := cokernel i
+  let q : I ⟶ Q := cokernel.π i
+  let U := baseObject R
+  have hT : IsTerminal U :=
+    KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)
+  apply SheafH1Descent.H1_subsingleton_of_global_lifts i hT
+  intro x
+  letI : Sheaf.IsLocallySurjective q :=
+    (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{0} q).mpr inferInstance
+  obtain ⟨n, V, f, hf, hcover⟩ := AffineEtaleLiftingCover.finite_indexed_jointly_surjective_lifts q x
+  let A (k : Fin n) : CommRingCat.{0} := (V k).left.unop
+  let a (k : Fin n) : CommRingCat.of R ⟶ A k := (f k).left.unop
+  letI : ∀ k, Algebra R (A k) := fun k => (a k).hom.toAlgebra
+  letI : ∀ k, Algebra.Etale R (A k) := fun k => by
+    have he : Etale (Spec.map (a k)) := by
+      change Etale ((Scheme.AffineEtale.Spec (X R)).map (f k)).left
+      infer_instance
+    exact (RingHom.etale_algebraMap).mp ((HasRingHomProperty.Spec_iff (P := @Etale)).mp he)
+  have hPrime : ∀ z : PrimeSpectrum R, ∃ k, ∃ p : PrimeSpectrum (A k),
+      PrimeSpectrum.comap (algebraMap R (A k)) p = z := hcover
+  let B := (k : Fin n) → A k
+  obtain ⟨hEt, hFaithful⟩ :=
+    AffineEtaleCoverProduct.product_affine_etale_faithfullyFlat (fun k : Fin n => (A k : Type)) hPrime
+  letI : Algebra.Etale R B := hEt
+  letI : Module.FaithfullyFlat R B := hFaithful
+  let g : Spec (AffineEtaleProductGluing.productRing A) ⟶ X R :=
+    Spec.map (CommRingCat.ofHom (algebraMap R B))
+  letI : Etale g := (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
+    (RingHom.etale_algebraMap.mpr (inferInstance : Algebra.Etale R B))
+  let W := AffineEtaleProductGluing.productObject A g
+  let v : W ⟶ U := coverArrow R B
+  let xW : Q.obj.obj (op W) := Q.obj.map v.op x
+  have hComponents (k : Fin n) :
+      ∃ y : I.obj.obj (op (AffineEtaleProductGluing.componentObject A g k)),
+        q.hom.app (op (AffineEtaleProductGluing.componentObject A g k)) y =
+          Q.obj.map (AffineEtaleProductGluing.componentArrow A g k).op xW := by
+    let Vc := AffineEtaleProductGluing.componentObject A g k
+    let vc : Vc ⟶ W := AffineEtaleProductGluing.componentArrow A g k
+    have hComponent : Vc.hom = (V k).hom := by
+      change Spec.map (CommRingCat.ofHom (Pi.evalRingHom (fun j => (A j : Type)) k)) ≫
+        Spec.map (CommRingCat.ofHom (algebraMap R B)) = (V k).hom
+      rw [← Spec.map_comp]
+      have hm : CommRingCat.ofHom (algebraMap R B) ≫
+          CommRingCat.ofHom (Pi.evalRingHom (fun j => (A j : Type)) k) = a k := by
+        ext z
+        rfl
+      rw [hm]
+      have hw := (f k).w
+      change Spec.map (a k) ≫ 𝟙 (X R) = (V k).hom ≫ 𝟙 (X R) at hw
+      simpa only [Category.comp_id] using hw
+    let e : Vc ≅ V k := MorphismProperty.CostructuredArrow.isoMk
+      (Iso.refl (V k).left) trivial trivial (by
+        change Scheme.Spec.map (𝟙 ((V k).left)) ≫ (V k).hom = Vc.hom
+        rw [CategoryTheory.Functor.map_id, Category.id_comp]
+        exact hComponent.symm)
+    have hArrow : e.hom ≫ f k = vc ≫ v := hT.hom_ext _ _
+    obtain ⟨z, hz⟩ := hf k
+    refine ⟨I.obj.map e.hom.op z, ?_⟩
+    change q.hom.app (op Vc) (I.obj.map e.hom.op z) = Q.obj.map vc.op (Q.obj.map v.op x)
+    calc
+      _ = Q.obj.map e.hom.op (q.hom.app (op (V k)) z) := NatTrans.naturality_apply q.hom e.hom.op z
+      _ = Q.obj.map e.hom.op (Q.obj.map (f k).op x) := by rw [hz]
+      _ = Q.obj.map (e.hom ≫ f k).op x := by
+        rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
+      _ = Q.obj.map vc.op (Q.obj.map v.op x) := by
+        rw [hArrow, op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
+  obtain ⟨y, hy⟩ := AffineEtaleProductGluing.exists_lift_from_component_lifts A g q xW hComponents
+  exact AffineEtaleUnitCocycle.global_lift_from_faithfully_flat_affine_lift R B i x y hy
+
+end
+
+end ManuscriptAudit.AffineEtaleProductDescent
+
+open Lean Elab Command in
+run_cmd do
+  let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+  let name := ``ManuscriptAudit.AffineEtaleProductDescent.affineUnitH1_subsingleton
+  let dependencies ← collectAxioms name
+  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+  unless unexpected.isEmpty do
+    throwError m!"{name} depends on unexpected axioms {unexpected}"
+  logInfo m!"{name} uses {dependencies}"

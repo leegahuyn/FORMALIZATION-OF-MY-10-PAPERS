@@ -142,6 +142,23 @@ theorem unitBoundary_eq_zero_iff {K : Type} [Field K] [IsAlgClosed K]
       Additive.ofMul ((E (E.symm (Additive.ofMul x))).toMul ^ d) at hp
     simpa only [E.apply_symm_apply, toMul_ofMul, hx, ofMul_toMul] using hp
 
+/-- Vanishing of the unit sheaf's actual first cohomology makes the
+Kummer boundary surjective. -/
+theorem unitBoundary_surjective_of_unitHOne {K : Type} [Field K] [IsAlgClosed K]
+    (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    (hpos : 0 < d) (hd : IsUnit (d : R))
+    (hUnit : Subsingleton (Sheaf.H (unitSheaf (Spec R)) 1)) :
+    Function.Surjective (unitBoundary (K := K) R d hpos hd) := by
+  intro x
+  let G := degreeOneConstantRoots (K := K) R d
+  let E := degreeZeroUnits R
+  have hZero : Sheaf.H.map (kernel.ι (sheafPower (Spec R) d)) 1 (G x) = 0 :=
+    @Subsingleton.elim _ hUnit _ _
+  obtain ⟨z, hz⟩ := (degree_one_exact R d hpos hd (G x)).mp hZero
+  refine ⟨E z, ?_⟩
+  change G.symm (connecting R d hpos hd (E.symm (E z))) = x
+  rw [AddEquiv.symm_apply_apply, hz, AddEquiv.symm_apply_apply]
+
 end
 
 end ManuscriptAudit.KummerAffineCohomology
@@ -153,7 +170,8 @@ run_cmd do
       ``ManuscriptAudit.KummerAffineCohomology.degreeZeroUnits,
       ``ManuscriptAudit.KummerAffineCohomology.degreeZeroUnits_power,
       ``ManuscriptAudit.KummerAffineCohomology.degreeOneConstantRoots,
-      ``ManuscriptAudit.KummerAffineCohomology.unitBoundary_eq_zero_iff] do
+      ``ManuscriptAudit.KummerAffineCohomology.unitBoundary_eq_zero_iff,
+      ``ManuscriptAudit.KummerAffineCohomology.unitBoundary_surjective_of_unitHOne] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
