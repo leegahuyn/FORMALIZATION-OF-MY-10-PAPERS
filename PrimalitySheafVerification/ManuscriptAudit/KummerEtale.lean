@@ -1,4 +1,7 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Etale.StandardEtale
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
@@ -28,8 +31,9 @@ theorem kummer_root_pow (d : ℕ) (a : A) :
   have h : Polynomial.aeval (AdjoinRoot.root (kummerPolynomial d a))
       (kummerPolynomial d a) = 0 := by
     rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self]
-  exact sub_eq_zero.mp (by
-    simpa only [kummerPolynomial, map_sub, Polynomial.aeval_X_pow, Polynomial.aeval_C] using h)
+  change Polynomial.aeval (AdjoinRoot.root (kummerPolynomial d a)) (X ^ d - C a) = 0 at h
+  rw [Polynomial.aeval_def, Polynomial.eval₂_sub, Polynomial.eval₂_X_pow, Polynomial.eval₂_C] at h
+  exact sub_eq_zero.mp h
 
 theorem kummer_root_isUnit {d : ℕ} (hd : 0 < d) {a : A} (ha : IsUnit a) :
     IsUnit (AdjoinRoot.root (kummerPolynomial d a)) := by
@@ -44,7 +48,8 @@ theorem kummer_derivative_value (d : ℕ) (a : A) :
         AdjoinRoot.root (kummerPolynomial d a) ^ (d - 1) := by
   rw [← AdjoinRoot.aeval_eq]
   simp only [kummerPolynomial, Polynomial.derivative_sub, Polynomial.derivative_X_pow,
-    Polynomial.derivative_C, sub_zero, map_mul, Polynomial.aeval_C, Polynomial.aeval_X_pow]
+    Polynomial.derivative_C, sub_zero]
+  rw [Polynomial.aeval_def, Polynomial.eval₂_mul, Polynomial.eval₂_C, Polynomial.eval₂_X_pow]
 
 theorem adjoinRoot_etale_of_derivative_unit {f : Polynomial A} (hf : f.Monic)
     (hu : IsUnit (AdjoinRoot.mk f f.derivative)) : Algebra.Etale A (AdjoinRoot f) := by
@@ -84,7 +89,7 @@ theorem kummer_faithfullyFlat {d : ℕ} (hpos : 0 < d) (a : A) :
     (kummer_monic hpos a).free_adjoinRoot
   rcases subsingleton_or_nontrivial A with hA | hA
   · letI : Subsingleton A := hA
-    refine ⟨inferInstance, ?_⟩
+    refine { submodule_ne_top := ?_ }
     intro m hm
     have ht : m = ⊤ := (Ideal.eq_top_iff_one m).mpr (by
       rw [Subsingleton.elim (1 : A) 0]
@@ -98,6 +103,23 @@ theorem kummer_faithfullyFlat {d : ℕ} (hpos : 0 < d) (a : A) :
       (Fin (kummerPolynomial d a).natDegree →₀ A)
       (AdjoinRoot.powerBasisAux' (kummer_monic hpos a)).repr
 
+/-- Adjoining roots of a unit gives an actual finite étale surjection
+of affine schemes under the invertibility hypothesis. -/
+theorem kummer_spec_finite_etale_cover {d : ℕ} (hpos : 0 < d) (hd : IsUnit (d : A))
+    {a : A} (ha : IsUnit a) :
+    let B := AdjoinRoot (kummerPolynomial d a)
+    let f := AlgebraicGeometry.Spec.map (CommRingCat.ofHom (algebraMap A B))
+    AlgebraicGeometry.IsFinite f ∧ AlgebraicGeometry.Etale f ∧ AlgebraicGeometry.Surjective f := by
+  let B := AdjoinRoot (kummerPolynomial d a)
+  letI : Module.FaithfullyFlat A B := kummer_faithfullyFlat hpos a
+  refine ⟨?_, ?_, ?_⟩
+  · apply (AlgebraicGeometry.IsFinite.SpecMap_iff (CommRingCat.ofHom (algebraMap A B))).2
+    exact RingHom.finite_algebraMap.mpr (kummer_module_finite hpos a)
+  · rw [AlgebraicGeometry.HasRingHomProperty.Spec_iff (P := @AlgebraicGeometry.Etale)]
+    exact RingHom.etale_algebraMap.mpr (kummer_etale hpos hd ha)
+  · rw [AlgebraicGeometry.surjective_iff]
+    exact PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
 end
 
 open Lean Elab Command in
@@ -105,7 +127,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``kummer_monic, ``kummer_root_pow, ``kummer_root_isUnit,
       ``kummer_derivative_value, ``adjoinRoot_etale_of_derivative_unit, ``kummer_etale,
-      ``kummer_module_finite, ``kummer_faithfullyFlat] do
+      ``kummer_module_finite, ``kummer_faithfullyFlat, ``kummer_spec_finite_etale_cover] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

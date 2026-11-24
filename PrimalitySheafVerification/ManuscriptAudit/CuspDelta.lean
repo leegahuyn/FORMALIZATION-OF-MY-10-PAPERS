@@ -562,7 +562,7 @@ private theorem cusp_square_reduction_eq_constant_iff (f : Polynomial K) (c : K)
   · intro h
     have h0 := h 0 (by decide)
     have h1 := h 1 (by decide)
-    exact ⟨by simpa using h0, by simpa using h1⟩
+    exact ⟨sub_eq_zero.mp (by simpa using h0), by simpa using h1⟩
   · rintro ⟨h0, h1⟩ d hd
     have hcases : d = 0 ∨ d = 1 := by omega
     rcases hcases with rfl | rfl <;> simp [h0, h1]

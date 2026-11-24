@@ -17,7 +17,7 @@ namespace ManuscriptAudit.FiniteFieldPowerSums
 open scoped BigOperators
 open Finset
 
-private theorem sum_field_powers_eq_sum_unit_powers (K : Type*) [Field K] [Fintype K]
+private theorem sum_field_powers_eq_sum_unit_powers (K : Type*) [Field K] [Fintype K] [DecidableEq K]
     (n : ℕ) (hn : n ≠ 0) :
     (∑ x : K, x ^ n) = ∑ x : Kˣ, (x ^ n : K) := by
   classical

@@ -52,7 +52,9 @@ private def descendEquation (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
 
 private theorem descendEquation_mk (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
     (f : Plane K →ₐ[K] B) (hf : f (equation K r s) = 0) (g : Plane K) :
-    descendEquation K r s f hf (Ideal.Quotient.mk (equationIdeal K r s) g) = f g := rfl
+    descendEquation K r s f hf (Ideal.Quotient.mk (equationIdeal K r s) g) = f g := by
+  simp only [descendEquation, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk,
+    AlgHom.coe_toRingHom]
 
 /-- Evaluation at the origin of the benchmark fiber. -/
 def atOrigin {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] K :=
@@ -158,11 +160,16 @@ private theorem composedEval_equation {r s : ℕ} (hs : 2 ≤ s) :
 private def intoU {r s : ℕ} (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] U K r :=
   descendEquation K r s (B := U K r) (composedEval K r) (composedEval_equation K (r := r) hs)
 
+set_option maxHeartbeats 2000000 in
 private theorem intoU_mk {r s : ℕ} (hs : 2 ≤ s) (g : Plane K) :
     intoU K (r := r) hs (Ideal.Quotient.mk (equationIdeal K r s) g) =
-      qP K r (firstCoordinate K g) :=
-  descendEquation_mk K r s (B := U K r) (composedEval K r)
-    (composedEval_equation K (r := r) hs) g
+      qP K r (firstCoordinate K g) := by
+  calc
+    _ = composedEval K r g := by
+      unfold intoU
+      exact descendEquation_mk K r s (B := U K r) (composedEval K r)
+        (composedEval_equation K (r := r) hs) g
+    _ = qP K r (firstCoordinate K g) := rfl
 
 private theorem intoU_x {r s : ℕ} (hs : 2 ≤ s) :
     intoU K (r := r) hs (coord K r s 0) = qU K r (t K r) := by

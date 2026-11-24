@@ -581,6 +581,35 @@ theorem paper2_jacobian_nonroot_no_padic_lift :
   simpa [hroot] using hx
 
 
+/-- Paper 5, p. 181, U1. The printed equality with reversed exponents
+forces the degenerate profile among positive bases. -/
+theorem paper5_reversed_lcm_profile_iff {M A qHigh qLow : ℕ}
+    (hA : 0 < A) (hq : qLow < qHigh) :
+    M.lcm (A ^ qHigh) = A ^ qLow ↔ A = 1 ∧ M = 1 := by
+  constructor
+  · intro h
+    have hd : A ^ qHigh ∣ A ^ qLow := by
+      rw [← h]
+      exact Nat.dvd_lcm_right _ _
+    have hle := Nat.le_of_dvd (pow_pos hA qLow) hd
+    have ha : A = 1 := by
+      by_contra hn
+      have hA' : 1 < A := by omega
+      exact (not_lt_of_ge hle) (Nat.pow_lt_pow_right hA' hq)
+    refine ⟨ha, ?_⟩
+    simpa [ha] using h
+  · rintro ⟨rfl, rfl⟩
+    simp
+
+/-- The only positive-base solution to U1 gives thickness zero at
+every prime, which contradicts U2 for any specified relevant prime. -/
+theorem paper5_reversed_lcm_positive_thickness_incompatible
+    {M A qHigh qLow p k : ℕ} [Fact p.Prime] (hA : 0 < A) (hq : qLow < qHigh) :
+    ¬ (M.lcm (A ^ qHigh) = A ^ qLow ∧ 0 < min (padicValNat p M) k) := by
+  rintro ⟨h, hthick⟩
+  have hM : M = 1 := ((paper5_reversed_lcm_profile_iff hA hq).1 h).2
+  simpa [hM, padicValNat_one_right] using hthick
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -599,6 +628,8 @@ run_cmd do
     ``ManuscriptAudit.paper2_jacobian_nonroot_no_padic_lift,
     ``ManuscriptAudit.paper3_composite_tor_single_prime_gcd_line_false,
     ``ManuscriptAudit.paper5_integer_hasse_threshold_false,
+    ``ManuscriptAudit.paper5_reversed_lcm_profile_iff,
+    ``ManuscriptAudit.paper5_reversed_lcm_positive_thickness_incompatible,
     ``ManuscriptAudit.paper8_printed_coefficient_rows_cannot_realize_first_target,
     ``ManuscriptAudit.paper10_no_positive_ad_invariant_gl2_form,
     ``ManuscriptAudit.paper1_printed_expansion_forces_negative_discrepancy,

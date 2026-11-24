@@ -105,15 +105,32 @@ private theorem localJacobianSubmodule_eq_bot : localJacobianSubmodule = ⊥ := 
   rw [paper2_localJacobianSubmodule_mem_iff, paper2_localJacobianIdeal_eq_bot,
     Ideal.mem_bot, Submodule.mem_bot]
 
+section QuotientModule
+
+variable {S W : Type*} [Ring S] [AddCommGroup W] [Module S W]
+
+private abbrev quotientSpace (N : Submodule S W) := W ⧸ N
+
+private abbrev quotientAddCommGroup (N : Submodule S W) : AddCommGroup (quotientSpace N) :=
+  Submodule.Quotient.addCommGroup N
+
+private abbrev quotientModule (N : Submodule S W) :
+    @Module S (quotientSpace N) _ (quotientAddCommGroup N).toAddCommMonoid :=
+  Submodule.Quotient.module N
+
+end QuotientModule
+
 /-- The precise localized Jacobian quotient as a residue-field module. -/
 abbrev OriginJacobianQuotient : Type :=
-  Quotient (Submodule.quotientRel (R := K) (M := OriginLocalRing) localJacobianSubmodule)
+  quotientSpace (S := K) (W := OriginLocalRing) localJacobianSubmodule
 
+set_option maxHeartbeats 3000000 in
 instance : AddCommGroup OriginJacobianQuotient :=
-  Submodule.Quotient.addCommGroup (R := K) (M := OriginLocalRing) localJacobianSubmodule
+  quotientAddCommGroup (S := K) (W := OriginLocalRing) localJacobianSubmodule
 
+set_option maxHeartbeats 3000000 in
 instance : Module K OriginJacobianQuotient :=
-  Submodule.Quotient.module (R := K) (M := OriginLocalRing) localJacobianSubmodule
+  quotientModule (S := K) (W := OriginLocalRing) localJacobianSubmodule
 
 private def lineToFraction : CurveRing →+* F :=
   (algebraMap P F).comp lineMap
@@ -165,10 +182,12 @@ private theorem originLocalRing_not_finite : ¬ Module.Finite K OriginLocalRing 
 
 private theorem quotient_not_finite_of_eq_bot {S W : Type*} [Ring S] [AddCommGroup W]
     [Module S W] (N : Submodule S W) (hN : N = ⊥) (hW : ¬ Module.Finite S W) :
-    ¬ Module.Finite S (W ⧸ N) :=
+    ¬ @Module.Finite S (quotientSpace N) _ (quotientAddCommGroup N).toAddCommMonoid
+      (quotientModule N) :=
   fun h => hW ((Module.Finite.equiv_iff (N.quotEquivOfEqBot hN)).mp h)
 
 /-- The actual local Jacobian quotient has infinite dimension over the residue field. -/
+set_option maxHeartbeats 3000000 in
 theorem paper2_localJacobianQuotient_not_finite :
     ¬ Module.Finite K OriginJacobianQuotient :=
   quotient_not_finite_of_eq_bot (S := K) (W := OriginLocalRing) localJacobianSubmodule
