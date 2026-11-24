@@ -57,11 +57,13 @@ jobs:
           upstream_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$upstream_lean_path"
           status=0
+          compiled_imports=()
           modules=(Spt1 Spt2 Spt3 Spt4 Spt5 Spt6 Spt7 Mock1 Mock1_Advanced Mock2 Mock2_Advanced
               Mock2_FunctionalAnalysis Mock2_FunctionalAnalysis_Integrated QYM Mock3 BuildAll Verification)
           for module in "${modules[@]}"; do
             if lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$module.olean" \
                 "$GITHUB_WORKSPACE/$project/$module.lean" > "$logs/$module.log" 2>&1; then
+              compiled_imports+=("$project.$module")
               echo "$module passed" | tee -a "$logs/build-status.log"
             else
               echo "$module failed" | tee -a "$logs/build-status.log"
@@ -69,8 +71,16 @@ jobs:
               status=1
             fi
           done
-          if [[ -f "$compiled/$project/BuildAll.olean" ]]; then
-            lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/AxiomAudit.lean" > "$logs/axioms.tsv" 2>&1 || status=1
+          if [[ "${#compiled_imports[@]}" -gt 0 ]]; then
+            # Audit successful original modules even when another original import failed.
+            # Build from the same audit body used for the complete vendored environment.
+            audit="${RUNNER_TEMP}/OriginalSourceAxiomAudit.lean"
+            {
+              printf 'import Lean\n'
+              printf 'import %s\n' "${compiled_imports[@]}"
+              sed '1,2d' "$GITHUB_WORKSPACE/$project/ManuscriptAudit/AxiomAudit.lean"
+            } > "$audit"
+            lean "$audit" > "$logs/axioms.tsv" 2>&1 || status=1
             tail -n 25 "$logs/axioms.tsv"
           fi
           exit "$status"

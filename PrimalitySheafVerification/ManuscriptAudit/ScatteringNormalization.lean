@@ -1,7 +1,9 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
 
 /-!
 # Scattering density and the derivative convention
@@ -46,6 +48,35 @@ theorem paper9_real_trace_over_i_has_zero_real_part (trace : ℝ) :
     Complex.inv_I]
   simp [Complex.mul_re]
 
+/-- A nonzero holomorphic scalar family satisfying the scalar
+functional equation and unitarity on the critical line. -/
+def analyticUnitaryExample (s : ℂ) : ℂ := Complex.exp (1 / 2 - s)
+
+theorem analyticUnitaryExample_functional_equation (s : ℂ) :
+    analyticUnitaryExample s * analyticUnitaryExample (1 - s) = 1 := by
+  unfold analyticUnitaryExample
+  rw [← Complex.exp_add]
+  rw [show (1 / 2 - s) + (1 / 2 - (1 - s)) = (0 : ℂ) by ring,
+    Complex.exp_zero]
+
+theorem analyticUnitaryExample_unitary (t : ℝ) :
+    ‖analyticUnitaryExample (1 / 2 + Complex.I * (t : ℂ))‖ = 1 := by
+  have h : (1 / 2 : ℂ) - (1 / 2 + Complex.I * (t : ℂ)) =
+      -(Complex.I * (t : ℂ)) := by ring
+  simp [analyticUnitaryExample, h, Complex.norm_exp, Complex.mul_re]
+
+/-- Holomorphic differentiation can yield a negative real normalized
+logarithmic derivative even with both scattering symmetries above. -/
+theorem paper9_unitary_analytic_example_log_derivative_negative (s : ℂ) :
+    deriv analyticUnitaryExample s * (analyticUnitaryExample s)⁻¹ = -1 := by
+  have hLin : HasDerivAt (fun z : ℂ => 1 / 2 - z) (-1) s := by
+    simpa using (hasDerivAt_id s).const_sub (1 / 2 : ℂ)
+  have h : HasDerivAt analyticUnitaryExample (-analyticUnitaryExample s) s := by
+    simpa only [analyticUnitaryExample, Function.comp_def, mul_neg, mul_one] using
+      (Complex.hasDerivAt_exp (1 / 2 - s)).comp s hLin
+  have hne : analyticUnitaryExample s ≠ 0 := Complex.exp_ne_zero _
+  rw [h.deriv, neg_mul, mul_inv_cancel₀ hne]
+
 end
 
 end ManuscriptAudit.ScatteringNormalization
@@ -55,7 +86,10 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.ScatteringNormalization.paper9_displayed_scattering_densities_eq_iff_zero,
-      ``ManuscriptAudit.ScatteringNormalization.paper9_real_trace_over_i_has_zero_real_part] do
+      ``ManuscriptAudit.ScatteringNormalization.paper9_real_trace_over_i_has_zero_real_part,
+      ``ManuscriptAudit.ScatteringNormalization.analyticUnitaryExample_functional_equation,
+      ``ManuscriptAudit.ScatteringNormalization.analyticUnitaryExample_unitary,
+      ``ManuscriptAudit.ScatteringNormalization.paper9_unitary_analytic_example_log_derivative_negative] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
