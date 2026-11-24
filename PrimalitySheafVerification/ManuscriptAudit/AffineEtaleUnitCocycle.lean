@@ -36,28 +36,32 @@ private theorem diagonal_first :
     diagonalArrow R B ≫ firstProjection R B = 𝟙 (ofAlgebra R B) := by
   apply coordinate_arrow_ext R
   intro b
-  change Algebra.TensorProduct.lmul' R (b ⊗ₜ[R] (1 : B)) = b
+  let a : B := b
+  change Algebra.TensorProduct.lmul' (S := B) R (a ⊗ₜ[R] (1 : B)) = a
   rw [Algebra.TensorProduct.lmul'_apply_tmul, mul_one]
 
 private theorem diagonal_second :
     diagonalArrow R B ≫ secondProjection R B = 𝟙 (ofAlgebra R B) := by
   apply coordinate_arrow_ext R
   intro b
-  change Algebra.TensorProduct.lmul' R ((1 : B) ⊗ₜ[R] b) = b
+  let a : B := b
+  change Algebra.TensorProduct.lmul' (S := B) R ((1 : B) ⊗ₜ[R] a) = a
   rw [Algebra.TensorProduct.lmul'_apply_tmul, one_mul]
 
 private theorem triple_left :
     projection12 R B ≫ firstProjection R B = projection13 R B ≫ firstProjection R B := by
   apply coordinate_arrow_ext R
   intro b
-  change pull12 R B (b ⊗ₜ[R] (1 : B)) = pull13 R B (b ⊗ₜ[R] (1 : B))
+  let a : B := b
+  change pull12 R B (a ⊗ₜ[R] (1 : B)) = pull13 R B (a ⊗ₜ[R] (1 : B))
   simp only [pull12, pull13, Algebra.TensorProduct.map_tmul, AlgHom.id_apply, map_one]
 
 private theorem triple_middle :
     projection12 R B ≫ secondProjection R B = projection23 R B ≫ firstProjection R B := by
   apply coordinate_arrow_ext R
   intro b
-  change pull12 R B ((1 : B) ⊗ₜ[R] b) = pull23 R B (b ⊗ₜ[R] (1 : B))
+  let a : B := b
+  change pull12 R B ((1 : B) ⊗ₜ[R] a) = pull23 R B (a ⊗ₜ[R] (1 : B))
   simp only [pull12, pull23, Algebra.TensorProduct.map_tmul, AlgHom.id_apply,
     Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.includeRight_apply]
 
@@ -65,7 +69,8 @@ private theorem triple_right :
     projection13 R B ≫ secondProjection R B = projection23 R B ≫ secondProjection R B := by
   apply coordinate_arrow_ext R
   intro b
-  change pull13 R B ((1 : B) ⊗ₜ[R] b) = pull23 R B ((1 : B) ⊗ₜ[R] b)
+  let a : B := b
+  change pull13 R B ((1 : B) ⊗ₜ[R] a) = pull23 R B ((1 : B) ⊗ₜ[R] a)
   simp only [pull13, pull23, Algebra.TensorProduct.map_tmul, AlgHom.id_apply,
     Algebra.TensorProduct.includeRight_apply]
 
@@ -97,7 +102,6 @@ private theorem transition_restriction {W : (Spec (CommRingCat.of R)).AffineEtal
     ι.hom.app (op W) ((G R).obj.map r.op (transitionSection R B ι x y hy)) =
       I.obj.map (r ≫ firstProjection R B).op y - I.obj.map (r ≫ secondProjection R B).op y := by
   rw [NatTrans.naturality_apply]
-  unfold transitionSection
   rw [difference_spec]
   change (I.obj.map r.op).hom (_ - _) = _
   rw [map_sub]
@@ -135,6 +139,7 @@ theorem transition_cocycle :
     exact sub_add_sub_cancel _ _ _
   exact congrArg (fun t : Additive (B ⊗[R] (B ⊗[R] B))ˣ => (t.toMul : B ⊗[R] (B ⊗[R] B))) h
 
+include y hy in
 /-- One local lift on a faithfully flat affine étale cover of a PID
 can be corrected to an actual global lift of the same cokernel section. -/
 theorem global_lift_from_faithfully_flat_affine_lift [IsDomain R] [IsPrincipalIdealRing R]
@@ -145,13 +150,19 @@ theorem global_lift_from_faithfully_flat_affine_lift [IsDomain R] [IsPrincipalId
   let r := Units.map (Algebra.TensorProduct.includeRight : B →ₐ[R] B ⊗[R] B).toMonoidHom
   have hf : (algebraMap R B).FaithfullyFlat :=
     RingHom.faithfullyFlat_algebraMap_iff.mpr inferInstance
-  have hDescent : ∀ c : (B ⊗[R] B)ˣ,
+  let descent (alg : Algebra R B) : Prop :=
+    letI : Algebra R B := alg
+    ∀ c : (B ⊗[R] B)ˣ,
       diagonal R B (c : B ⊗[R] B) = 1 →
       pull12 R B (c : B ⊗[R] B) * pull23 R B (c : B ⊗[R] B) =
         pull13 R B (c : B ⊗[R] B) →
-      ∃ v : Bˣ, c = (l v)⁻¹ * r v := by
-    simpa only [toAlgebra_algebraMap, l, r] using
-      AffineUnitDescent.unit_cocycle_is_coboundary (algebraMap R B) hf
+      ∃ v : Bˣ, c =
+        (Units.map (Algebra.TensorProduct.includeLeft : B →ₐ[R] B ⊗[R] B).toMonoidHom v)⁻¹ *
+        Units.map (Algebra.TensorProduct.includeRight : B →ₐ[R] B ⊗[R] B).toMonoidHom v
+  have hCanonical : descent ((algebraMap R B).toAlgebra) :=
+    AffineUnitDescent.unit_cocycle_is_coboundary (algebraMap R B) hf
+  have hAlg : (algebraMap R B).toAlgebra = ‹Algebra R B› := toAlgebra_algebraMap
+  have hDescent : descent ‹Algebra R B› := Eq.mp (congrArg descent hAlg) hCanonical
   obtain ⟨v, hv⟩ := hDescent u (transition_diagonal R B ι x y hy) (transition_cocycle R B ι x y hy)
   let b : Additive Bˣ := Additive.ofMul v⁻¹
   have hb : transitionSection R B ι x y hy =

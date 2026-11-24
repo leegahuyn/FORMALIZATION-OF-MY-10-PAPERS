@@ -40,6 +40,14 @@ private theorem cover_of_jointly_surjective {U : X.AffineEtale}
   simp only [Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
   exact h x
 
+private theorem underlying_types_isSheaf
+    (I : Sheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u}) :
+    Presieve.IsSheaf (Scheme.AffineEtale.topology X) (I.obj ⋙ forget AddCommGrpCat.{u}) := by
+  letI : PreservesLimitsOfSize.{u, u + 1} (forget AddCommGrpCat.{u}) :=
+    AddCommGrpCat.adj.rightAdjoint_preservesLimits
+  exact (isSheaf_iff_isSheaf_of_type (Scheme.AffineEtale.topology X) _).mp
+    (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{u}) I.property)
+
 private theorem sections_subsingleton_of_empty
     (I : Sheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u})
     (W : X.AffineEtale) [IsEmpty ((underlying X).obj W)] :
@@ -48,9 +56,7 @@ private theorem sections_subsingleton_of_empty
   let f : ∀ i, V i ⟶ W := fun i => PEmpty.elim i
   have hCov := cover_of_jointly_surjective V f (fun x => isEmptyElim x)
   let P := I.obj ⋙ forget AddCommGrpCat.{u}
-  have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P :=
-    (isSheaf_iff_isSheaf_of_type (Scheme.AffineEtale.topology X) P).mp
-      (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{u}) I.property)
+  have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P := underlying_types_isSheaf I
   obtain ⟨t, _, ht⟩ :=
     (Presieve.isSheafFor_arrows_iff (P := P) f).mp (hI.isSheafFor _ hCov)
       (fun i => PEmpty.elim i) (fun i => PEmpty.elim i)
@@ -103,9 +109,7 @@ theorem glue_sections
     ∃! z : I.obj.obj (op (productObject B g)),
       ∀ i, I.obj.map (componentArrow B g i).op z = s i := by
   let P := I.obj ⋙ forget AddCommGrpCat.{u}
-  have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P :=
-    (isSheaf_iff_isSheaf_of_type (Scheme.AffineEtale.topology X) P).mp
-      (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{u}) I.property)
+  have hI : Presieve.IsSheaf (Scheme.AffineEtale.topology X) P := underlying_types_isSheaf I
   have hs : Presieve.Arrows.Compatible P (componentArrow B g) s := by
     intro i j W p q hpq
     change I.obj.map p.op (s i) = I.obj.map q.op (s j)

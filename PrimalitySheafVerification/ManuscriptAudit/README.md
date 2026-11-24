@@ -21,7 +21,7 @@ See [coverage](coverage.md), the [numbered-label candidates](numbered-label-cand
 
 ## Lean checks
 
-The 87 declarations in the first two successful runs use only axioms from the three-name allowlist. The [declaration ledger](verified-declarations.tsv) records 428 distinct declarations with successful kernel and axiom checks across the specified jobs. It gives the checked source commit and Mathlib environment for each row. All 428 were checked with official Mathlib. The ledger also records 388 corresponding checks against repository-vendored Mathlib. The ledger tracks verifiable checks on the listed revisions and does not determine manuscript fidelity.
+The 87 declarations in the first two successful runs use only axioms from the three-name allowlist. The [declaration ledger](verified-declarations.tsv) records 437 distinct declarations with successful kernel and axiom checks across the specified jobs. It gives the checked source commit and Mathlib environment for each row. All 437 were checked with official Mathlib. The ledger also records 397 corresponding checks against repository-vendored Mathlib. The ledger tracks verifiable checks on the listed revisions and does not determine manuscript fidelity.
 
 | Job | Result |
 | --- | --- |
