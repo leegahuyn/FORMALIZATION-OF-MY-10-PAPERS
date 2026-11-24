@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.Group.ULift
+import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Data.Finsupp.Single
 import PrimalitySheafVerification.ManuscriptAudit.FixedCoverCechCounterexample
 
@@ -19,6 +20,7 @@ open ManuscriptAudit.TwoOpenDerivedComparison ManuscriptAudit.FixedCoverCechCoun
 noncomputable section
 
 set_option synthInstance.maxHeartbeats 120000
+set_option maxHeartbeats 1200000
 
 private abbrev G := AddCommGrpCat.{0}
 local notation "D" => PrimeSpectrum.basicOpen (R := ℤ)
@@ -30,11 +32,11 @@ local instance (X : TopCat.{0}) : HasExt.{0} (Sheaf (Opens.grothendieckTopology 
 private def terminalYonedaIso (X : TopCat.{0}) :
     yoneda.obj (⊤ : Opens X) ≅ (Functor.const (Opens X)ᵒᵖ).obj (PUnit : Type) := by
   refine NatIso.ofComponents (fun U => ?_) ?_
-  · let e : (unop U ⟶ (⊤ : Opens X)) ≃ PUnit where
-      toFun _ := PUnit.unit
-      invFun _ := homOfLE le_top
-      left_inv _ := Subsingleton.elim _ _
-      right_inv _ := Subsingleton.elim _ _
+  · let e : (unop U ⟶ (⊤ : Opens X)) ≃ (PUnit : Type) :=
+      { toFun := fun _ => PUnit.unit
+        invFun := fun _ => homOfLE le_top
+        left_inv := fun _ => Subsingleton.elim _ _
+        right_inv := fun _ => Subsingleton.elim _ _ }
     exact e.toIso
   · intro U V f
     ext x <;> rfl
@@ -53,14 +55,18 @@ def derivedOnTopEquivGlobal {X : TopCat.{0}} (F : Sheaf (Opens.grothendieckTopol
     F.H' n (⊤ : Opens X) ≃+ F.H n := by
   let i : ((Functor.const (Opens X)ᵒᵖ).obj (PUnit : Type) ⋙ AddCommGrpCat.free) ≅
       (Functor.const (Opens X)ᵒᵖ).obj (AddCommGrpCat.of (ULift.{0} ℤ)) :=
-    NatIso.ofComponents (fun _ => freeSingletonIso) (by intros; simp)
+    NatIso.ofComponents (fun _ => freeSingletonIso) (by
+      intro U V f
+      change AddCommGrpCat.free.map (𝟙 (PUnit : Type)) ≫ freeSingletonIso.hom =
+        freeSingletonIso.hom ≫ 𝟙 _
+      rw [Functor.map_id, Category.id_comp, Category.comp_id])
   let j := (presheafToSheaf (Opens.grothendieckTopology X) G).mapIso
-    ((isoWhiskerRight (terminalYonedaIso X) AddCommGrpCat.free).trans i)
+    ((Functor.isoWhiskerRight (terminalYonedaIso X) AddCommGrpCat.free).trans i)
   exact (((extFunctor n).mapIso j.op).app F).addCommGroupIsoToAddEquiv.symm
 
 theorem boundarySheaf_globalDerivedH1_nontrivial : Nontrivial (boundarySheaf.H 1) := by
   letI := boundarySheaf_derivedH1_nontrivial
-  exact (derivedOnTopEquivGlobal boundarySheaf 1).injective.nontrivial
+  exact (derivedOnTopEquivGlobal (X := TopCat.of (PrimeSpectrum ℤ)) boundarySheaf 1).injective.nontrivial
 
 /-- The same failure, with the global derived group written literally
 as Ext¹ from the constant integer sheaf. -/
@@ -71,7 +77,7 @@ theorem paper4_fixedCoverCech_not_globalDerivedH1 :
         boundarySheaf.H 1) := by
   rintro ⟨e⟩
   exact paper4_fixedCoverCech_not_derivedH1
-    ⟨e.trans (derivedOnTopEquivGlobal boundarySheaf 1).symm⟩
+    ⟨e.trans (derivedOnTopEquivGlobal (X := TopCat.of (PrimeSpectrum ℤ)) boundarySheaf 1).symm⟩
 
 end
 

@@ -66,8 +66,7 @@ private theorem cyclicNonzeroOfLaurentCoordinates (R : CommRingCat.{0}) [Algebra
   intro h
   apply hc
   apply H.injective
-  rw [H.map_zero]
-  exact h
+  exact h.trans H.map_zero.symm
 
 /-- The class of the Laurent generator gives a nonzero degree-one class
 in the actual constant roots-of-unity sheaf. -/

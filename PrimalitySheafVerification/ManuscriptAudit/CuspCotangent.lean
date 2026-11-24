@@ -140,6 +140,14 @@ theorem paper2_integral_cusp_h1_cotangent_vanishing_and_singular (h2 : (2 : K) �
       ¬ Algebra.Smooth K (AdjoinRoot (CuspDelta.cuspPlaneEquation K)) :=
   ⟨paper2_cusp_h1Cotangent_subsingleton K h2, CuspPlaneSmoothness.cuspPlane_not_smooth K⟩
 
+/-- The omitted projectivity condition fails on the same affine cusp. -/
+theorem paper2_cusp_kaehler_not_projective (h2 : (2 : K) ≠ 0) :
+    ¬ Module.Projective (CuspRing K) (KaehlerDifferential K (CuspRing K)) := by
+  intro hProjective
+  apply CuspPlaneSmoothness.cuspPlane_not_formallySmooth K
+  exact Algebra.formallySmooth_iff.mpr
+    ⟨hProjective, paper2_cusp_h1Cotangent_subsingleton K h2⟩
+
 end
 
 end ManuscriptAudit.CuspCotangent
@@ -149,7 +157,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CuspCotangent.paper2_cusp_h1Cotangent_subsingleton,
-      ``ManuscriptAudit.CuspCotangent.paper2_integral_cusp_h1_cotangent_vanishing_and_singular] do
+      ``ManuscriptAudit.CuspCotangent.paper2_integral_cusp_h1_cotangent_vanishing_and_singular,
+      ``ManuscriptAudit.CuspCotangent.paper2_cusp_kaehler_not_projective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
