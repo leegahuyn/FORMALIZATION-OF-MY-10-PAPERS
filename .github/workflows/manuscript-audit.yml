@@ -29,6 +29,7 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
       - name: Build all primary modules and bridges
+        id: aggregate
         shell: bash
         run: |
           set -euo pipefail
@@ -40,6 +41,7 @@ jobs:
           tail -n 80 "$logs/build-all.log"
           exit "$status"
       - name: Check focused verification file
+        id: focused
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         shell: bash
         run: |
@@ -49,6 +51,16 @@ jobs:
           status=0
           lake env lean PrimalitySheafVerification/Verification.lean > "$logs/verification.log" 2>&1 || status=$?
           cat "$logs/verification.log"
+          exit "$status"
+      - name: Audit transitive kernel dependencies
+        if: ${{ !cancelled() && steps.aggregate.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          logs="${RUNNER_TEMP}/manuscript-audit"
+          status=0
+          lake env lean PrimalitySheafVerification/ManuscriptAudit/AxiomAudit.lean > "$logs/axioms.tsv" 2>&1 || status=$?
+          tail -n 25 "$logs/axioms.tsv"
           exit "$status"
       - name: Preserve logs on GitHub
         if: always()
