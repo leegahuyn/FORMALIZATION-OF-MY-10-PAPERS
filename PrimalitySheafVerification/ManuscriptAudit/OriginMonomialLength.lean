@@ -178,17 +178,18 @@ def boxLocalEquiv (m n : ℕ) :
     (R K ⧸ boxIdeal K m n) ≃ₐ[K]
       (OriginRing K ⧸ (boxIdeal K m n).map (algebraMap (R K) (OriginRing K))) := by
   let Q := R K ⧸ boxIdeal K m n
-  let L := OriginRing K ⧸ (boxIdeal K m n).map (algebraMap (R K) (OriginRing K))
+  let J := (boxIdeal K m n).map (algebraMap (R K) (OriginRing K))
+  let L := OriginRing K ⧸ J
   let S := Algebra.algebraMapSubmonoid Q (originIdeal K).primeCompl
   have hS : S ≤ IsUnit.submonoid Q := by
     rintro _ ⟨s, hs, rfl⟩
     exact box_denominator_isUnit K m n ⟨s, hs⟩
   letI : IsLocalization S L := inferInstance
-  letI : IsScalarTower K Q L := IsScalarTower.of_algebraMap_eq fun k => by
-    change Ideal.Quotient.mk _ (algebraMap K (OriginRing K) k) =
-      Ideal.Quotient.mk _ (algebraMap (R K) (OriginRing K) (algebraMap K (R K) k))
-    rw [IsScalarTower.algebraMap_apply K (R K) (OriginRing K)]
-  exact (IsLocalization.atUnits Q S hS (S := L)).restrictScalars K
+  let e := IsLocalization.atUnits Q S hS (S := L)
+  refine AlgEquiv.ofRingEquiv (f := e.toRingEquiv) (fun k => ?_)
+  change Ideal.Quotient.mk J (algebraMap (R K) (OriginRing K) (algebraMap K (R K) k)) =
+    Ideal.Quotient.mk J (algebraMap K (OriginRing K) k)
+  rw [IsScalarTower.algebraMap_apply K (R K) (OriginRing K)]
 
 /-- The true origin-local quotient by coordinate powers has the rectangle's length. -/
 theorem boxLocalLength (m n : ℕ) :
@@ -260,6 +261,7 @@ theorem benchmarkJacobian_eq_box (a b : ℕ) (h : (a : K) ≠ 0 ∨ (b : K) ≠ 
   apply le_antisymm
   · refine Ideal.span_le.mpr ?_
     intro z hz
+    change z ∈ J
     rcases Set.mem_insert_iff.mp hz with rfl | hz
     · exact J.add_mem (pow_mem_ideal_of_le K J _ hm hJx) (pow_mem_ideal_of_le K J _ hn hJy)
     rcases Set.mem_insert_iff.mp hz with rfl | hz
@@ -273,6 +275,7 @@ theorem benchmarkJacobian_eq_box (a b : ℕ) (h : (a : K) ≠ 0 ∨ (b : K) ≠ 
     · exact J.mul_mem_left _ (by simpa only [n, if_neg hb] using hJy)
   · refine Ideal.span_le.mpr ?_
     intro z hz
+    change z ∈ I
     rcases Set.mem_insert_iff.mp hz with rfl | hz
     · by_cases ha : (a : K) = 0
       · have hb := h.resolve_left (not_ne_iff.mpr ha)

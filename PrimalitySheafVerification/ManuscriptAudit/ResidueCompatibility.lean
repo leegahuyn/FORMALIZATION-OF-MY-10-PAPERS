@@ -99,21 +99,23 @@ theorem commonResidue_detects_both_iff (I J : Ideal R) :
   · intro h
     refine le_antisymm (fun x hx => ?_) (fun x hx => ?_)
     · have h0 := Ideal.Quotient.eq_zero_iff_mem.mpr
-        (show x ∈ I ⊔ J from le_sup_left hx)
+        (show x ∈ I ⊔ J from (le_sup_left : I ≤ I ⊔ J) hx)
       have hq : Ideal.Quotient.mk (I ⊔ J) x = Ideal.Quotient.mk (I ⊔ J) 0 :=
         h0.trans (map_zero _).symm
       have hh := (h x 0 hq).2
       rw [map_zero] at hh
       exact Ideal.Quotient.eq_zero_iff_mem.mp hh
     · have h0 := Ideal.Quotient.eq_zero_iff_mem.mpr
-        (show x ∈ I ⊔ J from le_sup_right hx)
+        (show x ∈ I ⊔ J from (le_sup_right : J ≤ I ⊔ J) hx)
       have hq : Ideal.Quotient.mk (I ⊔ J) x = Ideal.Quotient.mk (I ⊔ J) 0 :=
         h0.trans (map_zero _).symm
       have hh := (h x 0 hq).1
       rw [map_zero] at hh
       exact Ideal.Quotient.eq_zero_iff_mem.mp hh
   · rintro rfl x y h
-    have he : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := by simpa using h
+    have hm : x - y ∈ I ⊔ I := Ideal.Quotient.eq.mp h
+    have hm' : x - y ∈ I := by simpa only [sup_idem] using hm
+    have he := Ideal.Quotient.eq.mpr hm'
     exact ⟨he, he⟩
 
 /-- For the moduli 6 and 3², the common residue forgets both

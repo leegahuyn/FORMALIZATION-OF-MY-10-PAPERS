@@ -28,11 +28,11 @@ theorem unitSheaf_HOne_subsingleton_of_pid (R : Type) [CommRing R]
     [IsDomain R] [IsPrincipalIdealRing R] :
     Subsingleton (Sheaf.H (KummerSheafSequence.unitSheaf (Spec (CommRingCat.of R))) 1) := by
   let A := CommRingCat.of R
-  letI : Subsingleton (Sheaf.H (KummerUnitsSheaf.coordinateUnitSheaf (Spec A)) 1) :=
+  have hCoordinate : Subsingleton (Sheaf.H (KummerUnitsSheaf.coordinateUnitSheaf (Spec A)) 1) :=
     AffineEtaleProductDescent.affineUnitH1_subsingleton R
   let e := ((Sheaf.functorH (affineSite A) 1).mapIso
     (KummerUnitsSheaf.coordinateUnitSheafIso (Spec A))).addCommGroupIsoToAddEquiv
-  exact e.symm.injective.subsingleton
+  exact ⟨fun x y => e.symm.injective (hCoordinate.elim _ _)⟩
 
 variable (K : Type) [Field K]
 
@@ -78,13 +78,13 @@ theorem affineLine_roots_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :
 theorem affineLine_cyclic_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :
     Subsingleton (Sheaf.H ((constantSheaf (affineSite (lineRing K))
       AddCommGrpCat.{0}).obj (AddCommGrpCat.of (ZMod d))) 1) := by
-  letI := affineLine_roots_HOne_subsingleton K d
+  have hRoots := affineLine_roots_HOne_subsingleton K d
   let r : Additive (rootsOfUnity d K) ≃+ ZMod d :=
     (CuspRootCoefficients.rootsOfUnityEquivZMod K d).toAdditive
   let e := (constantSheaf (affineSite (lineRing K)) AddCommGrpCat.{0}).mapIso
     (r.toAddCommGrpIso : KummerConstantCoefficients.coefficientGroup K d ≅ AddCommGrpCat.of (ZMod d))
   let h := ((Sheaf.functorH (affineSite (lineRing K)) 1).mapIso e).addCommGroupIsoToAddEquiv
-  exact h.symm.injective.subsingleton
+  exact ⟨fun x y => h.symm.injective (hRoots.elim _ _)⟩
 
 /-- The punctured cusp has native H¹ isomorphic to the constant cyclic
 coefficient group for degree at least two and nonzero in the field. -/

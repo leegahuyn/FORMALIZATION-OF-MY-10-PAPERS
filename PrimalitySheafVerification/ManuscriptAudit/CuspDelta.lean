@@ -49,7 +49,8 @@ private theorem pow_mem_cusp (n : ℕ) (hn : n ≠ 1) :
     rw [hform, pow_add, pow_mul]
     exact (cuspSubalgebra K).mul_mem h3 ((cuspSubalgebra K).pow_mem h2 _)
 
-private theorem cusp_mem_iff_coeff_one_zero (f : Polynomial K) :
+/-- A polynomial lies in the cusp coordinate algebra exactly when its linear coefficient vanishes. -/
+theorem cusp_mem_iff_coeff_one_zero (f : Polynomial K) :
     f ∈ cuspSubalgebra K ↔ f.coeff 1 = 0 := by
   constructor
   · intro hf
@@ -547,13 +548,16 @@ theorem paper2_cusp_conductor_comap_eq_origin :
     · exact h
     · exact (cusp_mem_iff_coeff_one_zero K a).mp a.property
 
-private abbrev cuspSquareQuotient (K : Type*) [Field K] :=
+/-- The polynomial algebra reduced modulo the square of the origin coordinate. -/
+abbrev cuspSquareQuotient (K : Type*) [Field K] :=
   Polynomial K ⧸ Ideal.span {((X : Polynomial K) ^ 2)}
 
-private def cuspSquareReduction : Polynomial K →+* cuspSquareQuotient K :=
+/-- Reduction to the square-zero neighborhood of the origin. -/
+def cuspSquareReduction : Polynomial K →+* cuspSquareQuotient K :=
   Ideal.Quotient.mk _
 
-private theorem cusp_square_reduction_eq_constant_iff (f : Polynomial K) (c : K) :
+/-- A polynomial and a constant agree modulo the square precisely when their constant terms agree and the linear coefficient vanishes. -/
+theorem cusp_square_reduction_eq_constant_iff (f : Polynomial K) (c : K) :
     cuspSquareReduction K f = cuspSquareReduction K (C c) ↔
       f.coeff 0 = c ∧ f.coeff 1 = 0 := by
   rw [cuspSquareReduction, Ideal.Quotient.eq, Ideal.mem_span_singleton,
