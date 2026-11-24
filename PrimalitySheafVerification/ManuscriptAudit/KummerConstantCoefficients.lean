@@ -53,13 +53,14 @@ private theorem coefficientMap_natural {U V : (Spec R).AffineEtale} (f : U ⟶ V
       have h := f.w
       change Scheme.Spec.map f.left ≫ V.hom = U.hom ≫ 𝟙 (Spec R) at h
       exact h.trans (Category.comp_id U.hom)
-    calc
-      Scheme.Spec.map (f.left ≫ v) = Scheme.Spec.map f.left ≫ Scheme.Spec.map v :=
-        Scheme.Spec.map_comp f.left v
-      _ = Scheme.Spec.map f.left ≫ V.hom :=
-        congrArg (fun g => Scheme.Spec.map f.left ≫ g) hv
-      _ = U.hom := hw
-      _ = Scheme.Spec.map u := hu.symm
+    have hComp : Scheme.Spec.map (f.left ≫ v) =
+        Scheme.Spec.map f.left ≫ Scheme.Spec.map v :=
+      Scheme.Spec.map_comp f.left v
+    have hLeft : Scheme.Spec.map f.left ≫ Scheme.Spec.map v =
+        Scheme.Spec.map f.left ≫ V.hom :=
+      congrArg (fun g : Scheme.Spec.obj V.left ⟶ Spec R => Scheme.Spec.map f.left ≫ g) hv
+    change Scheme.Spec.map (f.left ≫ v) = Scheme.Spec.map u
+    exact Eq.trans hComp (Eq.trans hLeft (Eq.trans hw hu.symm))
   have h : ((f.left ≫ (Scheme.Spec.preimage V.hom : V.left ⟶ op R)).unop).hom =
       (Scheme.Spec.preimage U.hom : U.left ⟶ op R).unop.hom :=
     congrArg (fun g : U.left ⟶ op R => g.unop.hom) hPreimage

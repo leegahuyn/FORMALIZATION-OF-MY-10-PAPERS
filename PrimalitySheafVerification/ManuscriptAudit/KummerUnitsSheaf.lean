@@ -55,6 +55,11 @@ private instance (X : Scheme.{0}) :
   let F := Scheme.Etale.forget X
   letI : F.IsContinuous X.smallEtaleTopology I := by
     letI : RepresentablyFlat F := flat_of_preservesFiniteLimits F
+    letI : MorphismProperty.RespectsIso (@Etale.{0}) := by
+      apply MorphismProperty.respectsIso_of_isStableUnderComposition
+      intro Y Z f hf
+      letI : IsIso f := hf
+      exact (inferInstance : Etale f)
     letI : F.LocallyCoverDense I :=
       Scheme.locallyCoverDense_of_le X (P := @Etale.{0}) (Q := @Etale.{0}) le_rfl
     rw [Functor.isContinuous_iff_coverPreserving]
@@ -88,8 +93,11 @@ theorem units_isSheaf (X : Scheme.{0}) :
   apply Presheaf.isSheaf_of_isSheaf_comp _ _ (forget AddCommGrpCat.{0})
   apply (Presheaf.isSheaf_of_iso_iff (unitsUnderlyingIso X)).mp
   apply (affineUnderlying X).op_comp_isSheaf_of_isSheaf _ Scheme.etaleTopology
-  apply Presheaf.IsSheaf.of_le Scheme.etaleTopology_le_proetaleTopology
-  exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _
+  have h : Presheaf.IsSheaf Scheme.proetaleTopology (yoneda.obj (Spec laurentRing)) := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
+      (J := Scheme.proetaleTopology) (yoneda.obj (Spec laurentRing))
+  exact Presheaf.IsSheaf.of_le Scheme.etaleTopology_le_proetaleTopology h
 
 /-- The coordinate-unit sheaf, using its explicit sections on affine objects. -/
 def coordinateUnitSheaf (X : Scheme.{0}) :

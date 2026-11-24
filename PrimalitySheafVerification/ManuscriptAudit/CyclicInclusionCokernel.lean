@@ -103,7 +103,7 @@ theorem lcmInclusionDifference_surjective (m n : ℕ) (hm : 0 < m) (hn : 0 < n) 
       (b : ZMod L) * (Nat.gcdB a b : ZMod L) = 1 := by
     have h := congrArg (fun t : ℤ => (t : ZMod L)) (Nat.gcd_eq_gcd_ab a b)
     rw [hCoprime] at h
-    simpa only [Int.cast_natCast, Nat.cast_one, Int.cast_add, Int.cast_mul] using h.symm
+    simpa only [Int.cast_natCast, Int.cast_one, Nat.cast_one, Int.cast_add, Int.cast_mul] using h.symm
   have hValue (u v : ℤ) :
       lcmInclusionDifference m n ((u : ZMod m), (v : ZMod n)) =
         (a : ZMod L) * (u : ZMod L) - (b : ZMod L) * (v : ZMod L) := by

@@ -135,6 +135,7 @@ theorem paper7_dirichlet_log_derivatives_abs_summable
   exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _)
     (fun p => h p (hα p) le_rfl) hBound
 
+set_option maxHeartbeats 1200000 in
 /-- The logarithm series with a uniformly bounded number of signed local
 factors admits termwise complex differentiation on the Dirichlet half-plane.
 Zero roots allow smaller local ranks to be padded to a common finite index. -/
@@ -158,8 +159,10 @@ theorem paper7_dirichlet_log_series_hasDeriv {ι : Type*} [Fintype ι]
     apply summable_sum
     intro i _
     exact (paper7_dirichlet_local_logs_summable (α i) hs (hα i)).mul_left (ε i)
-  refine hasDerivAt_tsum_of_isPreconnected (hBound.mul_left (Fintype.card ι : ℝ))
-    hOpen hConn ?_ ?_ hD hPoint hD
+  refine hasDerivAt_tsum_of_isPreconnected
+    (g := fun p z => ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) z)))
+    (g' := fun p z => ∑ i, ε i * localLogDerivative p (α i p) z)
+    (hBound.mul_left (Fintype.card ι : ℝ)) hOpen hConn ?_ ?_ hD hPoint hD
   · intro p z hz
     have hz' : W + 1 < z.re := hσ.trans hz
     exact HasDerivAt.fun_sum fun i _ =>
@@ -197,7 +200,9 @@ theorem paper7_dirichlet_scaled_euler_hasProd {ι : Type*} [Fintype ι]
     apply summable_sum
     intro i _
     exact (paper7_dirichlet_local_logs_summable (α i) hs (hα i)).mul_left (ε i)
-  exact ⟨by simpa only [Function.comp_apply] using hPoint.hasSum.cexp, Complex.exp_ne_zero _⟩
+  refine ⟨?_, Complex.exp_ne_zero _⟩
+  have hProduct := hPoint.hasSum.cexp
+  exact hProduct.congr_fun (fun _ => rfl)
 
 end
 
