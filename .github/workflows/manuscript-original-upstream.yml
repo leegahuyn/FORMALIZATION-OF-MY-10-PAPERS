@@ -1,0 +1,84 @@
+name: Manuscript original sources against official Mathlib
+on:
+  push:
+    branches: [codex/overleaf-bundle-formalization]
+    paths:
+      - '.github/workflows/manuscript-original-upstream.yml'
+      - 'PrimalitySheafVerification/*.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/AxiomAudit.lean'
+      - 'lean-toolchain'
+permissions:
+  contents: read
+concurrency:
+  group: manuscript-original-upstream-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  original:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: leanprover-community/mathlib4
+          ref: 79d0395a1825a6264ad5d269e35e60537518955e
+          path: upstream-mathlib
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-mathlib-cache: false
+          use-github-cache: false
+          lake-package-directory: upstream-mathlib
+      - name: Load official Mathlib artifacts
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          logs="${RUNNER_TEMP}/original-upstream-logs"
+          mkdir -p "$logs"
+          { git rev-parse HEAD; cat lean-toolchain; lean --version; lake --version; } > "$logs/provenance.log"
+          lake exe cache get Mathlib 2>&1 | tee "$logs/mathlib-cache.log"
+          lake build Mathlib 2>&1 | tee "$logs/mathlib-build.log"
+      - name: Build the unmodified original sources and audit their declarations
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          compiled="${RUNNER_TEMP}/original-upstream-modules"
+          logs="${RUNNER_TEMP}/original-upstream-logs"
+          project=PrimalitySheafVerification
+          mkdir -p "$compiled/$project"
+          upstream_lean_path="$(lake env printenv LEAN_PATH)"
+          export LEAN_PATH="$compiled:$upstream_lean_path"
+          status=0
+          modules=(Spt1 Spt2 Spt3 Spt4 Spt5 Spt6 Spt7 Mock1 Mock1_Advanced Mock2 Mock2_Advanced
+              Mock2_FunctionalAnalysis Mock2_FunctionalAnalysis_Integrated QYM Mock3 BuildAll Verification)
+          for module in "${modules[@]}"; do
+            if lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$module.olean" \
+                "$GITHUB_WORKSPACE/$project/$module.lean" > "$logs/$module.log" 2>&1; then
+              echo "$module passed" | tee -a "$logs/build-status.log"
+            else
+              echo "$module failed" | tee -a "$logs/build-status.log"
+              tail -n 50 "$logs/$module.log"
+              status=1
+            fi
+          done
+          if [[ -f "$compiled/$project/BuildAll.olean" ]]; then
+            lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/AxiomAudit.lean" > "$logs/axioms.tsv" 2>&1 || status=1
+            tail -n 25 "$logs/axioms.tsv"
+          fi
+          exit "$status"
+      - name: Preserve the result and toolchain provenance on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-original-upstream-${{ github.sha }}
+          path: ${{ runner.temp }}/original-upstream-logs
+          if-no-files-found: warn
+          retention-days: 30
