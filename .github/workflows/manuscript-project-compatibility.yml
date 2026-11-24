@@ -9,6 +9,8 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicLipschitz.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicBinomialLimit.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicExactBridge.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicLogNonzero.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicCoefficientTransfer.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicSpt6Bridge.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/NodalCotangent.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/CuspCotangent.lean'
@@ -22,7 +24,7 @@ permissions:
   contents: read
 concurrency:
   group: manuscript-project-upstream-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   check:
     name: Spt1, Spt5, and Spt6 against official Mathlib
@@ -83,7 +85,7 @@ jobs:
                     -o "$compiled/$project/ManuscriptAudit/PadicBinomialLimit.olean" \
                     "$GITHUB_WORKSPACE/$project/ManuscriptAudit/PadicBinomialLimit.lean" \
                     > "$logs/PadicBinomialLimit.log" 2>&1; then
-                  proofs+=(PadicExactBridge)
+                  proofs+=(PadicExactBridge PadicLogNonzero PadicCoefficientTransfer)
                 else
                   tail -n 80 "$logs/PadicBinomialLimit.log"
                   status=1
@@ -107,7 +109,8 @@ jobs:
               fi
               for proof in "${proofs[@]}"; do
                 LEAN_PATH="$compiled:$audit_lean_path" \
-                  lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |
+                  lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/ManuscriptAudit/$proof.olean" \
+                    "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |
                   tee "$logs/$proof.log" || status=1
               done
             else
