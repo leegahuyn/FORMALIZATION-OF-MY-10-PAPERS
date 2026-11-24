@@ -95,7 +95,7 @@ private theorem cusp_span_one_X :
   let S := Submodule.span (cuspSubalgebra K) ({1, X} : Set (Polynomial K))
   let a : cuspSubalgebra K := ⟨f - C (f.coeff 1) * X, by
     apply (cusp_mem_iff_coeff_one_zero K _).2
-    simp [Polynomial.coeff_C_mul_X]⟩
+    simp⟩
   let b : cuspSubalgebra K := ⟨C (f.coeff 1), by
     rw [Polynomial.C_eq_algebraMap]
     exact (cuspSubalgebra K).algebraMap_mem _⟩
@@ -123,7 +123,7 @@ theorem paper2_cusp_inclusion_integral :
       (Algebra.adjoin K ({(X : Polynomial K) ^ 2, X ^ 3} : Set (Polynomial K)))
       (Polynomial K) := by
   letI := paper2_cusp_inclusion_finite K
-  exact Algebra.IsIntegral.of_finite
+  exact Algebra.IsIntegral.of_finite _ _
 
 
 /-- The two monomials generating the cusp coordinate algebra. -/
