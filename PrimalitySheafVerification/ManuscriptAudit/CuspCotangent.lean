@@ -79,8 +79,18 @@ private theorem derivativePairing_of_relation :
       (2 : CuspRing K) * AdjoinRoot.root (CuspDelta.cuspPlaneEquation K)
   have hd : Polynomial.derivative (CuspDelta.cuspPlaneEquation K) =
       Polynomial.C (2 : Polynomial K) * (Polynomial.X : P K) := by
-    simp [CuspDelta.cuspPlaneEquation, Polynomial.derivative_X_pow]
-  rw [hd, map_mul, AdjoinRoot.mk_X, Polynomial.C_eq_natCast, map_natCast]
+    simp only [CuspDelta.cuspPlaneEquation, Polynomial.derivative_sub,
+      Polynomial.derivative_X_pow, Polynomial.derivative_C, sub_zero]
+    change Polynomial.C (2 : Polynomial K) * (Polynomial.X : P K) ^ 1 = _
+    rw [pow_one]
+  have hcoef : AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K) (Polynomial.C (2 : Polynomial K)) =
+      (2 : CuspRing K) := by
+    calc
+      _ = AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K) (2 : P K) :=
+        congrArg (AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K))
+          (map_ofNat (Polynomial.C : Polynomial K →+* P K) 2)
+      _ = _ := map_ofNat (AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K)) 2
+  rw [hd, map_mul, AdjoinRoot.mk_X, hcoef]
 
 private theorem root_ne_zero :
     AdjoinRoot.root (CuspDelta.cuspPlaneEquation K) ≠ 0 := by

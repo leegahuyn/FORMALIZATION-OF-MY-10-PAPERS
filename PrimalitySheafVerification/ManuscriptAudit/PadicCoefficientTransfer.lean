@@ -43,8 +43,9 @@ def shiftedBinomial (A : ℤ) (j : ℕ) : ℤ :=
 
 theorem shiftedBinomial_cast (A : ℤ) (j : ℕ) :
     (shiftedBinomial A j : ℚ_[p]) = Ring.choose ((A : ℚ_[p]) + 1) j := by
-  simpa only [shiftedBinomial, map_add, map_one, Int.castRingHom_apply, Int.cast_add, Int.cast_one] using
-    Ring.map_choose (Int.castRingHom ℚ_[p]) (A + 1) j
+  have h := Ring.map_choose (Int.castRingHom ℚ_[p]) (A + 1) j
+  change (Ring.choose (A + 1) j : ℚ_[p]) = Ring.choose ((A + 1 : ℤ) : ℚ_[p]) j at h
+  simpa only [shiftedBinomial, Int.cast_add, Int.cast_one] using h
 
 theorem shiftedBinomial_padic_norm_le_one (A : ℤ) (j : ℕ) :
     ‖Ring.choose ((A : ℚ_[p]) + 1) j‖ ≤ 1 := by

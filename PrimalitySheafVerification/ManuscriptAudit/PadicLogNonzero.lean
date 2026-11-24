@@ -79,12 +79,29 @@ theorem padicLog_prime : padicLog p (p : ℚ_[p]) = 0 := by
     (by simp : ‖(1 : ℚ_[p]) - 1‖ < 1)]
   simp [padicLogSeries, zero_pow (Nat.succ_ne_zero _)]
 
+theorem padicLog_one : padicLog p (1 : ℚ_[p]) = 0 := by
+  rw [padicLog_eq_unit_of_norm_one p (norm_one : ‖(1 : ℚ_[p])‖ = 1),
+    padicLogUnit_eq_series_of_principal_unit p
+      (by simp : ‖(1 : ℚ_[p]) - 1‖ < 1)]
+  simp [padicLogSeries, zero_pow (Nat.succ_ne_zero _)]
+
 /-- On nonzero arguments the logarithm respects the quotient. -/
 theorem padicLog_sub_eq_ratio {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
     padicLog p x - padicLog p y = padicLog p (x / y) := by
   unfold padicLog
   rw [padicLogUnit_sub_eq_ratio p (norm_unitFactor p hx) (norm_unitFactor p hy),
     unitFactor_div p hx hy]
+
+/-- The logarithm sends multiplication of nonzero p-adic numbers to addition. -/
+theorem padicLog_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
+    padicLog p (x * y) = padicLog p x + padicLog p y := by
+  have h := padicLog_sub_eq_ratio p (mul_ne_zero hx hy) hy
+  rw [mul_div_cancel_right₀ _ hy] at h
+  exact sub_eq_iff_eq_add.mp h
+
+theorem padicLog_inv {x : ℚ_[p]} (hx : x ≠ 0) :
+    padicLog p x⁻¹ = -padicLog p x := by
+  rw [← one_div, ← padicLog_sub_eq_ratio p one_ne_zero hx, padicLog_one, zero_sub]
 
 /-- The difference of logarithms is the series at \(x/y-1\) when
 the ratio is principal. Both arguments may have nonzero valuation. -/
@@ -122,7 +139,10 @@ run_cmd do
       ``ManuscriptAudit.PadicLogNonzero.unitFactor_div,
       ``ManuscriptAudit.PadicLogNonzero.padicLog_eq_unit_of_norm_one,
       ``ManuscriptAudit.PadicLogNonzero.padicLog_prime,
+      ``ManuscriptAudit.PadicLogNonzero.padicLog_one,
       ``ManuscriptAudit.PadicLogNonzero.padicLog_sub_eq_ratio,
+      ``ManuscriptAudit.PadicLogNonzero.padicLog_mul,
+      ``ManuscriptAudit.PadicLogNonzero.padicLog_inv,
       ``ManuscriptAudit.PadicLogNonzero.padicLog_sub_eq_series_of_principal_ratio,
       ``ManuscriptAudit.PadicLogNonzero.paper1_log_difference_at_normalized_discrepancy,
       ``ManuscriptAudit.PadicLogNonzero.padicLog_pow] do

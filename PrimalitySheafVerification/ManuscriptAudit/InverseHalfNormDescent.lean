@@ -42,9 +42,11 @@ private theorem denom_shear (c : ℤ) (τ : UpperHalfPlane) :
 /-- The squared norm of the printed half-power factor. -/
 theorem inverseHalf_norm_sq (z : ℂ) :
     ‖z ^ ((-(1 / 2 : ℝ)) : ℂ)‖ ^ (2 : ℕ) = ‖z‖⁻¹ := by
+  have hnorm : ‖z ^ (-((1 / 2 : ℝ) : ℂ))‖ = ‖z‖ ^ (-(1 / 2 : ℝ)) := by
+    simpa only [Complex.ofReal_neg] using Complex.norm_cpow_real z (-(1 / 2 : ℝ))
   calc
     _ = (‖z‖ ^ (-(1 / 2 : ℝ))) ^ (2 : ℕ) :=
-      congrArg (fun r : ℝ => r ^ (2 : ℕ)) (Complex.norm_cpow_real z (-(1 / 2 : ℝ)))
+      congrArg (fun r : ℝ => r ^ (2 : ℕ)) hnorm
     _ = (‖z‖ ^ (-(1 / 2 : ℝ))) ^ ((2 : ℕ) : ℝ) := (Real.rpow_natCast _ 2).symm
     _ = ‖z‖ ^ ((-(1 / 2 : ℝ)) * ((2 : ℕ) : ℝ)) :=
       (Real.rpow_mul (norm_nonneg z) _ _).symm

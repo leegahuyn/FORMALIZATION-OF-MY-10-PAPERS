@@ -78,6 +78,60 @@ theorem printedBessel_normalized_limit :
   filter_upwards [eventually_gt_atTop (0 : ℝ)] with x hx
   exact (printedBessel_normalized x hx).symm
 
+private theorem printedBessel_normalized_eventually_gt_half_limit :
+    ∀ᶠ x : ℝ in atTop,
+      (Real.sqrt (Real.pi / 2) / 2) / 2 < printedBessel x * Real.sqrt x * Real.exp (-x) := by
+  have hC : 0 < Real.sqrt (Real.pi / 2) / 2 := by positivity
+  exact (tendsto_order.1 printedBessel_normalized_limit).1 _ (by linarith)
+
+/-- The normalization required for the printed n⁻³⁄⁴ leading-order
+claim grows without bound, since its argument is proportional to √n. -/
+theorem paper8_printed_wrong_power_normalization_diverges :
+    Tendsto (fun x : ℝ =>
+      x * (printedBessel x * Real.sqrt x * Real.exp (-x))) atTop atTop := by
+  let C := Real.sqrt (Real.pi / 2) / 2
+  have hC : 0 < C := by dsimp [C]; positivity
+  have hLower : Tendsto (fun x : ℝ => (C / 2) * x) atTop atTop :=
+    tendsto_id.const_mul_atTop (div_pos hC (by norm_num))
+  have hNear : ∀ᶠ x in atTop, C / 2 < printedBessel x * Real.sqrt x * Real.exp (-x) :=
+    printedBessel_normalized_eventually_gt_half_limit
+  refine tendsto_atTop.2 fun M => ?_
+  filter_upwards [(tendsto_atTop.1 hLower) M, hNear, eventually_ge_atTop (0 : ℝ)]
+    with x hM hnx hx
+  calc
+    M ≤ (C / 2) * x := hM
+    _ = x * (C / 2) := mul_comm _ _
+    _ ≤ x * (printedBessel x * Real.sqrt x * Real.exp (-x)) :=
+      mul_le_mul_of_nonneg_left hnx.le hx
+
+theorem paper8_printed_wrong_power_normalization_has_no_finite_limit (C : ℝ) :
+    ¬ Tendsto (fun x : ℝ =>
+      x * (printedBessel x * Real.sqrt x * Real.exp (-x))) atTop (𝓝 C) := by
+  intro h
+  have hSmall := (tendsto_order.1 h).2 (C + 1) (by linarith)
+  have hLarge := (tendsto_atTop.1 paper8_printed_wrong_power_normalization_diverges) (C + 1)
+  obtain ⟨x, hxSmall, hxLarge⟩ := (hSmall.and hLarge).exists
+  exact (not_le_of_gt hxSmall) hxLarge
+
+/-- The literal I expression from Paper 8 cannot obey an x⁻¹⁄²
+envelope at large x. -/
+theorem printedBessel_sqrt_scale_tendsto_atTop :
+    Tendsto (fun x : ℝ => printedBessel x * Real.sqrt x) atTop atTop := by
+  let c := (Real.sqrt (Real.pi / 2) / 2) / 2
+  have hc : 0 < c := by dsimp [c]; positivity
+  have hLower : Tendsto (fun x : ℝ => c * Real.exp x) atTop atTop :=
+    Real.tendsto_exp_atTop.const_mul_atTop hc
+  refine tendsto_atTop.2 fun M => ?_
+  filter_upwards [(tendsto_atTop.1 hLower) M, printedBessel_normalized_eventually_gt_half_limit]
+    with x hM hnx
+  calc
+    M ≤ c * Real.exp x := hM
+    _ = Real.exp x * c := mul_comm _ _
+    _ ≤ Real.exp x * (printedBessel x * Real.sqrt x * Real.exp (-x)) :=
+      mul_le_mul_of_nonneg_left hnx.le (Real.exp_pos x).le
+    _ = (printedBessel x * Real.sqrt x) * (Real.exp x * Real.exp (-x)) := by ring
+    _ = _ := by rw [← Real.exp_add, add_neg_cancel, Real.exp_zero, mul_one]
+
 private theorem harmonic_minorant (B c w : ℝ) (hB : 0 < B) (hc : 0 < c) (hw : 1 ≤ w) :
     (Real.sqrt (Real.pi / 2) * Real.sqrt B) / c ≤
       (w / Real.sqrt c) * printedBessel (B / c) := by
@@ -167,6 +221,9 @@ run_cmd do
       ``ManuscriptAudit.PrintedRademacherTail.printedBessel_lower,
       ``ManuscriptAudit.PrintedRademacherTail.printedBessel_normalized,
       ``ManuscriptAudit.PrintedRademacherTail.printedBessel_normalized_limit,
+      ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_wrong_power_normalization_diverges,
+      ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_wrong_power_normalization_has_no_finite_limit,
+      ``ManuscriptAudit.PrintedRademacherTail.printedBessel_sqrt_scale_tendsto_atTop,
       ``ManuscriptAudit.PrintedRademacherTail.printed_positive_majorant_not_summable,
       ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_rademacher_tail_majorant_not_summable,
       ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_double_counted_tail_forces_constant_partials] do

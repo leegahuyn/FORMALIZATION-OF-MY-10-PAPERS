@@ -102,36 +102,18 @@ theorem paper1_padic_log_quadratic_remainder_bound_false :
   · rw [norm_padic_log_remainder_four]
     norm_num
 
-/-- Paper 1, p. 10, Lemma 2.3. For an odd prime, the actual logarithm
-remainder on the p⁻ᵏ ball has norm at most p⁻²ᵏ. -/
-theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
-    (hp : 3 ≤ p) (k : ℕ) (hk : 1 ≤ k) {x : ℚ_[p]}
-    (hx : ‖x‖ ≤ (p : ℝ) ^ (-(k : ℤ))) :
-    ‖padicLog1p x - x‖ ≤ (p : ℝ) ^ (-(2 * (k : ℤ))) := by
-  have hpPos : 0 < p := by omega
+private theorem logarithm_remainder_of_denominator_bound {p : ℕ} [Fact p.Prime]
+    (e k : ℕ) (hk : 1 ≤ k) {x : ℚ_[p]}
+    (hx : ‖x‖ ≤ (p : ℝ) ^ (-(k : ℤ)))
+    (hVal : ∀ i : ℕ, padicValNat p (i + 2) ≤ i + e) :
+    ‖padicLog1p x - x‖ ≤ (p : ℝ) ^ ((e : ℤ) - 2 * (k : ℤ)) := by
   have hpRlt : (1 : ℝ) < (p : ℝ) := by
-    exact_mod_cast (show 1 < p by omega)
+    exact_mod_cast (Fact.out : p.Prime).one_lt
   have hpRpos : (0 : ℝ) < (p : ℝ) := zero_lt_one.trans hpRlt
   have hRadiusPow : (p : ℝ) ^ (-(k : ℤ)) < 1 := by
     rw [zpow_neg, zpow_natCast, inv_lt_one₀ (pow_pos hpRpos k)]
     exact one_lt_pow₀ hpRlt (by omega)
   have hRadius : ‖x‖ < 1 := hx.trans_lt hRadiusPow
-  have hGrowth (i : ℕ) : i + 2 < p ^ (i + 1) := by
-    induction i with
-    | zero =>
-      simpa only [Nat.zero_add, pow_one] using (show 2 < p by omega)
-    | succ i ih =>
-      calc
-        i.succ + 2 = i + 3 := by omega
-        _ < (i + 2) * 2 := by omega
-        _ ≤ p ^ (i + 1) * p := Nat.mul_le_mul ih.le (by omega)
-        _ = p ^ (i.succ + 1) := by rw [← pow_succ] <;> rfl
-  have hVal (i : ℕ) : padicValNat p (i + 2) ≤ i := by
-    by_contra h
-    have hIndices : i + 1 ≤ padicValNat p (i + 2) := by omega
-    have hDvd : p ^ padicValNat p (i + 2) ∣ i + 2 := pow_padicValNat_dvd
-    exact (not_lt_of_ge ((Nat.pow_le_pow_right hpPos hIndices).trans
-      (Nat.le_of_dvd (by omega) hDvd))) (hGrowth i)
   have hSummable := padicLogSeries_summable hRadius
   have hSplit := Summable.sum_add_tsum_nat_add 2 hSummable
   have hPrefix : (∑ n ∈ Finset.range 2, padicLogSeries x n) = x :=
@@ -165,9 +147,9 @@ theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
       rw [← zpow_natCast ((p : ℝ) ^ (-(k : ℤ))) (i + 2),
         ← zpow_mul, ← zpow_natCast (p : ℝ) (padicValNat p (i + 2)),
         ← zpow_add₀ hpRpos.ne']
-    _ ≤ (p : ℝ) ^ (-(2 * (k : ℤ))) := by
+    _ ≤ (p : ℝ) ^ ((e : ℤ) - 2 * (k : ℤ)) := by
       apply zpow_le_zpow_right₀ hpRlt.le
-      have hValInt : (padicValNat p (i + 2) : ℤ) ≤ (i : ℤ) := by
+      have hValInt : (padicValNat p (i + 2) : ℤ) ≤ (i : ℤ) + (e : ℤ) := by
         exact_mod_cast hVal i
       have hkInt : (1 : ℤ) ≤ (k : ℤ) := by exact_mod_cast hk
       have hiInt : (0 : ℤ) ≤ (i : ℤ) := by positivity
@@ -175,15 +157,53 @@ theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
         calc
           (i : ℤ) = 1 * (i : ℤ) := (one_mul _).symm
           _ ≤ (k : ℤ) * (i : ℤ) := mul_le_mul_of_nonneg_right hkInt hiInt
-      have hBound : (padicValNat p (i + 2) : ℤ) ≤ (k : ℤ) * (i : ℤ) :=
-        hValInt.trans hMul
+      have hBound : (padicValNat p (i + 2) : ℤ) ≤ (k : ℤ) * (i : ℤ) + (e : ℤ) :=
+        hValInt.trans (add_le_add_right hMul _)
       have hRewrite :
           -(k : ℤ) * ((i + 2 : ℕ) : ℤ) + (padicValNat p (i + 2) : ℤ) =
             -(2 * (k : ℤ)) + ((padicValNat p (i + 2) : ℤ) - (k : ℤ) * (i : ℤ)) := by
         push_cast
         ring
       rw [hRewrite]
-      exact add_le_of_nonpos_right (sub_nonpos.mpr hBound)
+      linarith only [hBound]
+
+/-- Paper 1, p. 10, Lemma 2.3. For an odd prime, the actual logarithm
+remainder on the p⁻ᵏ ball has norm at most p⁻²ᵏ. -/
+theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
+    (hp : 3 ≤ p) (k : ℕ) (hk : 1 ≤ k) {x : ℚ_[p]}
+    (hx : ‖x‖ ≤ (p : ℝ) ^ (-(k : ℤ))) :
+    ‖padicLog1p x - x‖ ≤ (p : ℝ) ^ (-(2 * (k : ℤ))) := by
+  have hpPos : 0 < p := by omega
+  have hGrowth (i : ℕ) : i + 2 < p ^ (i + 1) := by
+    induction i with
+    | zero =>
+      simpa only [Nat.zero_add, pow_one] using (show 2 < p by omega)
+    | succ i ih =>
+      calc
+        i.succ + 2 = i + 3 := by omega
+        _ < (i + 2) * 2 := by omega
+        _ ≤ p ^ (i + 1) * p := Nat.mul_le_mul ih.le (by omega)
+        _ = p ^ (i.succ + 1) := by rw [← pow_succ] <;> rfl
+  have hVal (i : ℕ) : padicValNat p (i + 2) ≤ i := by
+    by_contra h
+    have hIndices : i + 1 ≤ padicValNat p (i + 2) := by omega
+    have hDvd : p ^ padicValNat p (i + 2) ∣ i + 2 := pow_padicValNat_dvd
+    exact (not_lt_of_ge ((Nat.pow_le_pow_right hpPos hIndices).trans
+      (Nat.le_of_dvd (by omega) hDvd))) (hGrowth i)
+  simpa only [Nat.cast_zero, zero_sub] using
+    logarithm_remainder_of_denominator_bound 0 k hk hx (by simpa using hVal)
+
+/-- Corrected uniform bound including the prime two. The two-adic
+counterexample above attains the loss of one valuation digit. -/
+theorem paper1_uniform_log_quadratic_remainder_with_loss {p : ℕ} [Fact p.Prime]
+    (k : ℕ) (hk : 1 ≤ k) {x : ℚ_[p]}
+    (hx : ‖x‖ ≤ (p : ℝ) ^ (-(k : ℤ))) :
+    ‖padicLog1p x - x‖ ≤ (p : ℝ) ^ (1 - 2 * (k : ℤ)) := by
+  have hVal (i : ℕ) : padicValNat p (i + 2) ≤ i + 1 := by
+    have hLt := (padicValNat_le_nat_log (p := p) (i + 2)).trans_lt
+      (Nat.log_lt_self p (by omega : (i + 2 : ℕ) ≠ 0))
+    omega
+  simpa only [Nat.cast_one] using logarithm_remainder_of_denominator_bound 1 k hk hx hVal
 
 /-- Paper 1, p. 7, Remark 2.2. With p=2, n=k=2, A=9, m=1
 and y=4 on the minus branch, the printed expansion uses p₂=3 and its
@@ -238,6 +258,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.PadicRemainder.paper1_padic_log_quadratic_remainder_bound_false,
       ``ManuscriptAudit.PadicRemainder.paper1_odd_prime_log_quadratic_remainder,
+      ``ManuscriptAudit.PadicRemainder.paper1_uniform_log_quadratic_remainder_with_loss,
       ``ManuscriptAudit.PadicRemainder.paper1_printed_parameters_violate_unrestricted_remainder] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

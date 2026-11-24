@@ -93,14 +93,16 @@ theorem tent_integral {T : ℝ} (hT : 0 < T) : (∫ t : ℝ, tent T t) = T ^ 2 :
     intro t ht
     rw [uIcc_of_le hT.le] at ht
     rw [tent, abs_of_nonneg ht.1, max_eq_right (sub_nonneg.mpr ht.2)]
-  rw [hLeft, hRight,
-    intervalIntegral.integral_add
-      (continuous_const.intervalIntegrable (-T) 0) (continuous_id.intervalIntegrable (-T) 0),
-    intervalIntegral.integral_sub
-      (continuous_const.intervalIntegrable 0 T) (continuous_id.intervalIntegrable 0 T),
-    intervalIntegral.integral_const, intervalIntegral.integral_const,
-    integral_id, integral_id]
-  simp only [smul_eq_mul]
+  have hAdd : (∫ t : ℝ in (-T)..0, T + t) =
+      (∫ _ : ℝ in (-T)..0, T) + ∫ t : ℝ in (-T)..0, t :=
+    intervalIntegral.integral_add (f := fun _ : ℝ => T) (g := fun t : ℝ => t)
+      (continuous_const.intervalIntegrable (-T) 0) (continuous_id.intervalIntegrable (-T) 0)
+  have hSub : (∫ t : ℝ in 0..T, T - t) =
+      (∫ _ : ℝ in 0..T, T) - ∫ t : ℝ in 0..T, t :=
+    intervalIntegral.integral_sub (f := fun _ : ℝ => T) (g := fun t : ℝ => t)
+      (continuous_const.intervalIntegrable 0 T) (continuous_id.intervalIntegrable 0 T)
+  rw [hLeft, hRight, hAdd, hSub]
+  simp only [intervalIntegral.integral_const, integral_id, smul_eq_mul]
   ring
 
 /-- At most 2r/T of the normalized tent mass lies in any interval of length 2r. -/
