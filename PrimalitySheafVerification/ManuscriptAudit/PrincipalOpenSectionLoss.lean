@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Ideal.Int
@@ -19,7 +20,7 @@ open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 noncomputable section
 
 local notation "S" => TopCat.of (PrimeSpectrum ℤ)
-local notation "G" => AddCommGrpCat.{0}
+private abbrev G := AddCommGrpCat.{0}
 local notation "D₂" => PrimeSpectrum.basicOpen (2 : ℤ)
 
 private instance : Fact (Nat.Prime 2) := ⟨by decide⟩

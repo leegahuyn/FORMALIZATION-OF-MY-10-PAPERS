@@ -26,14 +26,15 @@ theorem exists_mahler_cutoff (f : C(ℤ_[p], ℤ_[p])) (k minCutoff : ℕ) :
     ∃ N : ℕ, minCutoff ≤ N ∧
       (∀ j ≥ N, (p : ℤ_[p]) ^ k ∣ Δ_[1]^[j] f 0) ∧
       ∀ m ≥ N, ∀ x : ℤ_[p], (p : ℤ_[p]) ^ k ∣
-        (f - ∑ j ∈ Finset.range m, PadicInt.mahlerTerm (Δ_[1]^[j] f 0) j) x := by
+        (show C(ℤ_[p], ℤ_[p]) from
+          f - ∑ j ∈ Finset.range m, PadicInt.mahlerTerm (Δ_[1]^[j] f 0) j) x := by
   let threshold : ℝ := (p : ℝ) ^ (-(k : ℤ))
   have hThreshold : 0 < threshold := zpow_pos (Nat.cast_pos.mpr hp.out.pos) _
-  let partial (m : ℕ) : C(ℤ_[p], ℤ_[p]) :=
+  let truncation (m : ℕ) : C(ℤ_[p], ℤ_[p]) :=
     ∑ j ∈ Finset.range m, PadicInt.mahlerTerm (Δ_[1]^[j] f 0) j
-  have hPartial : Tendsto partial atTop (𝓝 f) :=
+  have hPartial : Tendsto truncation atTop (𝓝 f) :=
     (PadicInt.hasSum_mahler f).tendsto_sum_nat
-  have hApprox : Tendsto (fun m : ℕ => f - partial m) atTop (𝓝 (0 : C(ℤ_[p], ℤ_[p]))) := by
+  have hApprox : Tendsto (fun m : ℕ => f - truncation m) atTop (𝓝 (0 : C(ℤ_[p], ℤ_[p]))) := by
     simpa only [sub_self] using
       (tendsto_const_nhds : Tendsto (fun _ : ℕ => f) atTop (𝓝 f)).sub hPartial
   have hCoeff := (NormedAddGroup.tendsto_nhds_zero.mp (PadicInt.fwdDiff_tendsto_zero f))
@@ -46,9 +47,10 @@ theorem exists_mahler_cutoff (f : C(ℤ_[p], ℤ_[p])) (k minCutoff : ℕ) :
   · intro j hj
     exact hDvd _ (hN j ((le_max_right _ _).trans hj)).1.le
   · intro m hm x
-    change (p : ℤ_[p]) ^ k ∣ (f - partial m) x
-    exact hDvd _ (((f - partial m).norm_coe_le_norm x).trans
-      (hN m ((le_max_right _ _).trans hm)).2.le)
+    let error : C(ℤ_[p], ℤ_[p]) := f - truncation m
+    change (p : ℤ_[p]) ^ k ∣ error x
+    have hEval : ‖error x‖ ≤ ‖error‖ := error.norm_coe_le_norm x
+    exact hDvd _ (hEval.trans (hN m ((le_max_right _ _).trans hm)).2.le)
 
 end ManuscriptAudit.MahlerContinuity
 

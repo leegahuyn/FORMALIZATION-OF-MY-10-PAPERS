@@ -27,8 +27,7 @@ private abbrev cuspRing : CommRingCat.{0} :=
   CommRingCat.of (Localization.Away (CuspPunctured.cuspSquare K))
 private abbrev affineSite (R : CommRingCat.{0}) := Scheme.AffineEtale.topology (Spec R)
 
-local instance (R : CommRingCat.{0}) : HasExt.{0} (Sheaf (affineSite R) AddCommGrpCat.{0}) :=
-  hasExt_of_enoughInjectives _
+attribute [local instance] KummerCohomologySequence.affineSiteHasExt
 
 private theorem rootsNonzeroOfLaurentCoordinates (R : CommRingCat.{0}) [Algebra K R]
     (e : R ≃ₐ[K] LaurentPolynomial K) (d : ℕ) [NeZero (d : K)] (hdeg : 2 ≤ d) :

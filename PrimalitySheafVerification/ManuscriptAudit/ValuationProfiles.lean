@@ -146,13 +146,61 @@ theorem paper1_indexed_prime_design_actual_congruence (y : ℤ) :
     refine ⟨y / 9 + 1, ?_⟩
     omega
 
+/-- For the genuine prime-power modulus, the high-valuation branch is
+exactly a single congruence at the reduced exponent. The offset may carry
+either sign. -/
+theorem paper1_power_modulus_congruence {p b u y : ℤ} (hp : p ≠ 0)
+    {n t σ : ℕ} (ht : n ≤ t) (hσ : n ≤ σ) (hb : b = p ^ t * u) :
+    p ^ σ ∣ p ^ n * y + b ↔ p ^ (σ - n) ∣ y + p ^ (t - n) * u := by
+  have hσ' : p ^ n * p ^ (σ - n) = p ^ σ := by
+    rw [← pow_add, Nat.add_sub_of_le hσ]
+  have ht' : p ^ n * p ^ (t - n) = p ^ t := by
+    rw [← pow_add, Nat.add_sub_of_le ht]
+  calc
+    p ^ σ ∣ p ^ n * y + b ↔ p ^ n * p ^ (σ - n) ∣ p ^ n * (y + p ^ (t - n) * u) := by
+      rw [hσ', mul_add, ← mul_assoc, ht', ← hb]
+    _ ↔ _ := mul_dvd_mul_iff_left (pow_ne_zero n hp)
+
+/-- The printed conclusion about the low-valuation branch holds with a genuine
+power modulus and a unit coefficient in the offset. -/
+theorem paper1_power_modulus_low_branch {p b u : ℤ} (hp : p ≠ 0)
+    {n t : ℕ} (ht : t < n) (hb : b = p ^ t * u) (hu : ¬ p ∣ u) (y : ℤ) :
+    p ^ t ∣ p ^ n * y + b ∧ ¬ p ^ (t + 1) ∣ p ^ n * y + b := by
+  have hn : p ^ t * p ^ (n - t) = p ^ n := by
+    rw [← pow_add, Nat.add_sub_of_le ht.le]
+  have hM : p ^ n * y + b = p ^ t * (p ^ (n - t) * y + u) := by
+    rw [hb, mul_add, ← mul_assoc, hn]
+  rw [hM]
+  refine ⟨dvd_mul_right _ _, ?_⟩
+  intro h
+  rw [pow_succ] at h
+  have hz : p ∣ p ^ (n - t) * y + u := (mul_dvd_mul_iff_left (pow_ne_zero t hp)).mp h
+  have hpow : p ∣ p ^ (n - t) := by
+    simpa only [pow_one] using pow_dvd_pow p (Nat.succ_le_of_lt (Nat.sub_pos_of_lt ht))
+  have hsub := dvd_sub hz (dvd_mul_of_dvd_left hpow y)
+  exact hu (by simpa only [add_sub_cancel_left] using hsub)
+
+/-- A high-valuation power modulus can be chosen to equal the requested
+power exactly, avoiding zero at any finite threshold. -/
+theorem paper1_power_modulus_exact_design {p b u : ℤ} {n t σ : ℕ}
+    (ht : n ≤ t) (hσ : n ≤ σ) (hb : b = p ^ t * u) :
+    ∃ y : ℤ, p ^ n * y + b = p ^ σ := by
+  have hσ' : p ^ n * p ^ (σ - n) = p ^ σ := by
+    rw [← pow_add, Nat.add_sub_of_le hσ]
+  have ht' : p ^ n * p ^ (t - n) = p ^ t := by
+    rw [← pow_add, Nat.add_sub_of_le ht]
+  refine ⟨p ^ (σ - n) - p ^ (t - n) * u, ?_⟩
+  rw [hb, mul_sub, hσ', ← mul_assoc, ht', sub_add_cancel]
+
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper4_remark8_2_3_cancellation, ``paper4_remark8_2_3_refutation,
       ``paper6_lte_T_zero_refutation, ``paper1_indexed_ultrametric_estimate_refutation,
       ``paper1_indexed_prime_design_congruence_fails,
-      ``paper1_indexed_prime_design_actual_congruence] do
+      ``paper1_indexed_prime_design_actual_congruence,
+      ``paper1_power_modulus_congruence, ``paper1_power_modulus_low_branch,
+      ``paper1_power_modulus_exact_design] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

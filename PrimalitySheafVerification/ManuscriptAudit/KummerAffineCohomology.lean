@@ -22,8 +22,7 @@ noncomputable section
 
 private abbrev affineTopology (R : CommRingCat.{0}) := Scheme.AffineEtale.topology (Spec R)
 
-local instance (R : CommRingCat.{0}) : HasExt.{0} (Sheaf (affineTopology R) AddCommGrpCat.{0}) :=
-  hasExt_of_enoughInjectives _
+attribute [local instance] KummerCohomologySequence.affineSiteHasExt
 
 private def affineTerminal (R : CommRingCat.{0}) : (Spec R).AffineEtale :=
   Scheme.AffineEtale.mk (𝟙 (Spec R))

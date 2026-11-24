@@ -23,10 +23,10 @@ def impulse (n : ℕ) : ℤ := if n = 0 then 1 else 0
 
 theorem impulse_forwardDiff (j n : ℕ) :
     (Δ_[(1 : ℕ)]^[j] impulse) n = if n = 0 then (-1 : ℤ) ^ j else 0 := by
-  induction j with
+  induction j generalizing n with
   | zero => simp [impulse]
   | succ j ih =>
-      rw [Function.iterate_succ_apply', fwdDiff, ih, ih]
+      rw [Function.iterate_succ_apply', fwdDiff, ih (n + 1), ih n]
       by_cases hn : n = 0
       · subst n
         simp [pow_succ]
@@ -61,11 +61,11 @@ theorem shifted_dvd_values_iff_dvd_forwardDiff (a : ℕ → ℤ) (d : ℤ) (N : 
     rw [fwdDiff_iter_eq_sum_shift]
     apply Finset.dvd_sum
     intro k _
-    simpa only [nsmul_one, zsmul_eq_mul] using
+    simpa only [nsmul_one, zsmul_eq_mul, Int.cast_id, Nat.cast_id] using
       dvd_mul_of_dvd_right (h k) ((-1 : ℤ) ^ (j - k) * (j.choose k : ℤ))
   · intro h k
     have hNewton := shift_eq_sum_fwdDiff_iter (1 : ℕ) a k N
-    rw [nsmul_one] at hNewton
+    simp only [nsmul_one, Nat.cast_id] at hNewton
     rw [hNewton]
     apply Finset.dvd_sum
     intro j _
@@ -86,7 +86,7 @@ theorem paper8_impulse_has_no_continuous_padic_extension (p : ℕ) [Fact p.Prime
   have hEq : (fun j : ℕ => f ((p : ℤ_[p]) ^ j)) = fun _ => 0 := by
     funext j
     rw [← Nat.cast_pow, hValues]
-    simp [impulse, pow_ne_zero j (Fact.out : p.Prime).ne_zero]
+    simp [impulse, (Fact.out : p.Prime).ne_zero]
   change Tendsto (fun j : ℕ => f ((p : ℤ_[p]) ^ j)) atTop (𝓝 (f 0)) at hComp
   rw [hEq] at hComp
   have hZero : f 0 = 0 := tendsto_nhds_unique hComp tendsto_const_nhds

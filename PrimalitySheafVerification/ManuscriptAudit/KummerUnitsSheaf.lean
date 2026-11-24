@@ -55,13 +55,21 @@ private instance (X : Scheme.{0}) :
   let F := Scheme.Etale.forget X
   letI : F.IsContinuous X.smallEtaleTopology I := by
     letI : RepresentablyFlat F := flat_of_preservesFiniteLimits F
-    letI : MorphismProperty.RespectsIso (@Etale.{0}) := by
+    let P : MorphismProperty Scheme.{0} := @Etale
+    letI : P.IsStableUnderComposition := by
+      constructor
+      intro Y Z W f g hf hg
+      letI : Etale f := hf
+      letI : Etale g := hg
+      exact Etale.etale_comp f g
+    letI : P.IsStableUnderBaseChange := Etale.etale_isStableUnderBaseChange
+    letI : P.RespectsIso := by
       apply MorphismProperty.respectsIso_of_isStableUnderComposition
       intro Y Z f hf
       letI : IsIso f := hf
       exact (inferInstance : Etale f)
     letI : F.LocallyCoverDense I :=
-      Scheme.locallyCoverDense_of_le X (P := @Etale.{0}) (Q := @Etale.{0}) le_rfl
+      Scheme.locallyCoverDense_of_le X (P := P) (Q := P) le_rfl
     rw [Functor.isContinuous_iff_coverPreserving]
     exact Functor.coverPreserving_restrictedTopology F I
   exact Functor.isContinuous_comp F (Over.forget X) _ I _

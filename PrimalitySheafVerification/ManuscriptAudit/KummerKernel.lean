@@ -26,7 +26,11 @@ noncomputable section
 def inclusion (X : Scheme.{u}) (d : ℕ) : roots X d ⟶ units X where
   app U := AddCommGrpCat.ofHom
     (rootsOfUnity d (coordinateRing U.unop)).subtype.toAdditive
-  naturality _ := AddCommGrpCat.ext fun _ => Additive.ext (Units.ext rfl)
+  naturality {U V} f := by
+    apply AddCommGrpCat.ext
+    intro a
+    apply Additive.ext
+    exact Units.ext rfl
 
 private theorem inclusion_zero (X : Scheme.{u}) (d : ℕ) : inclusion X d ≫ power X d = 0 := by
   apply NatTrans.ext
@@ -34,7 +38,10 @@ private theorem inclusion_zero (X : Scheme.{u}) (d : ℕ) : inclusion X d ≫ po
   apply AddCommGrpCat.ext
   intro a
   apply Additive.ext
-  exact (mem_rootsOfUnity d (a.toMul : (coordinateRing U.unop)ˣ)).mp a.toMul.prop
+  let r : rootsOfUnity d (coordinateRing U.unop) :=
+    (show Additive (rootsOfUnity d (coordinateRing U.unop)) from a).toMul
+  change r.val ^ d = 1
+  exact (mem_rootsOfUnity d r.val).mp r.prop
 
 private instance (X : Scheme.{u}) (d : ℕ) : Mono (inclusion X d) := by
   rw [NatTrans.mono_iff_mono_app]
@@ -43,28 +50,35 @@ private instance (X : Scheme.{u}) (d : ℕ) : Mono (inclusion X d) := by
   intro a b h
   apply Additive.ext
   apply Subtype.ext
-  exact congrArg Additive.toMul h
+  exact congrArg (fun z : Additive (coordinateRing U.unop)ˣ => z.toMul) h
 
 private def lift {X : Scheme.{u}} {d : ℕ} {F : X.AffineEtaleᵒᵖ ⥤ AddCommGrpCat.{u}}
     (k : F ⟶ units X) (hk : k ≫ power X d = 0) : F ⟶ roots X d where
   app U := AddCommGrpCat.ofHom
-    { toFun := fun a => Additive.ofMul
-        ⟨(k.app U a).toMul, (mem_rootsOfUnity d (k.app U a).toMul).mpr
-          (congrArg Additive.toMul (ConcreteCategory.congr_hom (NatTrans.congr_app hk U) a))⟩
+    { toFun := fun a => by
+        let u : (coordinateRing U.unop)ˣ :=
+          (show Additive (coordinateRing U.unop)ˣ from k.app U a).toMul
+        have hEval := ConcreteCategory.congr_hom (NatTrans.congr_app hk U) a
+        have hPow := congrArg (fun z : Additive (coordinateRing U.unop)ˣ => z.toMul) hEval
+        change u ^ d = 1 at hPow
+        exact Additive.ofMul ⟨u, (mem_rootsOfUnity d u).mpr hPow⟩
       map_zero' := by
         apply Additive.ext
         apply Subtype.ext
-        exact congrArg Additive.toMul (map_zero (k.app U).hom)
+        exact congrArg (fun z : Additive (coordinateRing U.unop)ˣ => z.toMul)
+          (map_zero (k.app U).hom)
       map_add' a b := by
         apply Additive.ext
         apply Subtype.ext
-        exact congrArg Additive.toMul (map_add (k.app U).hom a b) }
-  naturality f := by
+        exact congrArg (fun z : Additive (coordinateRing U.unop)ˣ => z.toMul)
+          (map_add (k.app U).hom a b) }
+  naturality {U V} f := by
     apply AddCommGrpCat.ext
     intro a
     apply Additive.ext
     apply Subtype.ext
-    exact congrArg Additive.toMul (NatTrans.naturality_apply k f a)
+    exact congrArg (fun z : Additive (coordinateRing V.unop)ˣ => z.toMul)
+      (NatTrans.naturality_apply k f a)
 
 /-- The roots presheaf is the kernel of the power map on the units presheaf. -/
 def rootsIsKernel (X : Scheme.{u}) (d : ℕ) :
@@ -74,7 +88,12 @@ def rootsIsKernel (X : Scheme.{u}) (d : ℕ) :
   refine ⟨lift k hk, ?_⟩
   apply NatTrans.ext
   funext U
-  exact AddCommGrpCat.ext fun _ => rfl
+  rw [NatTrans.comp_app]
+  apply AddCommGrpCat.ext
+  intro a
+  change Additive.ofMul ((show Additive (coordinateRing U.unop)ˣ from k.app U a).toMul) =
+    k.app U a
+  rfl
 
 /-- After sheafification, the ring-roots presheaf still computes the kernel
 of the power map. -/
@@ -84,7 +103,7 @@ def sheafifiedRootsIsoKernel (X : Scheme.{u}) (d : ℕ) :
       kernel (KummerSheafSequence.sheafPower X d) := by
   let F := presheafToSheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u}
   let e : roots X d ≅ kernel (power X d) :=
-    (rootsIsKernel X d).conePointUniqueUpToIso (kernelIsKernel (power X d))
+    (rootsIsKernel X d).conePointUniqueUpToIso (limit.isLimit (parallelPair (power X d) 0))
   exact F.mapIso e ≪≫ PreservesKernel.iso F (power X d)
 
 /-- The Kummer power kernel is the constant sheaf associated to the roots
@@ -111,3 +130,4 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+
