@@ -41,7 +41,7 @@ private noncomputable abbrev sectionProjection (W : C) :
 theorem cokernel_sections_exact (W : C) :
     Function.Exact (i.hom.app (op W)) ((cokernel.π i).hom.app (op W)) := by
   let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
-  have hS : S.Exact := Abelian.exact_cokernel i
+  have hS : S.Exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel i)
   letI : Mono S.f := inferInstanceAs (Mono i)
   have hK := (KernelFork.ofι S.f S.zero).mapIsLimit hS.fIsKernel (evaluate (J := J) W)
   have h := ShortComplex.exact_of_f_is_kernel (S.map (evaluate (J := J) W)) hK

@@ -16,7 +16,7 @@ globally.
 
 namespace ManuscriptAudit.SheafH1Descent
 
-open CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
+open CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite ConcreteCategory
 
 universe u v w w'
 
@@ -28,7 +28,7 @@ private noncomputable abbrev cokernelSequence : ShortComplex (Sheaf J AddCommGrp
   ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
 
 private theorem cokernelSequence_exact [Mono i] : (cokernelSequence i).ShortExact where
-  exact := Abelian.exact_cokernel i
+  exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel i)
   mono_f := inferInstance
   epi_g := inferInstance
 
@@ -71,7 +71,7 @@ theorem connectingSection_of_lift (z : I.obj.obj (op T)) :
   exact (h _).2 ⟨(Sheaf.H.equiv₀ I hT).symm z, rfl⟩
 
 /-- Global lifts through the cokernel of an injective embedding imply vanishing. -/
-theorem H1_subsingleton_of_global_lifts [Injective I]
+theorem H1_subsingleton_of_global_lifts [Injective I] (hT : IsTerminal T)
     (h : Function.Surjective ((cokernel.π i).hom.app (op T))) :
     Subsingleton (Sheaf.H F 1) := by
   refine subsingleton_of_forall_eq 0 fun x => ?_
@@ -85,13 +85,13 @@ section LocalLifts
 
 variable [J.HasSheafCompose (forget AddCommGrpCat.{w})]
 variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
-variable [HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{w}]
+variable [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{w}]
 
 /-- The morphisms on which a given cokernel section lifts form a covering sieve. -/
 theorem cokernel_section_lift_sieve_mem {T : C} (x : (cokernel i).obj.obj (op T)) :
     Presheaf.imageSieve (cokernel.π i).hom x ∈ J T := by
   letI : Sheaf.IsLocallySurjective (cokernel.π i) :=
-    (Sheaf.isLocallySurjective_iff_epi' (cokernel.π i)).mpr inferInstance
+    (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{w} (cokernel.π i)).mpr inferInstance
   exact Presheaf.imageSieve_mem J (cokernel.π i).hom (U := op T) x
 
 /-- Once a local lift through a sheaf morphism is compatible on a
@@ -106,9 +106,9 @@ theorem exists_global_lift_of_compatible_cover {T U : C} (f : U ⟶ T)
     ∃ z : I.obj.obj (op T), q.hom.app (op T) z = x := by
   let Fg := forget AddCommGrpCat.{w}
   have hI : Presieve.IsSheaf J (I.obj ⋙ Fg) :=
-    (isSheaf_iff_isSheaf_of_type _).mp ((sheafCompose J Fg).obj I).property
+    (isSheaf_iff_isSheaf_of_type J (I.obj ⋙ Fg)).mp ((sheafCompose J Fg).obj I).property
   have hQ : Presieve.IsSheaf J (Q.obj ⋙ Fg) :=
-    (isSheaf_iff_isSheaf_of_type _).mp ((sheafCompose J Fg).obj Q).property
+    (isSheaf_iff_isSheaf_of_type J (Q.obj ⋙ Fg)).mp ((sheafCompose J Fg).obj Q).property
   obtain ⟨z, hz, _⟩ := (Presieve.isSheafFor_singleton.mp (hI.isSheafFor _ hCover)) y hCompat
   have hSep : Function.Injective ((Q.obj ⋙ Fg).map f.op) :=
     Presieve.isSeparatedFor_singleton.mp (hQ.isSheafFor _ hCover).isSeparatedFor

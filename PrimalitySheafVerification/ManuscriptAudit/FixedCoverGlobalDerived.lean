@@ -59,7 +59,8 @@ def derivedOnTopEquivGlobal {X : TopCat.{0}} (F : Sheaf (Opens.grothendieckTopol
       intro U V f
       change AddCommGrpCat.free.map (𝟙 (PUnit : Type)) ≫ freeSingletonIso.hom =
         freeSingletonIso.hom ≫ 𝟙 _
-      rw [Functor.map_id, Category.id_comp, Category.comp_id])
+      rw [CategoryTheory.Functor.map_id AddCommGrpCat.free, CategoryTheory.Category.id_comp,
+        CategoryTheory.Category.comp_id])
   let j := (presheafToSheaf (Opens.grothendieckTopology X) G).mapIso
     ((Functor.isoWhiskerRight (terminalYonedaIso X) AddCommGrpCat.free).trans i)
   exact (((extFunctor n).mapIso j.op).app F).addCommGroupIsoToAddEquiv.symm
