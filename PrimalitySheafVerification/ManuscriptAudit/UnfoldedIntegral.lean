@@ -27,6 +27,7 @@ theorem not_integrableOn_unfoldedBetaOne_Ioo (n : ℕ) :
         _ ≤ -a * y := mul_le_mul_of_nonpos_left hy.2.le (neg_nonpos.mpr ha)
     have hpos : 0 ≤ Real.exp a * (y⁻¹ * Real.exp (-a * y)) :=
       mul_nonneg (Real.exp_pos _).le (mul_nonneg hyinv (Real.exp_pos _).le)
+    change ‖y⁻¹‖ ≤ ‖Real.exp a * (y⁻¹ * Real.exp (-a * y))‖
     rw [Real.norm_of_nonneg hyinv, Real.norm_of_nonneg hpos]
     calc
       y⁻¹ = Real.exp a * (y⁻¹ * Real.exp (-a)) := by

@@ -42,7 +42,7 @@ theorem paperTheta_hasSum_zero (τ : ℂ) (hτ : 0 < τ.im) :
     simp only [term, paperChi4_neg, jacobiTheta₂_term, mul_zero, zero_add,
       Int.cast_neg, neg_sq, neg_mul]
   have hZero : term 0 = 0 := by
-    simp [term, paperChi4, MulChar.map_zero]
+    simp [term, paperChi4]
   have hPair : (fun n : ℕ => term (n : ℤ) + term (-(n : ℤ))) = (0 : ℕ → ℂ) := by
     funext n
     rw [hOdd]

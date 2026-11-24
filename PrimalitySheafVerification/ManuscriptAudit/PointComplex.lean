@@ -66,7 +66,7 @@ theorem page275_point_complex_H1_nonzero :
   apply degreeOneSingle_H1_nonzero
   intro hZero
   have hSub : Subsingleton (ZMod 5) := ModuleCat.isZero_iff_subsingleton.mp hZero
-  exact zero_ne_one (hSub.elim (0 : ZMod 5) 1)
+  exact (by decide : (0 : ZMod 5) ≠ 1) (hSub.elim 0 1)
 
 theorem page275_point_complex_other_H_zero (i : ℤ) (hi : i ≠ 1) :
     IsZero (pointSkyscraperSectionsComplex.homology i) :=

@@ -101,14 +101,70 @@ theorem paper1_padic_log_quadratic_remainder_bound_false :
   · rw [norm_padic_log_remainder_four]
     norm_num
 
+/-- Paper 1, p. 10, Lemma 2.3. For an odd prime, the actual logarithm
+remainder on the p⁻ᵏ ball has norm at most p⁻²ᵏ. -/
+theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
+    (hp : 3 ≤ p) (k : ℕ) (hk : 1 ≤ k) {x : ℚ_[p]}
+    (hx : ‖x‖ ≤ (p : ℝ) ^ (-(k : ℤ))) :
+    ‖padicLog1p x - x‖ ≤ (p : ℝ) ^ (-(2 * (k : ℤ))) := by
+  have hRadius : ‖x‖ < 1 := hx.trans_lt (pk_lt_one (p := p) hk)
+  have hpPos : 0 < p := by omega
+  have hpR : (1 : ℝ) ≤ (p : ℝ) := by
+    exact_mod_cast (show 1 ≤ p by omega)
+  have hGrowth (i : ℕ) : i + 2 < p ^ (i + 1) := by
+    induction i with
+    | zero => simpa using hp
+    | succ i ih =>
+      calc
+        i.succ + 2 = i + 3 := by omega
+        _ < (i + 2) * 2 := by omega
+        _ ≤ p ^ (i + 1) * p := Nat.mul_le_mul ih.le (by omega)
+        _ = p ^ (i.succ + 1) := by rw [← pow_succ] <;> rfl
+  have hVal (i : ℕ) : padicValNat p (i + 2) ≤ i := by
+    by_contra h
+    have hIndices : i + 1 ≤ padicValNat p (i + 2) := by omega
+    have hDvd : p ^ padicValNat p (i + 2) ∣ i + 2 := pow_padicValNat_dvd
+    exact (not_lt_of_ge ((Nat.pow_le_pow_right hpPos hIndices).trans
+      (Nat.le_of_dvd (by omega) hDvd))) (hGrowth i)
+  have hSummable := padicLogSeries_summable hRadius
+  have hSplit := Summable.sum_add_tsum_nat_add 2 hSummable
+  have hPrefix : (∑ n ∈ Finset.range 2, padicLogSeries x n) = x :=
+    padicLogTrunc_two x
+  rw [hPrefix] at hSplit
+  change x + (∑' i : ℕ, padicLogSeries x (i + 2)) = padicLog1p x at hSplit
+  have hTail : padicLog1p x - x = ∑' i : ℕ, padicLogSeries x (i + 2) := by
+    rw [← hSplit]
+    abel
+  rw [hTail]
+  refine IsUltrametricDist.norm_tsum_le_of_forall_le_of_nonneg (by positivity) ?_
+  intro i
+  have hi : (i + 2 : ℕ) ≠ 0 := by omega
+  refine (padicLogSeries_norm_le_pk hx hi).trans ?_
+  calc
+    ((p : ℝ) ^ (-(k : ℤ))) ^ (i + 2) * (p : ℝ) ^ padicValNat p (i + 2) =
+        (p : ℝ) ^ (-(k : ℤ) * ((i + 2 : ℕ) : ℤ) +
+          (padicValNat p (i + 2) : ℤ)) := by
+      rw [← zpow_natCast ((p : ℝ) ^ (-(k : ℤ))) (i + 2),
+        ← zpow_mul, ← zpow_natCast (p : ℝ) (padicValNat p (i + 2)),
+        ← zpow_add₀ ((Nat.cast_ne_zero).mpr (Nat.ne_of_gt hpPos))]
+    _ ≤ (p : ℝ) ^ (-(2 * (k : ℤ))) := by
+      apply zpow_le_zpow_right₀ hpR
+      have hValInt : (padicValNat p (i + 2) : ℤ) ≤ (i : ℤ) := by
+        exact_mod_cast hVal i
+      have hkInt : (1 : ℤ) ≤ (k : ℤ) := by exact_mod_cast hk
+      have hiInt : (0 : ℤ) ≤ (i : ℤ) := by positivity
+      push_cast
+      nlinarith [mul_nonneg (show (0 : ℤ) ≤ (k : ℤ) - 1 by omega) hiInt]
+
 end ManuscriptAudit.PadicRemainder
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.PadicRemainder.paper1_padic_log_quadratic_remainder_bound_false
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.PadicRemainder.paper1_padic_log_quadratic_remainder_bound_false,
+      ``ManuscriptAudit.PadicRemainder.paper1_odd_prime_log_quadratic_remainder] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

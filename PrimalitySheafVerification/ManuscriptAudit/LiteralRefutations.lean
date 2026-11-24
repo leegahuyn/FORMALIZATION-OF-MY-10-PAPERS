@@ -2,6 +2,7 @@ import Mathlib.Algebra.Polynomial.Degree.Units
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.FreeAbelianGroup
@@ -515,6 +516,38 @@ theorem unique_padic_residue_lift_does_not_imply_unit_derivative
     exact (pow_eq_zero_iff (by decide : (2 : ℕ) ≠ 0)).mp hz'
   · simp
 
+/-- Paper 4, p. 99. With M=6 and p=3 the two printed principal
+opens both omit the prime (3), so they do not cover Spec ℤ. -/
+theorem paper4_shared_prime_opens_do_not_cover :
+    PrimeSpectrum.basicOpen (6 : ℤ) ⊔ PrimeSpectrum.basicOpen 3 ≠ ⊤ := by
+  let p : PrimeSpectrum ℤ := ⟨pIdealThree, inferInstance⟩
+  have hSix : p ∉ PrimeSpectrum.basicOpen (6 : ℤ) := by
+    rw [PrimeSpectrum.mem_basicOpen]
+    change ¬ ((6 : ℤ) ∉ pIdealThree)
+    exact fun h => h (Ideal.mem_span_singleton.mpr ⟨2, by norm_num⟩)
+  have hThree : p ∉ PrimeSpectrum.basicOpen (3 : ℤ) := by
+    rw [PrimeSpectrum.mem_basicOpen]
+    change ¬ ((3 : ℤ) ∉ pIdealThree)
+    exact fun h => h (Ideal.mem_span_singleton_self _)
+  intro h
+  have hp : p ∈ PrimeSpectrum.basicOpen (6 : ℤ) ⊔ PrimeSpectrum.basicOpen 3 := by
+    rw [h]
+    trivial
+  change p ∈ PrimeSpectrum.basicOpen (6 : ℤ) ∨ p ∈ PrimeSpectrum.basicOpen 3 at hp
+  exact hp.elim hSix hThree
+
+/-- Paper 3, p. 81. A single local exponent at q=3 contributes one
+to the unweighted count and log(3) to the information expression. -/
+theorem paper3_ic_log_two_scaling_not_equality :
+    Real.log (3 : ℝ) / Real.log 2 ≠ 1 := by
+  have hPos : 0 < Real.log (2 : ℝ) := Real.log_pos (by norm_num)
+  have hStrict : Real.log (2 : ℝ) < Real.log 3 :=
+    Real.log_lt_log (by norm_num) (by norm_num)
+  intro hEq
+  have h := (div_eq_iff (ne_of_gt hPos)).mp hEq
+  rw [one_mul] at h
+  exact (ne_of_gt hStrict) h
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -544,7 +577,9 @@ run_cmd do
     ``ManuscriptAudit.paper4_free_abelianization_fails_terminal_object,
     ``ManuscriptAudit.paper7_rank_one_koszul_injectivity_fails_after_reduction,
     ``ManuscriptAudit.paper1_worked_tor_kernel_count,
-    ``ManuscriptAudit.unique_padic_residue_lift_does_not_imply_unit_derivative] do
+    ``ManuscriptAudit.unique_padic_residue_lift_does_not_imply_unit_derivative,
+    ``ManuscriptAudit.paper4_shared_prime_opens_do_not_cover,
+    ``ManuscriptAudit.paper3_ic_log_two_scaling_not_equality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

@@ -17,8 +17,8 @@ open of Spec ℤ fails uniqueness of gluing for the empty family. -/
 theorem paper3_constant_natural_presheaf_is_not_a_sheaf :
     ¬ constantNaturalPresheaf.IsSheaf := by
   intro h
-  let opens : PEmpty → Opens spectrumOfIntegers := fun i => nomatch i
-  let sections (i : PEmpty) : constantNaturalPresheaf.obj (op (opens i)) := nomatch i
+  let opens : Empty → Opens spectrumOfIntegers := fun i => nomatch i
+  let sections (i : Empty) : constantNaturalPresheaf.obj (op (opens i)) := nomatch i
   obtain ⟨gluing, _, hUnique⟩ :=
     h.isSheafUniqueGluing_types (U := opens) sections (fun i => nomatch i)
   have hZero : (0 : ℕ) = gluing := hUnique (0 : ℕ) (fun i => nomatch i)
