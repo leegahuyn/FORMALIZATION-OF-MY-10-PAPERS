@@ -1,0 +1,18 @@
+file	role	bytes	physical_lines	git_blob
+BuildAll.lean	aggregate	774	16	fc6fb147b8505b434104cf1ef50dd9243baa79f9
+Mock1.lean	primary	425518	9831	424fa454ee5f73b75a15e49e2eac931f3b4cd269
+Mock1_Advanced.lean	primary	4428854	90615	3b6596bbc0790c7d6e427c44e2b0b18b8af3efa6
+Mock2.lean	primary	1119419	26607	94f8894b5f866701955a105044b8958a8deb7734
+Mock2_Advanced.lean	primary	1390059	31919	a60fa47ebcd8c1fb6037d705e81b54c80910657a
+Mock2_FunctionalAnalysis.lean	primary	2821792	63138	28f614d48e02a0f28d3f5a758e813350b3ea89cf
+Mock2_FunctionalAnalysis_Integrated.lean	integration bridge	575	13	464f5dd095876b20165d12690c8127ef9d909e6a
+Mock3.lean	integration bridge	438	12	bf2a83664292e58f845c457a82de668b0e65be05
+QYM.lean	primary	2958818	62604	7afb309d7c4da97da7bc6b922931734d72830d41
+Spt1.lean	primary	365921	8087	c69b42e0dc4671ace05fe595d29669558b0d4372
+Spt2.lean	primary	403732	8878	ee1df370ee56549aebd9db0a0aaa0582ae227a5f
+Spt3.lean	primary	430152	7506	a73d346d060a9a2b8b3dca636e0e611eb394f69c
+Spt4.lean	primary	465620	8714	dfdbece780686cd0a490ea5ef27a2396728efea2
+Spt5.lean	primary	473184	8071	14ef77d87aaca5db11ca329731e052d000b4bdf5
+Spt6.lean	primary	435585	8651	e4832c95c1dddfc7febec5c6b2891b0149a6c7f9
+Spt7.lean	primary	865526	18114	1de97d018a37190df3a22824d2ad1d6cf3916955
+Verification.lean	focused verification	10086	197	75b91fe627a6c24ef789dcaabcd4b7ea5542c098
