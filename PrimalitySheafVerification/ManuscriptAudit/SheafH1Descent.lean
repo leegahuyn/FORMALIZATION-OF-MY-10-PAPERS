@@ -84,11 +84,12 @@ end DimensionShift
 section LocalLifts
 
 variable [J.HasSheafCompose (forget AddCommGrpCat.{w})]
-variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
-variable [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{w}]
 
 /-- The morphisms on which a given cokernel section lifts form a covering sieve. -/
-theorem cokernel_section_lift_sieve_mem {T : C} (x : (cokernel i).obj.obj (op T)) :
+theorem cokernel_section_lift_sieve_mem
+    [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
+    [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{w}]
+    {T : C} (x : (cokernel i).obj.obj (op T)) :
     Presheaf.imageSieve (cokernel.π i).hom x ∈ J T := by
   letI : Sheaf.IsLocallySurjective (cokernel.π i) :=
     (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{w} (cokernel.π i)).mpr inferInstance

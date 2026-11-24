@@ -80,7 +80,7 @@ private theorem supportSheaf_sections_subsingleton {X : TopCat.{0}} (P : Set X)
     (U : Opens X) (h : Disjoint (U : Set X) P) :
     Subsingleton ((supportSheaf X P).obj.obj (op U)) := by
   have hZero : IsZero ((ev U).obj (supportSheaf X P)) := by
-    apply IsZero.iff_id_eq_zero.mpr
+    apply (IsZero.iff_id_eq_zero ((ev U).obj (supportSheaf X P))).mpr
     refine Fan.IsLimit.hom_ext
       (isLimitOfHasProductOfPreservesLimit (ev U) (factor P)) _ _ fun p => ?_
     have hp : (p : X) ∉ U :=
