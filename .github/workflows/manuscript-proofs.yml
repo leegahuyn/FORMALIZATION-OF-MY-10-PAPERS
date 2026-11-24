@@ -6,6 +6,7 @@ on:
       - '.github/workflows/manuscript-proofs.yml'
       - 'PrimalitySheafVerification/ManuscriptAudit/*.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
+      - 'PrimalitySheafVerification/Spt1.lean'
 permissions:
   contents: read
 jobs:
@@ -34,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          awk '/^import / {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent}.lean |
+          awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent,PadicRemainder}.lean |
             sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           test -s "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           printf 'hash=%s\n' "$(sha256sum "${RUNNER_TEMP}/manuscript-proof-imports.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
@@ -67,7 +68,7 @@ jobs:
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
           status=0
-          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent}.lean; do
+          for proof in "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta,NodalCotangent,PadicRemainder}.lean; do
             echo "Checking $proof" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
             lake env lean "$proof" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
           done
@@ -115,10 +116,13 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          mapfile -t modules < <(awk '/^import / {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean | sort -u)
+          mapfile -t modules < <(awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir"/{LiteralRefutations,ResidueCompatibility,FixedProfile,OddTheta}.lean | sort -u)
           test "${#modules[@]}" -gt 0
-          lake exe cache get "${modules[@]}"
-          lake build "${modules[@]}"
+          log="${RUNNER_TEMP}/manuscript-upstream-dependencies.log"
+          if ! lake exe cache get "${modules[@]}" 2>&1 | tee "$log"; then
+            echo "Upstream cache was unavailable. Building required modules." | tee -a "$log"
+          fi
+          lake build "${modules[@]}" 2>&1 | tee -a "$log"
       - name: Check the proofs with upstream Mathlib
         shell: bash
         working-directory: upstream-mathlib
@@ -136,6 +140,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: manuscript-proofs-upstream-${{ github.sha }}
-          path: ${{ runner.temp }}/manuscript-proofs-upstream.log
+          path: |
+            ${{ runner.temp }}/manuscript-upstream-dependencies.log
+            ${{ runner.temp }}/manuscript-proofs-upstream.log
           if-no-files-found: warn
           retention-days: 30
