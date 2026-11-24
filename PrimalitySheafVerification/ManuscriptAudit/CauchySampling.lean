@@ -1,6 +1,8 @@
 import Mathlib.Algebra.Field.GeomSum
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.Tactic.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-!
 # The finite Laurent version of the Cauchy sample
@@ -8,8 +10,8 @@ import Mathlib.Tactic.Ring
 Paper 8, physical PDF p. 350, evaluates a circle integral by equidistant
 samples. For a Laurent polynomial the sampled coefficient has an exact
 formula. It includes every exponent congruent to the target modulo the
-number of nodes. Infinite series require a separate convergence and tail
-argument for their specific input on the sampling circle.
+number of nodes. The same identity extends to an absolutely convergent
+Laurent series on the sampling circle.
 -/
 
 open scoped BigOperators
@@ -108,6 +110,64 @@ theorem sample_monomial_at_zero (r : ℂ) (hr : r ≠ 0) (M : ℕ) (hM : M ≠ 0
     sub_zero, dvd_refl, if_true, one_mul, mul_one] using
       finiteLaurent_printed_sample_eq {(M : ℤ)} (fun _ => 1) r hr M hM 0
 
+/-- Absolute convergence at one nonzero radius gives the exact sampled
+Laurent coefficient as an absolutely justified alias sum. Each node series
+and the displayed alias series are summable. -/
+theorem absoluteLaurent_sample_eq (a : ℤ → ℂ) (r : ℂ) (hr : r ≠ 0)
+    (M : ℕ) (hM : M ≠ 0) (n : ℤ) (hAbs : Summable (fun k : ℤ => ‖a k * r ^ k‖)) :
+    let ζ := Complex.exp (2 * (Real.pi : ℂ) * Complex.I / (M : ℂ))
+    (∀ j : ℕ, Summable (fun k : ℤ => a k * (r * ζ ^ j) ^ k)) ∧
+    Summable (fun k : ℤ => if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0) ∧
+    (M : ℂ)⁻¹ * (∑ j ∈ Finset.range M,
+      (∑' k : ℤ, a k * (r * ζ ^ j) ^ k) * (r * ζ ^ j) ^ (-n)) =
+        ∑' k : ℤ, if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0 := by
+  let ζ := Complex.exp (2 * (Real.pi : ℂ) * Complex.I / (M : ℂ))
+  change (∀ j : ℕ, Summable (fun k : ℤ => a k * (r * ζ ^ j) ^ k)) ∧
+    Summable (fun k : ℤ => if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0) ∧
+    (M : ℂ)⁻¹ * (∑ j ∈ Finset.range M,
+      (∑' k : ℤ, a k * (r * ζ ^ j) ^ k) * (r * ζ ^ j) ^ (-n)) =
+        ∑' k : ℤ, if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0
+  have hζ : IsPrimitiveRoot ζ M := Complex.isPrimitiveRoot_exp M hM
+  have hM' : (M : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hM
+  have hNode (j : ℕ) : Summable (fun k : ℤ => a k * (r * ζ ^ j) ^ k) := by
+    refine hAbs.of_norm_bounded fun k => ?_
+    simp only [norm_mul, norm_zpow, norm_pow, hζ.norm'_eq_one hM, one_pow, mul_one, le_refl]
+  let weighted (j : ℕ) (k : ℤ) : ℂ :=
+    (M : ℂ)⁻¹ * ((a k * (r * ζ ^ j) ^ k) * (r * ζ ^ j) ^ (-n))
+  have hWeighted (j : ℕ) : Summable (weighted j) :=
+    ((hNode j).mul_right ((r * ζ ^ j) ^ (-n))).mul_left ((M : ℂ)⁻¹)
+  have hGrid (k : ℤ) :
+      (∑ j ∈ Finset.range M, weighted j k) =
+        if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0 := by
+    have hTerm (j : ℕ) : weighted j k =
+        ((M : ℂ)⁻¹ * (a k * r ^ (k - n))) * (ζ ^ (k - n)) ^ j := by
+      have hq : r * ζ ^ j ≠ 0 := mul_ne_zero hr (pow_ne_zero _ (hζ.ne_zero hM))
+      dsimp only [weighted]
+      rw [mul_assoc (a k), ← zpow_add₀ hq, ← sub_eq_add_neg, mul_zpow, zpow_nat_comm]
+      ring
+    simp_rw [hTerm]
+    rw [← Finset.mul_sum, sum_grid_character hζ]
+    by_cases hk : (M : ℤ) ∣ k - n
+    · simp only [if_pos hk]
+      calc
+        _ = ((M : ℂ)⁻¹ * (M : ℂ)) * (a k * r ^ (k - n)) := by ring
+        _ = _ := by rw [inv_mul_cancel₀ hM', one_mul]
+    · simp [hk]
+  have hInterchange :
+      HasSum (fun k : ℤ => ∑ j ∈ Finset.range M, weighted j k)
+        (∑ j ∈ Finset.range M, ∑' k : ℤ, weighted j k) :=
+    hasSum_sum fun j _ => (hWeighted j).hasSum
+  refine ⟨hNode, ?_, ?_⟩
+  · simpa only [hGrid] using hInterchange.summable
+  · rw [Finset.mul_sum]
+    calc
+      _ = ∑ j ∈ Finset.range M, ∑' k : ℤ, weighted j k := by
+        refine Finset.sum_congr rfl fun j _ => ?_
+        dsimp only [weighted]
+        rw [tsum_mul_left, tsum_mul_right]
+      _ = ∑' k : ℤ, ∑ j ∈ Finset.range M, weighted j k := hInterchange.tsum_eq.symm
+      _ = _ := tsum_congr hGrid
+
 end ManuscriptAudit.CauchySampling
 
 open Lean Elab Command in
@@ -116,7 +176,8 @@ run_cmd do
   for name in [
     ``ManuscriptAudit.CauchySampling.finiteLaurent_sample_eq,
     ``ManuscriptAudit.CauchySampling.finiteLaurent_printed_sample_eq,
-    ``ManuscriptAudit.CauchySampling.sample_monomial_at_zero] do
+    ``ManuscriptAudit.CauchySampling.sample_monomial_at_zero,
+    ``ManuscriptAudit.CauchySampling.absoluteLaurent_sample_eq] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

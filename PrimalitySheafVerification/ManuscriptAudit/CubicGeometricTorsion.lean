@@ -38,8 +38,8 @@ private theorem finite_affine_no_p_torsion {p : ℕ} [Fact p.Prime] {L : Type*} 
   let e := (WeierstrassCurve.Projective.Point.toAffineAddEquiv
     (W := (shortCubic (0 : L) (algebraMap (ZMod p) L A)).toProjective)).symm
   have hT : p • e Q = 0 := by rw [← map_nsmul, hQ, map_zero]
-  have hA' : algebraMap (ZMod p) L A ≠ 0 :=
-    (algebraMap (ZMod p) L).injective.ne hA
+  have hA' : algebraMap (ZMod p) L A ≠ 0 := by
+    simpa only [map_zero] using (algebraMap (ZMod p) L).injective.ne hA
   have hzero := CubicFiniteTorsion.paper5_no_p_torsion_over_finite_field hp hr hA' (e Q) hT
   apply e.injective
   simpa only [map_zero] using hzero

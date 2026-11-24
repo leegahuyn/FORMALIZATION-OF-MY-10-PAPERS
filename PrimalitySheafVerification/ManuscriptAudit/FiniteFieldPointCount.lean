@@ -2,6 +2,7 @@ import Lean.Elab.Tactic.Omega
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 import Mathlib.Data.Fintype.Option
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+import PrimalitySheafVerification.ManuscriptAudit.FiniteFieldPowerSums
 
 /-!
 # Finite-field point counts and the Euler criterion
@@ -50,7 +51,12 @@ theorem affinePoints_count_cast (hF : ringChar F ≠ 2) (f : F → F) :
   rw [Fintype.card_congr (affineEquivSigma f), Fintype.card_sigma, Nat.cast_sum]
   have hFiber (x : F) : (Fintype.card {y : F // y ^ 2 = f x} : F) =
       1 + f x ^ ((Fintype.card F - 1) / 2) := by
-    simpa only [Set.toFinset_card] using squareRootFiber_count_cast hF (f x)
+    have hCard : Fintype.card {y : F // y ^ 2 = f x} =
+        {y : F | y ^ 2 = f x}.toFinset.card :=
+      Fintype.card_of_subtype _ (fun y => by
+        simpa only [Set.mem_toFinset, Set.mem_setOf_eq])
+    rw [hCard]
+    exact squareRootFiber_count_cast hF (f x)
   simp_rw [hFiber]
   rw [Finset.sum_add_distrib]
   have hConst : (∑ _x : F, (1 : F)) = 0 := by
@@ -127,7 +133,8 @@ theorem shortCubic_zero_count_cast_eq_one_sub_coeff (hF : ringChar F ≠ 2)
   simp only [zero_mul, sub_zero]
   change (1 : F) + (∑ t : F, (t ^ 3 + A) ^ n) = 1 - f.coeff (Fintype.card F - 1)
   simp_rw [← he]
-  rw [FiniteFieldPowerSums.finite_field_sum_eval_eq_neg_coeff F hq f hf, sub_eq_add_neg]
+  rw [_root_.ManuscriptAudit.FiniteFieldPowerSums.finite_field_sum_eval_eq_neg_coeff F hq f hf,
+    sub_eq_add_neg]
 
 end
 

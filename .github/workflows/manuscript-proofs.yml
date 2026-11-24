@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -38,9 +38,9 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
           for proof in "${proofs[@]}"; do
-            awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
+            awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           test -s "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           printf 'hash=%s\n' "$(sha256sum "${RUNNER_TEMP}/manuscript-proof-imports.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
@@ -52,6 +52,7 @@ jobs:
           key: manuscript-lean-imports-0e026509-linux-arm64-${{ steps.vendored-inputs.outputs.hash }}
           restore-keys: manuscript-lean-imports-0e026509-linux-arm64-
       - name: Build the required vendored modules
+        id: vendored-dependencies
         shell: bash
         run: |
           set -euo pipefail
@@ -68,16 +69,43 @@ jobs:
         with:
           path: .lake
           key: ${{ steps.compiled.outputs.cache-primary-key }}
+      - name: Build the original project module needed by the proofs
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/manuscript-proof-project-imports.log"
+          status=0
+          lake build PrimalitySheafVerification.Spt5 > "$log" 2>&1 || status=$?
+          tail -n 60 "$log"
+          exit "$status"
       - name: Check the proofs and their transitive axioms
+        if: ${{ !cancelled() && steps.vendored-dependencies.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
+          compiled="${RUNNER_TEMP}/manuscript-vendored-proof-modules"
+          mkdir -p "$compiled/$proof_dir"
+          audit_lean_path="$(lake env printenv LEAN_PATH)"
+          export LEAN_PATH="$compiled:$audit_lean_path"
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
-            lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
+            missing=0
+            while IFS= read -r prerequisite; do
+              if [[ ! -f "$compiled/$prerequisite.olean" ]]; then
+                echo "Missing current build of $prerequisite" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
+                missing=1
+              fi
+            done < <(awk '$1 == "import" && $2 ~ /^PrimalitySheafVerification\.ManuscriptAudit\./ {gsub(/[.]/,"/",$2); print $2}' "$proof_dir/$proof.lean")
+            if [[ "$missing" == 1 ]]; then
+              status=1
+              continue
+            fi
+            lean --root="$GITHUB_WORKSPACE" -o "$compiled/$proof_dir/$proof.olean" \
+              "$GITHUB_WORKSPACE/$proof_dir/$proof.lean" 2>&1 |
+                tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
           done
           exit "$status"
       - name: Keep the vendored-build logs on GitHub
@@ -87,6 +115,7 @@ jobs:
           name: manuscript-proofs-vendored-${{ github.sha }}
           path: |
             ${{ runner.temp }}/manuscript-dependencies.log
+            ${{ runner.temp }}/manuscript-proof-project-imports.log
             ${{ runner.temp }}/manuscript-proofs.log
           if-no-files-found: warn
           retention-days: 30
@@ -160,7 +189,7 @@ jobs:
     timeout-minutes: 90
     concurrency:
       group: manuscript-proofs-upstream-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -186,7 +215,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -210,7 +239,7 @@ jobs:
           mkdir -p "$compiled/$package_path"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
             lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/$proof.olean" \
