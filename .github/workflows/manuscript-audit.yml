@@ -1,0 +1,60 @@
+name: Manuscript audit baseline
+on:
+  push:
+    branches: [codex/overleaf-bundle-formalization]
+    paths:
+      - '.github/workflows/manuscript-audit.yml'
+      - 'PrimalitySheafVerification/**'
+permissions:
+  contents: read
+concurrency:
+  group: manuscript-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  baseline:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up pinned Lean and Mathlib cache
+        id: setup
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: true
+      - name: Build all primary modules and bridges
+        shell: bash
+        run: |
+          set -euo pipefail
+          logs="${RUNNER_TEMP}/manuscript-audit"
+          mkdir -p "$logs"
+          { git rev-parse HEAD; cat lean-toolchain; lean --version; lake --version; } > "$logs/provenance.log"
+          status=0
+          lake build PrimalitySheafVerification.BuildAll > "$logs/build-all.log" 2>&1 || status=$?
+          tail -n 80 "$logs/build-all.log"
+          exit "$status"
+      - name: Check focused verification file
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          logs="${RUNNER_TEMP}/manuscript-audit"
+          mkdir -p "$logs"
+          status=0
+          lake env lean PrimalitySheafVerification/Verification.lean > "$logs/verification.log" 2>&1 || status=$?
+          cat "$logs/verification.log"
+          exit "$status"
+      - name: Preserve logs on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/manuscript-audit
+          if-no-files-found: warn
+          retention-days: 30
