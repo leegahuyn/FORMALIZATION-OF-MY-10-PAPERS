@@ -50,7 +50,9 @@ theorem finite_field_power_sum_low_degrees (K : Type*) [Field K] [Fintype K]
           exact False.elim ((not_le_of_gt hn) (hd ▸ Nat.mul_le_mul_left _ hd2))
       · rintro rfl
         exact dvd_refl _
-    rw [hdiv]
+    by_cases heq : n = Fintype.card K - 1
+    · simp only [if_pos (hdiv.mpr heq), if_pos heq]
+    · simp only [if_neg (mt hdiv.mp heq), if_neg heq]
 
 /-- The sum of a genuine polynomial over the actual finite field. -/
 theorem finite_field_sum_eval_eq_neg_coeff (K : Type*) [Field K] [Fintype K]

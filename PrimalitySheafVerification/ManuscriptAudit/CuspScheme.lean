@@ -22,13 +22,13 @@ universe u v
 
 variable (K : Type u) [Field K]
 
-private abbrev cuspAlgebra : Subalgebra K (Polynomial K) :=
+private noncomputable abbrev cuspAlgebra : Subalgebra K (Polynomial K) :=
   Algebra.adjoin K ({(X : Polynomial K) ^ 2, X ^ 3} : Set (Polynomial K))
 
-private abbrev cuspRing := cuspAlgebra K
+private noncomputable abbrev cuspRing := cuspAlgebra K
 
 /-- The coordinate inclusion as an arrow in commutative rings. -/
-def inclusion : CommRingCat.of (cuspRing K) ⟶ CommRingCat.of (Polynomial K) :=
+noncomputable def inclusion : CommRingCat.of (cuspRing K) ⟶ CommRingCat.of (Polynomial K) :=
   CommRingCat.ofHom (algebraMap (cuspRing K) (Polynomial K))
 
 /-- The actual induced morphism of affine schemes. -/
@@ -38,7 +38,7 @@ noncomputable def cuspMap :
 
 variable (L : Type v) [Field L]
 
-private def restrictRing (f : Polynomial K →+* L) : cuspRing K →+* L :=
+private noncomputable def restrictRing (f : Polynomial K →+* L) : cuspRing K →+* L :=
   f.comp (algebraMap (cuspRing K) (Polynomial K))
 
 /-- Field-valued ring maps have unique lifts, including when the

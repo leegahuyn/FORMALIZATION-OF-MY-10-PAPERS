@@ -4,6 +4,7 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -100,38 +101,6 @@ def localJacobianSubmodule : Submodule K OriginLocalRing where
 theorem paper2_localJacobianSubmodule_mem_iff (z : OriginLocalRing) :
     z ∈ localJacobianSubmodule ↔ z ∈ localJacobianIdeal := Iff.rfl
 
-private theorem localJacobianSubmodule_eq_bot : localJacobianSubmodule = ⊥ := by
-  ext z
-  rw [paper2_localJacobianSubmodule_mem_iff, paper2_localJacobianIdeal_eq_bot,
-    Ideal.mem_bot, Submodule.mem_bot]
-
-section QuotientModule
-
-variable {S W : Type*} [Ring S] [AddCommGroup W] [Module S W]
-
-private abbrev quotientSpace (N : Submodule S W) := W ⧸ N
-
-private abbrev quotientAddCommGroup (N : Submodule S W) : AddCommGroup (quotientSpace N) :=
-  Submodule.Quotient.addCommGroup N
-
-private abbrev quotientModule (N : Submodule S W) :
-    @Module S (quotientSpace N) _ (quotientAddCommGroup N).toAddCommMonoid :=
-  Submodule.Quotient.module N
-
-end QuotientModule
-
-/-- The precise localized Jacobian quotient as a residue-field module. -/
-abbrev OriginJacobianQuotient : Type :=
-  quotientSpace (S := K) (W := OriginLocalRing) localJacobianSubmodule
-
-set_option maxHeartbeats 3000000 in
-instance : AddCommGroup OriginJacobianQuotient :=
-  quotientAddCommGroup (S := K) (W := OriginLocalRing) localJacobianSubmodule
-
-set_option maxHeartbeats 3000000 in
-instance : Module K OriginJacobianQuotient :=
-  quotientModule (S := K) (W := OriginLocalRing) localJacobianSubmodule
-
 private def lineToFraction : CurveRing →+* F :=
   (algebraMap P F).comp lineMap
 
@@ -173,40 +142,66 @@ private theorem powers_firstCoordinate_injective :
     simpa only [map_pow] using hF
   simpa only [Polynomial.natDegree_X_pow] using congrArg Polynomial.natDegree hP
 
-private theorem originLocalRing_not_finite : ¬ Module.Finite K OriginLocalRing := by
+/-- The origin's local ring is infinite-dimensional over the coefficient field. -/
+theorem paper2_originLocalRing_not_finite : ¬ Module.Finite K OriginLocalRing := by
   intro h
   letI : Module.Finite K OriginLocalRing := h
   letI : Infinite OriginLocalRing := Infinite.of_injective _ powers_firstCoordinate_injective
   letI : Finite OriginLocalRing := Module.finite_of_finite K
   exact not_finite OriginLocalRing
 
-private theorem quotient_not_finite_of_eq_bot {S W : Type*} [Ring S] [AddCommGroup W]
-    [Module S W] (N : Submodule S W) (hN : N = ⊥) (hW : ¬ Module.Finite S W) :
-    ¬ @Module.Finite S (quotientSpace N) _ (quotientAddCommGroup N).toAddCommMonoid
-      (quotientModule N) :=
-  fun h => hW ((Module.Finite.equiv_iff (N.quotEquivOfEqBot hN)).mp h)
+private theorem firstCoordinate_in_maximalIdeal :
+    firstCoordinate ∈ IsLocalRing.maximalIdeal OriginLocalRing := by
+  rw [firstCoordinate, ← Localization.AtPrime.map_eq_maximalIdeal (I := originIdeal)]
+  apply Ideal.mem_map_of_mem (algebraMap CurveRing OriginLocalRing)
+  change originResidue (Ideal.Quotient.mk I (MvPolynomial.X 0)) = 0
+  change ((MvPolynomial.aeval (fun _ : Fin 2 => (Polynomial.X : P))
+    (MvPolynomial.X 0)) : P).eval (0 : K) = 0
+  rw [MvPolynomial.aeval_X, Polynomial.eval_X]
 
-/-- The actual local Jacobian quotient has infinite dimension over the residue field. -/
-set_option maxHeartbeats 3000000 in
-theorem paper2_localJacobianQuotient_not_finite :
-    ¬ Module.Finite K OriginJacobianQuotient :=
-  quotient_not_finite_of_eq_bot (S := K) (W := OriginLocalRing) localJacobianSubmodule
-    localJacobianSubmodule_eq_bot originLocalRing_not_finite
+private theorem firstCoordinate_not_nilpotent : ¬ IsNilpotent firstCoordinate := by
+  rintro ⟨n, hn⟩
+  have hs : firstCoordinate ^ (n + 1) = 0 := by
+    rw [pow_succ, hn, zero_mul]
+  exact Nat.succ_ne_self n (powers_firstCoordinate_injective (hs.trans hn.symm))
 
-/-- The local Jacobian quotient has infinite module length. -/
-theorem paper2_localJacobianQuotient_length_eq_top :
-    Module.length K OriginJacobianQuotient = ⊤ := by
+private theorem length_eq_top_of_nonnilpotent_maximal {A : Type*} [CommRing A]
+    [IsLocalRing A] (x : A) (hx : x ∈ IsLocalRing.maximalIdeal A)
+    (hn : ¬ IsNilpotent x) : Module.length A A = ⊤ := by
   classical
-  by_contra htop
-  have hfl : IsFiniteLength K OriginJacobianQuotient := Module.length_ne_top_iff.mp htop
-  letI : IsNoetherian K OriginJacobianQuotient :=
-    (isFiniteLength_iff_isNoetherian_isArtinian.mp hfl).1
-  exact paper2_localJacobianQuotient_not_finite inferInstance
+  by_contra hlen
+  have hf : IsFiniteLength A A := Module.length_ne_top_iff.mp hlen
+  letI : IsArtinianRing A := (isFiniteLength_iff_isNoetherian_isArtinian.mp hf).2
+  obtain ⟨n, hJ⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := A)
+  have hm : x ∈ Ideal.jacobson (⊥ : Ideal A) :=
+    IsLocalRing.maximalIdeal_le_jacobson _ hx
+  have hp := Ideal.pow_mem_pow hm n
+  rw [hJ, Ideal.mem_bot] at hp
+  exact hn ⟨n, hp⟩
 
-/-- The finite value pₙA=4 printed in the table fails at this fiber. -/
-theorem paper2_localJacobianQuotient_not_length_four :
-    Module.length K OriginJacobianQuotient ≠ 4 := by
-  rw [paper2_localJacobianQuotient_length_eq_top]
+private theorem length_ringQuotient_eq_of_eq_bot {A : Type*} [CommRing A]
+    (J : Ideal A) (hJ : J = ⊥) : Module.length A (A ⧸ J) = Module.length A A := by
+  subst J
+  exact (AlgEquiv.quotientBot A A).toLinearEquiv.length_eq
+
+/-- The origin's local ring has infinite length as a module over itself. -/
+theorem paper2_originLocalRing_length_eq_top : Module.length OriginLocalRing OriginLocalRing = ⊤ :=
+  length_eq_top_of_nonnilpotent_maximal firstCoordinate firstCoordinate_in_maximalIdeal
+    firstCoordinate_not_nilpotent
+
+set_option maxHeartbeats 3000000 in
+/-- The actual Jacobian quotient has infinite length over the local ring at the origin. -/
+theorem paper2_localJacobianQuotient_local_length_eq_top :
+    Module.length OriginLocalRing (OriginLocalRing ⧸ localJacobianIdeal) = ⊤ := by
+  calc
+    _ = Module.length OriginLocalRing OriginLocalRing :=
+      length_ringQuotient_eq_of_eq_bot localJacobianIdeal paper2_localJacobianIdeal_eq_bot
+    _ = ⊤ := paper2_originLocalRing_length_eq_top
+
+/-- The local-ring length differs from the printed finite value pₙA=4. -/
+theorem paper2_localJacobianQuotient_local_length_ne_four :
+    Module.length OriginLocalRing (OriginLocalRing ⧸ localJacobianIdeal) ≠ 4 := by
+  rw [paper2_localJacobianQuotient_local_length_eq_top]
   exact ENat.top_ne_ofNat 4
 
 end
@@ -215,8 +210,9 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper2_localJacobianIdeal_eq_bot, ``paper2_localJacobianSubmodule_mem_iff,
-      ``paper2_localJacobianQuotient_not_finite,
-      ``paper2_localJacobianQuotient_length_eq_top, ``paper2_localJacobianQuotient_not_length_four] do
+      ``paper2_originLocalRing_not_finite, ``paper2_originLocalRing_length_eq_top,
+      ``paper2_localJacobianQuotient_local_length_eq_top,
+      ``paper2_localJacobianQuotient_local_length_ne_four] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

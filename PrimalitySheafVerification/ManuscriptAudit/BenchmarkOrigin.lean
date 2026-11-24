@@ -52,9 +52,7 @@ private def descendEquation (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
 
 private theorem descendEquation_mk (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
     (f : Plane K →ₐ[K] B) (hf : f (equation K r s) = 0) (g : Plane K) :
-    descendEquation K r s f hf (Ideal.Quotient.mk (equationIdeal K r s) g) = f g := by
-  simp only [descendEquation, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk,
-    AlgHom.coe_toRingHom]
+    descendEquation K r s f hf (Ideal.Quotient.mk (equationIdeal K r s) g) = f g := rfl
 
 /-- Evaluation at the origin of the benchmark fiber. -/
 def atOrigin {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] K :=

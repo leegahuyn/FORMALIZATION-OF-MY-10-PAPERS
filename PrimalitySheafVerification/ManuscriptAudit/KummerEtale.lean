@@ -46,10 +46,10 @@ theorem kummer_derivative_value (d : ℕ) (a : A) :
     AdjoinRoot.mk (kummerPolynomial d a) (kummerPolynomial d a).derivative =
       algebraMap A (AdjoinRoot (kummerPolynomial d a)) (d : A) *
         AdjoinRoot.root (kummerPolynomial d a) ^ (d - 1) := by
-  rw [← AdjoinRoot.aeval_eq]
-  simp only [kummerPolynomial, Polynomial.derivative_sub, Polynomial.derivative_X_pow,
-    Polynomial.derivative_C, sub_zero]
-  rw [Polynomial.aeval_def, Polynomial.eval₂_mul, Polynomial.eval₂_C, Polynomial.eval₂_X_pow]
+  have hder : (kummerPolynomial d a).derivative = C (d : A) * X ^ (d - 1) := by
+    simp only [kummerPolynomial, Polynomial.derivative_sub, Polynomial.derivative_X_pow,
+      Polynomial.derivative_C, sub_zero]
+  simp only [hder, map_mul, map_pow, AdjoinRoot.mk_C, AdjoinRoot.mk_X]
 
 theorem adjoinRoot_etale_of_derivative_unit {f : Polynomial A} (hf : f.Monic)
     (hu : IsUnit (AdjoinRoot.mk f f.derivative)) : Algebra.Etale A (AdjoinRoot f) := by
