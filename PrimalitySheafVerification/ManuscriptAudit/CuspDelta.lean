@@ -1,12 +1,17 @@
 import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The coordinate quotient of the cusp inclusion
@@ -116,8 +121,7 @@ theorem paper2_cusp_inclusion_finite :
   refine ⟨⟨{1, X}, ?_⟩⟩
   simpa only [Finset.coe_insert, Finset.coe_singleton] using cusp_span_one_X K
 
-/-- The cusp coordinate inclusion is integral. The normalization identification
-and the étale comparisons require further results. -/
+/-- The cusp coordinate inclusion is integral. -/
 theorem paper2_cusp_inclusion_integral :
     Algebra.IsIntegral
       (Algebra.adjoin K ({(X : Polynomial K) ^ 2, X ^ 3} : Set (Polynomial K)))
@@ -125,6 +129,45 @@ theorem paper2_cusp_inclusion_integral :
   letI := paper2_cusp_inclusion_finite K
   exact Algebra.IsIntegral.of_finite _ _
 
+
+private theorem mul_X_sq_mem_cusp (f : Polynomial K) :
+    f * (X : Polynomial K) ^ 2 ∈ cuspSubalgebra K := by
+  apply (cusp_mem_iff_coeff_one_zero K _).2
+  simp only [Polynomial.coeff_mul_X_pow', if_neg (by decide : ¬ (2 : ℕ) ≤ 1)]
+
+/-- The cusp subalgebra has the same fraction field as K[X].
+A fraction f/g can be written as (fX²)/(gX²), with both polynomials
+in the subalgebra. -/
+theorem paper2_cusp_fraction_field :
+    IsFractionRing
+      (Algebra.adjoin K ({(X : Polynomial K) ^ 2, X ^ 3} : Set (Polynomial K)))
+      (FractionRing (Polynomial K)) := by
+  refine IsFractionRing.of_field (cuspSubalgebra K) (FractionRing (Polynomial K)) ?_
+  intro q
+  obtain ⟨f, g, _, hq⟩ := IsFractionRing.div_surjective (Polynomial K) q
+  let a : cuspSubalgebra K := ⟨f * X ^ 2, mul_X_sq_mem_cusp K f⟩
+  let b : cuspSubalgebra K := ⟨g * X ^ 2, mul_X_sq_mem_cusp K g⟩
+  have hX : algebraMap (Polynomial K) (FractionRing (Polynomial K))
+      ((X : Polynomial K) ^ 2) ≠ 0 :=
+    (map_ne_zero_iff _ (IsFractionRing.injective (Polynomial K) (FractionRing (Polynomial K)))).mpr
+      (pow_ne_zero 2 Polynomial.X_ne_zero)
+  refine ⟨a, b, ?_⟩
+  change q = algebraMap (Polynomial K) (FractionRing (Polynomial K)) (f * X ^ 2) /
+    algebraMap (Polynomial K) (FractionRing (Polynomial K)) (g * X ^ 2)
+  simpa only [map_mul, mul_div_mul_right _ _ hX] using hq.symm
+
+/-- The polynomial algebra is the integral closure of the cusp
+subalgebra in their common fraction field. -/
+theorem paper2_cusp_polynomial_is_integral_closure :
+    IsIntegralClosure (Polynomial K)
+      (Algebra.adjoin K ({(X : Polynomial K) ^ 2, X ^ 3} : Set (Polynomial K)))
+      (FractionRing (Polynomial K)) := by
+  classical
+  letI : GCDMonoid (Polynomial K) := EuclideanDomain.gcdMonoid _
+  letI : Algebra.IsIntegral (cuspSubalgebra K) (Polynomial K) :=
+    paper2_cusp_inclusion_integral K
+  exact IsIntegralClosure.of_isIntegrallyClosed (Polynomial K) (cuspSubalgebra K)
+    (FractionRing (Polynomial K))
 
 /-- The two monomials generating the cusp coordinate algebra. -/
 private abbrev cuspX2 : cuspSubalgebra K :=
@@ -209,6 +252,157 @@ theorem paper2_cusp_field_points_bijective :
       change Polynomial.aeval t ((Polynomial.X : Polynomial K) ^ 3) = h (cuspX3 K)
       simpa only [Polynomial.aeval_X_pow] using h3
 
+/-- The equation \(Y^2-X^3\) in \(K[X][Y]\). -/
+def cuspPlaneEquation : Polynomial (Polynomial K) :=
+  Polynomial.X ^ 2 - Polynomial.C ((Polynomial.X : Polynomial K) ^ 3)
+
+private theorem cuspPlaneEquation_monic : (cuspPlaneEquation K).Monic :=
+  Polynomial.monic_X_pow_sub_C ((Polynomial.X : Polynomial K) ^ 3) (n := 2) (by decide)
+
+private theorem cuspPlaneEquation_natDegree : (cuspPlaneEquation K).natDegree = 2 :=
+  Polynomial.natDegree_X_pow_sub_C
+
+private theorem eq_linear_polynomial_of_natDegree_lt_two {R : Type*} [CommSemiring R]
+    (r : Polynomial R) (hr : r.natDegree < 2) :
+    r = Polynomial.C (r.coeff 0) + Polynomial.C (r.coeff 1) * Polynomial.X := by
+  apply Polynomial.ext
+  intro n
+  cases n with
+  | zero => simp
+  | succ n =>
+    cases n with
+    | zero => simp [Polynomial.coeff_C_mul_X]
+    | succ n =>
+      have hdeg : r.natDegree < n.succ.succ := by omega
+      rw [Polynomial.coeff_eq_zero_of_natDegree_lt hdeg]
+      simp [Polynomial.coeff_C_mul_X]
+
+/-- In the parametrization \(X=t^2,\ Y=t^3\), the two terms of a
+linear remainder in \(Y\) have distinct coefficient parities. -/
+theorem cusp_expanded_linear_eq_zero (a b : Polynomial K)
+    (h : Polynomial.expand K 2 a + Polynomial.expand K 2 b * Polynomial.X ^ 3 = 0) :
+    a = 0 ∧ b = 0 := by
+  have hb : b = 0 := by
+    apply Polynomial.ext
+    intro n
+    have hn : ¬(2 ∣ 2 * n + 3) := by
+      rintro ⟨m, hm⟩
+      omega
+    have ha : (Polynomial.expand K 2 a).coeff (2 * n + 3) = 0 := by
+      rw [Polynomial.coeff_expand (by decide : 0 < (2 : ℕ)), if_neg hn]
+    have he := congrArg (fun f : Polynomial K => f.coeff (2 * n + 3)) h
+    change (Polynomial.expand K 2 a +
+      Polynomial.expand K 2 b * Polynomial.X ^ 3).coeff (2 * n + 3) =
+      (0 : Polynomial K).coeff (2 * n + 3) at he
+    rw [Polynomial.coeff_add, ha, zero_add, Polynomial.coeff_mul_X_pow,
+      Polynomial.coeff_expand_mul' (by decide : 0 < (2 : ℕ)), Polynomial.coeff_zero] at he
+    simpa only [Polynomial.coeff_zero] using he
+  have ha : Polynomial.expand K 2 a = 0 := by simpa [hb] using h
+  exact ⟨(Polynomial.expand_eq_zero (by decide : 0 < (2 : ℕ))).mp ha, hb⟩
+
+private abbrev cuspBaseMap : Polynomial K →ₐ[K] cuspSubalgebra K :=
+  Polynomial.aeval (cuspX2 K)
+
+private theorem cuspBaseMap_val :
+    (cuspSubalgebra K).val.comp (cuspBaseMap K) = Polynomial.expand K 2 := by
+  apply Polynomial.algHom_ext
+  change ((cuspBaseMap K (Polynomial.X : Polynomial K) : cuspSubalgebra K) :
+    Polynomial K) = Polynomial.expand K 2 Polynomial.X
+  simp only [cuspBaseMap, Polynomial.aeval_X, Polynomial.expand_X] <;> rfl
+
+private theorem cuspPlaneEquation_eval :
+    (cuspPlaneEquation K).eval₂ (cuspBaseMap K).toRingHom (cuspX3 K) = 0 := by
+  simp only [cuspPlaneEquation, Polynomial.eval₂_sub, Polynomial.eval₂_pow,
+    Polynomial.eval₂_X, Polynomial.eval₂_C, AlgHom.coe_toRingHom, map_pow, cuspBaseMap,
+    Polynomial.aeval_X, cusp_generator_relation, sub_self]
+
+private def cuspParametrization : AdjoinRoot (cuspPlaneEquation K) →ₐ[K] cuspSubalgebra K :=
+  AdjoinRoot.liftAlgHom (cuspPlaneEquation K) (cuspBaseMap K) (cuspX3 K)
+    (cuspPlaneEquation_eval K)
+
+private theorem cuspParametrization_coeff (f : Polynomial K) :
+    cuspParametrization K (AdjoinRoot.of (cuspPlaneEquation K) f) = cuspBaseMap K f :=
+  AdjoinRoot.liftAlgHom_of (cuspPlaneEquation K) (cuspBaseMap K) (cuspX3 K)
+    (cuspPlaneEquation_eval K) f
+
+private theorem cuspParametrization_root :
+    cuspParametrization K (AdjoinRoot.root (cuspPlaneEquation K)) = cuspX3 K :=
+  AdjoinRoot.liftAlgHom_root (cuspPlaneEquation K) (cuspBaseMap K) (cuspX3 K)
+    (cuspPlaneEquation_eval K)
+
+private theorem cuspParametrization_mk (f : Polynomial (Polynomial K)) :
+    cuspParametrization K (AdjoinRoot.mk (cuspPlaneEquation K) f) =
+      f.eval₂ (cuspBaseMap K).toRingHom (cuspX3 K) :=
+  AdjoinRoot.liftAlgHom_mk (cuspPlaneEquation K) (cuspBaseMap K) (cuspX3 K)
+    (cuspPlaneEquation_eval K) f
+
+private theorem cuspParametrization_surjective :
+    Function.Surjective (cuspParametrization K) := by
+  let F := (cuspSubalgebra K).val.comp (cuspParametrization K)
+  have h2 : (Polynomial.X : Polynomial K) ^ 2 ∈ F.range := by
+    refine ⟨AdjoinRoot.of (cuspPlaneEquation K) Polynomial.X, ?_⟩
+    change ((cuspParametrization K
+      (AdjoinRoot.of (cuspPlaneEquation K) Polynomial.X) : cuspSubalgebra K) :
+      Polynomial K) = Polynomial.X ^ 2
+    simp only [cuspParametrization_coeff, cuspBaseMap, Polynomial.aeval_X] <;> rfl
+  have h3 : (Polynomial.X : Polynomial K) ^ 3 ∈ F.range := by
+    refine ⟨AdjoinRoot.root (cuspPlaneEquation K), ?_⟩
+    change ((cuspParametrization K
+      (AdjoinRoot.root (cuspPlaneEquation K)) : cuspSubalgebra K) :
+      Polynomial K) = Polynomial.X ^ 3
+    simp only [cuspParametrization_root] <;> rfl
+  have hle : cuspSubalgebra K ≤ F.range := by
+    apply Algebra.adjoin_le
+    intro g hg
+    rcases Set.mem_insert_iff.mp hg with hg | hg
+    · rw [hg]
+      exact h2
+    · rw [Set.mem_singleton_iff.mp hg]
+      exact h3
+  intro z
+  obtain ⟨q, hq⟩ := hle z.property
+  exact ⟨q, Subtype.ext hq⟩
+
+private theorem cuspParametrization_injective :
+    Function.Injective (cuspParametrization K) := by
+  rw [injective_iff_map_eq_zero]
+  intro q hq
+  obtain ⟨f, rfl⟩ := AdjoinRoot.mk_surjective (cuspPlaneEquation K) q
+  let r := f %ₘ cuspPlaneEquation K
+  have hmonic := cuspPlaneEquation_monic K
+  have hne : cuspPlaneEquation K ≠ 1 := by
+    intro he
+    have hd := congrArg Polynomial.natDegree he
+    rw [cuspPlaneEquation_natDegree, Polynomial.natDegree_one] at hd
+    exact (by decide : (2 : ℕ) ≠ 0) hd
+  have hr : r.natDegree < 2 := by
+    simpa only [cuspPlaneEquation_natDegree] using Polynomial.natDegree_modByMonic_lt f hmonic hne
+  have hlin := eq_linear_polynomial_of_natDegree_lt_two r hr
+  have hrem : r.eval₂ (cuspBaseMap K).toRingHom (cuspX3 K) = 0 := by
+    exact (Polynomial.eval₂_modByMonic_eq_self_of_root
+      (p := f) (cuspPlaneEquation_eval K)).trans ((cuspParametrization_mk K f).symm.trans hq)
+  have heval : cuspBaseMap K (r.coeff 0) + cuspBaseMap K (r.coeff 1) * cuspX3 K = 0 := by
+    rw [hlin] at hrem
+    simpa only [Polynomial.eval₂_add, Polynomial.eval₂_C, Polynomial.eval₂_mul,
+      Polynomial.eval₂_X, AlgHom.coe_toRingHom] using hrem
+  have hbase (a : Polynomial K) :
+      (cuspSubalgebra K).val (cuspBaseMap K a) = Polynomial.expand K 2 a :=
+    AlgHom.congr_fun (cuspBaseMap_val K) a
+  have hsplit : Polynomial.expand K 2 (r.coeff 0) +
+      Polynomial.expand K 2 (r.coeff 1) * Polynomial.X ^ 3 = 0 := by
+    simpa only [map_add, map_mul, map_zero, hbase] using
+      congrArg ((cuspSubalgebra K).val) heval
+  obtain ⟨h0, h1⟩ := cusp_expanded_linear_eq_zero K _ _ hsplit
+  have hrzero : r = 0 := hlin.trans (by simp only [h0, h1, map_zero, zero_mul, zero_add])
+  exact AdjoinRoot.mk_eq_zero.mpr ((Polynomial.modByMonic_eq_zero_iff_dvd hmonic).mp hrzero)
+
+/-- The plane cusp \(K[X,Y]/(Y^2-X^3)\) is the coordinate algebra
+\(K[t^2,t^3]\) via \(X\mapsto t^2,\ Y\mapsto t^3\). -/
+noncomputable def paper2_cusp_coordinate_presentation :
+    AdjoinRoot (cuspPlaneEquation K) ≃ₐ[K] cuspSubalgebra K :=
+  AlgEquiv.ofBijective (cuspParametrization K)
+    ⟨cuspParametrization_injective K, cuspParametrization_surjective K⟩
+
 end
 
 end ManuscriptAudit.CuspDelta
@@ -220,7 +414,11 @@ run_cmd do
       ``ManuscriptAudit.CuspDelta.paper2_cusp_delta_coordinate_quotient_finrank,
       ``ManuscriptAudit.CuspDelta.paper2_cusp_inclusion_finite,
       ``ManuscriptAudit.CuspDelta.paper2_cusp_inclusion_integral,
-      ``ManuscriptAudit.CuspDelta.paper2_cusp_field_points_bijective] do
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_fraction_field,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_polynomial_is_integral_closure,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_field_points_bijective,
+      ``ManuscriptAudit.CuspDelta.cusp_expanded_linear_eq_zero,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_coordinate_presentation] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

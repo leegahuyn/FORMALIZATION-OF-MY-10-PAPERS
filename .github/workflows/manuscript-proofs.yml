@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme"
           for proof in "${proofs[@]}"; do
             awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
@@ -73,7 +73,7 @@ jobs:
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
             lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
@@ -185,7 +185,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -212,16 +212,20 @@ jobs:
           compiled="${RUNNER_TEMP}/manuscript-proof-modules"
           package_path="PrimalitySheafVerification/ManuscriptAudit"
           mkdir -p "$compiled/$package_path"
-          if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/CubicTrace.olean" \
-              "$GITHUB_WORKSPACE/$package_path/CubicTrace.lean" > "${RUNNER_TEMP}/cubic-compile.log" 2>&1; then
-            audit_lean_path="$(lake env printenv LEAN_PATH)"
-            echo "Checking $proof_dir/CubicTraceInfinitude.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
-            LEAN_PATH="$compiled:$audit_lean_path" lean "$proof_dir/CubicTraceInfinitude.lean" 2>&1 |
-              tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
-          else
-            cat "${RUNNER_TEMP}/cubic-compile.log"
-            status=1
-          fi
+          audit_lean_path="$(lake env printenv LEAN_PATH)"
+          for pair in CubicTrace:CubicTraceInfinitude CuspDelta:CuspScheme; do
+            source="${pair%%:*}"
+            proof="${pair#*:}"
+            if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/$source.olean" \
+                "$GITHUB_WORKSPACE/$package_path/$source.lean" > "${RUNNER_TEMP}/$source-compile.log" 2>&1; then
+              echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+              LEAN_PATH="$compiled:$audit_lean_path" lean "$proof_dir/$proof.lean" 2>&1 |
+                tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
+            else
+              cat "${RUNNER_TEMP}/$source-compile.log"
+              status=1
+            fi
+          done
           exit "$status"
       - name: Keep the upstream compatibility log on GitHub
         if: always()

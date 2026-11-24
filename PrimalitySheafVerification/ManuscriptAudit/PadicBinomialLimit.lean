@@ -55,6 +55,7 @@ theorem normalizedBinomial_eq (j k : ℕ) :
   apply (div_eq_div_iff hd hk).mpr
   have hcast := congrArg (fun n : ℕ => (n : ℚ_[p])) h
   push_cast at hcast
+  simp only [Nat.cast_add, Nat.cast_one]
   calc
     _ = (p : ℚ_[p]) ^ j * (Nat.choose (p ^ j - 1) k : ℚ_[p]) := hcast.symm
     _ = _ := mul_comm _ _
@@ -95,7 +96,7 @@ theorem tendsto_normalizedBinomial (k : ℕ) :
   rw [ring_choose_neg_one p k] at hh
   convert hh.div_const (((k + 1 : ℕ) : ℚ_[p])) using 1
   funext j
-  rw [normalizedBinomial_eq, shifted_choose_eq]
+  simp only [normalizedBinomial_eq, shifted_choose_eq, Function.comp_apply]
 
 private theorem norm_inv_nat_succ_le (k : ℕ) :
     ‖((k + 1 : ℕ) : ℚ_[p])⁻¹‖ ≤ (k + 1 : ℝ) := by
@@ -289,8 +290,10 @@ theorem norm_pow_card_sub_one_sub_one_lt_of_unit {x : ℚ_[p]}
     exact RingHom.mem_ker.mpr hred
   have hsmall : ‖z ^ (p - 1) - 1‖ < 1 := by
     simpa only [IsLocalRing.mem_maximalIdeal, PadicInt.mem_nonunits] using hmem
-  simpa only [PadicInt.norm_def, PadicInt.coe_sub, PadicInt.coe_pow, PadicInt.coe_one, z]
-    using hsmall
+  have hzpow : ((z ^ (p - 1) : ℤ_[p]) : ℚ_[p]) = x ^ (p - 1) :=
+    PadicInt.coe_pow z (p - 1)
+  rw [PadicInt.norm_def, PadicInt.coe_sub, hzpow, PadicInt.coe_one] at hsmall
+  exact hsmall
 
 private theorem padicLogSeries_principal_pow {x : ℚ_[p]} (hx : ‖x - 1‖ < 1) (n : ℕ) :
     ‖x ^ n - 1‖ < 1 ∧

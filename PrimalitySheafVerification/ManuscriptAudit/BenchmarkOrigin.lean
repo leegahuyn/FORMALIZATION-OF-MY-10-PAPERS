@@ -97,8 +97,9 @@ private theorem mul_t_eq_zero_of_mem_J {r : ℕ} {z : T K r} (hz : z ∈ J K r) 
     t K r * z = 0 := by
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hz
   calc
-    t K r * ((t K r) ^ r * a) = (t K r) ^ (r + 1) * a := by
-      rw [pow_succ, mul_comm ((t K r) ^ r) (t K r), mul_assoc]
+    t K r * ((t K r) ^ r * a) = ((t K r) ^ r * t K r) * a := by ac_rfl
+    _ = (t K r) ^ (r + 1) * a :=
+      congrArg (fun z : T K r => z * a) (pow_succ (t K r) r).symm
     _ = 0 := by rw [t_top_power K r, zero_mul]
 
 private theorem square_eq_zero_of_mem_J {r : ℕ} (hr : 2 ≤ r) {z : T K r}
@@ -133,7 +134,7 @@ private theorem const_firstCoordinate (g : Plane K) :
 
 private def intoU {r s : ℕ} (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] U K r :=
   Ideal.Quotient.liftₐ _ ((qP K r).comp (firstCoordinate K))
-    (liftEquation K r s _ (by
+    (liftEquation K r s ((qP K r).comp (firstCoordinate K)) (by
       have hs₀ : s ≠ 0 := by omega
       change qP K r (firstCoordinate K (equation K r s)) = 0
       have he : firstCoordinate K (equation K r s) = (Polynomial.X : P K) ^ r := by
@@ -170,12 +171,23 @@ private theorem qP_isUnit {r : ℕ} (g : P K) (h : g.coeff 0 ≠ 0) :
     simpa only [map_sub, map_mul] using congrArg (qP K r) ha
   have hn : IsNilpotent (qP K r g - qP K r (Polynomial.C (g.coeff 0))) := by
     use r
-    rw [he, mul_pow, qP_X_pow K r, zero_mul]
+    rw [he]
+    have hcomm : Commute (qP K r Polynomial.X) (qP K r a) := by
+      change qP K r Polynomial.X * qP K r a = qP K r a * qP K r Polynomial.X
+      simpa only [map_mul] using
+        congrArg (qP K r) (mul_comm (Polynomial.X : P K) a)
+    calc
+      _ = (qP K r Polynomial.X) ^ r * (qP K r a) ^ r := hcomm.mul_pow r
+      _ = 0 := by rw [qP_X_pow K r, zero_mul]
   have hc : IsUnit (qP K r (Polynomial.C (g.coeff 0))) :=
     ((isUnit_iff_ne_zero.mpr h).map Polynomial.C).map (qP K r).toRingHom
   have hcomm : Commute (qP K r g - qP K r (Polynomial.C (g.coeff 0)))
-      (qP K r (Polynomial.C (g.coeff 0))) :=
-    Commute.all _ _
+      (qP K r (Polynomial.C (g.coeff 0))) := by
+    change (qP K r g - qP K r (Polynomial.C (g.coeff 0))) *
+        qP K r (Polynomial.C (g.coeff 0)) =
+      qP K r (Polynomial.C (g.coeff 0)) * (qP K r g - qP K r (Polynomial.C (g.coeff 0)))
+    simpa only [map_sub, map_mul] using congrArg (qP K r)
+      (mul_comm (g - Polynomial.C (g.coeff 0)) (Polynomial.C (g.coeff 0)))
   simpa using hn.isUnit_add_right_of_commute hc hcomm
 
 private theorem intoU_unit {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s)
@@ -188,7 +200,7 @@ private theorem intoU_unit {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s)
     exact hn
   change IsUnit (intoU K (r := r) hs (u : CurveRing K r s))
   rw [← hg, intoU_mk]
-  exact qP_isUnit K g hres
+  exact qP_isUnit K (firstCoordinate K g) hres
 
 private def localMap {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s) :
     Local K hr hs →ₐ[K] U K r :=

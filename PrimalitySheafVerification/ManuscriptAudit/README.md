@@ -21,12 +21,13 @@ See [coverage](coverage.md), the [numbered-label candidates](numbered-label-cand
 
 ## Lean checks
 
-The 87 declarations in the first two successful runs use only axioms from the three-name allowlist. Six additional declarations passed their local proof and axiom checks in a later run, giving 93 individually checked declarations. These jobs used `leanprover/lean4:v4.33.0-rc1` and official Mathlib.
+The 87 declarations in the first two successful runs use only axioms from the three-name allowlist. The latest compatibility logs show another 11 declarations passed their local proof and axiom checks, giving 98 individually checked declarations. These jobs used `leanprover/lean4:v4.33.0-rc1` and official Mathlib.
 
 | Job | Result |
 | --- | --- |
 | [Audit proof modules](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/runs/45306647024/job/138152018023) | Passed and checked 74 declarations, including the singular benchmark origin, the Appell–Lerch numerator, and the Fourier interval integrals. |
 | [Proofs importing project modules](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/runs/45306647013/job/138152018134) | Passed and checked 13 declarations after compiling the pinned project sources Spt1 and Spt5 with official Mathlib. Includes the [p-adic certificate inputs](PadicCertificates.lean) and the [full logarithm Lipschitz inequality](PadicLipschitz.lean). |
 | [Cusp and theta additions](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/runs/45307689737/job/138155429554) | The three additional cusp checks and the three theta half-period checks passed. The job as a whole failed on the Euler and Jacobian files. |
+| [Euler product, Jacobian ideal and double-series identities](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/runs/45308187577/job/138157060021) | Both common-parameter Euler checks passed. The characteristic-two local Jacobian ideal and the two printed double-series identities passed. The new quotient-length and nonsummability checks require a rerun. |
 | [Vendored project and baseline](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/runs/45300501006) | Fresh full aggregate build and transitive dependency audit in progress. |
 | [Vendored proof modules](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/workflows/manuscript-proofs.yml) | A dependency build completed and stored its GitHub cache. The workflow tracks the current proof checks. |

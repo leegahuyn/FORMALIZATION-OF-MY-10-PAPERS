@@ -23,12 +23,14 @@ private theorem continuous_eq_zero_at_upper_support_endpoint {B : ℝ → ℝ} {
     intro t ht
     apply Set.mem_singleton_iff.mpr
     by_contra hne
-    exact (not_lt_of_ge (hsupp hne)) ht
+    have htSupport : t ∈ Function.support B := Function.mem_support.mpr hne
+    have htLe : t ≤ b := Set.mem_Iic.mp (hsupp htSupport)
+    exact (not_lt_of_ge htLe) (Set.mem_Ioi.mp ht)
   have hclosed : IsClosed (B ⁻¹' ({0} : Set ℝ)) :=
     isClosed_singleton.preimage hB
   have hb : b ∈ closure (Ioi b) := by
     rw [closure_Ioi]
-    exact le_rfl
+    exact Set.mem_Ici.mpr le_rfl
   exact Set.mem_singleton_iff.mp (closure_minimal hz hclosed hb)
 
 /-- The compact support and closed-window indicator conditions on p. 500

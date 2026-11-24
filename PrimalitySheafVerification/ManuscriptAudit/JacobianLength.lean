@@ -22,6 +22,8 @@ namespace ManuscriptAudit.JacobianLength
 
 noncomputable section
 
+set_option maxHeartbeats 1000000
+
 private instance : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
 private abbrev K := ZMod 2
 private abbrev R := MvPolynomial (Fin 2) K
@@ -83,16 +85,31 @@ theorem paper2_localJacobianIdeal_eq_bot : localJacobianIdeal = ⊥ := by
   rintro _ ⟨i, rfl⟩
   simp only [equation, map_add, MvPolynomial.pderiv_pow, htwo, zero_mul, add_zero, map_zero]
 
+private abbrev idealQuotient (A : Type*) [CommRing A] (J : Ideal A) := A ⧸ J
+
+private abbrev idealQuotientCommRing (A : Type*) [CommRing A] (J : Ideal A) :
+    CommRing (idealQuotient A J) := Ideal.Quotient.commRing J
+
+private abbrev idealQuotientAlgebra (k A : Type*) [CommRing k] [CommRing A] [Algebra k A]
+    (J : Ideal A) : Algebra k (idealQuotient A J) :=
+  Ideal.Quotient.algebra k (I := J)
+
 /-- The precise localized Jacobian quotient whose length is asserted to be four. -/
-abbrev OriginJacobianQuotient : Type :=
-  @HasQuotient.Quotient OriginLocalRing (Ideal OriginLocalRing)
-    (Ideal.instHasQuotient (R := OriginLocalRing)) localJacobianIdeal
+abbrev OriginJacobianQuotient := idealQuotient OriginLocalRing localJacobianIdeal
 
 local instance : CommRing OriginJacobianQuotient :=
-  Ideal.Quotient.commRing localJacobianIdeal
+  idealQuotientCommRing OriginLocalRing localJacobianIdeal
 
 local instance : Algebra K OriginJacobianQuotient :=
-  Ideal.Quotient.algebra K (I := localJacobianIdeal)
+  idealQuotientAlgebra K OriginLocalRing localJacobianIdeal
+
+private theorem idealQuotient_not_finite_of_eq_bot (k A : Type*) [CommRing k] [CommRing A]
+    [Algebra k A] (J : Ideal A) (hJ : J = ⊥) (hA : ¬ Module.Finite k A) :
+    ¬ Module.Finite k (idealQuotient A J) := by
+  intro h
+  letI : Module.Finite k (idealQuotient A J) := h
+  exact hA (Module.Finite.equiv
+    (((Ideal.quotientEquivAlgOfEq k hJ).trans (AlgEquiv.quotientBot k A)).toLinearEquiv))
 
 private def lineToFraction : CurveRing →+* F :=
   (algebraMap P F).comp lineMap
@@ -115,22 +132,12 @@ private theorem localLine_map (u : CurveRing) :
     localLine (algebraMap CurveRing OriginLocalRing u) = lineToFraction u :=
   IsLocalization.lift_eq lineToFraction_unit u
 
-private def quotientLine : OriginJacobianQuotient →+* F := by
-  refine Ideal.Quotient.lift (R := OriginLocalRing) (S := F) localJacobianIdeal localLine ?_
-  intro a ha
-  rw [paper2_localJacobianIdeal_eq_bot] at ha
-  have h : a = 0 := Ideal.mem_bot.mp ha
-  rw [h, map_zero]
+private def firstCoordinate : OriginLocalRing :=
+  algebraMap CurveRing OriginLocalRing (Ideal.Quotient.mk I (MvPolynomial.X 0))
 
-private def firstCoordinate : OriginJacobianQuotient :=
-  Ideal.Quotient.mk localJacobianIdeal
-    (algebraMap CurveRing OriginLocalRing (Ideal.Quotient.mk I (MvPolynomial.X 0)))
-
-private theorem quotientLine_firstCoordinate :
-    quotientLine firstCoordinate = algebraMap P F (Polynomial.X : P) := by
-  change localLine (algebraMap CurveRing OriginLocalRing
-    (Ideal.Quotient.mk I (MvPolynomial.X 0))) = _
-  rw [localLine_map]
+private theorem localLine_firstCoordinate :
+    localLine firstCoordinate = algebraMap P F (Polynomial.X : P) := by
+  rw [firstCoordinate, localLine_map]
   change algebraMap P F
     (MvPolynomial.aeval (fun _ : Fin 2 => (Polynomial.X : P)) (MvPolynomial.X 0)) = _
   rw [MvPolynomial.aeval_X]
@@ -138,22 +145,25 @@ private theorem quotientLine_firstCoordinate :
 private theorem powers_firstCoordinate_injective :
     Function.Injective (fun n : ℕ => firstCoordinate ^ n) := by
   intro n m h
-  have hF := congrArg quotientLine h
-  simp only [map_pow, quotientLine_firstCoordinate] at hF
+  have hF := congrArg localLine h
+  simp only [map_pow, localLine_firstCoordinate] at hF
   have hP : (Polynomial.X : P) ^ n = (Polynomial.X : P) ^ m := by
     apply IsFractionRing.injective P F
     simpa only [map_pow] using hF
   simpa only [Polynomial.natDegree_X_pow] using congrArg Polynomial.natDegree hP
 
+private theorem originLocalRing_not_finite : ¬ Module.Finite K OriginLocalRing := by
+  intro h
+  letI : Module.Finite K OriginLocalRing := h
+  letI : Infinite OriginLocalRing := Infinite.of_injective _ powers_firstCoordinate_injective
+  letI : Finite OriginLocalRing := Module.finite_of_finite K
+  exact not_finite OriginLocalRing
+
 /-- The actual local Jacobian quotient has infinite dimension over the residue field. -/
 theorem paper2_localJacobianQuotient_not_finite :
-    ¬ Module.Finite K OriginJacobianQuotient := by
-  intro h
-  letI : Module.Finite K OriginJacobianQuotient := h
-  letI : Infinite OriginJacobianQuotient :=
-    Infinite.of_injective _ powers_firstCoordinate_injective
-  letI : Finite OriginJacobianQuotient := Module.finite_of_finite K
-  exact not_finite OriginJacobianQuotient
+    ¬ Module.Finite K OriginJacobianQuotient :=
+  idealQuotient_not_finite_of_eq_bot K OriginLocalRing localJacobianIdeal
+    paper2_localJacobianIdeal_eq_bot originLocalRing_not_finite
 
 /-- The local Jacobian quotient has infinite module length. -/
 theorem paper2_localJacobianQuotient_length_eq_top :
