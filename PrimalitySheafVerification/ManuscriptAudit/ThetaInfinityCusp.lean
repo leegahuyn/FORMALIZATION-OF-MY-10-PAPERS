@@ -65,7 +65,7 @@ private theorem norm_theta_le {x y : ℝ} (hy : 1 ≤ y) :
     _ ≤ thetaBound := by
       change _ ≤ 2 / (1 - q₁) + 1
       rw [norm_one]
-      exact add_le_add_right (hDiff.trans hFrac) _
+      exact add_le_add (hDiff.trans hFrac) le_rfl
 
 private theorem sq_mul_density (a x y : ℝ) (hy : 0 < y) :
     (y ^ 2)⁻¹ * ‖weighted a jacobiTheta x y‖ ^ 2 =
@@ -99,8 +99,10 @@ theorem weighted_jacobiTheta_memLp_infinity (a : ℝ) (ha : a < 1 / 2) :
     have hTheta : ContinuousAt jacobiTheta (complexPoint z.1 (height z)) :=
       (differentiableAt_jacobiTheta (τ := complexPoint z.1 (height z))
         (by simpa only [complexPoint_im] using hHeightPos z)).continuousAt
-    exact (Complex.continuous_ofReal.continuousAt.comp hWeight).mul
-      (hTheta.comp hPoint.continuousAt)
+    have hThetaAt : ContinuousAt (fun w : ℝ × ℝ => jacobiTheta (complexPoint w.1 (height w))) z :=
+      ContinuousAt.comp' (f := fun w : ℝ × ℝ => complexPoint w.1 (height w)) (x := z)
+        hTheta hPoint.continuousAt
+    exact (Complex.continuous_ofReal.continuousAt.comp hWeight).mul hThetaAt
   have hEq : G =ᵐ[μ] F := hAE.mono fun z hz => by
     have hy : 1 < z.2 := hz.2
     simp only [G, F, height, max_eq_right hy.le]
@@ -119,8 +121,9 @@ theorem weighted_jacobiTheta_memLp_infinity (a : ℝ) (ha : a < 1 / 2) :
   apply (integrable_withDensity_iff_integrable_smul' hDensity
     (Filter.Eventually.of_forall fun _ => ENNReal.ofReal_lt_top)).2
   have hProduct : AEStronglyMeasurable (fun z => (cuspDensity z).toReal • ‖F z‖ ^ 2) μ := by
-    simpa only [smul_eq_mul] using
-      hDensity.ennreal_toReal.aestronglyMeasurable.mul (hMeas.norm.pow 2)
+    change AEStronglyMeasurable
+      ((fun z : ℝ × ℝ => (cuspDensity z).toReal) * (fun z : ℝ × ℝ => ‖F z‖) ^ 2) μ
+    exact hDensity.ennreal_toReal.aestronglyMeasurable.mul (hMeas.norm.pow 2)
   apply Integrable.mono' hMajor hProduct
   filter_upwards [hAE] with z hz
   have hy : 1 < z.2 := hz.2

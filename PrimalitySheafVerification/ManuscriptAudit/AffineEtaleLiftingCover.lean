@@ -72,13 +72,43 @@ theorem finite_jointly_surjective_lifts
   intro j _
   exact j.property
 
+/-- Index the local lifting family by an actual finite ordinal so that
+the associated product of rings remains in the original universe. -/
+theorem finite_indexed_jointly_surjective_lifts
+    {I Q : Sheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u}}
+    (q : I ⟶ Q) [Sheaf.IsLocallySurjective q] (x : Q.obj.obj (op U)) :
+    ∃ n : ℕ, ∃ V : Fin n → X.AffineEtale, ∃ f : ∀ j, V j ⟶ U,
+      (∀ j, ∃ y : I.obj.obj (op (V j)),
+        q.hom.app (op (V j)) y = Q.obj.map (f j).op x) ∧
+      ∀ z : ((Scheme.AffineEtale.Spec X).obj U).left,
+        ∃ j, ∃ y : ((Scheme.AffineEtale.Spec X).obj (V j)).left,
+          ((Scheme.AffineEtale.Spec X).map (f j)).left y = z := by
+  classical
+  obtain ⟨a, haLift, haCover⟩ := finite_jointly_surjective_lifts q x
+  let n := Fintype.card ↥a
+  let e : ↥a ≃ Fin n := Fintype.equivFin ↥a
+  let j (k : Fin n) := (e.symm k).1
+  refine ⟨n, (fun k => (j k).obj.left), (fun k => (j k).obj.hom), ?_, ?_⟩
+  · intro k
+    exact haLift (j k) (e.symm k).2
+  · intro z
+    obtain ⟨i, hi, y, hy⟩ := haCover z
+    let k := e ⟨i, hi⟩
+    have hk : j k = i := by simp [j, k]
+    refine ⟨k, ?_⟩
+    change ∃ y : ((Scheme.AffineEtale.Spec X).obj (j k).obj.left).left,
+      ((Scheme.AffineEtale.Spec X).map (j k).obj.hom).left y = z
+    rw [hk]
+    exact ⟨y, hy⟩
+
 end ManuscriptAudit.AffineEtaleLiftingCover
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.AffineEtaleLiftingCover.finite_jointly_surjective_of_covering_sieve,
-      ``ManuscriptAudit.AffineEtaleLiftingCover.finite_jointly_surjective_lifts] do
+      ``ManuscriptAudit.AffineEtaleLiftingCover.finite_jointly_surjective_lifts,
+      ``ManuscriptAudit.AffineEtaleLiftingCover.finite_indexed_jointly_surjective_lifts] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

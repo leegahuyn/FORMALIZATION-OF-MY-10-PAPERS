@@ -24,7 +24,8 @@ private abbrev affineTopology (R : CommRingCat.{0}) := Scheme.AffineEtale.topolo
 
 attribute [local instance] KummerCohomologySequence.affineSiteHasExt
 
-private def affineTerminal (R : CommRingCat.{0}) : (Spec R).AffineEtale :=
+/-- The terminal object of the affine étale site of an affine scheme. -/
+def affineTerminal (R : CommRingCat.{0}) : (Spec R).AffineEtale :=
   Scheme.AffineEtale.mk (𝟙 (Spec R))
 
 private def affineTerminalArrow (R : CommRingCat.{0}) (U : (Spec R).AffineEtale) :
@@ -35,7 +36,8 @@ private def affineTerminalArrow (R : CommRingCat.{0}) (U : (Spec R).AffineEtale)
         𝟙 (Spec R) = U.hom
       exact Eq.trans (Category.comp_id _) (Scheme.Spec.map_preimage U.hom))
 
-private def affineTerminal_isTerminal (R : CommRingCat.{0}) : IsTerminal (affineTerminal R) := by
+/-- The identity affine étale object is terminal. -/
+def affineTerminal_isTerminal (R : CommRingCat.{0}) : IsTerminal (affineTerminal R) := by
   refine IsTerminal.ofUniqueHom (affineTerminalArrow R) ?_
   intro U f
   apply MorphismProperty.CostructuredArrow.Hom.ext
@@ -147,7 +149,8 @@ end ManuscriptAudit.KummerAffineCohomology
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.KummerAffineCohomology.degreeZeroUnits,
+  for name in [``ManuscriptAudit.KummerAffineCohomology.affineTerminal_isTerminal,
+      ``ManuscriptAudit.KummerAffineCohomology.degreeZeroUnits,
       ``ManuscriptAudit.KummerAffineCohomology.degreeZeroUnits_power,
       ``ManuscriptAudit.KummerAffineCohomology.degreeOneConstantRoots,
       ``ManuscriptAudit.KummerAffineCohomology.unitBoundary_eq_zero_iff] do
