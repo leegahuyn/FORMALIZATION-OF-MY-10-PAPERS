@@ -35,21 +35,24 @@ def roots (X : Scheme.{u}) (d : ℕ) : X.AffineEtaleᵒᵖ ⥤ AddCommGrpCat.{u}
 variable {K : Type u} [Field K] (R : CommRingCat.{u}) [Algebra K R]
 
 private def baseMap (U : (Spec R).AffineEtale) : R →+* coordinateRing U :=
-  (AlgebraicGeometry.Spec.preimage U.hom).hom
+  (Scheme.Spec.preimage U.hom : U.left ⟶ op R).unop.hom
 
 private def coefficientMap (U : (Spec R).AffineEtale) : K →+* coordinateRing U :=
   (baseMap R U).comp (algebraMap K R)
 
 private theorem coefficientMap_natural {U V : (Spec R).AffineEtale} (f : U ⟶ V) :
     f.left.unop.hom.comp (coefficientMap (K := K) R V) = coefficientMap R U := by
-  have hw : AlgebraicGeometry.Spec.map f.left.unop ≫ V.hom = U.hom := by
-    simpa using f.w
-  have h := congrArg (fun g : Spec (coordinateRing U) ⟶ Spec R =>
-      (AlgebraicGeometry.Spec.preimage g).hom) hw
-  rw [AlgebraicGeometry.Spec.preimage_comp, AlgebraicGeometry.Spec.preimage_map,
-    CommRingCat.hom_comp] at h
+  have hPreimage : f.left ≫ (Scheme.Spec.preimage V.hom : V.left ⟶ op R) =
+      (Scheme.Spec.preimage U.hom : U.left ⟶ op R) := by
+    apply Scheme.Spec.map_injective
+    simpa only [Functor.map_comp, Functor.map_preimage] using f.w
+  have h : ((f.left ≫ (Scheme.Spec.preimage V.hom : V.left ⟶ op R)).unop).hom =
+      (Scheme.Spec.preimage U.hom : U.left ⟶ op R).unop.hom :=
+    congrArg (fun g : U.left ⟶ op R => g.unop.hom) hPreimage
+  rw [unop_comp, CommRingCat.hom_comp] at h
   apply RingHom.ext
   intro x
+  change f.left.unop.hom (baseMap R V (algebraMap K R x)) = baseMap R U (algebraMap K R x)
   exact DFunLike.congr_fun h (algebraMap K R x)
 
 /-- The constant ring roots, written additively. -/
@@ -66,8 +69,11 @@ def constantToRoots (d : ℕ) :
     apply Additive.ext
     apply Subtype.ext
     apply Units.ext
+    let a₀ : rootsOfUnity d K := (show Additive (rootsOfUnity d K) from a).toMul
+    change coefficientMap R V.unop ((a₀ : Kˣ) : K) =
+      f.unop.left.unop.hom (coefficientMap R U.unop ((a₀ : Kˣ) : K))
     exact (DFunLike.congr_fun (coefficientMap_natural (K := K) R f.unop)
-      ((a.toMul : Kˣ) : K)).symm
+      ((a₀ : Kˣ) : K)).symm
 
 private theorem affine_family_cover_iff {X : Scheme.{u}} {U : X.AffineEtale}
     {ι : Type*} {V : ι → X.AffineEtale} (f : ∀ i, V i ⟶ U) :
@@ -182,8 +188,11 @@ def constantRootSheafIso :
   have hW : J.W η := (J.W_iff_isLocallyBijective η).mpr
     ⟨constantToRoots_locallyInjective (K := K) R d,
       constantToRoots_locallySurjective (K := K) (d := d) R⟩
-  letI : IsIso ((presheafToSheaf J AddCommGrpCat.{u}).map η) := (J.W_iff η).mp hW
-  exact asIso ((presheafToSheaf J AddCommGrpCat.{u}).map η)
+  let f : (constantSheaf J AddCommGrpCat.{u}).obj (coefficientGroup K d) ⟶
+      (presheafToSheaf J AddCommGrpCat.{u}).obj (roots (Spec R) d) :=
+    (presheafToSheaf J AddCommGrpCat.{u}).map η
+  have hf : IsIso f := (J.W_iff η).mp hW
+  exact @asIso (Sheaf J AddCommGrpCat.{u}) _ _ _ f hf
 
 end
 

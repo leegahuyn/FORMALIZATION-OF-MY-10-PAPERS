@@ -14,7 +14,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: manuscript-audit-${{ github.ref }}
+  group: manuscript-audit-cached-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   baseline:
