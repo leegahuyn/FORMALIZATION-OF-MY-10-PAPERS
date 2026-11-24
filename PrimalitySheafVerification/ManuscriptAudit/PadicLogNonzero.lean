@@ -53,7 +53,7 @@ theorem unitFactor_div {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
       Padic.valuation_inv, sub_eq_add_neg]
   simp only [unitFactor, hv, zpow_sub₀ (prime_ne_zero p)]
   simp only [div_eq_mul_inv, mul_inv_rev, inv_inv]
-  ac_rfl
+  ring
 
 private theorem unitFactor_pow (x : ℚ_[p]) (n : ℕ) :
     unitFactor p (x ^ n) = (unitFactor p x) ^ n := by

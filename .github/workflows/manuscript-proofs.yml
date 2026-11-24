@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount"
           for proof in "${proofs[@]}"; do
             awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
@@ -74,7 +74,7 @@ jobs:
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
             lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
@@ -186,7 +186,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme PadicLogNonzero"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme PadicLogNonzero FiniteFieldPointCount"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -214,7 +214,7 @@ jobs:
           package_path="PrimalitySheafVerification/ManuscriptAudit"
           mkdir -p "$compiled/$package_path"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
-          for pair in CubicTrace:CubicTraceInfinitude CuspDelta:CuspScheme PadicBinomialLimit:PadicLogNonzero; do
+          for pair in CubicTrace:CubicTraceInfinitude CuspDelta:CuspScheme PadicBinomialLimit:PadicLogNonzero FiniteFieldPowerSums:FiniteFieldPointCount; do
             source="${pair%%:*}"
             proof="${pair#*:}"
             if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/$source.olean" \

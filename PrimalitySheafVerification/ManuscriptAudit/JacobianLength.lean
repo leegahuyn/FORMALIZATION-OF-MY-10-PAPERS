@@ -3,6 +3,7 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -105,7 +106,14 @@ private theorem localJacobianSubmodule_eq_bot : localJacobianSubmodule = ⊥ := 
     Ideal.mem_bot, Submodule.mem_bot]
 
 /-- The precise localized Jacobian quotient as a residue-field module. -/
-abbrev OriginJacobianQuotient : Type := OriginLocalRing ⧸ localJacobianSubmodule
+abbrev OriginJacobianQuotient : Type :=
+  Quotient (Submodule.quotientRel (R := K) (M := OriginLocalRing) localJacobianSubmodule)
+
+instance : AddCommGroup OriginJacobianQuotient :=
+  Submodule.Quotient.addCommGroup (R := K) (M := OriginLocalRing) localJacobianSubmodule
+
+instance : Module K OriginJacobianQuotient :=
+  Submodule.Quotient.module (R := K) (M := OriginLocalRing) localJacobianSubmodule
 
 private def lineToFraction : CurveRing →+* F :=
   (algebraMap P F).comp lineMap
@@ -155,12 +163,16 @@ private theorem originLocalRing_not_finite : ¬ Module.Finite K OriginLocalRing 
   letI : Finite OriginLocalRing := Module.finite_of_finite K
   exact not_finite OriginLocalRing
 
+private theorem quotient_not_finite_of_eq_bot {S W : Type*} [Ring S] [AddCommGroup W]
+    [Module S W] (N : Submodule S W) (hN : N = ⊥) (hW : ¬ Module.Finite S W) :
+    ¬ Module.Finite S (W ⧸ N) :=
+  fun h => hW ((Module.Finite.equiv_iff (N.quotEquivOfEqBot hN)).mp h)
+
 /-- The actual local Jacobian quotient has infinite dimension over the residue field. -/
 theorem paper2_localJacobianQuotient_not_finite :
-    ¬ Module.Finite K OriginJacobianQuotient := by
-  intro h
-  let e := localJacobianSubmodule.quotEquivOfEqBot localJacobianSubmodule_eq_bot
-  exact originLocalRing_not_finite ((Module.Finite.equiv_iff e).mp h)
+    ¬ Module.Finite K OriginJacobianQuotient :=
+  quotient_not_finite_of_eq_bot (S := K) (W := OriginLocalRing) localJacobianSubmodule
+    localJacobianSubmodule_eq_bot originLocalRing_not_finite
 
 /-- The local Jacobian quotient has infinite module length. -/
 theorem paper2_localJacobianQuotient_length_eq_top :
@@ -168,8 +180,9 @@ theorem paper2_localJacobianQuotient_length_eq_top :
   classical
   by_contra htop
   have hfl : IsFiniteLength K OriginJacobianQuotient := Module.length_ne_top_iff.mp htop
-  exact paper2_localJacobianQuotient_not_finite
-    (((IsArtinianRing.tfae (R := K) (M := OriginJacobianQuotient)).out 3 0).mp hfl)
+  letI : IsNoetherian K OriginJacobianQuotient :=
+    (isFiniteLength_iff_isNoetherian_isArtinian.mp hfl).1
+  exact paper2_localJacobianQuotient_not_finite inferInstance
 
 /-- The finite value pₙA=4 printed in the table fails at this fiber. -/
 theorem paper2_localJacobianQuotient_not_length_four :

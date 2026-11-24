@@ -102,8 +102,8 @@ noncomputable def paper2_cusp_punctured_coordinate_equiv :
           Polynomial.toLaurent (b : Polynomial K) at h
         have hab : a = b := Subtype.ext (Polynomial.toLaurent_injective h)
         exact ⟨1, by rw [hab]⟩ }
-  exact (Localization.algEquiv (LaurentPolynomial K)
-    (Submonoid.powers (cuspSquare K))).restrictScalars K
+  exact (Localization.algEquiv (Submonoid.powers (cuspSquare K))
+    (LaurentPolynomial K)).restrictScalars K
 
 end
 

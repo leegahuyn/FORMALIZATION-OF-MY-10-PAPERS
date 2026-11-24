@@ -45,6 +45,15 @@ private theorem liftEquation (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hg
   rw [map_mul, hf, zero_mul]
 
+private def descendEquation (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
+    (f : Plane K →ₐ[K] B) (hf : f (equation K r s) = 0) :
+    CurveRing K r s →ₐ[K] B :=
+  Ideal.Quotient.liftₐ (equationIdeal K r s) f (liftEquation K r s f hf)
+
+private theorem descendEquation_mk (r s : ℕ) {B : Type*} [CommRing B] [Algebra K B]
+    (f : Plane K →ₐ[K] B) (hf : f (equation K r s) = 0) (g : Plane K) :
+    descendEquation K r s f hf (Ideal.Quotient.mk (equationIdeal K r s) g) = f g := rfl
+
 /-- Evaluation at the origin of the benchmark fiber. -/
 def atOrigin {r s : ℕ} (hr : 2 ≤ r) (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] K :=
   Ideal.Quotient.liftₐ _ (evalOrigin K)
@@ -147,12 +156,13 @@ private theorem composedEval_equation {r s : ℕ} (hs : 2 ≤ s) :
     _ = 0 := qP_X_pow K r
 
 private def intoU {r s : ℕ} (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] U K r :=
-  Ideal.Quotient.liftₐ (equationIdeal K r s) (composedEval K r)
-    (liftEquation K r s (composedEval K r) (composedEval_equation K (r := r) hs))
+  descendEquation K r s (B := U K r) (composedEval K r) (composedEval_equation K (r := r) hs)
 
 private theorem intoU_mk {r s : ℕ} (hs : 2 ≤ s) (g : Plane K) :
     intoU K (r := r) hs (Ideal.Quotient.mk (equationIdeal K r s) g) =
-      qP K r (firstCoordinate K g) := rfl
+      qP K r (firstCoordinate K g) :=
+  descendEquation_mk K r s (B := U K r) (composedEval K r)
+    (composedEval_equation K (r := r) hs) g
 
 private theorem intoU_x {r s : ℕ} (hs : 2 ≤ s) :
     intoU K (r := r) hs (coord K r s 0) = qU K r (t K r) := by

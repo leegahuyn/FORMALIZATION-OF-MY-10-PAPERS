@@ -2,6 +2,7 @@ import Lean.Elab.Tactic.Omega
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
 import Mathlib.Data.Fintype.Option
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Ring
 
 namespace PrimalitySheafVerification.ManuscriptAudit
@@ -147,13 +148,24 @@ theorem paper5_traceCurve_trace_eq_zero {p : ℕ} [Fact p.Prime]
   rw [paper5_traceCurve_projective_count hp hr hA]
   simp
 
+/-- The rational point group over F_p has trivial p-torsion in the
+zero-trace profile. This works on the actual projective group of points. -/
+theorem paper5_traceCurve_no_rational_p_torsion {p : ℕ} [Fact p.Prime]
+    (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A ≠ 0)
+    (P : (paper5TraceCurve p A).toProjective.Point) (hP : p • P = 0) : P = 0 := by
+  have hcard : Nat.card (paper5TraceCurve p A).toProjective.Point • P = 0 :=
+    card_nsmul_eq_zero'
+  rw [paper5_traceCurve_projective_count hp hr hA] at hcard
+  simpa [succ_nsmul, hP] using hcard
+
 end
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``paper5_traceCurve_discriminant_ne_zero, ``paper5_traceCurve_affine_count,
-      ``paper5_traceCurve_projective_count, ``paper5_traceCurve_trace_eq_zero] do
+      ``paper5_traceCurve_projective_count, ``paper5_traceCurve_trace_eq_zero,
+      ``paper5_traceCurve_no_rational_p_torsion] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
