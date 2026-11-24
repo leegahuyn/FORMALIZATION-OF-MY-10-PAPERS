@@ -154,7 +154,9 @@ theorem locallyConstantRootTag_injective :
     rw [map_div, hab]
     apply LocallyConstant.ext
     intro P
-    exact div_self (locallyConstantRootTag (K := K) b P)
+    let z := locallyConstantRootTag (K := K) b P
+    change z / z = 1
+    exact div_eq_one.mpr rfl
   let t := rootValue (a / b)
   have htres (P : PrimeSpectrum A) : Ideal.Quotient.mk P.asIdeal t = 1 := by
     have hlabel : rootTag (K := K) (a / b) P = 1 := DFunLike.congr_fun hdiv P

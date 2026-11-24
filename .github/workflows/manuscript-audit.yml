@@ -33,7 +33,14 @@ jobs:
           lint: false
           test: false
           use-github-cache: false
-          use-mathlib-cache: true
+          use-mathlib-cache: false
+      - name: Restore vendored build objects
+        id: baseline-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: manuscript-baseline-0e026509-linux-arm64-v1
+          restore-keys: manuscript-lean-imports-0e026509-linux-arm64-
       - name: Build all primary modules and bridges
         id: aggregate
         shell: bash
@@ -43,8 +50,11 @@ jobs:
           mkdir -p "$logs"
           { git rev-parse HEAD; cat lean-toolchain; lean --version; lake --version; } > "$logs/provenance.log"
           status=0
-          lake build PrimalitySheafVerification.BuildAll > "$logs/build-all.log" 2>&1 || status=$?
-          tail -n 80 "$logs/build-all.log"
+          lake build PrimalitySheafVerification.BuildAll 2>&1 |
+            tee "$logs/build-all.log" |
+            awk 'NR % 100 == 0 || /PrimalitySheafVerification/ || /[Ee]rror/ {print; fflush()}' ||
+            status=$?
+          tail -n 20 "$logs/build-all.log"
           exit "$status"
       - name: Check focused verification file
         id: focused
@@ -55,11 +65,18 @@ jobs:
           logs="${RUNNER_TEMP}/manuscript-audit"
           mkdir -p "$logs"
           status=0
-          lake env lean PrimalitySheafVerification/Verification.lean > "$logs/verification.log" 2>&1 || status=$?
+          lake build PrimalitySheafVerification.Verification > "$logs/verification.log" 2>&1 || status=$?
           cat "$logs/verification.log"
           exit "$status"
+      - name: Save compiled original modules on GitHub
+        if: ${{ !cancelled() && steps.aggregate.outcome == 'success' && steps.baseline-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: ${{ steps.baseline-cache.outputs.cache-primary-key }}
       - name: Audit transitive kernel dependencies
-        if: ${{ !cancelled() && steps.aggregate.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.aggregate.outcome == 'success' && steps.focused.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail

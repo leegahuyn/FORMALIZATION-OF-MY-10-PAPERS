@@ -1,5 +1,6 @@
 import Lean
 import PrimalitySheafVerification.BuildAll
+import PrimalitySheafVerification.Verification
 
 open Lean Elab Command
 
@@ -7,7 +8,7 @@ set_option maxHeartbeats 0 in
 run_cmd do
   let env ← getEnv
   let moduleNames := env.allImportedModuleNames
-  let prefix := "PrimalitySheafVerification."
+  let projectNamespace := "PrimalitySheafVerification."
   let allowed := #[`propext, `Classical.choice, `Quot.sound]
   let mut counts : Std.HashMap Name Nat := {}
   let mut flagged := 0
@@ -15,7 +16,7 @@ run_cmd do
   for (name, _) in env.constants.toList do
     if let some idx := env.getModuleIdxFor? name then
       if let some modName := moduleNames[idx.toNat]? then
-        if modName.toString.startsWith prefix then
+        if modName.toString.startsWith projectNamespace then
           let axioms ← collectAxioms name
           let unexpected := axioms.filter fun axiomName => !allowed.contains axiomName
           let listed := String.intercalate "," (axioms.toList.map Name.toString)
@@ -25,9 +26,10 @@ run_cmd do
           if !unexpected.isEmpty then
             flagged := flagged + 1
   for modName in moduleNames do
-    if modName.toString.startsWith prefix then
+    if modName.toString.startsWith projectNamespace then
       liftIO <| IO.println s!"module-count\t{modName}\t{(counts[modName]?).getD 0}"
   if counts.isEmpty then
     throwError "No project declarations were found."
   if flagged > 0 then
     throwError "{flagged} declarations depend on an axiom outside the audit allowlist. See the unexpected column."
+

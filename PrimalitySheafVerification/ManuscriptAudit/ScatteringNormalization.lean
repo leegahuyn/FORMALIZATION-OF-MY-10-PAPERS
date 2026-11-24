@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Complex.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
@@ -15,6 +16,9 @@ derivative, the two densities agree only for trace zero.
 -/
 
 namespace ManuscriptAudit.ScatteringNormalization
+
+open MeasureTheory
+open scoped BigOperators
 
 noncomputable section
 
@@ -42,12 +46,24 @@ theorem paper9_displayed_scattering_densities_eq_iff_zero (trace : ℂ) :
   · rintro rfl
     simp [criticalLineDensity, analyticDensity]
 
+/-- The same derivative on both printed normalizations forces the
+continuous mass functional to vanish for every coefficient family. -/
+theorem paper9_mass_zero_of_both_printed_density_formulas {A : Type*} [Fintype A]
+    (trace : ℝ → ℂ) (Φ : ℝ → ℝ) (ρ : A → ℝ → ℂ)
+    (h : ∀ t, criticalLineDensity (trace t) = analyticDensity (trace t)) :
+    (∑ a : A, ∫ t : ℝ, Φ t * ‖ρ a t‖ ^ (2 : ℕ) *
+      (analyticDensity (trace t)).re) = 0 := by
+  have hTrace (t : ℝ) : trace t = 0 :=
+    (paper9_displayed_scattering_densities_eq_iff_zero (trace t)).1 (h t)
+  simp [hTrace, analyticDensity]
+
 theorem paper9_real_trace_over_i_has_zero_real_part (trace : ℝ) :
     (criticalLineDensity (trace : ℂ)).re = 0 := by
   have h : analyticDensity (trace : ℂ) = ((trace / (4 * Real.pi) : ℝ) : ℂ) := by
     simp only [analyticDensity, Complex.ofReal_div]
-  rw [criticalLineDensity, h, div_eq_mul_inv, Complex.inv_I]
-  simp [Complex.mul_re]
+  rw [criticalLineDensity, h, div_eq_mul_inv, Complex.inv_I, Complex.mul_re]
+  simp only [Complex.ofReal_re, Complex.ofReal_im, Complex.neg_re, Complex.neg_im,
+    Complex.I_re, Complex.I_im, neg_zero, mul_zero, zero_mul, sub_zero]
 
 /-- A nonzero holomorphic scalar family satisfying the scalar
 functional equation and unitarity on the critical line. -/
@@ -87,6 +103,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.ScatteringNormalization.paper9_displayed_scattering_densities_eq_iff_zero,
+      ``ManuscriptAudit.ScatteringNormalization.paper9_mass_zero_of_both_printed_density_formulas,
       ``ManuscriptAudit.ScatteringNormalization.paper9_real_trace_over_i_has_zero_real_part,
       ``ManuscriptAudit.ScatteringNormalization.analyticUnitaryExample_functional_equation,
       ``ManuscriptAudit.ScatteringNormalization.analyticUnitaryExample_unitary,

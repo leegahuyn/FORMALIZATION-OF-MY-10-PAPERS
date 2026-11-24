@@ -54,7 +54,8 @@ private theorem reflected_signedPulse_integrable : Integrable (conjneg signedPul
     have h₂ : -t ∈ Icc (2 : ℝ) 3 ↔ t ∈ Icc (-3 : ℝ) (-2) := by
       simp only [mem_Icc]
       constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
-    simp only [conjneg_apply, signedPulse_conj, signedPulse, Pi.sub_apply, box, indicator_apply, h₁, h₂]
+    rw [conjneg_apply, signedPulse_conj]
+    simp only [signedPulse, Pi.sub_apply, box, indicator_apply, h₁, h₂]
   rw [h]
   exact (box_integrable (-1) 0).sub (box_integrable (-3) (-2))
 
@@ -97,11 +98,13 @@ private theorem autocorrelation_integrand_at_two (t : ℝ) :
     have h₃ : -(2 - t) ∈ Icc (0 : ℝ) 1 :=
       ⟨by linarith [h₂.1], by linarith [h₂.2]⟩
     have h₄ : -(2 - t) ∉ Icc (2 : ℝ) 3 := fun h => by linarith [h₂.2, h.1]
-    simp [signedPulse, box, indicator_apply, h₁, h₂, h₃, h₄]
+    simp only [signedPulse, Pi.sub_apply, box, indicator_apply, if_neg h₁, if_pos h₂,
+      if_pos h₃, if_neg h₄, zero_sub, sub_zero, mul_one]
   · by_cases h₁ : t ∈ Icc (0 : ℝ) 1
     · have h₃ : -(2 - t) ∉ Icc (0 : ℝ) 1 := fun h => by linarith [h₁.2, h.1]
       have h₄ : -(2 - t) ∉ Icc (2 : ℝ) 3 := fun h => by linarith [h₁.2, h.1]
-      simp [signedPulse, box, indicator_apply, h₁, h₂, h₃, h₄]
+      simp only [signedPulse, Pi.sub_apply, box, indicator_apply, if_pos h₁, if_neg h₂,
+        if_neg h₃, if_neg h₄, sub_zero, mul_zero]
     · simp [signedPulse, box, indicator_apply, h₁, h₂]
 
 /-- Yet its value at the real shift 2 is −1. -/
@@ -144,7 +147,7 @@ theorem signedCorrelation_compactSupport : HasCompactSupport signedCorrelation :
           intro hu
           apply hxneg
           exact ⟨by linarith [ht.1, hu.2], by linarith [ht.2, hu.1]⟩
-        simp [conjneg_apply, signedPulse_zero_outside hout]
+        rw [conjneg_apply, signedPulse_zero_outside hout, map_zero, mul_zero]
       · simp [signedPulse_zero_outside ht]
     _ = _ := integral_zero _ _
 

@@ -25,22 +25,25 @@ variable {X : Scheme.{u}}
 abbrev coordinateRing (U : X.AffineEtale) : CommRingCat.{u} := U.left.unop
 
 /-- Units of the coordinate ring, with the group operation written additively. -/
-def units (X : Scheme.{u}) : X.AffineEtaleᵒᵖ ⥤ AddCommGrpCat.{u} where
+noncomputable def units (X : Scheme.{u}) : X.AffineEtaleᵒᵖ ⥤ AddCommGrpCat.{u} where
   obj U := AddCommGrpCat.of (Additive (coordinateRing U.unop)ˣ)
   map f := AddCommGrpCat.ofHom (Units.map f.unop.left.unop.hom.toMonoidHom).toAdditive
   map_id _ := AddCommGrpCat.ext fun _ => Additive.ext (Units.ext rfl)
   map_comp _ _ := AddCommGrpCat.ext fun _ => Additive.ext (Units.ext rfl)
 
 /-- Raise the units to the (d)-th power. -/
-def power (X : Scheme.{u}) (d : ℕ) : units X ⟶ units X where
+noncomputable def power (X : Scheme.{u}) (d : ℕ) : units X ⟶ units X where
   app _ := AddCommGrpCat.ofHom (powMonoidHom d).toAdditive
   naturality {U V} f := by
     apply AddCommGrpCat.ext
     intro a
     apply Additive.ext
-    let m := Units.map f.unop.left.unop.hom.toMonoidHom
-    change m a.toMul ^ d = m (a.toMul ^ d)
-    exact (map_pow m a.toMul d).symm
+    let m : (coordinateRing U.unop)ˣ →* (coordinateRing V.unop)ˣ :=
+      Units.map f.unop.left.unop.hom.toMonoidHom
+    let u : (coordinateRing U.unop)ˣ :=
+      (show Additive (coordinateRing U.unop)ˣ from a).toMul
+    change (m u) ^ d = m (u ^ d)
+    exact (map_pow m u d).symm
 
 /-- The power map on the coordinate-unit presheaf is locally surjective.
 Its local preimage is the unit root on the finite étale root algebra. -/

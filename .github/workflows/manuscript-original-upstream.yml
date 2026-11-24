@@ -78,7 +78,7 @@ jobs:
             {
               printf 'import Lean\n'
               printf 'import %s\n' "${compiled_imports[@]}"
-              sed '1,2d' "$GITHUB_WORKSPACE/$project/ManuscriptAudit/AxiomAudit.lean"
+              sed '/^import /d' "$GITHUB_WORKSPACE/$project/ManuscriptAudit/AxiomAudit.lean"
             } > "$audit"
             lean "$audit" > "$logs/axioms.tsv" 2>&1 || status=1
             tail -n 25 "$logs/axioms.tsv"

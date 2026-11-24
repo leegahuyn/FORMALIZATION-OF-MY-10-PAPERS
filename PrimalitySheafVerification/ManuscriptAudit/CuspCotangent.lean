@@ -147,9 +147,12 @@ end ManuscriptAudit.CuspCotangent
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.CuspCotangent.paper2_cusp_h1Cotangent_subsingleton
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [
+      ``ManuscriptAudit.CuspCotangent.paper2_cusp_h1Cotangent_subsingleton,
+      ``ManuscriptAudit.CuspCotangent.paper2_integral_cusp_h1_cotangent_vanishing_and_singular] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
+

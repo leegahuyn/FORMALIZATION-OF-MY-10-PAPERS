@@ -64,13 +64,20 @@ theorem paper7_dirichlet_local_log_hasDeriv
   have hF : HasDerivAt (fun z : ℂ => scaledRoot p α z)
       (-(Complex.log (p : ℂ) * scaledRoot p α s)) s := by
     have h := ((hasDerivAt_neg' s).const_cpow (c := (p : ℂ)) (Or.inl hpC)).const_mul α
-    convert h using 1 <;> simp only [scaledRoot] <;> ring
+    change HasDerivAt (fun z : ℂ => scaledRoot p α z)
+      (α * ((p : ℂ) ^ (-s) * Complex.log (p : ℂ) * (-1))) s at h
+    have hEq : α * ((p : ℂ) ^ (-s) * Complex.log (p : ℂ) * (-1)) =
+        -(Complex.log (p : ℂ) * scaledRoot p α s) := by
+      unfold scaledRoot
+      ring
+    exact hEq ▸ h
   have hDomain : (1 - scaledRoot p α s) ∈ Complex.slitPlane := by
     simpa only [sub_eq_add_neg] using
       Complex.mem_slitPlane_of_norm_lt_one (z := -scaledRoot p α s)
         (by simpa only [norm_neg] using hNorm)
-  simpa only [localLogDerivative, neg_neg] using
-    (((hF.const_sub (1 : ℂ)).clog hDomain).neg)
+  have hNeg := ((hF.const_sub (1 : ℂ)).clog hDomain).neg
+  change HasDerivAt (fun z : ℂ => -Complex.log (1 - scaledRoot p α z)) _ s at hNeg
+  simpa only [localLogDerivative, neg_neg] using hNeg
 
 theorem paper7_dirichlet_log_derivatives_abs_summable
     (α : Primes → ℂ) {s : ℂ} {W : ℝ} (hs : W + 1 < s.re)

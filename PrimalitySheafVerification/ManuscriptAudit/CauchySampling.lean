@@ -2,6 +2,7 @@ import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.Tactic.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-!
@@ -168,6 +169,43 @@ theorem absoluteLaurent_sample_eq (a : ℤ → ℂ) (r : ℂ) (hr : r ≠ 0)
       _ = ∑' k : ℤ, ∑ j ∈ Finset.range M, weighted j k := hInterchange.tsum_eq.symm
       _ = _ := tsum_congr hGrid
 
+/-- The absolute sum of the non-target aliases bounds the discrete coefficient error. -/
+theorem absoluteLaurent_sample_error_le (a : ℤ → ℂ) (r : ℂ) (hr : r ≠ 0)
+    (M : ℕ) (hM : M ≠ 0) (n : ℤ) (hAbs : Summable (fun k : ℤ => ‖a k * r ^ k‖)) :
+    let ζ := Complex.exp (2 * (Real.pi : ℂ) * Complex.I / (M : ℂ))
+    ‖(M : ℂ)⁻¹ * (∑ j ∈ Finset.range M,
+      (∑' k : ℤ, a k * (r * ζ ^ j) ^ k) * (r * ζ ^ j) ^ (-n)) - a n‖ ≤
+        ∑' k : ℤ, if (M : ℤ) ∣ k - n ∧ k ≠ n then ‖a k * r ^ (k - n)‖ else 0 := by
+  let ζ := Complex.exp (2 * (Real.pi : ℂ) * Complex.I / (M : ℂ))
+  change ‖(M : ℂ)⁻¹ * (∑ j ∈ Finset.range M,
+      (∑' k : ℤ, a k * (r * ζ ^ j) ^ k) * (r * ζ ^ j) ^ (-n)) - a n‖ ≤
+    ∑' k : ℤ, if (M : ℤ) ∣ k - n ∧ k ≠ n then ‖a k * r ^ (k - n)‖ else 0
+  let v (k : ℤ) : ℂ := if (M : ℤ) ∣ k - n then a k * r ^ (k - n) else 0
+  let remainder (k : ℤ) : ℂ := if k = n then 0 else v k
+  have hSample := absoluteLaurent_sample_eq a r hr M hM n hAbs
+  have hSplit : (∑' k : ℤ, v k) = v n + ∑' k : ℤ, remainder k :=
+    hSample.2.1.tsum_eq_add_tsum_ite n
+  have hAtN : v n = a n := by simp [v]
+  have hNorm (k : ℤ) : ‖remainder k‖ =
+      if (M : ℤ) ∣ k - n ∧ k ≠ n then ‖a k * r ^ (k - n)‖ else 0 := by
+    by_cases hkn : k = n <;> by_cases hd : (M : ℤ) ∣ k - n <;>
+      simp [remainder, v, hkn, hd]
+  have hScale (k : ℤ) :
+      ‖a k * r ^ (k - n)‖ = ‖a k * r ^ k‖ * ‖r ^ (-n)‖ := by
+    rw [sub_eq_add_neg, zpow_add₀ hr, ← mul_assoc, norm_mul]
+  have hShift : Summable (fun k : ℤ => ‖a k * r ^ (k - n)‖) := by
+    simpa only [hScale] using hAbs.mul_right ‖r ^ (-n)‖
+  have hTail : Summable (fun k : ℤ => ‖remainder k‖) :=
+    hShift.of_norm_bounded fun k => by
+      rw [Real.norm_of_nonneg (norm_nonneg _), hNorm]
+      split_ifs
+      · exact le_rfl
+      · exact norm_nonneg _
+  rw [hSample.2.2]
+  change ‖(∑' k : ℤ, v k) - a n‖ ≤ _
+  rw [hSplit, hAtN, add_sub_cancel_left]
+  simpa only [hNorm] using norm_tsum_le_tsum_norm hTail
+
 end ManuscriptAudit.CauchySampling
 
 open Lean Elab Command in
@@ -177,7 +215,8 @@ run_cmd do
     ``ManuscriptAudit.CauchySampling.finiteLaurent_sample_eq,
     ``ManuscriptAudit.CauchySampling.finiteLaurent_printed_sample_eq,
     ``ManuscriptAudit.CauchySampling.sample_monomial_at_zero,
-    ``ManuscriptAudit.CauchySampling.absoluteLaurent_sample_eq] do
+    ``ManuscriptAudit.CauchySampling.absoluteLaurent_sample_eq,
+    ``ManuscriptAudit.CauchySampling.absoluteLaurent_sample_error_le] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

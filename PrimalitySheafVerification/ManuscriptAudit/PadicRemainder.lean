@@ -157,8 +157,8 @@ private theorem logarithm_remainder_of_denominator_bound {p : ℕ} [Fact p.Prime
         calc
           (i : ℤ) = 1 * (i : ℤ) := (one_mul _).symm
           _ ≤ (k : ℤ) * (i : ℤ) := mul_le_mul_of_nonneg_right hkInt hiInt
-      have hBound : (padicValNat p (i + 2) : ℤ) ≤ (k : ℤ) * (i : ℤ) + (e : ℤ) :=
-        hValInt.trans (add_le_add_right hMul _)
+      have hBound : (padicValNat p (i + 2) : ℤ) ≤ (k : ℤ) * (i : ℤ) + (e : ℤ) := by
+        linarith only [hValInt, hMul]
       have hRewrite :
           -(k : ℤ) * ((i + 2 : ℕ) : ℤ) + (padicValNat p (i + 2) : ℤ) =
             -(2 * (k : ℤ)) + ((padicValNat p (i + 2) : ℤ) - (k : ℤ) * (i : ℤ)) := by
