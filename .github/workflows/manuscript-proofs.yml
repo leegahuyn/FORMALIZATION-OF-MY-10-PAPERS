@@ -7,10 +7,11 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/*.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
       - 'PrimalitySheafVerification/Spt1.lean'
+      - 'PrimalitySheafVerification/Spt6.lean'
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -37,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero"
           for proof in "${proofs[@]}"; do
             awk '$1 == "import" && $2 ~ /^(Mathlib|PrimalitySheafVerification)(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
@@ -73,7 +74,7 @@ jobs:
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme PadicLogNonzero"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
             lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs.log" || status=1
@@ -91,7 +92,7 @@ jobs:
           retention-days: 30
 
   padic:
-    name: Vendored Mathlib and Spt1
+    name: Vendored Mathlib and p-adic project sources
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 200
     concurrency:
@@ -116,13 +117,13 @@ jobs:
           path: .lake
           key: manuscript-spt1-0e026509-linux-arm64-${{ hashFiles('PrimalitySheafVerification/Spt1.lean') }}
           restore-keys: manuscript-lean-imports-0e026509-linux-arm64-
-      - name: Build Spt1 and its imports
+      - name: Build Spt1, Spt6 and their imports
         shell: bash
         run: |
           set -euo pipefail
           log="${RUNNER_TEMP}/manuscript-spt1-build.log"
           status=0
-          lake build PrimalitySheafVerification.Spt1 PrimalitySheafVerification.ManuscriptAudit.PadicBinomialLimit > "$log" 2>&1 || status=$?
+          lake build PrimalitySheafVerification.Spt1 PrimalitySheafVerification.Spt6 PrimalitySheafVerification.ManuscriptAudit.PadicBinomialLimit > "$log" 2>&1 || status=$?
           tail -n 60 "$log"
           exit "$status"
       - name: Cache compiled Spt1 on GitHub
@@ -137,7 +138,7 @@ jobs:
         run: |
           set -euo pipefail
           status=0
-          for proof in PadicRemainder PadicCertificates PadicLipschitz PadicExactBridge; do
+          for proof in PadicRemainder PadicCertificates PadicLipschitz PadicExactBridge PadicSpt6Bridge; do
             lake env lean "PrimalitySheafVerification/ManuscriptAudit/$proof.lean" 2>&1 |
               tee -a "${RUNNER_TEMP}/manuscript-spt1-proof.log" || status=1
           done
@@ -185,7 +186,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme PadicLogNonzero"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -213,7 +214,7 @@ jobs:
           package_path="PrimalitySheafVerification/ManuscriptAudit"
           mkdir -p "$compiled/$package_path"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
-          for pair in CubicTrace:CubicTraceInfinitude CuspDelta:CuspScheme; do
+          for pair in CubicTrace:CubicTraceInfinitude CuspDelta:CuspScheme PadicBinomialLimit:PadicLogNonzero; do
             source="${pair%%:*}"
             proof="${pair#*:}"
             if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/$source.olean" \

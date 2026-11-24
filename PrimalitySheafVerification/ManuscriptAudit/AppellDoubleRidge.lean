@@ -143,23 +143,28 @@ theorem not_summable_printed_order_at_I :
     doubleTermRealAtI p.1 ((p.2 : ℤ) + 1)) (fun _ => Real.exp_nonneg _)).2
     ⟨summable_real_row, hOuter⟩
 
-set_option maxHeartbeats 1000000 in
+private theorem one_le_real_column_tsum (m : ℤ) (hm : 0 ≤ m) :
+    1 ≤ ∑' n : ℤ, doubleTermRealAtI n m := by
+  have hRidge : doubleTermRealAtI (-m - 1) m ≤ ∑' n : ℤ, doubleTermRealAtI n m :=
+    (summable_real_column m).le_tsum (-m - 1) (fun _ _ => Real.exp_nonneg _)
+  exact (one_le_doubleTermRealAtI_ridge m hm).trans hRidge
+
 /-- Reversing the order also leaves a divergent outer sum at τ=i. -/
 theorem not_summable_reversed_order_at_I :
     ¬ Summable (fun k : ℕ => ∑' n : ℤ, doubleTerm Complex.I n ((k : ℤ) + 1)) := by
   intro h
-  have hColumns (k : ℕ) :=
-    tsum_at_I_eq_real (fun n : ℤ => n) (fun _ : ℤ => (k : ℤ) + 1)
+  have hColumns :
+      (fun k : ℕ => ∑' n : ℤ, doubleTerm Complex.I n ((k : ℤ) + 1)) =
+        (fun k : ℕ => Complex.ofReal (∑' n : ℤ, doubleTermRealAtI n ((k : ℤ) + 1))) := by
+    funext k
+    exact tsum_at_I_eq_real (fun n : ℤ => n) (fun _ : ℤ => (k : ℤ) + 1)
       (summable_real_column ((k : ℤ) + 1))
+  rw [hColumns] at h
   have hOuter : Summable (fun k : ℕ => ∑' n : ℤ, doubleTermRealAtI n ((k : ℤ) + 1)) := by
-    simpa only [hColumns, Complex.reCLM_apply, Complex.ofReal_re] using Complex.reCLM.summable h
-  have hSwap := (summable_prod_of_nonneg (f := fun p : ℕ × ℤ =>
-    doubleTermRealAtI p.2 ((p.1 : ℤ) + 1)) (fun _ => Real.exp_nonneg _)).2
-    ⟨fun k => summable_real_column ((k : ℤ) + 1), hOuter⟩
-  let flip : ℤ × ℕ → ℕ × ℤ := fun p => (p.2, p.1)
-  have hflip : Function.Injective flip := (Equiv.prodComm ℤ ℕ).injective
-  apply not_summable_joint_real
-  exact hSwap.comp_injective hflip
+    simpa only [Complex.reCLM_apply, Complex.ofReal_re] using Complex.reCLM.summable h
+  have hLower (k : ℕ) : 1 ≤ ∑' n : ℤ, doubleTermRealAtI n ((k : ℤ) + 1) :=
+    one_le_real_column_tsum ((k : ℤ) + 1) (by omega)
+  exact not_summable_of_one_le hLower hOuter
 
 end ManuscriptAudit.AppellDoubleRidge
 

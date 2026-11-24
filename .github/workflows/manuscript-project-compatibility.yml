@@ -9,9 +9,11 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicLipschitz.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicBinomialLimit.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicExactBridge.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicSpt6Bridge.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/NodalCotangent.lean'
       - 'PrimalitySheafVerification/Spt1.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
+      - 'PrimalitySheafVerification/Spt6.lean'
       - 'lean-toolchain'
 permissions:
   contents: read
@@ -20,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   check:
-    name: Spt1 and Spt5 against official Mathlib
+    name: Spt1, Spt5, and Spt6 against official Mathlib
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
     steps:
@@ -63,11 +65,13 @@ jobs:
           mkdir -p "$compiled/$project/ManuscriptAudit"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           status=0
-          for source in Spt1 Spt5; do
+          for source in Spt1 Spt5 Spt6; do
             if [[ "$source" == Spt1 ]]; then
               proofs=(PadicRemainder PadicCertificates PadicLipschitz)
-            else
+            elif [[ "$source" == Spt5 ]]; then
               proofs=(NodalCotangent)
+            else
+              proofs=(PadicSpt6Bridge)
             fi
             if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$source.olean" \
                 "$GITHUB_WORKSPACE/$project/$source.lean" > "$logs/$source.log" 2>&1; then

@@ -313,8 +313,9 @@ private theorem cuspBaseMap_val :
 private theorem cuspPlaneEquation_eval :
     (cuspPlaneEquation K).eval₂ (cuspBaseMap K).toRingHom (cuspX3 K) = 0 := by
   simp only [cuspPlaneEquation, Polynomial.eval₂_sub, Polynomial.eval₂_pow,
-    Polynomial.eval₂_X, Polynomial.eval₂_C, AlgHom.coe_toRingHom, map_pow, cuspBaseMap,
-    Polynomial.aeval_X, cusp_generator_relation, sub_self]
+    Polynomial.eval₂_X, Polynomial.eval₂_C, map_pow]
+  change cuspX3 K ^ 2 - (Polynomial.aeval (cuspX2 K) (Polynomial.X : Polynomial K)) ^ 3 = 0
+  rw [Polynomial.aeval_X, cusp_generator_relation, sub_self]
 
 private def cuspParametrization : AdjoinRoot (cuspPlaneEquation K) →ₐ[K] cuspSubalgebra K :=
   AdjoinRoot.liftAlgHom (cuspPlaneEquation K) (cuspBaseMap K) (cuspX3 K)
@@ -367,7 +368,7 @@ private theorem cuspParametrization_injective :
     Function.Injective (cuspParametrization K) := by
   rw [injective_iff_map_eq_zero]
   intro q hq
-  obtain ⟨f, rfl⟩ := AdjoinRoot.mk_surjective (cuspPlaneEquation K) q
+  obtain ⟨f, rfl⟩ := AdjoinRoot.mk_surjective q
   let r := f %ₘ cuspPlaneEquation K
   have hmonic := cuspPlaneEquation_monic K
   have hne : cuspPlaneEquation K ≠ 1 := by
@@ -383,8 +384,9 @@ private theorem cuspParametrization_injective :
       (p := f) (cuspPlaneEquation_eval K)).trans ((cuspParametrization_mk K f).symm.trans hq)
   have heval : cuspBaseMap K (r.coeff 0) + cuspBaseMap K (r.coeff 1) * cuspX3 K = 0 := by
     rw [hlin] at hrem
-    simpa only [Polynomial.eval₂_add, Polynomial.eval₂_C, Polynomial.eval₂_mul,
-      Polynomial.eval₂_X, AlgHom.coe_toRingHom] using hrem
+    simp only [Polynomial.eval₂_add, Polynomial.eval₂_C, Polynomial.eval₂_mul,
+      Polynomial.eval₂_X] at hrem
+    exact hrem
   have hbase (a : Polynomial K) :
       (cuspSubalgebra K).val (cuspBaseMap K a) = Polynomial.expand K 2 a :=
     AlgHom.congr_fun (cuspBaseMap_val K) a
@@ -403,6 +405,94 @@ noncomputable def paper2_cusp_coordinate_presentation :
   AlgEquiv.ofBijective (cuspParametrization K)
     ⟨cuspParametrization_injective K, cuspParametrization_surjective K⟩
 
+/-- The constant coefficient map is evaluation at the rational origin of the cusp. -/
+def cuspOriginResidue : cuspSubalgebra K →+* K :=
+  Polynomial.constantCoeff.comp (cuspSubalgebra K).val.toRingHom
+
+private theorem cuspOriginResidue_surjective :
+    Function.Surjective (cuspOriginResidue K) := by
+  intro c
+  refine ⟨algebraMap K (cuspSubalgebra K) c, ?_⟩
+  change (algebraMap K (Polynomial K) c).coeff 0 = c
+  rw [← Polynomial.C_eq_algebraMap, Polynomial.coeff_C_zero]
+
+/-- The kernel of evaluation is the maximal ideal of the rational origin. -/
+theorem paper2_cusp_origin_isMaximal :
+    (RingHom.ker (cuspOriginResidue K)).IsMaximal :=
+  RingHom.ker_isMaximal_of_surjective (cuspOriginResidue K) (cuspOriginResidue_surjective K)
+
+/-- The inclusion submodule of the cusp coordinate ring in its normalization. -/
+def cuspInclusionSubmodule : Submodule (cuspSubalgebra K) (Polynomial K) where
+  carrier := (cuspSubalgebra K : Set (Polynomial K))
+  zero_mem' := (cuspSubalgebra K).zero_mem
+  add_mem' := (cuspSubalgebra K).add_mem
+  smul_mem' a f hf := by
+    change (a : Polynomial K) * f ∈ cuspSubalgebra K
+    exact (cuspSubalgebra K).mul_mem a.property hf
+
+/-- The actual normalization quotient carries the action through the constant
+coefficient. The formula here is the coefficient-one identity on representatives. -/
+theorem paper2_cusp_coeff_one_smul (a : cuspSubalgebra K) (f : Polynomial K) :
+    (a • f).coeff 1 = cuspOriginResidue K a * f.coeff 1 := by
+  have ha : (a : Polynomial K).coeff 1 = 0 :=
+    (cusp_mem_iff_coeff_one_zero K _).mp a.property
+  change ((a : Polynomial K) * f).coeff 1 = (a : Polynomial K).coeff 0 * f.coeff 1
+  rw [Polynomial.mul_coeff_one, ha, zero_mul, add_zero]
+
+private def cuspOriginAlgebra : Algebra (cuspSubalgebra K) K :=
+  (cuspOriginResidue K).toAlgebra
+
+attribute [local instance] cuspOriginAlgebra
+
+private def cuspCoeffOne : Polynomial K →ₗ[cuspSubalgebra K] K where
+  toFun f := f.coeff 1
+  map_add' f g := Polynomial.coeff_add _ _ _
+  map_smul' a f := by
+    change (a • f).coeff 1 = cuspOriginResidue K a * f.coeff 1
+    exact paper2_cusp_coeff_one_smul K a f
+
+private theorem cuspInclusionSubmodule_eq_ker :
+    cuspInclusionSubmodule K = (cuspCoeffOne K).ker := by
+  ext f
+  change f ∈ cuspSubalgebra K ↔ f.coeff 1 = 0
+  exact cusp_mem_iff_coeff_one_zero K f
+
+private def cuspQuotientCoeffEquiv :
+    (Polynomial K ⧸ cuspInclusionSubmodule K) ≃ₗ[cuspSubalgebra K] K := by
+  rw [cuspInclusionSubmodule_eq_ker]
+  refine (cuspCoeffOne K).quotKerEquivOfSurjective ?_
+  intro c
+  exact ⟨Polynomial.monomial 1 c, by simp [cuspCoeffOne]⟩
+
+/-- The normalization quotient is the residue module at the origin, over the
+cusp coordinate ring itself. -/
+noncomputable def paper2_cusp_quotient_residue_linear_equiv :
+    (Polynomial K ⧸ cuspInclusionSubmodule K) ≃ₗ[cuspSubalgebra K]
+      (cuspSubalgebra K ⧸ RingHom.ker (cuspOriginResidue K)) := by
+  let e := (cuspOriginResidue K).quotientKerEquivOfSurjective (cuspOriginResidue_surjective K)
+  let eₐ : (cuspSubalgebra K ⧸ RingHom.ker (cuspOriginResidue K)) ≃ₐ[cuspSubalgebra K] K :=
+    AlgEquiv.ofRingEquiv (f := e) (by
+      intro a
+      exact RingHom.quotientKerEquivOfSurjective_apply_mk (cuspOriginResidue_surjective K) a)
+  exact (cuspQuotientCoeffEquiv K).trans eₐ.toLinearEquiv.symm
+
+/-- Every scalar outside the origin ideal acts invertibly on the normalization quotient. -/
+theorem paper2_cusp_nonzero_residue_smul_bijective (a : cuspSubalgebra K)
+    (ha : cuspOriginResidue K a ≠ 0) :
+    Function.Bijective (fun z : Polynomial K ⧸ cuspInclusionSubmodule K => a • z) := by
+  let e := cuspQuotientCoeffEquiv K
+  constructor
+  · intro x y h
+    have hs : cuspOriginResidue K a * e x = cuspOriginResidue K a * e y := by
+      simpa only [map_smul] using congrArg e h
+    exact e.injective (mul_left_cancel₀ ha hs)
+  · intro y
+    refine ⟨e.symm ((cuspOriginResidue K a)⁻¹ * e y), ?_⟩
+    apply e.injective
+    rw [map_smul, e.apply_symm_apply]
+    change cuspOriginResidue K a * ((cuspOriginResidue K a)⁻¹ * e y) = e y
+    rw [← mul_assoc, mul_inv_cancel₀ ha, one_mul]
+
 end
 
 end ManuscriptAudit.CuspDelta
@@ -418,7 +508,11 @@ run_cmd do
       ``ManuscriptAudit.CuspDelta.paper2_cusp_polynomial_is_integral_closure,
       ``ManuscriptAudit.CuspDelta.paper2_cusp_field_points_bijective,
       ``ManuscriptAudit.CuspDelta.cusp_expanded_linear_eq_zero,
-      ``ManuscriptAudit.CuspDelta.paper2_cusp_coordinate_presentation] do
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_coordinate_presentation,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_origin_isMaximal,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_coeff_one_smul,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_quotient_residue_linear_equiv,
+      ``ManuscriptAudit.CuspDelta.paper2_cusp_nonzero_residue_smul_bijective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

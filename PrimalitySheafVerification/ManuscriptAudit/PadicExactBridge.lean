@@ -40,8 +40,18 @@ theorem paper1_principal_unit_log_power {p : ℕ} [Fact p.Prime] {u : ℚ_[p]}
     padicLog1p ((1 + u) ^ k - 1) = k • padicLog1p u := by
   have hs : starPow u k = (1 + u) ^ k - 1 := by
     rw [← one_add_starPow u k, add_comm (1 : ℚ_[p]), add_sub_cancel_right]
-  rw [← hs]
-  exact padicLog1p_starPow (spt1_padicLog_additive p) hu k
+  have hbase : (1 + u : ℚ_[p]) - 1 = u := by ring
+  have hbaseSmall : ‖(1 + u : ℚ_[p]) - 1‖ < 1 := by simpa only [hbase] using hu
+  have hpowSmall : ‖(1 + u) ^ k - 1‖ < 1 := by
+    rw [← hs]
+    exact starPow_norm_lt_one hu k
+  have hunit := PadicBinomialLimit.norm_eq_one_of_principal_unit p hbaseSmall
+  have h := PadicBinomialLimit.padicLogUnit_pow p hunit k
+  rw [PadicBinomialLimit.padicLogUnit_eq_series_of_principal_unit p hpowSmall,
+    PadicBinomialLimit.padicLogUnit_eq_series_of_principal_unit p hbaseSmall, hbase] at h
+  rw [spt1_padicLog1p_eq_binomial_log hpowSmall, spt1_padicLog1p_eq_binomial_log hu,
+    nsmul_eq_mul]
+  exact h
 
 /-- The exact logarithm difference from Paper 1, p. 7, on units with
 a principal-unit quotient. This uses the existing Spt1 series on the right. -/

@@ -132,14 +132,23 @@ private theorem const_firstCoordinate (g : Plane K) :
   rw [Polynomial.coeff_zero_eq_aeval_zero]
   exact AlgHom.congr_fun he g
 
+private def composedEval (r : ℕ) : Plane K →ₐ[K] U K r :=
+  (qP K r).comp (firstCoordinate K)
+
+private theorem composedEval_equation {r s : ℕ} (hs : 2 ≤ s) :
+    composedEval K r (equation K r s) = 0 := by
+  have hs₀ : s ≠ 0 := by omega
+  have he : firstCoordinate K (equation K r s) = (Polynomial.X : P K) ^ r := by
+    simp [equation, firstCoordinate_zero, firstCoordinate_one, zero_pow hs₀]
+  calc
+    composedEval K r (equation K r s) = qP K r (firstCoordinate K (equation K r s)) := rfl
+    _ = qP K r ((Polynomial.X : P K) ^ r) := congrArg (qP K r) he
+    _ = (qP K r Polynomial.X) ^ r := map_pow (qP K r) Polynomial.X r
+    _ = 0 := qP_X_pow K r
+
 private def intoU {r s : ℕ} (hs : 2 ≤ s) : CurveRing K r s →ₐ[K] U K r :=
-  Ideal.Quotient.liftₐ _ ((qP K r).comp (firstCoordinate K))
-    (liftEquation K r s ((qP K r).comp (firstCoordinate K)) (by
-      have hs₀ : s ≠ 0 := by omega
-      change qP K r (firstCoordinate K (equation K r s)) = 0
-      have he : firstCoordinate K (equation K r s) = (Polynomial.X : P K) ^ r := by
-        simp [equation, firstCoordinate_zero, firstCoordinate_one, zero_pow hs₀]
-      rw [he, map_pow, qP_X_pow K r]))
+  Ideal.Quotient.liftₐ (equationIdeal K r s) (composedEval K r)
+    (liftEquation K r s (composedEval K r) (composedEval_equation K (r := r) hs))
 
 private theorem intoU_mk {r s : ℕ} (hs : 2 ≤ s) (g : Plane K) :
     intoU K (r := r) hs (Ideal.Quotient.mk (equationIdeal K r s) g) =
@@ -178,7 +187,10 @@ private theorem qP_isUnit {r : ℕ} (g : P K) (h : g.coeff 0 ≠ 0) :
         congrArg (qP K r) (mul_comm (Polynomial.X : P K) a)
     calc
       _ = (qP K r Polynomial.X) ^ r * (qP K r a) ^ r := hcomm.mul_pow r
-      _ = 0 := by rw [qP_X_pow K r, zero_mul]
+      _ = (0 : U K r) * (qP K r a) ^ r :=
+        congrArg (fun z : U K r => z * (qP K r a) ^ r) (qP_X_pow K r)
+      _ = 0 := by
+        simpa only [map_mul, map_zero, map_pow] using congrArg (qP K r) (zero_mul (a ^ r))
   have hc : IsUnit (qP K r (Polynomial.C (g.coeff 0))) :=
     ((isUnit_iff_ne_zero.mpr h).map Polynomial.C).map (qP K r).toRingHom
   have hcomm : Commute (qP K r g - qP K r (Polynomial.C (g.coeff 0)))

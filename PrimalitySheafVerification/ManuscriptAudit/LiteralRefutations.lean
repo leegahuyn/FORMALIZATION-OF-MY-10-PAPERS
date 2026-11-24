@@ -557,6 +557,30 @@ theorem paper1_indexed_prime_modulus_can_exceed_printed_order :
   change padicValNat 3 (3 ^ 2) = 2
   rw [padicValNat.pow, padicValNat_self] <;> decide
 
+/-- The composite decomposition on p. 80 also prints a single-prime gcd
+as its last term. For M=N=6 and p=2 the two groups have orders 6 and 2. -/
+theorem paper3_composite_tor_single_prime_gcd_line_false :
+    ¬ Nonempty ((ZMod 2 × ZMod 3) ≃+ ZMod (Nat.gcd 6 (2 ^ 1))) := by
+  change ¬ Nonempty ((ZMod 2 × ZMod 3) ≃+ ZMod 2)
+  rintro ⟨e⟩
+  have h := Fintype.card_congr e.toEquiv
+  norm_num [Fintype.card_prod, ZMod.card] at h
+
+
+/-- Paper 2, p. 37, Proposition 3.13. At residue class one the
+Jacobian of the degree-one model is a unit, but the polynomial has
+no root lifting that class. -/
+theorem paper2_jacobian_nonroot_no_padic_lift :
+    let f : Polynomial ℤ_[5] := Polynomial.X
+    ((f.map (PadicInt.toZMod (p := 5))).derivative.eval (1 : ZMod 5) ≠ 0) ∧
+      ¬ (∃ x : ℤ_[5], PadicInt.toZMod (p := 5) x = 1 ∧ f.eval x = 0) := by
+  dsimp only
+  refine ⟨by simp, ?_⟩
+  rintro ⟨x, hx, hroot⟩
+  rw [Polynomial.eval_X] at hroot
+  simpa [hroot] using hx
+
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -572,6 +596,8 @@ run_cmd do
     ``ManuscriptAudit.paper4_cech_worked_cokernel_false,
     ``ManuscriptAudit.paper6_printed_sequence_not_complex,
     ``ManuscriptAudit.paper6_lcm_difference_cannot_descend,
+    ``ManuscriptAudit.paper2_jacobian_nonroot_no_padic_lift,
+    ``ManuscriptAudit.paper3_composite_tor_single_prime_gcd_line_false,
     ``ManuscriptAudit.paper5_integer_hasse_threshold_false,
     ``ManuscriptAudit.paper8_printed_coefficient_rows_cannot_realize_first_target,
     ``ManuscriptAudit.paper10_no_positive_ad_invariant_gl2_form,
