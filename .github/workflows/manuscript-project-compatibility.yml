@@ -19,6 +19,7 @@ on:
       - 'PrimalitySheafVerification/Spt1.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
       - 'PrimalitySheafVerification/Spt6.lean'
+      - 'PrimalitySheafVerification/Verification.lean'
       - 'lean-toolchain'
 permissions:
   contents: read
@@ -70,6 +71,13 @@ jobs:
           mkdir -p "$compiled/$project/ManuscriptAudit"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           status=0
+          if lake env lean --root="$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$project/Verification.lean" \
+              > "$logs/Verification.log" 2>&1; then
+            echo "Verification.lean passed"
+          else
+            tail -n 80 "$logs/Verification.log"
+            status=1
+          fi
           for source in Spt1 Spt5 Spt6; do
             if [[ "$source" == Spt1 ]]; then
               proofs=(PadicRemainder PadicCertificates PadicLipschitz)

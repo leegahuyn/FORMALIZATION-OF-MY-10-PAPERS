@@ -40,7 +40,8 @@ theorem functorialSurjectiveInjectiveFactorization :
     hi := fun f => (AddCommGrpCat.epi_iff_surjective (factorThruImage f.hom)).mp inferInstance
     hp := fun f => (AddCommGrpCat.mono_iff_injective (image.ι f.hom)).mp inferInstance
   }⟩⟩
-  ext1 f
+  ext1
+  funext f
   exact image.fac f.hom
 
 end ManuscriptAudit.AddCommGrpImageFactorization

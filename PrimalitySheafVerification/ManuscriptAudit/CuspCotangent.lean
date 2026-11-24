@@ -145,8 +145,8 @@ theorem paper2_cusp_kaehler_not_projective (h2 : (2 : K) ≠ 0) :
     ¬ Module.Projective (CuspRing K) (KaehlerDifferential K (CuspRing K)) := by
   intro hProjective
   apply CuspPlaneSmoothness.cuspPlane_not_formallySmooth K
-  exact Algebra.formallySmooth_iff.mpr
-    ⟨hProjective, paper2_cusp_h1Cotangent_subsingleton K h2⟩
+  rw [Algebra.formallySmooth_iff]
+  exact ⟨hProjective, paper2_cusp_h1Cotangent_subsingleton K h2⟩
 
 end
 

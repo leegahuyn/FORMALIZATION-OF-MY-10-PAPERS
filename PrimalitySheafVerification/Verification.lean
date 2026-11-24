@@ -158,9 +158,8 @@ The paper proves `Tor₁(ℤ/M, ℤ/pᵏ) ≅ ker(·M : ℤ/pᵏ → ℤ/pᵏ)` 
 resolution `0 → ℤ →(·M) ℤ → ℤ/M → 0`, and shows that kernel is cyclic of order
 `gcd(M, pᵏ)`.  For the Example 4.5 data this is a finite computation: the kernel
 of multiplication by `12` on `ℤ/9` is `{0,3,6}`, of order `gcd(12,9) = 3`.
-(`native_decide` evaluates the `ZMod 9` arithmetic by compilation; plain `decide`
-also works in principle but is much slower on `ZMod` numerals.) -/
-example : Fintype.card {x : ZMod 9 // (12 : ZMod 9) * x = 0} = 3 := by native_decide
+The finite computation reduces in the Lean kernel. -/
+example : Fintype.card {x : ZMod 9 // (12 : ZMod 9) * x = 0} = 3 := by decide
 
 /-!
 ## Results that are NOT formalised here (and why)
