@@ -171,8 +171,19 @@ theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
         exact_mod_cast hVal i
       have hkInt : (1 : ℤ) ≤ (k : ℤ) := by exact_mod_cast hk
       have hiInt : (0 : ℤ) ≤ (i : ℤ) := by positivity
-      push_cast
-      nlinarith [mul_nonneg (show (0 : ℤ) ≤ (k : ℤ) - 1 by omega) hiInt]
+      have hMul : (i : ℤ) ≤ (k : ℤ) * (i : ℤ) := by
+        calc
+          (i : ℤ) = 1 * (i : ℤ) := (one_mul _).symm
+          _ ≤ (k : ℤ) * (i : ℤ) := mul_le_mul_of_nonneg_right hkInt hiInt
+      have hBound : (padicValNat p (i + 2) : ℤ) ≤ (k : ℤ) * (i : ℤ) :=
+        hValInt.trans hMul
+      have hRewrite :
+          -(k : ℤ) * ((i + 2 : ℕ) : ℤ) + (padicValNat p (i + 2) : ℤ) =
+            -(2 * (k : ℤ)) + ((padicValNat p (i + 2) : ℤ) - (k : ℤ) * (i : ℤ)) := by
+        push_cast
+        ring
+      rw [hRewrite]
+      exact add_le_of_nonpos_right (sub_nonpos.mpr hBound)
 
 /-- Paper 1, p. 7, Remark 2.2. With p=2, n=k=2, A=9, m=1
 and y=4 on the minus branch, the printed expansion uses p₂=3 and its

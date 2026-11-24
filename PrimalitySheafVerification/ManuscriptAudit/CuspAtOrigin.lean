@@ -128,7 +128,10 @@ private theorem intoU_equation : (qP.comp firstCoordinate) equation = 0 := by
 
 private def intoU : CuspRing →ₐ[k] U :=
   Ideal.Quotient.liftₐ equationIdeal (qP.comp firstCoordinate)
-    (liftEquation (qP.comp firstCoordinate) intoU_equation)
+    (by
+      intro g hg
+      obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hg
+      simp only [map_mul, intoU_equation, zero_mul])
 
 private theorem intoU_mk (g : Plane) :
     intoU (Ideal.Quotient.mk equationIdeal g) = qP (firstCoordinate g) := by
@@ -155,10 +158,18 @@ private theorem qP_isUnit (g : P) (h : g.coeff 0 ≠ 0) : IsUnit (qP g) := by
     simpa only [map_sub, map_mul] using congrArg qP ha
   have hn : IsNilpotent (qP g - qP (Polynomial.C (g.coeff 0))) := by
     use 2
-    rw [he, mul_pow, qP_X_square, zero_mul]
+    rw [he]
+    calc
+      (qP Polynomial.X * qP a) ^ 2 = (qP Polynomial.X) ^ 2 * (qP a) ^ 2 := by ring
+      _ = 0 := by rw [qP_X_square, zero_mul]
   have hc : IsUnit (qP (Polynomial.C (g.coeff 0))) :=
     ((isUnit_iff_ne_zero.mpr h).map Polynomial.C).map qP.toRingHom
-  simpa using hn.isUnit_add_right_of_commute hc (Commute.all _ _)
+  have hcomm : Commute (qP g - qP (Polynomial.C (g.coeff 0)))
+      (qP (Polynomial.C (g.coeff 0))) := by
+    change (qP g - qP (Polynomial.C (g.coeff 0))) * qP (Polynomial.C (g.coeff 0)) =
+      qP (Polynomial.C (g.coeff 0)) * (qP g - qP (Polynomial.C (g.coeff 0)))
+    ring
+  simpa using hn.isUnit_add_right_of_commute hc hcomm
 
 private theorem intoU_unit (s : originIdeal.primeCompl) : IsUnit (intoU s) := by
   obtain ⟨g, hg⟩ := Ideal.Quotient.mk_surjective (I := equationIdeal) (s : CuspRing)
@@ -177,10 +188,8 @@ private def localMap : CuspLocal →ₐ[k] U :=
 
 private theorem localMap_on_ring (a : CuspRing) :
     localMap (algebraMap CuspRing CuspLocal a) = intoU a := by
-  unfold localMap
-  rw [IsLocalization.liftAlgHom_apply]
-  exact IsLocalization.lift_eq (M := originIdeal.primeCompl) (S := CuspLocal)
-    (g := intoU.toRingHom) intoU_unit a
+  simp only [localMap, IsLocalization.liftAlgHom_apply, IsLocalization.lift_eq,
+    AlgHom.coe_toRingHom]
 
 /-- Paper 2, PDF pp. 29 and 44–49. The cusp \(x^2+y^3\) remains
 non-smooth at the actual origin of its fiber over \(\mathbb F_5\).
