@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation TwoOpenDerivedComparison
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation TwoOpenDerivedComparison CyclicInclusionCokernel
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -84,7 +84,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          compiled="${RUNNER_TEMP}/manuscript-vendored-proof-modules"
+          compiled="$GITHUB_WORKSPACE/.lake/build/lib/lean"
           mkdir -p "$compiled/$proof_dir"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 200
     concurrency:
-      group: manuscript-padic-vendored-${{ github.ref }}
+      group: manuscript-padic-vendored-cached-${{ github.ref }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -168,7 +168,7 @@ jobs:
           set -euo pipefail
           status=0
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          compiled="${RUNNER_TEMP}/manuscript-vendored-padic-modules"
+          compiled="$GITHUB_WORKSPACE/.lake/build/lib/lean"
           mkdir -p "$compiled/$proof_dir"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"

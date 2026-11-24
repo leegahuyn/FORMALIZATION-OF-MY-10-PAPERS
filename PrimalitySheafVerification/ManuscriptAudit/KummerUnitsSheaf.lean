@@ -54,12 +54,11 @@ private instance (X : Scheme.{0}) :
   let I := Scheme.etaleTopology.over X
   let F := Scheme.Etale.forget X
   letI : F.IsContinuous X.smallEtaleTopology I := by
-    change (MorphismProperty.Over.forget @Etale ⊤ X).IsContinuous
-      ((MorphismProperty.Over.forget @Etale ⊤ X).restrictedTopology I) I
-    letI : RepresentablyFlat (MorphismProperty.Over.forget @Etale ⊤ X) :=
-      flat_of_preservesFiniteLimits _
+    letI : RepresentablyFlat F := flat_of_preservesFiniteLimits F
+    letI : F.LocallyCoverDense I :=
+      Scheme.locallyCoverDense_of_le X (P := @Etale.{0}) (Q := @Etale.{0}) le_rfl
     rw [Functor.isContinuous_iff_coverPreserving]
-    exact Functor.coverPreserving_restrictedTopology _ _
+    exact Functor.coverPreserving_restrictedTopology F I
   exact Functor.isContinuous_comp F (Over.forget X) _ I _
 
 private def affineUnderlying (X : Scheme.{0}) : X.AffineEtale ⥤ Scheme.{0} :=
@@ -87,7 +86,7 @@ def unitsUnderlyingIso (X : Scheme.{0}) :
 theorem units_isSheaf (X : Scheme.{0}) :
     Presheaf.IsSheaf (Scheme.AffineEtale.topology X) (units X) := by
   apply Presheaf.isSheaf_of_isSheaf_comp _ _ (forget AddCommGrpCat.{0})
-  apply (Presheaf.isSheaf_of_iso_iff _ (unitsUnderlyingIso X)).mp
+  apply (Presheaf.isSheaf_of_iso_iff (unitsUnderlyingIso X)).mp
   apply (affineUnderlying X).op_comp_isSheaf_of_isSheaf _ Scheme.etaleTopology
   apply Presheaf.IsSheaf.of_le Scheme.etaleTopology_le_proetaleTopology
   exact GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable _

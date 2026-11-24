@@ -21,10 +21,19 @@ open KummerSheafSequence
 
 universe u
 
-private abbrev site (R : CommRingCat.{u}) := Scheme.AffineEtale.topology (Spec R)
+private noncomputable abbrev site (R : CommRingCat.{u}) := Scheme.AffineEtale.topology (Spec R)
 
-local instance (R : CommRingCat.{u}) : HasExt.{u} (Sheaf (site R) AddCommGrpCat.{u}) :=
-  hasExt_of_enoughInjectives _
+/-- The small affine étale abelian sheaf category has Ext in the coefficient universe. -/
+theorem affineSiteHasExt (R : CommRingCat.{u}) :
+    HasExt.{u} (Sheaf (site R) AddCommGrpCat.{u}) := by
+  let C := Sheaf (site R) AddCommGrpCat.{u}
+  letI : IsGrothendieckAbelian.{u} C :=
+    Scheme.isGrothendieckAbelian_sheaf_affineEtaleTopology (Spec R) AddCommGrpCat.{u}
+  letI : LocallySmall.{u} C := IsGrothendieckAbelian.locallySmall (C := C)
+  letI : EnoughInjectives C := IsGrothendieckAbelian.enoughInjectives.{u} (C := C)
+  exact hasExt_of_enoughInjectives C
+
+attribute [local instance] affineSiteHasExt
 
 private noncomputable abbrev integerConstant (R : CommRingCat.{u}) :
     Sheaf (site R) AddCommGrpCat.{u} :=

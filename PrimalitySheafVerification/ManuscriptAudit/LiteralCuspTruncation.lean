@@ -31,7 +31,7 @@ private theorem lowerMatrix_mem (n : ℤ) : lowerMatrix n ∈ GammaTwo := by
   rw [CongruenceSubgroup.Gamma_mem]
   change (1 : ZMod 2) = 1 ∧ (0 : ZMod 2) = 0 ∧
     ((2 * n : ℤ) : ZMod 2) = 0 ∧ (1 : ZMod 2) = 1
-  simp [Int.cast_mul, show ((2 : ℤ) : ZMod 2) = 0 by decide]
+  simp [Int.cast_mul, show (2 : ZMod 2) = 0 by decide]
 
 private def lowerElement (n : ℤ) : GammaTwo := ⟨lowerMatrix n, lowerMatrix_mem n⟩
 
@@ -80,7 +80,7 @@ theorem exists_smul_im_lt (Y : ℝ) (hY : 0 < Y) (z : ℍ) :
   change y / Complex.normSq d < Y
   exact (div_lt_iff₀ hdPos).mpr hBound
 
-def orbitPoint (z : ℍ) : OrbitQuotient := Quotient.mk _ z
+noncomputable def orbitPoint (z : ℍ) : OrbitQuotient := Quotient.mk _ z
 
 /-- The image of the printed sublevel is the entire quotient. -/
 theorem paper10_printed_sublevel_image_univ (Y : ℝ) (hY : 0 < Y) :

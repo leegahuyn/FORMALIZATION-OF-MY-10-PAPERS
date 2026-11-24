@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
@@ -19,6 +20,7 @@ derivative is taken with respect to s and includes the factor log p.
 namespace ManuscriptAudit.DirichletEuler
 
 open Nat
+open scoped BigOperators
 
 noncomputable section
 
@@ -79,11 +81,11 @@ theorem paper7_dirichlet_local_log_hasDeriv
   change HasDerivAt (fun z : ℂ => -Complex.log (1 - scaledRoot p α z)) _ s at hNeg
   simpa only [localLogDerivative, neg_neg] using hNeg
 
-theorem paper7_dirichlet_log_derivatives_abs_summable
-    (α : Primes → ℂ) {s : ℂ} {W : ℝ} (hs : W + 1 < s.re)
-    (hα : ∀ p, ‖α p‖ ≤ (p : ℝ) ^ W) :
-    Summable (fun p : Primes => ‖localLogDerivative p (α p) s‖) := by
-  let e := W - s.re
+private theorem localLogDerivative_majorant {W σ : ℝ} (hσ : W + 1 < σ) :
+    ∃ bound : Primes → ℝ, Summable bound ∧
+      ∀ (p : Primes) {α s : ℂ}, ‖α‖ ≤ (p : ℝ) ^ W → σ ≤ s.re →
+        ‖localLogDerivative p α s‖ ≤ bound p := by
+  let e := W - σ
   let δ := (-1 - e) / 2
   let u := (2 : ℝ) ^ e
   have he : e < -1 := by dsimp [e]; linarith
@@ -91,10 +93,10 @@ theorem paper7_dirichlet_log_derivatives_abs_summable
   have he' : e + δ < -1 := by dsimp [δ]; linarith
   have hu : u < 1 := Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) (by linarith)
   have hGap : 0 < 1 - u := sub_pos.mpr hu
-  have hS := ((Real.summable_nat_rpow.mpr he').subtype Nat.Prime).div_const (δ * (1 - u))
-  apply Summable.of_nonneg_of_le (fun p => norm_nonneg _) _ hS
-  intro p
-  let z := scaledRoot p (α p) s
+  refine ⟨fun p => (p : ℝ) ^ (e + δ) / (δ * (1 - u)), ?_, ?_⟩
+  · exact ((Real.summable_nat_rpow.mpr he').subtype Nat.Prime).div_const (δ * (1 - u))
+  intro p α s hα hs
+  let z := scaledRoot p α s
   have hp₂ : (2 : ℝ) ≤ p := Nat.cast_le.mpr p.prop.two_le
   have hp : (0 : ℝ) < p := Nat.cast_pos.mpr p.prop.pos
   have hlog₀ : 0 ≤ Real.log (p : ℝ) := Real.log_nonneg (by linarith)
@@ -102,7 +104,8 @@ theorem paper7_dirichlet_log_derivatives_abs_summable
     apply (le_div_iff₀ hδ).2
     rw [mul_comm, ← Real.log_rpow hp]
     exact Real.log_le_self (Real.rpow_nonneg hp.le _)
-  have hZ : ‖z‖ ≤ (p : ℝ) ^ e := scaledRoot_norm_le p (hα p)
+  have hZ : ‖z‖ ≤ (p : ℝ) ^ e := (scaledRoot_norm_le p hα).trans
+    (Real.rpow_le_rpow_of_exponent_le (by linarith : (1 : ℝ) ≤ p) (sub_le_sub_left hs W))
   have hBound : (p : ℝ) ^ e ≤ u :=
     Real.rpow_le_rpow_of_nonpos (by norm_num) hp₂ (by linarith)
   have hDenom : 1 - u ≤ ‖(1 : ℂ) - z‖ := by
@@ -124,6 +127,78 @@ theorem paper7_dirichlet_log_derivatives_abs_summable
     _ = _ := by
       rw [div_mul_eq_mul_div, div_div, ← Real.rpow_add hp, add_comm δ e]
 
+theorem paper7_dirichlet_log_derivatives_abs_summable
+    (α : Primes → ℂ) {s : ℂ} {W : ℝ} (hs : W + 1 < s.re)
+    (hα : ∀ p, ‖α p‖ ≤ (p : ℝ) ^ W) :
+    Summable (fun p : Primes => ‖localLogDerivative p (α p) s‖) := by
+  obtain ⟨bound, hBound, h⟩ := localLogDerivative_majorant hs
+  exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _)
+    (fun p => h p (hα p) le_rfl) hBound
+
+/-- The logarithm series with a uniformly bounded number of signed local
+factors admits termwise complex differentiation on the Dirichlet half-plane.
+Zero roots allow smaller local ranks to be padded to a common finite index. -/
+theorem paper7_dirichlet_log_series_hasDeriv {ι : Type*} [Fintype ι]
+    (α : ι → Primes → ℂ) (ε : ι → ℂ) (hε : ∀ i, ‖ε i‖ ≤ 1)
+    {s : ℂ} {W : ℝ} (hs : W + 1 < s.re)
+    (hα : ∀ i p, ‖α i p‖ ≤ (p : ℝ) ^ W) :
+    HasDerivAt
+      (fun z : ℂ => ∑' p : Primes, ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) z)))
+      (∑' p : Primes, ∑ i, ε i * localLogDerivative p (α i p) s) s := by
+  classical
+  obtain ⟨σ, hσ, hsσ⟩ := exists_between hs
+  obtain ⟨bound, hBound, hLocalBound⟩ := localLogDerivative_majorant hσ
+  let D : Set ℂ := {z | σ < z.re}
+  have hOpen : IsOpen D := isOpen_lt continuous_const Complex.continuous_re
+  have hConn : IsPreconnected D :=
+    (convex_halfSpace_gt Complex.reLm.isLinear σ).isPreconnected
+  have hD : s ∈ D := hsσ
+  have hPoint : Summable (fun p : Primes =>
+      ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) s))) := by
+    apply summable_sum
+    intro i _
+    exact (paper7_dirichlet_local_logs_summable (α i) hs (hα i)).mul_left (ε i)
+  refine hasDerivAt_tsum_of_isPreconnected (hBound.mul_left (Fintype.card ι : ℝ))
+    hOpen hConn ?_ ?_ hD hPoint hD
+  · intro p z hz
+    have hz' : W + 1 < z.re := hσ.trans hz
+    exact HasDerivAt.fun_sum fun i _ =>
+      (paper7_dirichlet_local_log_hasDeriv p hz' (hα i p)).const_mul (ε i)
+  · intro p z hz
+    have hz' : σ ≤ z.re := le_of_lt hz
+    calc
+      ‖∑ i, ε i * localLogDerivative p (α i p) z‖ ≤
+          ∑ i, ‖ε i * localLogDerivative p (α i p) z‖ :=
+        norm_sum_le _ _
+      _ ≤ ∑ _ : ι, bound p := by
+        apply Finset.sum_le_sum
+        intro i _
+        rw [norm_mul]
+        exact (mul_le_mul_of_nonneg_right (hε i) (norm_nonneg _)).trans
+          (by rw [one_mul]; exact hLocalBound p (hα i p) hz')
+      _ = (Fintype.card ι : ℝ) * bound p := by simp
+
+/-- The exponentials of the signed local log polynomials have an actual
+infinite product in the same half-plane, with a nonzero product value. -/
+theorem paper7_dirichlet_scaled_euler_hasProd {ι : Type*} [Fintype ι]
+    (α : ι → Primes → ℂ) (ε : ι → ℂ)
+    {s : ℂ} {W : ℝ} (hs : W + 1 < s.re)
+    (hα : ∀ i p, ‖α i p‖ ≤ (p : ℝ) ^ W) :
+    HasProd
+      (fun p : Primes =>
+        Complex.exp (∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) s))))
+      (Complex.exp (∑' p : Primes,
+        ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) s)))) ∧
+    Complex.exp (∑' p : Primes,
+      ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) s))) ≠ 0 := by
+  classical
+  have hPoint : Summable (fun p : Primes =>
+      ∑ i, ε i * (-Complex.log (1 - scaledRoot p (α i p) s))) := by
+    apply summable_sum
+    intro i _
+    exact (paper7_dirichlet_local_logs_summable (α i) hs (hα i)).mul_left (ε i)
+  exact ⟨by simpa only [Function.comp_apply] using hPoint.hasSum.cexp, Complex.exp_ne_zero _⟩
+
 end
 
 end ManuscriptAudit.DirichletEuler
@@ -135,7 +210,9 @@ run_cmd do
       ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_scaled_roots_abs_summable,
       ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_local_logs_summable,
       ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_local_log_hasDeriv,
-      ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_log_derivatives_abs_summable] do
+      ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_log_derivatives_abs_summable,
+      ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_log_series_hasDeriv,
+      ``ManuscriptAudit.DirichletEuler.paper7_dirichlet_scaled_euler_hasProd] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
