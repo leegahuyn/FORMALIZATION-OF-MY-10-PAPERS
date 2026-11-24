@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -179,7 +179,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -203,6 +203,19 @@ jobs:
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
             lake env lean "$proof_dir/$proof.lean" 2>&1 | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
           done
+          compiled="${RUNNER_TEMP}/manuscript-proof-modules"
+          package_path="PrimalitySheafVerification/ManuscriptAudit"
+          mkdir -p "$compiled/$package_path"
+          if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$package_path/CubicTrace.olean" \
+              "$GITHUB_WORKSPACE/$package_path/CubicTrace.lean" > "${RUNNER_TEMP}/cubic-compile.log" 2>&1; then
+            audit_lean_path="$(lake env printenv LEAN_PATH)"
+            echo "Checking $proof_dir/CubicTraceInfinitude.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+            LEAN_PATH="$compiled:$audit_lean_path" lean "$proof_dir/CubicTraceInfinitude.lean" 2>&1 |
+              tee -a "${RUNNER_TEMP}/manuscript-proofs-upstream.log" || status=1
+          else
+            cat "${RUNNER_TEMP}/cubic-compile.log"
+            status=1
+          fi
           exit "$status"
       - name: Keep the upstream compatibility log on GitHub
         if: always()

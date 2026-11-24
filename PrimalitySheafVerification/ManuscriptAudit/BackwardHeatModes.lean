@@ -26,7 +26,7 @@ namespace ManuscriptAudit.BackwardHeat
 /-- The positive diagonal elliptic rates on the infinite sequence of modes. -/
 def modeRate (n : ℕ) : ℝ := ((n + 1 : ℕ) : ℝ) ^ 2
 
-def initialMode (n : ℕ) : ℝ := (modeRate n)⁻¹
+noncomputable def initialMode (n : ℕ) : ℝ := (modeRate n)⁻¹
 
 private theorem modeRate_pos (n : ℕ) : 0 < modeRate n :=
   sq_pos_of_pos (Nat.cast_pos.mpr (Nat.succ_pos n))
@@ -104,10 +104,10 @@ private theorem value_of_mode_ode {u : ℝ → ℝ} {rate T : ℝ} (hT : 0 < T)
     intro s hs
     have hExp : HasDerivAt (fun v : ℝ => Real.exp (-rate * v))
         (Real.exp (-rate * s) * -rate) s := by
-      simpa only [mul_one] using ((hasDerivAt_id s).const_mul (-rate)).exp
+      simpa only [id_eq, mul_one] using ((hasDerivAt_id s).const_mul (-rate)).exp
     have hcancel : (Real.exp (-rate * s) * -rate) * u s +
         Real.exp (-rate * s) * (rate * u s) = 0 := by ring
-    simpa only [weighted, hcancel] using hExp.mul (hODE s hs)
+    simpa only [weighted, Pi.mul_def, hcancel] using hExp.mul (hODE s hs)
   obtain ⟨c, _, hSlope⟩ := exists_hasDerivAt_eq_slope weighted (fun _ => 0)
     hT hweightedCont hweightedDeriv
   have hSlope' : (0 : ℝ) = (weighted T - weighted 0) / T := by simpa using hSlope

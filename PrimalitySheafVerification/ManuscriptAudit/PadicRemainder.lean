@@ -156,13 +156,58 @@ theorem paper1_odd_prime_log_quadratic_remainder {p : ℕ} [Fact (Nat.Prime p)]
       push_cast
       nlinarith [mul_nonneg (show (0 : ℤ) ≤ (k : ℤ) - 1 by omega) hiInt]
 
+/-- Paper 1, p. 7, Remark 2.2. With p=2, n=k=2, A=9, m=1
+and y=1, the printed expansion holds and its per-term hypothesis holds.
+The actual logarithm remainder at the resulting discrepancy exceeds 2⁻⁴. -/
+theorem paper1_printed_parameters_violate_unrestricted_remainder :
+    Spt1.Hk 2 12 9 1 2 2 (Spt1.Yexp 9 2 2) ∧
+      (Spt1.Yexp 9 2 2 : ℚ) =
+        (729 : ℚ) * (Spt1.Snexp 9 2 : ℚ) +
+          Spt1.canonExpTail 12 9 1 (fun j => if j = 0 then -2187 else 0) 2 ∧
+      (1 : ℝ) / 16 <
+        ‖padicLog1p (((32805 : ℚ_[2]) - 6561) / 6561) -
+          (((32805 : ℚ_[2]) - 6561) / 6561)‖ := by
+  have hDen : padicValNat 2 2187 = 0 :=
+    padicValNat.eq_zero_of_not_dvd (by decide)
+  have hFour : padicValNat 2 4 = 2 := by
+    change padicValNat 2 (2 ^ 2) = 2
+    rw [padicValNat.pow, padicValNat_self] <;> norm_num
+  have hForty : padicValNat 2 40 = 3 := by
+    change padicValNat 2 ((2 ^ 3) * 5) = 3
+    rw [padicValNat.mul (by decide) (by decide), padicValNat.pow, padicValNat_self,
+      padicValNat.eq_zero_of_not_dvd (by decide : ¬ (2 : ℕ) ∣ 5)] <;> norm_num
+  have hY : Spt1.Yexp 9 2 2 = 6561 := by norm_num [Spt1.Yexp]
+  refine ⟨?_, ?_, ?_⟩
+  · rw [hY]
+    intro j hj
+    have hCases : j = 0 ∨ j = 1 := by omega
+    rcases hCases with rfl | rfl
+    · have hPhi : Spt1.phiTerm 12 9 1 6561 0 =
+          ((4 : ℕ) : ℚ) / ((2187 : ℕ) : ℚ) := by
+        norm_num [Spt1.phiTerm, Spt1.Sbinom]
+      rw [hPhi, padicValRat.div (by norm_num) (by norm_num),
+        padicValRat.of_nat, padicValRat.of_nat, hFour, hDen]
+      norm_num
+    · have hPhi : Spt1.phiTerm 12 9 1 6561 1 =
+          ((40 : ℕ) : ℚ) / ((2187 : ℕ) : ℚ) := by
+        norm_num [Spt1.phiTerm, Spt1.Sbinom]
+      rw [hPhi, padicValRat.div (by norm_num) (by norm_num),
+        padicValRat.of_nat, padicValRat.of_nat, hForty, hDen]
+      norm_num
+  · norm_num [hY, Spt1.Snexp, Spt1.Sbinom, Spt1.canonExpTail,
+      Finset.sum_range_succ, show (10 : ℕ).choose 2 = 45 by decide]
+  · rw [show ((32805 : ℚ_[2]) - 6561) / 6561 = 4 by norm_num,
+      norm_padic_log_remainder_four]
+    norm_num
+
 end ManuscriptAudit.PadicRemainder
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.PadicRemainder.paper1_padic_log_quadratic_remainder_bound_false,
-      ``ManuscriptAudit.PadicRemainder.paper1_odd_prime_log_quadratic_remainder] do
+      ``ManuscriptAudit.PadicRemainder.paper1_odd_prime_log_quadratic_remainder,
+      ``ManuscriptAudit.PadicRemainder.paper1_printed_parameters_violate_unrestricted_remainder] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

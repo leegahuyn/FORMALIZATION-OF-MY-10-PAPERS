@@ -95,7 +95,7 @@ theorem paper5_traceCurve_discriminant_ne_zero {p : ℕ} [Fact p.Prime]
   have hfour : (4 : ZMod p) ≠ 0 := paper5_smallCast_ne_zero (n := 4) (by omega) (by omega)
   have hΔ : (paper5TraceCurve p A).Δ = -((3 : ZMod p) ^ 3 * (4 * A) ^ 2) := by
     simp [paper5TraceCurve, WeierstrassCurve.Δ, WeierstrassCurve.b₂, WeierstrassCurve.b₄,
-      WeierstrassCurve.b₆, WeierstrassCurve.b₈, ZMod.natCast_self] <;> ring
+      WeierstrassCurve.b₆, WeierstrassCurve.b₈] <;> ring <;> simp
   rw [hΔ]
   exact neg_ne_zero.mpr (mul_ne_zero (pow_ne_zero 3 hthree) (pow_ne_zero 2 (mul_ne_zero hfour hA)))
 
@@ -106,7 +106,7 @@ private theorem paper5_nonsingular_iff {p : ℕ} [Fact p.Prime]
   rw [← WeierstrassCurve.Affine.equation_iff_nonsingular_of_Δ_ne_zero
     (paper5_traceCurve_discriminant_ne_zero hp hA)]
   rw [WeierstrassCurve.Affine.equation_iff]
-  simp [paper5TraceCurve, ZMod.natCast_self]
+  simp [paper5TraceCurve]
 
 private noncomputable def paper5ProjectiveEquiv {p : ℕ} [Fact p.Prime]
     (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A ≠ 0) :
