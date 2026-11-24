@@ -40,11 +40,12 @@ private def affineTerminal_isTerminal (R : CommRingCat.{0}) : IsTerminal (affine
   intro U f
   apply MorphismProperty.CostructuredArrow.Hom.ext
   apply Scheme.Spec.map_injective
+  let mapped : Scheme.Spec.obj U.left ⟶ Spec R := Scheme.Spec.map f.left
   have hw := f.w
-  change Scheme.Spec.map f.left ≫ 𝟙 (Spec R) = U.hom ≫ 𝟙 (Spec R) at hw
-  have hf : Scheme.Spec.map f.left = U.hom := by
-    simpa only [Category.comp_id] using hw
-  change Scheme.Spec.map f.left = Scheme.Spec.map (Scheme.Spec.preimage U.hom : U.left ⟶ op R)
+  change mapped ≫ 𝟙 (Spec R) = U.hom ≫ 𝟙 (Spec R) at hw
+  have hf : mapped = U.hom :=
+    Eq.trans (Category.comp_id mapped).symm (Eq.trans hw (Category.comp_id U.hom))
+  change mapped = Scheme.Spec.map (Scheme.Spec.preimage U.hom : U.left ⟶ op R)
   exact Eq.trans hf (Scheme.Spec.map_preimage U.hom).symm
 
 private def nativePower (R : CommRingCat.{0}) (d : ℕ) :

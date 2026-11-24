@@ -72,7 +72,10 @@ private theorem sky_obj_of_mem {p : X} {U : (Opens X)ᵒᵖ} (hp : p ∈ unop U)
 private def sky_obj_isTerminal {p : X} {U : (Opens X)ᵒᵖ} (hp : p ∉ unop U) :
     IsTerminal ((sky p).obj.obj U) := by
   classical
-  exact isTerminalSkyscraperSheafObjObjOfNotMem (p₀ := p) (A := A) hp
+  have heq : (sky p).obj.obj U = terminal G := by
+    change (if p ∈ unop U then A else terminal G) = _
+    rw [if_neg hp]
+  exact heq.symm ▸ terminalIsTerminal
 
 private def skyMapApp {p q : X} (h : Specializes p q) (U : (Opens X)ᵒᵖ) :
     (sky p).obj.obj U ⟶ (sky q).obj.obj U := by

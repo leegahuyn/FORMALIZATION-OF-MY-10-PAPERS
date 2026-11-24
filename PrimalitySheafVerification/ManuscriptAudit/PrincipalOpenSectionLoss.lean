@@ -62,7 +62,7 @@ private theorem terminalGroup_subsingleton : Subsingleton (terminal G) := by
     (hZero.of_iso (terminalIsoIsTerminal hZero.isTerminal))
 
 theorem skyscraperAtTwo_stalkSupport :
-    {x : S | Nontrivial (TopCat.Presheaf.stalk skyscraperAtTwo.obj x)} = {closedTwo} := by
+    {x : S | Nontrivial (TopCat.Presheaf.stalk (C := G) (X := S) skyscraperAtTwo.obj x)} = {closedTwo} := by
   classical
   ext x
   by_cases hx : x = closedTwo
@@ -78,7 +78,7 @@ theorem skyscraperAtTwo_stalkSupport :
     let e := skyscraperPresheafStalkOfNotSpecializes closedTwo
       (AddCommGrpCat.of (ZMod 2)) hs
     letI : Subsingleton (terminal G) := terminalGroup_subsingleton
-    letI : Subsingleton (TopCat.Presheaf.stalk skyscraperAtTwo.obj x) :=
+    letI : Subsingleton (TopCat.Presheaf.stalk (C := G) (X := S) skyscraperAtTwo.obj x) :=
       (e.addCommGroupIsoToAddEquiv).injective.subsingleton
     rintro ⟨a, b, hab⟩
     exact hab (Subsingleton.elim a b)

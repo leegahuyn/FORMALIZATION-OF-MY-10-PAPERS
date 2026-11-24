@@ -14,8 +14,10 @@ flat descent, a basis supplies a coboundary over a PID.
 namespace ManuscriptAudit.AffineUnitDescent
 
 open CategoryTheory ModuleCat TensorProduct
-open ModuleCat.ChangeOfRings
 open UnitCocycleTensor
+
+local notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
+  @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
 universe u
 
@@ -26,6 +28,7 @@ variable {R B : Type u} [CommRing R] [CommRing B]
 private abbrev scalarComonad (f : R →+* B) : Comonad (ModuleCat.{u} B) :=
   (extendRestrictScalarsAdj f).toComonad
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The overlap cocycle gives an actual coalgebra on the rank-one (B)-module. -/
 def coalgebraOfUnitCocycle (f : R →+* B)
     (u : letI : Algebra R B := f.toAlgebra; (B ⊗[R] B)ˣ)
@@ -54,37 +57,34 @@ def coalgebraOfUnitCocycle (f : R →+* B)
   let e₀ : L ≃ₗ[B] B := LinearEquiv.refl B B
   let e₃ : T₃ ≃ₗ[B] (B ⊗[R] (B ⊗[R] B)) :=
     TensorProduct.AlgebraTensorModule.congr e₀ e₂
-  have hCounit (z : B ⊗[R] B) : (C.ε.app N).hom z = diagonal R B z := by
-    induction z using TensorProduct.induction_on with
-    | zero => simp only [map_zero]
-    | tmul x y => rfl
-    | add x y hx hy => simp only [map_add, hx, hy]
-  have hComult (z : B ⊗[R] B) : e₃ ((C.δ.app N).hom z) = pull13 R B z := by
-    induction z using TensorProduct.induction_on with
-    | zero => simp only [map_zero]
-    | tmul x y =>
-      change e₃ ((extendScalars f).map
-        ((extendRestrictScalarsAdj f).unit.app ((restrictScalars f).obj N))
-        (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = _
-      rw [ExtendScalars.map_tmul, extendRestrictScalarsAdj_unit_app_apply,
-        pull13_tmul] <;> rfl
-    | add x y hx hy => simp only [map_add, hx, hy]
-  have hMap (z : B ⊗[R] B) :
-      e₃ (((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a).hom z) =
-        tensorCoaction R B u z := by
-    induction z using TensorProduct.induction_on with
-    | zero => simp only [map_zero]
-    | tmul x y =>
-      change e₃ ((extendScalars f).map ((restrictScalars f).map a)
-        (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = _
-      rw [ExtendScalars.map_tmul] <;> rfl
-    | add x y hx hy => simp only [map_add, hx, hy]
+  let εLin : (B ⊗[R] B) →ₗ[B] B := (C.ε.app N).hom
+  let δLin : (B ⊗[R] B) →ₗ[B] (B ⊗[R] (B ⊗[R] B)) :=
+    e₃.toLinearMap.comp (C.δ.app N).hom
+  let aLin : (B ⊗[R] B) →ₗ[B] (B ⊗[R] (B ⊗[R] B)) :=
+    e₃.toLinearMap.comp (((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a).hom)
+  have hCounit : εLin = (diagonal R B).toLinearMap := by
+    apply TensorProduct.AlgebraTensorModule.ext
+    intro x y
+    rfl
+  have hComult : δLin = (pull13 R B).toLinearMap := by
+    apply TensorProduct.AlgebraTensorModule.ext
+    intro x y
+    change e₃ ((extendScalars f).map
+      ((extendRestrictScalarsAdj f).unit.app ((restrictScalars f).obj N))
+      (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = pull13 R B (x ⊗ₜ[R] y)
+    rw [ExtendScalars.map_tmul, extendRestrictScalarsAdj_unit_app_apply, pull13_tmul] <;> rfl
+  have hMap : aLin = tensorCoaction R B u := by
+    apply TensorProduct.AlgebraTensorModule.ext
+    intro x y
+    change e₃ ((extendScalars f).map ((restrictScalars f).map a)
+      (x ⊗ₜ[R,f] (show (restrictScalars f).obj N from y))) = tensorCoaction R B u (x ⊗ₜ[R] y)
+    rw [ExtendScalars.map_tmul] <;> rfl
   refine { A := N, a := a, counit := ?_, coassoc := ?_ }
   · apply ModuleCat.hom_ext
     apply LinearMap.ext
     intro b
     simp only [ModuleCat.hom_comp, ModuleCat.hom_id, LinearMap.comp_apply, LinearMap.id_apply]
-    change (C.ε.app N).hom (twistedCoaction R B u b) = b
+    change εLin (twistedCoaction R B u b) = b
     rw [hCounit]
     exact twistedCoaction_counit R B u hε b
   · apply ModuleCat.hom_ext
@@ -92,11 +92,11 @@ def coalgebraOfUnitCocycle (f : R →+* B)
     intro b
     apply e₃.injective
     simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
-    change e₃ ((C.δ.app N).hom (twistedCoaction R B u b)) =
-      e₃ (((C : ModuleCat.{u} B ⥤ ModuleCat.{u} B).map a).hom (twistedCoaction R B u b))
+    change δLin (twistedCoaction R B u b) = aLin (twistedCoaction R B u b)
     rw [hComult, hMap]
     exact (twistedCoaction_coassoc R B u hδ b).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A faithfully flat unit cocycle over a PID is the ratio of the two
 images of an actual unit on the cover. -/
 theorem unit_cocycle_is_coboundary [IsDomain R] [IsPrincipalIdealRing R]
@@ -125,8 +125,14 @@ theorem unit_cocycle_is_coboundary [IsDomain R] [IsPrincipalIdealRing R]
   let v : Bˣ := ⟨e 1, e.symm 1, (mul_comm _ _).trans hInv, hInv⟩
   let i₁ := Units.map (Algebra.TensorProduct.includeLeft : B →ₐ[R] B ⊗[R] B).toMonoidHom
   let i₂ := Units.map (Algebra.TensorProduct.includeRight : B →ₐ[R] B ⊗[R] B).toMonoidHom
-  have compat := ConcreteCategory.congr_hom iso.hom.h
-    ((1 : B) ⊗ₜ[R,f] (1 : R))
+  let N := ModuleCat.of R R
+  let i : (extendScalars f).obj N ⟶ ModuleCat.of B B := iso.hom.f
+  let t : (extendScalars f).obj N := (1 : B) ⊗ₜ[R,f] (show N from (1 : R))
+  have compat := ConcreteCategory.congr_hom iso.hom.h t
+  change (extendScalars f).map ((restrictScalars f).map i)
+      ((1 : B) ⊗ₜ[R,f] (show (restrictScalars f).obj ((extendScalars f).obj N) from t)) =
+    twistedCoaction R B u (i t) at compat
+  rw [ExtendScalars.map_tmul] at compat
   change (1 : B) ⊗ₜ[R] (v : B) = twistedCoaction R B u (v : B) at compat
   rw [twistedCoaction_apply] at compat
   have hu : i₁ v * u = i₂ v := Units.ext compat.symm

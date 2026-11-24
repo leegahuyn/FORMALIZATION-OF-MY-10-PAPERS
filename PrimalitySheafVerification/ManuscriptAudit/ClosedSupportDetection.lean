@@ -34,7 +34,7 @@ private instance : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
 
 /-- The support detected by nonzero stalks. -/
 def stalkSupport {X : TopCat.{0}} (F : AbelianSheaf X) : Set X :=
-  {x | Nontrivial (TopCat.Presheaf.stalk F.obj x)}
+  {x | Nontrivial (TopCat.Presheaf.stalk (C := G) (X := X) F.obj x)}
 
 private def topIsTerminal (X : TopCat.{0}) : IsTerminal (⊤ : Opens X) :=
   IsTerminal.ofUniqueHom (fun _ => homOfLE le_top) (fun _ _ => Subsingleton.elim _ _)
@@ -58,9 +58,9 @@ theorem closed_nonempty_has_degree_zero_witness (X : TopCat.{0}) {P : Set X}
     have hsp : ¬ Specializes p x := fun h => hxP (h.mem_closed hP hp)
     let e := skyscraperPresheafStalkOfNotSpecializes p (AddCommGrpCat.of (ZMod 2)) hsp
     letI : Subsingleton (terminal G) := terminalGroup_subsingleton
-    letI : Subsingleton (TopCat.Presheaf.stalk F.obj x) :=
+    letI : Subsingleton (TopCat.Presheaf.stalk (C := G) (X := X) F.obj x) :=
       e.addCommGroupIsoToAddEquiv.injective.subsingleton
-    change Nontrivial (TopCat.Presheaf.stalk F.obj x) at hx
+    change Nontrivial (TopCat.Presheaf.stalk (C := G) (X := X) F.obj x) at hx
     obtain ⟨a, b, hab⟩ := hx
     exact hab (Subsingleton.elim a b)
   · have hSections : F.obj.obj (op (⊤ : Opens X)) = AddCommGrpCat.of (ZMod 2) := by
@@ -103,10 +103,9 @@ theorem detectionIndex_empty (X : TopCat.{0}) : detectionIndex X ∅ = ⊤ := by
       apply (TopCat.Sheaf.isZero_iff_stalkFunctor_obj_isZero
         (show TopCat.Sheaf G X from F)).mpr
       intro x
-      change IsZero (TopCat.Presheaf.stalk F.obj x)
-      have hNot : ¬ Nontrivial (TopCat.Presheaf.stalk F.obj x) := fun h => hs h
-      letI := not_nontrivial_iff_subsingleton.mp hNot
-      exact AddCommGrpCat.isZero_of_subsingleton _
+      change IsZero (TopCat.Presheaf.stalk (C := G) (X := X) F.obj x)
+      have hNot : ¬ Nontrivial (TopCat.Presheaf.stalk (C := G) (X := X) F.obj x) := fun h => hs h
+      exact AddCommGrpCat.isZero_iff_subsingleton.mpr (not_nontrivial_iff_subsingleton.mp hNot)
     letI := Sheaf.subsingleton_H_of_isZero hF n
     obtain ⟨a, b, hab⟩ := hn
     exact hab (Subsingleton.elim a b)

@@ -157,6 +157,7 @@ theorem tent_mass_interior_bounds (μ : Measure ℝ) (ρ : ℝ → ℝ)
   have hWeighted : Integrable (fun t => unitTent t * ρ t) μ := by
     apply hIntegrable.mono' (hTentCont.aestronglyMeasurable.mul hIntegrable.aestronglyMeasurable)
     filter_upwards [] with t
+    change ‖unitTent t * ρ t‖ ≤ ρ t
     rw [Real.norm_eq_abs, abs_of_nonneg (mul_nonneg (hTentNonneg t) (hρ t))]
     exact (mul_le_mul_of_nonneg_right (hTent_le_one t) (hρ t)).trans_eq (one_mul _)
   constructor
@@ -165,19 +166,25 @@ theorem tent_mass_interior_bounds (μ : Measure ℝ) (ρ : ℝ → ℝ)
       _ = ∫ t, I.indicator (fun z => δ * ρ z) t ∂μ := by
         rw [integral_indicator hI, integral_const_mul]
       _ ≤ _ := by
-        apply integral_mono_of_nonneg _ hWeighted
-        · filter_upwards [] with t
+        have hLowNonneg : 0 ≤ᵐ[μ] I.indicator (fun t => δ * ρ t) := by
+          filter_upwards [] with t
+          change 0 ≤ I.indicator (fun z => δ * ρ z) t
           by_cases ht : t ∈ I
-          · simpa only [Set.indicator_of_mem ht] using mul_nonneg hδ (hρ t)
+          · rw [Set.indicator_of_mem ht]
+            exact mul_nonneg hδ (hρ t)
           · simp [Set.indicator_of_notMem ht]
-        · filter_upwards [] with t
+        have hLowLe : I.indicator (fun t => δ * ρ t) ≤ᵐ[μ] fun t => unitTent t * ρ t := by
+          filter_upwards [] with t
+          change I.indicator (fun z => δ * ρ z) t ≤ unitTent t * ρ t
           by_cases ht : t ∈ I
           · have hAbs : |t| ≤ 1 - δ := abs_le.mpr ht
-            have hMargin : δ ≤ unitTent t := by
-              exact (by linarith : δ ≤ 1 - |t|).trans (le_max_right _ _)
-            simpa only [Set.indicator_of_mem ht] using
-              mul_le_mul_of_nonneg_right hMargin (hρ t)
-          · simpa only [Set.indicator_of_notMem ht] using mul_nonneg (hTentNonneg t) (hρ t)
+            have hMargin : δ ≤ unitTent t :=
+              (by linarith : δ ≤ 1 - |t|).trans (le_max_right _ _)
+            rw [Set.indicator_of_mem ht]
+            exact mul_le_mul_of_nonneg_right hMargin (hρ t)
+          · rw [Set.indicator_of_notMem ht]
+            exact mul_nonneg (hTentNonneg t) (hρ t)
+        exact integral_mono_of_nonneg hLowNonneg hWeighted hLowLe
   · change _ ≤ (∫ t in I, ρ t ∂μ) + δ * (∫ t, ρ t ∂μ)
     have hUpper := integral_mono hWeighted ((hIntegrable.indicator hI).add (hIntegrable.const_mul δ))
       (fun t => show unitTent t * ρ t ≤ I.indicator ρ t + δ * ρ t from by
@@ -191,6 +198,7 @@ theorem tent_mass_interior_bounds (μ : Measure ℝ) (ρ : ℝ → ℝ)
           have hMargin : unitTent t ≤ δ := max_le hδ (by linarith)
           rw [Set.indicator_of_notMem ht, zero_add]
           exact mul_le_mul_of_nonneg_right hMargin (hρ t))
+    simp only [Pi.add_apply] at hUpper
     rw [integral_add (hIntegrable.indicator hI) (hIntegrable.const_mul δ),
       integral_indicator hI, integral_const_mul] at hUpper
     exact hUpper

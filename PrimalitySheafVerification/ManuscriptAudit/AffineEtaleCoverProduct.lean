@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Morphisms.Etale
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 

@@ -98,7 +98,7 @@ theorem charpolyRev_eval_det (A : Matrix ι ι ℂ) (z : ℂ) :
   ext i j
   by_cases hij : i = j <;>
     simp [Matrix.one_apply, Matrix.map_apply, Matrix.sub_apply, Matrix.smul_apply,
-      hij, smul_eq_mul]
+      hij, smul_eq_mul] <;> exact mul_comm _ _
 
 /-- Each actual determinant zero is exactly the inverse of a nonzero
 root of the characteristic polynomial. -/
