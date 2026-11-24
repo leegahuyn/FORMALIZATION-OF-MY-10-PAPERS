@@ -8,11 +8,11 @@ Spt5.lean	1–8071	Full file reviewed. Exact benchmark Tjurina proofs and compar
 Spt6.lean	1–8651	Full file reviewed. Actual categorical Tor calculation and conditional detector models
 Spt7.lean	1–18114	Full file reviewed. Local radius bounds, exact Tor for nonzero moduli, and global comparison hypotheses
 Mock1.lean	1–9831	Full file reviewed. Finite Mahler interpolation and synthetic extraction blocks
-Mock1_Advanced.lean	1–80981	Reference model, paper-data refutations and analytic proof-input interfaces inspected
+Mock1_Advanced.lean	1–90615	Full file reviewed. Finite paper-data refutations, repeated reference certificates, genuine analytic inputs, and audit commands
 Mock2.lean	1–26607	Full file reviewed. Exact quotient and cusp refutations and actual categorical prime-power Tor
 Mock2_Advanced.lean	1–31919	Full file reviewed. Cusp and kernel counterexamples, positive model results, and analytic hypotheses
-Mock2_FunctionalAnalysis.lean	1–42950	Literal Petersson integral, inverse-eta operators, six-tile Stokes and closed graph cutoffs inspected
+Mock2_FunctionalAnalysis.lean	1–63138	Full file reviewed. Corrected inverse-eta operators, Stokes, Rellich, Fredholm and first-order strong adjoints
 Mock2_FunctionalAnalysis_Integrated.lean	1–13	Import bridge
-QYM.lean	1–25000, 42001–43070	Twisted algebra, bounded perturbation and abstract spectral results. At later range, concrete fractional graph and cusp geometry inspected
+QYM.lean	1–62604	Full file reviewed. Literal counterexamples, quotient geometry, abstract operator theory, and continuum Hamiltonian requirements
 Mock3.lean	1–12	Import bridge
 Verification.lean	1–197	Focused arithmetic file reviewed for scope and trust dependencies

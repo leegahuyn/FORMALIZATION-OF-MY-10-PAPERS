@@ -1,0 +1,43 @@
+name: Manuscript claim proofs
+on:
+  push:
+    branches: [codex/overleaf-bundle-formalization]
+    paths:
+      - '.github/workflows/manuscript-proofs.yml'
+      - 'PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean'
+permissions:
+  contents: read
+concurrency:
+  group: manuscript-proofs-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  proofs:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up pinned Lean and Mathlib cache
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: true
+      - name: Check claim statements and transitive axiom dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean \
+            2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs.log"
+      - name: Preserve the Lean output on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-proofs-${{ github.sha }}
+          path: ${{ runner.temp }}/manuscript-proofs.log
+          if-no-files-found: warn
+          retention-days: 30
