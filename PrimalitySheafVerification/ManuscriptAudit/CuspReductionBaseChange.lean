@@ -69,16 +69,36 @@ def flatConstantReductionAlg :
 def baseChangedOriginIdeal : Ideal (T ⊗[CuspSubalgebra K] cuspSquareQuotient K) :=
   Ideal.span {(1 : T) ⊗ₜ[CuspSubalgebra K] reductionAlg K (X : Polynomial K)}
 
+instance baseChangedOriginIdeal_isTwoSided : (baseChangedOriginIdeal K T).IsTwoSided := by
+  constructor
+  intro z t hz
+  rw [mul_comm]
+  exact (baseChangedOriginIdeal K T).mul_mem_left t hz
+
 /-- The base-changed origin ideal is square zero. -/
 theorem baseChangedOriginIdeal_square : (baseChangedOriginIdeal K T) ^ 2 = ⊥ := by
-  rw [baseChangedOriginIdeal, Ideal.span_singleton_pow, Ideal.span_singleton_eq_bot, pow_two,
-    Algebra.TensorProduct.tmul_mul_tmul, one_mul, ← pow_two, reduction_X_square,
-    TensorProduct.tmul_zero]
+  let o : T ⊗[CuspSubalgebra K] cuspSquareQuotient K :=
+    (1 : T) ⊗ₜ[CuspSubalgebra K] reductionAlg K (X : Polynomial K)
+  letI : (Ideal.span {o}).IsTwoSided := baseChangedOriginIdeal_isTwoSided K T
+  have h : o ^ 2 = 0 := by
+    dsimp only [o]
+    rw [pow_two, Algebra.TensorProduct.tmul_mul_tmul, one_mul, ← pow_two, reduction_X_square,
+      TensorProduct.tmul_zero]
+  change (Ideal.span {o}) ^ 2 = ⊥
+  exact (Ideal.span_singleton_pow o 2).trans (Ideal.span_singleton_eq_bot.mpr h)
 
+set_option maxHeartbeats 1200000 in
+private abbrev reductionModOrigin :
+    T ⊗[CuspSubalgebra K] cuspSquareQuotient K →ₐ[T]
+      (T ⊗[CuspSubalgebra K] cuspSquareQuotient K) ⧸ baseChangedOriginIdeal K T :=
+  Ideal.Quotient.mkₐ T (baseChangedOriginIdeal K T)
+
+set_option maxHeartbeats 1200000 in
+set_option backward.isDefEq.respectTransparency false in
 /-- The two reductions after base change agree modulo the same square-zero ideal. -/
 theorem flatReduction_equal_mod_origin :
-    (Ideal.Quotient.mkₐ T (baseChangedOriginIdeal K T)).comp (flatReductionAlg K T) =
-      (Ideal.Quotient.mkₐ T (baseChangedOriginIdeal K T)).comp (flatConstantReductionAlg K T) := by
+    (reductionModOrigin K T).comp (flatReductionAlg K T) =
+      (reductionModOrigin K T).comp (flatConstantReductionAlg K T) := by
   apply AlgHom.ext
   intro z
   induction z using TensorProduct.induction_on with
@@ -99,7 +119,7 @@ theorem flatReduction_equal_mod_origin :
           (t ⊗ₜ[CuspSubalgebra K] reductionAlg K q) := by
       rw [Algebra.TensorProduct.tmul_mul_tmul, one_mul]
     rw [ht]
-    exact (baseChangedOriginIdeal K T).mul_mem_right _ (Ideal.subset_span (Set.mem_singleton _))
+    exact Ideal.mul_mem_right _ (baseChangedOriginIdeal K T) (Ideal.subset_span (Set.mem_singleton _))
   | add x y hx hy => simp only [map_add, hx, hy]
 
 end

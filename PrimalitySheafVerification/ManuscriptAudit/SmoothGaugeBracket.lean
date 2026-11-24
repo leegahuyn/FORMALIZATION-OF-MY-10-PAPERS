@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Tactic.FinCases

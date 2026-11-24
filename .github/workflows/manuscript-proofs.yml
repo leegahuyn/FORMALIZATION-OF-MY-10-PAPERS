@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian ThetaInfinityCusp LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation TwoOpenDerivedComparison CyclicInclusionCokernel PrincipalOpenSectionLoss UnitCocycleTensor FaithfullyFlatCoalgebra MahlerTail MahlerContinuity AffineUnitDescent FixedCoverCechCounterexample FixedCoverGlobalDerived ClosedSupportDetection ExactSupportDetection AffineEtaleCoverProduct AffineEtaleLiftingCover AffineEtaleProductGluing AffineEtaleTensorOverlap SheafH1Descent SheafSectionDifference AddCommGrpImageFactorization SheafCoboundaryLift AffineEtaleUnitCocycle AffineEtaleProductDescent AffineEtaleCuspHOne OriginMonomialLength OriginTjurinaInfiniteLength PrincipalOpenFiniteProfiles UnramifiedEqualizerSections CuspReductionBaseChange CuspUnramifiedNormalization CuspFlatNormalization CuspFlatUnramifiedSections SheafFreeAbelianLimits CuspNormalizationHom MaassPrintedFactorization SmallEtaleCohomologyComparison SmallEtaleCuspHOne CuspFrobenius SmoothGaugeBracket
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian ThetaInfinityCusp LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation TwoOpenDerivedComparison CyclicInclusionCokernel PrincipalOpenSectionLoss UnitCocycleTensor FaithfullyFlatCoalgebra MahlerTail MahlerContinuity AffineUnitDescent FixedCoverCechCounterexample FixedCoverGlobalDerived ClosedSupportDetection ExactSupportDetection AffineEtaleCoverProduct AffineEtaleLiftingCover AffineEtaleProductGluing AffineEtaleTensorOverlap SheafH1Descent SheafSectionDifference AddCommGrpImageFactorization SheafCoboundaryLift AffineEtaleUnitCocycle AffineEtaleProductDescent AffineEtaleCuspHOne OriginMonomialLength OriginTjurinaInfiniteLength PrincipalOpenFiniteProfiles UnramifiedEqualizerSections CuspReductionBaseChange CuspUnramifiedNormalization CuspFlatNormalization CuspFlatUnramifiedSections SheafFreeAbelianLimits CuspNormalizationHom MaassPrintedFactorization SmallEtaleCohomologyComparison SmallEtaleCuspHOne CuspFrobenius SmoothGaugeBracket AffineAbsoluteFrobenius
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
           for proof in "${proofs[@]}"; do
             awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
@@ -69,13 +69,13 @@ jobs:
         with:
           path: .lake
           key: ${{ steps.compiled.outputs.cache-primary-key }}
-      - name: Build the original project module needed by the proofs
+      - name: Build the original project modules needed by the proofs
         shell: bash
         run: |
           set -euo pipefail
           log="${RUNNER_TEMP}/manuscript-proof-project-imports.log"
           status=0
-          lake build PrimalitySheafVerification.Spt5 > "$log" 2>&1 || status=$?
+          lake build PrimalitySheafVerification.Spt2 PrimalitySheafVerification.Spt5 > "$log" 2>&1 || status=$?
           tail -n 60 "$log"
           exit "$status"
       - name: Check the proofs and their transitive axioms
@@ -89,7 +89,7 @@ jobs:
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspPlaneSmoothness CuspCotangent PadicLogNonzero FiniteFieldPointCount CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
             missing=0
