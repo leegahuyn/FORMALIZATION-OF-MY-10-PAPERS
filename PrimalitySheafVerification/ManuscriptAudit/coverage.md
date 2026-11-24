@@ -10,12 +10,12 @@ Three reading passes covered the readable text of physical PDF pages 1–507. Ex
 | 4. Primality Sheaves and the Étale–Motivic–Derived Package | 92–145 | Spt4 |
 | 5. Principal-Open Methods on Arithmetic Curves | 146–183 | Spt5 |
 | 6. Equalizer–Tor, Gate Synchronization, and Étale–Motivic Detectors | 184–226 | Spt6 |
-| 7. Geometric Reformulation of the Riemann Hypothesis | 227–298 | Spt7 |
+| 7. Geometric Reformulation of the Riemann Hypothesis | 227–297 | Spt7 |
 | 8. Entropy–Growth and Sheaf Stability for Mock/Partial Theta and Jacobi Objects | 299–397 | Mock1, Mock1_Advanced |
 | 9. Global Poincaré Matching and Kloosterman-Compatible Test Kernels | 398–458 | Mock2, Mock2_Advanced, Mock2_FunctionalAnalysis |
 | 10. Modular q–Yang–Mills on Γ(2)∖ℍ | 459–507 | QYM, Mock3 |
 
-[Numbered-label candidates](numbered-label-candidates.tsv) records 476 extraction hits. The index can include repeated labels or cross-references and miss irregularly typeset labels. Full claim-to-declaration mapping, including unnumbered claims, is in progress.
+[Numbered-label candidates](numbered-label-candidates.tsv) records 476 extraction hits. The index can include repeated labels or cross-references and miss irregularly typeset labels. The page-based inventories for [Papers 1–3](inventory/papers-01-03.md), [Papers 4–7](inventory/papers-04-07.md), and [Papers 8–10](inventory/papers-08-10.md) record 317 groups, including substantive unnumbered claims. Pages 1–4 and 298 are preliminary material. Clause-level links to matching proofs and counterexamples are in progress.
 
 The [source-reading record](source-review.tsv) covers all 352,973 top-level Lean lines at the pinned commit, including all thirteen primary modules. Review compared the substantive declarations and proof routes and inspected repetitive projections and audit commands as source. Claim-level comparison is in progress. A Lean build checks declarations as stated. Assessing faithfulness requires comparing their definitions, quantifiers, and hypotheses with the manuscripts.
 

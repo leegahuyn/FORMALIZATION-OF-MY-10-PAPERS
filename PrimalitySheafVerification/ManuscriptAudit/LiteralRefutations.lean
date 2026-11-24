@@ -1,6 +1,10 @@
+import Mathlib.Algebra.Polynomial.Degree.Units
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.NumberTheory.Padics.RingHoms
@@ -32,7 +36,7 @@ theorem paper3_prime_two_misses_numeric_window :
     · subst A
       have hdiv : (1 : ℝ) / q < 1 :=
         (div_lt_iff₀ hqPos).mpr (by linarith)
-      convert hdiv using 1 <;> norm_num
+      simpa [show |(2 : ℝ) - 1| = 1 by norm_num] using hdiv
     · have hA2 : (2 : ℝ) ≤ (A : ℝ) := by
         exact_mod_cast (show (2 : ℤ) ≤ A by omega)
       have hPow : (A : ℝ) ^ 2 ≤ (A : ℝ) ^ q :=
@@ -366,7 +370,7 @@ theorem support_of_ideal_with_nonzero_element
 /-- Papers 1 and 6. Coprime moduli 2 and 3 give a nonzero equalizer ideal
 with full support, whereas the closed set V(gcd(2,3)) is empty. -/
 theorem paper1_coprime_kernel_support_ne_gcd_support :
-    Module.support ℤ (Ideal.span {(2 : ℤ)} ⊓ Ideal.span {(3 : ℤ)}) ≠
+    Module.support ℤ ↥(Ideal.span {(2 : ℤ)} ⊓ Ideal.span {(3 : ℤ)} : Ideal ℤ) ≠
       PrimeSpectrum.zeroLocus ({(Nat.gcd 2 3 : ℤ)} : Set ℤ) := by
   have hSix : (6 : ℤ) ∈ Ideal.span {(2 : ℤ)} ⊓ Ideal.span {(3 : ℤ)} := by
     change 6 ∈ Ideal.span {(2 : ℤ)} ∧ 6 ∈ Ideal.span {(3 : ℤ)}
@@ -386,7 +390,7 @@ theorem paper1_coprime_kernel_support_ne_gcd_support :
 /-- Paper 1, p. 17. In the case M=p=3 and k=1, the Tor term is Z/3.
 It cannot inject additively into the printed integral intersection ideal. -/
 theorem paper1_no_additive_injection_to_integral_intersection
-    (f : ZMod 3 →+ (Ideal.span {(3 : ℤ)} ⊓ Ideal.span {(3 : ℤ)})) :
+    (f : ZMod 3 →+ ↥(Ideal.span {(3 : ℤ)} ⊓ Ideal.span {(3 : ℤ)} : Ideal ℤ)) :
     ¬ Function.Injective f := by
   intro hf
   have hZero : 3 • (1 : ZMod 3) = 0 := by decide
@@ -419,6 +423,75 @@ theorem localized_intersection_ne_printed_minimum :
   rw [Localization.AtPrime.map_eq_maximalIdeal]
   exact (IsLocalRing.maximalIdeal.isMaximal ZAtThree).ne_top
 
+/-- Paper 1, p. 10, Proposition 2.5. At p=3, n=t=1 and σ=2,
+the required choice y≡±1 modulo 3 conflicts with y≡0 modulo 3. -/
+theorem paper1_optional_congruence_requires_compatibility :
+    ¬ ∃ y : ℤ, (((y : ZMod 3) = 1) ∨ ((y : ZMod 3) = -1)) ∧
+      (y : ZMod 3) = 0 := by
+  rintro ⟨y, hy, hZero⟩
+  rw [hZero] at hy
+  exact (by decide : ¬ ((0 : ZMod 3) = 1 ∨ (0 : ZMod 3) = -1)) hy
+
+open Polynomial in
+private def residuePolynomial3 : Polynomial (ZMod 3) := X ^ 2 + C 1
+
+open Polynomial in
+/-- Paper 2, pp. 29–30, Theorem 2.1. This non-squarefree polynomial
+has no residue-field root, hence no common residue-field root with its derivative. -/
+theorem paper2_repeated_geometric_root_without_rational_root :
+    ¬ Squarefree (residuePolynomial3 ^ 2) ∧
+      ¬ ∃ a : ZMod 3, (residuePolynomial3 ^ 2).eval a = 0 ∧
+        (residuePolynomial3 ^ 2).derivative.eval a = 0 := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    have hUnit := h residuePolynomial3 (by simpa only [pow_two] using dvd_refl (residuePolynomial3 ^ 2))
+    have hDegree := Polynomial.natDegree_eq_zero_of_isUnit hUnit
+    rw [residuePolynomial3, Polynomial.natDegree_X_pow_add_C] at hDegree
+    exact (by decide : (2 : ℕ) ≠ 0) hDegree
+  · rintro ⟨a, hRoot, _⟩
+    have hNoRoot : ∀ x : ZMod 3, (x ^ 2 + 1) ^ 2 ≠ 0 := by decide
+    exact hNoRoot a (by simpa [residuePolynomial3] using hRoot)
+
+/-- Paper 3, p. 76, Lemma C. Multiplication by 3 on Z/3 has 1
+in its kernel. The printed formula for the generator gives 0. -/
+theorem paper3_prime_power_printed_generator_misses_kernel :
+    (1 : ZMod 3) ∈ (AddMonoidHom.mulLeft (3 : ZMod 3)).ker ∧
+      ((3 / (3 ^ (1 - 1)) : ℕ) : ZMod 3) = 0 ∧
+      ¬ ∃ z : ℤ, z • (((3 / (3 ^ (1 - 1)) : ℕ) : ZMod 3)) = 1 := by
+  refine ⟨by decide, by decide, ?_⟩
+  rintro ⟨z, hz⟩
+  rw [show ((3 / (3 ^ (1 - 1)) : ℕ) : ZMod 3) = 0 by decide, smul_zero] at hz
+  exact (by decide : (0 : ZMod 3) ≠ 1) hz
+
+/-- Paper 4, p. 107, Lemma 3.13. The free abelian group on the terminal
+set is nontrivial. Free abelianization does not preserve the empty limit. -/
+theorem paper4_free_abelianization_fails_terminal_object :
+    ¬ Subsingleton (FreeAbelianGroup PUnit) := by
+  intro h
+  exact FreeAbelianGroup.of_ne_zero PUnit.unit (h.elim _ 0)
+
+/-- Paper 7, pp. 253–255. The rank-one Koszul differential given by
+multiplication by 3 is injective over ℤ localized at (3). Its base change
+to the actual residue field has nonzero kernel because 3 maps to zero. -/
+theorem paper7_rank_one_koszul_injectivity_fails_after_reduction :
+    Function.Injective (fun x : ZAtThree => (3 : ZAtThree) * x) ∧
+      ¬ Function.Injective (fun x : IsLocalRing.ResidueField ZAtThree =>
+        IsLocalRing.residue ZAtThree 3 * x) := by
+  have hThree : (3 : ZAtThree) ≠ 0 := by
+    have hMap : Function.Injective (algebraMap ℤ ZAtThree) :=
+      (faithfulSMul_iff_algebraMap_injective ℤ ZAtThree).mp inferInstance
+    simpa only [map_ofNat, map_zero] using hMap.ne (by decide : (3 : ℤ) ≠ 0)
+  have hMax : (3 : ZAtThree) ∈ IsLocalRing.maximalIdeal ZAtThree := by
+    rw [← Localization.AtPrime.map_eq_maximalIdeal, ← map_ofNat (algebraMap ℤ ZAtThree) 3]
+    exact Ideal.mem_map_of_mem _ (Ideal.subset_span (by simp))
+  have hRes : IsLocalRing.residue ZAtThree 3 = 0 :=
+    Ideal.Quotient.eq_zero_iff_mem.mpr hMax
+  letI : IsDomain ZAtThree := IsLocalization.isDomain_of_local_atPrime inferInstance
+  refine ⟨fun _ _ h => mul_left_cancel₀ hThree h, ?_⟩
+  intro hInj
+  have hEq : (0 : IsLocalRing.ResidueField ZAtThree) = 1 := hInj (by simp [hRes])
+  exact zero_ne_one hEq
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -441,7 +514,12 @@ run_cmd do
     ``ManuscriptAudit.support_of_ideal_with_nonzero_element,
     ``ManuscriptAudit.paper1_coprime_kernel_support_ne_gcd_support,
     ``ManuscriptAudit.paper1_no_additive_injection_to_integral_intersection,
-    ``ManuscriptAudit.localized_intersection_ne_printed_minimum] do
+    ``ManuscriptAudit.localized_intersection_ne_printed_minimum,
+    ``ManuscriptAudit.paper1_optional_congruence_requires_compatibility,
+    ``ManuscriptAudit.paper2_repeated_geometric_root_without_rational_root,
+    ``ManuscriptAudit.paper3_prime_power_printed_generator_misses_kernel,
+    ``ManuscriptAudit.paper4_free_abelianization_fails_terminal_object,
+    ``ManuscriptAudit.paper7_rank_one_koszul_injectivity_fails_after_reduction] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
