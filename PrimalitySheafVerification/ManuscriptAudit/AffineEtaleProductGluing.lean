@@ -52,7 +52,7 @@ private theorem sections_subsingleton_of_empty
     (I : Sheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u})
     (W : X.AffineEtale) [IsEmpty ((underlying X).obj W)] :
     Subsingleton (I.obj.obj (op W)) := by
-  let V : PEmpty → X.AffineEtale := PEmpty.elim
+  let V : PEmpty.{u + 1} → X.AffineEtale := PEmpty.elim
   let f : ∀ i, V i ⟶ W := fun i => PEmpty.elim i
   have hCov := cover_of_jointly_surjective V f (fun x => isEmptyElim x)
   let P := I.obj ⋙ forget AddCommGrpCat.{u}

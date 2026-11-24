@@ -1,3 +1,4 @@
+import PrimalitySheafVerification.ManuscriptAudit.ResidueCompatibility
 import Lean.Elab.Tactic.Omega
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Nth
@@ -192,6 +193,20 @@ theorem paper1_power_modulus_exact_design {p b u : ℤ} {n t σ : ℕ}
   refine ⟨p ^ (σ - n) - p ^ (t - n) * u, ?_⟩
   rw [hb, mul_sub, hσ', ← mul_assoc, ht', sub_add_cancel]
 
+/-- The genuine prime-power design meets an extra prescribed congruence
+exactly when the reduced residue class and the new class are compatible. -/
+theorem paper1_power_modulus_extra_congruence_iff
+    {p b u N y₀ : ℤ} (hp : p ≠ 0) {n t σ : ℕ}
+    (ht : n ≤ t) (hσ : n ≤ σ) (hb : b = p ^ t * u) :
+    (∃ y : ℤ, p ^ σ ∣ p ^ n * y + b ∧ N ∣ y - y₀) ↔
+      -(p ^ (t - n) * u) - y₀ ∈
+        Ideal.span ({p ^ (σ - n)} : Set ℤ) ⊔ Ideal.span ({N} : Set ℤ) := by
+  simpa only [Ideal.mem_span_singleton, sub_neg_eq_add,
+    paper1_power_modulus_congruence hp ht hσ hb] using
+      (_root_.ManuscriptAudit.idealResidues_compatible_iff
+        (Ideal.span ({p ^ (σ - n)} : Set ℤ)) (Ideal.span ({N} : Set ℤ))
+        (-(p ^ (t - n) * u)) y₀)
+
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
@@ -200,7 +215,7 @@ run_cmd do
       ``paper1_indexed_prime_design_congruence_fails,
       ``paper1_indexed_prime_design_actual_congruence,
       ``paper1_power_modulus_congruence, ``paper1_power_modulus_low_branch,
-      ``paper1_power_modulus_exact_design] do
+      ``paper1_power_modulus_exact_design, ``paper1_power_modulus_extra_congruence_iff] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

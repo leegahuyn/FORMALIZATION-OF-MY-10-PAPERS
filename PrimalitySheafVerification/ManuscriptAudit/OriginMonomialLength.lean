@@ -21,6 +21,7 @@ are the coefficients in the rectangle below the two defining powers.
 namespace ManuscriptAudit.OriginMonomialLength
 
 open MvPolynomial
+open scoped Classical
 
 noncomputable section
 
@@ -76,7 +77,7 @@ private theorem boxExponent_injective (m n : ℕ) :
   · exact Fin.ext (by simpa only [boxExponent_one] using congrArg (fun d : Fin 2 →₀ ℕ => d 1) h)
 
 private def boxLinear (m n : ℕ) : R K →ₗ[K] ((Fin m × Fin n) → K) :=
-  LinearMap.pi fun i => lcoeff (boxExponent i)
+  LinearMap.pi fun i => lcoeff K (boxExponent i)
 
 @[simp] private theorem boxLinear_apply (m n : ℕ) (f : R K) (i : Fin m × Fin n) :
     boxLinear K m n f i = coeff (boxExponent i) f := rfl
@@ -142,7 +143,7 @@ private theorem originIdeal_le_radical_box (m n : ℕ) :
       exact hf
     have h : ∃ i, d i ≠ 0 := by
       by_contra hn
-      push_neg at hn
+      push Not at hn
       apply hd0
       ext i
       simpa using hn i
@@ -152,8 +153,8 @@ private theorem originIdeal_le_radical_box (m n : ℕ) :
   refine Ideal.span_le.mpr ?_
   rintro _ ⟨i, rfl⟩
   fin_cases i
-  · exact ⟨m, Ideal.subset_span (by simp [boxIdeal])⟩
-  · exact ⟨n, Ideal.subset_span (by simp [boxIdeal])⟩
+  · exact ⟨m, Ideal.subset_span (by simp)⟩
+  · exact ⟨n, Ideal.subset_span (by simp)⟩
 
 private theorem box_denominator_isUnit (m n : ℕ) (s : (originIdeal K).primeCompl) :
     IsUnit (Ideal.Quotient.mk (boxIdeal K m n) (s : R K)) := by
@@ -183,6 +184,10 @@ def boxLocalEquiv (m n : ℕ) :
     rintro _ ⟨s, hs, rfl⟩
     exact box_denominator_isUnit K m n ⟨s, hs⟩
   letI : IsLocalization S L := inferInstance
+  letI : IsScalarTower K Q L := IsScalarTower.of_algebraMap_eq fun k => by
+    change Ideal.Quotient.mk _ (algebraMap K (OriginRing K) k) =
+      Ideal.Quotient.mk _ (algebraMap (R K) (OriginRing K) (algebraMap K (R K) k))
+    rw [IsScalarTower.algebraMap_apply K (R K) (OriginRing K)]
   exact (IsLocalization.atUnits Q S hS (S := L)).restrictScalars K
 
 /-- The true origin-local quotient by coordinate powers has the rectangle's length. -/
@@ -238,10 +243,10 @@ theorem benchmarkJacobian_eq_box (a b : ℕ) (h : (a : K) ≠ 0 ∨ (b : K) ≠ 
   let J := boxIdeal K m n
   have hf : benchmark K a b ∈ I := Ideal.subset_span (by simp)
   have hdx : C (a : K) * X 0 ^ (a - 1) ∈ I := by
-    rw [← pderiv_zero_benchmark]
+    rw [← pderiv_zero_benchmark K a b]
     exact Ideal.subset_span (by simp)
   have hdy : C (b : K) * X 1 ^ (b - 1) ∈ I := by
-    rw [← pderiv_one_benchmark]
+    rw [← pderiv_one_benchmark K a b]
     exact Ideal.subset_span (by simp)
   have hx : (a : K) ≠ 0 → X 0 ^ (a - 1) ∈ I :=
     fun ha => mem_ideal_of_nonzero_coefficient K I (a : K) ha _ hdx

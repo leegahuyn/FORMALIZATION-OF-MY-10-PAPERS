@@ -95,8 +95,11 @@ theorem affineUnitH1_subsingleton :
         rfl
       rw [hm]
       have hw := (f k).w
-      change Spec.map (a k) ≫ 𝟙 (X R) = (V k).hom ≫ 𝟙 (X R) at hw
-      simpa only [Category.comp_id] using hw
+      first
+      | change Spec.map (a k) ≫ 𝟙 (X R) = (V k).hom at hw
+        simpa only [Category.comp_id] using hw
+      | change Spec.map (a k) ≫ 𝟙 (X R) = (V k).hom ≫ 𝟙 (X R) at hw
+        simpa only [Category.comp_id] using hw
     let e : Vc ≅ V k := MorphismProperty.CostructuredArrow.isoMk
       (Iso.refl (V k).left) trivial trivial (by
         change Scheme.Spec.map (𝟙 ((V k).left)) ≫ (V k).hom = Vc.hom

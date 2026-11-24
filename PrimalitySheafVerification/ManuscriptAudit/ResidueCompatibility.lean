@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Exact.Basic
+import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Tactic.Abel
 
@@ -69,14 +70,71 @@ theorem corrected_ideal_residue_sequence (I J : Ideal R) :
     refine ⟨(Ideal.Quotient.mk I r, Ideal.Quotient.mk J 0), ?_⟩
     rw [idealResidueDifference_mk, sub_zero]
 
+/-- Two prescribed residues have a common integer or ring representative
+exactly when their difference is in the sum ideal. -/
+theorem idealResidues_compatible_iff (I J : Ideal R) (x y : R) :
+    (∃ z : R, z - x ∈ I ∧ z - y ∈ J) ↔ x - y ∈ I ⊔ J := by
+  constructor
+  · rintro ⟨z, hx, hy⟩
+    have heq : -(z - x) + (z - y) = x - y := by abel
+    exact Submodule.mem_sup.mpr ⟨_, I.neg_mem hx, _, hy, heq⟩
+  · intro h
+    obtain ⟨i, hi, j, hj, hij⟩ := Submodule.mem_sup.mp h
+    refine ⟨x - i, ?_, ?_⟩
+    · rw [show x - i - x = -i by abel]
+      exact I.neg_mem hi
+    · have heq : x - i - y = j := calc
+        x - i - y = (x - y) - i := by abel
+        _ = j := by rw [← hij]; abel
+      rw [heq]
+      exact hj
+
+/-- A common-fiber residue detects equality in both individual residue rings
+for every pair exactly when the ideals defining the two rings agree. -/
+theorem commonResidue_detects_both_iff (I J : Ideal R) :
+    (∀ x y : R, Ideal.Quotient.mk (I ⊔ J) x = Ideal.Quotient.mk (I ⊔ J) y →
+      Ideal.Quotient.mk I x = Ideal.Quotient.mk I y ∧
+      Ideal.Quotient.mk J x = Ideal.Quotient.mk J y) ↔ I = J := by
+  constructor
+  · intro h
+    refine le_antisymm (fun x hx => ?_) (fun x hx => ?_)
+    · have h0 := Ideal.Quotient.eq_zero_iff_mem.mpr
+        (show x ∈ I ⊔ J from le_sup_left hx)
+      have hq : Ideal.Quotient.mk (I ⊔ J) x = Ideal.Quotient.mk (I ⊔ J) 0 :=
+        h0.trans (map_zero _).symm
+      have hh := (h x 0 hq).2
+      rw [map_zero] at hh
+      exact Ideal.Quotient.eq_zero_iff_mem.mp hh
+    · have h0 := Ideal.Quotient.eq_zero_iff_mem.mpr
+        (show x ∈ I ⊔ J from le_sup_right hx)
+      have hq : Ideal.Quotient.mk (I ⊔ J) x = Ideal.Quotient.mk (I ⊔ J) 0 :=
+        h0.trans (map_zero _).symm
+      have hh := (h x 0 hq).1
+      rw [map_zero] at hh
+      exact Ideal.Quotient.eq_zero_iff_mem.mp hh
+  · rintro rfl x y h
+    have he : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := by simpa using h
+    exact ⟨he, he⟩
+
+/-- For the moduli 6 and 3², the common residue forgets both
+individual residue equalities for the pair 4³+3 and 4³. -/
+theorem paper1_commonFiber_does_not_detect_double_residue :
+    (4 : ZMod 3) ^ 3 + 3 = 4 ^ 3 ∧
+      (4 : ZMod 6) ^ 3 + 3 ≠ 4 ^ 3 ∧
+      (4 : ZMod 9) ^ 3 + 3 ≠ 4 ^ 3 := by
+  decide
+
 end ManuscriptAudit
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.corrected_ideal_residue_sequence
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.corrected_ideal_residue_sequence,
+      ``ManuscriptAudit.idealResidues_compatible_iff,
+      ``ManuscriptAudit.commonResidue_detects_both_iff,
+      ``ManuscriptAudit.paper1_commonFiber_does_not_detect_double_residue] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
