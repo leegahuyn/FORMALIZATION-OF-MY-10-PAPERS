@@ -78,6 +78,7 @@ theorem flat_exact_from_inclusion {M : Type*} [AddCommGroup M] [Module (A K) M]
     apply (h _).mpr
     refine ⟨t ⊗ₜ[A K] (1 : A K), ?_⟩
     rw [unitTensor_eq_includeBase, TensorProduct.rid_tmul, one_smul]
+    rfl
 
 /-- After flat base change, an element of the normalization comes from the
 cusp algebra precisely when its actual residue obstruction vanishes. -/

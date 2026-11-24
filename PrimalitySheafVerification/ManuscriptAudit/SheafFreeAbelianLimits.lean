@@ -79,7 +79,7 @@ theorem envelopeTerminal_not_terminal {T : C} (hT : IsTerminal T) (F : Sheaf J G
   rintro ⟨h⟩
   let e := envelopeTerminalHomEquiv J hT F
   obtain ⟨s, t, hst⟩ := exists_pair_ne (F.obj.obj (op T))
-  exact hst (e.symm.injective (h.hom_ext (e.symm s) (e.symm t)))
+  exact hst (e.symm.injective (h.isZero.eq_of_src (e.symm s) (e.symm t)))
 
 theorem envelope_not_preservesFiniteLimits {T : C} (hT : IsTerminal T)
     (F : Sheaf J G) (hF : Nontrivial (F.obj.obj (op T))) :
@@ -125,7 +125,6 @@ abbrev principalSite : GrothendieckTopology PrincipalOpen :=
   principalInclusion.inducedTopology zariskiZ
 
 theorem principalInclusion_coverDense : principalInclusion.IsCoverDense zariskiZ := by
-  apply TopCat.Opens.coverDense_inducedFunctor
   have hRange :
       Set.range (Subtype.val : basicOpens → Opens (PrimeSpectrum ℤ)) = basicOpens := by
     ext U
@@ -134,8 +133,10 @@ theorem principalInclusion_coverDense : principalInclusion.IsCoverDense zariskiZ
       exact V.property
     · intro hU
       exact ⟨⟨U, hU⟩, rfl⟩
-  rw [hRange]
-  exact PrimeSpectrum.isBasis_basic_opens
+  exact TopCat.Opens.coverDense_inducedFunctor (X := SpecZ)
+    (B := (Subtype.val : basicOpens → Opens (PrimeSpectrum ℤ))) (by
+      rw [hRange]
+      exact PrimeSpectrum.isBasis_basic_opens)
 
 private def principalTop : PrincipalOpen :=
   (⟨⊤, ⟨1, by simp⟩⟩ : basicOpens)

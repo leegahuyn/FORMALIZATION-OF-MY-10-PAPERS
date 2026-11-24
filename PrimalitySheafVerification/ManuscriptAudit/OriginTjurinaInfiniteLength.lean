@@ -200,40 +200,45 @@ private theorem localX_mem_maximal :
   change constantCoeff (MvPolynomial.X (0 : Fin 2) : Plane p) = 0
   exact MvPolynomial.constantCoeff_X (R := K p) (0 : Fin 2)
 
-/-- The same quotient has infinite length as a module over the actual
-ambient local ring at the origin. -/
-theorem benchmarkTjurina_local_length_eq_top (a b : ℕ) (ha : 0 < a) (hb : 0 < b)
-    (hA : (a : K p) = 0) (hB : (b : K p) = 0) :
-    Module.length (OriginRing (K p)) (Tjurina p a b) = ⊤ := by
-  let Q := Tjurina p a b
-  let q : OriginRing (K p) →+* Q := Ideal.Quotient.mk (localIdeal p a b)
+set_option backward.isDefEq.respectTransparency true in
+private theorem quotient_length_eq_top_of_nonnilpotent {A : Type*} [CommRing A] [IsLocalRing A]
+    (I : Ideal A) [Nontrivial (A ⧸ I)] (t : A) (ht : t ∈ IsLocalRing.maximalIdeal A)
+    (hn : ¬ IsNilpotent (Ideal.Quotient.mk I t)) : Module.length A (A ⧸ I) = ⊤ := by
+  let Q := A ⧸ I
+  let q : A →+* Q := Ideal.Quotient.mk I
   have hq : Function.Surjective q := Ideal.Quotient.mk_surjective
-  letI : Infinite Q := Infinite.of_injective _ (powers_x_injective p a b ha hb hA hB)
   letI : IsLocalRing Q := IsLocalRing.of_surjective' q hq
-  have hx : x p a b ∈ IsLocalRing.maximalIdeal Q := by
-    change q (localX p) ∈ IsLocalRing.maximalIdeal Q
-    have hMap : (IsLocalRing.maximalIdeal (OriginRing (K p))).map q =
-        IsLocalRing.maximalIdeal Q :=
-      IsLocalRing.map_maximalIdeal_of_surjective (R := OriginRing (K p)) (S := Q) q hq
-    exact hMap ▸ Ideal.mem_map_of_mem q (localX_mem_maximal p)
-  have hn : ¬ IsNilpotent (x p a b) := by
-    rintro ⟨n, hn⟩
-    have hs : (x p a b) ^ (n + 1) = 0 := by rw [pow_succ, hn, zero_mul]
-    exact Nat.succ_ne_self n (powers_x_injective p a b ha hb hA hB (hs.trans hn.symm))
+  letI : IsLocalHom q := IsLocalHom.of_surjective q hq
+  have hx : q t ∈ IsLocalRing.maximalIdeal Q :=
+    (IsLocalRing.map_maximalIdeal_le q) (Ideal.mem_map_of_mem q ht)
   calc
     _ = Module.length Q Q :=
-      Module.length_eq_of_surjective (S := OriginRing (K p)) (R := Q) (M := Q)
-        (show Function.Surjective (algebraMap (OriginRing (K p)) Q) from hq)
+      Module.length_eq_of_surjective (S := A) (R := Q) (M := Q)
+        (show Function.Surjective (algebraMap A Q) from hq)
     _ = ⊤ := by
       by_contra hlen
       have hf := Module.length_ne_top_iff.mp hlen
       letI : IsArtinianRing Q := (isFiniteLength_iff_isNoetherian_isArtinian.mp hf).2
       obtain ⟨n, hJ⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := Q)
-      have hj : x p a b ∈ Ideal.jacobson (⊥ : Ideal Q) :=
+      have hj : q t ∈ Ideal.jacobson (⊥ : Ideal Q) :=
         IsLocalRing.maximalIdeal_le_jacobson _ hx
       have hp := Ideal.pow_mem_pow hj n
       rw [hJ, Ideal.zero_eq_bot, Ideal.mem_bot] at hp
       exact hn ⟨n, hp⟩
+
+/-- The same quotient has infinite length as a module over the actual
+ambient local ring at the origin. -/
+theorem benchmarkTjurina_local_length_eq_top (a b : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hA : (a : K p) = 0) (hB : (b : K p) = 0) :
+    Module.length (OriginRing (K p)) (Tjurina p a b) = ⊤ := by
+  letI : Infinite (Tjurina p a b) :=
+    Infinite.of_injective _ (powers_x_injective p a b ha hb hA hB)
+  have hn : ¬ IsNilpotent (x p a b) := by
+    rintro ⟨n, hn⟩
+    have hs : (x p a b) ^ (n + 1) = 0 := by rw [pow_succ, hn, zero_mul]
+    exact Nat.succ_ne_self n (powers_x_injective p a b ha hb hA hB (hs.trans hn.symm))
+  exact quotient_length_eq_top_of_nonnilpotent (localIdeal p a b) (localX p)
+    (localX_mem_maximal p) hn
 
 end
 

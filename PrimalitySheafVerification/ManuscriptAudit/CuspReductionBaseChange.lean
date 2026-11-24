@@ -22,14 +22,12 @@ noncomputable section
 variable (K : Type*) [Field K]
 
 /-- The cusp acts on the square-zero quotient through polynomial reduction. -/
-def squareQuotientAlgebra : Algebra (CuspSubalgebra K) (cuspSquareQuotient K) :=
-  ((cuspSquareReduction K).comp (algebraMap (CuspSubalgebra K) (Polynomial K))).toAlgebra
-
-attribute [local instance] squareQuotientAlgebra
+abbrev squareQuotientAlgebra : Algebra (CuspSubalgebra K) (cuspSquareQuotient K) :=
+  inferInstance
 
 /-- Polynomial reduction as a homomorphism of cusp algebras. -/
 def reductionAlg : Polynomial K →ₐ[CuspSubalgebra K] cuspSquareQuotient K :=
-  { cuspSquareReduction K with commutes' := fun _ => rfl }
+  Ideal.Quotient.mkₐ (CuspSubalgebra K) (Ideal.span {((X : Polynomial K) ^ 2)})
 
 /-- Taking the constant term and then reducing as a cusp-algebra homomorphism. -/
 def constantReductionAlg : Polynomial K →ₐ[CuspSubalgebra K] cuspSquareQuotient K :=
