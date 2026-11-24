@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -61,6 +61,7 @@ jobs:
           tail -n 60 "${RUNNER_TEMP}/manuscript-dependencies.log"
           exit "$status"
       - name: Keep the compiled modules on GitHub
+        continue-on-error: true
         if: steps.compiled.outputs.cache-hit != 'true'
         uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
         with:
@@ -125,6 +126,7 @@ jobs:
           tail -n 60 "$log"
           exit "$status"
       - name: Cache compiled Spt1 on GitHub
+        continue-on-error: true
         if: steps.padic-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
         with:

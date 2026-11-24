@@ -1,0 +1,83 @@
+name: Manuscript project-dependent proof compatibility
+on:
+  push:
+    branches: [codex/overleaf-bundle-formalization]
+    paths:
+      - '.github/workflows/manuscript-project-compatibility.yml'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicRemainder.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/NodalCotangent.lean'
+      - 'PrimalitySheafVerification/Spt1.lean'
+      - 'PrimalitySheafVerification/Spt5.lean'
+      - 'lean-toolchain'
+permissions:
+  contents: read
+concurrency:
+  group: manuscript-project-upstream-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    name: Spt1 and Spt5 against official Mathlib
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: leanprover-community/mathlib4
+          ref: 79d0395a1825a6264ad5d269e35e60537518955e
+          path: upstream-mathlib
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          lake-package-directory: upstream-mathlib
+      - name: Retrieve precompiled official Mathlib
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/manuscript-project-upstream"
+          lake exe cache get Mathlib 2>&1 |
+            tee "${RUNNER_TEMP}/manuscript-project-upstream/mathlib-cache.log"
+          lake build Mathlib 2>&1 |
+            tee "${RUNNER_TEMP}/manuscript-project-upstream/mathlib-build.log"
+      - name: Check the existing project imports and new theorems
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          logs="${RUNNER_TEMP}/manuscript-project-upstream"
+          compiled="${RUNNER_TEMP}/manuscript-project-modules"
+          project=PrimalitySheafVerification
+          mkdir -p "$compiled/$project"
+          audit_lean_path="$(lake env printenv LEAN_PATH)"
+          status=0
+          for pair in Spt1:PadicRemainder Spt5:NodalCotangent; do
+            source="${pair%:*}"
+            proof="${pair#*:}"
+            if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$source.olean" \
+                "$GITHUB_WORKSPACE/$project/$source.lean" > "$logs/$source.log" 2>&1; then
+              LEAN_PATH="$compiled:$audit_lean_path" \
+                lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |
+                tee "$logs/$proof.log" || status=1
+            else
+              tail -n 80 "$logs/$source.log"
+              status=1
+            fi
+          done
+          exit "$status"
+      - name: Preserve the project compatibility logs on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-project-upstream-${{ github.sha }}
+          path: ${{ runner.temp }}/manuscript-project-upstream
+          if-no-files-found: warn
+          retention-days: 30
