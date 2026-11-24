@@ -56,7 +56,8 @@ theorem paper1_coefficient_transfer
   have hpRpos : (0 : ℝ) < p := zero_lt_one.trans hpR
   have hR : 0 ≤ R := zpow_nonneg hpRpos.le _
   have hRlt : R < 1 := by
-    rw [R, zpow_neg, zpow_natCast, inv_lt_one₀ (pow_pos hpRpos k)]
+    change (p : ℝ) ^ (-(k : ℤ)) < 1
+    rw [zpow_neg, zpow_natCast, inv_lt_one₀ (pow_pos hpRpos k)]
     exact one_lt_pow₀ hpR (Nat.ne_of_gt hk)
   have hW : ‖W‖ ≤ R := by
     apply norm_sum_le hR
@@ -85,7 +86,8 @@ theorem paper1_coefficient_transfer
     exact (lt_irrefl _ hSmall)
   have hU : ‖(X - A ^ q) / A ^ q‖ < 1 := by simpa only [hSign] using hSmall
   have hD : D = padicLog1p (-W) := by
-    rw [D, ← padicLog_pow p hA q, PadicExactBridge.spt1_padicLog1p_eq_binomial_log hSmall,
+    change padicLog p X - (q : ℚ_[p]) * padicLog p A = padicLog1p (-W)
+    rw [← padicLog_pow p hA q, PadicExactBridge.spt1_padicLog1p_eq_binomial_log hSmall,
       ← hSign]
     exact paper1_log_difference_at_normalized_discrepancy p hX hY hU
   have hZero : padicLog1p (0 : ℚ_[p]) = 0 := by

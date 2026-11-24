@@ -90,6 +90,65 @@ theorem paper5_common_parameter_euler_product_fails (trace prime : ℕ → ℤ)
   exact paper5_adjacent_partial_products_change trace prime n (hp n)
     ⟨hs₁.trans (h₁ n hn₁).symm, hs₂.trans (h₂ n hn₂).symm⟩
 
+/-- The polynomial for geometric Frobenius on the constant coefficient
+line of a geometric point. -/
+def pointDenominator : PowerSeries ℤ := 1 - X
+
+/-- Local factor for a point with constant coefficients in degree zero. -/
+def pointLocalFactor : PowerSeries ℤ := pointDenominator.invOfUnit 1
+
+@[simp] private theorem pointDenominator_const : constantCoeff pointDenominator = 1 := by
+  simp [pointDenominator]
+
+@[simp] private theorem pointLocalFactor_const : constantCoeff pointLocalFactor = 1 := by
+  simp [pointLocalFactor, constantCoeff_invOfUnit]
+
+@[simp] private theorem pointLocalFactor_coeff_one : coeff 1 pointLocalFactor = 1 := by
+  have hd : coeff 1 pointDenominator = -1 := by
+    simp [pointDenominator, map_sub, coeff_one, coeff_X]
+  have hprod : pointLocalFactor * pointDenominator = 1 :=
+    invOfUnit_mul _ _ (by simpa using pointDenominator_const)
+  have h := congrArg (coeff 1) hprod
+  simp only [coeff_one_mul, pointLocalFactor_const, pointDenominator_const, hd,
+    mul_one, one_mul] at h
+  have h₁ : coeff 1 (1 : PowerSeries ℤ) = 0 := by simp
+  rw [h₁] at h
+  omega
+
+/-- The first coefficient counts the factors in the common-variable
+Euler product of constant degree-zero point factors. -/
+theorem paper7_point_partial_product_coeff_one (n : ℕ) :
+    coeff 1 (pointLocalFactor ^ n) = (n : ℤ) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, coeff_one_mul]
+    simp [map_pow, ih, Nat.cast_succ, add_comm]
+
+theorem paper7_point_common_parameter_no_limit :
+    ¬ ∃ f : PowerSeries ℤ, ∀ d : ℕ, ∃ N : ℕ, ∀ n ≥ N,
+      coeff d (pointLocalFactor ^ n) = coeff d f := by
+  rintro ⟨f, hf⟩
+  obtain ⟨N, hN⟩ := hf 1
+  have h := (hN (N + 1) (Nat.le_succ N)).trans (hN N le_rfl).symm
+  rw [paper7_point_partial_product_coeff_one, paper7_point_partial_product_coeff_one] at h
+  omega
+
+/-- Equal Frobenius factors in opposite parities cancel from the
+local product. The same factor is still present in both degrees. -/
+theorem paper7_point_factor_cancels_in_opposite_degrees :
+    pointLocalFactor * pointDenominator = 1 :=
+  invOfUnit_mul _ _ (by simpa using pointDenominator_const)
+
+def ellipticH1Polynomial (p a t : ℚ) : ℚ := 1 - a * t + p * t ^ 2
+
+/-- For the trace-zero smooth elliptic example at p=5, the alternating
+product in degrees 0, 1 and 2 differs from the reciprocal H¹ factor. -/
+theorem paper7_elliptic_graded_factor_ne_reciprocal_H1 :
+    ellipticH1Polynomial 5 0 (1 / 2) / ((1 - 1 / 2) * (1 - 5 * (1 / 2))) ≠
+      (ellipticH1Polynomial 5 0 (1 / 2))⁻¹ := by
+  norm_num [ellipticH1Polynomial]
+
 end
 
 end ManuscriptAudit.CommonParameterEuler
@@ -99,7 +158,11 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CommonParameterEuler.paper5_adjacent_partial_products_change,
-      ``ManuscriptAudit.CommonParameterEuler.paper5_common_parameter_euler_product_fails] do
+      ``ManuscriptAudit.CommonParameterEuler.paper5_common_parameter_euler_product_fails,
+      ``ManuscriptAudit.CommonParameterEuler.paper7_point_partial_product_coeff_one,
+      ``ManuscriptAudit.CommonParameterEuler.paper7_point_common_parameter_no_limit,
+      ``ManuscriptAudit.CommonParameterEuler.paper7_point_factor_cancels_in_opposite_degrees,
+      ``ManuscriptAudit.CommonParameterEuler.paper7_elliptic_graded_factor_ne_reciprocal_H1] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

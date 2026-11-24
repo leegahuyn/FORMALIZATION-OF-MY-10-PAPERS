@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf PrintedRademacherTail
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels PrintedRademacherTail InverseHalfNormDescent
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -195,7 +195,7 @@ jobs:
     timeout-minutes: 90
     concurrency:
       group: manuscript-proofs-upstream-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:

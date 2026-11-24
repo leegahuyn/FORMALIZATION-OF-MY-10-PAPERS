@@ -146,6 +146,16 @@ theorem paper8_printed_rademacher_tail_majorant_not_summable
   exact (one_mul (1 : ℝ)).ge.trans
     (mul_le_mul hdiv' hs zero_le_one (zero_le_one.trans hdiv'))
 
+/-- If the same truncation tail is added to the complete sum and to
+each partial sum, all partial sums must equal the complete sum. -/
+theorem paper8_printed_double_counted_tail_forces_constant_partials
+    (a full : ℂ) (partialSum tail : ℕ → ℂ)
+    (hPrinted : ∀ K, a = full + tail K)
+    (hTruncated : ∀ K, a = partialSum K + tail K) :
+    ∀ K, partialSum K = full := by
+  intro K
+  exact add_right_cancel ((hTruncated K).symm.trans (hPrinted K))
+
 end
 
 end ManuscriptAudit.PrintedRademacherTail
@@ -158,7 +168,8 @@ run_cmd do
       ``ManuscriptAudit.PrintedRademacherTail.printedBessel_normalized,
       ``ManuscriptAudit.PrintedRademacherTail.printedBessel_normalized_limit,
       ``ManuscriptAudit.PrintedRademacherTail.printed_positive_majorant_not_summable,
-      ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_rademacher_tail_majorant_not_summable] do
+      ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_rademacher_tail_majorant_not_summable,
+      ``ManuscriptAudit.PrintedRademacherTail.paper8_printed_double_counted_tail_forces_constant_partials] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

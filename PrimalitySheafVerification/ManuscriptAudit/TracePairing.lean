@@ -1,6 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Data.Complex.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # The printed complex trace pairing
@@ -86,6 +88,45 @@ theorem paper10_complex_skew_family_eq_zero {U : Type*}
   change B u v = 0
   exact hND (B u v) (paper10_complex_skew_family_pair_eq_zero B P hP hSkew u v)
 
+/-- Equality with the negative conjugate kills the real part. -/
+theorem real_part_eq_zero_of_eq_neg_star (z : ℂ) (h : z = -star z) :
+    z.re = 0 := by
+  have hRe := congrArg Complex.re h
+  simp only [Complex.star_def, Complex.neg_re, Complex.conj_re] at hRe
+  linarith
+
+/-- The step from skew-adjointness to zero diagonal is false for a
+genuine complex sesquilinear pairing. Multiplication by (i) on the
+complex line is skew-adjoint and has the nonzero diagonal value (i). -/
+theorem paper10_skew_pairing_diagonal_need_not_vanish :
+    ∃ (B : ℂ → ℂ → ℂ) (T : ℂ →ₗ[ℂ] ℂ),
+      (∀ c x y : ℂ, B (c • x) y = c * B x y ∧
+        B x (c • y) = star c * B x y) ∧
+      (∀ x y : ℂ, B x y = star (B y x)) ∧
+      (∀ x y : ℂ, B (T x) y = -B x (T y)) ∧ B (T 1) 1 ≠ 0 := by
+  let B (x y : ℂ) := x * star y
+  let T : ℂ →ₗ[ℂ] ℂ :=
+    { toFun := fun z => Complex.I * z
+      map_add' := fun x y => mul_add _ _ _
+      map_smul' := fun c z => by
+        change Complex.I * (c * z) = c * (Complex.I * z)
+        ring }
+  refine ⟨B, T, ?_, ?_, ?_, ?_⟩
+  · intro c x y
+    change (c * x) * star y = c * (x * star y) ∧
+      x * star (c * y) = star c * (x * star y)
+    rw [star_mul]
+    constructor <;> ring
+  · intro x y
+    change x * star y = star (y * star x)
+    rw [star_mul, star_star]
+  · intro x y
+    change (Complex.I * x) * star y = -(x * star (Complex.I * y))
+    rw [star_mul, Complex.star_def, Complex.conj_I]
+    ring
+  · change (Complex.I * (1 : ℂ)) * star 1 ≠ 0
+    simpa using Complex.I_ne_zero
+
 end ManuscriptAudit.TracePairing
 
 open Lean Elab Command in
@@ -94,7 +135,9 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.TracePairing.paper10_sesquilinear_bilinear_pair_eq_zero,
       ``ManuscriptAudit.TracePairing.paper10_complex_skew_family_pair_eq_zero,
-      ``ManuscriptAudit.TracePairing.paper10_complex_skew_family_eq_zero] do
+      ``ManuscriptAudit.TracePairing.paper10_complex_skew_family_eq_zero,
+      ``ManuscriptAudit.TracePairing.real_part_eq_zero_of_eq_neg_star,
+      ``ManuscriptAudit.TracePairing.paper10_skew_pairing_diagonal_need_not_vanish] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
