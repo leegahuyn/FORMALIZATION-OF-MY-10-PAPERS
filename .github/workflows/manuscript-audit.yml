@@ -4,7 +4,13 @@ on:
     branches: [codex/overleaf-bundle-formalization]
     paths:
       - '.github/workflows/manuscript-audit.yml'
-      - 'PrimalitySheafVerification/**'
+      - 'PrimalitySheafVerification/*.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/AxiomAudit.lean'
+      - 'Mathlib/**'
+      - 'Mathlib.lean'
+      - 'lean-toolchain'
+      - 'lakefile.lean'
+      - 'lake-manifest.json'
 permissions:
   contents: read
 concurrency:

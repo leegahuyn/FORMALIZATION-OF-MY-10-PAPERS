@@ -1,6 +1,16 @@
-import Mathlib
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.NumberTheory.Padics.Hensel
+import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Ring
 
-open scoped Matrix
+open scoped BigOperators
 
 namespace ManuscriptAudit
 
@@ -239,6 +249,88 @@ theorem paper6_printed_sequence_not_complex :
     Prod.snd_mk, map_one, map_neg] at hOne
   exact (by decide : (1 : ZMod 3) - (-1) ≠ 0) hOne
 
+
+/-- Paper 6, pp. 190–191. Subtraction of integer representatives does not
+define the displayed map to the quotient by the lcm. -/
+theorem paper6_lcm_difference_cannot_descend :
+    ¬ ∃ δ : ZMod 6 × ZMod 9 → ZMod 18,
+      ∀ a b : ℤ,
+        δ ((a : ZMod 6), (b : ZMod 9)) = ((a - b : ℤ) : ZMod 18) := by
+  rintro ⟨δ, hδ⟩
+  have hzero : δ (0, 0) = 0 := by simpa using hδ 0 0
+  have hsixMod : ((6 : ℤ) : ZMod 6) = 0 := by decide
+  have hsix : δ (0, 0) = ((6 : ℤ) : ZMod 18) := by
+    simpa only [sub_zero, Int.cast_zero, hsixMod] using hδ 6 0
+  exact (by decide : (0 : ZMod 18) ≠ ((6 : ℤ) : ZMod 18))
+    (hzero.symm.trans hsix)
+
+private def hasseExampleCount : ℕ :=
+  1 + ((Finset.univ : Finset (ZMod 7 × ZMod 7)).filter
+    (fun xy => xy.2 ^ 2 = xy.1 ^ 3 - 7 * xy.1 + 3)).card
+
+private def hasseExampleTrace : ℤ := 7 + 1 - (hasseExampleCount : ℤ)
+
+/-- Paper 5, p. 161. The Hasse scanner uses 2 times the integer
+square root. Its conclusion fails for a valid curve in its own family. -/
+theorem paper5_integer_hasse_threshold_false :
+    (16 * (4 * (7 : ZMod 7) ^ 3 - 27 * 3 ^ 2) ≠ 0) ∧
+      hasseExampleCount = 13 ∧ hasseExampleTrace = -5 ∧
+      hasseExampleTrace ^ 2 ≤ 4 * (7 : ℤ) ∧
+      ¬ hasseExampleTrace.natAbs ≤ 2 * Nat.sqrt 7 := by
+  decide
+
+private def printedCoefficientExponent : Fin 11 → ℚ :=
+  ![(-1715 : ℚ) / 2, -3483 / 4, -1711 / 2, -3477 / 4,
+    -1709 / 2, -3475 / 4, -1709 / 2, -3477 / 4,
+    -1711 / 2, -3483 / 4, -1715 / 2]
+
+/-- Paper 8, p. 310, Table 1. If a row extracts the coefficient of its
+printed exponent, the displayed e₁ target is impossible. -/
+theorem paper8_printed_coefficient_rows_cannot_realize_first_target
+    (coeff : ℚ → Fin 22 → ℚ) :
+    ¬ ∃ x : Fin 22 → ℚ, ∀ i : Fin 11,
+      (∑ j : Fin 22, coeff (printedCoefficientExponent i) j * x j) =
+        (if i = 0 then 1 else 0) := by
+  rintro ⟨x, hx⟩
+  have hFirst := hx 0
+  have hLast := hx 10
+  have hRows : printedCoefficientExponent 0 = printedCoefficientExponent 10 := by decide
+  rw [if_pos rfl, hRows] at hFirst
+  rw [if_neg (by decide : (10 : Fin 11) ≠ 0)] at hLast
+  exact one_ne_zero (hFirst.symm.trans hLast)
+
+private abbrev ComplexMatrixTwo := Matrix (Fin 2) (Fin 2) ℂ
+
+/-- Paper 10, p. 465. Positivity and invariance under every invertible
+conjugation are incompatible on the underlying real Lie algebra of GL₂(ℂ). -/
+theorem paper10_no_positive_ad_invariant_gl2_form
+    (B : ComplexMatrixTwo →ₗ[ℝ] ComplexMatrixTwo →ₗ[ℝ] ℝ)
+    (hPos : ∀ X : ComplexMatrixTwo, X ≠ 0 → 0 < B X X)
+    (hInv : ∀ G Gi X Y : ComplexMatrixTwo, G * Gi = 1 → Gi * G = 1 →
+      B (Gi * X * G) (Gi * Y * G) = B X Y) : False := by
+  let G : ComplexMatrixTwo := !![(1 : ℂ), 0; 0, 2]
+  let Gi : ComplexMatrixTwo := !![(1 : ℂ), 0; 0, 1 / 2]
+  let X : ComplexMatrixTwo := !![(0 : ℂ), 1; 0, 0]
+  have hG : G * Gi = 1 := by
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      norm_num [G, Gi, Matrix.mul_apply, Fin.sum_univ_two, Matrix.one_apply]
+  have hGi : Gi * G = 1 := by
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      norm_num [G, Gi, Matrix.mul_apply, Fin.sum_univ_two, Matrix.one_apply]
+  have hX : X ≠ 0 := by
+    intro h
+    have hEntry := congrArg (fun A : ComplexMatrixTwo => A 0 1) h
+    norm_num [X] at hEntry
+  have hConj : Gi * X * G = X + X := by
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      norm_num [G, Gi, X, Matrix.mul_apply, Fin.sum_univ_two]
+  have hEq := hInv G Gi X X hG hGi
+  simp only [hConj, map_add, LinearMap.add_apply] at hEq
+  linarith [hPos X hX]
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -252,7 +344,11 @@ run_cmd do
     ``ManuscriptAudit.paper8_doubling_bound_does_not_follow_from_tail_identity,
     ``ManuscriptAudit.paper4_cech_gcd_cokernel_false,
     ``ManuscriptAudit.paper4_cech_worked_cokernel_false,
-    ``ManuscriptAudit.paper6_printed_sequence_not_complex] do
+    ``ManuscriptAudit.paper6_printed_sequence_not_complex,
+    ``ManuscriptAudit.paper6_lcm_difference_cannot_descend,
+    ``ManuscriptAudit.paper5_integer_hasse_threshold_false,
+    ``ManuscriptAudit.paper8_printed_coefficient_rows_cannot_realize_first_target,
+    ``ManuscriptAudit.paper10_no_positive_ad_invariant_gl2_form] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

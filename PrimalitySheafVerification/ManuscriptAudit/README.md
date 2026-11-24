@@ -16,3 +16,5 @@
 - Distinguish a counterexample to a statement from a flaw in its printed proof. Keep unresolved claims visible.
 
 See [coverage](coverage.md), the [numbered-label candidates](numbered-label-candidates.tsv), and [selected claim findings](claims-first-pass.md). Full semantic source review, claim mapping, and declaration-level trust checks are in progress.
+
+[Claim comparisons by manuscript](claim-comparisons.md) records 61 statement comparisons. The [new Lean declarations](LiteralRefutations.lean) and their [GitHub Actions workflow](https://github.com/leegahuyn/FORMALIZATION-OF-MY-10-PAPERS/actions/workflows/manuscript-proofs.yml) are separate from the pinned baseline build. Proof verification status is tracked by the workflow jobs for vendored and upstream Mathlib.

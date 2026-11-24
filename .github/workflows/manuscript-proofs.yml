@@ -7,37 +7,111 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean'
 permissions:
   contents: read
-concurrency:
-  group: manuscript-proofs-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
-  proofs:
+  pinned:
+    name: Vendored Mathlib
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
+    timeout-minutes: 180
+    concurrency:
+      group: manuscript-proofs-vendored-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Set up pinned Lean and Mathlib cache
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
         with:
           auto-config: false
           build: false
           lint: false
           test: false
           use-github-cache: false
-          use-mathlib-cache: true
-      - name: Check claim statements and transitive axiom dependencies
+          use-mathlib-cache: false
+      - name: Restore compiled modules
+        id: compiled
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: manuscript-lean-imports-0e026509-linux-arm64-v1
+      - name: Build the required vendored modules
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean \
-            2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs.log"
-      - name: Preserve the Lean output on GitHub
+          mapfile -t modules < <(awk '/^import / {print $2}' PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean)
+          test "${#modules[@]}" -gt 0
+          : > "${RUNNER_TEMP}/manuscript-dependencies.log"
+          status=0
+          lake build "${modules[@]}" > "${RUNNER_TEMP}/manuscript-dependencies.log" 2>&1 || status=$?
+          tail -n 60 "${RUNNER_TEMP}/manuscript-dependencies.log"
+          exit "$status"
+      - name: Keep the compiled modules on GitHub
+        if: steps.compiled.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: .lake
+          key: ${{ steps.compiled.outputs.cache-primary-key }}
+      - name: Check the proofs and their transitive axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean 2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs.log"
+      - name: Keep the vendored-build logs on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: manuscript-proofs-${{ github.sha }}
-          path: ${{ runner.temp }}/manuscript-proofs.log
+          name: manuscript-proofs-vendored-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/manuscript-dependencies.log
+            ${{ runner.temp }}/manuscript-proofs.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  upstream:
+    name: Upstream Mathlib compatibility
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    concurrency:
+      group: manuscript-proofs-upstream-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: leanprover-community/mathlib4
+          ref: 79d0395a1825a6264ad5d269e35e60537518955e
+          path: upstream-mathlib
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          lake-package-directory: upstream-mathlib
+      - name: Retrieve the upstream module cache
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          mapfile -t modules < <(awk '/^import / {print $2}' ../PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean)
+          test "${#modules[@]}" -gt 0
+          lake exe cache get "${modules[@]}"
+          lake build "${modules[@]}"
+      - name: Check the proofs with upstream Mathlib
+        shell: bash
+        working-directory: upstream-mathlib
+        run: |
+          set -euo pipefail
+          lake env lean ../PrimalitySheafVerification/ManuscriptAudit/LiteralRefutations.lean 2>&1 | tee "${RUNNER_TEMP}/manuscript-proofs-upstream.log"
+      - name: Keep the upstream compatibility log on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-proofs-upstream-${{ github.sha }}
+          path: ${{ runner.temp }}/manuscript-proofs-upstream.log
           if-no-files-found: warn
           retention-days: 30
