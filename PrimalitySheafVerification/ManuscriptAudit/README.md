@@ -15,4 +15,4 @@
 - Mark a claim verified or refuted only when the corresponding Lean proof passes on the pinned toolchain and its transitive axioms are audited. Standard Lean axioms are `propext`, `Classical.choice`, and `Quot.sound`. A hypothesis in the manuscript remains part of the statement. Assuming the conclusion or an unproved stronger replacement leaves the claim unresolved.
 - Distinguish a counterexample to a statement from a flaw in its printed proof. Keep unresolved claims visible.
 
-The inventory is a byte-level baseline. Semantic review of the manuscripts and Lean modules, source-to-declaration mapping, and fresh kernel verification are in progress. The historical build record in the source tree points to a different repository and commit and cannot serve as a fresh check of this snapshot.
+See [coverage](coverage.md), the [numbered-label candidates](numbered-label-candidates.tsv), and [selected claim findings](claims-first-pass.md). Full semantic source review, claim mapping, and declaration-level trust checks are in progress.

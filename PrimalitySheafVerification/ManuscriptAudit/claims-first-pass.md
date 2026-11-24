@@ -1,0 +1,34 @@
+# Selected claim findings
+
+Page numbers refer to physical pages in the attached PDF. A source link identifies a declaration or model to inspect. Claim-level verification requires both a faithful Lean statement and a transitive-axiom check.
+
+| PDF page and claim | Finding | Existing Lean source |
+| --- | --- | --- |
+| 6, 13, 18–19. Localized kernel thickness and vanishing | M=3, p=3, k=2 gives the ideal intersection (9), with thickness 2. The sum has thickness 1. M=2 and p=3, k=1 gives the nonzero kernel element 6 despite coprimality. | [Intersection and corrected exponents](../Verification.lean#L38-L94) |
+| 15. Proposition 2.14 | M=3, p=3, k=2 gives a zero gcd-residue class represented by 3, which is outside the intersection (9). | [Zero-class model](../Spt1.lean#L930-L946) |
+| 7, 304. The quadratic p-adic remainder | At p=2 and u=2^k with k≥2, the quadratic term has valuation 2k−1, strictly below the later terms. | [Existing numerical defect lemma](../Spt3.lean#L1373-L1384) |
+| 27–28. Cotangent H₁ detector | The singular cusp y²=x³ over F₅ has injective conormal differential over its domain, so H₁=0. The Jacobian quotient measures T¹ in this hypersurface setting. | [Kernel and Tjurina divergence](../Spt2.lean#L2125-L2159) |
+| 29–30. Critical roots | Reduction of (T²+1)²+3 at 3 has repeated geometric roots and no F₃-root. | [Geometric and rational gate definitions](../Spt2.lean#L2840-L2987) |
+| 31, 35–37, 184, 197–199. Euler jump and H¹ bump | The affine geometric cusp and its smooth open have H¹ dimensions 0 and 1. Their compact-support Euler difference is +1. The source uses natural subtraction and inputs comparing numerical models. | [Curve data and bump](../Spt6.lean#L3809-L3868) |
+| 37, 150. Unique smooth-point lift | For y²=x³−x+1, (0,1) and (5,11) are distinct integral lifts of the same smooth residue point modulo 5. A one-coordinate Hensel theorem can fix the other coordinate. | [Univariate forward theorem](../Spt4.lean#L2011-L2037) |
+| 60–62, 82. Primality via numeric window | For X=2, the printed condition abs(X−A^q)≤A/q fails for every integer A≥1 and q≥2. The Lean gate needs a statement-level comparison. | [Lean gate definitions](../Spt1.lean#L1354-L1399) |
+| 98–100. Minimality of nested layers | The intersection of four nested filters is the smallest filter. Removing any of the larger ones preserves it. | [Independent sample predicates](../Spt4.lean#L1258-L1298) |
+| 105, 116, 137–138. Čech cokernel | The printed inclusion difference for Z/6 and Z/10 into Z/30 is 5a−3b and is onto by setting a=2r, b=3r. The CRT obstruction is the cokernel of the preceding diagonal arrow. | [Integer model](../Spt4.lean#L5070-L5110), [CRT exactness](../Spt4.lean#L2612-L2690) |
+| 161. Hasse scanner | At p=7, A=3, the benchmark curve has 13 points. The trace −5 satisfies 25≤28, while the scanner compares 5 to 2⌊√7⌋=4. | [Squared Hasse gate](../Spt5.lean#L1520-L1540) |
+| 190–191. Principal opens and quotient restriction | D(2)∪D(3)=Spec ℤ, while D(6) omits (2) and (3). The identity on representatives cannot induce ℤ/2→ℤ/4. | [Overlap model](../Spt6.lean#L3430-L3563) |
+| 200–203, 219. Cohomological density | For singleton support {p}, a nonzero skyscraper has nonzero H⁰, so the printed existential infimum is zero. | [Density interface](../Spt4.lean#L8531-L8642) |
+| 220. Proposition 10.7 | With M=p=3, k=1, the printed composite x↦(x,−x)↦a−b sends 1 to 2 in Z/3. A diagonal first map sends x to (x,x). | [CRT arithmetic sequence](../Spt4.lean#L2612-L2690) |
+| 253–255. Koszul regularity under base change | The regular element 5 in ℤ₍₅₎ becomes zero over F₅, where first Koszul homology is F₅. | Open formalization |
+| 271–286. Mixed weights and the local RH condition | Reciprocals reverse the absolute-value bound, and factors in different degrees can cancel. The Lean global equivalence assumes the semantic implications connecting the conditions. | [Local radius theorem](../Spt7.lean#L12275-L12282), [global bridge](../Spt7.lean#L12561-L12589) |
+| 305–312. Appell–Lerch rank | Nonintegral half-integer shifts put one argument on the polar lattice. The admissible printed base sum cancels in pairs n and −n−1. The reported rank-11 table also lists repeated coefficient exponents. | [Primary transformation formulas](https://arxiv.org/pdf/0807.4834) |
+| 348. Choice of SL₂ matrix | h=1, k=3 forces −a−3b=1 and a−3b=1. These imply a=0 and −3b=1 in ℤ. | Open formalization |
+| 351, 354. Truncation difference | The coefficients 1,1,−1 and zero thereafter give partial sums 1 and 2 at K=1 and 2K, with zero true tail at K. | Open formalization |
+| 361–366. Odd theta kernel and renormalized limit | The χ₋₄ theta summands cancel in symmetric pairs. The printed inverse-Gamma factor has zero limit. The Lean wrapper stores a real field and a string. | [Record](../Mock1_Advanced.lean#L27921-L27979), [instance](../Mock1_Advanced.lean#L28200-L28223) |
+| 440, 448. Radius on Γ(2)∖ℍ | The matrix with rows (1,0),(2,1) takes i to (2+i)/5. Its q-radius and the q-radius of i differ. | [Original radius refutation](../Mock2.lean#L9595-L9607) |
+| 445. Proposition 13(1) | Taking ∞ to 0 would require the top-left entry of a Γ(2) matrix to be zero. Membership requires that entry to be odd. | [Actual cusp action](../Mock2.lean#L21646-L21669), [refutation](../Mock2_Advanced.lean#L14718-L14738) |
+| 466–467. Scalar algebra automorphism and q-cyclic trace | A unital algebra automorphism preserves 1, obstructing scalar multiplication by q≠1 for faithful scalar action. For the scalar cyclic identity, substitution of the unit forces the trace to vanish. | [Algebra and trace obstructions](../QYM.lean#L640-L692) |
+| 481. Cover across the unit circle | For τ∈ℍ, abs(q(τ))=exp(−2π Im τ)<1. The stipulated outside piece cannot arise from that q-map. | [Strict radius bound](../Mock2.lean#L21628-L21644) |
+| 494, 497. Sign of the Hamiltonian | With Δ=D*D and H=−Δ+V, choosing V=0 gives a negative quadratic form on any vector with Da≠0. | Open fidelity check |
+| 498, 505. Spectral gap inference | Diag(2,5/2) has simple ground and gap 1/2. Its unshifted quadratic form satisfies the stated scalar comparison with bound 1 on the ground complement. | [Bounded-operator countermodel](../QYM.lean#L29928-L30039), [shifted repair](../QYM.lean#L30065-L30094) |
+
+The cusp cohomology comparison uses [étale topological invariance](https://stacks.math.columbia.edu/tag/03SI). Standard modular cusp and q-expansion conventions are given in [Zywina, Computing actions on cusp forms, §1.4](https://arxiv.org/abs/2001.07270).
