@@ -1,9 +1,12 @@
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.NumberTheory.Padics.Hensel
+import Mathlib.NumberTheory.Padics.RingHoms
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Support
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.Prime
@@ -29,7 +32,7 @@ theorem paper3_prime_two_misses_numeric_window :
     · subst A
       have hdiv : (1 : ℝ) / q < 1 :=
         (div_lt_iff₀ hqPos).mpr (by linarith)
-      simpa using hdiv
+      convert hdiv using 1 <;> norm_num
     · have hA2 : (2 : ℝ) ≤ (A : ℝ) := by
         exact_mod_cast (show (2 : ℤ) ≤ A by omega)
       have hPow : (A : ℝ) ^ 2 ≤ (A : ℝ) ^ q :=
@@ -192,8 +195,8 @@ private theorem cechSixNine_surjective : Function.Surjective cechSixNine := by
   intro r
   obtain ⟨x, rfl⟩ := ZMod.intCast_surjective (n := 18) r
   refine ⟨((x : ZMod 6), (x : ZMod 9)), ?_⟩
-  change cyclicInclusion 6 3 _ (x : ZMod 6) -
-    cyclicInclusion 9 2 _ (x : ZMod 9) = (x : ZMod 18)
+  change cyclicInclusion 6 3 (by decide) (x : ZMod 6) -
+    cyclicInclusion 9 2 (by decide) (x : ZMod 9) = (x : ZMod 18)
   rw [cyclicInclusion_int, cyclicInclusion_int]
   ring
 
@@ -201,8 +204,8 @@ private theorem cechSixTen_surjective : Function.Surjective cechSixTen := by
   intro r
   obtain ⟨x, rfl⟩ := ZMod.intCast_surjective (n := 30) r
   refine ⟨(((2 * x : ℤ) : ZMod 6), ((3 * x : ℤ) : ZMod 10)), ?_⟩
-  change cyclicInclusion 6 5 _ ((2 * x : ℤ) : ZMod 6) -
-    cyclicInclusion 10 3 _ ((3 * x : ℤ) : ZMod 10) = (x : ZMod 30)
+  change cyclicInclusion 6 5 (by decide) ((2 * x : ℤ) : ZMod 6) -
+    cyclicInclusion 10 3 (by decide) ((3 * x : ℤ) : ZMod 10) = (x : ZMod 30)
   rw [cyclicInclusion_int, cyclicInclusion_int]
   push_cast
   ring
@@ -245,8 +248,8 @@ theorem paper6_printed_sequence_not_complex :
     ¬ ∀ x, paper6ResidueDifference (paper6SignedInclusion x) = 0 := by
   intro h
   have hOne := h 1
-  simp only [paper6ResidueDifference, paper6SignedInclusion, Prod.fst_mk,
-    Prod.snd_mk, map_one, map_neg] at hOne
+  simp only [paper6ResidueDifference, paper6SignedInclusion,
+    map_one, map_neg] at hOne
   exact (by decide : (1 : ZMod 3) - (-1) ≠ 0) hOne
 
 
@@ -277,6 +280,8 @@ theorem paper5_integer_hasse_threshold_false :
       hasseExampleCount = 13 ∧ hasseExampleTrace = -5 ∧
       hasseExampleTrace ^ 2 ≤ 4 * (7 : ℤ) ∧
       ¬ hasseExampleTrace.natAbs ≤ 2 * Nat.sqrt 7 := by
+  have hSqrt : Nat.sqrt 7 = 2 := Nat.sqrt_add_eq' 2 (by decide : 3 ≤ 2 + 2)
+  rw [hSqrt]
   decide
 
 private def printedCoefficientExponent : Fin 11 → ℚ :=
@@ -294,7 +299,7 @@ theorem paper8_printed_coefficient_rows_cannot_realize_first_target
   rintro ⟨x, hx⟩
   have hFirst := hx 0
   have hLast := hx 10
-  have hRows : printedCoefficientExponent 0 = printedCoefficientExponent 10 := by decide
+  have hRows : printedCoefficientExponent 0 = printedCoefficientExponent 10 := by rfl
   rw [if_pos rfl, hRows] at hFirst
   rw [if_neg (by decide : (10 : Fin 11) ≠ 0)] at hLast
   exact one_ne_zero (hFirst.symm.trans hLast)
@@ -331,6 +336,89 @@ theorem paper10_no_positive_ad_invariant_gl2_form
   simp only [hConj, map_add, LinearMap.add_apply] at hEq
   linarith [hPos X hX]
 
+/-- With a nonzero normalized tail, the printed plus-sign expansion and
+the printed sign of the linearization in Paper 1, p. 7, are incompatible. -/
+theorem paper1_printed_expansion_forces_negative_discrepancy
+    (X Y T : ℚ) (hY : Y ≠ 0) (hT : T ≠ 0) (hExp : Y = X + T) :
+    (X - Y) / Y ≠ T / Y := by
+  intro h
+  have hDiff : X - Y = T := by
+    apply mul_right_cancel₀ (inv_ne_zero hY)
+    simpa only [div_eq_mul_inv] using h
+  exact hT (by linarith)
+
+/-- The module support of an ideal containing a nonzero element of a
+domain is the whole prime spectrum. -/
+theorem support_of_ideal_with_nonzero_element
+    {R : Type*} [CommRing R] [IsDomain R] (I : Ideal R) {a : R}
+    (ha : a ∈ I) (ha₀ : a ≠ 0) :
+    Module.support R I = Set.univ := by
+  apply Set.eq_univ_of_forall
+  intro p
+  rw [Module.mem_support_iff']
+  refine ⟨⟨a, ha⟩, ?_⟩
+  intro r hr h
+  have hProduct : r * a = 0 := congrArg Subtype.val h
+  have hr₀ : r = 0 := (mul_eq_zero.mp hProduct).resolve_right ha₀
+  rw [hr₀] at hr
+  exact hr p.asIdeal.zero_mem
+
+/-- Papers 1 and 6. Coprime moduli 2 and 3 give a nonzero equalizer ideal
+with full support, whereas the closed set V(gcd(2,3)) is empty. -/
+theorem paper1_coprime_kernel_support_ne_gcd_support :
+    Module.support ℤ (Ideal.span {(2 : ℤ)} ⊓ Ideal.span {(3 : ℤ)}) ≠
+      PrimeSpectrum.zeroLocus ({(Nat.gcd 2 3 : ℤ)} : Set ℤ) := by
+  have hSix : (6 : ℤ) ∈ Ideal.span {(2 : ℤ)} ⊓ Ideal.span {(3 : ℤ)} := by
+    change 6 ∈ Ideal.span {(2 : ℤ)} ∧ 6 ∈ Ideal.span {(3 : ℤ)}
+    simp only [Ideal.mem_span_singleton]
+    norm_num
+  rw [support_of_ideal_with_nonzero_element _ hSix (by norm_num)]
+  intro h
+  let p : PrimeSpectrum ℤ := ⟨⊥, Ideal.isPrime_bot⟩
+  have hp : p ∈ PrimeSpectrum.zeroLocus ({(Nat.gcd 2 3 : ℤ)} : Set ℤ) := by
+    rw [← h]
+    exact Set.mem_univ _
+  have hOne : (1 : ℤ) ∈ p.asIdeal := by
+    apply (PrimeSpectrum.mem_zeroLocus.mp hp)
+    decide
+  exact p.isPrime.ne_top (Ideal.eq_top_iff_one.mpr hOne)
+
+/-- Paper 1, p. 17. In the case M=p=3 and k=1, the Tor term is Z/3.
+It cannot inject additively into the printed integral intersection ideal. -/
+theorem paper1_no_additive_injection_to_integral_intersection
+    (f : ZMod 3 →+ (Ideal.span {(3 : ℤ)} ⊓ Ideal.span {(3 : ℤ)})) :
+    ¬ Function.Injective f := by
+  intro hf
+  have hZero : 3 • (1 : ZMod 3) = 0 := by decide
+  have h := map_nsmul f (1 : ZMod 3) 3
+  rw [hZero, map_zero] at h
+  have hInt : (0 : ℤ) = 3 * (f 1 : ℤ) := by
+    have h' : (0 : ℤ) = 3 • (f 1 : ℤ) := congrArg Subtype.val h
+    simpa only [nsmul_eq_mul, Nat.cast_ofNat] using h'
+  have hVal : (f 1 : ℤ) = 0 :=
+    (mul_eq_zero.mp hInt.symm).resolve_left (by norm_num)
+  have hMap : f 1 = 0 := Subtype.ext hVal
+  have hOne : (1 : ZMod 3) = 0 := hf (hMap.trans (map_zero f).symm)
+  exact (by decide : (1 : ZMod 3) ≠ 0) hOne
+
+private abbrev pIdealThree : Ideal ℤ := Ideal.span {(3 : ℤ)}
+
+private instance : pIdealThree.IsPrime :=
+  (Ideal.span_singleton_prime (by norm_num)).mpr
+    (Nat.prime_iff_prime_int.mp Nat.prime_three)
+
+private abbrev ZAtThree := Localization.AtPrime pIdealThree
+
+/-- Papers 1, 4, 6 and 7. At M=1, p=3 and k=1 the localization of the
+intersection is proper. The printed minimum exponent gives the unit ideal. -/
+theorem localized_intersection_ne_printed_minimum :
+    Ideal.map (algebraMap ℤ ZAtThree)
+        (Ideal.span {(1 : ℤ)} ⊓ pIdealThree) ≠
+      Ideal.span {(1 : ZAtThree)} := by
+  simp only [Ideal.span_singleton_one, top_inf_eq]
+  rw [Localization.AtPrime.map_eq_maximalIdeal]
+  exact (IsLocalRing.maximalIdeal.isMaximal ZAtThree).ne_top
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -348,7 +436,12 @@ run_cmd do
     ``ManuscriptAudit.paper6_lcm_difference_cannot_descend,
     ``ManuscriptAudit.paper5_integer_hasse_threshold_false,
     ``ManuscriptAudit.paper8_printed_coefficient_rows_cannot_realize_first_target,
-    ``ManuscriptAudit.paper10_no_positive_ad_invariant_gl2_form] do
+    ``ManuscriptAudit.paper10_no_positive_ad_invariant_gl2_form,
+    ``ManuscriptAudit.paper1_printed_expansion_forces_negative_discrepancy,
+    ``ManuscriptAudit.support_of_ideal_with_nonzero_element,
+    ``ManuscriptAudit.paper1_coprime_kernel_support_ne_gcd_support,
+    ``ManuscriptAudit.paper1_no_additive_injection_to_integral_intersection,
+    ``ManuscriptAudit.localized_intersection_ne_printed_minimum] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
