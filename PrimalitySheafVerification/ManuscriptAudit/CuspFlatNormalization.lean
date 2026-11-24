@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 import PrimalitySheafVerification.ManuscriptAudit.CuspDelta
+import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
 
 /-!
 # The cusp normalization sequence under flat base change
@@ -19,7 +20,7 @@ noncomputable section
 
 variable (K : Type*) [Field K]
 
-private abbrev A := cuspSubalgebra K
+private abbrev A := CuspPunctured.CuspSubalgebra K
 private abbrev B := Polynomial K
 
 /-- The actual linear map from the polynomial normalization to the residue
@@ -38,7 +39,7 @@ theorem normalization_exact :
   rw [← map_zero (paper2_cusp_quotient_residue_linear_equiv K),
     (paper2_cusp_quotient_residue_linear_equiv K).injective.eq_iff, Submodule.mkQ_apply,
     Submodule.Quotient.mk_eq_zero]
-  change f ∈ cuspSubalgebra K ↔ ∃ a : A K, (a : B K) = f
+  change f ∈ CuspPunctured.CuspSubalgebra K ↔ ∃ a : A K, (a : B K) = f
   exact ⟨fun h => ⟨⟨f, h⟩, rfl⟩, fun ⟨a, ha⟩ => ha ▸ a.property⟩
 
 variable (T : Type*) [CommRing T] [Algebra (A K) T] [Module.Flat (A K) T]
@@ -62,11 +63,12 @@ theorem includeBase_injective :
     Function.Injective (includeBase K T) :=
   Algebra.TensorProduct.includeLeft_injective Subtype.val_injective
 
-/-- After flat base change, an element of the normalization comes from the
-cusp algebra precisely when its actual residue obstruction vanishes. -/
-theorem flat_normalization_exact :
-    Function.Exact (includeBase K T).toLinearMap ((normalizationResidue K).lTensor T) := by
-  have h := Module.Flat.lTensor_exact T (normalization_exact K)
+/-- Tensoring a linear map whose kernel is the cusp preserves the
+description of that kernel, with the original base algebra as its image. -/
+theorem flat_exact_from_inclusion {M : Type*} [AddCommGroup M] [Module (A K) M]
+    (g : B K →ₗ[A K] M) (hg : Function.Exact (Algebra.linearMap (A K) (B K)) g) :
+    Function.Exact (includeBase K T).toLinearMap (g.lTensor T) := by
+  have h := Module.Flat.lTensor_exact T hg
   intro z
   constructor
   · intro hz
@@ -77,6 +79,12 @@ theorem flat_normalization_exact :
     refine ⟨t ⊗ₜ[A K] (1 : A K), ?_⟩
     rw [unitTensor_eq_includeBase, TensorProduct.rid_tmul, one_smul]
 
+/-- After flat base change, an element of the normalization comes from the
+cusp algebra precisely when its actual residue obstruction vanishes. -/
+theorem flat_normalization_exact :
+    Function.Exact (includeBase K T).toLinearMap ((normalizationResidue K).lTensor T) :=
+  flat_exact_from_inclusion K T _ (normalization_exact K)
+
 end
 
 end ManuscriptAudit.CuspFlatNormalization
@@ -86,6 +94,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.CuspFlatNormalization.normalization_exact,
       ``ManuscriptAudit.CuspFlatNormalization.includeBase_injective,
+      ``ManuscriptAudit.CuspFlatNormalization.flat_exact_from_inclusion,
       ``ManuscriptAudit.CuspFlatNormalization.flat_normalization_exact] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -1,5 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.CuspReductionBaseChange
+import PrimalitySheafVerification.ManuscriptAudit.UnramifiedEqualizerSections
 import Mathlib.RingTheory.Unramified.Basic
 import PrimalitySheafVerification.ManuscriptAudit.CuspDelta
 import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
@@ -14,9 +16,11 @@ compares the two reductions to the square-zero neighborhood of the origin.
 
 namespace ManuscriptAudit.CuspUnramifiedNormalization
 
-open Polynomial CuspDelta CuspPunctured
+open Polynomial CuspDelta CuspPunctured CuspReductionBaseChange
 
 noncomputable section
+
+attribute [local instance] squareQuotientAlgebra
 
 variable (K : Type*) [Field K]
 
@@ -37,17 +41,8 @@ algebra already lies in the cusp coordinate subalgebra. -/
 theorem image_mem_cusp (f : P →ₐ[CuspSubalgebra K] Polynomial K) (p : P) :
     f p ∈ CuspSubalgebra K := by
   let q := cuspSquareReduction K
-  let c : Polynomial K →+* cuspSquareQuotient K := q.comp (C.comp Polynomial.constantCoeff)
-  letI : Algebra (CuspSubalgebra K) (cuspSquareQuotient K) :=
-    (q.comp (algebraMap (CuspSubalgebra K) (Polynomial K))).toAlgebra
-  let qA : Polynomial K →ₐ[CuspSubalgebra K] cuspSquareQuotient K :=
-    { q with commutes' := fun _ => rfl }
-  let cA : Polynomial K →ₐ[CuspSubalgebra K] cuspSquareQuotient K :=
-    { c with
-      commutes' := fun a => by
-        change q (C ((a : Polynomial K).coeff 0)) = q (a : Polynomial K)
-        exact ((cusp_square_reduction_eq_constant_iff K _ _).2
-          ⟨rfl, (cusp_mem_iff_coeff_one_zero K _).1 a.property⟩).symm }
+  let qA := reductionAlg K
+  let cA := constantReductionAlg K
   have h :
       (Ideal.Quotient.mkₐ (CuspSubalgebra K) (originIdeal K)).comp qA =
         (Ideal.Quotient.mkₐ (CuspSubalgebra K) (originIdeal K)).comp cA := by
@@ -58,7 +53,7 @@ theorem image_mem_cusp (f : P →ₐ[CuspSubalgebra K] Polynomial K) (p : P) :
     apply Ideal.Quotient.eq.mpr
     rw [← map_sub]
     apply Ideal.mem_span_singleton.mpr
-    apply map_dvd q
+    apply _root_.map_dvd q
     rw [Polynomial.X_dvd_iff, Polynomial.coeff_sub, Polynomial.coeff_C_zero, sub_self]
   let t := (UnramifiedEqualizerSections.sectionsEquiv (P := P)
     (originIdeal K) (originIdeal_square K) qA cA h).symm f

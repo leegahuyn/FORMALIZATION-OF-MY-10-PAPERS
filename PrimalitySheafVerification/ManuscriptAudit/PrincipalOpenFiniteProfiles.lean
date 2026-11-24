@@ -27,7 +27,7 @@ abbrev Profile (U : Opens IntSpectrum) :=
 
 private def incl {V U : Opens IntSpectrum} (h : V ≤ U) : PrimePlaces V ↪ PrimePlaces U where
   toFun x := ⟨x.val, h x.property.1, x.property.2⟩
-  inj' := fun _ _ heq => Subtype.ext (congrArg Subtype.val heq)
+  inj' := fun _ _ heq => Subtype.ext (congrArg (fun q : PrimePlaces U => q.val) heq)
 
 /-- A profile restricts by retaining the weights of prime places in the smaller open. -/
 def restrict {V U : Opens IntSpectrum} (h : V ≤ U) (s : Profile U) : Profile V :=

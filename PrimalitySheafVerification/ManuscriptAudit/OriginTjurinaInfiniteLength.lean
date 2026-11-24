@@ -75,7 +75,7 @@ private theorem branch_benchmark (a b : ℕ) (ζ : E p) (hζ : ζ ^ b = -1) :
     (MvPolynomial.aeval (branchValues p a b ζ) (MvPolynomial.X 1 : Plane p)) ^ b = 0
   rw [MvPolynomial.aeval_X, MvPolynomial.aeval_X]
   have h10 : (1 : Fin 2) ≠ 0 := by decide
-  simp only [branchValues, if_pos rfl, if_neg h10, mul_pow, ← map_pow, hζ, map_neg,
+  simp only [branchValues, eq_self, if_true, if_neg h10, mul_pow, ← map_pow, hζ, map_neg,
     map_one, neg_one_mul, ← pow_mul]
   rw [Nat.mul_comm b a, add_neg_cancel]
 
@@ -162,7 +162,7 @@ private theorem quotientBranch_x (a b : ℕ) (ha : 0 < a) (hb : 0 < b)
   change algebraMap (P p) (F p)
     (MvPolynomial.aeval (branchValues p a b ζ) (MvPolynomial.X 0 : Plane p)) = _
   rw [MvPolynomial.aeval_X]
-  simp only [branchValues, if_pos rfl]
+  simp [branchValues]
 
 private theorem powers_x_injective (a b : ℕ) (ha : 0 < a) (hb : 0 < b)
     (hA : (a : K p) = 0) (hB : (b : K p) = 0) :
@@ -191,14 +191,14 @@ theorem benchmarkTjurina_field_length_eq_top (a b : ℕ) (ha : 0 < a) (hb : 0 < 
     Infinite.of_injective _ (powers_x_injective p a b ha hb hA hB)
   letI : NeZero p := ⟨(Fact.out : p.Prime).ne_zero⟩
   letI : Finite (Tjurina p a b) := Module.finite_of_finite (K p)
-  exact not_finite _
+  exact not_finite (Tjurina p a b)
 
 private theorem localX_mem_maximal :
     localX p ∈ IsLocalRing.maximalIdeal (OriginRing (K p)) := by
   rw [localX, ← Localization.AtPrime.map_eq_maximalIdeal (I := originIdeal (K p))]
-  apply Ideal.mem_map_of_mem
+  apply Ideal.mem_map_of_mem (algebraMap (Plane p) (OriginRing (K p)))
   change constantCoeff (MvPolynomial.X (0 : Fin 2) : Plane p) = 0
-  exact MvPolynomial.constantCoeff_X _
+  exact MvPolynomial.constantCoeff_X (R := K p) (0 : Fin 2)
 
 /-- The same quotient has infinite length as a module over the actual
 ambient local ring at the origin. -/
@@ -206,13 +206,16 @@ theorem benchmarkTjurina_local_length_eq_top (a b : ℕ) (ha : 0 < a) (hb : 0 < 
     (hA : (a : K p) = 0) (hB : (b : K p) = 0) :
     Module.length (OriginRing (K p)) (Tjurina p a b) = ⊤ := by
   let Q := Tjurina p a b
-  let q := Ideal.Quotient.mk (localIdeal p a b)
+  let q : OriginRing (K p) →+* Q := Ideal.Quotient.mk (localIdeal p a b)
   have hq : Function.Surjective q := Ideal.Quotient.mk_surjective
   letI : Infinite Q := Infinite.of_injective _ (powers_x_injective p a b ha hb hA hB)
   letI : IsLocalRing Q := IsLocalRing.of_surjective' q hq
   have hx : x p a b ∈ IsLocalRing.maximalIdeal Q := by
-    rw [← IsLocalRing.map_maximalIdeal_of_surjective q hq]
-    exact Ideal.mem_map_of_mem q (localX_mem_maximal p)
+    change q (localX p) ∈ IsLocalRing.maximalIdeal Q
+    have hMap : (IsLocalRing.maximalIdeal (OriginRing (K p))).map q =
+        IsLocalRing.maximalIdeal Q :=
+      IsLocalRing.map_maximalIdeal_of_surjective (R := OriginRing (K p)) (S := Q) q hq
+    exact hMap ▸ Ideal.mem_map_of_mem q (localX_mem_maximal p)
   have hn : ¬ IsNilpotent (x p a b) := by
     rintro ⟨n, hn⟩
     have hs : (x p a b) ^ (n + 1) = 0 := by rw [pow_succ, hn, zero_mul]
