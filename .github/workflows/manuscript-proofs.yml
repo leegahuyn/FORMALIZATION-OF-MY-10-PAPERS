@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles
 jobs:
   pinned:
     name: Vendored Mathlib

@@ -65,13 +65,17 @@ private theorem derivative_zero :
     (G k).cotangentSpaceBasis.repr ((G k).toExtension.cotangentComplex (gen k)) 0 =
       nodeVar k 1 := by
   have h : (1 : Fin 2) ≠ 0 := by decide
-  simp [repr_derivative, relation, pderiv_mul, pderiv_X_self, pderiv_X_of_ne (R := k) _ _ h, G]
+  rw [repr_derivative]
+  simp only [relation, pderiv_mul, pderiv_X_self, pderiv_X_of_ne (R := k) h,
+    one_mul, mul_zero, add_zero, MvPolynomial.aeval_X] <;> rfl
 
 private theorem derivative_one :
     (G k).cotangentSpaceBasis.repr ((G k).toExtension.cotangentComplex (gen k)) 1 =
       nodeVar k 0 := by
   have h : (0 : Fin 2) ≠ 1 := by decide
-  simp [repr_derivative, relation, pderiv_mul, pderiv_X_self, pderiv_X_of_ne (R := k) _ _ h, G]
+  rw [repr_derivative]
+  simp only [relation, pderiv_mul, pderiv_X_self, pderiv_X_of_ne (R := k) h,
+    zero_mul, mul_one, zero_add, MvPolynomial.aeval_X] <;> rfl
 
 private theorem common_annihilator (s : NodeRing k)
     (hx : s * nodeVar k 0 = 0) (hy : s * nodeVar k 1 = 0) : s = 0 := by

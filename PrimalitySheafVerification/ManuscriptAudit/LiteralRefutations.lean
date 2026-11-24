@@ -425,7 +425,7 @@ theorem localized_intersection_ne_printed_minimum :
   rw [Localization.AtPrime.map_eq_maximalIdeal]
   exact (IsLocalRing.maximalIdeal.isMaximal ZAtThree).ne_top
 
-/-- Paper 1, p. 10, Proposition 2.5. At p=3, n=t=1 and σ=2,
+/-- Paper 1, p. 10, Proposition 2.5. At p=p₂=3, n=t=2 and σ=3,
 the required choice y≡±1 modulo 3 conflicts with y≡0 modulo 3. -/
 theorem paper1_optional_congruence_requires_compatibility :
     ¬ ∃ y : ℤ, (((y : ZMod 3) = 1) ∨ ((y : ZMod 3) = -1)) ∧
@@ -548,6 +548,15 @@ theorem paper3_ic_log_two_scaling_not_equality :
   rw [one_mul] at h
   exact (ne_of_gt hStrict) h
 
+/-- Paper 1, p. 10, Proposition 2.4. At p=p₂=3, n=2, A=4
+and y=2, the printed indexed-prime modulus has order two although t=1. -/
+theorem paper1_indexed_prime_modulus_can_exceed_printed_order :
+    padicValNat 3 (4 - 1) = 1 ∧ padicValNat 3 (3 * 2 + (4 - 1)) = 2 := by
+  letI : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
+  refine ⟨padicValNat_self, ?_⟩
+  change padicValNat 3 (3 ^ 2) = 2
+  rw [padicValNat.pow, padicValNat_self] <;> decide
+
 end ManuscriptAudit
 
 open Lean Elab Command in
@@ -579,7 +588,8 @@ run_cmd do
     ``ManuscriptAudit.paper1_worked_tor_kernel_count,
     ``ManuscriptAudit.unique_padic_residue_lift_does_not_imply_unit_derivative,
     ``ManuscriptAudit.paper4_shared_prime_opens_do_not_cover,
-    ``ManuscriptAudit.paper3_ic_log_two_scaling_not_equality] do
+    ``ManuscriptAudit.paper3_ic_log_two_scaling_not_equality,
+    ``ManuscriptAudit.paper1_indexed_prime_modulus_can_exceed_printed_order] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

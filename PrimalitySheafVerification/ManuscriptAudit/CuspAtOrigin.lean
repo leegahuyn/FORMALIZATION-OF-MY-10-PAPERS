@@ -120,21 +120,37 @@ private theorem const_firstCoordinate (g : Plane) :
   rw [Polynomial.coeff_zero_eq_aeval_zero]
   exact AlgHom.congr_fun he g
 
+private theorem intoU_equation : (qP.comp firstCoordinate) equation = 0 := by
+  have he : firstCoordinate equation = (Polynomial.X : P) ^ 2 := by
+    simp [equation, firstCoordinate_zero, firstCoordinate_one]
+  change qP (firstCoordinate equation) = 0
+  rw [he, map_pow, qP_X_square]
+
 private def intoU : CuspRing →ₐ[k] U :=
   Ideal.Quotient.liftₐ equationIdeal (qP.comp firstCoordinate)
-    (liftEquation (qP.comp firstCoordinate) (by
-      simp [equation, firstCoordinate_zero, firstCoordinate_one, qP_X_square]))
+    (liftEquation (qP.comp firstCoordinate) intoU_equation)
+
+private theorem intoU_mk (g : Plane) :
+    intoU (Ideal.Quotient.mk equationIdeal g) = qP (firstCoordinate g) := by
+  simp only [intoU, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk,
+    AlgHom.coe_toRingHom, AlgHom.comp_apply]
 
 private theorem intoU_x : intoU (coord 0) = qU t := by
-  change qP (firstCoordinate (X 0)) = qU t
-  simpa only [firstCoordinate_zero]
+  calc
+    intoU (coord 0) = qP (firstCoordinate (X 0)) := intoU_mk _
+    _ = qP Polynomial.X := congrArg qP firstCoordinate_zero
+    _ = qU t := rfl
 
 private theorem intoU_y : intoU (coord 1) = 0 := by
-  change qP (firstCoordinate (X 1)) = 0
-  rw [firstCoordinate_one, map_zero]
+  calc
+    intoU (coord 1) = qP (firstCoordinate (X 1)) := intoU_mk _
+    _ = qP 0 := congrArg qP firstCoordinate_one
+    _ = 0 := map_zero qP
 
 private theorem qP_isUnit (g : P) (h : g.coeff 0 ≠ 0) : IsUnit (qP g) := by
-  obtain ⟨a, ha⟩ := Polynomial.X_dvd_sub_C g
+  have hdvd : (Polynomial.X : P) ∣ g - Polynomial.C (g.coeff 0) :=
+    Polynomial.X_dvd_sub_C
+  obtain ⟨a, ha⟩ := hdvd
   have he : qP g - qP (Polynomial.C (g.coeff 0)) = qP Polynomial.X * qP a := by
     simpa only [map_sub, map_mul] using congrArg qP ha
   have hn : IsNilpotent (qP g - qP (Polynomial.C (g.coeff 0))) := by
@@ -152,15 +168,19 @@ private theorem intoU_unit (s : originIdeal.primeCompl) : IsUnit (intoU s) := by
     rw [← hg] at hn
     exact hn
   change IsUnit (intoU (s : CuspRing))
-  rw [← hg]
+  rw [← hg, intoU_mk]
   exact qP_isUnit (firstCoordinate g) hres
 
 private def localMap : CuspLocal →ₐ[k] U :=
-  IsLocalization.liftAlgHom (f := intoU) intoU_unit
+  IsLocalization.liftAlgHom (A := k) (R := CuspRing)
+    (M := originIdeal.primeCompl) (S := CuspLocal) (P := U) (f := intoU) intoU_unit
 
 private theorem localMap_on_ring (a : CuspRing) :
     localMap (algebraMap CuspRing CuspLocal a) = intoU a := by
-  exact IsLocalization.lift_eq (g := intoU.toRingHom) intoU_unit a
+  unfold localMap
+  rw [IsLocalization.liftAlgHom_apply]
+  exact IsLocalization.lift_eq (M := originIdeal.primeCompl) (S := CuspLocal)
+    (g := intoU.toRingHom) intoU_unit a
 
 /-- Paper 2, PDF pp. 29 and 44–49. The cusp \(x^2+y^3\) remains
 non-smooth at the actual origin of its fiber over \(\mathbb F_5\).
@@ -201,9 +221,8 @@ theorem cusp_not_smooth_at_origin : ¬ Algebra.IsSmoothAt k originIdeal := by
       _ = t ^ 2 := by
         simp [mul_t_eq_zero_of_mem_J hd, square_eq_zero_of_mem_J hd]
   have hrel : x ^ 2 + y ^ 3 = 0 := by
-    change (algebraMap CuspRing CuspLocal (coord 0)) ^ 2 +
-      (algebraMap CuspRing CuspLocal (coord 1)) ^ 3 = 0
-    rw [← map_pow, ← map_pow, ← map_add, coord_relation, map_zero]
+    simpa only [map_add, map_pow, map_zero] using
+      congrArg (algebraMap CuspRing CuspLocal) coord_relation
   have h := congrArg lift hrel
   rw [map_add, map_pow, map_pow, map_zero, hx2, hy3, add_zero] at h
   exact t_square_ne_zero h
