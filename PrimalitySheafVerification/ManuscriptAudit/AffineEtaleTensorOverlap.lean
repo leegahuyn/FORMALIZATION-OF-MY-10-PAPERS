@@ -2,6 +2,8 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+import PrimalitySheafVerification.ManuscriptAudit.KummerSiteCover
 import PrimalitySheafVerification.ManuscriptAudit.UnitCocycleTensor
 
 /-!
@@ -99,11 +101,28 @@ def coverArrow : ofAlgebra R B ⟶ baseObject R :=
 
 variable (R B)
 
-private instance doubleEtale : Algebra.Etale R (B ⊗[R] B) :=
+/-- A faithfully flat étale algebra determines a genuine singleton
+covering sieve on the affine étale site. -/
+theorem coverArrow_generate_mem [Module.FaithfullyFlat R B] :
+    Sieve.generate (Presieve.singleton (coverArrow R B)) ∈
+      Scheme.AffineEtale.topology (Spec (CommRingCat.of R)) (baseObject R) := by
+  rw [← Presieve.ofArrows_of_unique (fun _ : Unit => coverArrow R B)]
+  change Sieve.ofArrows (fun _ : Unit => ofAlgebra R B) (fun _ : Unit => coverArrow R B) ∈ _
+  rw [Scheme.AffineEtale.topology, Functor.mem_inducedTopology_iff_of_isCoverDense,
+    Sieve.functorPushforward_ofArrows]
+  apply KummerSiteCover.singleton_mem_smallEtaleTopology
+  change Function.Surjective (PrimeSpectrum.comap (algebraMap R B))
+  exact PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+theorem doubleEtale : Algebra.Etale R (B ⊗[R] B) :=
   Algebra.Etale.comp R B (B ⊗[R] B)
 
-private instance tripleEtale : Algebra.Etale R (B ⊗[R] (B ⊗[R] B)) :=
+attribute [local instance] doubleEtale
+
+theorem tripleEtale : Algebra.Etale R (B ⊗[R] (B ⊗[R] B)) :=
   Algebra.Etale.comp R B (B ⊗[R] (B ⊗[R] B))
+
+attribute [local instance] tripleEtale
 
 /-- The two projections from the tensor double overlap. -/
 def firstProjection : ofAlgebra R (B ⊗[R] B) ⟶ ofAlgebra R B :=
@@ -146,6 +165,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.AffineEtaleTensorOverlap.double_isPullback,
+      ``ManuscriptAudit.AffineEtaleTensorOverlap.coverArrow_generate_mem,
       ``ManuscriptAudit.AffineEtaleTensorOverlap.diagonalArrow,
       ``ManuscriptAudit.AffineEtaleTensorOverlap.projection12,
       ``ManuscriptAudit.AffineEtaleTensorOverlap.projection13,
