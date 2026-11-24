@@ -85,7 +85,7 @@ private theorem rootTag_fiber (a : rootsOfUnity d A) (ζ : rootsOfUnity d K) :
     rootTag a ⁻¹' {ζ} = PrimeSpectrum.zeroLocus {rootValue a - algebraMap K A (rootValue ζ)} := by
   ext P
   simpa only [Set.mem_preimage, Set.mem_singleton_iff, PrimeSpectrum.mem_zeroLocus,
-    Set.singleton_subset_iff] using rootTag_eq_iff a P ζ
+    Set.singleton_subset_iff, SetLike.mem_coe] using rootTag_eq_iff a P ζ
 
 private theorem isLocallyConstant_rootTag (a : rootsOfUnity d A) :
     IsLocallyConstant (rootTag (K := K) a) := by
@@ -124,8 +124,8 @@ theorem locallyConstantRootTag_idempotent (a : rootsOfUnity d A) (ζ : rootsOfUn
 /-- The locally constant label is compatible with change of affine object. -/
 theorem locallyConstantRootTag_natural [Algebra K B] (f : A →ₐ[K] B)
     (a : rootsOfUnity d A) (P : PrimeSpectrum B) :
-    locallyConstantRootTag (mapRoots d f.toRingHom a) P =
-      locallyConstantRootTag a (PrimeSpectrum.comap f.toRingHom P) := by
+    locallyConstantRootTag (K := K) (mapRoots d f.toRingHom a) P =
+      locallyConstantRootTag (K := K) a (PrimeSpectrum.comap f.toRingHom P) := by
   change rootTag (K := K) (mapRoots d f.toRingHom a) P =
     rootTag (K := K) a (PrimeSpectrum.comap f.toRingHom P)
   apply (rootTag_eq_iff _ _ _).mpr

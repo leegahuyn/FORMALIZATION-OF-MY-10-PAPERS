@@ -41,7 +41,8 @@ private theorem E_ker : (E K).ker = Ideal.span {CuspDelta.cuspPlaneEquation K} :
   ext g
   change AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K) g = 0 ↔
     g ∈ Ideal.span {CuspDelta.cuspPlaneEquation K}
-  rw [AdjoinRoot.mk_eq_zero, Ideal.mem_span_singleton]
+  exact (AdjoinRoot.mk_eq_zero (f := CuspDelta.cuspPlaneEquation K) (g := (show P K from g))).trans
+    Ideal.mem_span_singleton.symm
 
 private theorem monic_equation : (CuspDelta.cuspPlaneEquation K).Monic :=
   Polynomial.monic_X_pow_sub_C ((Polynomial.X : Polynomial K) ^ 3) (n := 2) (by decide)
@@ -68,7 +69,7 @@ private theorem derivativePairing_of_relation :
   rw [Algebra.Extension.cotangentComplex_mk]
   unfold derivativePairing
   rw [LinearMap.liftBaseChange_one_tmul, LinearMap.comp_apply,
-    Derivation.liftKaehlerDifferential_D]
+    Derivation.liftKaehlerDifferential_comp_D]
   change AdjoinRoot.mk (CuspDelta.cuspPlaneEquation K)
     (Polynomial.derivative (CuspDelta.cuspPlaneEquation K)) =
       (2 : CuspRing K) * AdjoinRoot.root (CuspDelta.cuspPlaneEquation K)
