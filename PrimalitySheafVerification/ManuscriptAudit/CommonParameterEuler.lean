@@ -1,6 +1,7 @@
 import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.Tactic.NormNum
 
 /-!
 # The Euler product with a common formal parameter
@@ -25,36 +26,36 @@ private theorem denominator_constant (a p : ℤ) :
 
 private theorem denominator_first (a p : ℤ) :
     coeff 1 (denominator a p) = -a := by
-  simp [denominator, coeff_one, coeff_X, coeff_X_pow]
+  simp only [denominator, map_add, map_sub, coeff_C_mul, coeff_one, coeff_X, coeff_X_pow] <;> norm_num
 
 private theorem denominator_second (a p : ℤ) :
     coeff 2 (denominator a p) = p := by
-  simp [denominator, coeff_one, coeff_X, coeff_X_pow]
+  simp only [denominator, map_add, map_sub, coeff_C_mul, coeff_one, coeff_X, coeff_X_pow] <;> norm_num
 
 /-- Products over the first n factors, in increasing enumeration order. -/
-def partial (trace prime : ℕ → ℤ) : ℕ → PowerSeries ℤ
+def partialProduct (trace prime : ℕ → ℤ) : ℕ → PowerSeries ℤ
   | 0 => 1
-  | n + 1 => partial trace prime n * (denominator (trace n) (prime n)).invOfUnit 1
+  | n + 1 => partialProduct trace prime n * (denominator (trace n) (prime n)).invOfUnit 1
 
 @[simp] private theorem partial_constant (trace prime : ℕ → ℤ) (n : ℕ) :
-    constantCoeff (partial trace prime n) = 1 := by
+    constantCoeff (partialProduct trace prime n) = 1 := by
   induction n with
-  | zero => simp [partial]
+  | zero => simp [partialProduct]
   | succ n ih =>
-      simp [partial, ih]
+      simp [partialProduct, ih]
 
 private theorem partial_cancel (trace prime : ℕ → ℤ) (n : ℕ) :
-    partial trace prime (n + 1) * denominator (trace n) (prime n) =
-      partial trace prime n := by
+    partialProduct trace prime (n + 1) * denominator (trace n) (prime n) =
+      partialProduct trace prime n := by
   have hc : constantCoeff (denominator (trace n) (prime n)) =
       ((1 : ℤˣ) : ℤ) := denominator_constant (trace n) (prime n)
-  rw [partial, mul_assoc, PowerSeries.invOfUnit_mul _ _ hc, mul_one]
+  rw [partialProduct, mul_assoc, PowerSeries.invOfUnit_mul _ _ hc, mul_one]
 
 /-- Successive partial products differ in degree one or two, regardless of the trace. -/
 theorem paper5_adjacent_partial_products_change (trace prime : ℕ → ℤ)
     (n : ℕ) (hn : prime n ≠ 0) :
-    ¬ (coeff 1 (partial trace prime (n + 1)) = coeff 1 (partial trace prime n) ∧
-       coeff 2 (partial trace prime (n + 1)) = coeff 2 (partial trace prime n)) := by
+    ¬ (coeff 1 (partialProduct trace prime (n + 1)) = coeff 1 (partialProduct trace prime n) ∧
+       coeff 2 (partialProduct trace prime (n + 1)) = coeff 2 (partialProduct trace prime n)) := by
   rintro ⟨h₁, h₂⟩
   have h := congrArg (coeff 1) (partial_cancel trace prime n)
   rw [coeff_one_mul, denominator_constant, denominator_first, partial_constant,
@@ -77,7 +78,7 @@ constant. This applies to any infinite enumeration of the good primes. -/
 theorem paper5_common_parameter_euler_product_fails (trace prime : ℕ → ℤ)
     (hp : ∀ n, prime n ≠ 0) :
     ¬ (∃ f : PowerSeries ℤ, ∀ d : ℕ, ∃ N : ℕ, ∀ n ≥ N,
-      coeff d (partial trace prime n) = coeff d f) := by
+      coeff d (partialProduct trace prime n) = coeff d f) := by
   rintro ⟨f, hl⟩
   obtain ⟨N₁, h₁⟩ := hl 1
   obtain ⟨N₂, h₂⟩ := hl 2

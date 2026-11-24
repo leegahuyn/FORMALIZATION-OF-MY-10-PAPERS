@@ -7,6 +7,8 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicRemainder.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicCertificates.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/PadicLipschitz.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicBinomialLimit.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/PadicExactBridge.lean'
       - 'PrimalitySheafVerification/ManuscriptAudit/NodalCotangent.lean'
       - 'PrimalitySheafVerification/Spt1.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
@@ -58,7 +60,7 @@ jobs:
           logs="${RUNNER_TEMP}/manuscript-project-upstream"
           compiled="${RUNNER_TEMP}/manuscript-project-modules"
           project=PrimalitySheafVerification
-          mkdir -p "$compiled/$project"
+          mkdir -p "$compiled/$project/ManuscriptAudit"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           status=0
           for source in Spt1 Spt5; do
@@ -69,6 +71,17 @@ jobs:
             fi
             if lake env lean --root="$GITHUB_WORKSPACE" -o "$compiled/$project/$source.olean" \
                 "$GITHUB_WORKSPACE/$project/$source.lean" > "$logs/$source.log" 2>&1; then
+              if [[ "$source" == Spt1 ]]; then
+                if lake env lean --root="$GITHUB_WORKSPACE" \
+                    -o "$compiled/$project/ManuscriptAudit/PadicBinomialLimit.olean" \
+                    "$GITHUB_WORKSPACE/$project/ManuscriptAudit/PadicBinomialLimit.lean" \
+                    > "$logs/PadicBinomialLimit.log" 2>&1; then
+                  proofs+=(PadicExactBridge)
+                else
+                  tail -n 80 "$logs/PadicBinomialLimit.log"
+                  status=1
+                fi
+              fi
               for proof in "${proofs[@]}"; do
                 LEAN_PATH="$compiled:$audit_lean_path" \
                   lean "$GITHUB_WORKSPACE/$project/ManuscriptAudit/$proof.lean" 2>&1 |

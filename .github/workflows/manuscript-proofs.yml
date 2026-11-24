@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength
+  CORE_PROOFS: LiteralRefutations ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex CubicTrace ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -122,7 +122,7 @@ jobs:
           set -euo pipefail
           log="${RUNNER_TEMP}/manuscript-spt1-build.log"
           status=0
-          lake build PrimalitySheafVerification.Spt1 > "$log" 2>&1 || status=$?
+          lake build PrimalitySheafVerification.Spt1 PrimalitySheafVerification.ManuscriptAudit.PadicBinomialLimit > "$log" 2>&1 || status=$?
           tail -n 60 "$log"
           exit "$status"
       - name: Cache compiled Spt1 on GitHub
@@ -137,7 +137,7 @@ jobs:
         run: |
           set -euo pipefail
           status=0
-          for proof in PadicRemainder PadicCertificates PadicLipschitz; do
+          for proof in PadicRemainder PadicCertificates PadicLipschitz PadicExactBridge; do
             lake env lean "PrimalitySheafVerification/ManuscriptAudit/$proof.lean" 2>&1 |
               tee -a "${RUNNER_TEMP}/manuscript-spt1-proof.log" || status=1
           done

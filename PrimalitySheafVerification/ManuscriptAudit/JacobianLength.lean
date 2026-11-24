@@ -41,8 +41,8 @@ private def lineSubstitution : R →+* P :=
 
 private theorem lineSubstitution_equation : lineSubstitution equation = 0 := by
   have htwo : (2 : P) = 0 := by
-    simpa only [map_natCast, map_zero] using
-      congrArg (fun c : K => (Polynomial.C c : P)) (ZMod.natCast_self 2)
+    have hk : (2 : K) = 0 := by decide
+    rw [← map_ofNat (Polynomial.C : K →+* P) 2, hk, map_zero]
   change MvPolynomial.aeval (fun _ : Fin 2 => (Polynomial.X : P)) equation = 0
   simp only [equation, map_add, map_pow, MvPolynomial.aeval_X]
   rw [← two_mul, htwo, zero_mul]
@@ -84,7 +84,15 @@ theorem paper2_localJacobianIdeal_eq_bot : localJacobianIdeal = ⊥ := by
   simp only [equation, map_add, MvPolynomial.pderiv_pow, htwo, zero_mul, add_zero, map_zero]
 
 /-- The precise localized Jacobian quotient whose length is asserted to be four. -/
-abbrev OriginJacobianQuotient := OriginLocalRing ⧸ localJacobianIdeal
+abbrev OriginJacobianQuotient : Type :=
+  @HasQuotient.Quotient OriginLocalRing (Ideal OriginLocalRing)
+    (Ideal.instHasQuotient (R := OriginLocalRing)) localJacobianIdeal
+
+local instance : CommRing OriginJacobianQuotient :=
+  Ideal.Quotient.commRing localJacobianIdeal
+
+local instance : Algebra K OriginJacobianQuotient :=
+  Ideal.Quotient.algebra K (I := localJacobianIdeal)
 
 private def lineToFraction : CurveRing →+* F :=
   (algebraMap P F).comp lineMap
@@ -107,12 +115,12 @@ private theorem localLine_map (u : CurveRing) :
     localLine (algebraMap CurveRing OriginLocalRing u) = lineToFraction u :=
   IsLocalization.lift_eq lineToFraction_unit u
 
-private def quotientLine : OriginJacobianQuotient →+* F :=
-  Ideal.Quotient.lift localJacobianIdeal localLine (by
-    intro a ha
-    rw [paper2_localJacobianIdeal_eq_bot] at ha
-    have h : a = 0 := Submodule.mem_bot.mp ha
-    rw [h, map_zero])
+private def quotientLine : OriginJacobianQuotient →+* F := by
+  refine Ideal.Quotient.lift (R := OriginLocalRing) (S := F) localJacobianIdeal localLine ?_
+  intro a ha
+  rw [paper2_localJacobianIdeal_eq_bot] at ha
+  have h : a = 0 := Ideal.mem_bot.mp ha
+  rw [h, map_zero]
 
 private def firstCoordinate : OriginJacobianQuotient :=
   Ideal.Quotient.mk localJacobianIdeal
@@ -150,6 +158,7 @@ theorem paper2_localJacobianQuotient_not_finite :
 /-- The local Jacobian quotient has infinite module length. -/
 theorem paper2_localJacobianQuotient_length_eq_top :
     Module.length K OriginJacobianQuotient = ⊤ := by
+  classical
   by_contra htop
   have hfl : IsFiniteLength K OriginJacobianQuotient := Module.length_ne_top_iff.mp htop
   exact paper2_localJacobianQuotient_not_finite
