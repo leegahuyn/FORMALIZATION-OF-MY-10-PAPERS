@@ -2,17 +2,17 @@ file	contiguous_semantic_lines	checkpoint
 BuildAll.lean	1–16	Imports and bridge coverage inspected
 Spt1.lean	1–8087	Full file reviewed. Exact localized min-versus-max correction, derived Tor of nonzero cyclic moduli, and p-adic comparison dependencies
 Spt2.lean	1–8878	Full file reviewed. Native Hensel, polynomial and principal-open results. Étale and motive realizations still use models or certificates
-Spt3.lean		Targeted Tor and p-adic logarithm declarations located
+Spt3.lean	1–7506	Full file reviewed. Exact CRT, derived Tor and repointed sheaf. Four-gate certification uses replacement certifiers
 Spt4.lean	1–8714	Full file reviewed. Arithmetic CRT and generalized sheaf model distinguished
 Spt5.lean	1–8071	Full file reviewed. Exact benchmark Tjurina proofs and comparison packages
 Spt6.lean	1–8651	Full file reviewed. Actual categorical Tor calculation and conditional detector models
 Spt7.lean	1–18114	Full file reviewed. Local radius bounds, exact Tor for nonzero moduli, and global comparison hypotheses
 Mock1.lean	1–9831	Full file reviewed. Finite Mahler interpolation and synthetic extraction blocks
-Mock1_Advanced.lean	1–51030	Fixed reference and prompt-bullet ledgers inspected. Further targeted ranges reviewed
+Mock1_Advanced.lean	1–80981	Reference model, paper-data refutations and analytic proof-input interfaces inspected
 Mock2.lean	1–26607	Full file reviewed. Exact quotient and cusp refutations and actual categorical prime-power Tor
 Mock2_Advanced.lean	1–31919	Full file reviewed. Cusp and kernel counterexamples, positive model results, and analytic hypotheses
-Mock2_FunctionalAnalysis.lean	1–22550	Literal Petersson integral, corrected weight operators, and concrete graph core. Further targeted ranges reviewed
+Mock2_FunctionalAnalysis.lean	1–42950	Literal Petersson integral, inverse-eta operators, six-tile Stokes and closed graph cutoffs inspected
 Mock2_FunctionalAnalysis_Integrated.lean	1–13	Import bridge
-QYM.lean		Targeted q-radius and Hamiltonian countermodels reviewed
+QYM.lean	1–25000, 42001–43070	Twisted algebra, bounded perturbation and abstract spectral results. At later range, concrete fractional graph and cusp geometry inspected
 Mock3.lean	1–12	Import bridge
 Verification.lean	1–197	Focused arithmetic file reviewed for scope and trust dependencies
