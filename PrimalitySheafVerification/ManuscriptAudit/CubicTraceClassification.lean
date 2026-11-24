@@ -1,8 +1,7 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Data.Nat.Choose.Lucas
 import Mathlib.Data.Nat.Prime.Factorial
 import PrimalitySheafVerification.ManuscriptAudit.CubicFiniteTorsion
-import PrimalitySheafVerification.ManuscriptAudit.CubicGeometricConverse
-import PrimalitySheafVerification.ManuscriptAudit.CubicGeometricTorsion
 import PrimalitySheafVerification.ManuscriptAudit.CubicTrace
 
 /-!
@@ -131,7 +130,7 @@ private theorem cubic_coefficient_base_nonzero {p : ℕ} [Fact p.Prime]
   rw [h]
   exact mul_ne_zero (pow_ne_zero _ hA) (choose_cast_ne_zero (by omega) (by omega))
 
-private theorem prime_rem_three_ne_zero {p : ℕ} [Fact p.Prime] (hp5 : 5 ≤ p) :
+theorem prime_rem_three_ne_zero {p : ℕ} [Fact p.Prime] (hp5 : 5 ≤ p) :
     p % 3 ≠ 0 := by
   intro h
   have hp : Nat.Prime p := Fact.out
@@ -192,37 +191,6 @@ theorem paper5_extension_count_dvd {p : ℕ} [Fact p.Prime]
   rw [hW]
   exact (CharP.cast_eq_zero_iff F p _).mp hCount
 
-/-- Actual geometric p-torsion of the printed varying family is trivial
-exactly in the residue class two modulo three. -/
-theorem paper5_trivial_geometric_p_torsion_iff {p : ℕ} [Fact p.Prime] (hp5 : 5 ≤ p)
-    {A : ZMod p} (hA : A ≠ 0) :
-    (∀ P : ((paper5TraceCurve p A).baseChange (AlgebraicClosure (ZMod p))).toProjective.Point,
-      p • P = 0 → P = 0) ↔ p % 3 = 2 := by
-  classical
-  refine ⟨?_, fun hr => CubicGeometricTorsion.paper5_no_p_torsion_over_algebraicClosure hp5 hr hA⟩
-  intro h
-  by_contra hn
-  have h0 := prime_rem_three_ne_zero (p := p) hp5
-  have hr : p % 3 = 1 := by omega
-  let r := p - 1
-  let F := GaloisField p r
-  letI : Fintype F := Fintype.ofFinite F
-  have hc : Fintype.card F = p ^ (p - 1) := by
-    rw [← Nat.card_eq_fintype_card]
-    exact GaloisField.card p r (by dsimp [r]; omega)
-  obtain ⟨P, hP, hz⟩ :=
-    CubicGeometricConverse.paper5_geometric_p_torsion_of_galoisField_projective_card_dvd r
-      (paper5_extension_count_dvd hc hp5 hr hA)
-  exact hP (h P hz)
-
-/-- Trace zero and trivial geometric p-torsion agree for every stated
-good reduction of the printed varying family. -/
-theorem paper5_trace_zero_iff_trivial_geometric_p_torsion {p : ℕ} [Fact p.Prime] (hp5 : 5 ≤ p)
-    {A : ZMod p} (hA : A ≠ 0) :
-    ((p : ℤ) + 1 - (Nat.card (paper5TraceCurve p A).toProjective.Point : ℤ) = 0) ↔
-      (∀ P : ((paper5TraceCurve p A).baseChange (AlgebraicClosure (ZMod p))).toProjective.Point,
-        p • P = 0 → P = 0) :=
-  (paper5_trace_eq_zero_iff hp5 hA).trans (paper5_trivial_geometric_p_torsion_iff hp5 hA).symm
 
 end ManuscriptAudit.CubicTraceClassification
 
@@ -231,9 +199,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.CubicTraceClassification.cubic_coefficient_primePower_eq_pow,
       ``ManuscriptAudit.CubicTraceClassification.paper5_trace_eq_zero_iff,
-      ``ManuscriptAudit.CubicTraceClassification.paper5_extension_count_dvd,
-      ``ManuscriptAudit.CubicTraceClassification.paper5_trivial_geometric_p_torsion_iff,
-      ``ManuscriptAudit.CubicTraceClassification.paper5_trace_zero_iff_trivial_geometric_p_torsion] do
+      ``ManuscriptAudit.CubicTraceClassification.paper5_extension_count_dvd] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

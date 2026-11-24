@@ -29,11 +29,12 @@ private abbrev siteEquiv (R : CommRingCat.{0}) :=
 attribute [local instance] KummerCohomologySequence.affineSiteHasExt
 
 /-- The native full small étale site has the required Ext groups. -/
-def fullSiteHasExt (R : CommRingCat.{0}) :
+theorem fullSiteHasExt (R : CommRingCat.{0}) :
     HasExt.{0} (Sheaf (fullSite R) AddCommGrpCat.{0}) := by
   let C := Sheaf (fullSite R) AddCommGrpCat.{0}
   letI : IsGrothendieckAbelian.{0} C :=
     Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology (Spec R) AddCommGrpCat.{0}
+  letI : LocallySmall.{0} C := IsGrothendieckAbelian.locallySmall (C := C)
   letI : EnoughInjectives C := IsGrothendieckAbelian.enoughInjectives.{0} (C := C)
   exact hasExt_of_enoughInjectives C
 
@@ -47,7 +48,9 @@ private def fullTerminal_isTerminal (R : CommRingCat.{0}) :
   change f.left = U.hom
   have h := f.w
   change f.left ≫ 𝟙 (Spec R) = U.hom at h
-  simpa only [Category.comp_id] using h
+  have hId : (f.left : U.left ⟶ Spec R) ≫ 𝟙 (Spec R) = f.left :=
+    Category.comp_id (f.left : U.left ⟶ Spec R)
+  exact hId.symm.trans h
 
 /-- The affine-to-full sheaf equivalence carries constant sheaves to the
 actual constant sheaves on the small étale site. -/

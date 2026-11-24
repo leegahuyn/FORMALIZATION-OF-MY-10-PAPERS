@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
+import Mathlib.Data.Fintype.Option
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.GroupTheory.Perm.Cycle.Type
@@ -30,6 +31,8 @@ theorem exists_algebraicClosure_point_of_card_dvd
   classical
   let eL := Projective.Point.toAffineAddEquiv (W := (W.baseChange L).toProjective)
   let eFinite := eL.toEquiv.trans ((W.baseChange L).toAffine.nonsingularPointEquiv)
+  letI : Finite (WithZero {xy : L × L // (W.baseChange L).toAffine.Nonsingular xy.1 xy.2}) :=
+    inferInstanceAs (Finite (Option {xy : L × L // (W.baseChange L).toAffine.Nonsingular xy.1 xy.2}))
   letI : Finite (W.baseChange L).toProjective.Point :=
     Finite.of_injective eFinite eFinite.injective
   obtain ⟨P, hOrder⟩ := exists_prime_addOrderOf_dvd_card' p hCard
