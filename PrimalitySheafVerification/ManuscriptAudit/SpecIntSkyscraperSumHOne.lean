@@ -252,8 +252,9 @@ theorem paper6_direct_sum_comparison_refuted {P : Set X₀} (A : P → G)
   rintro ⟨e⟩
   letI := pointCoproduct_H1_subsingleton A hP
   letI : Subsingleton (DirectSum P (fun q => (A q : Type))) := e.symm.injective.subsingleton
-  have hs : Subsingleton (A p) :=
-    (DirectSum.of_injective (fun q : P => (A q : Type)) p).subsingleton
+  have hinj : Function.Injective (DirectSum.of (fun q : P => (A q : Type)) p) :=
+    DirectSum.of_injective p
+  have hs : Subsingleton (A p) := hinj.subsingleton
   exact (not_nontrivial_iff_subsingleton.mpr hs) hp
 
 end

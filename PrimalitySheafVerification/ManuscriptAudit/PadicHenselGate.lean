@@ -56,12 +56,13 @@ theorem residue_simple_root_unique_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
     (hDerivative : (derivative (F.map reduction)).eval r ≠ 0) :
     ∃! z : ℤ_[p], F.eval z = 0 ∧ reduction z = r := by
   obtain ⟨a, ha⟩ := (ZMod.ringHom_surjective (reduction : ℤ_[p] →+* ZMod p)) r
-  rw [← ha] at *
   have hRoot' : reduction (F.eval a) = 0 := by
-    simpa only [Polynomial.eval_map_apply] using hRoot
+    rw [← Polynomial.eval_map_apply, ha]
+    exact hRoot
   have hDerivative' : reduction (F.derivative.eval a) ≠ 0 := by
-    simpa only [Polynomial.derivative_map, Polynomial.eval_map_apply] using hDerivative
-  exact unique_lift_from_simple F a hRoot' hDerivative'
+    rw [← Polynomial.eval_map_apply, ← Polynomial.derivative_map, ha]
+    exact hDerivative
+  simpa only [ha] using unique_lift_from_simple F a hRoot' hDerivative'
 
 /-- The good-locus equivalence for a specified polynomial and residue. -/
 theorem good_residue_root_iff_unique_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
@@ -101,8 +102,8 @@ theorem repeated_root_unique_lift :
       ∃! z : ℤ_[p], ((X : Polynomial (ℤ_[p])) ^ 2).eval z = 0 ∧ reduction z = 0 := by
   refine ⟨by simp [pow_two], 0, by simp, ?_⟩
   intro z hz
-  have h : z ^ 2 = 0 := by simpa using hz.1
-  exact pow_eq_zero h
+  have h : z * z = 0 := by simpa [pow_two] using hz.1
+  exact (mul_eq_zero.mp h).elim id id
 
 end
 

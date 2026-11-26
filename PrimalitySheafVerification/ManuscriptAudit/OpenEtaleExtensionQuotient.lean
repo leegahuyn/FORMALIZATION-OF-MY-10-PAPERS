@@ -34,9 +34,13 @@ def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C.{u})
   ShortComplex.mk (nestedOpenConstantMap i j M) (cokernel.π (nestedOpenConstantMap i j M))
     (cokernel.condition (nestedOpenConstantMap i j M))
 
-theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact :=
-  ShortComplex.ShortExact.mk' (Abelian.exact_cokernel _)
-    (nestedOpenConstantMap_mono i j M) (inferInstanceAs (Epi (cokernel.π (nestedOpenConstantMap i j M))))
+set_option maxHeartbeats 1200000 in
+theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact := by
+  let f := nestedOpenConstantMap i j M
+  change (ShortComplex.cokernelSequence f).ShortExact
+  letI : Mono f := nestedOpenConstantMap_mono i j M
+  exact ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
+    (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))
 
 variable {Ω : Type u} [Field Ω] [IsSepClosed Ω]
 

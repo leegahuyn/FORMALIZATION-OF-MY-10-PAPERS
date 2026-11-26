@@ -72,9 +72,11 @@ theorem paper6_proposition7_2_reduction_refuted :
       exactDetectionIndex (TopCat.of (PrimeSpectrum (ZMod 2)))
         ((PrimeSpectrum.comap (Int.castRingHom (ZMod 2))) ⁻¹' {primeThree}) := by
   have hZero : exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) {primeThree} = 0 := by
-    apply exactDetectionIndex_eq_zero_of_nonempty_closed _ ⟨primeThree, rfl⟩
-    exact (PrimeSpectrum.isClosed_singleton_iff_isMaximal primeThree).2
-      (IsPrime.to_maximal_ideal primeThree_ne_generic)
+    exact exactDetectionIndex_eq_zero_of_nonempty_closed
+      (X := TopCat.of (PrimeSpectrum ℤ)) (P := {primeThree})
+      ((PrimeSpectrum.isClosed_singleton_iff_isMaximal primeThree).2
+        (IsPrime.to_maximal_ideal primeThree_ne_generic))
+      (Set.singleton_nonempty primeThree)
   rw [hZero, inverseImage_reductionTwo_primeThree, exactDetectionIndex_empty]
   simp
 

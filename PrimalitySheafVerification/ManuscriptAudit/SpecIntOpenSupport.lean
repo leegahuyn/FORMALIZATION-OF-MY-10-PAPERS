@@ -95,10 +95,12 @@ private theorem exists_closed_point_in_generic_open (U : Opens Y) (hU : (⊥ : Y
 private theorem detection_eq_top_of_no_support (X : TopCat.{0}) (P : Set X)
     (h : ¬ ∃ F : AbelianSheaf X, stalkSupport F = P) : exactDetectionIndex X P = ⊤ := by
   unfold exactDetectionIndex
-  apply eq_trans (congrArg sInf ?_) sInf_empty
-  apply Set.eq_empty_iff_forall_notMem.mpr
-  rintro i ⟨n, hn, F, hF, hH⟩
-  exact h ⟨F, hF⟩
+  have hEmpty : {i : ℕ∞ | ∃ n : ℕ, (n : ℕ∞) = i ∧
+      ∃ F : AbelianSheaf X, stalkSupport F = P ∧ Nontrivial (F.H n)} = ∅ := by
+    refine Set.eq_empty_iff_forall_notMem.mpr fun i hi => ?_
+    obtain ⟨n, -, F, hF, hH⟩ := hi
+    exact h ⟨F, hF⟩
+  rw [hEmpty, sInf_empty]
 
 private theorem openDetectionIndex_classification (U : Opens Y) (hU : (⊥ : Y) ∈ U) (P : Set U) :
     exactDetectionIndex (space U) P =
