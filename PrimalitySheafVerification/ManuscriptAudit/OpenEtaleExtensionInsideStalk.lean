@@ -84,7 +84,8 @@ private def presheafFiberComparison (P : X.Etaleᵒᵖ ⥤ AddCommGrpCat.{u}) :
   change colimit R ≅ colimit ((pointedPostcompose j s).op ⋙ R)
   exact (Functor.Final.colimitIso (pointedPostcompose j s).op R).symm
 
-private def presheafFiberComparisonNatIso :
+/-- Cofinal comparison of presheaf stalks along the open immersion. -/
+def presheafFiberComparisonNatIso :
     (ambientPoint j s).presheafFiber (A := AddCommGrpCat.{u}) ≅
       (Functor.whiskeringLeft _ _ AddCommGrpCat.{u}).obj (etalePostcompose j).op ⋙
         (openPoint s).presheafFiber := by
