@@ -1,5 +1,7 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Frobenius
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
@@ -85,7 +87,8 @@ theorem pow_eq_leftInclusion_relativeFrobenius (z : B ⊗[A] FrobeniusTwist p A)
         relativeFrobenius A B p (b ⊗ₜ[A] a) ⊗ₜ[A] (1 : FrobeniusTwist p A)
       have htwist : (show A from a) • (1 : FrobeniusTwist p A) = a ^ p := by
         change algebraMap A A (frobenius A p (show A from a)) * 1 = (show A from a) ^ p
-        simp only [Algebra.algebraMap_self_apply, frobenius_def, mul_one]
+        simpa only [Algebra.algebraMap_self_apply, mul_one] using
+          (frobenius_def p (show A from a))
       rw [Algebra.TensorProduct.tmul_pow, relativeFrobenius_tmul, ← htwist,
         ← TensorProduct.smul_tmul, Algebra.smul_def]
       exact congrArg (fun b' : B => b' ⊗ₜ[A] (1 : FrobeniusTwist p A)) (mul_comm _ _)

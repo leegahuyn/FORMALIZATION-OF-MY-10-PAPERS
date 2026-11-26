@@ -65,7 +65,9 @@ theorem flat_reduction_equalizer (z : normalization K T) :
     (q K T z = c K T z) ↔ ∃ t : T, inclusion K T t = z := by
   have h := flat_exact_from_inclusion K T _ (reduction_difference_exact K)
   rw [LinearMap.lTensor_sub, flatReduction_toLinearMap, flatConstantReduction_toLinearMap] at h
-  simpa only [LinearMap.sub_apply, sub_eq_zero] using h z
+  simpa only [LinearMap.sub_apply, sub_eq_zero, AlgHom.toLinearMap_apply,
+    AlgHom.restrictScalars_apply, Set.mem_range, inclusion, Algebra.ofId_apply,
+    Algebra.TensorProduct.algebraMap_apply, Algebra.TensorProduct.includeLeft_apply] using h z
 
 private def inclusionToEqualizer :
     T →ₐ[T] AlgHom.equalizer (q K T) (c K T) :=
@@ -85,31 +87,27 @@ def flatBaseEquivEqualizer : T ≃ₐ[T] AlgHom.equalizer (q K T) (c K T) :=
       ((AlgHom.mem_equalizer _ _ _).mp z.property)
     exact ⟨t, Subtype.ext ht⟩⟩
 
+private def postcomposeAlgEquiv {R P V W : Type*}
+    [CommRing R] [CommRing P] [CommRing V] [CommRing W]
+    [Algebra R P] [Algebra R V] [Algebra R W]
+    (e : V ≃ₐ[R] W) : (P →ₐ[R] V) ≃ (P →ₐ[R] W) where
+  toFun f := e.toAlgHom.comp f
+  invFun f := e.symm.toAlgHom.comp f
+  left_inv f := AlgHom.ext fun x => e.symm_apply_apply (f x)
+  right_inv f := AlgHom.ext fun x => e.apply_symm_apply (f x)
+
 variable {P : Type*} [CommRing P] [Algebra T P] [Algebra.FormallyUnramified T P]
 
+set_option maxHeartbeats 1800000 in
+set_option backward.isDefEq.respectTransparency false in
 /-- A formally unramified algebra has the same sections before and after
 base change from a flat cusp algebra to its polynomial normalization. -/
 def flatSectionsEquiv : (P →ₐ[T] T) ≃ (P →ₐ[T] normalization K T) := by
-  let e := flatBaseEquivEqualizer K T
-  let s := UnramifiedEqualizerSections.sectionsEquiv (P := P)
+  let s := UnramifiedEqualizerSections.sectionsEquiv (R := T)
+    (A := normalization K T) (B := reduction K T) (P := P)
     (baseChangedOriginIdeal K T) (baseChangedOriginIdeal_square K T)
     (q K T) (c K T) (flatReduction_equal_mod_origin K T)
-  refine
-    { toFun := fun f => s (e.toAlgHom.comp f)
-      invFun := fun f => e.symm.toAlgHom.comp (s.symm f)
-      left_inv := ?_
-      right_inv := ?_ }
-  · intro f
-    rw [s.symm_apply_apply]
-    apply AlgHom.ext
-    intro x
-    exact e.symm_apply_apply (f x)
-  · intro f
-    have h : e.toAlgHom.comp (e.symm.toAlgHom.comp (s.symm f)) = s.symm f := by
-      apply AlgHom.ext
-      intro x
-      exact e.apply_symm_apply (s.symm f x)
-    rw [h, s.apply_symm_apply]
+  exact (postcomposeAlgEquiv (P := P) (flatBaseEquivEqualizer K T)).trans s
 
 end
 

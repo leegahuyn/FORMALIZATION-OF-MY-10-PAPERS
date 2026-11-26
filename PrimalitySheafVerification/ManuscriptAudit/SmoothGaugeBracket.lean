@@ -13,9 +13,10 @@ import Mathlib.Tactic.Ring
 # A smooth unitary gauge and the printed local bracket
 
 Paper 10, physical PDF p. 471, Lemma 3.2 and equation (3.15).
-Set the central parameter to one, the twist to the identity, and the
-trace to the usual matrix trace. For a matrix-valued one-form, store
-its coefficients in the order dx, dy.
+Use the usual matrix trace and store the coefficients of a one-form in
+the order dx, dy. The scalar interpretation uses `σ_q(Y) = qY`, with
+a specialization to the cusp parameter at `τ = i`. The identity-twist
+interpretation uses the unital algebra automorphism in Axiom 2.3.
 -/
 
 namespace ManuscriptAudit.SmoothGaugeBracket
@@ -130,7 +131,16 @@ theorem trace_conjugation (x y : ℝ) (Z : Mat₂) :
 
 def wedgeCoefficient (A B : Mat₂ × Mat₂) : Mat₂ := A.1 * B.2 - A.2 * B.1
 
-/-- The ungraded bracket in (3.15), for the identity twist, in the dx∧dy component. -/
+/-- The ungraded dx∧dy bracket in (3.15) with the scalar interpretation
+`σ_q(Y) = qY`. -/
+def printedScalarBracket (q : ℂ) (A B : Mat₂ × Mat₂) : Mat₂ :=
+  wedgeCoefficient A B - wedgeCoefficient (q • B.1, q • B.2) A
+
+private theorem printedScalarBracket_eq (q : ℂ) (A B : Mat₂ × Mat₂) :
+    printedScalarBracket q A B = wedgeCoefficient A B - q • wedgeCoefficient B A := by
+  simp only [printedScalarBracket, wedgeCoefficient, Matrix.smul_mul, smul_sub]
+
+/-- The ungraded bracket in (3.15) for the identity twist of Axiom 2.3. -/
 def printedBracket (A B : Mat₂ × Mat₂) : Mat₂ :=
   wedgeCoefficient A B - wedgeCoefficient B A
 
@@ -158,20 +168,52 @@ private theorem affineGauge_at_one (A : Mat₂ × Mat₂) :
     affineGauge 0 1 A = (A.1, A.2 + Y) := by
   simp [affineGauge, gauge_at_one, gaugeDx_eq_zero, gaugeDy_at_one]
 
-/-- For the actual smooth local gauge, the transformed bracket has
-off-diagonal coefficient i while the conjugated original bracket is
-zero. The original fields are the constant one-forms (X,0) and (0,0). -/
+/-- The transformed scalar bracket at the witness point has off-diagonal
+entry i for every q. -/
+theorem transformed_scalar_bracket_entry (q : ℂ) :
+    (printedScalarBracket q (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0))) 0 1 =
+      Complex.I := by
+  have hXY : (X * Y) 0 1 = Complex.I := by
+    norm_num [X, Y, Matrix.mul_apply, Fin.sum_univ_two]
+  have hYX : (Y * X) 0 1 = 0 := by
+    norm_num [X, Y, Matrix.mul_apply, Fin.sum_univ_two]
+  simp only [printedScalarBracket_eq, affineGauge_at_one, wedgeCoefficient,
+    zero_add, zero_mul, mul_zero, sub_zero, zero_sub, smul_neg, sub_neg_eq_add,
+    Matrix.add_apply, Matrix.smul_apply, smul_eq_mul,
+    hXY, hYX, mul_zero, add_zero]
+
+/-- The smooth unitary gauge refutes (3.15) under its scalar interpretation
+for every central parameter q. -/
+theorem smooth_unitary_gauge_refutes_scalar_bracket_covariance (q : ℂ) :
+    printedScalarBracket q (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0)) ≠
+      (gauge 0 1)ᴴ * printedScalarBracket q (X, 0) (0, 0) * gauge 0 1 := by
+  intro h
+  apply Complex.I_ne_zero
+  calc
+    Complex.I = (printedScalarBracket q
+        (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0))) 0 1 :=
+      (transformed_scalar_bracket_entry q).symm
+    _ = 0 := by
+      rw [h]
+      simp only [printedScalarBracket_eq, wedgeCoefficient, mul_zero, zero_mul,
+        sub_zero, smul_zero, Matrix.zero_apply]
+
+/-- Scalar covariance fails at the manuscript's cusp parameter
+`q = exp(2 π i τ)` evaluated at the witness point `τ = i`. -/
+theorem smooth_unitary_gauge_refutes_cusp_scalar_bracket_covariance :
+    let q := Complex.exp (2 * (Real.pi : ℂ) * Complex.I * Complex.I)
+    printedScalarBracket q (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0)) ≠
+      (gauge 0 1)ᴴ * printedScalarBracket q (X, 0) (0, 0) * gauge 0 1 :=
+  smooth_unitary_gauge_refutes_scalar_bracket_covariance
+    (Complex.exp (2 * (Real.pi : ℂ) * Complex.I * Complex.I))
+
+/-- A separate instance of the same failure with the identity algebra
+automorphism allowed by Axiom 2.3. -/
 theorem smooth_unitary_gauge_refutes_bracket_covariance :
     printedBracket (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0)) ≠
       (gauge 0 1)ᴴ * printedBracket (X, 0) (0, 0) * gauge 0 1 := by
-  simp only [affineGauge_at_one, zero_add, printedBracket, wedgeCoefficient,
-    zero_mul, mul_zero, sub_zero, zero_sub, sub_neg_eq_add]
-  intro h
-  have hEntry : (X * Y + Y * X) 0 1 = 0 :=
-    congrArg (fun M : Mat₂ => M 0 1) h
-  have hNonzero : (X * Y + Y * X) 0 1 = Complex.I := by
-    norm_num [X, Y, Matrix.mul_apply, Fin.sum_univ_two]
-  exact Complex.I_ne_zero (hNonzero.symm.trans hEntry)
+  simpa only [printedScalarBracket_eq, one_smul, printedBracket] using
+    smooth_unitary_gauge_refutes_scalar_bracket_covariance 1
 
 end
 
@@ -184,6 +226,9 @@ run_cmd do
       ``ManuscriptAudit.SmoothGaugeBracket.rotation_entry_hasDerivAt,
       ``ManuscriptAudit.SmoothGaugeBracket.rotation_unitary,
       ``ManuscriptAudit.SmoothGaugeBracket.trace_conjugation,
+      ``ManuscriptAudit.SmoothGaugeBracket.transformed_scalar_bracket_entry,
+      ``ManuscriptAudit.SmoothGaugeBracket.smooth_unitary_gauge_refutes_scalar_bracket_covariance,
+      ``ManuscriptAudit.SmoothGaugeBracket.smooth_unitary_gauge_refutes_cusp_scalar_bracket_covariance,
       ``ManuscriptAudit.SmoothGaugeBracket.smooth_unitary_gauge_refutes_bracket_covariance] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

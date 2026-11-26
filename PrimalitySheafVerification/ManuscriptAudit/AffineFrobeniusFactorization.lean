@@ -41,6 +41,7 @@ theorem specMap_integral_of_power_lifts (h : ∀ b : B, ∃ a : A, f a = b ^ p) 
 theorem specMap_surjective_of_factors_power (g : B →+* A) (h : ∀ a, g (f a) = a ^ p) :
     Surjective (specMap f) := by
   rw [surjective_iff]
+  change Function.Surjective (PrimeSpectrum.comap f)
   intro x
   refine ⟨PrimeSpectrum.comap g x, ?_⟩
   change PrimeSpectrum.comap f (PrimeSpectrum.comap g x) = x
@@ -48,7 +49,7 @@ theorem specMap_surjective_of_factors_power (g : B →+* A) (h : ∀ a, g (f a) 
   ext a
   change g (f a) ∈ x.asIdeal ↔ a ∈ x.asIdeal
   rw [h]
-  exact (inferInstance : x.asIdeal.IsPrime).pow_mem_iff_mem p (show p.Prime from Fact.out).pos
+  exact x.isPrime.pow_mem_iff_mem p (show p.Prime from Fact.out).pos
 
 theorem specMap_universallyInjective_of_power_lifts (hpB : (p : B) = 0)
     (h : ∀ b : B, ∃ a : A, f a = b ^ p) : UniversallyInjective (specMap f) := by
