@@ -1,12 +1,12 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
-import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.SeparableClosure
 import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
 import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleBaseChange
@@ -84,7 +84,7 @@ theorem directImage_constant_not_isZero {X Y : Scheme.{u}} (f : X ⟶ Y)
     calc
       𝟙 (ev.obj N) = ev.map (𝟙 N) := (ev.map_id N).symm
       _ = ev.map 0 := congrArg (fun g : N ⟶ N => ev.map g) hId
-      _ = 0 := ev.map_zero
+      _ = 0 := ev.map_zero N N
   exact constant_sections_not_isZero Φ T x A hA hEval
 
 private abbrev K := ZMod 5

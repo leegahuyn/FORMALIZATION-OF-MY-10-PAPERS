@@ -156,8 +156,8 @@ def canonicalConstantComparison [E.IsEquivalence] :
   let k := canonicalFullSheafEquivalence f hf E e
   let cy := constantSheaf Y.smallEtaleTopology AddCommGrpCat.{u}
   let c := canonicalPullbackConstantComparison f hf E e
-  exact (isoWhiskerRight c k.functor).symm ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft cy k.counitIso ≪≫ cy.rightUnitor
+  exact (Functor.isoWhiskerRight c k.functor).symm ≪≫ Functor.associator _ _ _ ≪≫
+    Functor.isoWhiskerLeft cy k.counitIso ≪≫ cy.rightUnitor
 
 end
 

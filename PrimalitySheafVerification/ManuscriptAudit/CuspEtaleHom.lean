@@ -90,7 +90,7 @@ private theorem chart_hom_fst (P : Type u) [CommRing P] [Algebra (A K) P] :
 private theorem chart_hom_snd (P : Type u) [CommRing P] [Algebra (A K) P] :
     (chart K P).hom ≫ specAlgebraMap (B K) (B K ⊗[A K] P) =
       pullback.snd (specAlgebraMap (A K) P) (CuspScheme.cuspMap K) := by
-  simp [chart, specAlgebraMap, specRight, CuspScheme.cuspMap, CuspScheme.inclusion, Category.assoc]
+  simp [chart, specAlgebraMap, CuspScheme.cuspMap, CuspScheme.inclusion, Category.assoc]
 
 @[reassoc (attr := simp)]
 private theorem chart_inv_fst (P : Type u) [CommRing P] [Algebra (A K) P] :
@@ -139,10 +139,10 @@ private theorem map_comp_overChart (f : P →ₐ[A K] T) :
   apply (cancel_mono (chart K P).inv).mp
   simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
   apply pullback.hom_ext
-  · simp only [Category.assoc, chart_inv_fst, hn, chart_hom_fst_assoc,
-      F, Over.pullback_map_left, pullback.lift_fst]
-  · simp only [Category.assoc, chart_inv_snd, hbase, chart_hom_snd,
-      F, Over.pullback_map_left, pullback.lift_snd]
+  · simp only [Category.assoc, F, Over.pullback_map_left, Over.mk_hom, pullback.lift_fst,
+      chart_inv_fst, hn, chart_hom_fst_assoc]
+  · simp only [Category.assoc, F, Over.pullback_map_left, Over.mk_hom, pullback.lift_snd,
+      chart_inv_snd, hbase, chart_hom_snd]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The actual pullback functor has bijective map on homs for affine charts
@@ -170,8 +170,11 @@ theorem overPullback_map_bijective_of_algebras [Algebra.FormallyUnramified (A K)
     change eC (eR (CuspNormalizationHom.homEquiv K P T (eL.symm (eL f)))) =
       (Over.pullback (CuspScheme.cuspMap K)).map (eL f)
     rw [Equiv.symm_apply_apply, CuspNormalizationHom.homEquiv_apply]
-    have h := congrArg (fun g => g ≫ (overChart K P).inv) (map_comp_overChart K f).symm
-    simpa only [eC, eR, eL, Category.assoc, Iso.hom_inv_id, Category.comp_id] using h
+    change (overChart K T).hom ≫
+        specOverHomEquiv (B K) (B K ⊗[A K] P) (B K ⊗[A K] T)
+          (Algebra.TensorProduct.map (AlgHom.id (B K) (B K)) f) ≫ (overChart K P).inv =
+      (Over.pullback (CuspScheme.cuspMap K)).map (specOverHomEquiv (A K) P T f)
+    rw [← Category.assoc, ← map_comp_overChart K f, Category.assoc, Iso.hom_inv_id, Category.comp_id]
   rw [← he]
   exact e.bijective
 

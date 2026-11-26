@@ -84,6 +84,7 @@ def comparison (h : augmentationIdeal D k ^ 2 = ⊥) :
     (extendedIdeal_sq D k (T D B E) h) (extendedIdeal_sq D k (U D k B E) h)
     ((directReduction D k B E).trans (sectionReduction D k B E).symm)
 
+set_option maxRecDepth 4096 in
 set_option backward.isDefEq.respectTransparency false in
 /-- The comparison induces the identity on the common scalar extension to (k). -/
 theorem comparison_reduction (h : augmentationIdeal D k ^ 2 = ⊥) (x : D ⊗[B] E) :
@@ -91,15 +92,21 @@ theorem comparison_reduction (h : augmentationIdeal D k ^ 2 = ⊥) (x : D ⊗[B]
         (Ideal.Quotient.mk (extendedIdeal D k (U D k B E)) (comparison D k B E h x)) =
       directReduction D k B E
         (Ideal.Quotient.mk (extendedIdeal D k (T D B E)) x) := by
-  have hx := DFunLike.congr_fun
-    (EtaleSquareZeroLift.liftReductionIso_spec D (T D B E) (U D k B E)
-      (extendedIdeal D k (T D B E)) (extendedIdeal D k (U D k B E))
+  let I := extendedIdeal D k (T D B E)
+  let J := extendedIdeal D k (U D k B E)
+  let f := directReduction D k B E
+  let g := sectionReduction D k B E
+  have hcomp : (Ideal.Quotient.mkₐ D J).comp (comparison D k B E h).toAlgHom =
+      (f.trans g.symm).toAlgHom.comp (Ideal.Quotient.mkₐ D I) :=
+    EtaleSquareZeroLift.liftReductionIso_spec D (T D B E) (U D k B E) I J
       (extendedIdeal_sq D k (T D B E) h) (extendedIdeal_sq D k (U D k B E) h)
-      ((directReduction D k B E).trans (sectionReduction D k B E).symm)) x
-  change Ideal.Quotient.mk (extendedIdeal D k (U D k B E)) (comparison D k B E h x) =
-    (sectionReduction D k B E).symm
-      (directReduction D k B E (Ideal.Quotient.mk (extendedIdeal D k (T D B E)) x)) at hx
-  rw [hx, AlgEquiv.apply_symm_apply]
+      (f.trans g.symm)
+  have hx : Ideal.Quotient.mk J (comparison D k B E h x) =
+      g.symm (f (Ideal.Quotient.mk I x)) :=
+    DFunLike.congr_fun hcomp x
+  calc
+    _ = g (g.symm (f (Ideal.Quotient.mk I x))) := congrArg g hx
+    _ = _ := g.apply_symm_apply _
 
 end
 

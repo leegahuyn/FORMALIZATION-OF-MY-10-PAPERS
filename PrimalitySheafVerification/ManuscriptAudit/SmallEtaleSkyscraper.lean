@@ -36,7 +36,7 @@ theorem skyscraper_not_isZero {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepCl
     calc
       𝟙 (ev.obj F) = ev.map (𝟙 F) := (ev.map_id F).symm
       _ = ev.map 0 := congrArg (fun g : F ⟶ F => ev.map g) hId
-      _ = 0 := ev.map_zero
+      _ = 0 := ev.map_zero F F
   let family : Φ.fiber.obj T → AddCommGrpCat.{u} := fun _ => A
   change IsZero (∏ᶜ family) at hEval
   let diagonal : A ⟶ ∏ᶜ family := Pi.lift fun _ => 𝟙 A
