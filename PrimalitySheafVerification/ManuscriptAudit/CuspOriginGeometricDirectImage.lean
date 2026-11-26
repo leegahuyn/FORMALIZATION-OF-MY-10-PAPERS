@@ -48,10 +48,11 @@ private theorem identityPointCounitIsIso (M : C.{u}) :
   apply skyscraperCounit_isIso_of_unique_refinements (p K) _ M
   intro W w
   let e := Scheme.Etale.forgetFullyFaithful (S K)
-  let g : T K ⟶ W := e.preimage w
+  let w' : (Scheme.Etale.forget (S K)).obj (T K) ⟶ (Scheme.Etale.forget (S K)).obj W := w
+  let g : T K ⟶ W := e.preimage w'
   refine ⟨T K, g, x K, ?_, ⟨fun a b => (Over.mkIdTerminal (X := S K)).hom_ext a b⟩⟩
-  change (𝟙 _ ≫ (Scheme.Etale.forget (S K)).map g) = w
-  simpa only [Category.id_comp] using e.map_preimage w
+  change (𝟙 _ ≫ (Scheme.Etale.forget (S K)).map g) = w'
+  exact (Category.id_comp _).trans (e.map_preimage w')
 
 private theorem identityPointReflectsIso {F Q : Sheaf (S K).smallEtaleTopology C.{u}} (f : F ⟶ Q)
     [IsIso ((p K).sheafFiber.map f)] : IsIso f := by
@@ -80,7 +81,8 @@ def separablyClosedConstantSkyscraperIso (M : C.{u}) :
       _ = e.hom := (a.homEquiv _ M).symm_apply_apply _
   letI : IsIso (a.counit.app M) := identityPointCounitIsIso K M
   letI : IsIso (Φ.sheafFiber.map f ≫ a.counit.app M) := by rw [h]; infer_instance
-  letI : IsIso (Φ.sheafFiber.map f) := IsIso.of_isIso_comp_right _ _
+  letI : IsIso (Φ.sheafFiber.map f) :=
+    IsIso.of_isIso_comp_right (Φ.sheafFiber.map f) (a.counit.app M)
   letI : IsIso f := identityPointReflectsIso K f
   exact asIso f
 

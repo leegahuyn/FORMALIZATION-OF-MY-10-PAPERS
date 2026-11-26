@@ -62,7 +62,8 @@ theorem residue_simple_root_unique_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
   have hDerivative' : reduction (F.derivative.eval a) ≠ 0 := by
     rw [← Polynomial.eval_map_apply, ← Polynomial.derivative_map, ha]
     exact hDerivative
-  simpa only [ha] using unique_lift_from_simple F a hRoot' hDerivative'
+  simpa only [ha, Polynomial.coe_aeval_eq_eval] using
+    unique_lift_from_simple F a hRoot' hDerivative'
 
 /-- The good-locus equivalence for a specified polynomial and residue. -/
 theorem good_residue_root_iff_unique_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
@@ -92,7 +93,10 @@ theorem resultant_good_residue_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
     intro hRoot hBad
     obtain ⟨A, B, hAB⟩ := hCoprime
     have h := congrArg (Polynomial.eval r) hAB
-    simp [hRoot, hBad] at h
+    have h01 : (0 : ZMod p) = 1 := by
+      simpa only [Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_one,
+        hRoot, hBad, mul_zero, add_zero] using h
+    exact zero_ne_one h01
   exact ⟨fun h => residue_simple_root_unique_lift F r h (hSimple h),
     fun h => ((good_residue_root_iff_unique_lift F r hSimple).mpr h).1⟩
 

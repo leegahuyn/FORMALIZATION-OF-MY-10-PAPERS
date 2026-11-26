@@ -49,11 +49,11 @@ def geometricSkyscraperHZeroEquiv (M : AddCommGrpCat.{u}) :
   exact (Sheaf.H.equiv₀ (Φ.skyscraperSheaf M) (terminalIsTerminal (C := S.Etale))).trans e
 
 private theorem epi_productMap {I : Type u} {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f] :
-    Epi (Pi.map (f := fun _ : I => M) (g := fun _ : I => N) (fun _ => f)) := by
+    Epi (CategoryTheory.Limits.Pi.map (f := fun _ : I => M) (g := fun _ : I => N) (fun _ => f)) := by
   classical
   let A : I → AddCommGrpCat.{u} := fun _ => M
   let B : I → AddCommGrpCat.{u} := fun _ => N
-  let g : (∏ᶜ A) ⟶ (∏ᶜ B) := Pi.map fun _ : I => f
+  let g : (∏ᶜ A) ⟶ (∏ᶜ B) := CategoryTheory.Limits.Pi.map fun _ : I => f
   apply (AddCommGrpCat.epi_iff_surjective g).2
   intro b
   let y := Concrete.productEquiv B b
@@ -70,7 +70,7 @@ private theorem epi_productMap {I : Type u} {M N : AddCommGrpCat.{u}} (f : M ⟶
 theorem geometricSkyscraper_map_app_epi {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f]
     (W : S.Etaleᵒᵖ) :
     Epi (((Φ.skyscraperSheafFunctor.map f).hom).app W) := by
-  change Epi (Pi.map (f := fun _ : Φ.fiber.obj W.unop => M)
+  change Epi (CategoryTheory.Limits.Pi.map (f := fun _ : Φ.fiber.obj W.unop => M)
     (g := fun _ : Φ.fiber.obj W.unop => N) (fun _ => f))
   exact epi_productMap f
 

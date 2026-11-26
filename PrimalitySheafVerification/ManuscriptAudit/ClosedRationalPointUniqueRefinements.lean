@@ -78,8 +78,12 @@ theorem closedRationalPoint_unique_refinements (W : X.Etale) (w : (Φ i).fiber.o
     rw [hB]
     rintro _ ⟨a, rfl⟩
     have ha : σ a ∈ r ⁻¹' A := by rw [hEq]; exact ⟨a, rfl⟩
-    change r (σ a) ∈ A at ha
-    simpa only [← Scheme.Hom.comp_apply, σ, r, pullback.lift_fst] using ha
+    have hσr : σ ≫ r = w.left := pullback.lift_fst _ _ _
+    have hPoint : (σ ≫ r) a = w.left a :=
+      congrArg (fun f : S (K := K) ⟶ W.left => f a) hσr
+    change (σ ≫ r) a ∈ A at ha
+    change w.left a ∈ A
+    exact hPoint ▸ ha
   let v₀ := IsOpenImmersion.lift B.ι w.left hLift
   have hv : v₀ ≫ B.ι = w.left := IsOpenImmersion.lift_fac _ _ _
   let V : X.Etale := Scheme.Etale.mk (B.ι ≫ W.hom)

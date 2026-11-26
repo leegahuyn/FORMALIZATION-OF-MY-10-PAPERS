@@ -54,9 +54,11 @@ theorem three_isUnit_at_two : IsUnit (localizationMap 3) := by
 theorem three_isUnit_in_padicTwo : IsUnit (completionMap 3) := by
   apply IsLocalRing.notMem_maximalIdeal.mp
   intro h
-  have hk : ((3 : ℤ) : ℤ_[2]) ∈ (PadicInt.toZMod (p := 2)).ker := by
-    simpa only [PadicInt.ker_toZMod] using h
-  have hz := RingHom.mem_ker.mp hk
+  have hk : ((3 : ℤ) : ℤ_[2]) ∈ RingHom.ker (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) := by
+    rw [PadicInt.ker_toZMod]
+    exact h
+  have hz : (PadicInt.toZMod : ℤ_[2] →+* ZMod 2) ((3 : ℤ) : ℤ_[2]) = 0 :=
+    RingHom.mem_ker.mp hk
   rw [map_intCast] at hz
   exact (by decide : ((3 : ℤ) : ZMod 2) ≠ 0) hz
 
@@ -82,9 +84,11 @@ theorem inverseImage_completionAtTwo_primeThree :
 
 private theorem index_primeThree :
     exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) {primeThree} = 0 := by
-  apply exactDetectionIndex_eq_zero_of_nonempty_closed _ ⟨primeThree, rfl⟩
-  exact (PrimeSpectrum.isClosed_singleton_iff_isMaximal primeThree).2
-    (IsPrime.to_maximal_ideal primeThree_ne_generic)
+  exact exactDetectionIndex_eq_zero_of_nonempty_closed
+    (X := TopCat.of (PrimeSpectrum ℤ)) (P := {primeThree})
+    ((PrimeSpectrum.isClosed_singleton_iff_isMaximal primeThree).2
+      (IsPrime.to_maximal_ideal primeThree_ne_generic))
+    (Set.singleton_nonempty primeThree)
 
 theorem paper6_proposition7_2_localization_refuted :
     exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) {primeThree} ≠
@@ -122,6 +126,7 @@ theorem localizationAtTwo_range_ne_basicOpen :
   intro h
   have hp : primeTwo ∈ Set.range (PrimeSpectrum.comap localizationMap) := by
     rw [localizationAtTwo_range]
+    change primeTwo.asIdeal ≤ primeTwo.asIdeal
     exact le_rfl
   rw [h] at hp
   have hTwo : (2 : ℤ) ∈ primeTwo.asIdeal := by

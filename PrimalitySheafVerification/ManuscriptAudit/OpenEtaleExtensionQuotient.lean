@@ -31,16 +31,18 @@ set_option backward.isDefEq.respectTransparency false
 
 /-- The short complex of the native nested-open map and its cokernel projection. -/
 def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) :=
-  ShortComplex.mk (nestedOpenConstantMap i j M) (cokernel.π (nestedOpenConstantMap i j M))
-    (cokernel.condition (nestedOpenConstantMap i j M))
+  ShortComplex.cokernelSequence (nestedOpenConstantMap i j M)
 
-set_option maxHeartbeats 1200000 in
-theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact := by
-  let f := nestedOpenConstantMap i j M
-  change (ShortComplex.cokernelSequence f).ShortExact
-  letI : Mono f := nestedOpenConstantMap_mono i j M
+private theorem cokernelSequence_shortExact_of_mono {D : Type*} [Category* D] [Abelian D]
+    {A B : D} (f : A ⟶ B) (hf : Mono f) : (ShortComplex.cokernelSequence f).ShortExact := by
+  letI : Mono f := hf
   exact ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
     (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))
+
+set_option backward.isDefEq.respectTransparency true in
+theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact :=
+  cokernelSequence_shortExact_of_mono (nestedOpenConstantMap i j M)
+    (nestedOpenConstantMap_mono i j M)
 
 variable {Ω : Type u} [Field Ω] [IsSepClosed Ω]
 
