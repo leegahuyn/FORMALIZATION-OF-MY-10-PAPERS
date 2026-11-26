@@ -52,10 +52,10 @@ theorem projectiveCusp_HOne_subsingleton : Subsingleton (Sheaf.H (C ℓ (project
     change IsConnected (Set.range (pullback.fst f g ≫ f))
     rw [Scheme.Pullback.range_fst_comp]
     exact affine_chart_overlap_isConnected K
-  letI : Nonempty (pullback f g) := by
+  letI : Nonempty (↑(pullback f g) : Type) := by
     obtain ⟨x, y, _⟩ := hConn.nonempty
     exact ⟨y⟩
-  letI : PreconnectedSpace (pullback f g) := by
+  letI : PreconnectedSpace (↑(pullback f g) : Type) := by
     apply preconnectedSpace_iff_univ.mpr
     apply (h.isOpenEmbedding.isInducing.isPreconnected_image).mp
     simpa only [Set.image_univ] using hConn.isPreconnected

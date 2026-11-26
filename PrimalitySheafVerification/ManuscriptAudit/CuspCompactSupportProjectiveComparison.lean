@@ -35,7 +35,7 @@ private abbrev C := AddCommGrpCat.{u}
 private theorem positiveMap_bijective {X : Scheme.{u}}
     (S : ShortComplex (Sheaf X.smallEtaleTopology C.{u})) (hS : S.ShortExact)
     (h₀ : Function.Surjective (Sheaf.H.map S.g 0))
-    (h₊ : ∀ n : ℕ, Subsingleton (Sheaf.H S.X₃ (n + 1))) (n : ℕ) :
+    (hHigher : ∀ n : ℕ, Subsingleton (Sheaf.H S.X₃ (n + 1))) (n : ℕ) :
     Function.Bijective (Sheaf.H.map S.f (n + 1)) := by
   let Z := (constantSheaf X.smallEtaleTopology C.{u}).obj
     (AddCommGrpCat.of (ULift.{u} ℤ))
@@ -48,7 +48,7 @@ private theorem positiveMap_bijective {X : Scheme.{u}}
         (ShortComplex.ab_exact_iff_function_exact _).mp (Ext.covariant_sequence_exact₃' Z hS 0 1 rfl)
       exact (hExact x).mpr (h₀ x)
     | succ a =>
-      have hx : x = 0 := (h₊ a).allEq _ _
+      have hx : x = 0 := (hHigher a).allEq _ _
       rw [hx, Ext.zero_comp]
   constructor
   · intro x y hxy
@@ -58,7 +58,7 @@ private theorem positiveMap_bijective {X : Scheme.{u}}
       (show n + 1 = n + 1 from rfl)
     exact sub_eq_zero.mp (ht.symm.trans (hδ n t))
   · intro y
-    have hy : y.comp (Ext.mk₀ S.g) (add_zero (n + 1)) = 0 := (h₊ n).allEq _ _
+    have hy : y.comp (Ext.mk₀ S.g) (add_zero (n + 1)) = 0 := (hHigher n).allEq _ _
     exact Ext.covariant_sequence_exact₂ (X := Z) hS y hy
 
 variable (K : Type u) [Field K] [IsSepClosed K]
