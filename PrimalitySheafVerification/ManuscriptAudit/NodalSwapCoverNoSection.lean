@@ -93,9 +93,12 @@ theorem coverMap_etale (h2 : (2 : K) ≠ 0) : Etale (coverMap K) :=
   (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
     (RingHom.etale_algebraMap.mpr (cover_finite_etale K h2).2)
 
-theorem coverMap_finite (h2 : (2 : K) ≠ 0) : IsFinite (coverMap K) :=
-  (IsFinite.SpecMap_iff (CommRingCat.ofHom (algebraMap (A K) (L K)))).mpr
-    (RingHom.finite_algebraMap.mpr (cover_finite_etale K h2).1)
+set_option backward.isDefEq.respectTransparency false in
+theorem coverMap_finite (h2 : (2 : K) ≠ 0) : IsFinite (coverMap K) := by
+  change IsFinite (Spec.map (CommRingCat.ofHom (algebraMap (A K) (L K))))
+  apply (IsFinite.SpecMap_iff (CommRingCat.ofHom (algebraMap (A K) (L K)))).2
+  change (algebraMap (A K) (L K)).Finite
+  exact RingHom.finite_algebraMap.mpr (cover_finite_etale K h2).1
 
 theorem coverMap_surjective (h2 : (2 : K) ≠ 0) : Function.Surjective (coverMap K) :=
   cover_spec_surjective K h2

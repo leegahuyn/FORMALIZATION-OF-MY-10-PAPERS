@@ -47,7 +47,7 @@ private theorem mapped_nonZeroDivisors_le : Algebra.algebraMapSubmonoid B A⁰ �
 /-- The tensor-product generic fiber of an integral affine étale chart is a field. -/
 theorem genericFiber_isField : IsField (F ⊗[A] B) := by
   letI : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) (F ⊗[A] B) :=
-    IsLocalization.tensorRight A⁰
+    IsLocalization.tensorRight F A⁰
   letI : IsDomain (F ⊗[A] B) :=
     IsLocalization.isDomain_of_le_nonZeroDivisors _ (mapped_nonZeroDivisors_le A B)
   letI : Module.Finite F (F ⊗[A] B) :=
@@ -58,7 +58,7 @@ theorem genericFiber_isField : IsField (F ⊗[A] B) := by
 /-- The actual generic fiber is the fraction field of the chart's coordinate ring. -/
 theorem genericFiber_isFractionRing : IsFractionRing B (F ⊗[A] B) := by
   letI : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) (F ⊗[A] B) :=
-    IsLocalization.tensorRight A⁰
+    IsLocalization.tensorRight F A⁰
   have hh := mapped_nonZeroDivisors_le A B
   have hinj : Function.Injective (algebraMap B (F ⊗[A] B)) :=
     IsLocalization.injective _ hh

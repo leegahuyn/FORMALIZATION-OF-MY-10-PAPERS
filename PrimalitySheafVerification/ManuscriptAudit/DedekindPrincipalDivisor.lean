@@ -94,12 +94,16 @@ theorem principalDivisor_exact : Function.Exact (unitInclusion R F) (principalDi
     apply Additive.ext
     apply Units.ext
     change algebraMap R F (u : R) = (x.toMul : F)
-    simpa only [Algebra.smul_def, mul_one] using hu
+    change (u : R) • (1 : F) = (x.toMul : F) at hu
+    rw [← Algebra.algebraMap_eq_smul_one] at hu
+    exact hu
   · rintro ⟨u, rfl⟩
     have hSpan : FractionalIdeal.spanSingleton R⁰ (1 : F) =
         FractionalIdeal.spanSingleton R⁰ (algebraMap R F (u.toMul : R)) := by
       apply FractionalIdeal.spanSingleton_eq_spanSingleton.2
-      exact ⟨u.toMul, by simp [Algebra.smul_def]⟩
+      refine ⟨u.toMul, ?_⟩
+      change (u.toMul : R) • (1 : F) = algebraMap R F (u.toMul : R)
+      exact (Algebra.algebraMap_eq_smul_one (u.toMul : R)).symm
     apply Finsupp.ext
     intro v
     change FractionalIdeal.count F v

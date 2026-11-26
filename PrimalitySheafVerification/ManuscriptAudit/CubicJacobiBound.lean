@@ -18,7 +18,7 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 def quadraticComplex : MulChar F ℂ :=
   (quadraticChar F).ringHomComp (Int.castRingHom ℂ)
 
-private theorem quadraticComplex_shift_sum (hF : ringChar F ≠ 2) (A : F) :
+theorem quadraticComplex_shift_sum (hF : ringChar F ≠ 2) (A : F) :
     (∑ z : F, quadraticComplex (z + A)) = 0 := by
   let e : F ≃ F :=
     { toFun := fun z => z + A, invFun := fun z => z - A
@@ -86,7 +86,7 @@ theorem pointTrace_norm_eq (hF : ringChar F ≠ 2) {A : F}
   have hs : (Fintype.card F : ℝ) + 1 -
       ((Fintype.card F : ℝ) + 1 + ∑ x : F, (quadraticChar F (x ^ 3 + A) : ℝ)) =
       -(∑ x : F, (quadraticChar F (x ^ 3 + A) : ℝ)) := by ring
-  rw [hs, abs_neg]
+  rw [hs, abs_neg, Int.cast_sum]
 
 end
 end ManuscriptAudit.CubicJacobiBound

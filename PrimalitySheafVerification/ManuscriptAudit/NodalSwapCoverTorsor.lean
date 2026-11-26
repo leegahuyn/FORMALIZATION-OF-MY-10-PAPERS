@@ -61,23 +61,34 @@ private theorem half_add_half (h2 : (2 : K) ≠ 0) : half K + half K = 1 := by
   unfold half
   rw [← map_add, ← map_add, h, map_one, map_one]
 
+set_option maxHeartbeats 1800000 in
+set_option backward.isDefEq.respectTransparency false in
 private theorem comparison_bijective (h2 : (2 : K) ≠ 0) :
-    Function.Bijective (InvolutionTensorComparison.comparison (A K) (T K) (swap K)) :=
-  InvolutionTensorComparison.comparison_bijective (A K) (T K) (swap K) (swap_twice K)
-    (fun z hz => (swap_fixed_iff_from_node K h2 z).mp hz)
-    (half K) (weight K) (skewT K) (skewX K)
-    ((swap_fixed_iff_from_node K h2 (half K)).mpr ⟨_, rfl⟩) (half_add_half K h2)
-    ((swap_fixed_iff_from_node K h2 (weight K)).mpr ⟨_, rfl⟩)
-    (skewT_anti K) (skewX_anti K) (partition K)
+    Function.Bijective (InvolutionTensorComparison.comparison (A K) (T K) (swap K)) := by
+  have hFixed (z : T K) (hz : swap K z = z) : ∃ a : A K, algebraMap (A K) (T K) a = z :=
+    (swap_fixed_iff_from_node K h2 z).mp hz
+  have hHalf : swap K (half K) = half K :=
+    (swap_fixed_iff_from_node K h2 (half K)).mpr ⟨algebraMap K (A K) ((2 : K)⁻¹), rfl⟩
+  have hWeight : swap K (weight K) = weight K :=
+    (swap_fixed_iff_from_node K h2 (weight K)).mpr ⟨1 - nodeX K, rfl⟩
+  exact InvolutionTensorComparison.comparison_bijective (A K) (T K) (swap K)
+    (swap_twice K) hFixed (half K) (weight K) (skewT K) (skewX K) hHalf
+    (half_add_half K h2) hWeight (skewT_anti K) (skewX_anti K) (partition K)
 
+set_option maxHeartbeats 1800000 in
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map of the actual involution identifies the tensor algebra with two copies. -/
 def torsorEquiv (h2 : (2 : K) ≠ 0) : (T K ⊗[A K] T K) ≃ₐ[T K] (T K × T K) :=
   AlgEquiv.ofBijective (InvolutionTensorComparison.comparison (A K) (T K) (swap K))
     (comparison_bijective K h2)
 
+set_option maxHeartbeats 1800000 in
+set_option backward.isDefEq.respectTransparency false in
 theorem torsorEquiv_tmul (h2 : (2 : K) ≠ 0) (a b : T K) :
-    torsorEquiv K h2 (a ⊗ₜ[A K] b) = (a * b, a * swap K b) :=
-  InvolutionTensorComparison.comparison_tmul (A K) (T K) (swap K) a b
+    torsorEquiv K h2 (a ⊗ₜ[A K] b) = (a * b, a * swap K b) := by
+  change InvolutionTensorComparison.comparison (A K) (T K) (swap K) (a ⊗ₜ[A K] b) =
+    (a * b, a * swap K b)
+  exact InvolutionTensorComparison.comparison_tmul (A K) (T K) (swap K) a b
 
 end
 

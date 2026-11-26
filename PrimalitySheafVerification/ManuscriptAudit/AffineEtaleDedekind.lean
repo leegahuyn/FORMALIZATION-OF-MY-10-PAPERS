@@ -27,7 +27,7 @@ theorem of_etale_over_pid (A B : Type*) [CommRing A] [CommRing B]
     [Algebra.Etale A B] : IsDedekindDomain B := by
   letI hNoeth : IsNoetherianRing B := Algebra.FiniteType.isNoetherianRing A B
   have hDvr : IsDedekindDomainDvr B := by
-    refine ⟨hNoeth, ?_⟩
+    refine { toIsNoetherian := hNoeth, is_dvr_at_nonzero_prime := ?_ }
     intro q hq hq'
     letI : q.IsPrime := hq'
     let p := q.under A

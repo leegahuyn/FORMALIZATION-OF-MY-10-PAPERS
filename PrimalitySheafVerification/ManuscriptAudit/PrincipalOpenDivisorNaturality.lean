@@ -83,7 +83,7 @@ private def pointEmbedding (f g : Polynomial K)
     have he := congrArg (fun p : Polynomial K => p.eval a.val) hq
     exact pow_ne_zero n a.property (by simpa only [Polynomial.eval_pow, Polynomial.eval_mul,
       hz, zero_mul] using he)⟩
-  inj' := fun _ _ e => Subtype.ext (congrArg Subtype.val e)
+  inj' := fun _ _ e => Subtype.ext (congrArg (fun a : OpenPoint K f => a.val) e)
 
 /-- On cycles, restriction retains the coefficients of points still in the open. -/
 def restrictCycles (f g : Polynomial K)
