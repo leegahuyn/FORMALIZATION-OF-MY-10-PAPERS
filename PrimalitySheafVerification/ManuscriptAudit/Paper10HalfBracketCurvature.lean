@@ -56,12 +56,13 @@ def transformedConnection : Connection := fun x y => affineGauge x y (constantCo
 private theorem transformed_x_entry (x y : ℝ) :
     (transformedConnection x y).1 0 1 =
       rotation y 0 0 * Complex.I * rotation y 0 1 := by
-  have hEntry : (rotation y)ᴴ 0 0 = rotation y 0 0 := by
+  have hEntry : (starRingEnd ℂ) (rotation y 0 0) = rotation y 0 0 := by
     change star (rotation y 0 0) = rotation y 0 0
     exact Complex.conj_ofReal (Real.cos (y - 1))
   simp only [transformedConnection, constantConnection, affineGauge, gaugeDx_eq_zero,
     mul_zero, add_zero, gauge]
-  simp [X, Matrix.mul_apply, Fin.sum_univ_two, hEntry]
+  simp [X, Matrix.mul_apply, Fin.sum_univ_two]
+  exact Or.inl hEntry
 
 private theorem transformed_x_derivative :
     deriv (fun t => (transformedConnection 0 t).1 0 1) 1 = Complex.I := by

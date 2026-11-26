@@ -40,9 +40,12 @@ theorem compressPotential_selfAdjoint {V : H →L[𝕜] H} (hV : IsSelfAdjoint V
 restricted quadratic form without asking for invariance of the slice. -/
 theorem compressPotential_inner (V : H →L[𝕜] H) (x y : U) :
     inner 𝕜 (compressPotential U V x) y = inner 𝕜 (V (x : H)) (y : H) := by
-  simpa only [compressPotential, ContinuousLinearMap.comp_apply, U.adjoint_subtypeL] using
-    (ContinuousLinearMap.adjoint_inner_left U.subtypeL y (V (x : H)))
+  change inner 𝕜 (U.orthogonalProjectionOnto (V (x : H))) y =
+    inner 𝕜 (V (x : H)) (U.subtypeL y)
+  rw [← U.adjoint_subtypeL]
+  exact ContinuousLinearMap.adjoint_inner_left U.subtypeL y (V (x : H))
 
+omit [CompleteSpace H] in
 theorem compressPotential_eq_of_image_mem (V : H →L[𝕜] H) (x : U) (hx : V (x : H) ∈ U) :
     (compressPotential U V x : H) = V (x : H) := by
   let y : U := ⟨V (x : H), hx⟩

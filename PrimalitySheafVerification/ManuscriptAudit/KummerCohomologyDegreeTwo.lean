@@ -14,7 +14,7 @@ for a principal ideal domain.
 
 namespace ManuscriptAudit.KummerCohomologyDegreeTwo
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
 open KummerCohomologySequence KummerSheafSequence KummerUnitsPresheaf
 
 noncomputable section
@@ -40,7 +40,8 @@ def killedBy (A : Type u) [AddCommGroup A] (d : ℕ) : AddSubgroup A where
   neg_mem' {x} hx := by
     change d • x = 0 at hx
     change d • (-x) = 0
-    rw [nsmul_neg, hx, neg_zero]
+    have h : d • (0 - x) = 0 := by rw [nsmul_sub, nsmul_zero, hx, sub_zero]
+    simpa only [zero_sub] using h
 
 private theorem presheafPower_eq_nsmul_id (X : Scheme.{u}) (d : ℕ) :
     power X d = d • 𝟙 (units X) := by
@@ -49,14 +50,16 @@ private theorem presheafPower_eq_nsmul_id (X : Scheme.{u}) (d : ℕ) :
   rw [NatTrans.app_nsmul]
   apply AddCommGrpCat.ext
   intro x
-  change Additive.ofMul (x.toMul ^ d) = d • x
-  exact Additive.ofMul_pow d x.toMul
+  let a : Additive (coordinateRing U.unop)ˣ := x
+  change Additive.ofMul (a.toMul ^ d) = d • a
+  exact Additive.ofMul_pow d a.toMul
 
 theorem sheafPower_eq_nsmul_id (X : Scheme.{u}) (d : ℕ) :
     sheafPower X d = d • 𝟙 (unitSheaf X) := by
-  change (presheafToSheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u}).map
-    (power X d) = _
-  rw [presheafPower_eq_nsmul_id, Functor.map_nsmul, Functor.map_id]
+  let F := presheafToSheaf (Scheme.AffineEtale.topology X) AddCommGrpCat.{u}
+  change F.map (power X d) = _
+  rw [presheafPower_eq_nsmul_id, Functor.map_nsmul]
+  exact congrArg (fun f => d • f) (F.map_id (units X))
 
 /-- The power map acts as ordinary multiplication by the degree on all cohomology groups. -/
 theorem cohomologyPower_apply (R : CommRingCat.{u}) (d n : ℕ)
@@ -64,8 +67,10 @@ theorem cohomologyPower_apply (R : CommRingCat.{u}) (d n : ℕ)
     Sheaf.H.map (sheafPower (Spec R) d) n x = d • x := by
   let F := Sheaf.functorH (affineSite R) n
   change (F.map (sheafPower (Spec R) d)).hom x = _
-  rw [sheafPower_eq_nsmul_id, Functor.map_nsmul, Functor.map_id]
-  rfl
+  rw [sheafPower_eq_nsmul_id, Functor.map_nsmul]
+  have hId : F.map (𝟙 (unitSheaf (Spec R))) = 𝟙 (F.obj (unitSheaf (Spec R))) :=
+    F.map_id (unitSheaf (Spec R))
+  rw [hId] <;> rfl
 
 /-- If the unit sheaf has zero first cohomology, the Kummer inclusion
 identifies its coefficient's second cohomology with the actual torsion subgroup. -/
@@ -100,7 +105,7 @@ def degreeTwoKernelEquiv (R : CommRingCat.{u}) (d : ℕ) (hpos : 0 < d)
       (X := integerConstant R) hS (x - y) hz' (show 1 + 1 = 2 by rfl)
     have ht₀ : t = 0 := h₁.allEq _ _
     apply sub_eq_zero.mp
-    rw [← ht, ht₀, Ext.zero_comp]
+    rw [← ht, ht₀, Ext.zero_comp] <;> rfl
   · intro y
     have hy : d • (y : Sheaf.H (unitSheaf (Spec R)) 2) = 0 := y.property
     obtain ⟨x, hx⟩ := (hExact y).1 ((hPower y).trans hy)

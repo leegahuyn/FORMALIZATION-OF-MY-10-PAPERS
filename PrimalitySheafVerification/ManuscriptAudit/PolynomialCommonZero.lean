@@ -38,8 +38,8 @@ private theorem coordinateIdeal_lt (n j : ℕ) (hj : j < n) :
     intro i
     by_cases hi : i.val < j
     · have hi' : i.val < j + 1 := Nat.lt_succ_of_lt hi
-      simp [eraseInitial, hi, hi']
-    · simp [eraseInitial, hi]
+      simp only [eraseInitial, AlgHom.comp_apply, aeval_X, if_pos hi, if_pos hi', map_zero]
+    · simp only [eraseInitial, AlgHom.comp_apply, aeval_X, if_neg hi]
   apply lt_of_le_not_ge
   · intro f hf
     change eraseInitial K n j f = 0 at hf
@@ -56,13 +56,15 @@ private theorem coordinateIdeal_lt (n j : ℕ) (hj : j < n) :
 private theorem coordinateIdeal_height (n j : ℕ) (hj : j ≤ n) :
     (j : ℕ∞) ≤ (coordinateIdeal K n j).height := by
   induction j with
-  | zero => exact zero_le _
+  | zero => exact zero_le
   | succ j ih =>
     letI : (coordinateIdeal K n j).IsPrime := coordinateIdeal_prime K n j
     letI : (coordinateIdeal K n (j + 1)).IsPrime := coordinateIdeal_prime K n (j + 1)
     have h := Ideal.height_add_one_le_of_lt_of_isPrime
       (coordinateIdeal_lt K n j (Nat.lt_of_succ_le hj))
-    have hle := (add_le_add_right (ih (Nat.le_of_succ_le hj)) (1 : ℕ∞)).trans h
+    have h₀ : (j : ℕ∞) + 1 ≤ (coordinateIdeal K n j).height + 1 :=
+      add_le_add (ih (Nat.le_of_succ_le hj)) le_rfl
+    have hle := h₀.trans h
     simpa only [Nat.cast_succ] using hle
 
 private theorem coordinateIdeal_eq_vanishingIdeal_zero (n : ℕ) :
@@ -71,7 +73,7 @@ private theorem coordinateIdeal_eq_vanishingIdeal_zero (n : ℕ) :
   have he : eraseInitial K n n = c.comp (aeval (0 : Fin n → K)) := by
     apply MvPolynomial.algHom_ext
     intro i
-    simp [eraseInitial, i.isLt]
+    simp [eraseInitial]
   ext f
   rw [mem_vanishingIdeal_singleton_iff]
   change eraseInitial K n n f = 0 ↔ aeval (0 : Fin n → K) f = 0
@@ -104,7 +106,7 @@ theorem exists_nonzero_common_zero [IsAlgClosed K] {n m : ℕ}
     · rintro rfl _ ⟨i, rfl⟩
       exact h₀ i
   have hRad : I.radical = M := by
-    rw [← vanishingIdeal_zeroLocus_eq_radical K I, hPoint]
+    rw [← vanishingIdeal_zeroLocus_eq_radical (K := K) I, hPoint]
   have hPrime : M.IsPrime := inferInstance
   have hMinimal : M ∈ I.minimalPrimes := by
     refine ⟨⟨hPrime, ?_⟩, ?_⟩
@@ -114,6 +116,7 @@ theorem exists_nonzero_common_zero [IsAlgClosed K] {n m : ℕ}
       rw [← hRad]
       exact hJ.1.radical_le_iff.mpr hJ.2
   have hLower : (n : ℕ∞) ≤ M.height := by
+    change (n : ℕ∞) ≤ (vanishingIdeal K ({0} : Set (Fin n → K))).height
     rw [← coordinateIdeal_eq_vanishingIdeal_zero K n]
     exact coordinateIdeal_height K n n le_rfl
   have hUpper : M.height ≤ s.card :=

@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import PrimalitySheafVerification.ManuscriptAudit.HighInfinityCusp
 
@@ -46,15 +47,19 @@ def multipliedForm : OneForm := fun x y =>
   (potential x y * (witnessForm x y).1, potential x y * (witnessForm x y).2)
 
 private theorem heightCutoff_smooth : ContDiff ℝ ⊤ heightCutoff := by
-  exact (Real.smoothTransition.contDiff.comp (contDiff_id.sub contDiff_const)).mul
-    (Real.smoothTransition.contDiff.comp (contDiff_const.sub contDiff_id))
+  have hFirst : ContDiff ℝ ⊤ (fun y : ℝ => y - 2) := contDiff_id.sub contDiff_const
+  have hSecond : ContDiff ℝ ⊤ (fun y : ℝ => 4 - y) := contDiff_const.sub contDiff_id
+  change ContDiff ℝ ⊤ (fun y => Real.smoothTransition (y - 2) * Real.smoothTransition (4 - y))
+  exact (Real.smoothTransition.contDiff.comp hFirst).mul
+    (Real.smoothTransition.contDiff.comp hSecond)
 
 theorem witnessForm_smooth : ContDiff ℝ ⊤ (Function.uncurry witnessForm) := by
   exact (heightCutoff_smooth.comp contDiff_snd).prodMk contDiff_const
 
 theorem potential_smooth : ContDiff ℝ ⊤ (Function.uncurry potential) := by
-  exact (heightCutoff_smooth.comp contDiff_snd).mul
-    (Real.contDiff_sin.comp (contDiff_const.mul contDiff_fst))
+  have h : ContDiff ℝ ⊤ (fun p : ℝ × ℝ => Real.pi * p.1) := contDiff_const.mul contDiff_fst
+  change ContDiff ℝ ⊤ (fun p : ℝ × ℝ => heightCutoff p.2 * Real.sin (Real.pi * p.1))
+  exact (heightCutoff_smooth.comp contDiff_snd).mul (Real.contDiff_sin.comp h)
 
 theorem heightCutoff_zero_of_outside {y : ℝ} (hy : y ≤ 2 ∨ 4 ≤ y) : heightCutoff y = 0 := by
   rcases hy with hy | hy
