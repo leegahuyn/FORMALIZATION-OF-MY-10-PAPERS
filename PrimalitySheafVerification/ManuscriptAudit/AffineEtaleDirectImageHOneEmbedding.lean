@@ -9,7 +9,7 @@ sheaf to the source scheme is injective in degree one for affine schemes. -/
 
 namespace ManuscriptAudit.AffineEtaleDirectImageHOneEmbedding
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian Opposite
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
 
 noncomputable section
 

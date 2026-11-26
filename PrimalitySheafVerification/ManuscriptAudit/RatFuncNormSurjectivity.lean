@@ -62,12 +62,13 @@ private theorem eval_normMatrix_det {F E : Type*} [Field F] [Field E]
   change aeval z (normMatrix b).det = Algebra.norm F x
   rw [AlgHom.map_det, hMatrix, Algebra.norm_eq_matrix_det b x]
 
-/-- Every scalar is a field norm from a finite extension of the
-rational function field of an algebraically closed field. -/
-theorem norm_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
-    [Algebra (RatFunc K) E] [FiniteDimensional (RatFunc K) E] :
-    Function.Surjective (fun x : E => Algebra.norm (RatFunc K) x) := by
-  let F := RatFunc K
+/-- Every scalar is a field norm from a finite extension of a field
+with the homogeneous zero property C1. -/
+theorem norm_surjective_of_C1 (F E : Type*) [Field F] [Field E] [Algebra F E]
+    [FiniteDimensional F E]
+    (hC : ∀ {m d : ℕ} (P : MvPolynomial (Fin m) F), P.IsHomogeneous d →
+      0 < d → d < m → ∃ z : Fin m → F, z ≠ 0 ∧ aeval z P = 0) :
+    Function.Surjective (fun x : E => Algebra.norm F x) := by
   let n := Module.finrank F E
   let b : Module.Basis (Fin n) F E := Module.finBasis F E
   have hn : 0 < n := Module.finrank_pos
@@ -75,7 +76,7 @@ theorem norm_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
   let P := (normMatrix b).det - C a * X (Fin.last n) ^ n
   have hP : P.IsHomogeneous n :=
     (normMatrix_det_homogeneous b).sub (isHomogeneous_C_mul_X_pow _ _ _)
-  obtain ⟨z, hz, heval⟩ := exists_ratFunc_zero P hP hn (Nat.lt_succ_self n)
+  obtain ⟨z, hz, heval⟩ := hC P hP hn (Nat.lt_succ_self n)
   let x := b.equivFun.symm (fun i => z i.castSucc)
   let t := z (Fin.last n)
   have hNorm : Algebra.norm F x = a * t ^ n := by
@@ -98,6 +99,13 @@ theorem norm_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
   change (a * t ^ n) * (t ^ n)⁻¹ = a
   rw [mul_assoc, mul_inv_cancel₀ (pow_ne_zero n ht), mul_one]
 
+/-- Every scalar is a field norm from a finite extension of the
+rational function field of an algebraically closed field. -/
+theorem norm_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
+    [Algebra (RatFunc K) E] [FiniteDimensional (RatFunc K) E] :
+    Function.Surjective (fun x : E => Algebra.norm (RatFunc K) x) :=
+  norm_surjective_of_C1 (RatFunc K) E (fun P hP hd hm ↦ exists_ratFunc_zero P hP hd hm)
+
 /-- The norm is surjective on the actual unit groups as well. -/
 theorem norm_units_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
     [Algebra (RatFunc K) E] [FiniteDimensional (RatFunc K) E] :
@@ -118,7 +126,8 @@ end ManuscriptAudit.RatFuncTsen
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.RatFuncTsen.norm_surjective,
+  for name in [``ManuscriptAudit.RatFuncTsen.norm_surjective_of_C1,
+      ``ManuscriptAudit.RatFuncTsen.norm_surjective,
       ``ManuscriptAudit.RatFuncTsen.norm_units_surjective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

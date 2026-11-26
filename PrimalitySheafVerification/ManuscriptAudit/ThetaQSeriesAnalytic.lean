@@ -128,7 +128,8 @@ theorem jacobiTheta_eq_thetaQ {τ : ℂ} (hτ : 0 < τ.im) :
 
 theorem thetaAlternating_eq_thetaQ_neg {τ : ℂ} (hτ : 0 < τ.im) :
     thetaAlternating τ = thetaQ (-cuspQ τ) := by
-  rw [← jacobiTheta_add_one_profile, jacobiTheta_eq_thetaQ (by simpa using hτ)]
+  have hShift : 0 < (τ + 1).im := by simpa using hτ
+  rw [thetaAlternating, ← jacobiTheta_add_one_profile, jacobiTheta_eq_thetaQ hShift]
   congr 1
   rw [cuspQ, mul_add, Complex.exp_add, mul_one, Complex.exp_pi_mul_I, mul_neg_one, cuspQ]
 

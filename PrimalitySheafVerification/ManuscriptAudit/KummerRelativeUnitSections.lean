@@ -49,7 +49,10 @@ theorem coordinateUnitsIso_restrict :
   change (UnitTerm d (X := X)).obj.map a ≫
       E.hom.app _ ≫ (ringUnits.mapIso (Scheme.ΓSpecIso S)).hom =
     (E.hom.app _ ≫ (ringUnits.mapIso (Scheme.ΓSpecIso R)).hom) ≫ ringUnits.map r
-  rw [← Category.assoc, E.hom.naturality a, Category.assoc, h, Category.assoc]
+  have hn := E.hom.naturality a
+  change (UnitTerm d (X := X)).obj.map a ≫ E.hom.app _ =
+    E.hom.app _ ≫ (fullCoordinateUnits X).map a at hn
+  rw [← Category.assoc, hn, Category.assoc, h, Category.assoc]
 
 variable {d} in
 /-- Passing to coordinate units turns a pointwise Kummer lift into an actual root. -/
@@ -60,7 +63,11 @@ theorem coordinateUnitsIso_power {U : X.Etale}
   have h := congrArg P.map (power_nsmul (X := X) d)
   change ((sequence X d).g.hom.app (op U)) = P.map (d • 𝟙 (UnitTerm d (X := X))) at h
   rw [Functor.map_nsmul, P.map_id] at h
-  simpa using congrArg (fun f : P.obj (UnitTerm d (X := X)) ⟶ P.obj (UnitTerm d (X := X)) => f x) h
+  let Q := P.obj (UnitTerm d (X := X))
+  have hQ : ((sequence X d).g.hom.app (op U) : Q ⟶ Q) = d • 𝟙 Q := h
+  change ((sequence X d).g.hom.app (op U) : Q ⟶ Q) x = d • x
+  rw [hQ]
+  rfl
 
 end
 end ManuscriptAudit.KummerRelativeUnitSections

@@ -15,9 +15,7 @@ namespace ManuscriptAudit.GroupTwoCocycleConjugation
 
 open groupCohomology
 
-universe u
-
-variable {G A : Type u} [Group G] [AddCommGroup A] [DistribMulAction G A]
+variable {G A : Type} [Group G] [AddCommGroup A] [DistribMulAction G A]
 variable (S : Subgroup G) [S.Normal]
 
 set_option maxHeartbeats 1600000 in

@@ -64,13 +64,13 @@ private theorem plus_projection (U : UOver K) (c : (Conductor K U).left) :
     projection K U (plus K U c) = pullback.fst U.hom (originMap K) c := by
   change (plus K U ≫ projection K U) c = _
   unfold plus
-  rw [baseChangeMap_fst]
+  rw [baseChangeMap_fst] <;> rfl
 
 private theorem minus_projection (U : UOver K) (c : (Conductor K U).left) :
     projection K U (minus K U c) = pullback.fst U.hom (originMap K) c := by
   change (minus K U ≫ projection K U) c = _
   unfold minus
-  rw [baseChangeMap_fst]
+  rw [baseChangeMap_fst] <;> rfl
 
 private theorem sameOnFibers (U : UOver K) (s : ContinuousMap (Norm K U).left M)
     (hs : ∀ c : (Conductor K U).left, s (plus K U c) = s (minus K U c)) :

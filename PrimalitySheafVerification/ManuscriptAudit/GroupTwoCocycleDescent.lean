@@ -15,9 +15,7 @@ namespace ManuscriptAudit.GroupTwoCocycleConjugation
 
 open groupCohomology
 
-universe u
-
-variable {G A : Type u} [Group G] [AddCommGroup A] [DistribMulAction G A]
+variable {G A : Type} [Group G] [AddCommGroup A] [DistribMulAction G A]
 variable (S : Subgroup G) [hS : S.Normal]
 
 /-- A degree-two cocycle with vanishing mixed terms is inflation of an
