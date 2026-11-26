@@ -29,10 +29,12 @@ theorem actualFrobenius_trace_power_eq_point_count (hp : 5 ≤ p) {A : ZMod p} (
       ((actualFrobenius p L hp hA).toLinearMap ^ Module.finrank (ZMod p) E) =
       (((Fintype.card E : ℤ) + 1 -
         (Nat.card ((paper5TraceCurve p A).baseChange E).toProjective.Point : ℤ)) : ZMod 2) := by
-  rw [Paper5PrintedActualExtensionCounts.actual_extension_trace_eq_recurrence hp hA]
-  exact trace_pow_eq_recurrence_mod_two _ (torsionBasis p L hp hA)
+  have h := Paper5PrintedActualExtensionCounts.actual_extension_trace_eq_recurrence
+    hp (E := E) hA
+  have hCast := congrArg (fun a : ℤ => (a : ZMod 2)) h
+  exact (trace_pow_eq_recurrence_mod_two _ (torsionBasis p L hp hA)
     (actualFrobenius p L hp hA) p (firstTrace p A)
-    (actualFrobenius_trace p L hp hA) (actualFrobenius_det p L hp hA) _
+    (actualFrobenius_trace p L hp hA) (actualFrobenius_det p L hp hA) _).trans hCast.symm
 
 end
 

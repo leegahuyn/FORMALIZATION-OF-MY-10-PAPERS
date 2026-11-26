@@ -47,8 +47,10 @@ theorem cubicPolynomial_separable {c A : K} (hΔ : (shortCubic c A).Δ ≠ 0) :
   intro x
   by_cases hx : x ^ 3 - c * x + A = 0
   · right
-    have hn : (CubicAffine c A).Nonsingular x 0 :=
-      (shortCubic_nonsingular_iff hΔ x 0).mpr (by simpa using hx.symm)
+    have hn : (CubicAffine c A).Nonsingular x 0 := by
+      rw [← WeierstrassCurve.Affine.equation_iff_nonsingular_of_Δ_ne_zero hΔ,
+        WeierstrassCurve.Affine.equation_iff]
+      simpa [CubicAffine, shortCubic, sub_eq_add_neg, neg_mul] using hx.symm
     have hp := ((CubicAffine c A).nonsingular_iff x 0).mp hn
     have hd : (0 : K) ≠ 3 * x ^ 2 - c := by
       simpa [CubicAffine, shortCubic, sub_eq_add_neg] using hp.2

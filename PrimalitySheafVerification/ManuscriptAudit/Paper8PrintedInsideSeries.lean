@@ -28,6 +28,15 @@ def printedTerm (q : ℝ) (n : ℕ) : ℝ :=
 
 def printedInside (q : ℝ) : ℝ := ∑' n : ℕ, printedTerm q n
 
+private theorem pow_exponent_antitone {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1)
+    {m n : ℕ} (h : m ≤ n) : q ^ n ≤ q ^ m := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [pow_add]
+  have hk : q ^ k ≤ 1 := by simpa only [one_pow] using pow_le_pow_left₀ hq h₁ k
+  calc
+    _ ≤ q ^ m * 1 := mul_le_mul_of_nonneg_left hk (pow_nonneg hq _)
+    _ = _ := mul_one _
+
 theorem doubled_pochhammer_le_squared {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1) (n : ℕ) :
     negPochhammer q (2 * n) ≤ (negPochhammer q n) ^ 2 := by
   unfold negPochhammer
@@ -37,7 +46,7 @@ theorem doubled_pochhammer_le_squared {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1) 
   · intro j _
     exact zero_le_one.trans (le_add_of_nonneg_right (pow_nonneg hq _))
   · intro j _
-    exact add_le_add_left (pow_le_pow_right_of_le_one hq h₁ (by omega)) 1
+    exact add_le_add_left (pow_exponent_antitone hq h₁ (by omega)) 1
 
 private theorem summable_of_pochhammer_bound {q : ℝ} (hq : 0 ≤ q) (h₁ : q < 1)
     (denom : ℕ → ℝ) (hD : ∀ n, 1 ≤ denom n) :
@@ -55,7 +64,7 @@ private theorem summable_of_pochhammer_bound {q : ℝ} (hq : 0 ≤ q) (h₁ : q 
         cases n with
         | zero => decide
         | succ n => nlinarith
-      exact pow_le_pow_right_of_le_one hq h₁.le hn
+      exact pow_exponent_antitone hq h₁.le hn
 
 theorem printed_and_standard_summable {q : ℝ} (hq : 0 ≤ q) (h₁ : q < 1) :
     Summable (printedTerm q) ∧ Summable (ramanujanTerm q) :=
@@ -74,8 +83,9 @@ private theorem first_term_strict {q : ℝ} (hq : 0 < q) (h₁ : q < 1) :
     ramanujanTerm q 1 < printedTerm q 1 := by
   have hq2 : q ^ (2 : ℕ) < q := by nlinarith [mul_pos hq (sub_pos.mpr h₁)]
   have hd : (1 + q) * (1 + q ^ (2 : ℕ)) < (1 + q) ^ 2 := by
-    rw [pow_two]
-    exact mul_lt_mul_of_pos_left (add_lt_add_left hq2 _) (by positivity)
+    rw [pow_two (1 + q)]
+    have hAdd : 1 + q ^ (2 : ℕ) < 1 + q := by linarith only [hq2]
+    exact mul_lt_mul_of_pos_left hAdd (by positivity : 0 < 1 + q)
   have hpos : 0 < (1 + q) * (1 + q ^ (2 : ℕ)) := by positivity
   have hDivide := div_lt_div_of_pos_left hq hpos hd
   simpa [ramanujanTerm, printedTerm, negPochhammer, Finset.prod_range_succ] using hDivide

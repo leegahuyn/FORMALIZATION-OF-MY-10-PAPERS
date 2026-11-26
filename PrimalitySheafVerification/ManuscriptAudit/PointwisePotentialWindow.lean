@@ -120,8 +120,8 @@ private theorem window_index_le (n : ℕ) (i : UnitWindow n) : i.val.1 ≤ max n
   have hT := actual_real_parameter n i.val
   have ht : t n i.val ^ (2 : ℕ) ≤ (2 : ℝ) ^ (2 : ℕ) :=
     pow_le_pow_left₀ hT.1 i.property.2 _
-  have hλ := hT.2
-  rw [lambda, referenceValue, levelValue, potential, if_neg hi, add_zero] at hλ
+  have hValue := hT.2
+  rw [lambda, referenceValue, levelValue, potential, if_neg hi, add_zero] at hValue
   by_contra! hx
   have hn : 2 ≤ i.val.1 := by
     have := le_max_right n 1
@@ -131,7 +131,7 @@ private theorem window_index_le (n : ℕ) (i : UnitWindow n) : i.val.1 ≤ max n
     have h := mul_le_mul hn' (show (3 : ℝ) ≤ (i.val.1 : ℝ) + 1 by linarith)
       (by norm_num : (0 : ℝ) ≤ 3) (by positivity)
     linarith
-  linarith only [hλ, hProd, ht]
+  linarith only [hValue, hProd, ht]
 
 theorem finite_window (n : ℕ) : Finite (UnitWindow n) := by
   let J := Σ m : Fin (max n 1 + 1), Fin (2 * m.val + 1)
@@ -147,8 +147,10 @@ theorem window_card_ge_block (n : ℕ) : 2 * n + 1 ≤ Nat.card (UnitWindow n) :
   let put (i : Fin (2 * n + 1)) : UnitWindow n :=
     ⟨⟨n, i⟩, by
       change t n ⟨n, i⟩ ∈ Icc (1 : ℝ) 2
-      rw [t, lambda_same_block rfl]
-      norm_num⟩
+      have h : lambda n (⟨n, i⟩ : Index) = 5 / 4 :=
+        lambda_same_block (i := ⟨n, i⟩) (n := n) rfl
+      rw [t, h]
+      norm_num [Set.mem_Icc]⟩
   have hinj : Function.Injective put := by
     intro i j he
     have hk := congrArg (fun v : UnitWindow n => v.val.2.val) he

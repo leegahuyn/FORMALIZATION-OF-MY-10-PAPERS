@@ -50,7 +50,9 @@ theorem coordinateMap_chart_comm (g : V ⟶ U)
     letI := hU
     letI := hV
     (coordinateChartIso K V hV).hom ≫ g =
-      (Scheme.AffineEtale.Spec (X K)).preimage (algebraEtaleMap (coordinateMap K g)) ≫
+      (Scheme.AffineEtale.Spec (X K)).preimage
+        (X := chartObject K (coordinateRing K V)) (Y := chartObject K (coordinateRing K U))
+        (algebraEtaleMap (coordinateMap K g)) ≫
         (coordinateChartIso K U hU).hom := by
   letI := coordinateAlgebra K U
   letI := coordinateAlgebra K V

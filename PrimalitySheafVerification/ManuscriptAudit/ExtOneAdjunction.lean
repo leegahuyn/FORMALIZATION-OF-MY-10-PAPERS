@@ -90,7 +90,9 @@ theorem map_injective (adj : F ⊣ G) (X : C) (Y : D) :
     obtain ⟨t, rfl⟩ := (Ext.mk₀_bijective (F.obj E) Y).surjective e'
     have ht : F.map j ≫ t = adj.counit.app Y := by
       apply (Ext.mk₀_bijective _ _).injective
-      simpa only [Ext.mk₀_comp_mk₀] using he'
+      change (Ext.mk₀ (F.map j)).comp (Ext.mk₀ t) rfl =
+        Ext.mk₀ (adj.counit.app Y) at he'
+      rwa [Ext.mk₀_comp_mk₀] at he'
     let r := (adj.homEquiv E Y) t
     have hr : j ≫ r = 𝟙 _ := by
       rw [← adj.homEquiv_naturality_left j t, ht, ← adj.homEquiv_symm_id Y,

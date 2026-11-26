@@ -27,7 +27,9 @@ private theorem applyCoefficients_homogeneous (f : E →ₗ[F] F) {P : MvPolynom
   unfold applyCoefficients
   apply IsHomogeneous.sum
   intro m hm
-  exact isHomogeneous_monomial _ (hP (mem_support_iff.mp hm))
+  apply isHomogeneous_monomial
+  rw [Finsupp.degree_eq_weight_one]
+  exact hP (mem_support_iff.mp hm)
 
 private theorem eval_applyCoefficients (f : E →ₗ[F] F) (P : MvPolynomial σ E) (z : σ → F) :
     eval z (applyCoefficients f P) =

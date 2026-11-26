@@ -109,6 +109,9 @@ theorem affineNormalization_surjective (h2 : (2 : K) ≠ 0) :
     Function.Surjective (affineNormalization K) := by
   letI : Module.Finite (A K) (B K) := NodalNormalization.normalization_finite K h2
   letI : Algebra.IsIntegral (A K) (B K) := Algebra.IsIntegral.of_finite _ _
+  letI : FaithfulSMul (A K) (B K) :=
+    (faithfulSMul_iff_algebraMap_injective (A K) (B K)).mpr Subtype.val_injective
+  change Function.Surjective (PrimeSpectrum.comap (algebraMap (A K) (B K)))
   exact Algebra.IsIntegral.comap_surjective (A K) (B K)
 
 /-- The native normalization is a quotient map on points. -/
@@ -141,16 +144,21 @@ def conductorFiberIso (h2 : (2 : K) ≠ 0) :
   (tensor_isPullback K).isoPullback.symm ≪≫
     Scheme.Spec.mapIso (fiberRingEquiv K h2).symm.toCommRingCatIso.op
 
+set_option maxHeartbeats 1400000 in
 /-- Under the scheme fiber identification, its second projection is
 the morphism defined by evaluation on the two ordered branches. -/
 theorem conductorFiberIso_second (h2 : (2 : K) ≠ 0) :
     (conductorFiberIso K h2).hom ≫ Spec.map (NodalConductorSquare.branches K) =
       pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) := by
-  apply (cancel_epi (tensor_isPullback K).isoPullback.hom).mp
-  simp only [conductorFiberIso, Iso.trans_hom, Iso.symm_hom, Iso.hom_inv_id_assoc]
-  rw [(tensor_isPullback K).isoPullback_hom_snd]
-  change Spec.map (CommRingCat.ofHom (fiberRingEquiv K h2).symm.toRingHom) ≫
-    Spec.map (NodalConductorSquare.branches K) = fiberSecond K
+  let e := (tensor_isPullback K).isoPullback
+  let r := fiberRingEquiv K h2
+  let i := Scheme.Spec.mapIso r.symm.toCommRingCatIso.op
+  have he : (conductorFiberIso K h2).hom = e.inv ≫ i.hom := rfl
+  have hi : i.hom = Spec.map (CommRingCat.ofHom r.symm.toRingHom) := rfl
+  have hp : e.hom ≫ pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) =
+      fiberSecond K := (tensor_isPullback K).isoPullback_hom_snd
+  apply (cancel_epi e.hom).mp
+  simp only [he, Category.assoc, Iso.hom_inv_id_assoc, hp, hi]
   rw [← Spec.map_comp]
   unfold fiberSecond
   apply congrArg Spec.map

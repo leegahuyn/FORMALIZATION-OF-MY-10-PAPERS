@@ -66,8 +66,9 @@ def diagonal (p : Y ⟶ Z) : continuousMapSheaf Z M ⟶ functionsOver M p :=
        intro c
        apply ContinuousMap.ext
        intro x
-       change c ((pullback.fst V.unop.hom p ≫ f.unop.left) x) =
-         c ((((etaleBaseChange p).map f.unop).left ≫ pullback.fst U.unop.hom p) x)
+       let c' : ContinuousMap U.unop.left M := c
+       change c' ((pullback.fst V.unop.hom p ≫ f.unop.left) x) =
+         c' ((((etaleBaseChange p).map f.unop).left ≫ pullback.fst U.unop.hom p) x)
        simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst] }⟩
 
 /-- Pullback of local functions along a scheme map over the common base. -/
@@ -79,8 +80,9 @@ def restriction (g : X ⟶ Y) (hg : g ≫ p = q) : functionsOver M p ⟶ functio
        intro c
        apply ContinuousMap.ext
        intro x
-       change c ((baseChangeMap g hg V.unop ≫ ((etaleBaseChange p).map f.unop).left) x) =
-         c ((((etaleBaseChange q).map f.unop).left ≫ baseChangeMap g hg U.unop) x)
+       let c' : ContinuousMap ((etaleBaseChange p).obj U.unop).left M := c
+       change c' ((baseChangeMap g hg V.unop ≫ ((etaleBaseChange p).map f.unop).left) x) =
+         c' ((((etaleBaseChange q).map f.unop).left ≫ baseChangeMap g hg U.unop) x)
        rw [baseChangeMap_natural] }⟩
 
 /-- A function pulled back from the base gives the same local value on
@@ -89,13 +91,14 @@ theorem diagonal_restriction (g : X ⟶ Y) (hg : g ≫ p = q) :
     diagonal M p ≫ restriction M g hg = diagonal M q := by
   apply Sheaf.hom_ext
   apply NatTrans.ext
-  intro U
+  funext U
   apply ConcreteCategory.hom_ext
   intro c
   apply ContinuousMap.ext
   intro x
-  change c ((baseChangeMap g hg U.unop ≫ pullback.fst U.unop.hom p) x) =
-    c (pullback.fst U.unop.hom q x)
+  let c' : ContinuousMap U.unop.left M := c
+  change c' ((baseChangeMap g hg U.unop ≫ pullback.fst U.unop.hom p) x) =
+    c' (pullback.fst U.unop.hom q x)
   rw [baseChangeMap_fst]
 
 end

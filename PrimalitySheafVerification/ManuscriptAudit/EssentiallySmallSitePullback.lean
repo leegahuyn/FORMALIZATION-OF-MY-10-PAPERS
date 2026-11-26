@@ -96,7 +96,7 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
   let L₀ := g.sheafPullback A.{u} J' K'
   let L₁ := R₁.asEquivalence.inverse
   let L₂ := R₂.asEquivalence.inverse
-  letI : ReflectsLimits (forget A.{u}) := reflectsLimits_of_reflectsIsomorphisms _
+  letI : ReflectsLimits (forget A.{u}) := reflectsLimits_of_reflectsIsomorphisms
   letI : PreservesFiniteLimits (g.op.lan :
       ((SmallModel.{u} C)ᵒᵖ ⥤ A.{u}) ⥤ (SmallModel.{u} D)ᵒᵖ ⥤ A.{u}) :=
     lan_preservesFiniteLimits_of_flat A.{u} g

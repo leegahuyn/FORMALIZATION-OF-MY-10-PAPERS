@@ -36,9 +36,18 @@ private theorem compatiblePreserving_of_pullbacks {C D : Type*} [Category* C] [C
     have hv : P.obj.map (F.map a).op (x g₁ hg₁) =
         P.obj.map (F.map b).op (x g₂ hg₂) :=
       hx a b hg₁ hg₂ pullback.condition
-    rw [← he.lift_fst f₁ f₂ h, ← he.lift_snd f₁ f₂ h]
-    simp only [op_comp, Functor.map_comp, types_comp_apply]
-    exact congrArg (P.obj.map r.op) hv
+    have h₁ : r ≫ F.map a = f₁ := he.lift_fst f₁ f₂ h
+    have h₂ : r ≫ F.map b = f₂ := he.lift_snd f₁ f₂ h
+    calc
+      _ = P.obj.map (r ≫ F.map a).op (x g₁ hg₁) :=
+        (congrArg (fun k ↦ P.obj.map k.op (x g₁ hg₁)) h₁).symm
+      _ = P.obj.map r.op (P.obj.map (F.map a).op (x g₁ hg₁)) := by
+        rw [op_comp, P.obj.map_comp] <;> rfl
+      _ = P.obj.map r.op (P.obj.map (F.map b).op (x g₂ hg₂)) :=
+        congrArg (P.obj.map r.op) hv
+      _ = P.obj.map (r ≫ F.map b).op (x g₂ hg₂) := by
+        rw [op_comp, P.obj.map_comp] <;> rfl
+      _ = _ := congrArg (fun k ↦ P.obj.map k.op (x g₂ hg₂)) h₂
 
 variable {U X : Scheme.{u}} (j : U ⟶ X) [Etale j]
 

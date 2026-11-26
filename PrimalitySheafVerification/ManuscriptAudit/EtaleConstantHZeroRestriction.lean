@@ -65,6 +65,7 @@ theorem restriction_surjective {X : Scheme.{u}} (M : AddCommGrpCat.{u})
     let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M
     Function.Surjective ((F.cohomologyPresheaf 0).map f.op) := by
   let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M
+  change Function.Surjective ((F.cohomologyPresheaf 0).map f.op)
   intro y
   obtain ⟨s, rfl⟩ := (fromSection F V).surjective y
   obtain ⟨t, ht⟩ := sections_restrict_surjective M f s

@@ -20,17 +20,17 @@ namespace ManuscriptAudit.HyperbolicCuspGaugeTest
 
 open MeasureTheory Paper10CoulombMultiplier Paper10CoulombProductRule
 open LiteralCuspTruncation (orbitPoint)
-open scoped UpperHalfPlane
+open scoped UpperHalfPlane ContDiff
 
 noncomputable section
 
 def cuspBump (y : ℝ) : ℝ :=
   Real.smoothTransition (y - 2) * Real.smoothTransition (5 - y)
 
-theorem cuspBump_smooth : ContDiff ℝ (↑(⊤ : WithTop ℕ)) cuspBump := by
-  have hLeft : ContDiff ℝ (↑(⊤ : WithTop ℕ)) (fun y : ℝ => y - 2) :=
+theorem cuspBump_smooth : ContDiff ℝ ∞ cuspBump := by
+  have hLeft : ContDiff ℝ ∞ (fun y : ℝ => y - 2) :=
     contDiff_id.sub contDiff_const
-  have hRight : ContDiff ℝ (↑(⊤ : WithTop ℕ)) (fun y : ℝ => 5 - y) :=
+  have hRight : ContDiff ℝ ∞ (fun y : ℝ => 5 - y) :=
     contDiff_const.sub contDiff_id
   exact (Real.smoothTransition.contDiff.comp hLeft).mul (Real.smoothTransition.contDiff.comp hRight)
 
@@ -67,9 +67,10 @@ def christoffel_xy_x (y : ℝ) : ℝ :=
 
 theorem christoffel_xy_x_eq {y : ℝ} (hy : 0 < y) : christoffel_xy_x y = -1 / y := by
   have h := ((hasDerivAt_id y).pow 2).inv (pow_ne_zero 2 hy.ne')
-  have h' : HasDerivAt (fun t : ℝ => (t ^ 2)⁻¹) (-(2 * y) / (y ^ 2) ^ 2) y := by
-    convert h using 1 <;> norm_num [id]
-  rw [christoffel_xy_x, h'.deriv]
+  unfold christoffel_xy_x
+  change 1 / 2 * y ^ 2 * deriv (((id : ℝ → ℝ) ^ (2 : ℕ))⁻¹) y = -1 / y
+  rw [h.deriv]
+  simp only [id, Pi.pow_apply, Nat.cast_ofNat, Nat.reduceSub, pow_one, mul_one]
   field_simp [hy.ne'] <;> ring
 
 /-- For this horizontal one-form, these are the xy and yx components of ∇a. -/
@@ -102,7 +103,7 @@ theorem cuspMass_pos : 0 < cuspMass := by
 
 theorem cuspMass_le_cuspDerivativeEnergy : cuspMass ≤ cuspDerivativeEnergy := by
   have hB := cuspBump_smooth.continuous
-  have hD := cuspBump_smooth.continuous_deriv (by simp)
+  have hD := (contDiff_infty.mp cuspBump_smooth 1).continuous_deriv_one
   have hM : Continuous (fun y : ℝ => cuspBump y ^ 2) := hB.pow 2
   have hE : Continuous (fun y : ℝ => (y * deriv cuspBump y + cuspBump y) ^ 2) :=
     ((continuous_id.mul hD).add hB).pow 2
