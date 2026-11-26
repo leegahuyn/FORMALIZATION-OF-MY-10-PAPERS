@@ -56,7 +56,8 @@ private abbrev residueCoordinates := (residueBasis K E).equivFun.restrictScalars
 private abbrev coordinatePatch :=
   MilnorCoordinatePatch.patch (quotientMap K) (constantMap K) (transitionMatrix K E).val
 
-private def first : L K E →ₐ[A K] E :=
+/-- The first projection of the actual conductor pullback as a cusp-algebra map. -/
+def firstProjection : L K E →ₐ[A K] E :=
   { (patchCone K E).fst.hom with
     commutes' := fun a => by
       change (patchCone K E).fst.hom ((cuspToPatch K E).hom a) =
@@ -76,14 +77,14 @@ private def second : L K E →ₐ[A K] F K E :=
 set_option maxHeartbeats 1200000 in
 set_option backward.isDefEq.respectTransparency false in
 private def coordinateMap : L K E →ₗ[A K] coordinatePatch K E :=
-  let a := (normalizationCoordinates K E).toLinearMap.comp (first K E).toLinearMap
+  let a := (normalizationCoordinates K E).toLinearMap.comp (firstProjection K E).toLinearMap
   let b := (residueCoordinates K E).toLinearMap.comp (second K E).toLinearMap
   (a.prod b).codRestrict (coordinatePatch K E) fun z => by
     rw [MilnorCoordinatePatch.mem_patch_iff]
-    change (algebraMap (Polynomial K) (D K) ∘ (normalizationBasis K E).2.equivFun (first K E z)) =
+    change (algebraMap (Polynomial K) (D K) ∘ (normalizationBasis K E).2.equivFun (firstProjection K E z)) =
       (transitionMatrix K E).val *ᵥ
         (algebraMap K (D K) ∘ (residueBasis K E).equivFun (second K E z))
-    apply (conductor_coordinate_equation K E (first K E z) (second K E z)).mp
+    apply (conductor_coordinate_equation K E (firstProjection K E z) (second K E z)).mp
     exact DFunLike.congr_fun (congrArg CommRingCat.Hom.hom (patch_isPullback K E).w) z
 
 set_option maxHeartbeats 1200000 in
@@ -93,8 +94,8 @@ private theorem coordinateMap_bijective : Function.Bijective (coordinateMap K E)
   · intro x y h
     have hf := congrArg (fun z : coordinatePatch K E => z.val.1) h
     have hs := congrArg (fun z : coordinatePatch K E => z.val.2) h
-    change normalizationCoordinates K E (first K E x) =
-      normalizationCoordinates K E (first K E y) at hf
+    change normalizationCoordinates K E (firstProjection K E x) =
+      normalizationCoordinates K E (firstProjection K E y) at hf
     change residueCoordinates K E (second K E x) = residueCoordinates K E (second K E y) at hs
     have hNorm := (normalizationCoordinates K E).injective hf
     have hRes := (residueCoordinates K E).injective hs
@@ -124,6 +125,13 @@ coordinate patch at the level of cusp modules. -/
 def patchModuleEquiv : L K E ≃ₗ[A K] coordinatePatch K E :=
   LinearEquiv.ofBijective (coordinateMap K E) (coordinateMap_bijective K E)
 
+
+/-- The first coordinate of the patch equivalence is the actual first projection
+expressed in the normalization basis. -/
+theorem patchModuleEquiv_fst (x : L K E) :
+    (patchModuleEquiv K E x).val.1 =
+      (normalizationBasis K E).2.equivFun (firstProjection K E x) := rfl
+
 /-- The actual ring pullback is finite and projective as a cusp module. -/
 theorem patch_finite_projective :
     Module.Finite (A K) (L K E) ∧ Module.Projective (A K) (L K E) := by
@@ -146,7 +154,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CuspPatchedFiniteProjective.patchModuleEquiv,
-      ``ManuscriptAudit.CuspPatchedFiniteProjective.patch_finite_projective] do
+      ``ManuscriptAudit.CuspPatchedFiniteProjective.patch_finite_projective,
+      ``ManuscriptAudit.CuspPatchedFiniteProjective.patchModuleEquiv_fst] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
