@@ -28,8 +28,7 @@ theorem skyscraper_not_isZero {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepCl
   let x : Φ.fiber.obj T := CategoryTheory.Over.homMk s (Category.comp_id s)
   let F := Φ.skyscraperSheaf A
   let ev := (sheafSections S.smallEtaleTopology AddCommGrpCat.{u}).obj (op T)
-  letI : ev.Additive where
-    map_add := by intros; rfl
+  letI : ev.Additive := ⟨by intros; rfl⟩
   intro hF
   have hEval : IsZero (ev.obj F) := by
     apply (IsZero.iff_id_eq_zero _).2

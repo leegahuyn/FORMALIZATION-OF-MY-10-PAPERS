@@ -90,6 +90,7 @@ theorem affine_etale_algebra_descends (B : Type u) [CommRing B] [CharP B p]
     rfl
 
 include p pPrime kCharP in
+set_option backward.isDefEq.respectTransparency false in
 /-- Every affine étale morphism over the normalization comes from an actual pullback square
 along the cusp map. The empty affine scheme descends as the empty affine scheme. -/
 theorem affine_etale_descends (T : CommRingCat.{u}) (f : Spec T ⟶ Normalization K) [Etale f] :
@@ -120,7 +121,10 @@ theorem affine_etale_descends (T : CommRingCat.{u}) (f : Spec T ⟶ Normalizatio
       infer_instance
     letI : Algebra.Etale (Polynomial K) T := RingHom.etale_algebraMap.mp hkEtale
     have hmap : Spec.map (CommRingCat.ofHom (algebraMap (Polynomial K) T)) = f := hk
-    simpa only [hmap] using affine_etale_algebra_descends K p T
+    obtain ⟨R, d, hd, j, hj⟩ := affine_etale_algebra_descends K p T
+    refine ⟨R, d, hd, j, ?_⟩
+    rw [← hmap]
+    exact hj
 
 end
 

@@ -55,11 +55,11 @@ theorem addConstantPotential_norm_le (V : H →L[𝕜] H) {B : ℝ}
     _ = ‖V x‖ + |c| * ‖x‖ := by rw [constantMultiplier_norm]
     _ ≤ (B + |c|) * ‖x‖ := by
       rw [add_mul]
-      exact add_le_add_right (hB x) _
+      exact add_le_add (hB x) le_rfl
 
 theorem eigenvector_add_constant {T : H →L[𝕜] H} {lambda : ℝ} {x : H}
-    (hx : (T : Module.End 𝕜 H).HasEigenvector (lambda : 𝕜) x) (c : ℝ) :
-    (addConstantPotential T c : Module.End 𝕜 H).HasEigenvector ((lambda + c : ℝ) : 𝕜) x := by
+    (hx : HasEigenvector (T : Module.End 𝕜 H) (lambda : 𝕜) x) (c : ℝ) :
+    HasEigenvector (addConstantPotential T c : Module.End 𝕜 H) ((lambda + c : ℝ) : 𝕜) x := by
   refine ⟨mem_eigenspace_iff.mpr ?_, hx.2⟩
   change addConstantPotential T c x = ((lambda + c : ℝ) : 𝕜) • x
   have h : T x = (lambda : 𝕜) • x := hx.apply_eq_smul
@@ -94,9 +94,9 @@ eigenvalue zero. This is a perturbation theorem for an arbitrary fixed base. -/
 theorem bounded_hamiltonian_constant_shift_refutes_real_parameter
     {K V : H →L[𝕜] H} (hK : IsSelfAdjoint K) (hV : IsSelfAdjoint V)
     {lambda : ℝ} {x : H}
-    (hx : ((K + V : H →L[𝕜] H) : Module.End 𝕜 H).HasEigenvector (lambda : 𝕜) x) :
+    (hx : HasEigenvector ((K + V : H →L[𝕜] H) : Module.End 𝕜 H) (lambda : 𝕜) x) :
     ∃ W : H →L[𝕜] H, IsSelfAdjoint W ∧ IsSelfAdjoint (K + W) ∧
-      ((K + W : H →L[𝕜] H) : Module.End 𝕜 H).HasEigenvector 0 x ∧
+      HasEigenvector ((K + W : H →L[𝕜] H) : Module.End 𝕜 H) 0 x ∧
       ¬ ∃ t : ℝ, 0 ≤ t ∧ (0 : ℝ) = 1 / 4 + t ^ 2 := by
   let W := addConstantPotential V (-lambda)
   have hW : IsSelfAdjoint W := addConstantPotential_selfAdjoint hV _
@@ -104,7 +104,7 @@ theorem bounded_hamiltonian_constant_shift_refutes_real_parameter
     ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric.mpr (hK.isSymmetric.add hW.isSymmetric)
   refine ⟨W, hW, hKW, ?_, zero_has_no_real_parameter⟩
   have he := eigenvector_add_constant (T := K + V) hx (-lambda)
-  change ((K + W : H →L[𝕜] H) : Module.End 𝕜 H).HasEigenvector 0 x
+  change HasEigenvector ((K + W : H →L[𝕜] H) : Module.End 𝕜 H) 0 x
   simpa only [W, addConstantPotential, add_assoc, add_neg_cancel, RCLike.ofReal_zero] using he
 
 /-- A bounded potential acts on the unchanged domain of a partial Hamiltonian. -/
@@ -146,7 +146,8 @@ variable {p : ℝ≥0∞} {μ : Measure X} [Fact (1 ≤ p)]
 theorem constantMultiplier_ae (c : ℝ) (u : Lp F p μ) :
     ((constantMultiplier (𝕜 := 𝕜) c u : Lp F p μ) : X → F) =ᵐ[μ]
       fun y => (c : 𝕜) • u y := by
-  simpa only [constantMultiplier_apply, Pi.smul_apply] using Lp.coeFn_smul (c : 𝕜) u
+  filter_upwards [Lp.coeFn_smul (c : 𝕜) u] with y hy
+  simpa only [constantMultiplier_apply, Pi.smul_apply] using hy
 
 /-- On `Lp`, the shifted potential adds the same real scalar to the
 pointwise multiplier at almost every point. -/
@@ -159,8 +160,8 @@ theorem addConstantPotential_represents
   have hadd :
       ((addConstantPotential V c u : Lp F p μ) : X → F) =ᵐ[μ]
         fun y => V u y + constantMultiplier (𝕜 := 𝕜) c u y := by
-    simpa only [addConstantPotential_apply, constantMultiplier_apply, Pi.add_apply] using
-      Lp.coeFn_add (V u) (constantMultiplier (𝕜 := 𝕜) c u)
+    filter_upwards [Lp.coeFn_add (V u) (constantMultiplier (𝕜 := 𝕜) c u)] with y hy
+    simpa only [addConstantPotential_apply, constantMultiplier_apply, Pi.add_apply] using hy
   filter_upwards [hadd, hV, constantMultiplier_ae (𝕜 := 𝕜) c u] with y ha hb hc
   rw [ha, hb, hc, addConstantPotential_apply]
 

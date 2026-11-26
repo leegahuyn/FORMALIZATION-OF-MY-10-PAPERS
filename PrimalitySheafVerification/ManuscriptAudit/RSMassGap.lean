@@ -62,10 +62,11 @@ theorem diagonal_symmetric (a b : ℝ) : (diagonal a b).IsSymmetric := by
   ring
 
 def boundedDiagonal (a b : ℝ) : E →L[ℝ] E :=
-  (diagonal a b).toContinuousLinearMap
+  LinearMap.toContinuousLinearMap (diagonal a b)
 
-theorem boundedDiagonal_selfAdjoint (a b : ℝ) : IsSelfAdjoint (boundedDiagonal a b) :=
-  ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric.mpr (diagonal_symmetric a b)
+theorem boundedDiagonal_selfAdjoint (a b : ℝ) : IsSelfAdjoint (boundedDiagonal a b) := by
+  apply ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric.mpr
+  simpa only [boundedDiagonal, LinearMap.coe_toContinuousLinearMap] using diagonal_symmetric a b
 
 def axis (i : Fin 2) : E := EuclideanSpace.single i 1
 

@@ -23,7 +23,7 @@ private abbrev R := CommRingCat.of (Polynomial K)
 private abbrev cyclic := AddCommGrpCat.of (ZMod 2)
 
 local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
-local instance : NeZero (2 : K) := ⟨by decide⟩
+local instance : NeZero ((2 : ℕ) : K) := ⟨by decide⟩
 
 private theorem primitiveNegOne : IsPrimitiveRoot (-1 : K) 2 :=
   IsPrimitiveRoot.neg_one 5 (by decide)
@@ -52,9 +52,10 @@ theorem affine_line_Five_cyclic_HOne_nontrivial :
     ¬ Subsingleton (Sheaf.H ((constantSheaf (Spec R).smallEtaleTopology
       AddCommGrpCat.{0}).obj cyclic) 1) := by
   let J := Scheme.AffineEtale.topology (Spec R)
-  have hd : IsUnit (2 : R) := by
-    have h : IsUnit (2 : K) := isUnit_iff_ne_zero.mpr (NeZero.ne _)
-    simpa using h.map (algebraMap K (Polynomial K))
+  have hd : IsUnit ((2 : ℕ) : R) := by
+    change IsUnit ((2 : ℕ) : Polynomial K)
+    have h : IsUnit ((2 : ℕ) : K) := isUnit_iff_ne_zero.mpr (NeZero.ne _)
+    simpa only [map_natCast] using h.map (algebraMap K (Polynomial K))
   let a := unitBoundary (K := K) R 2 (by decide) hd (Additive.ofMul twoUnit)
   have ha : a ≠ 0 := by
     intro ha
