@@ -512,5 +512,5 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   let bad := ax.filter (fun x => x ∉ allowed)
   unless bad.isEmpty do
-    throwError "{name} depends on unexpected axioms {bad}"
-  logInfo "{name} uses {ax}"
+    throwError m!"{name} depends on unexpected axioms {bad}"
+  logInfo m!"{name} uses {ax}"

@@ -112,11 +112,6 @@ theorem tensorMap_fst (f : U ⟶ V) :
   change _ = tensorFirst A E U ≫ Spec.map f.left.unop
   simp only [tensorMap, tensorFirst, ← Spec.map_comp]
   congr 1
-  apply CommRingCat.hom_ext
-  apply RingHom.ext
-  intro b
-  change (tensorAlgHom A E f) (b ⊗ₜ[A] (1 : E)) = f.left.unop.hom b ⊗ₜ[A] (1 : E)
-  rw [tensorAlgHom, Algebra.TensorProduct.map_tmul] <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem tensorMap_snd (f : U ⟶ V) :
@@ -140,10 +135,14 @@ theorem tensorIsoPullback_natural (f : U ⟶ V) :
   let f' := ((SmallEtaleBaseChange.etaleBaseChange (affineMap A E)).map g).left
   have hFst : f' ≫ pullback.fst V.hom (affineMap A E) =
       pullback.fst U.hom (affineMap A E) ≫ g.left := by
+    change f' ≫ pullback.fst ((Scheme.AffineEtale.Spec (base A)).obj V).hom (affineMap A E) =
+      pullback.fst ((Scheme.AffineEtale.Spec (base A)).obj U).hom (affineMap A E) ≫ g.left
     simp only [f', SmallEtaleBaseChange.etaleBaseChange,
       MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
   have hSnd : f' ≫ pullback.snd V.hom (affineMap A E) =
       pullback.snd U.hom (affineMap A E) := by
+    change f' ≫ pullback.snd ((Scheme.AffineEtale.Spec (base A)).obj V).hom (affineMap A E) =
+      pullback.snd ((Scheme.AffineEtale.Spec (base A)).obj U).hom (affineMap A E)
     simp only [f', SmallEtaleBaseChange.etaleBaseChange,
       MorphismProperty.Over.pullback_map_left, pullback.lift_snd]
   apply pullback.hom_ext

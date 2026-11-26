@@ -69,6 +69,9 @@ private abbrev fiberMap {U V : aff K} (f : U ⟶ V) :=
 
 private theorem fiberMap_fst {U V : aff K} (f : U ⟶ V) :
     fiberMap K f ≫ projectionOf K V = projectionOf K U ≫ underlying K f := by
+  change fiberMap K f ≫
+      pullback.fst ((Scheme.AffineEtale.Spec (X K)).obj V).hom (cover K) =
+    pullback.fst ((Scheme.AffineEtale.Spec (X K)).obj U).hom (cover K) ≫ underlying K f
   simp only [SmallEtaleBaseChange.etaleBaseChange, MorphismProperty.Over.pullback_map_left,
     pullback.lift_fst]
 
@@ -76,7 +79,7 @@ set_option maxHeartbeats 1600000 in
 def diagonal : baseFunctions K M ⟶ coverFunctions K M :=
   ⟨{ app := fun U => AddCommGrpCat.ofHom (precompose M (projectionOf K U.unop))
      naturality := fun {U V} f => by
-      apply AddCommGrpCat.hom_ext
+      apply ConcreteCategory.hom_ext
       intro x
       apply ContinuousMap.ext
       intro p
@@ -94,7 +97,7 @@ set_option maxHeartbeats 1700000 in
 def trace (h2 : (2 : K) ≠ 0) : coverFunctions K M ⟶ baseFunctions K M :=
   ⟨{ app := fun U => AddCommGrpCat.ofHom (traceApp K M h2 U.unop)
      naturality := fun {U V} f => by
-      apply AddCommGrpCat.hom_ext
+      apply ConcreteCategory.hom_ext
       intro s
       change traceApp K M h2 V.unop (s.comp (asMap (fiberMap K f.unop))) =
         (traceApp K M h2 U.unop s).comp (asMap (underlying K f.unop))
@@ -150,6 +153,41 @@ theorem trace_app_kernel (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
   · rintro ⟨t, ht⟩
     exact ⟨t, (hComp t).trans (congrArg (precompose M (fiberIso K U).hom) ht)⟩
 
+
+set_option maxHeartbeats 1800000 in
+theorem trace_app_surjective_of_affine_trace_surjective (h2 : (2 : K) ≠ 0) (U : aff K)
+    (hSurj : Function.Surjective
+      (NodalSwapCoverAffineTrace.affineTrace K (objectRing (A K) U) M h2)) :
+    Function.Surjective ((trace K M h2).hom.app (op U)) := by
+  intro t
+  change C(Spec (objectRing (A K) U), M) at t
+  obtain ⟨s, hs⟩ := hSurj t
+  refine ⟨s.comp (asMap (fiberIso K U).inv), ?_⟩
+  change NodalSwapCoverAffineTrace.affineTrace K (objectRing (A K) U) M h2
+    ((s.comp (asMap (fiberIso K U).inv)).comp (asMap (fiberIso K U).hom)) = t
+  have hComp :
+      (s.comp (asMap (fiberIso K U).inv)).comp (asMap (fiberIso K U).hom) = s := by
+    apply ContinuousMap.ext
+    intro p
+    exact congrArg (fun f : tensorScheme (A K) (E K) U ⟶ tensorScheme (A K) (E K) U =>
+      s (f p)) (fiberIso K U).hom_inv_id
+  rwa [hComp]
+
+set_option maxHeartbeats 1300000 in
+theorem diagonal_app_injective (h2 : (2 : K) ≠ 0) (U : aff K) :
+    Function.Injective ((diagonal K M).hom.app (op U)) := by
+  intro s t h
+  change precompose M (projectionOf K U) s = precompose M (projectionOf K U) t at h
+  apply ContinuousMap.ext
+  intro p
+  have hcover : Function.Surjective (cover K) := NodalSwapCoverEtale.cover_spec_surjective K h2
+  obtain ⟨q, hq⟩ := hcover (U.hom p)
+  obtain ⟨x, hx, _⟩ := Scheme.Pullback.exists_preimage_pullback
+    (f := U.hom) (g := cover K) p q hq.symm
+  have hst := congrArg (fun z : C(fiber K U, M) => z x) h
+  change s (projectionOf K U x) = t (projectionOf K U x) at hst
+  rwa [hx] at hst
+
 end
 
 end ManuscriptAudit.NodalSwapCoverSheafTrace
@@ -160,7 +198,9 @@ run_cmd do
   for name in
       [``ManuscriptAudit.NodalSwapCoverSheafTrace.diagonal,
         ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace,
-        ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_kernel] do
+        ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_kernel,
+        ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_surjective_of_affine_trace_surjective,
+        ``ManuscriptAudit.NodalSwapCoverSheafTrace.diagonal_app_injective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

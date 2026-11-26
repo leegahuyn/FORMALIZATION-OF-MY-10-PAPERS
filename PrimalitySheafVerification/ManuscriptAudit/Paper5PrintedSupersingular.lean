@@ -82,5 +82,5 @@ run_cmd do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => x != `propext && x != `Classical.choice && x != `Quot.sound
     unless bad.isEmpty do
-      throwError "{name} depends on forbidden axioms {bad}"
-    logInfo "{name} uses only {ax}"
+      throwError m!"{name} depends on forbidden axioms {bad}"
+    logInfo m!"{name} uses {ax}"

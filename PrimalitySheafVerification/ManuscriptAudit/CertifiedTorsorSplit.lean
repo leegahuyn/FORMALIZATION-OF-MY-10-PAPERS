@@ -35,15 +35,18 @@ theorem split_tmul (b : B) (e : E) :
     split A E B σ c (b ⊗ₜ[A] e) =
       (algebraMap E B e * b, algebraMap E B (σ e) * b) := by
   simp only [split, AlgEquiv.trans_apply, Algebra.TensorProduct.cancelBaseChange_symm_tmul,
-    Algebra.TensorProduct.congr_apply, Algebra.TensorProduct.map_tmul, AlgEquiv.refl_apply,
-    c.on_tmul, one_mul, Algebra.TensorProduct.prodRight_tmul, AlgEquiv.prodCongr_apply,
-    Equiv.prodCongr_apply, Algebra.TensorProduct.rid_tmul, Algebra.smul_def]
+    Algebra.TensorProduct.congr_apply, Algebra.TensorProduct.map_tmul,
+    Algebra.TensorProduct.prodRight_tmul, AlgEquiv.prodCongr_apply, Equiv.prodCongr_apply]
+  change (Algebra.TensorProduct.rid E B B (b ⊗ₜ[E] (c.equiv (1 ⊗ₜ[A] e)).1),
+    Algebra.TensorProduct.rid E B B (b ⊗ₜ[E] (c.equiv (1 ⊗ₜ[A] e)).2)) = _
+  rw [c.on_tmul]
+  simp [Algebra.smul_def]
 
 theorem split_deck (hσ : Function.Involutive σ) (z : B ⊗[A] E) :
     split A E B σ c (baseSwap A E B σ z) = (split A E B σ c z).swap := by
   induction z using TensorProduct.induction_on with
   | zero => simp
-  | tmul b e => simp only [baseSwap_tmul, split_tmul, hσ] <;> rfl
+  | tmul b e => simp only [baseSwap_tmul, split_tmul, hσ e] <;> rfl
   | add x y hx hy =>
     simp only [map_add, hx, hy] <;> rfl
 

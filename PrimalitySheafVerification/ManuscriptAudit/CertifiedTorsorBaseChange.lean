@@ -20,7 +20,8 @@ variable (A E B : Type*) [CommRing A] [CommRing E] [CommRing B] [Algebra A E] [A
 
 private abbrev D := B ⊗[A] E
 
-local instance : IsScalarTower A E (E × E) where
+local instance productTower (P Q : Type*) [CommRing P] [CommRing Q] [Algebra P Q] :
+    IsScalarTower P Q (Q × Q) where
   smul_assoc a b z := Prod.ext (smul_assoc a b z.1) (smul_assoc a b z.2)
 
 /-- Transport an actual canonical equivalence to every base algebra. -/
@@ -30,18 +31,20 @@ def liftCertified (σ : E ≃ₐ[A] E) (cert : CertifiedComparison A E σ) :
   let lift := (cert.equiv.toLinearEquiv.restrictScalars A).baseChange A B (E ⊗[A] E) (E × E)
   let split := TensorProduct.prodRight A B B E E
   let cmp := comparison B (D A E B) (baseSwap A E B σ)
-  have hLift (b : B) (z : E ⊗[A] E) : lift (b ⊗ₜ[A] z) = b ⊗ₜ[A] cert.equiv z :=
-    LinearEquiv.baseChange_tmul (e := cert.equiv.toLinearEquiv.restrictScalars A) b z
-  have hMap : cmp.toLinearMap.comp assoc.toLinearMap = split.toLinearMap.comp lift.toLinearMap := by
+  let cmpLinear : D A E B ⊗[B] D A E B →ₗ[B] D A E B × D A E B :=
+    cmp.toLinearMap.restrictScalars B
+  have hLift (b : B) (z : E ⊗[A] E) : lift (b ⊗ₜ[A] z) = b ⊗ₜ[A] cert.equiv z := rfl
+  have hMap : cmpLinear.comp assoc.toLinearMap = split.toLinearMap.comp lift.toLinearMap := by
     apply TensorProduct.AlgebraTensorModule.ext
     intro b z
     change cmp (assoc (b ⊗ₜ[A] z)) = split (lift (b ⊗ₜ[A] z))
     induction z using TensorProduct.induction_on with
     | zero => simp
     | tmul x y =>
+      have hc : cert.equiv (x ⊗ₜ[A] y) = (x * y, x * σ y) := cert.on_tmul x y
+      rw [hLift, hc]
       simp only [assoc, TensorProduct.AlgebraTensorModule.distribBaseChange_tmul,
         cmp, comparison_tmul, baseSwap_tmul, Algebra.TensorProduct.tmul_mul_tmul, mul_one,
-        hLift, cert.on_tmul,
         split, TensorProduct.prodRight_tmul]
     | add x y hx hy =>
       simpa only [TensorProduct.tmul_add, map_add] using congrArg₂ (· + ·) hx hy

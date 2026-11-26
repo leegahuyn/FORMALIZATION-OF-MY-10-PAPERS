@@ -95,7 +95,8 @@ theorem genericPointUnitsHom_mono (A F : Type) [CommRing A] [IsDomain A]
     change Mono (m.hom.app (op ((Scheme.AffineEtale.Spec X).obj (unop U))))
     exact genericPointUnitsHom_onAffineSite_mono A F (unop U))
   letI : Mono (R.map m).hom := h
-  exact R.mono_of_mono_map (Sheaf.Hom.mono_of_presheaf_mono (R.map m))
+  exact R.mono_of_mono_map (Sheaf.Hom.mono_of_presheaf_mono
+    (Scheme.AffineEtale.topology X) AddCommGrpCat.{0} (R.map m))
 
 end
 

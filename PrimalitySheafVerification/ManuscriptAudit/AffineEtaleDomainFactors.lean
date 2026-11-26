@@ -98,9 +98,10 @@ theorem exists_etale_domain_factors (A B F : Type u) [CommRing A] [IsDomain A]
   refine ⟨I, hI, e, heC.idem, ?_, fun i ↦ idempotentQuotientEtale A B (heC.idem i),
     heC.bijective_pi⟩
   intro i
-  apply Ideal.Quotient.isDomain_iff_prime.mpr
-  rw [← ker_eval_eq_span L g hg e he i]
-  exact RingHom.ker_isPrime ((Pi.evalRingHom L i).comp g)
+  letI : (Ideal.span {1 - e i}).IsPrime := by
+    rw [← ker_eval_eq_span L g hg e he i]
+    exact RingHom.ker_isPrime ((Pi.evalRingHom L i).comp g)
+  infer_instance
 
 end
 

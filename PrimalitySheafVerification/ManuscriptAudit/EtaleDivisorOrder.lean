@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.Unramified.LocalRing
 
@@ -30,14 +31,14 @@ theorem addVal_algebraMap_of_map_maximalIdeal (R S : Type*) [CommRing R] [IsDoma
     rw [map_zero, addVal_zero, addVal_zero]
   obtain ⟨t, ht⟩ := exists_irreducible R
   have ht' : Irreducible (algebraMap R S t) := by
-    apply (irreducible_iff_uniformizer S _).mpr
+    apply (irreducible_iff_uniformizer (algebraMap R S t)).mpr
     rw [← h, ht.maximalIdeal_eq, Ideal.map_span, Set.image_singleton]
   obtain ⟨n, u, hru⟩ := eq_unit_mul_pow_irreducible hr ht
   let v := Units.map (algebraMap R S).toMonoidHom u
   have hrv : algebraMap R S r = (v : S) * (algebraMap R S t) ^ n := by
-    simpa only [v, Units.coe_map, RingHom.coe_toMonoidHom, map_mul, map_pow] using
-      congrArg (algebraMap R S) hru
-  exact (addVal_def S _ v ht' n hrv).trans (addVal_def R r u ht n hru).symm
+    change algebraMap R S r = algebraMap R S (u : R) * (algebraMap R S t) ^ n
+    simpa only [map_mul, map_pow] using congrArg (algebraMap R S) hru
+  exact (addVal_def _ v ht' n hrv).trans (addVal_def r u ht n hru).symm
 
 section Localizations
 
@@ -45,20 +46,20 @@ variable (R S : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R]
   [CommRing S] [IsDomain S] [IsDedekindDomain S] [Algebra R S] [Algebra.Etale R S]
   (p : HeightOneSpectrum R) (q : HeightOneSpectrum S) [q.asIdeal.LiesOver p.asIdeal]
 
-local notation "RP" => Localization.AtPrime p.asIdeal
-local notation "SQ" => Localization.AtPrime q.asIdeal
-
-local instance : IsDiscreteValuationRing RP :=
-  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain p.ne_bot RP
-
-local instance : IsDiscreteValuationRing SQ :=
-  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain q.ne_bot SQ
+private local instance dvrAtHeightOne {D : Type*} [CommRing D] [IsDomain D]
+    [IsDedekindDomain D] (x : HeightOneSpectrum D) :
+    IsDiscreteValuationRing (Localization.AtPrime x.asIdeal) :=
+  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain x.ne_bot _
 
 /-- The actual map on localizations at height-one points of an étale algebra
 preserves normalized order. -/
-theorem localRingHom_addVal (r : RP) :
-    addVal SQ (Localization.localRingHom p.asIdeal q.asIdeal (algebraMap R S)
-      (Ideal.LiesOver.over : p.asIdeal = q.asIdeal.comap (algebraMap R S)) r) = addVal RP r := by
+theorem localRingHom_addVal (r : Localization.AtPrime p.asIdeal) :
+    addVal (Localization.AtPrime q.asIdeal)
+      (Localization.localRingHom p.asIdeal q.asIdeal (algebraMap R S)
+        (Ideal.LiesOver.over : p.asIdeal = q.asIdeal.comap (algebraMap R S)) r) =
+      addVal (Localization.AtPrime p.asIdeal) r := by
+  let RP := Localization.AtPrime p.asIdeal
+  let SQ := Localization.AtPrime q.asIdeal
   letI : Algebra RP SQ := Localization.AtPrime.algebraOfLiesOver p.asIdeal q.asIdeal
   letI : IsLocalHom (algebraMap RP SQ) := by
     rw [Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]

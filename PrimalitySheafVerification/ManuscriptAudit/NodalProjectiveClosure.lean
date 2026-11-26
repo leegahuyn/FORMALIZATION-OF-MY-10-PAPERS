@@ -30,6 +30,7 @@ theorem chartValues_Z : chartValues K 2 = 1 := by
 def chartEvaluation : standardZChartRing K →+* coordinates K :=
   standardZChartEvaluation K (chartValues K) (chartValues_Z K)
 
+set_option maxHeartbeats 4000000 in
 theorem chartEvaluation_surjective : Function.Surjective (chartEvaluation K) := by
   rintro ⟨f, hf⟩
   refine Algebra.adjoin_induction
