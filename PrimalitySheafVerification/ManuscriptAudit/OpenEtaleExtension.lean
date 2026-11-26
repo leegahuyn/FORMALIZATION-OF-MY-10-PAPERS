@@ -33,7 +33,8 @@ set_option backward.isDefEq.respectTransparency false
 abbrev etalePostcompose : U.Etale ⥤ X.Etale :=
   MorphismProperty.Over.map ⊤ (show Etale j from inferInstance)
 
-private def postcomposeFullyFaithful : (etalePostcompose j).FullyFaithful where
+/-- Postcomposition along an open immersion is fully faithful on étale objects. -/
+def postcomposeFullyFaithful : (etalePostcompose j).FullyFaithful where
   preimage f := MorphismProperty.Over.homMk f.left (by
     apply (cancel_mono j).mp
     simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
