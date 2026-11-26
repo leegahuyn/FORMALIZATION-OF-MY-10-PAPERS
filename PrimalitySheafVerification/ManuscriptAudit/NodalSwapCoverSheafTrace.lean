@@ -188,6 +188,17 @@ theorem diagonal_app_injective (h2 : (2 : K) ≠ 0) (U : aff K) :
   change s (projectionOf K U x) = t (projectionOf K U x) at hst
   rwa [hx] at hst
 
+
+set_option maxHeartbeats 1400000 in
+theorem trace_app_eq_zero_of_connected_tensor (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
+    (U : aff K) [PreconnectedSpace (tensorScheme (A K) (E K) U)]
+    (s : (coverFunctions K M).obj.obj (op U)) :
+    (trace K M h2).hom.app (op U) s = 0 := by
+  change NodalSwapCoverAffineTrace.affineTrace K (objectRing (A K) U) M h2
+    (precompose M (fiberIso K U).hom s) = 0
+  exact NodalSwapCoverAffineTrace.affineTrace_eq_zero_of_connected K (objectRing (A K) U) M h2
+    htwo (precompose M (fiberIso K U).hom s)
+
 end
 
 end ManuscriptAudit.NodalSwapCoverSheafTrace
@@ -200,7 +211,8 @@ run_cmd do
         ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace,
         ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_kernel,
         ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_surjective_of_affine_trace_surjective,
-        ``ManuscriptAudit.NodalSwapCoverSheafTrace.diagonal_app_injective] do
+        ``ManuscriptAudit.NodalSwapCoverSheafTrace.diagonal_app_injective,
+        ``ManuscriptAudit.NodalSwapCoverSheafTrace.trace_app_eq_zero_of_connected_tensor] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

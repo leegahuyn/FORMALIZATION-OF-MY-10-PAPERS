@@ -75,6 +75,16 @@ theorem affineTrace_kernel (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
     htwo s
 
+set_option maxHeartbeats 950000 in
+theorem affineTrace_eq_zero_of_connected (h2 : (2 : K) ≠ 0)
+    [PreconnectedSpace (PrimeSpectrum (coverOver K R))] [TotallyDisconnectedSpace M]
+    (htwo : ∀ m : M, m + m = 0) (s : C(PrimeSpectrum (coverOver K R), M)) :
+    affineTrace K R M h2 s = 0 :=
+  spectrumTrace_zero_of_connected R (coverOver K R) (coverOverSwap K R)
+    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+    (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
+    htwo s
+
 variable (S : Type u) [CommRing S] [Algebra (A K) S]
 
 def coverOverMap (f : R →ₐ[A K] S) : coverOver K R →ₐ[A K] coverOver K S :=
@@ -169,6 +179,7 @@ run_cmd do
       [``ManuscriptAudit.NodalSwapCoverAffineTrace.cover_faithfullyFlat,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.coverOverCertificate,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.affineTrace_kernel,
+        ``ManuscriptAudit.NodalSwapCoverAffineTrace.affineTrace_eq_zero_of_connected,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.affineTrace_natural,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.globalTrace_eq_zero,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.global_one_has_no_trace_lift] do

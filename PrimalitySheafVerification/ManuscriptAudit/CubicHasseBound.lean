@@ -15,7 +15,7 @@ noncomputable section
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
-private theorem quadraticComplex_ne_one (hF : ringChar F ≠ 2) :
+theorem quadraticComplex_ne_one (hF : ringChar F ≠ 2) :
     (quadraticComplex : MulChar F ℂ) ≠ 1 := by
   intro h
   obtain ⟨a, ha⟩ := quadraticChar_exists_neg_one hF
@@ -29,7 +29,7 @@ private theorem quadraticComplex_ne_one (hF : ringChar F ≠ 2) :
   rw [ha, MulChar.one_apply ha₀.isUnit] at e
   norm_num at e
 
-private theorem quadraticComplex_sq :
+theorem quadraticComplex_sq :
     (quadraticComplex : MulChar F ℂ) ^ 2 = 1 := by
   apply MulChar.ext
   intro u
@@ -37,14 +37,14 @@ private theorem quadraticComplex_sq :
   change (quadraticChar F (u : F) : ℂ) ^ 2 = 1
   exact_mod_cast (quadraticChar_sq_one u.ne_zero)
 
-private theorem ne_one_of_orderThree_pow {χ : MulChar F ℂ} (hχ : orderOf χ = 3)
+theorem ne_one_of_orderThree_pow {χ : MulChar F ℂ} (hχ : orderOf χ = 3)
     {n : ℕ} (hn : ¬ 3 ∣ n) : χ ^ n ≠ 1 := by
   intro h
   have h' := orderOf_dvd_of_pow_eq_one h
   rw [hχ] at h'
   exact hn h'
 
-private theorem mul_quadratic_eq_one {χ : MulChar F ℂ} (h : χ * quadraticComplex = 1) :
+theorem mul_quadratic_eq_one {χ : MulChar F ℂ} (h : χ * quadraticComplex = 1) :
     χ = quadraticComplex := by
   calc
     χ = χ * 1 := (mul_one _).symm
@@ -105,7 +105,7 @@ private theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
       _ = b := by rw [hg, one_mul]
   exact congrArg (fun z : Fˣ => (z : F)) he
 
-private theorem trace_zero_of_no_orderThree (hF : ringChar F ≠ 2)
+theorem trace_zero_of_no_orderThree (hF : ringChar F ≠ 2)
     (hdiv : ¬ 3 ∣ Fintype.card F - 1) (A : F) : cubicTraceSum A = 0 := by
   let e : F ≃ F := Equiv.ofBijective _ ⟨cube_injective hdiv,
     Finite.surjective_of_injective (cube_injective hdiv)⟩
