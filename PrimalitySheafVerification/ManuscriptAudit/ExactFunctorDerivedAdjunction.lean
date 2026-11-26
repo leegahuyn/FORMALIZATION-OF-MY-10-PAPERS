@@ -79,7 +79,7 @@ def derivedAdjunction (a : F ⊣ G) : F.mapDerivedCategory ⊣ G.mapDerivedCateg
 /-- The induced functor on the native derived categories is additive. -/
 theorem mapDerivedCategory_additive : F.mapDerivedCategory.Additive := by
   rw [Localization.functor_additive_iff
-    (DerivedCategory.Qh (C := C)) (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))]
+    (DerivedCategory.Qh (C := C)) (HomotopyCategory.subcategoryAcyclic C).trW]
   exact Functor.additive_of_iso F.mapDerivedCategoryFactorsh
 
 end Derived

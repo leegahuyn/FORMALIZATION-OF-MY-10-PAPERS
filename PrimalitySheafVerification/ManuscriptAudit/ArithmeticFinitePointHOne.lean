@@ -49,6 +49,9 @@ private theorem two_isUnit : IsUnit ((2 : ℕ) : R K) := by
   have hn : (-1 : K) - 1 = 0 := by linear_combination -h
   exact (Ring.neg_one_ne_one_of_char_ne_two hChar.out) (sub_eq_zero.mp hn)
 
+local instance two_neZero : NeZero ((2 : ℕ) : K) :=
+  ⟨isUnit_iff_ne_zero.mp (two_isUnit K)⟩
+
 private def boundary : Additive Kˣ →+ HR K :=
   unitBoundary (K := K) (R K) 2 (by decide) (two_isUnit K)
 
@@ -108,7 +111,9 @@ private theorem roots_classes (g : Kˣ) (hg : ∀ x : Kˣ, x ∈ Subgroup.zpower
 /-- Native full small-étale H¹ of the odd finite-field point is cyclic of order two. -/
 def finitePointCyclicHOneEquiv : ZMod 2 ≃+
     Sheaf.H ((constantSheaf (Spec (R K)).smallEtaleTopology AddCommGrpCat.{0}).obj cyclic) 1 := by
-  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Kˣ)
+  let g : Kˣ := Classical.choose (IsCyclic.exists_generator (α := Kˣ))
+  have hg : ∀ x : Kˣ, x ∈ Subgroup.zpowers g :=
+    Classical.choose_spec (IsCyclic.exists_generator (α := Kˣ))
   let b := boundary K (Additive.ofMul g)
   have hb : b ≠ 0 := by
     obtain ⟨v, hv⟩ := exists_nonzero_boundary K

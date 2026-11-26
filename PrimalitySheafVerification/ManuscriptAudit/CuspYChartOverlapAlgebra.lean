@@ -141,7 +141,11 @@ theorem evalYZ_on_y :
   change evalZLaurent K (p * z K ^ n) * LaurentPolynomial.T (-3) ^ n =
     lineLaurent K (evalYPolynomial K p)
   rw [map_mul, map_pow, evalZLaurent_z, one_pow, mul_one]
-  rw [scaled_eval K n p (by simpa only [nsmul_eq_mul, mul_one] using hp)]
+  have hp' : p ∈ grading K n := by
+    have hd : n • (1 : ℕ) = n := by simp
+    rw [← hd]
+    exact hp
+  rw [scaled_eval K n p hp']
   calc
     _ = lineLaurent K (evalYPolynomial K p) *
           ((LaurentPolynomial.T 3 : LaurentRing K) ^ n * LaurentPolynomial.T (-3) ^ n) := by ac_rfl

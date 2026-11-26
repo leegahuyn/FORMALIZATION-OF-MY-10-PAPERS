@@ -89,6 +89,25 @@ private theorem extensionSections_natural {F G : Sheaf X.smallEtaleTopology C.{u
   rw [a.homEquiv_naturality_right]
   exact congrArg (fun φ => φ t) (e.hom.naturality (g.hom.app (op W)))
 
+private def isoOfSectionEquivs {D : Type*} [Category* D] {A B : D}
+    (H : D ⥤ Type u) (eA : ∀ F, (A ⟶ F) ≃ H.obj F)
+    (eB : ∀ F, (B ⟶ F) ≃ H.obj F)
+    (hA : ∀ {F G} (f : A ⟶ F) (g : F ⟶ G), eA G (f ≫ g) = H.map g (eA F f))
+    (hB : ∀ {F G} (f : B ⟶ F) (g : F ⟶ G), eB G (f ≫ g) = H.map g (eB F f)) :
+    A ≅ B := by
+  let e (F : D) : (A ⟶ F) ≃ (B ⟶ F) := (eA F).trans (eB F).symm
+  apply Coyoneda.ext A B (fun {F} => e F) (fun {F} => (e F).symm)
+  · intro F f
+    exact (e F).symm_apply_apply f
+  · intro F f
+    exact (e F).apply_symm_apply f
+  · intro F G f g
+    apply (eA G).injective
+    change eA G ((eA G).symm (eB G (f ≫ g))) =
+      eA G ((eA F).symm (eB F f) ≫ g)
+    rw [Equiv.apply_symm_apply, hA, Equiv.apply_symm_apply, hB]
+
+set_option maxHeartbeats 500000 in
 /-- The free sheaf on the ordinary open object is the free constant sheaf extended by zero. -/
 def freeEtaleRepresentableOpenIso :
     (freeEtaleRepresentable X).obj (Scheme.Etale.mk j) ≅
@@ -96,23 +115,16 @@ def freeEtaleRepresentableOpenIso :
   let W := openObject j
   let A := (freeEtaleRepresentable X).obj W
   let B := (extensionByZero j C.{u}).obj (openIntegerSheaf (U := U))
-  let e (F : Sheaf X.smallEtaleTopology C.{u}) :
-      (A ⟶ F) ≃ (B ⟶ F) :=
-    (freeRepresentableSections W F).trans (extensionSections j F).symm
-  have h : A ≅ B := by
-    apply Coyoneda.ext A B (fun {F} => e F) (fun {F} => (e F).symm)
-    · intro F f
-      exact (e F).symm_apply_apply f
-    · intro F f
-      exact (e F).apply_symm_apply f
-    · intro F G g f
-      apply (freeRepresentableSections W G).injective
-      change (freeRepresentableSections W G) ((freeRepresentableSections W G).symm
-          (extensionSections j G (f ≫ g))) =
-        (freeRepresentableSections W G) ((freeRepresentableSections W F).symm
-          (extensionSections j F f) ≫ g)
-      rw [Equiv.apply_symm_apply, freeRepresentableSections_natural,
-        Equiv.apply_symm_apply, extensionSections_natural]
+  let H := (sheafSections X.smallEtaleTopology C.{u}).obj (op W) ⋙ forget C.{u}
+  let eA : ∀ F, (A ⟶ F) ≃ H.obj F := freeRepresentableSections W
+  let eB : ∀ F, (B ⟶ F) ≃ H.obj F := extensionSections j
+  have hA {F G} (f : A ⟶ F) (g : F ⟶ G) :
+      eA G (f ≫ g) = H.map g (eA F f) :=
+    freeRepresentableSections_natural W f g
+  have hB {F G} (f : B ⟶ F) (g : F ⟶ G) :
+      eB G (f ≫ g) = H.map g (eB F f) :=
+    extensionSections_natural j f g
+  let h : A ≅ B := isoOfSectionEquivs (A := A) (B := B) H eA eB hA hB
   exact ((freeEtaleRepresentable X).mapIso (openObjectIso j)).symm ≪≫ h
 
 end

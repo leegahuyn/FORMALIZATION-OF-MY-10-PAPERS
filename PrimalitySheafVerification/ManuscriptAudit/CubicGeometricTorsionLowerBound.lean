@@ -41,7 +41,7 @@ theorem paper5_geometric_p_torsion_contains_fin {p : ℕ} [Fact p.Prime]
   have hz : p • P = 0 := by
     simpa only [hOrder] using addOrderOf_nsmul_eq_zero P
   refine ⟨⟨fun i => ⟨i.val • P, ?_⟩, ?_⟩⟩
-  · rw [← mul_nsmul, Nat.mul_comm p i.val, mul_nsmul, hz, nsmul_zero]
+  · rw [← mul_nsmul, Nat.mul_comm i.val p, mul_nsmul, hz, nsmul_zero]
   · intro i j hij
     apply Fin.ext
     have hi : i.val ∈ Set.Iio (addOrderOf P) := by
