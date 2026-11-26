@@ -64,7 +64,8 @@ def literalStructureMap (negative : Bool) (p A : ℕ) :
 /-- Smoothness of the actual affine structure morphism over the given base. -/
 theorem literalStructureMap_smooth {p A : ℕ} (hp : Odd p) (hc : p.Coprime A)
     (negative : Bool) : AlgebraicGeometry.Smooth (literalStructureMap R negative p A) := by
-  rw [literalStructureMap, HasRingHomProperty.Spec_iff]
+  rw [literalStructureMap, HasRingHomProperty.Spec_iff (P := @AlgebraicGeometry.Smooth)]
+  change (algebraMap R (PrintedCurve R negative p A)).Smooth
   exact RingHom.smooth_algebraMap.mpr (literalAlgebra_smooth R hp hc negative)
 
 theorem paper4_literalAlgebra_smooth {p A : ℕ} (hp : Nat.Prime p) (h5 : 5 ≤ p)

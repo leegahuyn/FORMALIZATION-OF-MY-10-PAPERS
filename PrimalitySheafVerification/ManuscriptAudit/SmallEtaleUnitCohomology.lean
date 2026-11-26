@@ -30,9 +30,15 @@ private abbrev E (R : CommRingCat.{0}) := Scheme.AffineEtale.sheafEquiv (Spec R)
 
 /-- The actual restriction of the full unit sheaf is the affine unit sheaf. -/
 def affineUnitRestrictionIso (R : CommRingCat.{0}) :
-    (E R).inverse.obj (fullCoordinateUnitSheaf (Spec R)) ≅ unitSheaf (Spec R) :=
-  ((fullyFaithfulSheafToPresheaf (affineSite R) AddCommGrpCat.{0}).preimageIso
-    (affineRestrictionUnitsIso (Spec R))) ≪≫ coordinateUnitSheafIso (Spec R)
+    (E R).inverse.obj (fullCoordinateUnitSheaf (Spec R)) ≅ unitSheaf (Spec R) := by
+  let F := (E R).inverse.obj (fullCoordinateUnitSheaf (Spec R))
+  let G := coordinateUnitSheaf (Spec R)
+  have e : F.obj ≅ G.obj := by
+    change (Scheme.AffineEtale.Spec (Spec R)).op ⋙ fullCoordinateUnits (Spec R) ≅
+      KummerUnitsPresheaf.units (Spec R)
+    exact affineRestrictionUnitsIso (Spec R)
+  let e' : F ≅ G := (fullyFaithfulSheafToPresheaf (affineSite R) AddCommGrpCat.{0}).preimageIso e
+  exact e' ≪≫ coordinateUnitSheafIso (Spec R)
 
 /-- The actual small affine and full étale unit cohomology groups agree in every degree. -/
 def unitCohomologyEquiv (R : CommRingCat.{0}) (n : ℕ) :
@@ -55,6 +61,15 @@ def unitCohomologyEquiv (R : CommRingCat.{0}) (n : ℕ) :
     F.mapIso (affineUnitRestrictionIso R).symm ≪≫ (E R).counitIso.app _
   let e₂ := ((Sheaf.functorH (fullSite R) n).mapIso eY).addCommGroupIsoToAddEquiv
   exact e₀.trans (e₁.trans e₂)
+
+/-- Unit cohomology in degree one vanishes on the full site of a PID,
+including on the spectrum of any field. -/
+theorem unitHOne_subsingleton_of_pid (R : Type) [CommRing R]
+    [IsDomain R] [IsPrincipalIdealRing R] :
+    Subsingleton (Sheaf.H (fullCoordinateUnitSheaf (Spec (CommRingCat.of R))) 1) := by
+  let e := unitCohomologyEquiv (CommRingCat.of R) 1
+  have h := AffineEtaleCuspHOne.unitSheaf_HOne_subsingleton_of_pid R
+  exact ⟨fun x y => e.symm.injective (h.allEq (e.symm x) (e.symm y))⟩
 
 private def killedByEquiv {U V : Type} [AddCommGroup U] [AddCommGroup V]
     (e : U ≃+ V) (d : ℕ) : killedBy U d ≃+ killedBy V d where
@@ -87,6 +102,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.KummerUnitsSheaf.affineUnitRestrictionIso,
       ``ManuscriptAudit.KummerUnitsSheaf.unitCohomologyEquiv,
+      ``ManuscriptAudit.KummerUnitsSheaf.unitHOne_subsingleton_of_pid,
       ``ManuscriptAudit.KummerUnitsSheaf.affineLineCyclicHTwoFullUnitsEquiv] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

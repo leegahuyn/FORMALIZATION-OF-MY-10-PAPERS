@@ -32,16 +32,27 @@ private def projection {X Y : Scheme.{0}} (f : X ⟶ Y) :
     intro U V h
     change ((Over.pullback f).map ((Scheme.Etale.forget Y).map h)).left ≫
         pullback.fst V.hom f = pullback.fst U.hom f ≫ h.left
+    have hh : h.left ≫ V.hom = U.hom := by simpa only [Functor.id_map] using h.w
     have hw : (pullback.fst U.hom f ≫ h.left) ≫ V.hom =
         pullback.snd U.hom f ≫ f := by
-      rw [Category.assoc, h.w, pullback.condition]
+      rw [Category.assoc, hh, pullback.condition]
     exact pullback.lift_fst _ _ hw
 
+private def projectionUnits {X Y : Scheme.{0}} (f : X ⟶ Y) :
+    (underlying Y).op ⋙ (Scheme.Γ ⋙ ringUnits) ⟶
+      (etaleBaseChange f ⋙ underlying X).op ⋙ (Scheme.Γ ⋙ ringUnits) :=
+  Functor.whiskerRight (projection f).op (Scheme.Γ ⋙ ringUnits)
+
+set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 800000 in
 /-- The actual pullback of regular units gives a map into the direct image on
 the small étale site. -/
 def pullbackToDirectImage {X Y : Scheme.{0}} (f : X ⟶ Y) :
-    fullCoordinateUnitSheaf Y ⟶ (directImage f AddCommGrpCat.{0}).obj (fullCoordinateUnitSheaf X) :=
-  ⟨Functor.whiskerRight (projection f).op (Scheme.Γ ⋙ ringUnits)⟩
+    fullCoordinateUnitSheaf Y ⟶ (directImage f AddCommGrpCat.{0}).obj (fullCoordinateUnitSheaf X) := by
+  refine ⟨?_⟩
+  change (underlying Y).op ⋙ (Scheme.Γ ⋙ ringUnits) ⟶
+    (etaleBaseChange f ⋙ underlying X).op ⋙ (Scheme.Γ ⋙ ringUnits)
+  exact projectionUnits f
 
 private abbrev algebraSpecMap (A B : Type) [CommRing A] [CommRing B] [Algebra A B] :
     Spec (CommRingCat.of B) ⟶ Spec (CommRingCat.of A) :=

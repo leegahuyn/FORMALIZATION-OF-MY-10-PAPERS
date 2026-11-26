@@ -193,7 +193,7 @@ theorem projectiveCusp_isProper : IsProper (projectiveCuspToBase K) := by
   unfold projectiveCuspToBase
   infer_instance
 
-instance affineOpen_isOpenImmersion : IsOpenImmersion (affineOpen K) := by
+theorem affineOpen_isOpenImmersion : IsOpenImmersion (affineOpen K) := by
   unfold affineOpen
   infer_instance
 
@@ -376,6 +376,77 @@ theorem affineOpen_opensRange_eq :
   · intro h
     exact mem_affine_image_of_z_open K x h
 
+
+/-- The common projective plane containing the cusp and nodal models. -/
+abbrev projectivePlane := plane K
+
+abbrev standardPlaneGrading := grading K
+
+theorem standardPlane_X_mem_one (i : Fin 3) :
+    (MvPolynomial.X i : PlaneRing K) ∈ standardPlaneGrading K 1 := X_mem_one K i
+
+theorem standardPlane_basicOpens_cover :
+    (⨆ i : Fin 3, Proj.basicOpen (standardPlaneGrading K) (MvPolynomial.X i)) =
+      (⊤ : (projectivePlane K).Opens) :=
+  Proj.iSup_basicOpen_eq_top' (grading K) (MvPolynomial.X : Fin 3 → PlaneRing K)
+    (fun i => ⟨1, X_mem_one K i⟩) (variables_adjoin_eq_top K)
+
+abbrev projectivePlaneToBase := planeToBase K
+
+theorem projectivePlaneToBase_isProper : IsProper (projectivePlaneToBase K) :=
+  planeToBase_isProper K
+
+/-- The coordinate ring of the standard Z-chart in the projective plane. -/
+abbrev standardZChartRing := ChartRing K
+
+private def zChartPointEval {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) : PlaneRing K →ₐ[K] R :=
+  MvPolynomial.aeval coordinates
+
+private theorem zChartPoint_unit {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) :
+    zChartPointEval K coordinates (z K) * 1 = 1 := by
+  simp [zChartPointEval, z, hz]
+
+/-- Evaluation on the standard affine chart at any normalized coordinates Z=1. -/
+def standardZChartEvaluation {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) : standardZChartRing K →+* R :=
+  (Localization.awayLift (zChartPointEval K coordinates).toRingHom (z K)
+    (isUnit_iff_exists_inv.mpr ⟨1, zChartPoint_unit K coordinates hz⟩)).comp
+      (algebraMap (standardZChartRing K) (Localization.Away (z K)))
+
+theorem standardZChartEvaluation_mk {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) (n : ℕ) (p : PlaneRing K)
+    (hp : p ∈ grading K (n • 1)) :
+    standardZChartEvaluation K coordinates hz
+        (Away.mk (grading K) (X_mem_one K 2) n p hp) =
+      MvPolynomial.aeval coordinates p := by
+  change (Localization.awayLift (zChartPointEval K coordinates).toRingHom (z K)
+    (isUnit_iff_exists_inv.mpr ⟨1, zChartPoint_unit K coordinates hz⟩))
+    (Away.mk (grading K) (X_mem_one K 2) n p hp).val = _
+  rw [Away.val_mk]
+  change (Localization.awayLift (zChartPointEval K coordinates).toRingHom (z K)
+    (isUnit_iff_exists_inv.mpr ⟨1, zChartPoint_unit K coordinates hz⟩))
+    (Localization.mk p ⟨(z K) ^ n, ⟨n, rfl⟩⟩) =
+      (zChartPointEval K coordinates).toRingHom p
+  simpa only [one_pow, mul_one] using
+    Localization.awayLift_mk (zChartPointEval K coordinates).toRingHom (z K) p 1
+      (zChartPoint_unit K coordinates hz) n
+
+theorem standardZChartEvaluation_X {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) (i : Fin 3) :
+    standardZChartEvaluation K coordinates hz
+        (Away.mk (grading K) (X_mem_one K 2) 1 (MvPolynomial.X i)
+          (by simpa only [one_nsmul] using X_mem_one K i)) = coordinates i :=
+  (standardZChartEvaluation_mk K coordinates hz _ _ _).trans (MvPolynomial.aeval_X coordinates i)
+
+theorem standardZChartEvaluation_C {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) (a : K) :
+    standardZChartEvaluation K coordinates hz
+        (Away.mk (grading K) (X_mem_one K 2) 0 (MvPolynomial.C a)
+          (by simpa only [zero_nsmul] using C_mem_zero K a)) = algebraMap K R a :=
+  (standardZChartEvaluation_mk K coordinates hz _ _ _).trans (MvPolynomial.aeval_C coordinates a)
+
 end
 
 end ManuscriptAudit.CuspProperCompactification
@@ -391,9 +462,13 @@ run_cmd do
       ``ManuscriptAudit.CuspProperCompactification.boundary_plane_coordinates,
       ``ManuscriptAudit.CuspProperCompactification.affineChartEvaluation_mk_coe,
       ``ManuscriptAudit.CuspProperCompactification.cuspInPlane_as_Z_chart,
-      ``ManuscriptAudit.CuspProperCompactification.affineOpen_opensRange_eq] do
+      ``ManuscriptAudit.CuspProperCompactification.affineOpen_opensRange_eq,
+      ``ManuscriptAudit.CuspProperCompactification.standardPlane_basicOpens_cover,
+      ``ManuscriptAudit.CuspProperCompactification.projectivePlaneToBase_isProper,
+      ``ManuscriptAudit.CuspProperCompactification.standardZChartEvaluation_mk] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

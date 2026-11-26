@@ -86,6 +86,7 @@ private theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
   let b := Units.mk0 y hy
   have h₃ : (a / b) ^ (3 : ℕ) = 1 := by
     apply Units.ext
+    rw [Units.val_pow_eq_pow_val, Units.val_one, Units.val_div_eq_div_val]
     change (x / y) ^ (3 : ℕ) = 1
     rw [div_pow, h, div_self (pow_ne_zero _ hy)]
   have hq : (a / b) ^ (Fintype.card F - 1) = 1 := by
@@ -97,7 +98,11 @@ private theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
   have hg : (a / b) ^ (Nat.gcd 3 (Fintype.card F - 1)) = 1 :=
     pow_gcd_eq_one.mpr ⟨h₃, hq⟩
   rw [show Nat.gcd 3 (Fintype.card F - 1) = 1 from hn, pow_one] at hg
-  exact congrArg (fun z : Fˣ => (z : F)) (div_eq_one_iff_eq.mp hg)
+  have he : a = b := by
+    calc
+      a = (a / b) * b := (div_mul_cancel a b).symm
+      _ = b := by rw [hg, one_mul]
+  exact congrArg (fun z : Fˣ => (z : F)) he
 
 private theorem trace_zero_of_no_orderThree (hF : ringChar F ≠ 2)
     (hdiv : ¬ 3 ∣ Fintype.card F - 1) (A : F) : cubicTraceSum A = 0 := by

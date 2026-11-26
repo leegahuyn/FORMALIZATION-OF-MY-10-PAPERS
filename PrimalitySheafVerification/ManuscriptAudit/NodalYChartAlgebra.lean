@@ -19,7 +19,7 @@ private abbrev LinCurve (u v : R) := AdjoinRoot (linearEquation u v)
 private theorem root_relation (u v : R) :
     algebraMap R (LinCurve u v) u * AdjoinRoot.root (linearEquation u v) =
       algebraMap R (LinCurve u v) v := by
-  have h := AdjoinRoot.mk_self (linearEquation u v)
+  have h : AdjoinRoot.mk (linearEquation u v) (linearEquation u v) = 0 := AdjoinRoot.mk_self
   change AdjoinRoot.mk (linearEquation u v) (C u * X - C v) = 0 at h
   rw [map_sub, map_mul, AdjoinRoot.mk_C, AdjoinRoot.mk_X, AdjoinRoot.mk_C,
     sub_eq_zero] at h
@@ -64,7 +64,9 @@ def linearEquationLocalization {u v : R} (hc : ∃ a b : R, u * a + v * b = 1) :
   · apply IsLocalization.algHom_ext (Submonoid.powers u)
     apply AlgHom.ext
     intro a
-    simp only [AlgHom.comp_apply, Algebra.algHom_apply, AlgHom.commutes, AlgHom.id_apply]
+    change toLocalization u v (fromLocalization hc (algebraMap R (Localization.Away u) a)) =
+      algebraMap R (Localization.Away u) a
+    rw [(fromLocalization hc).commutes, (toLocalization u v).commutes]
   · apply AdjoinRoot.algHom_ext
     let i := algebraMap R (LinCurve u v)
     let z := AdjoinRoot.root (linearEquation u v)
