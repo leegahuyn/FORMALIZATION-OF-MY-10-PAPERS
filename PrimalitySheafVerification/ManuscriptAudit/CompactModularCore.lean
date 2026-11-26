@@ -12,7 +12,7 @@ all-cusp set underlying the truncation used in Paper 10, physical
 pp. 465, 472, and 477. Compactness here concerns the quotient topology.
 -/
 
-open Matrix.SpecialLinearGroup
+open Matrix Matrix.SpecialLinearGroup
 open scoped MatrixGroups UpperHalfPlane
 
 namespace ManuscriptAudit.CompactModularCore

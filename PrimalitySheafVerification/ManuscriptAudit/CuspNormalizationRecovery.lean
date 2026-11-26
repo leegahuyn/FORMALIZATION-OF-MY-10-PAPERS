@@ -27,6 +27,8 @@ variable [Algebra.Etale (Polynomial K) E] [Module.Finite (Polynomial K) E]
 private abbrev A := CuspSubalgebra K
 private abbrev L := patchRing K E
 
+local instance originAlgebra : Algebra (A K) K := (cuspOriginResidue K).toAlgebra
+
 local instance descendedAlgebra : Algebra (A K) (L K E) := patchAlgebra K E
 
 

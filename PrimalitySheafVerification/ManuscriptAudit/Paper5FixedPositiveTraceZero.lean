@@ -28,7 +28,7 @@ noncomputable section
 
 section CharacterTransport
 
-variable {F : Type*} [Field F] [Fintype F]
+variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
 private def sourceCubic (a b x : F) : F := x ^ 3 + a * x ^ 2 + b * x
 

@@ -110,7 +110,8 @@ theorem potential_periodic (n : ℕ) (x y : ℝ) :
       Function.Periodic (potential n x) 1 := by
   refine ⟨?_, fun _ => rfl⟩
   intro t
-  unfold potential
+  change -((rate n) ^ 3)⁻¹ * Real.cos ((frequency n : ℝ) * (t + 2 * Real.pi)) =
+    -((rate n) ^ 3)⁻¹ * Real.cos ((frequency n : ℝ) * t)
   rw [mul_add, Real.cos_add_nat_mul_two_pi]
 
 private theorem frequency_derivative (n : ℕ) (x : ℝ) :
@@ -131,7 +132,9 @@ theorem mode_exact (n : ℕ) : mode n = exteriorDerivative (potential n) := by
   · funext x y
     exact (potential_dx n x y).symm
   · funext x y
-    simp [partialY, potential]
+    change 0 = deriv (fun _ : ℝ => -((rate n) ^ 3)⁻¹ *
+      Real.cos ((frequency n : ℝ) * x)) y
+    simp
 
 private theorem mode_dx_x (n : ℕ) (x y : ℝ) :
     partialX (mode n).dx x y = rate n * Real.cos ((frequency n : ℝ) * x) := by
