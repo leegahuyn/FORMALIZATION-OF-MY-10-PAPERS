@@ -56,7 +56,7 @@ theorem thetaDensity_T_alternating (z : ℍ) :
 theorem thetaDensity_T_half (z : ℍ) :
     thetaDensity thetaHalfShift (T • z) = thetaDensity thetaHalfShift z := by
   have h : ‖Complex.exp ((Real.pi : ℂ) * Complex.I / 4)‖ = 1 := by
-    rw [show (Real.pi : ℂ) * Complex.I / 4 = (↑(Real.pi / 4) : ℂ) * Complex.I by
+    rw [show (Real.pi : ℂ) * Complex.I / 4 = Complex.ofReal (Real.pi / 4) * Complex.I by
       push_cast
       ring, Complex.norm_exp, Complex.mul_I_re]
     simp

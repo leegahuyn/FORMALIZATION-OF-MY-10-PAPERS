@@ -37,9 +37,9 @@ def infinityCuspMeasureAbove (H : ℝ) : Measure (ℝ × ℝ) :=
 
 abbrev infinityCuspMeasure : Measure (ℝ × ℝ) := infinityCuspMeasureAbove 1
 
-private def thetaBound (H : ℝ) : ℝ := 2 / (1 - Real.exp (-Real.pi * H)) + 1
+def thetaBound (H : ℝ) : ℝ := 2 / (1 - Real.exp (-Real.pi * H)) + 1
 
-private theorem norm_theta_le {H x y : ℝ} (hH : 0 < H) (hy : H ≤ y) :
+theorem norm_theta_le {H x y : ℝ} (hH : 0 < H) (hy : H ≤ y) :
     ‖jacobiTheta (complexPoint x y)‖ ≤ thetaBound H := by
   let q := Real.exp (-Real.pi * y)
   let q₁ := Real.exp (-Real.pi * H)

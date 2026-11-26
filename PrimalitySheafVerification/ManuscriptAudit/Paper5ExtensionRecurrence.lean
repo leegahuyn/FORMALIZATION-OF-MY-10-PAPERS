@@ -75,6 +75,7 @@ theorem actual_extension_trace_eq_recurrence (hp : 5 ≤ p) (hp3 : p % 3 = 1)
   have hrec := recurrence_cast_eq_root_powers p a _ _ hsum hm (Module.finrank (ZMod p) E)
   have hcount := extension_actual_point_count (E := E) hF hE hχ hψ hA (reducedK_good hp hA)
   rw [← printed_cubic_baseChange_eq_zero p A, ← hrec] at hcount
+  dsimp only [a] at hcount
   exact_mod_cast hcount
 
 end

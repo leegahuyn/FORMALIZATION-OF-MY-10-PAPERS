@@ -27,7 +27,7 @@ theorem thetaHalfShift_eq_tsum (τ : ℂ) :
 private theorem norm_halfTerm (n : ℤ) (τ : ℂ) :
     ‖halfTerm n τ‖ = Real.exp (-Real.pi * (((n : ℝ) + 1 / 2) ^ 2) * τ.im) := by
   have h : (Real.pi : ℂ) * Complex.I * ((n : ℂ) + 1 / 2) ^ 2 * τ =
-      (↑(Real.pi * (((n : ℝ) + 1 / 2) ^ 2)) : ℂ) * τ * Complex.I := by
+      Complex.ofReal (Real.pi * (((n : ℝ) + 1 / 2) ^ 2)) * τ * Complex.I := by
     push_cast
     ring
   rw [halfTerm, h, Complex.norm_exp, Complex.mul_I_re, Complex.im_ofReal_mul]
@@ -43,13 +43,13 @@ private theorem integer_half_sq (n : ℤ) : (n : ℝ) ^ 2 / 4 ≤ ((n : ℝ) + 1
       exact mul_nonneg_of_nonpos_of_nonpos (by linarith) (by linarith)
   nlinarith
 
-private def halfBound (H : ℝ) :=
+def halfBound (H : ℝ) :=
   ∑' n : ℤ, Real.exp (-Real.pi * (H / 4 * (n : ℝ) ^ 2))
 
-private theorem norm_thetaHalfShift_le {H : ℝ} (hH : 0 < H) {τ : ℂ} (hτ : H ≤ τ.im) :
+theorem norm_thetaHalfShift_le {H : ℝ} (hH : 0 < H) {τ : ℂ} (hτ : H ≤ τ.im) :
     ‖thetaHalfShift τ‖ ≤ halfBound H := by
   have hs : Summable (fun n : ℤ => Real.exp (-Real.pi * (H / 4 * (n : ℝ) ^ 2))) := by
-    simpa only [pow_zero, one_mul, zero_mul, sub_zero] using
+    simpa only [pow_zero, one_mul, zero_mul, mul_zero, sub_zero] using
       (summable_pow_mul_jacobiTheta₂_term_bound 0 (T := H / 4) (by positivity) 0)
   have hd (n : ℤ) : ‖halfTerm n τ‖ ≤ Real.exp (-Real.pi * (H / 4 * (n : ℝ) ^ 2)) := by
     rw [norm_halfTerm]
@@ -64,14 +64,19 @@ private theorem norm_thetaHalfShift_le {H : ℝ} (hH : 0 < H) {τ : ℂ} (hτ : 
   have hAbs : Summable (fun n : ℤ => ‖halfTerm n τ‖) :=
     Summable.of_nonneg_of_le (fun _ => norm_nonneg _) hd hs
   rw [thetaHalfShift_eq_tsum]
-  exact (norm_tsum_le_tsum_norm hAbs).trans (tsum_le_tsum hd hAbs hs)
+  exact (norm_tsum_le_tsum_norm hAbs).trans (hAbs.tsum_mono hs hd)
 
+set_option maxHeartbeats 1000000 in
 theorem continuousAt_thetaHalfShift {τ : ℂ} (hτ : 0 < τ.im) : ContinuousAt thetaHalfShift τ := by
   have hExp : Continuous (fun z : ℂ => Complex.exp ((Real.pi : ℂ) * Complex.I * z / 4)) :=
     Complex.continuous_exp.comp ((continuous_const.mul continuous_id).div_const 4)
   have hArg : Continuous (fun z : ℂ => (z / 2, z)) :=
     (continuous_id.div_const 2).prodMk continuous_id
-  exact hExp.continuousAt.mul ((continuousAt_jacobiTheta₂ (τ / 2) hτ).comp hArg.continuousAt)
+  have hComposed : ContinuousAt (fun z : ℂ => jacobiTheta₂ (z / 2) z) τ :=
+    ContinuousAt.comp' (f := fun z : ℂ => (z / 2, z)) (x := τ)
+      (continuousAt_jacobiTheta₂ (τ / 2) hτ) hArg.continuousAt
+  unfold thetaHalfShift
+  exact hExp.continuousAt.mul hComposed
 
 theorem thetaHalfShift_memLp (H a : ℝ) (hH : 0 < H) (ha : a < 1 / 2) :
     MemLp (fun z : ℝ × ℝ => weighted a thetaHalfShift z.1 z.2) 2 (infinityCuspMeasureAbove H) := by
@@ -83,8 +88,8 @@ theorem thetaHalfShift_memLp (H a : ℝ) (hH : 0 < H) (ha : a < 1 / 2) :
 
 /-- The holomorphic-coordinate realizations of the actual normalized
 profiles for the three fixed cusp charts. -/
-def chartProfile (i : Fin 3) (τ : ℂ) : ℂ :=
-  if i = 2 then thetaHalfShift τ else jacobiTheta τ
+def chartProfile (i : Fin 3) : ℂ → ℂ :=
+  ![jacobiTheta, jacobiTheta, thetaHalfShift] i
 
 theorem chartProfile_eq (i : Fin 3) (z : ℍ) :
     chartProfile i z = normalizedProfile i z := by
@@ -102,9 +107,9 @@ theorem chartProfile_memLp (i : Fin 3) (H a : ℝ) (hH : 0 < H) (ha : a < 1 / 2)
     MemLp (fun z : ℝ × ℝ => weighted a (chartProfile i) z.1 z.2) 2
       (infinityCuspMeasureAbove H) := by
   fin_cases i
-  · simpa [chartProfile] using weighted_jacobiTheta_memLp_infinity_above H a hH ha
-  · simpa [chartProfile] using weighted_jacobiTheta_memLp_infinity_above H a hH ha
-  · simpa [chartProfile] using thetaHalfShift_memLp H a hH ha
+  · exact weighted_jacobiTheta_memLp_infinity_above H a hH ha
+  · exact weighted_jacobiTheta_memLp_infinity_above H a hH ha
+  · exact thetaHalfShift_memLp H a hH ha
 
 theorem halfWeight_memLp_all_cusps (i : Fin 3) (H : ℝ) (hH : 0 < H) :
     MemLp (fun z : ℝ × ℝ => weighted (1 / 4) (chartProfile i) z.1 z.2) 2

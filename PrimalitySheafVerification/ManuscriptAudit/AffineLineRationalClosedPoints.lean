@@ -45,9 +45,16 @@ theorem rationalPoint_default (a : K) :
   let x : Spec (CommRingCat.of K) := default
   letI : x.asIdeal.IsPrime := x.isPrime
   have hx : x.asIdeal = ⊥ := Ideal.eq_bot_of_prime _
-  change (rationalPoint K a x).asIdeal = (closedPoint K a).asIdeal
-  rw [rationalPoint, Spec.map_apply, PrimeSpectrum.comap_asIdeal, hx]
-  exact (RingHom.ker_eq_comap_bot (evalRingHom a)).symm
+  let f : CommRingCat.of (Polynomial K) ⟶ CommRingCat.of K :=
+    CommRingCat.ofHom (evalRingHom a)
+  change (Spec.map f x).asIdeal = RingHom.ker (evalRingHom a)
+  calc
+    _ = Ideal.comap f.hom x.asIdeal :=
+      (congrArg PrimeSpectrum.asIdeal (Spec.map_apply f x)).trans
+        (PrimeSpectrum.comap_asIdeal f.hom x)
+    _ = _ := by
+      rw [hx]
+      exact (RingHom.ker_eq_comap_bot (evalRingHom a)).symm
 
 /-- Every closed point has exactly one rational coordinate over an algebraically closed field. -/
 theorem closedPoint_bijective [IsAlgClosed K] : Function.Bijective (closedPoint K) := by
