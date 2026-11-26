@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.Data.ZMod.Basic
 import PrimalitySheafVerification.ManuscriptAudit.DerivedSheafShift
@@ -24,11 +25,12 @@ noncomputable section
 
 local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
 
-private abbrev S := Spec (CommRingCat.of ℤ)
-private abbrev Z := Spec (CommRingCat.of (ZMod 5))
-private abbrev J := Scheme.ProEt.topology S
+private abbrev S : Scheme.{0} := Spec (CommRingCat.of ℤ)
+private abbrev Z : Scheme.{0} := Spec (CommRingCat.of (ZMod 5))
+private abbrev J : GrothendieckTopology S.ProEt := Scheme.ProEt.topology S
 private abbrev A := AddCommGrpCat.{1}
 
+local instance : HasSheafify J A := inferInstance
 local instance : HasDerivedCategory (Sheaf J A) := HasDerivedCategory.standard _
 local instance : HasExt.{1} (Sheaf J A) := IsGrothendieckAbelian.hasExt _
 
@@ -37,9 +39,11 @@ def closedPoint : Z ⟶ S :=
   Spec.map (CommRingCat.ofHom (Int.castRingHom (ZMod 5)))
 
 theorem closedPoint_isClosedImmersion : IsClosedImmersion closedPoint :=
-  IsClosedImmersion.spec_of_surjective ZMod.intCast_surjective
+  IsClosedImmersion.spec_of_surjective _ ZMod.intCast_surjective
 
-private def point : Z := (⊥ : PrimeSpectrum (ZMod 5))
+private def point : Z := (default : PrimeSpectrum (ZMod 5))
+
+local instance : Subsingleton Z := inferInstanceAs (Subsingleton (PrimeSpectrum (ZMod 5)))
 
 /-- The closed fiber has exactly one underlying point. -/
 theorem closedPoint_range : Set.range closedPoint = {closedPoint point} := by

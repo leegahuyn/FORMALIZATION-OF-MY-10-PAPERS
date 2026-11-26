@@ -40,8 +40,7 @@ private def geometricFiberEquiv (W : X.Etale) :
     apply CostructuredArrow.hom_ext
     apply pullback.hom_ext
     · exact pullback.lift_fst _ _ _
-    · rw [pullback.lift_snd]
-      exact ht.symm
+    · exact (pullback.lift_snd _ _ _).trans ht.symm
   right_inv t := by
     apply CostructuredArrow.hom_ext
     exact pullback.lift_fst _ _ _
@@ -51,12 +50,15 @@ def geometricFiberBaseChangeIso :
     etaleBaseChange i ⋙ (Scheme.pointSmallEtale s).fiber ≅
       (Scheme.pointSmallEtale (s ≫ i)).fiber :=
   NatIso.ofComponents (fun W => (geometricFiberEquiv i s W).toIso) (fun {W Y} f => by
-    ext t : 1
+    apply ConcreteCategory.hom_ext
+    intro t
     apply CostructuredArrow.hom_ext
     change (t.left ≫ ((etaleBaseChange i).map f).left) ≫ pullback.fst Y.hom i =
       (t.left ≫ pullback.fst W.hom i) ≫ f.left
-    simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left,
-      Category.assoc, pullback.lift_fst])
+    have hMap : ((etaleBaseChange i).map f).left ≫ pullback.fst Y.hom i =
+        pullback.fst W.hom i ≫ f.left := by
+      simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
+    simpa only [Category.assoc] using congrArg (fun a => t.left ≫ a) hMap)
 
 variable (K : Type u) [Field K]
 
