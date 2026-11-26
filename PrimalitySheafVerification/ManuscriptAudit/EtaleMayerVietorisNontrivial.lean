@@ -51,7 +51,8 @@ theorem existsHOne_of_overlap_zero (c : F.H' 1 (Scheme.Etale.mk j))
   have eq := congrArg (fun d => p d) hz
   change p (S.toBiprod F 1 z) = p (i c) at eq
   rw [← ConcreteCategory.comp_apply, hb, ← ConcreteCategory.comp_apply, hp] at eq
-  simpa using eq
+  change (F.cohomologyPresheaf 1).map (openArrow j).op z = c at eq
+  exact eq
 
 include hCover in
 /-- A nonzero chart class with zero overlap restriction forces actual

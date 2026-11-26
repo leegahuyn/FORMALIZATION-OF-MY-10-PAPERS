@@ -101,21 +101,25 @@ theorem infinityPoint_isClosedImmersion : IsClosedImmersion (infinityPoint K) :=
     infer_instance
   exact IsClosedImmersion.of_comp (infinityPoint K) (projectiveNodeToBase K)
 
+private theorem origin_preimage_x :
+    (originInChart K) ⁻¹ᵁ PrimeSpectrum.basicOpen (xCoeff K) = ⊥ := by
+  unfold originInChart
+  rw [SpecMap_preimage_basicOpen]
+  change PrimeSpectrum.basicOpen (coordinateAtOrigin K (xCoeff K)) = ⊥
+  rw [coordinateAtOrigin_x, PrimeSpectrum.basicOpen_zero]
+
+private theorem infinity_preimage_affine :
+    (infinityPoint K) ⁻¹ᵁ (affineOpen K).opensRange = ⊥ := by
+  unfold infinityPoint
+  rw [Scheme.Hom.comp_preimage, chartOpen_preimage_affine]
+  exact origin_preimage_x K
+
 theorem infinityPoint_outside :
     infinityPoint K (IsLocalRing.closedPoint K) ∉ Set.range (affineOpen K) := by
   intro hp
-  change originInChart K (IsLocalRing.closedPoint K) ∈
-    (chartOpen K) ⁻¹ᵁ (affineOpen K).opensRange at hp
-  rw [chartOpen_preimage_affine] at hp
-  change IsLocalRing.closedPoint K ∈
-    (originInChart K) ⁻¹ᵁ PrimeSpectrum.basicOpen (xCoeff K) at hp
-  unfold originInChart at hp
-  rw [SpecMap_preimage_basicOpen] at hp
-  have hnot := (PrimeSpectrum.mem_basicOpen _ _).mp hp
-  apply hnot
-  change coordinateAtOrigin K (xCoeff K) ∈ (IsLocalRing.closedPoint K).asIdeal
-  rw [coordinateAtOrigin_x]
-  exact (IsLocalRing.closedPoint K).asIdeal.zero_mem
+  have h := ((infinityPoint K).mem_preimage (U := (affineOpen K).opensRange)).mpr hp
+  rw [infinity_preimage_affine] at h
+  exact (show IsLocalRing.closedPoint K ∉ (⊥ : (Spec (CommRingCat.of K)).Opens) by simp) h
 
 theorem boundary_eq_infinityPoint (p : projectiveNode K)
     (hp : p ∉ Set.range (affineOpen K)) :

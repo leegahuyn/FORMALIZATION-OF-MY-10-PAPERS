@@ -27,8 +27,12 @@ private theorem pullback_support_finite (d : HeightOneSpectrum A →₀ ℤ) :
   have h : (⋃ p ∈ (d.support : Set (HeightOneSpectrum A)), (comap A B) ⁻¹' {p}).Finite := by
     apply d.support.finite_toSet.biUnion
     intro p _
+    let S := (comap A B) ⁻¹' {p}
+    let e : S → {q : HeightOneSpectrum B // comap A B q = p} :=
+      fun q ↦ ⟨q.val, Set.mem_singleton_iff.mp q.property⟩
     letI : Finite {q : HeightOneSpectrum B // comap A B q = p} := finite_comap_fiber A B p
-    exact Set.toFinite ((comap A B) ⁻¹' {p})
+    letI : Finite S := Finite.of_injective e (fun x y h ↦ Subtype.ext (congrArg Subtype.val h))
+    exact Set.toFinite S
   apply h.subset
   intro q hq
   exact Set.mem_iUnion₂.mpr ⟨comap A B q, Finsupp.mem_support_iff.mpr hq, rfl⟩

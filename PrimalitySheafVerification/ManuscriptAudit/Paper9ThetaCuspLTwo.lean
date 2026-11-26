@@ -11,10 +11,10 @@ open scoped UpperHalfPlane
 
 noncomputable section
 
-private def halfTerm (n : ℤ) (τ : ℂ) : ℂ :=
+def halfTerm (n : ℤ) (τ : ℂ) : ℂ :=
   Complex.exp ((Real.pi : ℂ) * Complex.I * ((n : ℂ) + 1 / 2) ^ 2 * τ)
 
-private theorem thetaHalfShift_eq_tsum (τ : ℂ) :
+theorem thetaHalfShift_eq_tsum (τ : ℂ) :
     thetaHalfShift τ = ∑' n : ℤ, halfTerm n τ := by
   unfold thetaHalfShift jacobiTheta₂
   rw [← tsum_mul_left]

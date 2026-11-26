@@ -65,9 +65,9 @@ private theorem tensorFirst_etale (h2 : (2 : K) ≠ 0) :
   letI : Algebra.Etale (A K) (E K) := (cover_finite_etale K h2).2
   change Etale (Spec.map
     (CommRingCat.ofHom (algebraMap (objectRing (A K) U) (tensorRing (A K) (E K) U))))
-  exact (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
-    (RingHom.etale_algebraMap.mpr (inferInstance :
-      Algebra.Etale (objectRing (A K) U) (tensorRing (A K) (E K) U)))
+  have hEtale : Algebra.Etale (objectRing (A K) U) (tensorRing (A K) (E K) U) :=
+    Algebra.Etale.baseChange (A K) (E K) (objectRing (A K) U)
+  exact (HasRingHomProperty.Spec_iff (P := @Etale)).mpr (RingHom.etale_algebraMap.mpr hEtale)
 
 def refinement (h2 : (2 : K) ≠ 0) : aff K := by
   letI : Etale U.hom := U.prop

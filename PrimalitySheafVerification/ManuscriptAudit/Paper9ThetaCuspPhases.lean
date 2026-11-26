@@ -52,7 +52,7 @@ theorem thetaHalfShift_add_two (τ : ℂ) :
     Complex.exp_add, Complex.exp_pi_div_two_mul_I]
   ring
 
-private theorem int_square_eq_add_twice (n : ℤ) : ∃ k : ℤ, n ^ 2 = n + 2 * k := by
+theorem int_square_eq_add_twice (n : ℤ) : ∃ k : ℤ, n ^ 2 = n + 2 * k := by
   let m := n / 2
   have h : n = 2 * m ∨ n = 2 * m + 1 := by
     dsimp [m]

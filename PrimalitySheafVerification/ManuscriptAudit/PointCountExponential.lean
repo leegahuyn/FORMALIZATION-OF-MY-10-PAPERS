@@ -38,8 +38,9 @@ theorem X_mul_derivative_countLog (counts : Series K) (hc : constantCoeff counts
   | succ n =>
     rw [coeff_succ_X_mul, coeff_derivative, countLog, coeff_mk, if_neg n.succ_ne_zero]
     simp only [Nat.cast_add, Nat.cast_one]
-    exact div_mul_cancel₀ _ (by
-      simpa only [Nat.cast_add, Nat.cast_one] using (Nat.cast_ne_zero.mpr n.succ_ne_zero : (n.succ : K) ≠ 0))
+    have hn : (n.succ : K) ≠ 0 := Nat.cast_ne_zero.mpr n.succ_ne_zero
+    rw [Nat.cast_succ] at hn
+    exact div_mul_cancel₀ _ hn
 
 theorem expAt_constantCoeff (f : Series K) (hf : constantCoeff f = 0) :
     constantCoeff (expAt f) = 1 := by

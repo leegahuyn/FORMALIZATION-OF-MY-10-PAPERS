@@ -49,6 +49,7 @@ theorem principalDivisor_coefficient_surjective (p : HeightOneSpectrum R) :
   refine ⟨n • u, ?_⟩
   change coeff (n • u) = n
   rw [map_zsmul, show coeff u = 1 from h, zsmul_eq_mul, mul_one]
+  simp
 
 private theorem finite_set_avoided (x : PrimeSpectrum R) (s : Finset (HeightOneSpectrum R))
     (h : ∀ p ∈ s, p.asIdeal ≠ x.asIdeal) :

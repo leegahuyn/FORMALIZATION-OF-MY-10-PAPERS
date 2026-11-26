@@ -81,6 +81,7 @@ def diagonal : baseFunctions K M ⟶ coverFunctions K M :=
      naturality := fun {U V} f => by
       apply ConcreteCategory.hom_ext
       intro x
+      change C(Spec (objectRing (A K) U.unop), M) at x
       apply ContinuousMap.ext
       intro p
       change x (underlying K f.unop (projectionOf K V.unop p)) =
@@ -99,6 +100,7 @@ def trace (h2 : (2 : K) ≠ 0) : coverFunctions K M ⟶ baseFunctions K M :=
      naturality := fun {U V} f => by
       apply ConcreteCategory.hom_ext
       intro s
+      change C(fiber K U.unop, M) at s
       change traceApp K M h2 V.unop (s.comp (asMap (fiberMap K f.unop))) =
         (traceApp K M h2 U.unop s).comp (asMap (underlying K f.unop))
       have hTransport :
@@ -177,6 +179,7 @@ set_option maxHeartbeats 1300000 in
 theorem diagonal_app_injective (h2 : (2 : K) ≠ 0) (U : aff K) :
     Function.Injective ((diagonal K M).hom.app (op U)) := by
   intro s t h
+  change C(Spec (objectRing (A K) U), M) at s t
   change precompose M (projectionOf K U) s = precompose M (projectionOf K U) t at h
   apply ContinuousMap.ext
   intro p
@@ -191,9 +194,11 @@ theorem diagonal_app_injective (h2 : (2 : K) ≠ 0) (U : aff K) :
 
 set_option maxHeartbeats 1400000 in
 theorem trace_app_eq_zero_of_connected_tensor (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
-    (U : aff K) [PreconnectedSpace (tensorScheme (A K) (E K) U)]
+    (U : aff K) [hconn : PreconnectedSpace (tensorScheme (A K) (E K) U)]
     (s : (coverFunctions K M).obj.obj (op U)) :
     (trace K M h2).hom.app (op U) s = 0 := by
+  letI : PreconnectedSpace (PrimeSpectrum
+      (NodalSwapCoverAffineTrace.coverOver K (objectRing (A K) U))) := hconn
   change NodalSwapCoverAffineTrace.affineTrace K (objectRing (A K) U) M h2
     (precompose M (fiberIso K U).hom s) = 0
   exact NodalSwapCoverAffineTrace.affineTrace_eq_zero_of_connected K (objectRing (A K) U) M h2

@@ -87,7 +87,8 @@ theorem restrictedExtensionMap_right :
       (abelianExtensionByZeroAdjunction j).unit.app S.X₃ := by
   change (abelianExtensionByZeroAdjunction j).unit.app S.X₃ ≫
     (R j).map (𝟙 ((E j).obj S.X₃)) = _
-  rw [(R j).map_id, Category.comp_id]
+  rw [(R j).map_id]
+  exact Category.comp_id ((abelianExtensionByZeroAdjunction j).unit.app S.X₃)
 
 /-- The native ambient extension restricts back to the original short exact sequence. -/
 def restrictedExtensionIso (hS : S.ShortExact) :
