@@ -75,6 +75,47 @@ theorem affineTrace_kernel (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
     htwo s
 
+variable (S : Type u) [CommRing S] [Algebra (A K) S]
+
+def coverOverMap (f : R →ₐ[A K] S) : coverOver K R →ₐ[A K] coverOver K S :=
+  Algebra.TensorProduct.map f (AlgHom.id (A K) (E K))
+
+private theorem coverOverMap_base (f : R →ₐ[A K] S) :
+    (coverOverMap K R S f).toRingHom.comp (algebraMap R (coverOver K R)) =
+      (algebraMap S (coverOver K S)).comp f.toRingHom := by
+  apply RingHom.ext
+  intro r
+  change coverOverMap K R S f (r ⊗ₜ[A K] (1 : E K)) = f r ⊗ₜ[A K] (1 : E K)
+  rw [coverOverMap, Algebra.TensorProduct.map_tmul] <;> rfl
+
+private theorem coverOverMap_deck (f : R →ₐ[A K] S) :
+    (coverOverSwap K S).toRingHom.comp (coverOverMap K R S f).toRingHom =
+      (coverOverMap K R S f).toRingHom.comp (coverOverSwap K R).toRingHom := by
+  apply RingHom.ext
+  intro z
+  change coverOverSwap K S (coverOverMap K R S f z) = coverOverMap K R S f (coverOverSwap K R z)
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul r x =>
+    simp only [coverOverMap, Algebra.TensorProduct.map_tmul, AlgHom.id_apply,
+      InvolutionTensorBaseChange.baseSwap_tmul]
+  | add x y hx hy =>
+    simpa only [map_add] using congrArg₂ (· + ·) hx hy
+
+set_option maxHeartbeats 1000000 in
+theorem affineTrace_natural (h2 : (2 : K) ≠ 0) (f : R →ₐ[A K] S)
+    (s : C(PrimeSpectrum (coverOver K R), M)) :
+    affineTrace K S M h2 (s.comp (spectrumMap (coverOverMap K R S f).toRingHom)) =
+      (affineTrace K R M h2 s).comp (spectrumMap f.toRingHom) :=
+  spectrumTrace_natural R (coverOver K R) (coverOverSwap K R)
+    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+    (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
+    (coverOverSwap K S)
+    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) S (swap K) (swap_twice K))
+    (coverOverCertificate K S h2) (coverOver_finite K S h2) (coverOver_faithfullyFlat K S h2)
+    f.toRingHom (coverOverMap K R S f).toRingHom (coverOverMap_base K R S f)
+    (coverOverMap_deck K R S f) s
+
 end ScalarExtension
 
 section Global
@@ -128,6 +169,7 @@ run_cmd do
       [``ManuscriptAudit.NodalSwapCoverAffineTrace.cover_faithfullyFlat,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.coverOverCertificate,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.affineTrace_kernel,
+        ``ManuscriptAudit.NodalSwapCoverAffineTrace.affineTrace_natural,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.globalTrace_eq_zero,
         ``ManuscriptAudit.NodalSwapCoverAffineTrace.global_one_has_no_trace_lift] do
     let dependencies ← collectAxioms name

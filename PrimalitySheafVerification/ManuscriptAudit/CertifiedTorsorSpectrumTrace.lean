@@ -90,6 +90,32 @@ theorem spectrumTrace_zero_of_connected [PreconnectedSpace (PrimeSpectrum E)]
     spectrumTrace A E σ hσ c hfin hfaith s = 0 :=
   trace_zero_of_connected _ _ _ _ _ htwo s
 
+def spectrumMap {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
+    C(PrimeSpectrum S, PrimeSpectrum R) :=
+  ⟨comap f, continuous_comap f⟩
+
+variable {A' E' : Type u} [CommRing A'] [CommRing E'] [Algebra A' E']
+
+theorem spectrumTrace_natural (σ : E ≃ₐ[A] E) (hσ : Function.Involutive σ)
+    (c : CertifiedComparison A E σ) (hfin : Module.Finite A E)
+    (hfaith : Module.FaithfullyFlat A E)
+    (σ' : E' ≃ₐ[A'] E') (hσ' : Function.Involutive σ')
+    (c' : CertifiedComparison A' E' σ') (hfin' : Module.Finite A' E')
+    (hfaith' : Module.FaithfullyFlat A' E')
+    (a : A →+* A') (b : E →+* E')
+    (hBase : b.comp (algebraMap A E) = (algebraMap A' E').comp a)
+    (hDeck : σ'.toRingHom.comp b = b.comp σ.toRingHom)
+    (s : C(PrimeSpectrum E, M)) :
+    spectrumTrace A' E' σ' hσ' c' hfin' hfaith' (s.comp (spectrumMap b)) =
+      (spectrumTrace A E σ hσ c hfin hfaith s).comp (spectrumMap a) := by
+  apply trace_natural
+  · intro p
+    change comap (algebraMap A E) (comap b p) = comap a (comap (algebraMap A' E') p)
+    rw [← comap_comp_apply, ← comap_comp_apply, hBase]
+  · intro p
+    change comap b (comap σ'.toRingHom p) = comap σ.toRingHom (comap b p)
+    rw [← comap_comp_apply, ← comap_comp_apply, hDeck]
+
 end
 
 end ManuscriptAudit.CertifiedTorsorSpectrumTrace
@@ -101,6 +127,7 @@ run_cmd do
       [``ManuscriptAudit.CertifiedTorsorSpectrumTrace.quotient_projection,
         ``ManuscriptAudit.CertifiedTorsorSpectrumTrace.spectrumTrace_apply,
         ``ManuscriptAudit.CertifiedTorsorSpectrumTrace.spectrumTrace_kernel,
+        ``ManuscriptAudit.CertifiedTorsorSpectrumTrace.spectrumTrace_natural,
         ``ManuscriptAudit.CertifiedTorsorSpectrumTrace.spectrumTrace_zero_of_connected] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter (fun axiomName => !allowed.contains axiomName)

@@ -28,7 +28,7 @@ def liftCertified (σ : E ≃ₐ[A] E) (cert : CertifiedComparison A E σ) :
     CertifiedComparison B (D A E B) (baseSwap A E B σ) := by
   let assoc := TensorProduct.AlgebraTensorModule.distribBaseChange A B E E
   let lift := (cert.equiv.toLinearEquiv.restrictScalars A).baseChange A B (E ⊗[A] E) (E × E)
-  let split := TensorProduct.AlgebraTensorModule.prodRight A B B E E
+  let split := TensorProduct.prodRight A B B E E
   let cmp := comparison B (D A E B) (baseSwap A E B σ)
   have hLift (b : B) (z : E ⊗[A] E) : lift (b ⊗ₜ[A] z) = b ⊗ₜ[A] cert.equiv z :=
     LinearEquiv.baseChange_tmul (e := cert.equiv.toLinearEquiv.restrictScalars A) b z
@@ -42,7 +42,7 @@ def liftCertified (σ : E ≃ₐ[A] E) (cert : CertifiedComparison A E σ) :
       simp only [assoc, TensorProduct.AlgebraTensorModule.distribBaseChange_tmul,
         cmp, comparison_tmul, baseSwap_tmul, Algebra.TensorProduct.tmul_mul_tmul, mul_one,
         hLift, cert.on_tmul,
-        split, TensorProduct.AlgebraTensorModule.prodRight_tmul]
+        split, TensorProduct.prodRight_tmul]
     | add x y hx hy =>
       simpa only [TensorProduct.tmul_add, map_add] using congrArg₂ (· + ·) hx hy
   have hFun : ⇑cmp = split ∘ lift ∘ assoc.symm := by
