@@ -125,7 +125,7 @@ theorem actual_euler_hasProd (A : ℤ) {s : ℂ} (hs : 3 / 2 < s.re) :
     ∃ L : ℂ, HasProd (fun p : Primes => localFactor A p s) L ∧ L ≠ 0 := by
   have h := paper7_dirichlet_scaled_euler_hasProd (root A) (fun _ : Fin 2 => 1)
     (show (1 / 2 : ℝ) + 1 < s.re by linarith) (root_bound A)
-  exact ⟨_, h.1.congr_fun fun p => localFactor_eq_exp A p hs, h.2⟩
+  exact ⟨_, h.1.congr_fun fun p => (localFactor_eq_exp A p hs).symm, h.2⟩
 
 end
 end ManuscriptAudit.Paper5AnalyticEuler

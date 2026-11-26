@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Gluing
+import Mathlib.AlgebraicGeometry.Pullbacks
 
 /-! Two schemes covered by the same two open charts are isomorphic
 when the ordinary scheme pullbacks agree with their projection maps. -/

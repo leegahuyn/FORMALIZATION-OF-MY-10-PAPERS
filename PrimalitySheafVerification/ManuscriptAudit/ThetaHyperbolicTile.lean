@@ -10,7 +10,7 @@ namespace ManuscriptAudit.ThetaHyperbolicTile
 open Set MeasureTheory ModularGroup
 open ThetaProfileGenerators ThetaGammaTwoMetric ThetaInfinityCusp
 open Paper9ThetaCuspLTwo Paper9ThetaCuspPhases MaassLaplacian
-open scoped UpperHalfPlane ENNReal
+open scoped UpperHalfPlane NNReal ENNReal
 
 noncomputable section
 
@@ -61,7 +61,7 @@ private theorem density_toReal (z : ℍ) : (density z).toReal = (z.im ^ 2)⁻¹ 
 private theorem density_measurable : Measurable density := by
   have he : density = fun z => ENNReal.ofReal ((z.im ^ 2)⁻¹) := by
     funext z
-    apply ENNReal.toReal_injective (by simp [density]) ENNReal.ofReal_ne_top
+    apply (ENNReal.toReal_eq_toReal_iff' (by simp [density]) ENNReal.ofReal_ne_top).mp
     rw [density_toReal, ENNReal.toReal_ofReal (inv_nonneg.mpr (sq_nonneg _))]
   rw [he]
   exact (UpperHalfPlane.continuous_im.measurable.pow_const 2).inv.ennreal_ofReal
@@ -118,12 +118,23 @@ private theorem shifted_profile_integrableOn_fd (t : ℝ) :
 theorem profileDensity_integrableOn_fd (v : Direction) :
     IntegrableOn (profileDensity v) ModularGroup.fd (volume : Measure ℍ) := by
   rcases direction_cases v with rfl | rfl | rfl | rfl
-  · simp [profileDensity, profile_00, thetaDensity]
-  · simpa [profileDensity, profile_11] using shifted_profile_integrableOn_fd 0
-  · have he : thetaAlternating = fun τ => jacobiTheta (τ + (1 : ℂ)) :=
+  · change IntegrableOn (thetaDensity (profile (![0, 0] : Direction))) _ _
+    rw [profile_00]
+    have he : thetaDensity (0 : ℂ → ℂ) = 0 := by
+      funext z
+      simp [thetaDensity]
+    rw [he]
+    exact integrableOn_zero
+  · change IntegrableOn (thetaDensity (profile (![1, 1] : Direction))) _ _
+    rw [profile_11]
+    simpa only [Complex.ofReal_zero, add_zero] using shifted_profile_integrableOn_fd 0
+  · change IntegrableOn (thetaDensity (profile (![0, 1] : Direction))) _ _
+    have he : thetaAlternating = fun τ => jacobiTheta (τ + (1 : ℂ)) :=
       funext fun τ => (jacobiTheta_add_one_profile τ).symm
-    simpa [profileDensity, profile_01, he] using shifted_profile_integrableOn_fd 1
-  · rw [profileDensity, profile_10]
+    rw [profile_01, he]
+    simpa only [Complex.ofReal_one] using shifted_profile_integrableOn_fd 1
+  · change IntegrableOn (thetaDensity (profile (![1, 0] : Direction))) _ _
+    rw [profile_10]
     apply bounded_profile_integrableOn_fd _ (halfBound (1 / 2))
     · refine continuous_iff_continuousAt.mpr fun z => ?_
       exact ContinuousAt.comp' (f := UpperHalfPlane.coe) (x := z)

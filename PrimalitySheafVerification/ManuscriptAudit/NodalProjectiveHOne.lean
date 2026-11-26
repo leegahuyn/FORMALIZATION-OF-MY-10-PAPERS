@@ -63,7 +63,7 @@ private theorem overlap_lifted (h2 : (2 : K) ≠ 0) :
       ConcreteCategory.congr_hom (S.g.hom.naturality q.hom.op) u
     _ = t := by
       rw [hv, ← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, Iso.hom_inv_id,
-        op_id, Functor.map_id] <;> rfl
+        op_id, S.X₃.obj.map_id] <;> rfl
 
 /-- The actual proper nodal curve has nontrivial ordinary small-étale
 H¹ with constant Z/2 coefficients whenever 2 is invertible in K. -/

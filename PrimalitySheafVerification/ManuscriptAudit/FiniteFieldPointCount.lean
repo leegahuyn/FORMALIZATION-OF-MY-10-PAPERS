@@ -89,7 +89,7 @@ def shortCubic (c A : F) : WeierstrassCurve F where
   a₄ := -c
   a₆ := A
 
-private theorem shortCubic_nonsingular_iff {c A : F}
+theorem shortCubic_nonsingular_iff {c A : F}
     (hΔ : (shortCubic c A).Δ ≠ 0) (x y : F) :
     (shortCubic c A).toProjective.toAffine.Nonsingular x y ↔
       y ^ 2 = x ^ 3 - c * x + A := by
