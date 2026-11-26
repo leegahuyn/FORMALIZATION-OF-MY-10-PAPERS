@@ -88,6 +88,7 @@ private theorem node_isNoetherian : IsNoetherianRing (A K) := by
     exact Algebra.FiniteType.adjoin_of_finite ((Set.finite_singleton _).insert _)
   exact Algebra.FiniteType.isNoetherianRing K (A K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cover_finite_etale (h2 : (2 : K) ≠ 0) :
     Module.Finite (A K) (Cover K) ∧ Algebra.Etale (A K) (Cover K) := by
   obtain ⟨hFin, hProj⟩ := cover_finite_projective K h2
@@ -96,7 +97,8 @@ theorem cover_finite_etale (h2 : (2 : K) ≠ 0) :
   letI : Module.Flat (A K) (Cover K) := inferInstance
   letI : IsNoetherianRing (A K) := node_isNoetherian K
   letI : Algebra.FinitePresentation (A K) (Cover K) :=
-    Algebra.FinitePresentation.of_finiteType.mp inferInstance
+    (Algebra.FinitePresentation.of_finiteType (R := A K) (A := Cover K)).mp
+      (inferInstance : Algebra.FiniteType (A K) (Cover K))
   letI : Algebra.Etale (B K) (E K) := Algebra.Etale.of_equiv (productFunctions K).symm
   letI : Algebra.Etale (B K) (B K ⊗[A K] Cover K) :=
     Algebra.Etale.of_equiv (normalizationRecovery K h2).symm

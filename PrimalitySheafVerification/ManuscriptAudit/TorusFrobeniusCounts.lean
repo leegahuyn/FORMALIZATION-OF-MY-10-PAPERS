@@ -93,15 +93,15 @@ theorem prime_power_counts (n A : ℕ) (hn : n ≠ 0) :
 
 end
 
+local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+
 /-- The manuscript's asserted uniqueness for a fixed first coordinate fails for both signs. -/
 theorem five_two_distinct_second_coordinates :
     (1 : ZMod 5) ≠ 4 ∧
       ((4 : ZMod 5) ^ (5 : ℕ) + 1 ^ (2 : ℕ) = 0) ∧
       ((4 : ZMod 5) ^ (5 : ℕ) + 4 ^ (2 : ℕ) = 0) ∧
       ((4 : ZMod 5) ^ (-5 : ℤ) + 1 ^ (2 : ℕ) = 0) ∧
-      ((4 : ZMod 5) ^ (-5 : ℤ) + 4 ^ (2 : ℕ) = 0) := by
-  letI : Fact (Nat.Prime 5) := ⟨by decide⟩
-  decide
+      ((4 : ZMod 5) ^ (-5 : ℤ) + 4 ^ (2 : ℕ) = 0) := by decide
 
 end ManuscriptAudit.TorusFrobeniusCounts
 

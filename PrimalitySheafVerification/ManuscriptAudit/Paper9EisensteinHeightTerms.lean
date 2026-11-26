@@ -80,7 +80,8 @@ theorem every_orbit_has_different_printed_height_terms (c : ℂ) (z : ℍ) :
         _ < z.im * w₁.im * (z.im + w₂.im) :=
           mul_lt_mul_of_pos_right (mul_lt_mul_of_pos_left h₂ z.im_pos)
             (add_pos z.im_pos w₂.im_pos)
-        _ < _ := mul_lt_mul_of_pos_left (add_lt_add_left h₂ _)
+        _ < _ := mul_lt_mul_of_pos_left
+          (show z.im + w₂.im < z.im + w₁.im by linarith only [h₂])
           (mul_pos z.im_pos w₁.im_pos)
     exact (ne_of_gt hStrict) hReal
   · exact ⟨w₁, Quotient.sound ⟨g₁, rfl⟩, hEq₁⟩

@@ -23,7 +23,7 @@ set_option backward.isDefEq.respectTransparency false
 
 /-- All positive even group cohomology groups vanish for the actual
 unit representation of a finite cyclic extension of K(t). -/
-theorem cyclic_units_even_subsingleton (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
+theorem cyclic_units_even_subsingleton (K E : Type) [Field K] [IsAlgClosed K] [Field E]
     [Algebra (RatFunc K) E] [FiniteDimensional (RatFunc K) E] [IsGalois (RatFunc K) E]
     [IsCyclic (E ≃ₐ[RatFunc K] E)] (g : E ≃ₐ[RatFunc K] E)
     (hg : ∀ x, x ∈ Subgroup.zpowers g) (i : ℕ) [NeZero i] (hi : Even i) :

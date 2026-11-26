@@ -26,7 +26,7 @@ def firstProjection : Cover K →+* K[X] where
   map_zero' := rfl
   map_add' _ _ := rfl
 
-def secondProjection : Cover K →+* K[X] :=
+noncomputable def secondProjection : Cover K →+* K[X] :=
   (firstProjection K).comp (swap K).toRingHom
 
 theorem firstProjection_surjective (h2 : (2 : K) ≠ 0) :
@@ -40,11 +40,17 @@ theorem secondProjection_surjective (h2 : (2 : K) ≠ 0) :
     Function.Surjective (secondProjection K) :=
   (firstProjection_surjective K h2).comp (swap K).surjective
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem images_cover (h2 : (2 : K) ≠ 0) :
     Set.range (comap (firstProjection K)) ∪ Set.range (comap (secondProjection K)) =
       (Set.univ : Set (PrimeSpectrum (Cover K))) := by
-  rw [range_comap_of_surjective K[X] (firstProjection K) (firstProjection_surjective K h2),
-    range_comap_of_surjective K[X] (secondProjection K) (secondProjection_surjective K h2)]
+  have hFirst : Set.range (comap (firstProjection K)) =
+      zeroLocus (RingHom.ker (firstProjection K) : Set (Cover K)) :=
+    range_comap_of_surjective (Polynomial K) (firstProjection K) (firstProjection_surjective K h2)
+  have hSecond : Set.range (comap (secondProjection K)) =
+      zeroLocus (RingHom.ker (secondProjection K) : Set (Cover K)) :=
+    range_comap_of_surjective (Polynomial K) (secondProjection K) (secondProjection_surjective K h2)
+  rw [hFirst, hSecond]
   apply Set.eq_univ_of_forall
   intro p
   change RingHom.ker (firstProjection K) ≤ p.asIdeal ∨
