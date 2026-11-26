@@ -57,10 +57,14 @@ private theorem integralImageSieve_mem
         (D K).map e.inv.op :=
     affineDivisorHom_app_integral K F U
   have hSource : (G K F).map e.inv.op ≫ (G K F).map e.hom.op = 𝟙 _ := by
-    rw [← Functor.map_comp, ← op_comp, e.hom_inv_id, op_id, Functor.map_id]
+    rw [← Functor.map_comp, ← op_comp, e.hom_inv_id, op_id]
+    exact (G K F).map_id _
   have hTarget : (D K).map e.inv.op ≫ (D K).map f.op = (D K).map a.op := by
-    rw [← Functor.map_comp, ← op_comp]
-    simp only [f, Category.assoc, e.hom_inv_id, Category.comp_id]
+    have hF : f ≫ e.inv = a := by
+      change (a ≫ e.hom) ≫ e.inv = a
+      rw [Category.assoc, e.hom_inv_id]
+      exact Category.comp_id a
+    rw [← Functor.map_comp, ← op_comp, hF]
   have hTarget' : (D K).map f.op = (D K).map e.hom.op ≫ (D K).map a.op := by
     rw [← Functor.map_comp, ← op_comp]
   refine ⟨chartObject K C, f, ?_, ?_⟩
@@ -84,13 +88,14 @@ private theorem integralImageSieve_mem
       rw [hA]
       change Spec.map (CommRingCat.ofHom (algebraMap B C)) ≫
         Spec.map (𝟙 (coordinateRing K U.obj)) = _
-      rw [Spec.map_id, Category.comp_id]
+      rw [Spec.map_id]
+      exact Category.comp_id (Spec.map (CommRingCat.ofHom (algebraMap B C)))
     rw [hS]
-    have hr : Set.range (Spec.map (CommRingCat.ofHom (algebraMap B C))) =
-        Set.range (PrimeSpectrum.comap (algebraMap B C)) :=
-      congrArg Set.range (funext (Spec.map_apply (CommRingCat.ofHom (algebraMap B C))))
-    rw [hr, PrimeSpectrum.localization_away_comap_range C b]
-    exact hb
+    have hx : (show PrimeSpectrum B from x) ∈ Set.range (PrimeSpectrum.comap (algebraMap B C)) := by
+      rw [PrimeSpectrum.localization_away_comap_range C b]
+      exact hb
+    obtain ⟨y, hy⟩ := hx
+    exact ⟨y, (Spec.map_apply (CommRingCat.ofHom (algebraMap B C)) y).trans hy⟩
 
 /-- The actual affine étale divisor morphism is an epimorphism. -/
 theorem affineDivisorHom_epi : Epi (affineDivisorHom K F) := by

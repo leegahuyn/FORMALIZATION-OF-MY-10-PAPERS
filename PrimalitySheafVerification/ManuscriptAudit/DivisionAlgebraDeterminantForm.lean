@@ -54,8 +54,13 @@ theorem eval_determinantForm (z : Fin m → F) :
   have h : f.mapMatrix (genericMatrix b r) = r (b.equivFun.symm z) := by
     ext i j
     change f (∑ k : Fin m, C (r (b k) i j) * X k) = r (b.equivFun.symm z) i j
-    rw [b.equivFun_symm_apply]
-    simp [f, map_sum, Matrix.sum_apply, Matrix.smul_apply, Algebra.smul_def, mul_comm]
+    have hR : r (b.equivFun.symm z) i j =
+        ∑ k : Fin m, (algebraMap F L (z k)) * r (b k) i j := by
+      rw [b.equivFun_symm_apply, map_sum]
+      simp only [map_smul, Matrix.sum_apply, Matrix.smul_apply]
+      exact Finset.sum_congr rfl (fun k _ ↦ Algebra.smul_def (z k) (r (b k) i j))
+    rw [hR]
+    simp [f, mul_comm]
   rw [AlgHom.map_det, h]
 
 /-- Evaluation after mapping the coefficients is the determinant of the

@@ -45,6 +45,7 @@ private def cosetRightMul (g : G) : RightCosets S ≃ RightCosets S where
 private def normalizedValue (f : CoindRes S A) : RightCosets S → A.V := by
   refine Quotient.lift (fun x : G ↦ A.ρ x⁻¹ (f.1 x)) ?_
   intro x y h
+  change QuotientGroup.rightRel S x y at h
   rw [QuotientGroup.rightRel_apply] at h
   let s : S := ⟨y * x⁻¹, h⟩
   have hy : (s : G) * x = y := by simp [s, mul_assoc]
@@ -87,15 +88,23 @@ def trace [Finite G] : CoindRes S A ⟶ A := by
   refine Rep.ofHom
     { toFun := fun f ↦ ∑ q : RightCosets S, normalizedValue S A f q
       map_add' := fun f h ↦ by
-        simp only [normalizedValue_add, Finset.sum_add_distrib]
+        rw [← Finset.sum_add_distrib]
+        exact Finset.sum_congr rfl (fun q _ ↦ normalizedValue_add S A f h q)
       map_smul' := fun r f ↦ by
-        simp only [RingHom.id_apply, normalizedValue_smul, Finset.smul_sum]
+        change (∑ q : RightCosets S, normalizedValue S A (r • f) q) =
+          r • ∑ q : RightCosets S, normalizedValue S A f q
+        rw [Finset.smul_sum]
+        exact Finset.sum_congr rfl (fun q _ ↦ normalizedValue_smul S A r f q)
       isIntertwining' := fun g ↦ by
         ext f
         change (∑ q : RightCosets S, normalizedValue S A ((CoindRes S A).ρ g f) q) =
           A.ρ g (∑ q : RightCosets S, normalizedValue S A f q)
-        simp_rw [normalizedValue_action, ← map_sum]
-        exact congrArg (A.ρ g) ((cosetRightMul S g).sum_comp (normalizedValue S A f)) }
+        calc
+          _ = ∑ q : RightCosets S, A.ρ g (normalizedValue S A f (cosetRightMul S g q)) :=
+            Finset.sum_congr rfl (fun q _ ↦ normalizedValue_action S A g f q)
+          _ = A.ρ g (∑ q : RightCosets S, normalizedValue S A f (cosetRightMul S g q)) :=
+            (map_sum (A.ρ g) _ _).symm
+          _ = _ := congrArg (A.ρ g) ((cosetRightMul S g).sum_comp (normalizedValue S A f)) }
 
 /-- The composite of the unit and trace is multiplication by the subgroup index. -/
 theorem unit_trace [Finite G] : unit S A ≫ trace S A = S.index • (𝟙 A : A ⟶ A) := by
@@ -115,7 +124,8 @@ theorem unit_trace [Finite G] : unit S A ≫ trace S A = S.index • (𝟙 A : A
     rfl
   change (∑ q : RightCosets S, normalizedValue S A ((unit S A).hom a) q) =
     (S.index • (𝟙 A : A ⟶ A)).hom a
-  simp [hq, hCard, Rep.nsmul_hom]
+  simp only [hq, Finset.sum_const, Finset.card_univ, hCard, Rep.nsmul_hom, Rep.hom_id,
+    Representation.IntertwiningMap.coe_nsmul, Pi.smul_apply, Representation.IntertwiningMap.id_apply]
 
 end
 
