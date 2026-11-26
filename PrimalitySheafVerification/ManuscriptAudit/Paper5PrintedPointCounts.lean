@@ -27,8 +27,10 @@ private abbrev residueSolutions (p : ℕ) :=
 private theorem zmod_equation_iff_mod (p x y : ℕ) :
     (y : ZMod p) ^ 2 = (x : ZMod p) ^ 3 + 1 ↔
       y ^ 2 % p = (x ^ 3 + 1) % p := by
-  simpa only [Nat.cast_pow, Nat.cast_add, Nat.cast_one] using
-    (ZMod.natCast_eq_natCast_iff' (y ^ 2) (x ^ 3 + 1) p)
+  let f := Nat.castRingHom (ZMod p)
+  change f y ^ 2 = f x ^ 3 + 1 ↔ y ^ 2 % p = (x ^ 3 + 1) % p
+  rw [← map_pow f y 2, ← map_pow f x 3, ← map_one f, ← map_add f]
+  exact ZMod.natCast_eq_natCast_iff' (y ^ 2) (x ^ 3 + 1) p
 
 private def affineResidueEquiv (p : ℕ) [NeZero p] :
     Paper5TraceAffine p (1 : ZMod p) ≃ residueSolutions p := by
@@ -63,7 +65,7 @@ private noncomputable def projectiveAffineEquiv {p : ℕ} [Fact p.Prime] (hp : 5
     rw [← WeierstrassCurve.Affine.equation_iff_nonsingular_of_Δ_ne_zero
       (paper5_traceCurve_discriminant_ne_zero hp (one_ne_zero : (1 : ZMod p) ≠ 0))]
     rw [WeierstrassCurve.Affine.equation_iff]
-    simp [W, paper5TraceCurve]
+    simp [paper5TraceCurve]
   let e₁ : W.Point ≃ W.toAffine.Point :=
     (WeierstrassCurve.Projective.Point.toAffineAddEquiv (W := W)).toEquiv
   let e₂ : W.toAffine.Point ≃ Option {xy : ZMod p × ZMod p // W.toAffine.Nonsingular xy.1 xy.2} :=

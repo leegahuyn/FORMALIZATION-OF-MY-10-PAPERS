@@ -11,6 +11,8 @@ namespace ManuscriptAudit.NodalConductor
 
 open Polynomial
 
+noncomputable section
+
 variable (K : Type*) [Field K]
 
 def x : K[X] := X ^ 2 - 1
@@ -117,6 +119,8 @@ theorem conductor_iff_dvd (h2 : (2 : K) ≠ 0) (f : K[X]) :
   · rintro ⟨j, rfl⟩ g
     rw [mul_assoc]
     exact x_mul_mem_coordinates K (j * g)
+
+end
 
 end ManuscriptAudit.NodalConductor
 
