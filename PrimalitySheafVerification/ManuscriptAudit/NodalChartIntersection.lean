@@ -89,7 +89,7 @@ private theorem parameterIsoLocal_toChart :
   change toParameter K (algebraMap (yCoordinateRing K) (overlapRing K) a) =
     NodalYChartOverlap.yToParameter K a
   unfold toParameter
-  rw [IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq]
+  rw [IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq] <;> rfl
 
 @[reassoc]
 theorem intersectionIsoParameter_inv_snd :

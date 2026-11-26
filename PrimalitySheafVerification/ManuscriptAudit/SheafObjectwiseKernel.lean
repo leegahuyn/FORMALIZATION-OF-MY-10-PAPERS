@@ -30,12 +30,12 @@ theorem mono_of_value_injective
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U)) : Mono a := by
   letI : Mono a.hom := (NatTrans.mono_iff_mono_app a.hom).mpr fun U =>
     ConcreteCategory.mono_of_injective _ (ha U)
-  exact Sheaf.Hom.mono_of_presheaf_mono J a
+  exact Sheaf.Hom.mono_of_presheaf_mono J AddCommGrpCat.{w} a
 
-private def lift {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0)
+private def liftWithFac {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0)
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U))
     (hKer : ∀ (U : Cᵒᵖ) (s : G.obj.obj U), b.hom.app U s = 0 →
-      ∃ t : F.obj.obj U, a.hom.app U t = s) : H ⟶ F := by
+      ∃ t : F.obj.obj U, a.hom.app U t = s) : { l : H ⟶ F // l ≫ a = k } := by
   have hex (U : Cᵒᵖ) (x : H.obj.obj U) :
       ∃ t : F.obj.obj U, a.hom.app U t = k.hom.app U x := by
     apply hKer
@@ -55,32 +55,29 @@ private def lift {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0
         change (k.hom.app U).hom (x + z) = (a.hom.app U).hom (y U x + y U z)
         rw [map_add, map_add]
         exact congrArg₂ (· + ·) (hy U x).symm (hy U z).symm }
-  refine ⟨{ app := app, naturality := ?_ }⟩
-  intro U V f
-  apply ConcreteCategory.hom_ext
-  intro x
-  apply ha V
-  change a.hom.app V (y V (H.obj.map f x)) = a.hom.app V (F.obj.map f (y U x))
-  calc
-    _ = k.hom.app V (H.obj.map f x) := hy _ _
-    _ = G.obj.map f (k.hom.app U x) :=
-      ConcreteCategory.congr_hom (k.hom.naturality f) x
-    _ = G.obj.map f (a.hom.app U (y U x)) := congrArg (G.obj.map f) (hy U x).symm
-    _ = _ := (ConcreteCategory.congr_hom (a.hom.naturality f) (y U x)).symm
+  let n : H.obj ⟶ F.obj := by
+    refine { app := app, naturality := ?_ }
+    intro U V f
+    apply ConcreteCategory.hom_ext
+    intro x
+    apply ha V
+    change a.hom.app V (y V (H.obj.map f x)) = a.hom.app V (F.obj.map f (y U x))
+    calc
+      _ = k.hom.app V (H.obj.map f x) := hy _ _
+      _ = G.obj.map f (k.hom.app U x) :=
+        ConcreteCategory.congr_hom (k.hom.naturality f) x
+      _ = G.obj.map f (a.hom.app U (y U x)) := congrArg (G.obj.map f) (hy U x).symm
+      _ = _ := (ConcreteCategory.congr_hom (a.hom.naturality f) (y U x)).symm
 
-private theorem lift_fac {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0)
-    (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U))
-    (hKer : ∀ (U : Cᵒᵖ) (s : G.obj.obj U), b.hom.app U s = 0 →
-      ∃ t : F.obj.obj U, a.hom.app U t = s) :
-    lift a b k hk ha hKer ≫ a = k := by
+  refine ⟨⟨n⟩, ?_⟩
   apply Sheaf.hom_ext
   apply NatTrans.ext
   funext U
   apply ConcreteCategory.hom_ext
   intro x
-  exact Classical.choose_spec _
+  exact hy U x
 
-theorem isLimit_of_value_kernel
+def isLimit_of_value_kernel
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U))
     (h : ∀ (U : Cᵒᵖ) (s : G.obj.obj U),
       b.hom.app U s = 0 ↔ ∃ t : F.obj.obj U, a.hom.app U t = s)
@@ -88,7 +85,7 @@ theorem isLimit_of_value_kernel
   letI : Mono a := mono_of_value_injective a ha
   refine KernelFork.IsLimit.ofι' a w fun k hk => ?_
   let hKer := fun U s => (h U s).mp
-  exact ⟨lift a b k hk ha hKer, lift_fac a b k hk ha hKer⟩
+  exact liftWithFac a b k hk ha hKer
 
 theorem zero_of_value_kernel
     (h : ∀ (U : Cᵒᵖ) (s : G.obj.obj U),

@@ -55,7 +55,7 @@ theorem sectionHom_restrict (F : Sheaf J AddCommGrpCat.{v}) {U V : C} (f : V ⟶
   change (freePresheaf ⋙ presheafToSheaf J AddCommGrpCat.{v}).map (yoneda.map f) ≫
       ((freeAdjunction J).homEquiv (yoneda.obj U) F).symm (yonedaEquiv.symm s) =
     ((freeAdjunction J).homEquiv (yoneda.obj V) F).symm (yonedaEquiv.symm (F.obj.map f.op s))
-  rw [(freeAdjunction J).homEquiv_naturality_left_symm,
+  rw [← (freeAdjunction J).homEquiv_naturality_left_symm,
     yonedaEquiv_symm_naturality_left] <;> rfl
 
 theorem sectionHom_map {F G : Sheaf J AddCommGrpCat.{v}} (a : F ⟶ G) (U : C)

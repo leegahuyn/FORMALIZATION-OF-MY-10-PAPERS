@@ -1,7 +1,6 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.Finsupp.ToDFinsupp
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleClosedPoints
 
 /-!
@@ -15,27 +14,21 @@ height-one points of the base.
 namespace ManuscriptAudit.AffineEtaleClosedPoints
 
 open IsDedekindDomain
-open scoped DirectSum
 
 noncomputable section
 
 private def fiberFunctionEquiv {ι : Type*} [Finite ι] :
-    (Π₀ _ : ι, ℤ) ≃+ (ι → ℤ) := by
-  letI : Fintype ι := Fintype.ofFinite ι
-  exact { DFinsupp.equivFunOnFintype with map_add' := fun _ _ ↦ rfl }
+    (ι →₀ ℤ) ≃+ (ι → ℤ) :=
+  { Finsupp.equivFunOnFinite with map_add' := fun _ _ ↦ rfl }
 
 private def groupFiniteFibers {A B : Type*} (f : B → A) (h : ∀ a, Finite {b // f b = a}) :
     (B →₀ ℤ) ≃+ (Π₀ a, ({b // f b = a} → ℤ)) := by
   classical
   let e := Finsupp.domCongr (M := ℤ) (Equiv.sigmaFiberEquiv f).symm
-  let g := (finsuppLEquivDirectSum ℤ ℤ (Σ a, {b // f b = a})).toAddEquiv
-  let c : (Π₀ _ : (Σ a, {b // f b = a}), ℤ) ≃+ (Π₀ a, Π₀ _ : {b // f b = a}, ℤ) :=
-    { DFinsupp.sigmaCurryEquiv with
-      map_add' := fun _ _ ↦ DFinsupp.ext fun a ↦ DFinsupp.ext fun b ↦ rfl }
   let k := DFinsupp.mapRange.addEquiv (fun a ↦ by
     letI := h a
     exact fiberFunctionEquiv (ι := {b // f b = a}))
-  exact e.trans (g.trans (c.trans k))
+  exact e.trans (sigmaFinsuppAddEquivDFinsupp.trans k)
 
 variable (A B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
   [Algebra A B] [Algebra.Etale A B]

@@ -41,9 +41,9 @@ theorem local_addVal_eq_regularOrder (p : HeightOneSpectrum R) (a : R) :
   intro n
   change (n : ℕ∞) ≤ addVal RP (algebraMap R RP a) ↔
     (n : ℕ∞) ≤ emultiplicity p.asIdeal (Ideal.span {a})
+  rw [← pow_dvd_iff_le_emultiplicity, Ideal.dvd_span_singleton]
   rw [← ht.addVal_pow n, addVal_le_iff_dvd, ← Ideal.mem_span_singleton,
-    ← Ideal.span_singleton_pow, ← ht.maximalIdeal_eq, ← pow_dvd_iff_le_emultiplicity,
-    Ideal.dvd_span_singleton]
+    ← Ideal.span_singleton_pow, ← ht.maximalIdeal_eq]
   change a ∈ (maximalIdeal RP ^ n).under R ↔ a ∈ p.asIdeal ^ n
   rw [IsLocalization.AtPrime.under_maximalIdeal_pow p.asIdeal]
 
@@ -67,7 +67,8 @@ private theorem regularOrder_toNat (p : HeightOneSpectrum R) {a : R} (ha : a ≠
     exact ha
   change (emultiplicity p.asIdeal (Ideal.span {a})).toNat = _
   rw [Ideal.count_associates_factors_eq ha' p.isPrime p.ne_bot,
-    emultiplicity_eq_count_normalizedFactors p.irreducible ha', normalize_eq, ENat.toNat_coe]
+    UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors p.irreducible ha',
+    normalize_eq, ENat.toNat_coe]
 
 /-- The coefficient of a fraction is the difference of the two normalized orders. -/
 theorem principalDivisor_coeff_div (F : Type*) [Field F] [Algebra R F] [IsFractionRing R F]
@@ -107,7 +108,9 @@ theorem principalDivisor_coeff_map (S F G : Type*) [CommRing S] [IsDomain S] [Is
     intro h
     have H := hρ x
     rw [h, map_zero] at H
-    exact hx ((IsFractionRing.injective R F) (ρ.injective (H.trans (map_zero ρ).symm)))
+    have H' : ρ (algebraMap R F x) = ρ (algebraMap R F 0) := by
+      simpa only [map_zero] using H
+    exact hx ((IsFractionRing.injective R F) (ρ.injective H'))
   let v := Additive.ofMul (Units.map ρ.toMonoidHom u.toMul)
   have hv : (v.toMul : G) = algebraMap S G (algebraMap R S a) /
       algebraMap S G (algebraMap R S b) := by

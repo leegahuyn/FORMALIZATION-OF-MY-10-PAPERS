@@ -30,7 +30,8 @@ theorem principalDivisor_coefficient_surjective (p : HeightOneSpectrum R) :
   have ht₀ : t ≠ 0 := by
     intro h
     rw [h, map_zero] at ht
-    simpa using ht
+    rw [eq_comm] at ht
+    simpa only [WithZero.exp_ne_zero] using ht
   have ht' : (Ideal.span {t} : Ideal R) ≠ 0 := by
     rw [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
     exact ht₀
@@ -40,10 +41,10 @@ theorem principalDivisor_coefficient_surjective (p : HeightOneSpectrum R) :
     change FractionalIdeal.count F p (FractionalIdeal.spanSingleton R⁰ (algebraMap R F t)) = 1
     rw [← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.count_coe F p ht']
     rwa [p.intValuation_if_neg ht₀, WithZero.exp_inj, neg_inj] at ht
-  let coeff : Additive Fˣ →+ ℤ where
-    toFun z := principalDivisor R F z p
-    map_zero' := by simp
-    map_add' x y := by simp
+  let coeff : Additive Fˣ →+ ℤ :=
+    { toFun := fun z ↦ principalDivisor R F z p
+      map_zero' := by simp
+      map_add' := fun _ _ ↦ by simp }
   intro n
   refine ⟨n • u, ?_⟩
   change coeff (n • u) = n
@@ -69,7 +70,7 @@ private theorem finite_set_avoided (x : PrimeSpectrum R) (s : Finset (HeightOneS
     refine ⟨g * f, x.isPrime.mul_notMem hgx hf, ?_⟩
     intro q hq
     rcases Finset.mem_insert.mp hq with rfl | hq
-    · exact Ideal.mul_mem_right _ f hgp
+    · exact Ideal.mul_mem_right f _ hgp
     · exact Ideal.mul_mem_left _ g (hs q hq)
 
 /-- Every finite cycle admits a lift by a fraction-field unit after

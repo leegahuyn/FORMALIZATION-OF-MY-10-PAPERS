@@ -40,7 +40,9 @@ private theorem flatAfterBaseChange (A E R : Type u) [CommRing A] [CommRing E]
   infer_instance
 
 theorem cover_faithfullyFlat (h2 : (2 : K) ≠ 0) : Module.FaithfullyFlat (A K) (E K) := by
-  letI : Algebra.Etale (A K) (E K) := (cover_finite_etale K h2).2
+  letI : Module.Projective (A K) (E K) :=
+    (NodalSwapCoverPatch.cover_finite_projective K h2).2
+  letI : Module.Flat (A K) (E K) := Module.Flat.of_projective
   exact Module.FaithfullyFlat.of_comap_surjective (A := A K) (B := E K)
     (cover_spec_surjective K h2)
 

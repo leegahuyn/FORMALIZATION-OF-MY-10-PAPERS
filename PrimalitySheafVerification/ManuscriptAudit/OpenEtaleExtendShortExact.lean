@@ -80,7 +80,6 @@ theorem restrictedExtensionMap_left :
     (restrictedExtensionMap j S F e).τ₁ = e.hom := by
   let a := abelianExtensionByZeroAdjunction j
   change a.unit.app S.X₁ ≫ (R j).map (kernelMap j S F e) = e.hom
-  rw [← a.homEquiv_unit]
   exact (a.homEquiv S.X₁ F).apply_symm_apply e.hom
 
 theorem restrictedExtensionMap_right :
@@ -88,7 +87,7 @@ theorem restrictedExtensionMap_right :
       (abelianExtensionByZeroAdjunction j).unit.app S.X₃ := by
   change (abelianExtensionByZeroAdjunction j).unit.app S.X₃ ≫
     (R j).map (𝟙 ((E j).obj S.X₃)) = _
-  rw [Functor.map_id, Category.comp_id]
+  rw [(R j).map_id, Category.comp_id]
 
 /-- The native ambient extension restricts back to the original short exact sequence. -/
 def restrictedExtensionIso (hS : S.ShortExact) :

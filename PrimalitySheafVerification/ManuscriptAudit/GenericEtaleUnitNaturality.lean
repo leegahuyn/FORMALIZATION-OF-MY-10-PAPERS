@@ -99,16 +99,22 @@ private theorem chart_inv_naturality (f : B →ₐ[A] C) :
     change (Algebra.TensorProduct.map (AlgHom.id A F) f) (x ⊗ₜ[A] (1 : B)) =
       x ⊗ₜ[A] (1 : C)
     simp
-  have h₁ : m.left ≫ pullback.fst (specAlgebraMap A B) j =
-      pullback.fst (specAlgebraMap A C) j ≫ g.left := by
+  have h₁ : m.left ≫ pullback.fst (algebraEtaleObject A B).hom j =
+      pullback.fst (algebraEtaleObject A C).hom j ≫ g.left := by
     simp only [m, etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
-  have h₂ : m.left ≫ pullback.snd (specAlgebraMap A B) j =
-      pullback.snd (specAlgebraMap A C) j := by
+  have h₂ : m.left ≫ pullback.snd (algebraEtaleObject A B).hom j =
+      pullback.snd (algebraEtaleObject A C).hom j := by
     simp only [m, etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_snd]
   change (chart A C F).inv ≫ m.left = n ≫ (chart A B F).inv
   apply pullback.hom_ext
-  · simp only [Category.assoc, h₁, chart_inv_fst, hn₁, ← Category.assoc]
-  · simp only [Category.assoc, h₂, chart_inv_snd, hn₂]
+  · simp only [Category.assoc, h₁]
+    change (chart A C F).inv ≫ pullback.fst (specAlgebraMap A C) j ≫ g.left =
+      n ≫ (chart A B F).inv ≫ pullback.fst (specAlgebraMap A B) j
+    rw [← Category.assoc (chart A C F).inv, chart_inv_fst, chart_inv_fst, hn₁]
+  · simp only [Category.assoc, h₂]
+    change (chart A C F).inv ≫ pullback.snd (specAlgebraMap A C) j =
+      n ≫ (chart A B F).inv ≫ pullback.snd (specAlgebraMap A B) j
+    rw [chart_inv_snd, chart_inv_snd, hn₂]
 
 section FractionField
 

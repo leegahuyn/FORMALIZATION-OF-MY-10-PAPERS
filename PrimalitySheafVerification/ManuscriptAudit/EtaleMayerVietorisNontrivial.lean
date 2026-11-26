@@ -26,6 +26,7 @@ variable [IsOpenImmersion j] [IsOpenImmersion k]
 variable (F : Sheaf X.smallEtaleTopology AddCommGrpCat.{u})
 variable (hCover : Set.range j ∪ Set.range k = Set.univ)
 
+include hCover in
 theorem existsHOne_of_overlap_zero (c : F.H' 1 (Scheme.Etale.mk j))
     (hc : (F.cohomologyPresheaf 1).map (fstLeg j k).op c = 0) :
     ∃ z : F.H' 1 (identityObject X), (F.cohomologyPresheaf 1).map (openArrow j).op z = c := by
@@ -34,11 +35,9 @@ theorem existsHOne_of_overlap_zero (c : F.H' 1 (Scheme.Etale.mk j))
   let i : F.H' 1 S.X₂ ⟶ F.H' 1 S.X₂ ⊞ F.H' 1 S.X₃ := biprod.inl
   let p : F.H' 1 S.X₂ ⊞ F.H' 1 S.X₃ ⟶ F.H' 1 S.X₂ := biprod.fst
   have hi : i ≫ S.fromBiprod F 1 = (F.cohomologyPresheaf 1).map (fstLeg j k).op := by
-    change biprod.inl ≫ S.fromBiprod F 1 = _
-    rw [GrothendieckTopology.MayerVietorisSquare.fromBiprod, biprod.inl_desc] <;> rfl
+    exact biprod.inl_desc _ _
   have hb : S.toBiprod F 1 ≫ p = (F.cohomologyPresheaf 1).map (openArrow j).op := by
-    change S.toBiprod F 1 ≫ biprod.fst = _
-    rw [GrothendieckTopology.MayerVietorisSquare.toBiprod, biprod.lift_fst] <;> rfl
+    exact biprod.lift_fst _ _
   have hp : i ≫ p = 𝟙 _ := biprod.inl_fst
   have hK : i c ∈ (S.fromBiprod F 1).hom.ker := by
     change S.fromBiprod F 1 (i c) = 0
@@ -49,11 +48,12 @@ theorem existsHOne_of_overlap_zero (c : F.H' 1 (Scheme.Etale.mk j))
   rw [← hExact] at hK
   obtain ⟨z, hz⟩ := hK
   refine ⟨z, ?_⟩
-  have eq := congrArg (fun (d : F.H' 1 S.X₂ ⊞ F.H' 1 S.X₃) => p d) hz
+  have eq := congrArg (fun d => p d) hz
   change p (S.toBiprod F 1 z) = p (i c) at eq
   rw [← ConcreteCategory.comp_apply, hb, ← ConcreteCategory.comp_apply, hp] at eq
   simpa using eq
 
+include hCover in
 /-- A nonzero chart class with zero overlap restriction forces actual
 ordinary degree-one ambient étale cohomology to be nontrivial. -/
 theorem HOne_nontrivial_of_overlap_zero (c : F.H' 1 (Scheme.Etale.mk j)) (hne : c ≠ 0)
