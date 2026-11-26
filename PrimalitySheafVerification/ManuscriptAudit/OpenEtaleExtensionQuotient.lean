@@ -29,20 +29,34 @@ variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C.{u})
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
+private def cokernelShortExactData {D : Type*} [Category* D] [Abelian D]
+    {A B : D} (f : A ⟶ B) (hf : Mono f) : {S : ShortComplex D // S.ShortExact} := by
+  letI : Mono f := hf
+  exact ⟨ShortComplex.cokernelSequence f,
+    ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
+      (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))⟩
+
+set_option backward.isDefEq.respectTransparency true in
+private def nestedOpenQuotientData :
+    {S : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) // S.ShortExact} :=
+  cokernelShortExactData (D := Sheaf X.smallEtaleTopology C.{u})
+    (nestedOpenConstantMap i j M) (nestedOpenConstantMap_mono i j M)
+
 /-- The short complex of the native nested-open map and its cokernel projection. -/
 def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) :=
-  ShortComplex.cokernelSequence (nestedOpenConstantMap i j M)
+  (nestedOpenQuotientData i j M).val
 
-private theorem cokernelSequence_shortExact_of_mono {D : Type*} [Category* D] [Abelian D]
-    {A B : D} (f : A ⟶ B) (hf : Mono f) : (ShortComplex.cokernelSequence f).ShortExact := by
-  letI : Mono f := hf
-  exact ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
-    (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))
+@[simp]
+theorem nestedOpenQuotientSequence_f :
+    (nestedOpenQuotientSequence i j M).f = nestedOpenConstantMap i j M := rfl
+
+@[simp]
+theorem nestedOpenQuotientSequence_g :
+    (nestedOpenQuotientSequence i j M).g = cokernel.π (nestedOpenConstantMap i j M) := rfl
 
 set_option backward.isDefEq.respectTransparency true in
 theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact :=
-  cokernelSequence_shortExact_of_mono (nestedOpenConstantMap i j M)
-    (nestedOpenConstantMap_mono i j M)
+  (nestedOpenQuotientData i j M).property
 
 variable {Ω : Type u} [Field Ω] [IsSepClosed Ω]
 

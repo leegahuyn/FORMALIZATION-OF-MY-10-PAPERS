@@ -61,10 +61,13 @@ private theorem epi_productMap {I : Type u} {M N : AddCommGrpCat.{u}} (f : M ⟶
   refine ⟨(Concrete.productEquiv A).symm x, ?_⟩
   apply (Concrete.productEquiv B).injective
   funext i
-  change Pi.π B i (g ((Concrete.productEquiv A).symm x)) = y i
-  rw [← ConcreteCategory.comp_apply, Pi.map_π, ConcreteCategory.comp_apply,
-    Concrete.productEquiv_symm_apply_π]
-  exact hx i
+  let a := (Concrete.productEquiv A).symm x
+  have hπ : Pi.π B i (g a) = y i := by
+    rw [← ConcreteCategory.comp_apply]
+    change (CategoryTheory.Limits.Pi.map (fun _ : I => f) ≫ Pi.π B i) a = y i
+    rw [Pi.map_π, ConcreteCategory.comp_apply, Concrete.productEquiv_symm_apply_π]
+    exact hx i
+  exact (Concrete.productEquiv_apply_apply B (g a) i).trans hπ
 
 /-- In each étale neighborhood the skyscraper map of an epimorphism is epic. -/
 theorem geometricSkyscraper_map_app_epi {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f]
