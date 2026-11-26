@@ -28,7 +28,10 @@ private def productAddEquiv {I : Type} (M : AddCommGrpCat.{0}) :
   __ := Concrete.productEquiv (fun _ : I ↦ M)
   map_add' x y := by
     funext i
-    simp only [Concrete.productEquiv_apply_apply, Pi.add_apply]
+    let e := Concrete.productEquiv (fun _ : I ↦ M)
+    change e (x + y) i = e x i + e y i
+    rw [Concrete.productEquiv_apply_apply, Concrete.productEquiv_apply_apply,
+      Concrete.productEquiv_apply_apply]
     exact (Pi.π (fun _ : I ↦ M) i).hom.map_add x y
 
 variable (K B : Type) [Field K] [IsAlgClosed K] [CommRing B] [IsDomain B]

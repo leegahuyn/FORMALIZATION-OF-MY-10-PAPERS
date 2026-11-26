@@ -87,9 +87,9 @@ private theorem chartComponentEquiv_restrict (p : HeightOneSpectrum (A K))
   have hπ := congrArg (fun m ↦ m ≫ Pi.π
     (fun _ : {q : HeightOneSpectrum C // comap (A K) C q = p} ↦ M) q) h
   simp only [Category.assoc, Pi.map'_comp_π, Category.comp_id] at hπ
-  change productEquiv _ (e'.hom (F.map (étaleMap K B C).op x)) q =
-    productEquiv _ (e.hom x) (contractFiber (A K) B C p q)
-  rw [productEquiv_apply_apply, productEquiv_apply_apply]
+  change Concrete.productEquiv _ (e'.hom (F.map (étaleMap K B C).op x)) q =
+    Concrete.productEquiv _ (e.hom x) (contractFiber (A K) B C p q)
+  rw [Concrete.productEquiv_apply_apply, Concrete.productEquiv_apply_apply]
   exact ConcreteCategory.congr_hom hπ x
 
 set_option maxHeartbeats 1400000 in

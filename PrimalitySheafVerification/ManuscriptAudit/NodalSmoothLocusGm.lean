@@ -168,7 +168,7 @@ private instance parameterToY_open : IsOpenImmersion (toNodeYChart K) := by
 private theorem parameterToY_range :
     (toNodeYChart K).opensRange = PrimeSpectrum.basicOpen (xCoeff K) := by
   apply SetLike.coe_injective
-  change Set.range (toNodeYChart K) = (PrimeSpectrum.basicOpen (xCoeff K) : Set (nodeYChart K))
+  change Set.range (toNodeYChart K) = (PrimeSpectrum.basicOpen (xCoeff K)).1
   rw [← intersectionIsoParameter_inv_snd]
   change (↑(((intersectionIsoParameter K).inv ≫
     pullback.snd (affineOpen K) (chartOpen K)).opensRange) : Set (nodeYChart K)) = _

@@ -35,18 +35,29 @@ private theorem ratioHom_bijective (h2 : (2 : K) ≠ 0) :
     obtain ⟨r, hr⟩ := exists_branchLine K h2 I
     exact ⟨r, Units.ext hr.symm⟩
 
-private theorem unitsToPic_injective :
-    Function.Injective (Submodule.unitsToPic (A K) (B K)) := by
-  rw [← MonoidHom.ker_eq_bot_iff, Submodule.ker_unitsToPic]
-  apply bot_unique
-  rintro I ⟨v, rfl⟩
-  apply Subgroup.mem_bot.mpr
+set_option maxHeartbeats 1200000 in
+private theorem principal_unit_eq_one (v : (B K)ˣ) :
+    Units.map (Submodule.spanSingleton (A K)).toMonoidHom v = 1 := by
   apply Units.ext
   change Submodule.span (A K) {(v : B K)} = 1
   obtain ⟨a, ha, he⟩ := Polynomial.isUnit_iff.mp v.isUnit
   rw [← he]
-  have h : IsUnit (algebraMap K (A K) a) := ha.map (algebraMap K (A K))
-  exact Submodule.span_singleton_algebraMap_of_isUnit (A := B K) h
+  let c : A K := algebraMap K (A K) a
+  change Submodule.span (A K) {algebraMap (A K) (B K) c} = 1
+  exact Submodule.span_singleton_algebraMap_of_isUnit (A := B K)
+    (ha.map (algebraMap K (A K)))
+
+set_option maxHeartbeats 1200000 in
+private theorem unitsToPic_injective :
+    Function.Injective (Submodule.unitsToPic (A K) (B K)) := by
+  let f := Submodule.unitsToPic (A K) (B K)
+  apply (MonoidHom.ker_eq_bot_iff f).mp
+  apply bot_unique
+  intro I hI
+  change I ∈ (Submodule.unitsToPic (A K) (B K)).ker at hI
+  rw [Submodule.ker_unitsToPic (A K) (B K)] at hI
+  obtain ⟨v, hv⟩ := hI
+  exact Subgroup.mem_bot.mpr (hv.symm.trans (principal_unit_eq_one K v))
 
 private theorem unitsToPic_surjective :
     Function.Surjective (Submodule.unitsToPic (A K) (B K)) := by
@@ -90,6 +101,7 @@ theorem unit_power_surjective [IsAlgClosed K] (d : ℕ) (hd : 0 < d) :
     rw [h, zero_pow hd.ne'] at hb
     exact a.ne_zero hb.symm
   refine ⟨unitsEquiv K (Units.mk0 b hbn), ?_⟩
+  change (unitsEquiv K (Units.mk0 b hbn)) ^ d = unitsEquiv K a
   rw [← map_pow]
   apply congrArg (unitsEquiv K)
   exact Units.ext hb

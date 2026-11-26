@@ -47,7 +47,9 @@ theorem thetaWeightedMode_horocycleMean_re_pos (y : ℝ) (hy : 2 / 3 < y) :
 theorem thetaWeightedMode_horocycleMean_ne_zero (y : ℝ) (hy : 2 / 3 < y) :
     (∫ x : ℝ in (0 : ℝ)..2, weighted (1 / 4) jacobiTheta x y) ≠ 0 := by
   intro h
-  simpa [h] using thetaWeightedMode_horocycleMean_re_pos y hy
+  have hp := thetaWeightedMode_horocycleMean_re_pos y hy
+  rw [h, Complex.zero_re] at hp
+  exact (lt_irrefl _) hp
 
 end
 end ManuscriptAudit.ThetaHorocycleMean
