@@ -98,7 +98,8 @@ private theorem specialInclusion_closedPoint :
     specialInclusion K (IsLocalRing.closedPoint K) = IsLocalRing.closedPoint (R K) := by
   letI : IsLocalHom (PowerSeries.constantCoeff (R := K)) :=
     ⟨fun _ h => PowerSeries.isUnit_iff_constantCoeff.mpr h⟩
-  exact IsLocalRing.Spec_closedPoint
+  exact AlgebraicGeometry.Spec_closedPoint
+    (f := CommRingCat.ofHom (PowerSeries.constantCoeff (R := K)))
 
 /-- The specialization of the cusp parameter \(t=s^{-1}\) at \(s=0\). -/
 def infinityPoint : Spec (CommRingCat.of K) ⟶ projectiveCusp K :=
@@ -116,7 +117,7 @@ theorem infinityPoint_overBase :
   apply RingHom.ext
   intro a
   change PowerSeries.constantCoeff (algebraMap K (R K) a) = a
-  simp [R, PowerSeries.algebraMap_apply]
+  simp [R]
 
 /-- The rational infinity point defines a closed subscheme of the proper cusp. -/
 theorem infinityPoint_isClosedImmersion : IsClosedImmersion (infinityPoint K) := by
