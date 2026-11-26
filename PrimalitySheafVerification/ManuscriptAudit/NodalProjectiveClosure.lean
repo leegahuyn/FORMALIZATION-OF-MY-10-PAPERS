@@ -16,6 +16,8 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
+attribute [local instance] MvPolynomial.gradedAlgebra
+
 variable (K : Type u) [Field K]
 
 def chartValues (i : Fin 3) : coordinates K :=

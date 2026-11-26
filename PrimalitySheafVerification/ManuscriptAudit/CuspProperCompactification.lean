@@ -193,7 +193,7 @@ theorem projectiveCusp_isProper : IsProper (projectiveCuspToBase K) := by
   unfold projectiveCuspToBase
   infer_instance
 
-theorem affineOpen_isOpenImmersion : IsOpenImmersion (affineOpen K) := by
+instance affineOpen_isOpenImmersion : IsOpenImmersion (affineOpen K) := by
   unfold affineOpen
   infer_instance
 
