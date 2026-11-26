@@ -34,6 +34,7 @@ private theorem jacobiRoot_degree_two_scalar
     jacobiRoot χ (algebraMap (ZMod p) D A) = jacobiRoot χ (1 : D) := by
   have hξ (b : ZMod p) (hb : b ≠ 0) : χ (algebraMap (ZMod p) D b) = 1 := by
     obtain ⟨x, hx⟩ := Finite.surjective_of_injective (cube_injective (base_no_cubicCharacter hp3)) b
+    change x ^ (3 : ℕ) = b at hx
     have hb' : algebraMap (ZMod p) D b ≠ 0 := by
       simpa only [map_zero] using (algebraMap (ZMod p) D).injective.ne hb
     exact (cube_iff_character_one hχ hb').mp

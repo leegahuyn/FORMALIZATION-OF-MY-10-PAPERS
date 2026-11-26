@@ -1,16 +1,14 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Algebra.Prod
-import PrimalitySheafVerification.ManuscriptAudit.NodalSwapCoverLocalTrace
+import PrimalitySheafVerification.ManuscriptAudit.NodalSwapCoverPatch
 import PrimalitySheafVerification.ManuscriptAudit.NodalYChartOverlap
 
 /-! The crossed nodal cover has a section after normalization and on
-the actual overlap of the proper nodal charts. Consequently its trace
-on sections is surjective there. -/
+the actual overlap of the proper nodal charts. -/
 
 namespace ManuscriptAudit.NodalSwapCoverOverlap
 
 open NodalConductor NodalSwapCover NodalSwapCoverPatch
-open NodalSwapCoverAffineTrace NodalSwapCoverLocalTrace
 open NodalYChartOverlap (parameterRing)
 
 noncomputable section
@@ -43,16 +41,6 @@ theorem overlapSection_apply (g : Cover K) :
     overlapSection K g = algebraMap (Polynomial K) (parameterRing K)
       ((g : Polynomial K × Polynomial K).1) := rfl
 
-variable (M : AddCommGrpCat.{u}) [TopologicalSpace M] [DiscreteTopology M] [IsTopologicalAddGroup M]
-
-theorem normalizationTrace_surjective (h2 : (2 : K) ≠ 0) :
-    Function.Surjective (affineTrace K (Polynomial K) M h2) :=
-  affineTrace_surjective_of_section K (Polynomial K) M h2 (normalizationSection K)
-
-theorem overlapTrace_surjective (h2 : (2 : K) ≠ 0) :
-    Function.Surjective (affineTrace K (parameterRing K) M h2) :=
-  affineTrace_surjective_of_section K (parameterRing K) M h2 (overlapSection K)
-
 end
 end ManuscriptAudit.NodalSwapCoverOverlap
 
@@ -60,9 +48,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.NodalSwapCoverOverlap.normalizationSection_apply,
-      ``ManuscriptAudit.NodalSwapCoverOverlap.overlapSection_apply,
-      ``ManuscriptAudit.NodalSwapCoverOverlap.normalizationTrace_surjective,
-      ``ManuscriptAudit.NodalSwapCoverOverlap.overlapTrace_surjective] do
+      ``ManuscriptAudit.NodalSwapCoverOverlap.overlapSection_apply] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

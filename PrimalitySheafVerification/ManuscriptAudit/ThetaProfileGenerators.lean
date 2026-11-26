@@ -6,6 +6,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper9ThetaCuspLTwo
 namespace ManuscriptAudit.ThetaProfileGenerators
 
 open Paper9ThetaCuspPhases Paper9ThetaCuspLTwo
+open Matrix
 open ModularGroup (S T)
 open scoped UpperHalfPlane
 
@@ -89,15 +90,17 @@ theorem thetaDensity_S_standard (z : ℍ) :
 theorem thetaDensity_S_alternating (z : ℍ) :
     thetaDensity thetaAlternating (S • z) = thetaDensity thetaHalfShift z := by
   apply thetaDensity_S_of_transform
-  simpa [thetaAlternating, UpperHalfPlane.modular_S_smul, neg_div, one_div] using
-    thetaHalfShift_inversion z
+  change jacobiTheta₂ (1 / 2) ((S • z : ℍ) : ℂ) = _
+  rw [UpperHalfPlane.modular_S_smul]
+  change jacobiTheta₂ (1 / 2) (-(z : ℂ))⁻¹ = _
+  simpa only [neg_div, one_div, inv_neg] using thetaHalfShift_inversion z
 
 theorem thetaDensity_S_half (z : ℍ) :
     thetaDensity thetaHalfShift (S • z) = thetaDensity thetaAlternating z := by
   have h := thetaDensity_S_alternating (S • z)
   have hS : S • (S • z) = z := by
-    apply UpperHalfPlane.ext
-    simp [UpperHalfPlane.modular_S_smul, inv_neg]
+    have hneg : S * S = (-1 : SL(2, ℤ)) := by decide
+    rw [← mul_smul, hneg, ModularGroup.SL_neg_smul, one_smul]
   rw [hS] at h
   exact h.symm
 

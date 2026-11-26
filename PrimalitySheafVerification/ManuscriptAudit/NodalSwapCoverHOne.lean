@@ -70,6 +70,7 @@ private def terminalTensorIso :
   (IsPullback.id_vert (affineMap (A K) (E K))).isoPullback ≪≫
     (tensorIsoPullback (A K) (E K) (term K)).symm
 
+include h2 in
 private theorem terminal_tensor_connected :
     ConnectedSpace (tensorScheme (A K) (E K) (term K)) := by
   letI : ConnectedSpace (Spec (CommRingCat.of (E K))) :=
@@ -107,6 +108,7 @@ theorem affineFunctionHOneClass_ne_zero : affineFunctionHOneClass K h2 ≠ 0 := 
       (shortComplex K h2) (shortComplex_shortExact K h2)
       (KummerAffineCohomology.affineTerminal_isTerminal (R K)) (terminalOne K)).mp h)
 
+include h2 in
 theorem affine_function_HOne_nontrivial : Nontrivial (Sheaf.H (baseFunctions K cyclic) 1) :=
   SheafHOneGlobalBoundary.hOne_nontrivial_of_unlifted_global_section
     (shortComplex K h2) (shortComplex_shortExact K h2)
@@ -135,9 +137,11 @@ theorem fullConstantHOneClass_ne_zero : fullConstantHOneClass K h2 ≠ 0 := by
   intro h
   apply affineFunctionHOneClass_ne_zero K h2
   apply (classTransport K).injective
+  change classTransport K (affineFunctionHOneClass K h2) = 0 at h
   simpa only [map_zero] using h
 
 /-- Ordinary native small étale H¹ of the split affine node with constant Z/2 is nonzero. -/
+include h2 in
 theorem full_constant_HOne_nontrivial :
     Nontrivial (Sheaf.H ((constantSheaf (X K).smallEtaleTopology AddCommGrpCat.{0}).obj cyclic) 1) :=
   ⟨⟨fullConstantHOneClass K h2, 0, fullConstantHOneClass_ne_zero K h2⟩⟩

@@ -60,8 +60,15 @@ theorem exists_etale_domain_cover (A B F : Type u) [CommRing A] [IsDomain A]
   cases subsingleton_or_nontrivial B with
   | inl h =>
     letI : Subsingleton B := h
-    exact ⟨PEmpty, inferInstance, PEmpty.elim, PEmpty.elim, PEmpty.elim, PEmpty.elim,
-      fun x ↦ (x.isPrime.one_notMem ((Subsingleton.elim (1 : B) 0).symm ▸ x.asIdeal.zero_mem)).elim⟩
+    refine ⟨PEmpty, inferInstance, PEmpty.elim, ?_, ?_, ?_, ?_⟩
+    · intro i
+      cases i
+    · intro i
+      cases i
+    · intro i
+      cases i
+    · intro x
+      exact (x.isPrime.one_notMem ((Subsingleton.elim (1 : B) 0).symm ▸ x.asIdeal.zero_mem)).elim
   | inr h =>
     letI : Nontrivial B := h
     obtain ⟨I, hI, e, he, hd, het, hb⟩ := exists_etale_domain_factors A B F

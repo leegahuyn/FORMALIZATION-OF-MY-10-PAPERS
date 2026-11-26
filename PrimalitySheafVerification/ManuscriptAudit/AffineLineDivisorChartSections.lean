@@ -41,7 +41,8 @@ def chartObject : (X K).AffineEtale := by
     (RingHom.etale_algebraMap.mpr (inferInstance : Algebra.Etale (Polynomial K) B))
   exact Scheme.AffineEtale.mk f
 
-private def chartComponentEquiv (p : HeightOneSpectrum (Polynomial K)) :
+/-- Pointwise integer coefficients of one rational skyscraper on this chart. -/
+def chartComponentEquiv (p : HeightOneSpectrum (Polynomial K)) :
     (skyscraper K ((closedPointEquiv K).symm p)).obj.obj
         (op (algebraEtaleObject (Polynomial K) B)) ≃+
       ({q : HeightOneSpectrum B // comap (Polynomial K) B q = p} → ℤ) := by

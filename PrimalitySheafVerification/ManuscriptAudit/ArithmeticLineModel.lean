@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Ring.LinearAlgebra
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.Smooth
@@ -74,11 +75,11 @@ def fiberFiveIso : fiberFive ≅ Spec (CommRingCat.of (Polynomial Five)) :=
     Scheme.Spec.mapIso (polyEquivTensor ℤ Five).toRingEquiv.toCommRingCatIso.op
 
 theorem fiber_coordinate_dimension (K : Type) [Field K] : ringKrullDim (Polynomial K) = 1 :=
-  IsPrincipalIdealRing.ringKrullDim_eq_one (Polynomial K) Polynomial.polynomial_not_isField
+  IsPrincipalIdealRing.ringKrullDim_eq_one (Polynomial K) Ideal.polynomial_not_isField
 
 theorem fiber_coordinate_normal : IsIntegrallyClosed (Polynomial Five) := by
   classical
-  letI : GCDMonoid (Polynomial Five) := EuclideanDomain.gcdMonoid _
+  letI : GCDMonoid (Polynomial Five) := EuclideanDomain.gcdMonoid (Polynomial Five)
   infer_instance
 
 theorem fiber_one_component : IrreducibleSpace (Spec (CommRingCat.of (Polynomial Five))) :=

@@ -55,7 +55,8 @@ instance : IsOpenImmersion (conductorOpen K) := by
   infer_instance
 
 private theorem puncturedAffine_range :
-    Set.range (puncturedAffine K) = (PrimeSpectrum.basicOpen (nodeX K) : Set (affineNode K)) :=
+    Set.range (puncturedAffine K) =
+      (↑(PrimeSpectrum.basicOpen (nodeX K)) : Set (PrimeSpectrum (coordinates K))) :=
   PrimeSpectrum.localization_away_comap_range (R K) (nodeX K)
 
 private theorem conductorOpen_toBase :
@@ -196,7 +197,11 @@ theorem smoothLocus_eq_complement :
     by_cases hEq : p = nodePoint K
     · exact hEq.symm ▸ hp
     · exact hSub hEq
-  exact le_antisymm (fun p hp hp' => hBad (Set.mem_singleton_iff.mp hp' ▸ hp)) hSub
+  refine le_antisymm ?_ hSub
+  intro p hp hq
+  have hEq : p = nodePoint K := Set.mem_singleton_iff.mp hq
+  rw [hEq] at hp
+  exact hBad hp
 
 end
 end ManuscriptAudit.NodalSmoothLocus

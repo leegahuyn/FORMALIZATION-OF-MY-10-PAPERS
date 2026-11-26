@@ -59,10 +59,14 @@ theorem rationalSkyscraperHeightOneIso_naturality (p : HeightOneSpectrum A)
     have r := heightOneIndexEquiv_map A K p hs hK B C (e'.symm q)
     change (e (Φ.fiber.map f (e'.symm q))).val = comap B C (e' (e'.symm q)).val at r
     simpa only [Equiv.apply_symm_apply] using r
-  change Pi.map' (Φ.fiber.map f) (fun _ ↦ 𝟙 M) ≫
-      (Pi.whiskerEquiv e' (fun _ ↦ Iso.refl M)).hom =
-    (Pi.whiskerEquiv e (fun _ ↦ Iso.refl M)).hom ≫
-      Pi.map' (contractFiber A B C p) (fun _ ↦ 𝟙 M)
+  let liftB := fun _ : Φ.fiber.obj (algebraEtaleObject A B) ↦ M
+  let liftC := fun _ : Φ.fiber.obj (algebraEtaleObject A C) ↦ M
+  let pointB := fun _ : {q : HeightOneSpectrum B // comap A B q = p} ↦ M
+  let pointC := fun _ : {q : HeightOneSpectrum C // comap A C q = p} ↦ M
+  change Pi.map' (f := liftB) (g := liftC) (Φ.fiber.map f) (fun _ ↦ 𝟙 M) ≫
+      (Pi.whiskerEquiv (f := liftC) (g := pointC) e' (fun _ ↦ Iso.refl M)).hom =
+    (Pi.whiskerEquiv (f := liftB) (g := pointB) e (fun _ ↦ Iso.refl M)).hom ≫
+      Pi.map' (f := pointB) (g := pointC) (contractFiber A B C p) (fun _ ↦ 𝟙 M)
   apply Pi.hom_ext
   intro q
   simp only [Category.assoc, Pi.whiskerEquiv_hom, Pi.map'_comp_π, Iso.refl_inv, eqToHom_refl,

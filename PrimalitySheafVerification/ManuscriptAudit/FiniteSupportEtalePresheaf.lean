@@ -22,9 +22,12 @@ universe u v
 variable {C : Type u} [Category.{v} C] {ι : Type}
   (P : ι → Cᵒᵖ ⥤ AddCommGrpCat.{0})
 
+/-- The dependent finite-support sections at an object. -/
+abbrev sections (X : Cᵒᵖ) := Π₀ a, (P a).obj X
+
 /-- The actual pointwise direct sum of additive presheaves. -/
 def directSum : Cᵒᵖ ⥤ AddCommGrpCat.{0} where
-  obj X := AddCommGrpCat.of (Π₀ a, (P a).obj X)
+  obj X := AddCommGrpCat.of (sections P X)
   map f := AddCommGrpCat.ofHom (DFinsupp.mapRange.addMonoidHom fun a ↦ ((P a).map f).hom)
   map_id X := by
     apply ConcreteCategory.hom_ext
@@ -32,7 +35,7 @@ def directSum : Cᵒᵖ ⥤ AddCommGrpCat.{0} where
     apply DFinsupp.ext
     intro a
     change (P a).map (𝟙 X) (z a) = z a
-    rw [Functor.map_id, ConcreteCategory.id_apply]
+    exact ConcreteCategory.congr_hom ((P a).map_id X) (z a)
   map_comp f g := by
     apply ConcreteCategory.hom_ext
     intro z
@@ -52,10 +55,10 @@ def component (a : ι) : directSum P ⟶ P a where
     intro _
     rfl
 
-@[simp] theorem directSum_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (z : (directSum P).obj X) (a : ι) :
-    ((directSum P).map f z) a = (P a).map f (z a) := rfl
+@[simp] theorem directSum_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (z : sections P X) (a : ι) :
+    ((directSum P).map f z : sections P Y) a = (P a).map f (z a) := rfl
 
-@[simp] theorem component_app_apply (a : ι) (X : Cᵒᵖ) (z : (directSum P).obj X) :
+@[simp] theorem component_app_apply (a : ι) (X : Cᵒᵖ) (z : sections P X) :
     (component P a).app X z = z a := rfl
 
 end

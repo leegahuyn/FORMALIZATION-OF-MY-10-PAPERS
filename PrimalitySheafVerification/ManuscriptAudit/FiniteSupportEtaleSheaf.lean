@@ -72,6 +72,7 @@ theorem directSum_isSheaf (hFinite : HasFiniteCoverFamilies J) {ι : Type}
   apply (Presieve.isSheafFor_arrows_iff (P := Q ⋙ coyoneda.obj (op E)) (π := f)).mpr
   intro x hx
   let x' (i : I) : E ⟶ Q.obj (op (V i)) := x i
+  let xval (i : I) (z : E) : sections F (op (V i)) := x' i z
   let q (a : ι) (i : I) : E ⟶ (F a).obj (op (V i)) :=
     x' i ≫ (component F a).app (op (V i))
   have hq (a : ι) : Presieve.Arrows.Compatible (F a ⋙ coyoneda.obj (op E)) f (q a) := by
@@ -91,17 +92,17 @@ theorem directSum_isSheaf (hFinite : HasFiniteCoverFamilies J) {ι : Type}
       (sheafForArrows J (P a) E V f hS) (q a) (hq a)
   choose y hy hyu using hGlue
   obtain ⟨t, ht⟩ := hFinite V f hS
-  let bounds (z : E) := t.biUnion (fun i ↦ ((x' i) z).support)
+  let bounds (z : E) := t.biUnion (fun i ↦ (xval i z).support)
   have hZero (z : E) (a : ι) (ha : a ∉ bounds z) : y a z = 0 := by
     apply element_eq_zero_of_cover J (P a) (fun i : t ↦ V i.val) (fun i : t ↦ f i.val) ht
     intro i
-    have h₁ : (F a).map (f i.val).op (y a z) = (x' i.val z) a :=
+    have h₁ : (F a).map (f i.val).op (y a z) = (xval i.val z) a :=
       ConcreteCategory.congr_hom (hy a i.val) z
     rw [h₁]
     by_contra hn
     exact ha (Finset.mem_biUnion.mpr ⟨i.val, i.property,
-      (DFinsupp.mem_support_toFun (x' i.val z) a).mpr hn⟩)
-  let value (z : E) : Q.obj (op U) :=
+      (DFinsupp.mem_support_toFun (xval i.val z) a).mpr hn⟩)
+  let value (z : E) : sections F (op U) :=
     ⟨fun a ↦ y a z, Trunc.mk ⟨(bounds z).val, fun a ↦ by
       by_cases ha : a ∈ bounds z
       · exact Or.inl ha

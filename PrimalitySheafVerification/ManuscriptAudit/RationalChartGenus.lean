@@ -40,7 +40,8 @@ def regularForms : Submodule K (Polynomial K × Polynomial K) := (overlap K).ker
 
 private theorem coeff_nat (p : Polynomial K) (n : ℕ) :
     p.toLaurent.coeff (n : ℤ) = p.coeff n := by
-  rw [LaurentPolynomial.coeff_toLaurent, Finsupp.mapDomain_apply Nat.castEmbedding.injective] <;> rfl
+  rw [LaurentPolynomial.coeff_toLaurent]
+  exact Finsupp.mapDomain_apply (Nat.castEmbedding : ℕ ↪ ℤ).injective p.toFinsupp.coeff n
 
 private theorem coeff_negative (p : Polynomial K) (n : ℤ) (hn : n < 0) :
     p.toLaurent.coeff n = 0 := by
@@ -48,7 +49,8 @@ private theorem coeff_negative (p : Polynomial K) (n : ℤ) (hn : n < 0) :
   apply Finsupp.mapDomain_of_notMem_range
   rintro ⟨m, hm⟩
   change (m : ℤ) = n at hm
-  exact (not_le_of_lt hn) (hm ▸ Int.natCast_nonneg m)
+  have hnonneg : (0 : ℤ) ≤ n := hm ▸ Int.natCast_nonneg m
+  omega
 
 private theorem coeff_mul_T (p : LaurentPolynomial K) (n : ℤ) :
     (p * LaurentPolynomial.T (-2)).coeff n = p.coeff (n + 2) := by
