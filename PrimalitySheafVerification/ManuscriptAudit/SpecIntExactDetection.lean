@@ -46,7 +46,8 @@ private theorem index_eq_top_of_no_support {S : TopCat.{0}} {P : Set S}
 point, or for supports containing it whose complement is finite. -/
 theorem specInt_exactDetectionIndex_classification (P : Set (PrimeSpectrum ℤ)) :
     exactDetectionIndex X P =
-      if P.Nonempty ∧ ((⊥ : PrimeSpectrum ℤ) ∉ P ∨ (Pᶜ).Finite) then 0 else ⊤ := by
+      @ite ℕ∞ (P.Nonempty ∧ ((⊥ : PrimeSpectrum ℤ) ∉ P ∨ (Pᶜ).Finite))
+        (Classical.propDecidable _) 0 ⊤ := by
   classical
   by_cases hNonempty : P.Nonempty
   · by_cases hη : (⊥ : PrimeSpectrum ℤ) ∈ P

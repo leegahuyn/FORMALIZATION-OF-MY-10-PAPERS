@@ -82,8 +82,14 @@ theorem extensionCounit_stalk_isIso {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   let η := (Φ.sheafFiber (A := C.{u})).map (a.unit.app (R.obj F))
   let ε := (Φ.sheafFiber (A := C.{u})).map (R.map (a.counit.app F))
   have h : η ≫ ε = 𝟙 _ := by
-    simpa only [η, ε, Functor.map_comp, Functor.map_id] using
-      congrArg (fun f => (Φ.sheafFiber (A := C.{u})).map f) (a.right_triangle_components F)
+    calc
+      η ≫ ε = (Φ.sheafFiber (A := C.{u})).map
+          (a.unit.app (R.obj F) ≫ R.map (a.counit.app F)) :=
+        ((Φ.sheafFiber (A := C.{u})).map_comp _ _).symm
+      _ = (Φ.sheafFiber (A := C.{u})).map (𝟙 (R.obj F)) :=
+        congrArg (fun f : R.obj F ⟶ R.obj F => (Φ.sheafFiber (A := C.{u})).map f)
+          (a.right_triangle_components F)
+      _ = 𝟙 _ := (Φ.sheafFiber (A := C.{u})).map_id _
   letI : IsIso η := extensionUnit_stalk_isIso j s (R.obj F)
   letI : IsIso (η ≫ ε) := by rw [h]; infer_instance
   exact IsIso.of_isIso_comp_left η ε

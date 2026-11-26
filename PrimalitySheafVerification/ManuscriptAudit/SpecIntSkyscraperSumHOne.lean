@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.RingTheory.PrincipalIdealDomain
@@ -135,7 +136,7 @@ private theorem eq_of_projections {X : TopCat.{0}} {P : Set X} (A : P → G)
       (TopCat.Presheaf.germ (pointCoproduct A).obj U x hx s) =
         (TopCat.Presheaf.stalkFunctor G x).map (projection A p).hom
           (TopCat.Presheaf.germ (pointCoproduct A).obj U x hx t)
-    simp only [TopCat.Presheaf.stalkFunctor_map_germ_apply, h p]
+    simp only [TopCat.Presheaf.stalkFunctor_map_germ_apply, h p] <;> rfl
   · letI : Subsingleton (TopCat.Presheaf.stalk (C := G) (pointCoproduct A).obj x) :=
       AddCommGrpCat.subsingleton_of_isZero (coproduct_stalk_isZero A hClosed hxP)
     exact Subsingleton.elim _ _
@@ -145,8 +146,11 @@ private theorem point_restrict_isIso {X : TopCat.{0}} (p : X) (A : G)
     IsIso ((pointSummand p A).obj.map i.op) := by
   classical
   change IsIso ((skyscraperPresheaf p A).map i.op)
+  have hpV : p ∈ V := leOfHom i hp
+  have hEq : (skyscraperPresheaf p A).obj (op V) = (skyscraperPresheaf p A).obj (op U) := by
+    simp [skyscraperPresheaf_obj, hp, hpV]
   rw [skyscraperPresheaf_map, dif_pos hp]
-  exact (eqToIso _).isIso_hom
+  exact (eqToIso hEq).isIso_hom
 
 private theorem closed_prime {P : Set X₀} (hP : (⊥ : PrimeSpectrum ℤ) ∉ P) (p : P) :
     IsClosed ({(p : X₀)} : Set X₀) := by
@@ -240,6 +244,18 @@ theorem pointCoproduct_H1_subsingleton {P : Set X₀} (A : P → G)
   letI := pointCoproduct_isFlasque A hP
   exact flasque_H1_subsingleton _
 
+/-- The printed direct-sum comparison fails whenever an indexed coefficient is nonzero. -/
+theorem paper6_direct_sum_comparison_refuted {P : Set X₀} (A : P → G)
+    (hP : (⊥ : PrimeSpectrum ℤ) ∉ P) (p : P) (hp : Nontrivial (A p)) :
+    ¬ Nonempty (((pointCoproduct A).H 1) ≃+ DirectSum P (fun q => (A q : Type))) := by
+  classical
+  rintro ⟨e⟩
+  letI := pointCoproduct_H1_subsingleton A hP
+  letI : Subsingleton (DirectSum P (fun q => (A q : Type))) := e.symm.injective.subsingleton
+  have hs : Subsingleton (A p) :=
+    (DirectSum.of_injective (fun q : P => (A q : Type)) p).subsingleton
+  exact (not_nontrivial_iff_subsingleton.mpr hs) hp
+
 end
 
 end ManuscriptAudit.SpecIntSkyscraperSumHOne
@@ -249,7 +265,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.SpecIntSkyscraperSumHOne.pointCoproduct_isFlasque,
-      ``ManuscriptAudit.SpecIntSkyscraperSumHOne.pointCoproduct_H1_subsingleton] do
+      ``ManuscriptAudit.SpecIntSkyscraperSumHOne.pointCoproduct_H1_subsingleton,
+      ``ManuscriptAudit.SpecIntSkyscraperSumHOne.paper6_direct_sum_comparison_refuted] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

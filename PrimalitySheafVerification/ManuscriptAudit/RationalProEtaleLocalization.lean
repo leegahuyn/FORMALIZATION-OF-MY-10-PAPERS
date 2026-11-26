@@ -88,7 +88,11 @@ theorem closedToBase_global_eq_zero (s : closedPushforward ⟶ baseRationalSheaf
   apply (cancel_mono (baseRationalSheaf.obj.map (op dFiveArrow))).mp
   have hz : closedPushforward.obj.map (op dFiveArrow) = 0 :=
     closedPushforward_dFive_isZero.eq_of_tgt _ _
-  rw [zero_comp, ← s.hom.naturality (op dFiveArrow), hz, zero_comp]
+  have hn :
+      closedPushforward.obj.map (op dFiveArrow) ≫ s.hom.app (op dFiveObject) =
+        s.hom.app (op (terminalObject S)) ≫ baseRationalSheaf.obj.map (op dFiveArrow) :=
+    s.hom.naturality (op dFiveArrow)
+  exact hn.symm.trans (by simp only [hz, zero_comp])
 
 /-- There is no splitting map for any morphism from the rational coefficient
 sheaf to the actual closed rational pushforward. -/

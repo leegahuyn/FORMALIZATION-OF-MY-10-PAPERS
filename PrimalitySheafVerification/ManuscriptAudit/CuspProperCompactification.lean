@@ -70,6 +70,9 @@ private lemma chartEvaluation_mk (n : ℕ) (p : PlaneRing K) (hp : p ∈ grading
     (isUnit_iff_exists_inv.mpr ⟨1, eval_z_mul_one K⟩))
     (Away.mk (grading K) (X_mem_one K 2) n p hp).val = evalPolynomial K p
   rw [Away.val_mk]
+  change (Localization.awayLift (evalPolynomial K).toRingHom (z K)
+    (isUnit_iff_exists_inv.mpr ⟨1, eval_z_mul_one K⟩))
+    (Localization.mk p ⟨(z K) ^ n, ⟨n, rfl⟩⟩) = (evalPolynomial K).toRingHom p
   simpa only [one_pow, mul_one] using
     Localization.awayLift_mk (evalPolynomial K).toRingHom (z K) p 1
       (eval_z_mul_one K) n
@@ -116,16 +119,28 @@ private theorem constants_bijective : Function.Bijective (constants K) := by
     have hp : (p : PlaneRing K) ∈ (1 : Submodule K (PlaneRing K)) := by
       simpa only [grading, MvPolynomial.homogeneousSubmodule_zero] using p.property
     obtain ⟨a, ha⟩ := Submodule.mem_one.mp hp
-    exact ⟨a, Subtype.ext (by simpa only [MvPolynomial.algebraMap_eq] using ha)⟩
+    refine ⟨a, Subtype.ext ?_⟩
+    change (MvPolynomial.C a : PlaneRing K) = (p : PlaneRing K)
+    simpa only [MvPolynomial.algebraMap_eq] using ha
 
 private instance constants_isIso : IsIso (CommRingCat.ofHom (constants K)) :=
   (RingEquiv.ofBijective (constants K) (constants_bijective K)).toCommRingCatIso.isIso_hom
 
 private instance planeRing_finiteType : Algebra.FiniteType (grading K 0) (PlaneRing K) := by
-  letI : Algebra K (grading K 0) := (constants K).toAlgebra
-  letI : IsScalarTower K (grading K 0) (PlaneRing K) :=
-    IsScalarTower.of_algebraMap_eq fun _ => rfl
-  exact Algebra.FiniteType.of_restrictScalars_finiteType K (grading K 0) (PlaneRing K)
+  classical
+  constructor
+  refine ⟨Finset.univ.image (MvPolynomial.X : Fin 3 → PlaneRing K), ?_⟩
+  simp only [Finset.coe_image, Finset.coe_univ, Set.image_univ]
+  apply top_unique
+  intro p hpTop
+  clear hpTop
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+      change algebraMap (grading K 0) (PlaneRing K) (constants K a) ∈ _
+      exact Subalgebra.algebraMap_mem _ _
+  | add p q hp hq => exact Subalgebra.add_mem _ hp hq
+  | mul_X p i hp =>
+      exact Subalgebra.mul_mem _ hp (Algebra.subset_adjoin (Set.mem_range_self i))
 
 private abbrev plane := Proj (grading K)
 

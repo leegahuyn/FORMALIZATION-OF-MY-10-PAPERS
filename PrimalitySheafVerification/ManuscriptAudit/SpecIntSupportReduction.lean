@@ -1,6 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Tactic.NormNum
 import PrimalitySheafVerification.ManuscriptAudit.ExactSupportDetection
 

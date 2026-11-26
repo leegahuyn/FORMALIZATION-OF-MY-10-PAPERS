@@ -102,7 +102,8 @@ private theorem detection_eq_top_of_no_support (X : TopCat.{0}) (P : Set X)
 
 private theorem openDetectionIndex_classification (U : Opens Y) (hU : (⊥ : Y) ∈ U) (P : Set U) :
     exactDetectionIndex (space U) P =
-      if P.Nonempty ∧ ((⟨⊥, hU⟩ : U) ∉ P ∨ Pᶜ.Finite) then 0 else ⊤ := by
+      @ite ℕ∞ (P.Nonempty ∧ ((⟨⊥, hU⟩ : U) ∉ P ∨ Pᶜ.Finite))
+        (Classical.propDecidable _) 0 ⊤ := by
   classical
   by_cases hNonempty : P.Nonempty
   · by_cases hη : (⟨⊥, hU⟩ : U) ∈ P
