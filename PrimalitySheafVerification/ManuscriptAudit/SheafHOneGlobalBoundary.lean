@@ -56,3 +56,16 @@ theorem hOne_nontrivial_of_unlifted_global_section
   ⟨⟨boundaryAtTerminal S hS hT z, 0, fun h =>
     hz ((boundaryAtTerminal_eq_zero_iff S hS hT z).mp h)⟩⟩
 
+end ManuscriptAudit.SheafHOneGlobalBoundary
+
+open Lean Elab Command in
+run_cmd do
+  let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+  for name in
+    [``ManuscriptAudit.SheafHOneGlobalBoundary.boundaryAtTerminal_eq_zero_iff,
+      ``ManuscriptAudit.SheafHOneGlobalBoundary.hOne_nontrivial_of_unlifted_global_section] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter (fun axiomName => !allowed.contains axiomName)
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

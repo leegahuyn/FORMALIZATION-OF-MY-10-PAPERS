@@ -34,7 +34,9 @@ private theorem jacobiRoot_degree_two_scalar
     jacobiRoot χ (algebraMap (ZMod p) D A) = jacobiRoot χ (1 : D) := by
   have hξ (b : ZMod p) (hb : b ≠ 0) : χ (algebraMap (ZMod p) D b) = 1 := by
     obtain ⟨x, hx⟩ := Finite.surjective_of_injective (cube_injective (base_no_cubicCharacter hp3)) b
-    exact (cube_iff_character_one hχ ((algebraMap (ZMod p) D).injective.ne hb)).mp
+    have hb' : algebraMap (ZMod p) D b ≠ 0 := by
+      simpa only [map_zero] using (algebraMap (ZMod p) D).injective.ne hb
+    exact (cube_iff_character_one hχ hb').mp
       ⟨algebraMap (ZMod p) D x, by rw [← map_pow, hx]⟩
   have hχA : χ (-algebraMap (ZMod p) D A) = 1 := by
     rw [← map_neg]
@@ -92,7 +94,8 @@ private theorem even_extension_trace (hp : 5 ≤ p) (hp3 : p % 3 = 2)
   have hroot := square_extension_jacobiRoot hp3 hp2 hDC hcard hΔD hχ
   have hroot' := (jacobiRoots_eq_at_one hp3 hp2 hDC hχ).symm.trans hroot
   let B := algebraMap (ZMod p) D A
-  have hB : B ≠ 0 := (algebraMap (ZMod p) D).injective.ne hA
+  have hB : B ≠ 0 := by
+    simpa only [B, map_zero] using (algebraMap (ZMod p) D).injective.ne hA
   have hα : jacobiRoot χ B = -(p : ℂ) :=
     (jacobiRoot_degree_two_scalar hF hDC hp3 hD hχ hA).trans hroot
   have hβ : jacobiRoot (χ ^ 2) B = -(p : ℂ) :=

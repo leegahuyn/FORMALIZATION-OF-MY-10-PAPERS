@@ -71,23 +71,25 @@ private theorem norm_theta_le {H x y : ℝ} (hH : 0 < H) (hy : H ≤ y) :
       rw [norm_one]
       exact add_le_add (hDiff.trans hFrac) le_rfl
 
-private theorem sq_mul_density (a x y : ℝ) (hy : 0 < y) :
-    (y ^ 2)⁻¹ * ‖weighted a jacobiTheta x y‖ ^ 2 =
-      ‖jacobiTheta (complexPoint x y)‖ ^ 2 * y ^ (a * 2 - 2) := by
-  change (y ^ 2)⁻¹ * ‖((y ^ a : ℝ) : ℂ) * jacobiTheta (complexPoint x y)‖ ^ 2 = _
+private theorem sq_mul_density (f : ℂ → ℂ) (a x y : ℝ) (hy : 0 < y) :
+    (y ^ 2)⁻¹ * ‖weighted a f x y‖ ^ 2 =
+      ‖f (complexPoint x y)‖ ^ 2 * y ^ (a * 2 - 2) := by
+  change (y ^ 2)⁻¹ * ‖((y ^ a : ℝ) : ℂ) * f (complexPoint x y)‖ ^ 2 = _
   rw [norm_mul, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (Real.rpow_nonneg hy.le a),
     mul_pow, Real.rpow_sub hy, Real.rpow_two y, Real.rpow_mul hy.le a 2,
     Real.rpow_two (y ^ a), div_eq_mul_inv]
   ring
 
-/-- The actual Jacobi theta mode at height power a belongs to L² on the
-infinity strip when the local exponent satisfies a < 1/2. -/
-theorem weighted_jacobiTheta_memLp_infinity_above (H a : ℝ) (hH : 0 < H) (ha : a < 1 / 2) :
-    MemLp (fun z : ℝ × ℝ => weighted a jacobiTheta z.1 z.2) 2 (infinityCuspMeasureAbove H) := by
+/-- A bounded continuous holomorphic-coordinate profile gives a square-integrable
+mode after any height weighting with exponent less than one half. -/
+theorem weighted_memLp_of_bound (f : ℂ → ℂ) (H a B : ℝ) (hH : 0 < H) (ha : a < 1 / 2)
+    (hContinuous : ∀ τ, 0 < τ.im → ContinuousAt f τ)
+    (hBound : ∀ x y, H ≤ y → ‖f (complexPoint x y)‖ ≤ B) :
+    MemLp (fun z : ℝ × ℝ => weighted a f z.1 z.2) 2 (infinityCuspMeasureAbove H) := by
   let μ : Measure (ℝ × ℝ) := ((volume : Measure ℝ).prod volume).restrict (infinityStripAbove H)
-  let F (z : ℝ × ℝ) : ℂ := weighted a jacobiTheta z.1 z.2
+  let F (z : ℝ × ℝ) : ℂ := weighted a f z.1 z.2
   let height (z : ℝ × ℝ) : ℝ := max H z.2
-  let G (z : ℝ × ℝ) : ℂ := weighted a jacobiTheta z.1 (height z)
+  let G (z : ℝ × ℝ) : ℂ := weighted a f z.1 (height z)
   have hStrip : MeasurableSet (infinityStripAbove H) := measurableSet_Ioc.prod measurableSet_Ioi
   have hAE : ∀ᵐ z ∂μ, z ∈ infinityStripAbove H := self_mem_ae_restrict hStrip
   have hHeight : Continuous height := continuous_const.max continuous_snd
@@ -100,10 +102,9 @@ theorem weighted_jacobiTheta_memLp_infinity_above (H a : ℝ) (hH : 0 < H) (ha :
     have hWeight : ContinuousAt (fun w : ℝ × ℝ => height w ^ a) z :=
       (Real.continuousAt_rpow_const (height z) a (Or.inl (hHeightPos z).ne')).comp
         hHeight.continuousAt
-    have hTheta : ContinuousAt jacobiTheta (complexPoint z.1 (height z)) :=
-      (differentiableAt_jacobiTheta (τ := complexPoint z.1 (height z))
-        (by simpa only [complexPoint_im] using hHeightPos z)).continuousAt
-    have hThetaAt : ContinuousAt (fun w : ℝ × ℝ => jacobiTheta (complexPoint w.1 (height w))) z :=
+    have hTheta : ContinuousAt f (complexPoint z.1 (height z)) :=
+      hContinuous _ (by simpa only [complexPoint_im] using hHeightPos z)
+    have hThetaAt : ContinuousAt (fun w : ℝ × ℝ => f (complexPoint w.1 (height w))) z :=
       ContinuousAt.comp' (f := fun w : ℝ × ℝ => complexPoint w.1 (height w)) (x := z)
         hTheta hPoint.continuousAt
     exact (Complex.continuous_ofReal.continuousAt.comp hWeight).mul hThetaAt
@@ -114,10 +115,10 @@ theorem weighted_jacobiTheta_memLp_infinity_above (H a : ℝ) (hH : 0 < H) (ha :
   have hDensity : Measurable cuspDensity := ((measurable_snd.pow_const 2).inv).ennreal_ofReal
   have hPower : IntegrableOn (fun y : ℝ => y ^ (a * 2 - 2)) (Ioi H) :=
     integrableOn_Ioi_rpow_of_lt (by linarith) hH
-  have hMajor : Integrable (fun z : ℝ × ℝ => thetaBound H ^ 2 * z.2 ^ (a * 2 - 2)) μ := by
+  have hMajor : Integrable (fun z : ℝ × ℝ => B ^ 2 * z.2 ^ (a * 2 - 2)) μ := by
     dsimp only [μ, infinityStripAbove]
     rw [← Measure.prod_restrict]
-    exact (hPower.const_mul (thetaBound H ^ 2)).comp_snd
+    exact (hPower.const_mul (B ^ 2)).comp_snd
       ((volume : Measure ℝ).restrict (Ioc 0 2))
   change MemLp F 2 (μ.withDensity cuspDensity)
   apply (memLp_two_iff_integrable_sq_norm
@@ -133,14 +134,23 @@ theorem weighted_jacobiTheta_memLp_infinity_above (H a : ℝ) (hH : 0 < H) (ha :
   have hy : H < z.2 := hz.2
   have hy' : 0 < z.2 := hH.trans hy
   have hInv : 0 ≤ (z.2 ^ 2)⁻¹ := inv_nonneg.mpr (sq_nonneg _)
-  change ‖(cuspDensity z).toReal • ‖F z‖ ^ 2‖ ≤ thetaBound H ^ 2 * z.2 ^ (a * 2 - 2)
+  change ‖(cuspDensity z).toReal • ‖F z‖ ^ 2‖ ≤ B ^ 2 * z.2 ^ (a * 2 - 2)
   rw [cuspDensity, ENNReal.toReal_ofReal hInv, smul_eq_mul, Real.norm_eq_abs,
     abs_of_nonneg (mul_nonneg hInv (sq_nonneg _))]
-  change (z.2 ^ 2)⁻¹ * ‖weighted a jacobiTheta z.1 z.2‖ ^ 2 ≤ _
-  rw [sq_mul_density a z.1 z.2 hy']
+  change (z.2 ^ 2)⁻¹ * ‖weighted a f z.1 z.2‖ ^ 2 ≤ _
+  rw [sq_mul_density f a z.1 z.2 hy']
   exact mul_le_mul_of_nonneg_right
-    (pow_le_pow_left₀ (norm_nonneg _) (norm_theta_le hH hy.le) 2)
+    (pow_le_pow_left₀ (norm_nonneg _) (hBound z.1 z.2 hy.le) 2)
     (Real.rpow_nonneg hy'.le _)
+
+/-- The native Jacobi theta mode belongs to L² on the strip. -/
+theorem weighted_jacobiTheta_memLp_infinity_above (H a : ℝ) (hH : 0 < H) (ha : a < 1 / 2) :
+    MemLp (fun z : ℝ × ℝ => weighted a jacobiTheta z.1 z.2) 2 (infinityCuspMeasureAbove H) := by
+  refine weighted_memLp_of_bound jacobiTheta H a (thetaBound H) hH ha ?_ ?_
+  · intro τ hτ
+    exact (differentiableAt_jacobiTheta (τ := τ) hτ).continuousAt
+  · intro x y hy
+    exact norm_theta_le hH hy
 
 /-- The same square-integrability statement above height one. -/
 theorem weighted_jacobiTheta_memLp_infinity (a : ℝ) (ha : a < 1 / 2) :
@@ -160,7 +170,8 @@ end ManuscriptAudit.ThetaInfinityCusp
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.ThetaInfinityCusp.weighted_jacobiTheta_memLp_infinity_above,
+  for name in [``ManuscriptAudit.ThetaInfinityCusp.weighted_memLp_of_bound,
+      ``ManuscriptAudit.ThetaInfinityCusp.weighted_jacobiTheta_memLp_infinity_above,
       ``ManuscriptAudit.ThetaInfinityCusp.weighted_jacobiTheta_memLp_infinity,
       ``ManuscriptAudit.ThetaInfinityCusp.jacobiTheta_half_memLp_infinity] do
     let dependencies ← collectAxioms name

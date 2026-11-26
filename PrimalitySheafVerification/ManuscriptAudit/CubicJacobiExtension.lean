@@ -93,7 +93,8 @@ theorem extension_actual_point_count (hF : ringChar F ≠ 2) (hE : ringChar E �
         (Nat.card (shortCubic (0 : E) (algebraMap F E A)).toProjective.Point : ℂ) =
       (jacobiRoot χ A) ^ Module.finrank F E + (jacobiRoot (χ ^ 2) A) ^ Module.finrank F E := by
   let ρ : MulChar F ℂ →* MulChar E ℂ := normCharacter
-  have hA' : algebraMap F E A ≠ 0 := (algebraMap F E).injective.ne hA
+  have hA' : algebraMap F E A ≠ 0 := by
+    simpa only [map_zero] using (algebraMap F E).injective.ne hA
   have hρ : orderOf (ρ χ) = 3 := normCharacter_orderThree hχ
   have hpow : (ρ χ) ^ (2 : ℕ) = ρ (χ ^ (2 : ℕ)) := (map_pow ρ χ 2).symm
   rw [projective_count_trace_complex hE hΔ, cubicTraceSum_eq_neg_jacobiRoots hE hρ hA',

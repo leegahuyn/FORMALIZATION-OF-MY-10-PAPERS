@@ -28,8 +28,7 @@ theorem odd_extension_card_mod_three (hp : p % 3 = 2)
     (hd : Odd (Module.finrank (ZMod p) E)) :
     Fintype.card E % 3 = 2 := by
   have hc : Fintype.card E = p ^ Module.finrank (ZMod p) E := by
-    rw [← Nat.card_eq_fintype_card, Module.natCard_eq_pow_finrank, Nat.card_eq_fintype_card,
-      ZMod.card]
+    rw [Module.card_eq_pow_finrank (K := ZMod p) (V := E), ZMod.card]
   rw [hc]
   simpa [Nat.ModEq] using power_mod_three hp hd
 

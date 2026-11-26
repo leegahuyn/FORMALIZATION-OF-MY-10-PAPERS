@@ -88,10 +88,18 @@ private theorem underlyingPoint_ker (x : (point A K).fiber.obj (algebraEtaleObje
   have hf : Spec.map (CommRingCat.ofHom f.toRingHom) = x.left :=
     congrArg (fun g : Over.mk (specAlgebraMap A K) ⟶ Over.mk (specAlgebraMap A B) => g.left)
       (E.apply_symm_apply x)
-  rw [← hf, Spec.map_apply]
-  change Ideal.comap f (default : PrimeSpectrum K).asIdeal = RingHom.ker f
-  have hZero : (default : PrimeSpectrum K).asIdeal = ⊥ := Ideal.eq_bot_of_prime _
-  rw [hZero, RingHom.ker_eq_comap_bot]
+  let o : Spec (CommRingCat.of K) := default
+  letI : o.asIdeal.IsPrime := o.isPrime
+  have ho : o.asIdeal = ⊥ := Ideal.eq_bot_of_prime _
+  let b : CommRingCat.of B ⟶ CommRingCat.of K := CommRingCat.ofHom f.toRingHom
+  have hb : (Spec.map b o).asIdeal = Ideal.comap b.hom o.asIdeal :=
+    (congrArg PrimeSpectrum.asIdeal (Spec.map_apply b o)).trans
+      (PrimeSpectrum.comap_asIdeal b.hom o)
+  change (x.left o).asIdeal = RingHom.ker f
+  rw [← hf]
+  change (Spec.map b o).asIdeal = RingHom.ker f
+  rw [hb, ho]
+  exact (RingHom.ker_eq_comap_bot f).symm
 
 /-- The prime indexing a geometric lift contracts to the actual underlying
 point of that lift on the affine étale chart. -/
@@ -122,8 +130,8 @@ def rationalFiberEquivPreimage (hK : Function.Surjective (algebraMap A K)) :
   let E := specOverHomEquiv A B K
   let f : B →ₐ[A] K := E.symm x
   let g : B →ₐ[A] K := E.symm y
-  have hPoint : x.left (default : Spec (CommRingCat.of K)) = y.left default :=
-    congrArg Subtype.val h
+  have hPoint : x.left (default : Spec (CommRingCat.of K)) =
+      y.left (default : Spec (CommRingCat.of K)) := congrArg Subtype.val h
   have hKer : RingHom.ker f = RingHom.ker g := by
     rw [← underlyingPoint_ker A B K x, ← underlyingPoint_ker A B K y, hPoint]
   apply E.symm.injective

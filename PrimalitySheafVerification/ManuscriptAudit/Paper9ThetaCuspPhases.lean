@@ -140,18 +140,18 @@ def normalizedProfile (i : Fin 3) (z : ℍ) : ℂ :=
   jacobiTheta ((ThreeCuspNeighborhoods.chart i • z : ℍ) : ℂ) /
     (if i = 0 then 1 else thetaWeightFactor z)
 
-private theorem normalizedProfile_zero (z : ℍ) :
+theorem normalizedProfile_zero (z : ℍ) :
     normalizedProfile 0 z = jacobiTheta (z : ℂ) := by
   simp [normalizedProfile, ThreeCuspNeighborhoods.chart]
 
-private theorem normalizedProfile_one (z : ℍ) :
+theorem normalizedProfile_one (z : ℍ) :
     normalizedProfile 1 z = jacobiTheta (z : ℂ) := by
   change jacobiTheta ((S • z : ℍ) : ℂ) / thetaWeightFactor z = _
   apply (div_eq_iff (thetaWeightFactor_ne_zero z)).2
   rw [jacobiTheta_S_smul]
   exact mul_comm _ _
 
-private theorem normalizedProfile_two (z : ℍ) :
+theorem normalizedProfile_two (z : ℍ) :
     normalizedProfile 2 z = thetaHalfShift (z : ℂ) := by
   change jacobiTheta (((T * S) • z : ℍ) : ℂ) / thetaWeightFactor z = _
   apply (div_eq_iff (thetaWeightFactor_ne_zero z)).2
