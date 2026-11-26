@@ -1,7 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
-import Mathlib.AlgebraicGeometry.Sites.Etale
+import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
@@ -39,8 +39,12 @@ def postcomposeFullyFaithful : (etalePostcompose j).FullyFaithful where
     apply (cancel_mono j).mp
     simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
       MorphismProperty.Over.w f)
-  map_preimage f := by ext <;> rfl
-  preimage_map f := by ext <;> rfl
+  map_preimage f := by
+    apply (Scheme.Etale.forget X).map_injective
+    exact CostructuredArrow.hom_ext _ _ rfl
+  preimage_map f := by
+    apply (Scheme.Etale.forget U).map_injective
+    exact CostructuredArrow.hom_ext _ _ rfl
 
 private def postcomposeDownwardsClosed {Y : U.Etale} {W : X.Etale}
     (f : W ⟶ (etalePostcompose j).obj Y) : Σ W' : U.Etale, (etalePostcompose j).obj W' ≅ W := by
@@ -62,14 +66,16 @@ theorem postcomposeCoverPreserving :
     obtain ⟨ι, Z, f, rfl⟩ := Sieve.exists_eq_ofArrows S
     rw [Scheme.ofArrows_mem_smallEtaleTopology_iff] at hS
     rw [Sieve.functorPushforward_ofArrows, Scheme.ofArrows_mem_smallEtaleTopology_iff]
-    simpa only [MorphismProperty.Over.map_map_left] using hS
+    change (⋃ i, Set.range (f i).left) = Set.univ
+    exact hS
 
 theorem postcomposeContinuous :
     (etalePostcompose j).IsContinuous U.smallEtaleTopology X.smallEtaleTopology := by
   letI := (postcomposeFullyFaithful j).full
   letI := (postcomposeFullyFaithful j).faithful
   exact Functor.isContinuous_of_coverPreserving
-    (compatiblePreservingOfDownwardsClosed (etalePostcompose j) (postcomposeDownwardsClosed j))
+    (compatiblePreservingOfDownwardsClosed X.smallEtaleTopology
+      (etalePostcompose j) (postcomposeDownwardsClosed j))
     (postcomposeCoverPreserving j)
 
 variable (C : Type v) [Category.{w} C]
@@ -92,8 +98,9 @@ theorem hasPointwiseLeftKanExtension (P : U.Etaleᵒᵖ ⥤ C) :
   · obtain ⟨a⟩ := h
     obtain ⟨V, e⟩ := postcomposeDownwardsClosed j a.hom.unop
     have hV : G.HasPointwiseLeftKanExtensionAt P (G.obj (op V)) :=
-      HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal
-        CostructuredArrow.mkIdTerminal _ }
+      HasColimit.mk
+        { cocone := _
+          isColimit := colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _ }
     exact (G.hasPointwiseLeftKanExtensionAt_iff_of_iso P e.op.symm).mp hV
   · have empty (a : CostructuredArrow G W) : False := h ⟨a⟩
     let c : Cocone (CostructuredArrow.proj G W ⋙ P) :=

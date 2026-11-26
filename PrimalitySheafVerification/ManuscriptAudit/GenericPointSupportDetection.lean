@@ -34,11 +34,11 @@ theorem exists_open_subset_support {X : TopCat.{0}} (F : AbelianSheaf X)
   refine ⟨U, hηU, ?_⟩
   intro x hx
   have hxU : x ∈ U := hx
-  have hnz : F.obj.germ U x hxU s ≠ 0 := by
+  have hnz : TopCat.Presheaf.germ F.obj U x hxU s ≠ 0 := by
     intro hzero
-    have h := DFunLike.congr_fun (F.obj.germ_stalkSpecializes hxU (hgen x)) s
-    change (F.obj.stalkSpecializes (hgen x)) (F.obj.germ U x hxU s) =
-      F.obj.germ U η ((hgen x).mem_open U.isOpen hxU) s at h
+    have h := DFunLike.congr_fun (TopCat.Presheaf.germ_stalkSpecializes F.obj hxU (hgen x)) s
+    change (TopCat.Presheaf.stalkSpecializes F.obj (hgen x)) (TopCat.Presheaf.germ F.obj U x hxU s) =
+      TopCat.Presheaf.germ F.obj U η ((hgen x).mem_open U.isOpen hxU) s at h
     rw [hzero, map_zero] at h
     apply ha
     rw [← hs]
@@ -64,7 +64,6 @@ private theorem basicOpen_contains_nonzero_prime (n : ℤ) (hn : n ≠ 0) :
     have hm : (p : ℤ) ∈ x.asIdeal := by
       change (((p : ℤ) : ZMod p) ∈ (⊥ : Ideal (ZMod p)))
       rw [Ideal.mem_bot, ZMod.intCast_zmod_eq_zero_iff_dvd]
-      exact dvd_rfl
     rw [hx, PrimeSpectrum.asIdeal_bot, Ideal.mem_bot] at hm
     exact hp.ne_zero (by simpa using hm)
 
@@ -92,8 +91,19 @@ private theorem basicOpen_compl_finite (n : ℤ) (hn : n ≠ 0) :
       (fun _ _ h => PrimeSpectrum.ext_iff.mpr (SetLike.coe_injective h))
   rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, compl_compl]
   have h := Set.finite_range (PrimeSpectrum.comap (Ideal.Quotient.mk I))
-  simpa only [PrimeSpectrum.range_comap_of_surjective (ℤ ⧸ I) (Ideal.Quotient.mk I)
+  simpa only [range_comap_of_surjective (ℤ ⧸ I) (Ideal.Quotient.mk I)
     Ideal.Quotient.mk_surjective, Ideal.mk_ker, I, PrimeSpectrum.zeroLocus_span] using h
+
+/-- An open neighborhood of the generic point of Spec ℤ has finite complement. -/
+theorem specInt_generic_neighborhood_compl_finite (U : Opens (PrimeSpectrum ℤ))
+    (hη : (⊥ : PrimeSpectrum ℤ) ∈ U) :
+    ((U : Set (PrimeSpectrum ℤ))ᶜ).Finite := by
+  obtain ⟨_, ⟨n, rfl⟩, hn, hsub⟩ :=
+    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hη U.isOpen
+  have hn' : n ≠ 0 := by
+    simpa only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen,
+      PrimeSpectrum.asIdeal_bot, Ideal.mem_bot] using hn
+  exact (basicOpen_compl_finite n hn').subset (Set.compl_subset_compl.mpr hsub)
 
 /-- Any stalk support containing the generic point of Spec ℤ has finite complement. -/
 theorem specInt_stalkSupport_compl_finite_of_generic_mem
@@ -104,12 +114,7 @@ theorem specInt_stalkSupport_compl_finite_of_generic_mem
     intro x
     exact (PrimeSpectrum.le_iff_specializes _ _).mp bot_le
   obtain ⟨U, hηU, hU⟩ := exists_open_subset_support F hgen hη
-  obtain ⟨_, ⟨n, rfl⟩, hn, hsub⟩ :=
-    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hηU U.isOpen
-  have hn' : n ≠ 0 := by
-    simpa only [SetLike.mem_coe, PrimeSpectrum.mem_basicOpen,
-      PrimeSpectrum.asIdeal_bot, Ideal.mem_bot] using hn
-  exact (basicOpen_compl_finite n hn').subset (Set.compl_subset_compl.mpr (hsub.trans hU))
+  exact (specInt_generic_neighborhood_compl_finite U hηU).subset (Set.compl_subset_compl.mpr hU)
 
 /-- The generic singleton of Spec ℤ is not the exact support of any abelian sheaf. -/
 theorem specInt_stalkSupport_ne_generic_singleton
@@ -136,6 +141,7 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.GenericPointSupportDetection.exists_open_subset_support,
       ``ManuscriptAudit.GenericPointSupportDetection.specInt_neighborhood_contains_nonzero_prime,
+      ``ManuscriptAudit.GenericPointSupportDetection.specInt_generic_neighborhood_compl_finite,
       ``ManuscriptAudit.GenericPointSupportDetection.specInt_stalkSupport_compl_finite_of_generic_mem,
       ``ManuscriptAudit.GenericPointSupportDetection.specInt_stalkSupport_ne_generic_singleton] do
     let dependencies ← collectAxioms name

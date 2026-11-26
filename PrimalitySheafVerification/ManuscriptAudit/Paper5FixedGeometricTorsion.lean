@@ -126,7 +126,7 @@ theorem projective_count_cast_eq_one {F : Type*} [Field F] [Fintype F]
   have hbase : ((X : Polynomial F) ^ 3 - C c * X).natDegree ≤ 3 := by
     refine (natDegree_sub_le _ _).trans ?_
     have hlin : (C c * (X : Polynomial F)).natDegree ≤ 1 :=
-      (natDegree_mul_le _ _).trans (by simp)
+      natDegree_mul_le.trans (by simp)
     exact max_le (by simp) (hlin.trans (by decide))
   have hdeg : f.natDegree < (q - 1) * 2 := by
     calc
@@ -164,10 +164,10 @@ private theorem reduction_baseChange_eq_short {p : ℕ} [Fact p.Prime] {L : Type
     [Field L] [Algebra (ZMod p) L] :
     (Paper5FixedTraceZero.reduction p).baseChange L = shortCubic (2 : L) 0 := by
   simp [Paper5FixedTraceZero.reduction, Paper5FixedTraceZero.fixedCurve, shortCubic,
-    WeierstrassCurve.baseChange, WeierstrassCurve.map]
+    WeierstrassCurve.baseChange, WeierstrassCurve.map, map_ofNat]
 
 private theorem finite_affine_no_p_torsion {p : ℕ} [Fact p.Prime] {L : Type*} [Field L]
-    [Fintype L] [Algebra (ZMod p) L] (hp5 : 5 ≤ p) (hp4 : p % 4 = 3) :
+    [Fintype L] [DecidableEq L] [Algebra (ZMod p) L] (hp5 : 5 ≤ p) (hp4 : p % 4 = 3) :
     ∀ Q : ((Paper5FixedTraceZero.reduction p).baseChange L).toAffine.Point,
       p • Q = 0 → Q = 0 := by
   letI : CharP L p := charP_of_injective_algebraMap (algebraMap (ZMod p) L).injective p
@@ -196,6 +196,7 @@ theorem fixed_curve_no_geometric_p_torsion {p : ℕ} [Fact p.Prime] {L : Type*} 
   · intro E hE
     letI : Finite E := hE
     letI := Fintype.ofFinite E
+    letI : DecidableEq E := inferInstanceAs (DecidableEq {x : L // x ∈ E})
     exact finite_affine_no_p_torsion (L := E) hp5 hp4
   · rw [← map_nsmul, hP, map_zero]
 
