@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Adjunction.Additive
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionComposition
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionMono
 

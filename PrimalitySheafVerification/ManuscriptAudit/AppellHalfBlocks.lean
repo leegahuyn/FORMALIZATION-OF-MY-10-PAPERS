@@ -102,7 +102,8 @@ theorem halfBlock_numerator_hasSum (τ : ℂ) (hτ : 0 < τ.im) :
   have hv : (τ + 1) / 2 + 1 / 2 = τ / 2 + 1 := by ring
   have hi : (τ + 1).im = τ.im := by simp
   have h := baseBlock_numerator_hasSum (τ + 1) (by rw [hi]; exact hτ)
-  rw [hu, hv] at h
+  rw [hv, hu] at h
+  change HasSum (fun n : ℤ => numeratorTerm (τ / 2 + 1 / 2) (τ / 2 + 1) (τ + 1) n) 0 at h
   simpa only [numeratorTerm_tau_add_one] using h
 
 /-- All three displayed Paper 8 blocks have zero Appell value on the upper half-plane. -/

@@ -69,10 +69,17 @@ private abbrev C (S : Scheme.{u}) (M : AddCommGrpCat.{u}) :=
 intersection give vanishing H¹ for the ambient constant sheaf. -/
 theorem ambientHOne_subsingleton (M : AddCommGrpCat.{u})
     (hCover : Set.range j ∪ Set.range k = Set.univ)
-    [PreconnectedSpace (↑(pullback j k) : Type u)] [Nonempty (↑(pullback j k) : Type u)]
+    [hConn : PreconnectedSpace (↑(pullback j k) : Type u)]
+    [hN : Nonempty (↑(pullback j k) : Type u)]
     (hU : Subsingleton (Sheaf.H (C U M) 1)) (hV : Subsingleton (Sheaf.H (C V M) 1)) :
-    Subsingleton (Sheaf.H (C X M) 1) :=
-  constantHOne_subsingleton j k M hCover (fstLeg j k) (sndLeg j k)
+    Subsingleton (Sheaf.H (C X M) 1) := by
+  letI : PreconnectedSpace (intersection j k).left := by
+    change PreconnectedSpace (↑(pullback j k) : Type u)
+    exact hConn
+  letI : Nonempty (intersection j k).left := by
+    change Nonempty (↑(pullback j k) : Type u)
+    exact hN
+  exact constantHOne_subsingleton j k M hCover (fstLeg j k) (sndLeg j k)
     (intersection_isPullback j k) hU hV
 
 end

@@ -86,11 +86,24 @@ private theorem affine_eval_laurent_mk (n : ℕ) (p : PlaneRing K) (hp : p ∈ g
   funext i
   fin_cases i <;> simp [zValues, Polynomial.toLaurent_X_pow]
 
+private theorem lineLaurent_X :
+    lineLaurent K (Polynomial.X : Polynomial K) = LaurentPolynomial.T (-1) := by
+  change LaurentPolynomial.invert (Polynomial.toLaurent (Polynomial.X : Polynomial K)) = _
+  rw [Polynomial.toLaurent_X, LaurentPolynomial.invert_T]
+
 private theorem scaled_values :
     (fun i => (LaurentPolynomial.T 3 : LaurentRing K) * lineLaurent K (yValues K i)) = zValues K := by
   funext i
-  fin_cases i <;>
-    norm_num [lineLaurent, yValues, zValues, Polynomial.toLaurent_X_pow, ← LaurentPolynomial.T_add]
+  fin_cases i
+  · change (LaurentPolynomial.T 3 : LaurentRing K) * lineLaurent K Polynomial.X =
+      LaurentPolynomial.T 2
+    rw [lineLaurent_X]
+    exact (LaurentPolynomial.T_add 3 (-1)).symm
+  · change (LaurentPolynomial.T 3 : LaurentRing K) * lineLaurent K 1 = LaurentPolynomial.T 3
+    rw [map_one, mul_one]
+  · change (LaurentPolynomial.T 3 : LaurentRing K) * lineLaurent K (Polynomial.X ^ 3) = 1
+    rw [map_pow, lineLaurent_X, LaurentPolynomial.T_pow]
+    exact mul_T_three_neg_three K
 
 private theorem scaled_eval (n : ℕ) (p : PlaneRing K) (hp : p ∈ grading K n) :
     evalZLaurent K p = (LaurentPolynomial.T 3 : LaurentRing K) ^ n * lineLaurent K (evalYPolynomial K p) := by
@@ -104,7 +117,7 @@ theorem evalYZ_on_z :
     (evalYZ K).comp (zToYZ K) = (cuspLaurent K).toRingHom.comp (affineChartEvaluation K) := by
   apply RingHom.ext
   intro b
-  obtain ⟨n, p, hp, rfl⟩ := Away.mk_surjective (X_mem_one K 2) b
+  obtain ⟨n, p, hp, rfl⟩ := Away.mk_surjective (grading K) (X_mem_one K 2) b
   change evalYZ K (zToYZ K (Away.mk (grading K) (X_mem_one K 2) n p hp)) =
     cuspLaurent K (affineChartEvaluation K (Away.mk (grading K) (X_mem_one K 2) n p hp))
   unfold zToYZ
@@ -118,7 +131,7 @@ theorem evalYZ_on_y :
     (evalYZ K).comp (yToYZ K) = (lineLaurent K).toRingHom.comp (evalYChart K) := by
   apply RingHom.ext
   intro b
-  obtain ⟨n, p, hp, rfl⟩ := Away.mk_surjective (X_mem_one K 1) b
+  obtain ⟨n, p, hp, rfl⟩ := Away.mk_surjective (grading K) (X_mem_one K 1) b
   change evalYZ K (yToYZ K (Away.mk (grading K) (X_mem_one K 1) n p hp)) =
     lineLaurent K (evalYChart K (Away.mk (grading K) (X_mem_one K 1) n p hp))
   unfold yToYZ
