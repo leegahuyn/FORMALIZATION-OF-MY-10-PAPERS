@@ -70,7 +70,8 @@ theorem rationalSkyscraperHeightOneIso_naturality (p : HeightOneSpectrum A)
   apply Pi.hom_ext
   intro q
   simp only [Category.assoc, Pi.whiskerEquiv_hom, Pi.map'_comp_π, Pi.map'_comp_π_assoc,
-    Iso.refl_inv, eqToHom_refl, Category.id_comp, Category.comp_id, h]
+    Iso.refl_inv, eqToHom_refl, Category.comp_id]
+  exact congrArg (fun z ↦ Pi.π liftB z ≫ 𝟙 M ≫ 𝟙 M) (h q)
 
 end
 

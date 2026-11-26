@@ -11,7 +11,7 @@ open Polynomial CubicTwoTorsion FiniteFieldPointCount
 
 noncomputable section
 
-variable {K : Type*} [Field K] [IsAlgClosed K]
+variable {K : Type*} [Field K] [IsAlgClosed K] [DecidableEq K]
 
 private def cubicPolynomial (A : K) : K[X] := X ^ 3 - C (-A)
 

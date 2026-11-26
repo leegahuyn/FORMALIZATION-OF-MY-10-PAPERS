@@ -29,7 +29,7 @@ theorem of_coverDense (i : D ⥤ C) [i.IsCoverDense J]
     apply J.transitive (i.is_cover_of_isCoverDense J U)
     intro V f hf
     obtain ⟨⟨W, a, b, rfl⟩⟩ := hf
-    rw [← Sieve.pullback_comp, Presheaf.pullback_imageSieve]
+    rw [Sieve.pullback_comp, Presheaf.pullback_imageSieve]
     exact J.pullback_stable a (h W (G.map b.op s))
 
 universe u

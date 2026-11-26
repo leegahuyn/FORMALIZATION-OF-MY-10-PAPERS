@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Exact.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
@@ -29,7 +30,8 @@ theorem hom_ext {P Q : Sheaf J AddCommGrpCat.{u}} {a b : P ⟶ Q}
   apply Sheaf.hom_ext
   apply (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense (K := J)
     I P.obj Q.obj Q.property).1
-  ext1 U
+  apply NatTrans.ext
+  funext U
   exact h U
 
 set_option backward.isDefEq.respectTransparency false in

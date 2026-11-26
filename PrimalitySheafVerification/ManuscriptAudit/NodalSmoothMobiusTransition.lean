@@ -88,12 +88,15 @@ theorem zGenerator_normalized (h2 : (2 : K) ≠ 0) :
       (algebraMap (laurentRing K) (minusRing K) (LaurentPolynomial.T 1))))) = _
   rw [AlgEquiv.apply_symm_apply, minusEquiv_T, uToT_u]
 
+set_option maxRecDepth 2048 in
 private theorem yGenerator_normalized (h2 : (2 : K) ≠ 0) :
     yToT K (laurentToY K h2 (LaurentPolynomial.T 1)) = -uAtT K := by
-  change yToT K ((yToT K).symm
-    (uToT K h2 ((signedCoordinateEquiv K).symm ((NodalSmoothMobiusY.localizationEquiv K).symm
-      (algebraMap (laurentRing K) (plusRing K) (LaurentPolynomial.T 1)))))) = _
-  rw [AlgEquiv.apply_symm_apply, plusEquiv_T, signedEquiv_inv_X, map_neg, uToT_u]
+  simp only [laurentToY, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
+    AlgEquiv.restrictScalars_symm_apply, Algebra.algHom_apply, yMobiusEquiv,
+    AlgEquiv.symm_trans_apply]
+  rw [AlgEquiv.apply_symm_apply, plusEquiv_T, signedEquiv_inv_X]
+  change (uToT K h2) (-NodalSmoothMobius.u K) = -uAtT K
+  rw [map_neg, uToT_u]
 
 theorem yGenerator_relation (h2 : (2 : K) ≠ 0) :
     laurentToY K h2 (LaurentPolynomial.T 1) * (xCoeff K + 1) = 1 - xCoeff K := by
@@ -141,7 +144,7 @@ private theorem tToParameter_t : tToParameter K (NodalSmoothMobius.t K) = T K :=
 
 private theorem zParameter_factor :
     (tToParameter K).comp (normalizationEquiv K).toAlgHom = zParameterLocal K := by
-  apply IsLocalization.algHom_ext (Submonoid.powers (nodeX K))
+  apply IsLocalization.algHom_ext (Submonoid.powers (NodalAwayNormalization.nodeX K))
   apply AlgHom.ext
   intro a
   change tToParameter K (normalizationEquiv K (algebraMap (coordinates K) (ZRing K) a)) =

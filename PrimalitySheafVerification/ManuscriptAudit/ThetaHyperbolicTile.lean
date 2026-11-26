@@ -84,8 +84,11 @@ theorem bounded_profile_integrableOn_fd (F : ℂ → ℂ) (B : ℝ)
     exact (hD.ennreal_toReal.mul hF'.measurable).aestronglyMeasurable
   apply Integrable.mono' (integrable_majorant_fd B) hMeas
   filter_upwards [self_mem_ae_restrict ModularGroup.isClosed_fd.measurableSet] with z hz
-  rw [smul_eq_mul, density_toReal, Real.norm_eq_abs, abs_of_nonneg
-    (mul_nonneg (inv_nonneg.mpr (sq_nonneg _)) (mul_nonneg (Real.sqrt_nonneg _) (sq_nonneg _)))]
+  have hFz : 0 ≤ thetaDensity F z := by
+    unfold thetaDensity
+    exact mul_nonneg (Real.sqrt_nonneg _) (sq_nonneg _)
+  rw [smul_eq_mul, density_toReal, Real.norm_eq_abs,
+    abs_of_nonneg (mul_nonneg (inv_nonneg.mpr (sq_nonneg z.im)) hFz)]
   have he : (z.im ^ 2)⁻¹ * thetaDensity F z =
       ‖F (z : ℂ)‖ ^ 2 * z.im ^ (-(3 / 2 : ℝ)) := by
     rw [thetaDensity, Real.sqrt_eq_rpow, show -(3 / 2 : ℝ) = 1 / 2 - 2 by norm_num,
