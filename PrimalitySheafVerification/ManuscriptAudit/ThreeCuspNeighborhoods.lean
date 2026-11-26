@@ -141,11 +141,17 @@ theorem highOrbits_eq_three_neighborhoods (Y : ℝ) :
     obtain ⟨i, m, γ, hg⟩ := coordinate_factorization g
     apply Set.mem_iUnion.2
     refine ⟨i, T ^ m • z, ?_, ?_⟩
-    · simpa only [ModularGroup.im_T_zpow_smul] using hz
+    · change Y < (T ^ m • z).im
+      rw [ModularGroup.im_T_zpow_smul]
+      exact hz
     · have hγ : γ • (chart i • (T ^ m • z)) = g • z := by
         change (γ : SL(2, ℤ)) • (chart i • (T ^ m • z)) = g • z
         rw [hg, mul_smul, mul_smul]
-      exact (Quotient.sound ⟨γ, hγ⟩).symm.trans hq
+      have heq : orbitPoint (g • z) = orbitPoint (chart i • (T ^ m • z)) := by
+        apply Quotient.sound
+        change ∃ δ : GammaTwo, δ • (chart i • (T ^ m • z)) = g • z
+        exact ⟨γ, hγ⟩
+      exact heq.symm.trans hq
   · intro h
     obtain ⟨i, z, hz, hq⟩ := Set.mem_iUnion.1 h
     exact ⟨chart i, z, hz, hq⟩
@@ -163,7 +169,7 @@ theorem high_chart_eq_iff {Y : ℝ} (hY : 1 ≤ Y) {i j : Fin 3} {z w : ℍ}
     let k := (chart j)⁻¹ * ((γ : SL(2, ℤ)) * chart i)
     have hAct : k • z = w := by
       change (γ : SL(2, ℤ)) • (chart i • z) = chart j • w at hγ
-      dsimp [k]
+      change ((chart j)⁻¹ * ((γ : SL(2, ℤ)) * chart i)) • z = w
       rw [mul_smul, mul_smul, hγ, ← mul_smul, inv_mul_cancel, one_smul]
     have hk : k 1 0 = 0 := HighInfinityCusp.bottom_left_zero_of_high_image hY k hz (by
       rw [hAct]

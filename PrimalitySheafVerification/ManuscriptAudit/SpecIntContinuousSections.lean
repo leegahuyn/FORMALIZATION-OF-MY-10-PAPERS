@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.AlgebraicGeometry.Spec
+import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.Separation.Hausdorff
 
@@ -15,7 +15,7 @@ namespace ManuscriptAudit.SpecIntContinuousSections
 
 open AlgebraicGeometry
 
-abbrev arithBase := Spec (CommRingCat.of ℤ)
+abbrev arithBase : Scheme.{0} := Spec (CommRingCat.of ℤ)
 
 theorem values_equal {B : Type*} [TopologicalSpace B] [T2Space B]
     (f : C(arithBase, B)) (x y : arithBase) : f x = f y := by

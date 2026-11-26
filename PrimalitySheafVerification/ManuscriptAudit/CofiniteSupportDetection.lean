@@ -39,6 +39,17 @@ private def sk {X : TopCat.{0}} (x : X) : AbelianSheaf X := by
 private abbrev stalkAt {X : TopCat.{0}} (x : X) : AbelianSheaf X ⥤ G :=
   TopCat.Sheaf.forget G X ⋙ TopCat.Presheaf.stalkFunctor G x
 
+local instance stalkAt_additive {X : TopCat.{0}} (x : X) : (stalkAt x).Additive :=
+  inferInstanceAs ((TopCat.Sheaf.forget G X ⋙ TopCat.Presheaf.stalkFunctor G x).Additive)
+
+local instance stalkAt_preservesZeroMorphisms {X : TopCat.{0}} (x : X) :
+    (stalkAt x).PreservesZeroMorphisms :=
+  Functor.preservesZeroMorphisms_of_additive (stalkAt x)
+
+local instance stalkAt_preservesFiniteLimits {X : TopCat.{0}} (x : X) :
+    PreservesFiniteLimits (stalkAt x) :=
+  inferInstanceAs (PreservesFiniteLimits (TopCat.Sheaf.forget G X ⋙ TopCat.Presheaf.stalkFunctor G x))
+
 private def toPoint {X : TopCat.{0}} (η x : X) (h : Specializes η x) : sk η ⟶ sk x := by
   classical
   let e := skyscraperPresheafStalkOfSpecializes η A h
@@ -51,7 +62,8 @@ private theorem map_toPoint_mono {X : TopCat.{0}} (η x : X) (h : Specializes η
   let e := skyscraperPresheafStalkOfSpecializes η A h
   have he : (stalkAt x).map (toPoint η x h) ≫ adj.counit.app A = e.hom := by
     change (stalkAt x).map (adj.homEquiv (sk η) A e.hom) ≫ adj.counit.app A = e.hom
-    rw [← adj.homEquiv_counit, Equiv.symm_apply_apply]
+    simpa only [adj.homEquiv_counit] using
+      (adj.homEquiv (sk η) A).symm_apply_apply e.hom
   exact mono_of_mono_fac he
 
 private abbrev omittedProduct {X : TopCat.{0}} (Q : Set X) : AbelianSheaf X :=
@@ -77,7 +89,7 @@ private theorem map_testOmitted_mono {X : TopCat.{0}} (η : X) (hη : ∀ x : X,
 private theorem kernel_stalk_isZero {X : TopCat.{0}} (η : X) (hη : ∀ x : X, Specializes η x)
     {P : Set X} {x : X} (hx : x ∉ P) :
     IsZero ((stalkAt x).obj (kernel (testOmitted η hη Pᶜ))) := by
-  let q : Pᶜ := ⟨x, hx⟩
+  let q : ↑(Pᶜ : Set X) := ⟨x, hx⟩
   letI := map_testOmitted_mono η hη Pᶜ q
   exact (isZero_kernel_of_mono _).of_iso (PreservesKernel.iso (stalkAt x)
     (testOmitted η hη Pᶜ)).symm
@@ -87,6 +99,8 @@ private theorem kernel_stalk_nontrivial {X : TopCat.{0}} (η : X)
     Nontrivial ((stalkAt x).obj (kernel (testOmitted η hη Pᶜ))) := by
   classical
   let F := stalkAt x
+  letI : F.PreservesZeroMorphisms := stalkAt_preservesZeroMorphisms x
+  letI : PreservesFiniteLimits F := stalkAt_preservesFiniteLimits x
   let f := testOmitted η hη Pᶜ
   have hNot : ¬ Nontrivial (F.obj (omittedProduct Pᶜ)) := by
     intro h
@@ -141,6 +155,7 @@ theorem exactDetectionIndex_eq_zero_of_open_with_generic_and_closed_point
     · intro hx
       by_contra hxP
       let F := stalkAt x
+      letI : PreservesFiniteLimits F := stalkAt_preservesFiniteLimits x
       have hU : IsZero (F.obj U) := kernel_stalk_isZero η hη hxP
       have hsp : ¬ Specializes x₀ x := by
         intro hsp

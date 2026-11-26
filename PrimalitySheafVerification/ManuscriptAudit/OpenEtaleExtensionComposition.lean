@@ -29,7 +29,7 @@ set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
 /-- Restriction along an open immersion is left adjoint to its usual direct image. -/
-def restrictionDirectImageAdjunction : restriction j C.{u} ⊣ directImage j C := by
+def restrictionDirectImageAdjunction : restriction j C.{u} ⊣ directImage j C.{u} := by
   letI := postcomposeContinuous j
   letI := isContinuous_of_baseChange j
   let a : etalePostcompose j ⊣ etaleBaseChange j :=
@@ -39,7 +39,7 @@ def restrictionDirectImageAdjunction : restriction j C.{u} ⊣ directImage j C :
 
 /-- Restricting the constant abelian-group sheaf gives the constant sheaf on the open. -/
 def restrictionConstantIso : constantSheaf X.smallEtaleTopology C.{u} ⋙ restriction j C.{u} ≅
-    constantSheaf U.smallEtaleTopology C := by
+    constantSheaf U.smallEtaleTopology C.{u} := by
   letI := SmallEtaleBaseChange.preservesFiniteLimits j
   let aX := constantSheafAdj X.smallEtaleTopology C.{u} (terminalIsTerminal (C := X.Etale))
   let aU := constantSheafAdj U.smallEtaleTopology C.{u}
@@ -47,7 +47,7 @@ def restrictionConstantIso : constantSheaf X.smallEtaleTopology C.{u} ⋙ restri
   exact (aX.comp (restrictionDirectImageAdjunction j)).leftAdjointUniq aU
 
 /-- Restriction along nested opens is restriction along their composite. -/
-def restrictionCompIso : restriction j C.{u} ⋙ restriction i C.{u} ≅ restriction (i ≫ j) C := by
+def restrictionCompIso : restriction j C.{u} ⋙ restriction i C.{u} ≅ restriction (i ≫ j) C.{u} := by
   letI := postcomposeContinuous i
   letI := postcomposeContinuous j
   letI := postcomposeContinuous (i ≫ j)
@@ -59,10 +59,10 @@ def restrictionCompIso : restriction j C.{u} ⋙ restriction i C.{u} ≅ restric
 
 /-- Extension by zero along nested opens is extension along their composite. -/
 def extensionByZeroCompIso : extensionByZero i C.{u} ⋙ extensionByZero j C.{u} ≅
-    extensionByZero (i ≫ j) C :=
-  (((abelianExtensionByZeroAdjunction i).comp (abelianExtensionByZeroAdjunction j))
-    .ofNatIsoRight (restrictionCompIso i j)).leftAdjointUniq
-      (abelianExtensionByZeroAdjunction (i ≫ j))
+    extensionByZero (i ≫ j) C.{u} := by
+  let a := (abelianExtensionByZeroAdjunction i).comp (abelianExtensionByZeroAdjunction j)
+  exact (a.ofNatIsoRight (restrictionCompIso i j)).leftAdjointUniq
+    (abelianExtensionByZeroAdjunction (i ≫ j))
 
 /-- The canonical map from the constant sheaf extended by zero from the smaller
 open to the constant sheaf extended by zero from the larger open. -/

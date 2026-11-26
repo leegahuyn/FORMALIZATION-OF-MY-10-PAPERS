@@ -28,7 +28,7 @@ set_option maxHeartbeats 50000 in
 Grothendieck abelian structure. -/
 theorem abelianSheaf_hasDiscreteColimit (X : TopCat.{0}) {ι : Type}
     (D : Discrete ι ⥤ AbelianSheaf X) : HasColimit D :=
-  let h : HasColimitsOfSize.{0, 0} (AbelianSheaf X) := IsGrothendieckAbelian.hasColimits
+  let h : HasColimitsOfSize.{0, 0} (AbelianSheaf X) := IsGrothendieckAbelian.hasColimits _
   (h.has_colimits_of_shape (Discrete ι)).has_colimit D
 
 local instance pointFactor_hasCoproduct {X : TopCat.{0}} (P : Set X) :
@@ -61,9 +61,11 @@ theorem supportSheaf_nontrivial_of_factor {X : TopCat.{0}} (P : Set X) (p : P)
     (T : AbelianSheaf X ⥤ G) (hp : Nontrivial (T.obj (pointFactor P p))) :
     Nontrivial (T.obj (supportSheaf X P)) := by
   letI := hp
-  let j : pointFactor P p ⟶ supportSheaf X P := Sigma.ι (pointFactor P) p
+  let j := Sigma.ι (pointFactor P) p
   obtain ⟨r, hr⟩ := exists_ι_split (pointFactor P) p
-  have h : T.map j ≫ T.map r = 𝟙 _ := by rw [← T.map_comp, hr, T.map_id]
+  have hr' : j ≫ r = 𝟙 (pointFactor P p) := hr
+  have h : T.map j ≫ T.map r = 𝟙 _ :=
+    (T.map_comp j r).symm.trans (by rw [hr', T.map_id])
   have hl : Function.LeftInverse (T.map r) (T.map j) := by
     intro a
     change (T.map j ≫ T.map r) a = a

@@ -37,7 +37,7 @@ private theorem extensionUnit_hom (F : Sheaf U.smallEtaleTopology C.{u}) :
   letI := postcomposeContinuous j
   letI := hasLeftKanExtension j C.{u}
   let a := (G.lanAdjunction C.{u}).comp (sheafificationAdjunction X.smallEtaleTopology C.{u})
-  let b : extensionByZero j C.{u} ⊣ restriction j C :=
+  let b : extensionByZero j C.{u} ⊣ restriction j C.{u} :=
     a.restrictFullyFaithful (fullyFaithfulSheafToPresheaf U.smallEtaleTopology C.{u})
       (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
   change (sheafToPresheaf U.smallEtaleTopology C.{u}).map (b.unit.app F) = _
