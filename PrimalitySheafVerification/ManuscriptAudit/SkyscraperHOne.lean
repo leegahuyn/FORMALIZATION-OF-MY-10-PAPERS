@@ -69,7 +69,7 @@ theorem flasque_H1_subsingleton {X : TopCat.{0}} (F : AbelianSheaf X)
 theorem skyscraper_H1_subsingleton {X : TopCat.{0}} (p : X)
     [(U : Opens X) → Decidable (p ∈ U)] (A : G) :
     Subsingleton ((skyscraperSheaf p A).H 1) := by
-  letI := TopCat.isFlasque_skyscraperSheaf_of_hasZeroObject p A
+  letI := isFlasque_skyscraperSheaf_of_hasZeroObject p A
   exact flasque_H1_subsingleton _
 
 end

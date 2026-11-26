@@ -94,7 +94,7 @@ def pointSummand {X : TopCat.{0}} (p : X) (A : G) : AbelianSheaf X := by
 theorem pointSummand_isFlasque {X : TopCat.{0}} (p : X) (A : G) :
     TopCat.Sheaf.IsFlasque (pointSummand p A) := by
   classical
-  exact TopCat.isFlasque_skyscraperSheaf_of_hasZeroObject p A
+  exact isFlasque_skyscraperSheaf_of_hasZeroObject p A
 
 /-- The finite-stage skyscraper sums in Paper 6 have zero native H¹. -/
 theorem finiteSkyscraperCoproduct_H1_subsingleton {X : TopCat.{0}} {ι : Type} [Finite ι]
