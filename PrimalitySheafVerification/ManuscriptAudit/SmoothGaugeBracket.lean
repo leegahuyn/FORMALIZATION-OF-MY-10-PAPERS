@@ -74,7 +74,9 @@ theorem rotation_entry_hasDerivAt (y : ℝ) (i j : Fin 2) :
   fin_cases i <;> fin_cases j
   · simpa [rotation, rotationVelocity] using hc
   · simpa [rotation, rotationVelocity] using hs
-  · simpa [rotation, rotationVelocity] using hs.neg
+  · change HasDerivAt (-(fun t : ℝ => (Real.sin (t - 1) : ℂ)))
+        (-(Real.cos (y - 1) : ℂ)) y
+    exact hs.neg
   · simpa [rotation, rotationVelocity] using hc
 
 theorem gaugeDx_eq_zero (x y : ℝ) : gaugeDx x y = 0 := by
@@ -91,17 +93,30 @@ theorem gaugeDy_eq_velocity (x y : ℝ) : gaugeDy x y = rotationVelocity y := by
 its genuine inverse. -/
 theorem rotation_unitary (y : ℝ) :
     (rotation y)ᴴ * rotation y = 1 ∧ rotation y * (rotation y)ᴴ = 1 := by
+  let c : ℂ := (Real.cos (y - 1) : ℂ)
+  let s : ℂ := (Real.sin (y - 1) : ℂ)
+  have hRotation : rotation y = !![c, s; -s, c] := rfl
+  have hcStar : star c = c := Complex.conj_ofReal _
+  have hsStar : star s = s := Complex.conj_ofReal _
   have hTranspose : (rotation y)ᴴ = (rotation y)ᵀ := by
+    rw [hRotation]
     apply Matrix.ext
     intro i j
-    fin_cases i <;> fin_cases j <;>
-      simp [rotation, Matrix.conjTranspose_apply, Matrix.transpose_apply, Complex.star_def]
-  have hTrig : (Real.sin (y - 1) : ℂ) ^ 2 + (Real.cos (y - 1) : ℂ) ^ 2 = 1 := by
+    fin_cases i <;> fin_cases j
+    · change star c = c
+      exact hcStar
+    · change star (-s) = -s
+      rw [star_neg, hsStar]
+    · change star s = s
+      exact hsStar
+    · change star c = c
+      exact hcStar
+  have hTrig : s ^ 2 + c ^ 2 = 1 := by
     simpa only [Complex.ofReal_add, Complex.ofReal_pow, Complex.ofReal_one] using
       congrArg Complex.ofReal (Real.sin_sq_add_cos_sq (y - 1))
-  rw [hTranspose]
+  rw [hTranspose, hRotation]
   constructor <;> apply Matrix.ext <;> intro i j <;> fin_cases i <;> fin_cases j <;>
-    norm_num [rotation, Matrix.transpose_apply, Matrix.mul_apply, Fin.sum_univ_two,
+    norm_num [Matrix.transpose_apply, Matrix.mul_apply, Fin.sum_univ_two,
       Matrix.one_apply] <;> first | linear_combination hTrig | ring
 
 /-- The usual trace meets the conjugation rule of the manuscript for this gauge. -/
@@ -149,8 +164,8 @@ zero. The original fields are the constant one-forms (X,0) and (0,0). -/
 theorem smooth_unitary_gauge_refutes_bracket_covariance :
     printedBracket (affineGauge 0 1 (X, 0)) (affineGauge 0 1 (0, 0)) ≠
       (gauge 0 1)ᴴ * printedBracket (X, 0) (0, 0) * gauge 0 1 := by
-  simp only [affineGauge_at_one, zero_add, printedBracket, wedgeCoefficient, Prod.fst_mk,
-    Prod.snd_mk, zero_mul, mul_zero, sub_zero, zero_sub, sub_neg_eq_add]
+  simp only [affineGauge_at_one, zero_add, printedBracket, wedgeCoefficient,
+    zero_mul, mul_zero, sub_zero, zero_sub, sub_neg_eq_add]
   intro h
   have hEntry : (X * Y + Y * X) 0 1 = 0 :=
     congrArg (fun M : Mat₂ => M 0 1) h

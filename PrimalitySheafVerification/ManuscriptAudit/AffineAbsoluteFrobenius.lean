@@ -63,7 +63,7 @@ theorem frobeniusMap_universally_injective : UniversallyInjective (frobeniusMap 
   have hRing := congrArg CommRingCat.Hom.hom (Spec.map_injective he)
   have hpzero : (p : F) = 0 := by
     rw [← map_natCast f'.hom, CharP.cast_eq_zero R p, map_zero]
-  letI : CharP F p := (charP_iff_prime_eq_zero hp).mpr hpzero
+  letI : CharP F p := (CharP.charP_iff_prime_eq_zero hp).mpr hpzero
   have heq : f'.hom = g'.hom := by
     ext a
     have hpow := DFunLike.congr_fun hRing a

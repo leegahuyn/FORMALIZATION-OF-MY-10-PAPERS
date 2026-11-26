@@ -30,7 +30,8 @@ private theorem coeff_one_succ_pow (f : Polynomial K) (n : ℕ) :
       Polynomial.mul_coeff_one, ih]
     have h : (f ^ (n + 1)).coeff 0 = f.coeff 0 ^ (n + 1) :=
       map_pow (Polynomial.constantCoeff : Polynomial K →+* K) f (n + 1)
-    rw [h, pow_succ, Nat.cast_succ]
+    rw [h, pow_succ]
+    simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
     ring
 
 variable (p : ℕ) [Fact p.Prime] [CharP K p]
@@ -57,7 +58,8 @@ def normalizationFrobeniusToCusp : Polynomial K →+* CuspSubalgebra K :=
 theorem inclusion_comp_normalizationFrobenius :
     (algebraMap (CuspSubalgebra K) (Polynomial K)).comp (normalizationFrobeniusToCusp K p) =
       frobenius (Polynomial K) p := by
-  ext f
+  apply RingHom.ext
+  intro f
   rfl
 
 theorem normalizationFrobenius_comp_inclusion :

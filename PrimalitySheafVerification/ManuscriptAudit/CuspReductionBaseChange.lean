@@ -43,6 +43,34 @@ private theorem reduction_X_square : (reductionAlg K (X : Polynomial K)) ^ 2 = 0
   change Ideal.Quotient.mk (Ideal.span {((X : Polynomial K) ^ 2)}) (X ^ 2) = 0
   exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_singleton _))
 
+private theorem ideal_isTwoSided {R : Type*} [CommRing R] (I : Ideal R) :
+    I.IsTwoSided := inferInstance
+
+private theorem span_tmul_square {R S D : Type*}
+    [CommRing R] [CommRing S] [CommRing D] [Algebra R S] [Algebra R D]
+    (a : D) (ha : a ^ 2 = 0) : (Ideal.span {(1 : S) ⊗ₜ[R] a}) ^ 2 = ⊥ := by
+  have h : ((1 : S) ⊗ₜ[R] a) ^ 2 = 0 := by
+    calc
+      _ = (1 : S) ⊗ₜ[R] (a ^ 2) := by
+        simp only [pow_two, Algebra.TensorProduct.tmul_mul_tmul, one_mul]
+      _ = 0 := by rw [ha, TensorProduct.tmul_zero]
+  exact (Ideal.span_singleton_pow _ 2).trans (Ideal.span_singleton_eq_bot.mpr h)
+
+private theorem tmul_mul_mem_span {R S D : Type*}
+    [CommRing R] [CommRing S] [CommRing D] [Algebra R S] [Algebra R D]
+    (t : S) (a b : D) : t ⊗ₜ[R] (a * b) ∈ Ideal.span {(1 : S) ⊗ₜ[R] a} := by
+  simpa only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, mul_comm b a] using
+    (Ideal.span {(1 : S) ⊗ₜ[R] a}).mul_mem_left (t ⊗ₜ[R] b)
+      (Ideal.subset_span (Set.mem_singleton _))
+
+private theorem quotient_comps_eq_of_sub_mem {R S D : Type*}
+    [CommRing R] [CommRing S] [CommRing D] [Algebra R S] [Algebra R D]
+    (I : Ideal D) (f g : S →ₐ[R] D) (h : ∀ z, f z - g z ∈ I) :
+    (Ideal.Quotient.mkₐ R I).comp f = (Ideal.Quotient.mkₐ R I).comp g := by
+  apply AlgHom.ext
+  intro z
+  exact Ideal.Quotient.eq.mpr (h z)
+
 variable (T : Type*) [CommRing T] [Algebra (CuspSubalgebra K) T]
 
 /-- Base change of polynomial reduction to a cusp algebra. -/
@@ -69,28 +97,14 @@ def flatConstantReductionAlg :
 def baseChangedOriginIdeal : Ideal (T ⊗[CuspSubalgebra K] cuspSquareQuotient K) :=
   Ideal.span {(1 : T) ⊗ₜ[CuspSubalgebra K] reductionAlg K (X : Polynomial K)}
 
-instance baseChangedOriginIdeal_isTwoSided : (baseChangedOriginIdeal K T).IsTwoSided := by
-  constructor
-  intro z t hz
-  rw [mul_comm]
-  exact (baseChangedOriginIdeal K T).mul_mem_left t hz
+instance baseChangedOriginIdeal_isTwoSided : (baseChangedOriginIdeal K T).IsTwoSided :=
+  ideal_isTwoSided (baseChangedOriginIdeal K T)
 
 /-- The base-changed origin ideal is square zero. -/
-theorem baseChangedOriginIdeal_square : (baseChangedOriginIdeal K T) ^ 2 = ⊥ := by
-  let o : T ⊗[CuspSubalgebra K] cuspSquareQuotient K :=
-    (1 : T) ⊗ₜ[CuspSubalgebra K] reductionAlg K (X : Polynomial K)
-  letI : (Ideal.span {o}).IsTwoSided := baseChangedOriginIdeal_isTwoSided K T
-  have h : o ^ 2 = 0 := by
-    dsimp only [o]
-    rw [pow_two, Algebra.TensorProduct.tmul_mul_tmul, one_mul, ← pow_two, reduction_X_square,
-      TensorProduct.tmul_zero]
-  change (Ideal.span {o}) ^ 2 = ⊥
-  exact (Ideal.span_singleton_pow o 2).trans (Ideal.span_singleton_eq_bot.mpr h)
+theorem baseChangedOriginIdeal_square : (baseChangedOriginIdeal K T) ^ 2 = ⊥ :=
+  span_tmul_square (R := CuspSubalgebra K) (S := T) _ (reduction_X_square K)
 
-set_option maxHeartbeats 1200000 in
-private abbrev reductionModOrigin :
-    T ⊗[CuspSubalgebra K] cuspSquareQuotient K →ₐ[T]
-      (T ⊗[CuspSubalgebra K] cuspSquareQuotient K) ⧸ baseChangedOriginIdeal K T :=
+private abbrev reductionModOrigin :=
   Ideal.Quotient.mkₐ T (baseChangedOriginIdeal K T)
 
 set_option maxHeartbeats 1200000 in
@@ -99,28 +113,24 @@ set_option backward.isDefEq.respectTransparency false in
 theorem flatReduction_equal_mod_origin :
     (reductionModOrigin K T).comp (flatReductionAlg K T) =
       (reductionModOrigin K T).comp (flatConstantReductionAlg K T) := by
-  apply AlgHom.ext
+  refine quotient_comps_eq_of_sub_mem (baseChangedOriginIdeal K T) _ _ ?_
   intro z
   induction z using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
+  | zero => simpa only [map_zero, sub_self] using (baseChangedOriginIdeal K T).zero_mem
   | tmul t f =>
-    change Ideal.Quotient.mk (baseChangedOriginIdeal K T) (flatReductionAlg K T (t ⊗ₜ f)) =
-      Ideal.Quotient.mk (baseChangedOriginIdeal K T) (flatConstantReductionAlg K T (t ⊗ₜ f))
-    rw [flatReductionAlg_tmul, flatConstantReductionAlg_tmul]
-    apply Ideal.Quotient.eq.mpr
-    rw [← TensorProduct.tmul_sub]
+    rw [flatReductionAlg_tmul, flatConstantReductionAlg_tmul, ← TensorProduct.tmul_sub]
     have h : X ∣ f - C (f.coeff 0) := by
       rw [Polynomial.X_dvd_iff, Polynomial.coeff_sub, Polynomial.coeff_C_zero, sub_self]
     obtain ⟨q, hq⟩ := h
-    have hc : constantReductionAlg K f = reductionAlg K (C (f.coeff 0)) := rfl
-    rw [hc, ← map_sub, hq, map_mul]
-    have ht : (t ⊗ₜ[CuspSubalgebra K] (reductionAlg K X * reductionAlg K q)) =
-        ((1 : T) ⊗ₜ[CuspSubalgebra K] reductionAlg K X) *
-          (t ⊗ₜ[CuspSubalgebra K] reductionAlg K q) := by
-      rw [Algebra.TensorProduct.tmul_mul_tmul, one_mul]
-    rw [ht]
-    exact Ideal.mul_mem_right _ (baseChangedOriginIdeal K T) (Ideal.subset_span (Set.mem_singleton _))
-  | add x y hx hy => simp only [map_add, hx, hy]
+    have hd : reductionAlg K f - constantReductionAlg K f =
+        reductionAlg K X * reductionAlg K q := by
+      change reductionAlg K f - reductionAlg K (C (f.coeff 0)) = _
+      rw [← map_sub, hq, map_mul]
+    have ht := congrArg (fun u : cuspSquareQuotient K => t ⊗ₜ[CuspSubalgebra K] u) hd
+    exact ht.symm ▸ tmul_mul_mem_span (R := CuspSubalgebra K) t (reductionAlg K X) (reductionAlg K q)
+  | add x y hx hy =>
+    rw [map_add, map_add, add_sub_add_comm]
+    exact (baseChangedOriginIdeal K T).add_mem hx hy
 
 end
 

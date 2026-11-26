@@ -55,13 +55,17 @@ private theorem choose_geometricSum_cast {p n k : ℕ} [Fact p.Prime]
     let N := n * geometricSum p (r + 1)
     let K := k * geometricSum p (r + 1)
     have hmN : N % p = n := by
-      rw [N, geometricSum_digit, Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hn]
+      change (n * geometricSum p (r + 1)) % p = n
+      rw [geometricSum_digit, Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hn]
     have hmK : K % p = k := by
-      rw [K, geometricSum_digit, Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hk]
+      change (k * geometricSum p (r + 1)) % p = k
+      rw [geometricSum_digit, Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hk]
     have hdN : N / p = n * geometricSum p r := by
-      rw [N, geometricSum_digit, Nat.add_mul_div_left _ _ hp, Nat.div_eq_of_lt hn, zero_add]
+      change (n * geometricSum p (r + 1)) / p = n * geometricSum p r
+      rw [geometricSum_digit, Nat.add_mul_div_left _ _ hp, Nat.div_eq_of_lt hn, zero_add]
     have hdK : K / p = k * geometricSum p r := by
-      rw [K, geometricSum_digit, Nat.add_mul_div_left _ _ hp, Nat.div_eq_of_lt hk, zero_add]
+      change (k * geometricSum p (r + 1)) / p = k * geometricSum p r
+      rw [geometricSum_digit, Nat.add_mul_div_left _ _ hp, Nat.div_eq_of_lt hk, zero_add]
     have h := Choose.choose_modEq_choose_mod_mul_choose_div_nat (p := p) (n := N) (k := K)
     have hc := (ZMod.natCast_eq_natCast_iff _ _ p).mpr h
     change (Nat.choose N K : ZMod p) = _
