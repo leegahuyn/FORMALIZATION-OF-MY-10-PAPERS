@@ -1,14 +1,14 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.SpecificLimits.Basic
-import PrimalitySheafVerification.ManuscriptAudit.Paper9ThetaCuspPhases
+import PrimalitySheafVerification.ManuscriptAudit.ThetaProfileGenerators
 
 /-! The actual standard and alternating theta series have holomorphic cusp parameters. -/
 
 namespace ManuscriptAudit.ThetaQSeriesAnalytic
 
 open Set MeasureTheory
-open Paper9ThetaCuspPhases
+open Paper9ThetaCuspPhases ThetaProfileGenerators
 
 noncomputable section
 
@@ -20,18 +20,22 @@ private def squareSum (q : ℂ) : ℂ := ∑' n : ℕ, term n q
 
 def thetaQ (q : ℂ) : ℂ := 1 + 2 * squareSum q
 
-private theorem term_le_radius (n : ℕ) {r : ℝ} (hr : r ≤ 1) {q : ℂ} (hq : ‖q‖ ≤ r) :
-    ‖term n q‖ ≤ r ^ (n + 1) := by
+theorem norm_power_le_radius {m n : ℕ} (hmn : m ≤ n)
+    {r : ℝ} (hr : r ≤ 1) {q : ℂ} (hq : ‖q‖ ≤ r) :
+    ‖q ^ n‖ ≤ r ^ m := by
   have hR : 0 ≤ r := (norm_nonneg q).trans hq
-  have hK : n + 1 ≤ (n + 1) ^ 2 := by nlinarith
-  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le hK
+  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le hmn
   have hp : r ^ k ≤ 1 := by simpa only [one_pow] using pow_le_pow_left₀ hR hr k
-  rw [term, norm_pow]
+  rw [norm_pow]
   calc
-    _ ≤ r ^ ((n + 1) ^ 2) := pow_le_pow_left₀ (norm_nonneg _) hq _
-    _ = r ^ (n + 1) * r ^ k := by rw [hk, pow_add]
-    _ ≤ r ^ (n + 1) * 1 := mul_le_mul_of_nonneg_left hp (pow_nonneg hR _)
+    _ ≤ r ^ n := pow_le_pow_left₀ (norm_nonneg _) hq _
+    _ = r ^ m * r ^ k := by rw [hk, pow_add]
+    _ ≤ r ^ m * 1 := mul_le_mul_of_nonneg_left hp (pow_nonneg hR _)
     _ = _ := mul_one _
+
+private theorem term_le_radius (n : ℕ) {r : ℝ} (hr : r ≤ 1) {q : ℂ} (hq : ‖q‖ ≤ r) :
+    ‖term n q‖ ≤ r ^ (n + 1) :=
+  norm_power_le_radius (by nlinarith : n + 1 ≤ (n + 1) ^ 2) hr hq
 
 private theorem summable_radius {r : ℝ} (hr : 0 ≤ r) (h₁ : r < 1) :
     Summable (fun n : ℕ => r ^ (n + 1)) := by
@@ -64,10 +68,12 @@ theorem thetaQ_differentiableOn_unit_disk :
     (by dsimp [r]; positivity) (by dsimp [r]; linarith)
   have hD := (hP q hqr).differentiableAt (Metric.isOpen_ball.mem_nhds hqr)
   change DifferentiableWithinAt ℂ (fun x => 1 + 2 * squareSum x) (Metric.ball 0 1) q
-  exact (differentiableAt_const.add (differentiableAt_const.mul hD)).differentiableWithinAt
+  have hOne : DifferentiableAt ℂ (fun _ : ℂ => (1 : ℂ)) q := differentiableAt_const _
+  have hTwo : DifferentiableAt ℂ (fun _ : ℂ => (2 : ℂ)) q := differentiableAt_const _
+  exact (hOne.add (hTwo.mul hD)).differentiableWithinAt
 
 theorem thetaQ_zero : thetaQ 0 = 1 := by
-  have ht : (fun n : ℕ => term n 0) = 0 := by
+  have ht : (fun n : ℕ => term n 0) = (fun _ : ℕ => (0 : ℂ)) := by
     funext n
     exact zero_pow (by positivity : (n + 1) ^ 2 ≠ 0)
   rw [thetaQ, squareSum, ht, tsum_zero, mul_zero, add_zero]
@@ -81,7 +87,8 @@ private theorem deriv_term_at_zero {n : ℕ} (h : n ≠ 0) : deriv (term n) 0 = 
   have hd := (hasDerivAt_id (0 : ℂ)).pow k
   change deriv ((id : ℂ → ℂ) ^ k) 0 = 0
   rw [hd.deriv]
-  simp only [id, zero_pow hn.ne', mul_zero, zero_mul]
+  have hk : k - 1 ≠ 0 := hn.ne'
+  simp only [id, zero_pow hk, mul_zero, zero_mul]
 
 private theorem deriv_squareSum_at_zero : deriv squareSum 0 = 1 := by
   let r : ℝ := 1 / 2
@@ -94,14 +101,18 @@ private theorem deriv_squareSum_at_zero : deriv squareSum 0 = 1 := by
   change HasSum (fun n => deriv (term n) 0) (deriv squareSum 0) at hSum
   rw [← hSum.tsum_eq]
   rw [tsum_eq_single 0]
-  · simpa [term, id] using (hasDerivAt_id (0 : ℂ)).deriv
+  · have hTerm : term 0 = id := by
+      funext z
+      simp [term]
+    rw [hTerm, (hasDerivAt_id (0 : ℂ)).deriv]
   · exact fun n hn => deriv_term_at_zero hn
 
 theorem thetaQ_first_derivative : HasDerivAt thetaQ 2 0 := by
   have h : (0 : ℂ) ∈ Metric.ball (0 : ℂ) (1 / 2) := Metric.mem_ball_self (by norm_num)
   have hD := ((squareSum_differentiableOn_ball (by norm_num : (0 : ℝ) ≤ 1 / 2)
     (by norm_num) 0 h).differentiableAt (Metric.isOpen_ball.mem_nhds h)).hasDerivAt
-  simpa [thetaQ, deriv_squareSum_at_zero] using
+  change HasDerivAt ((fun _ : ℂ => (1 : ℂ)) + (fun q => 2 * squareSum q)) 2 0
+  simpa only [deriv_squareSum_at_zero, mul_one, zero_add] using
     (hasDerivAt_const (0 : ℂ) (1 : ℂ)).add (hD.const_mul (2 : ℂ))
 
 theorem jacobiTheta_eq_thetaQ {τ : ℂ} (hτ : 0 < τ.im) :
@@ -113,7 +124,7 @@ theorem jacobiTheta_eq_thetaQ {τ : ℂ} (hτ : 0 < τ.im) :
     congr 1
     push_cast
     ring
-  simp only [jacobiTheta_eq_tsum_nat hτ, thetaQ, squareSum, h, Nat.cast_one, Nat.cast_ofNat]
+  simp only [jacobiTheta_eq_tsum_nat hτ, thetaQ, squareSum, h, Nat.cast_ofNat]
 
 theorem thetaAlternating_eq_thetaQ_neg {τ : ℂ} (hτ : 0 < τ.im) :
     thetaAlternating τ = thetaQ (-cuspQ τ) := by
@@ -128,6 +139,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.ThetaQSeriesAnalytic.norm_power_le_radius,
       ``ManuscriptAudit.ThetaQSeriesAnalytic.thetaQ_differentiableOn_unit_disk,
       ``ManuscriptAudit.ThetaQSeriesAnalytic.thetaQ_zero,
       ``ManuscriptAudit.ThetaQSeriesAnalytic.thetaQ_first_derivative,

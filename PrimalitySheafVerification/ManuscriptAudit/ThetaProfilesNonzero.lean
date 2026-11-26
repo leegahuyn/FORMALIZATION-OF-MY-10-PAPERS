@@ -79,6 +79,17 @@ private theorem thetaHalfShift_pair {τ : ℂ} (hτ : 0 < τ.im) :
   simp_rw [normalizedHalfTerm_flip, ← two_mul]
   rw [tsum_mul_left]
 
+theorem thetaHalfShift_eq_quarter_series {τ : ℂ} (hτ : 0 < τ.im) :
+    thetaHalfShift τ = Complex.exp ((Real.pi : ℂ) * Complex.I * τ / 4) *
+      (2 * ∑' n : ℕ, Complex.exp ((Real.pi : ℂ) * Complex.I * τ / 4) ^ (4 * n * (n + 1))) := by
+  have hT (n : ℕ) : normalizedHalfTerm (n : ℤ) τ =
+      Complex.exp ((Real.pi : ℂ) * Complex.I * τ / 4) ^ (4 * n * (n + 1)) := by
+    rw [normalizedHalfTerm, ← Complex.exp_nat_mul]
+    congr 1
+    push_cast
+    ring
+  simp only [thetaHalfShift_pair hτ, hT]
+
 private theorem norm_halfTail {τ : ℂ} (hτ : 0 < τ.im) :
     ‖∑' n : ℕ, normalizedHalfTerm ((n : ℤ) + 1) τ‖ ≤
       Real.exp (-Real.pi * τ.im) / (1 - Real.exp (-Real.pi * τ.im)) := by
@@ -138,7 +149,8 @@ run_cmd do
       ``ManuscriptAudit.ThetaProfilesNonzero.jacobiTheta_sub_one_norm_lt_one_at_height,
       ``ManuscriptAudit.ThetaProfilesNonzero.jacobiTheta_ne_zero_at_height,
       ``ManuscriptAudit.ThetaProfilesNonzero.thetaAlternating_ne_zero_at_height,
-      ``ManuscriptAudit.ThetaProfilesNonzero.thetaHalfShift_ne_zero_at_height] do
+      ``ManuscriptAudit.ThetaProfilesNonzero.thetaHalfShift_ne_zero_at_height,
+      ``ManuscriptAudit.ThetaProfilesNonzero.thetaHalfShift_eq_quarter_series] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

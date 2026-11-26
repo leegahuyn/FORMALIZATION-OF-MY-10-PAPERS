@@ -61,7 +61,7 @@ theorem exists_open_restriction_const (U : X.Etale)
     let W : U.left.Opens := ⟨(f '' C)ᶜ, (hf.isClosedMap _ hC).isOpen_compl⟩
     refine ⟨W, ?_, a, ?_⟩
     · rintro ⟨x, hx, he⟩
-      change s x ≠ a at hx
+      change s' x ≠ a at hx
       have h : x = z := hf.injective (he.trans hz.symm)
       exact hx (congrArg s' h)
     · apply ContinuousMap.ext

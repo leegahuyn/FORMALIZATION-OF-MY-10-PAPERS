@@ -11,7 +11,7 @@ cohomology class is detected on any nonempty principal open. -/
 namespace ManuscriptAudit.KummerPrincipalOpenRestriction
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian Opposite
-open KummerRelativeFull KummerRelativeUnitSections SmallEtaleUnitSheaf
+open KummerRelativeFull KummerRelativeUnitSections KummerUnitsSheaf
 open OpenEtaleExtension SheafPresheafHOneBoundary
 
 noncomputable section
@@ -39,7 +39,7 @@ private theorem unitTerm_HOne_subsingleton (d : ℕ) :
   let e := (restriction j C).mapIso (unitsIso (X := X) d).symm ≪≫ restrictedUnitsIso j
   let h := openCohomologyPresheafEquiv j F 1
   let g := ((Sheaf.functorH J 1).mapIso e).addCommGroupIsoToAddEquiv
-  have hR := SmallEtaleUnitCohomology.unitHOne_subsingleton_of_pid R
+  have hR := KummerUnitsSheaf.unitHOne_subsingleton_of_pid R
   exact ⟨fun x y => h.injective (g.injective (hR.allEq _ _))⟩
 
 include k in
@@ -64,6 +64,9 @@ private theorem boundary_surjective (d : ℕ) (hd : 0 < d) [NeZero (d : K)] :
 variable (s : R)
 private abbrev locHom : CommRingCat.of R ⟶ CommRingCat.of (Localization.Away s) :=
   CommRingCat.ofHom (algebraMap R (Localization.Away s))
+
+private instance locOpen : IsOpenImmersion (Spec.map (locHom s)) :=
+  IsOpenImmersion.of_isLocalization (S := Localization.Away s) s
 
 include k in
 /-- The actual degree-one Kummer restriction to a nonempty principal open is injective. -/
@@ -97,7 +100,7 @@ theorem restriction_firstTerm_injective [IsIntegrallyClosed R] (hs : s ≠ 0)
       rw [← map_nsmul]
       exact h₁.trans h₂
     exact congrArg Additive.toMul h₃
-  obtain ⟨u, hu, _⟩ := NormalLocalizationUnitRoots.unit_root_extends s hs d hd _ _ hwr
+  obtain ⟨u, hu, _⟩ := NormalLocalizationUnitRoots.unit_root_extends R s hs d hd _ _ hwr
   refine (boundaryOfSection_eq_zero_iff J S hS U v).mpr ⟨EU.inv (Additive.ofMul u), ?_⟩
   apply (ConcreteCategory.injective_of_mono EU.hom)
   rw [coordinateUnitsIso_power, map_nsmul]
@@ -122,8 +125,8 @@ theorem restriction_constant_injective [IsIntegrallyClosed R] (hs : s ≠ 0)
   apply ConcreteCategory.injective_of_mono (e.hom.app U)
   apply restriction_firstTerm_injective k j s hs d hd
   have hn := e.hom.naturality a.op
-  have hx := congrArg (fun f => f x) hn
-  have hy := congrArg (fun f => f y) hn
+  have hx := ConcreteCategory.congr_hom hn x
+  have hy := ConcreteCategory.congr_hom hn y
   exact hx.symm.trans ((congrArg (e.hom.app V) h).trans hy)
 
 end

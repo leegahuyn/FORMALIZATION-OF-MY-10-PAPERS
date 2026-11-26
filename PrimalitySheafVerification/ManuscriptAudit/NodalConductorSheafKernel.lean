@@ -103,8 +103,11 @@ theorem diagonal_injective_on_sections (h2 : (2 : K) ≠ 0) (U : UOver K) :
   apply ContinuousMap.ext
   intro y
   obtain ⟨t, ht⟩ := projection_surjective K h2 U y
+  let a' : ContinuousMap U.left M := a
+  let b' : ContinuousMap U.left M := b
   have he := congrArg (fun f : ContinuousMap (Norm K U).left M => f t) h
-  change a (projection K U t) = b (projection K U t) at he
+  change a' (projection K U t) = b' (projection K U t) at he
+  change a' y = b' y
   rwa [ht] at he
 
 /-- The full small-étale pointwise kernel of the actual branch difference
@@ -114,16 +117,17 @@ theorem exact_on_sections (h2 : (2 : K) ≠ 0) (U : UOver K) :
   intro s
   constructor
   · intro hs
-    have hbal (c : (Conductor K U).left) : s (plus K U c) = s (minus K U c) := by
+    let s' : ContinuousMap (Norm K U).left M := s
+    have hbal (c : (Conductor K U).left) : s' (plus K U c) = s' (minus K U c) := by
       have hh := congrArg (fun t : ContinuousMap (Conductor K U).left M => t c) hs
-      change s (plus K U c) - s (minus K U c) = 0 at hh
+      change s' (plus K U c) - s' (minus K U c) = 0 at hh
       exact sub_eq_zero.mp hh
     let p : ContinuousMap (Norm K U).left U.left := ⟨projection K U, (projection K U).continuous⟩
     have hp : Topology.IsQuotientMap p := projection_quotient K h2 U
-    have hf : Function.FactorsThrough s p := sameOnFibers K M U s hbal
-    refine ⟨hp.lift s hf, ?_⟩
-    change (hp.lift s hf).comp p = s
-    exact hp.lift_comp s hf
+    have hf : Function.FactorsThrough s' p := sameOnFibers K M U s' hbal
+    refine ⟨hp.lift s' hf, ?_⟩
+    change (hp.lift s' hf).comp p = s'
+    exact hp.lift_comp s' hf
   · rintro ⟨s, rfl⟩
     have h := ConcreteCategory.congr_hom (congrArg (fun f =>
       f.hom.app (op U)) (diagonal_difference_zero K M)) s

@@ -16,6 +16,8 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 variable (K : Type u) [Field K]
 
+attribute [local instance] NodalMilnorCoefficients.originAlgebra
+
 set_option synthInstance.maxHeartbeats 180000 in
 set_option maxHeartbeats 1400000 in
 /-- Under the scheme fiber identification, its second projection is

@@ -7,7 +7,7 @@ sections of the full Kummer unit terms. Their restrictions are native ring maps.
 namespace ManuscriptAudit.KummerRelativeUnitSections
 
 open AlgebraicGeometry CategoryTheory Opposite
-open KummerRelativeFull SmallEtaleUnitSheaf
+open KummerRelativeFull KummerUnitsSheaf
 
 noncomputable section
 
@@ -59,7 +59,7 @@ theorem coordinateUnitsIso_power {U : X.Etale}
   let P := sheafToPresheaf X.smallEtaleTopology C ⋙ (evaluation X.Etaleᵒᵖ C).obj (op U)
   have h := congrArg P.map (power_nsmul (X := X) d)
   change ((sequence X d).g.hom.app (op U)) = P.map (d • 𝟙 (UnitTerm d (X := X))) at h
-  rw [Functor.map_nsmul, Functor.map_id] at h
+  rw [Functor.map_nsmul, P.map_id] at h
   simpa using congrArg (fun f : P.obj (UnitTerm d (X := X)) ⟶ P.obj (UnitTerm d (X := X)) => f x) h
 
 end

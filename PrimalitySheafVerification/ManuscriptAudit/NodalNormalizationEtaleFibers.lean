@@ -52,7 +52,7 @@ private theorem projection_eq_of_isIso_nearby {X Y U D : Scheme.{u}}
   obtain ⟨s', hss, hsc⟩ := points_lift H s c (hs.trans hc.symm)
   obtain ⟨t', htt, htc⟩ := points_lift H t c (ht.trans hc.symm)
   haveI : IsIso r := inferInstance
-  have ht' : s' = t' := (ConcreteCategory.bijective_of_isIso r).1 (hsc.trans htc.symm)
+  have ht' : s' = t' := r.homeomorph.injective (by simpa only [Scheme.Hom.homeomorph_apply] using hsc.trans htc.symm)
   exact hss.symm.trans (ht'.symm ▸ htt)
 
 private theorem restrictionSquare {X Y Z : Scheme.{u}} {p : Y ⟶ Z} {q : X ⟶ Z}

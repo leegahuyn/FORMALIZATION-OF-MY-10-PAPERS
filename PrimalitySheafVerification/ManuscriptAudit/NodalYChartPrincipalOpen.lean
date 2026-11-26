@@ -15,6 +15,7 @@ open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 open NodalProjectiveClosure NodalProperYChart NodalYChartImmersion
 open NodalYChartOverlap (overlapRing)
 open NodalChartIntersection (intersection_snd_opensRange)
+open scoped nonZeroDivisors
 
 noncomputable section
 set_option backward.defeqAttrib.useBackward true
@@ -30,7 +31,7 @@ private abbrev localized := Localization.Away (denominator K)
 private theorem denominator_ne_zero : denominator K ≠ 0 := by
   intro h
   have he := congrArg (Polynomial.eval (0 : K)) h
-  exact one_ne_zero (by simpa [denominator] using he)
+  exact (one_ne_zero : (1 : K) ≠ 0) (by simpa [denominator] using he)
 
 private theorem denominator_good : Submonoid.powers (denominator K) ≤ (Polynomial K)⁰ := by
   rintro _ ⟨n, rfl⟩
@@ -47,7 +48,7 @@ private instance localizedPID : IsPrincipalIdealRing (localized K) := ⟨fun I =
 /-- The affine coordinate ring of the Y-chart is an integral domain. -/
 instance yDomain : IsDomain (yCoordinateRing K) := by
   let e := (coordinateEquiv K).toRingEquiv
-  apply isDomain_iff_noZeroDivisors_and_nontrivial.mpr
+  apply (isDomain_iff_noZeroDivisors_and_nontrivial (yCoordinateRing K)).mpr
   refine ⟨⟨?_⟩, ⟨⟨0, 1, ?_⟩⟩⟩
   · intro a b hab
     have h : e a * e b = 0 := by rw [← map_mul, hab, map_zero]
@@ -70,10 +71,11 @@ theorem coordinate_ne_zero : xCoeff K ≠ 0 := by
     coordinateEquiv K 0 at he
   rw [AlgEquiv.commutes, map_zero] at he
   exact Polynomial.X_ne_zero
-    ((IsLocalization.to_map_eq_zero_iff (localized K) (denominator_good K)).mp he)
+    ((IsLocalization.to_map_eq_zero_iff (M := Submonoid.powers (denominator K))
+      (localized K) (denominator_good K)).mp he)
 
 instance overlapDomain : IsDomain (overlapRing K) := by
-  apply IsLocalization.isDomain_of_le_nonZeroDivisors (overlapRing K)
+  apply IsLocalization.isDomain_of_le_nonZeroDivisors (M := Submonoid.powers (xCoeff K)) (overlapRing K)
   rintro _ ⟨n, rfl⟩
   exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n (coordinate_ne_zero K))
 
@@ -127,11 +129,11 @@ theorem overlap_nonempty : Nonempty (overlapObject K).left := by
 
 theorem overlap_preconnected : PreconnectedSpace (overlapObject K).left := by
   let e := overlapIso K
-  have h : IsPreconnected (Set.univ : Set (Spec (CommRingCat.of (overlapRing K)))) :=
+  have h : _root_.IsPreconnected (Set.univ : Set (Spec (CommRingCat.of (overlapRing K)))) :=
     isPreconnected_univ
   refine ⟨?_⟩
   have h' := h.image e.inv e.inv.continuous.continuousOn
-  rwa [Set.image_univ, Set.range_eq_univ.mpr (ConcreteCategory.bijective_of_isIso e.inv).2] at h'
+  rwa [Set.image_univ, Set.range_eq_univ.mpr (show Function.Surjective e.inv from e.inv.homeomorph.surjective)] at h'
 
 end
 end ManuscriptAudit.NodalYChartPrincipalOpen

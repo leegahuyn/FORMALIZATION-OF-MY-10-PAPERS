@@ -49,7 +49,7 @@ private def conductorSectionsEquiv :
   intro s
   apply ContinuousMap.ext
   intro q
-  have he : p = q := (ConcreteCategory.bijective_of_isIso e.hom).1 (Subsingleton.elim _ _)
+  have he : p = q := e.hom.homeomorph.injective (Subsingleton.elim _ _)
   let s' : ContinuousMap (Conductor K (term K)).left C := s
   exact congrArg s' he
 
@@ -67,7 +67,9 @@ private theorem terminal_difference_zero (s : (normalizationFunctions K C).obj.o
   have hu (x y : (Norm K (term K)).left) : u x = u y := by
     have h := TotallyDisconnectedSpace.eq_of_continuous u' u'.continuous (e.hom x) (e.hom y)
     change u (e.inv (e.hom x)) = u (e.inv (e.hom y)) at h
-    simpa only [Iso.hom_inv_id_apply] using h
+    change u ((e.hom ≫ e.inv) x) = u ((e.hom ≫ e.inv) y) at h
+    rw [e.hom_inv_id] at h
+    exact h
   apply ContinuousMap.ext
   intro p
   change u (plus K (term K) p) - u (minus K (term K) p) = 0

@@ -12,7 +12,7 @@ open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 open KummerUnitsPresheaf KummerSheafSequence
 open KummerConstantCoefficients (coefficientGroup)
 open KummerRelativeCoefficients (coefficientMap)
-open SmallEtaleUnitSheaf
+open KummerUnitsSheaf
 
 noncomputable section
 
@@ -76,8 +76,11 @@ private def affineUnitsIso :
     (E X).inverse.obj (fullCoordinateUnitSheaf X) ≅ unitSheaf X := by
   let F := (E X).inverse.obj (fullCoordinateUnitSheaf X)
   let U := KummerUnitsSheaf.coordinateUnitSheaf X
-  have e : F.obj ≅ U.obj := affineRestrictionUnitsIso X
-  have e' : F ≅ U := (sheafToPresheaf _ C).preimageIso e
+  have e : F.obj ≅ U.obj := by
+    change (Scheme.AffineEtale.Spec X).op ⋙ fullCoordinateUnits X ≅
+      KummerUnitsPresheaf.units X
+    exact affineRestrictionUnitsIso X
+  have e' : F ≅ U := (fullyFaithfulSheafToPresheaf (A X) C).preimageIso e
   exact e' ≪≫ KummerUnitsSheaf.coordinateUnitSheafIso X
 
 /-- The two unit terms are the actual full-site coordinate-unit sheaf. -/
@@ -95,14 +98,14 @@ private theorem affine_power_nsmul (d : ℕ) :
     intro a
     rfl
   change P.map (power X d) = d • 𝟙 (P.obj (units X))
-  rw [h, Functor.map_nsmul, Functor.map_id]
+  rw [h, Functor.map_nsmul, P.map_id]
 
 /-- The full sequence's last arrow acts by the usual coordinate power. -/
 theorem power_nsmul (d : ℕ) : (sequence X d).g = d • 𝟙 (sequence X d).X₂ := by
   let P := (E X).functor
   letI : P.Additive := Functor.additive_of_preserves_binary_products P
   change P.map (sheafPower X d) = d • 𝟙 (P.obj (unitSheaf X))
-  rw [affine_power_nsmul, Functor.map_nsmul, Functor.map_id]
+  rw [affine_power_nsmul, Functor.map_nsmul, P.map_id]
 
 end
 end ManuscriptAudit.KummerRelativeFull
