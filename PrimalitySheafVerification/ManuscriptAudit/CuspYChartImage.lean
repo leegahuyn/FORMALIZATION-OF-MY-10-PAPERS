@@ -28,10 +28,12 @@ universe u
 
 variable (K : Type u) [Field K]
 
-private def laurentToCusp : Spec (CommRingCat.of (LaurentRing K)) ⟶ affineCusp K :=
+/-- The Laurent line using the affine cusp normalization coordinate. -/
+def laurentToCusp : Spec (CommRingCat.of (LaurentRing K)) ⟶ affineCusp K :=
   Spec.map (CommRingCat.ofHom (cuspLaurent K).toRingHom)
 
-private def laurentToLine : Spec (CommRingCat.of (LaurentRing K)) ⟶ Spec (CommRingCat.of (Polynomial K)) :=
+/-- The Laurent line using the inverse coordinate in the infinity chart. -/
+def laurentToLine : Spec (CommRingCat.of (LaurentRing K)) ⟶ Spec (CommRingCat.of (Polynomial K)) :=
   Spec.map (CommRingCat.ofHom (lineLaurent K).toRingHom)
 
 private def yzChartι : Spec (CommRingCat.of (YZChartRing K)) ⟶ plane K :=
@@ -67,6 +69,11 @@ private theorem linePlaneViaYZ :
     (Proj.SpecMap_awayMap_awayι (grading K) (X_mem_one K 1) (by decide)
       (X_mem_one K 2) (show yz K = y K * z K from rfl))
 
+/-- The two Laurent chart maps agree in the actual projective plane. -/
+theorem laurentPlane_eq :
+    laurentToCusp K ≫ cuspInPlane K = laurentToLine K ≫ lineInPlane K :=
+  (cuspPlaneViaYZ K).trans (linePlaneViaYZ K).symm
+
 private theorem specMap_dominant_of_injective {A B : Type u} [CommRing A] [CommRing B]
     (f : A →+* B) (hf : Function.Injective f) : IsDominant (Spec.map (CommRingCat.ofHom f)) := by
   constructor
@@ -91,7 +98,7 @@ theorem cuspKernel_lineKernel :
   have hY : (laurentToLine K ≫ lineInPlane K).ker = (lineInPlane K).ker := by
     rw [Scheme.Hom.ker_comp, (laurentToLine K).ker_eq_bot, Scheme.IdealSheafData.map_bot]
   exact hC.symm.trans ((congrArg Scheme.Hom.ker
-    ((cuspPlaneViaYZ K).trans (linePlaneViaYZ K).symm)).trans hY)
+    (laurentPlane_eq K)).trans hY)
 
 
 end
@@ -102,6 +109,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.CuspYChartImage.laurentPlane_eq,
       ``ManuscriptAudit.CuspYChartImage.cuspKernel_lineKernel] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -23,16 +23,17 @@ attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 variable {U V X : Scheme.{u}} (j : U ⟶ X) (k : V ⟶ X)
 variable [IsOpenImmersion j] [IsOpenImmersion k]
 
-private abbrev intersection : X.Etale :=
+/-- The ordinary scheme pullback viewed in the small étale site. -/
+abbrev intersection : X.Etale :=
   Scheme.Etale.mk (pullback.fst j k ≫ j)
 
-private def fstLeg : intersection j k ⟶ Scheme.Etale.mk j :=
+def fstLeg : intersection j k ⟶ Scheme.Etale.mk j :=
   MorphismProperty.Over.homMk (pullback.fst j k) rfl
 
-private def sndLeg : intersection j k ⟶ Scheme.Etale.mk k :=
+def sndLeg : intersection j k ⟶ Scheme.Etale.mk k :=
   MorphismProperty.Over.homMk (pullback.snd j k) (pullback.condition (f := j) (g := k)).symm
 
-private theorem intersection_isPullback :
+theorem intersection_isPullback :
     IsPullback (fstLeg j k) (sndLeg j k) (openArrow j) (openArrow k) := by
   have h : fstLeg j k ≫ openArrow j = sndLeg j k ≫ openArrow k :=
     MorphismProperty.Over.Hom.ext pullback.condition
@@ -89,9 +90,11 @@ end ManuscriptAudit.EtaleOpenIntersection
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.EtaleOpenIntersection.ambientHOne_subsingleton
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [
+      ``ManuscriptAudit.EtaleOpenIntersection.intersection_isPullback,
+      ``ManuscriptAudit.EtaleOpenIntersection.ambientHOne_subsingleton] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

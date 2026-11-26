@@ -29,13 +29,16 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
-variable (K : Type) [Field K] [IsAlgClosed K] (p : ℕ) [Fact p.Prime] [CharP K p]
-variable (ℓ : ℕ) [NeZero (ℓ : K)]
+variable (K : Type) [Field K] [kClosed : IsAlgClosed K]
+variable (p : ℕ) [pPrime : Fact p.Prime] [pChar : CharP K p]
+variable (ℓ : ℕ) [coeffNZ : NeZero (ℓ : K)]
 
 private abbrev coeff : AddCommGrpCat.{0} := AddCommGrpCat.of (ZMod ℓ)
 
 private abbrev C (S : Scheme.{0}) :=
   (constantSheaf S.smallEtaleTopology AddCommGrpCat.{0}).obj (coeff ℓ)
+
+include kClosed p pPrime pChar coeffNZ
 
 /-- Ordinary degree-one cyclic cohomology of the actual proper cusp vanishes. -/
 theorem projectiveCusp_HOne_subsingleton : Subsingleton (Sheaf.H (C ℓ (projectiveCusp K)) 1) := by
@@ -48,8 +51,8 @@ theorem projectiveCusp_HOne_subsingleton : Subsingleton (Sheaf.H (C ℓ (project
   have hCov : Set.range f ∪ Set.range g = Set.univ := by
     exact congrArg (fun O : (projectiveCusp K).Opens => (O : Set (projectiveCusp K)))
       (affine_chart_cover K)
-  have hConn : IsConnected (Set.range h) := by
-    change IsConnected (Set.range (pullback.fst f g ≫ f))
+  have hConn : _root_.IsConnected (Set.range h) := by
+    change _root_.IsConnected (Set.range (pullback.fst f g ≫ f))
     rw [Scheme.Pullback.range_fst_comp]
     exact affine_chart_overlap_isConnected K
   letI : Nonempty (↑(pullback f g) : Type) := by

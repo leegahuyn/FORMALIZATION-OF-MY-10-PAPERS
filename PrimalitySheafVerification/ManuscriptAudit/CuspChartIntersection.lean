@@ -33,11 +33,9 @@ def laurentToAffineLine :
 instance laurentToAffineLine_isOpenImmersion : IsOpenImmersion (laurentToAffineLine K) :=
   IsOpenImmersion.of_isLocalization (S := LaurentPolynomial K) (Polynomial.X : Polynomial K)
 
-private theorem laurentToAffineLine_range :
-    Set.range (laurentToAffineLine K) =
-      (PrimeSpectrum.basicOpen (Polynomial.X : Polynomial K) :
-        Set (Spec (CommRingCat.of (Polynomial K)))) := by
-  change Set.range (PrimeSpectrum.comap (algebraMap (Polynomial K) (LaurentPolynomial K))) = _
+private theorem laurentToAffineLine_opensRange :
+    (laurentToAffineLine K).opensRange = PrimeSpectrum.basicOpen (Polynomial.X : Polynomial K) := by
+  apply TopologicalSpace.Opens.ext
   exact PrimeSpectrum.localization_away_comap_range (LaurentPolynomial K)
     (Polynomial.X : Polynomial K)
 
@@ -48,10 +46,10 @@ theorem overlap_snd_opensRange :
 
 private theorem chartRanges_eq :
     Set.range (pullback.snd (affineOpen K) (lineOpen K)) =
-      Set.range (laurentToAffineLine K) := by
-  rw [laurentToAffineLine_range]
-  exact congrArg (fun U : (Spec (CommRingCat.of (Polynomial K))).Opens =>
-    (U : Set (Spec (CommRingCat.of (Polynomial K))))) (overlap_snd_opensRange K)
+      Set.range (laurentToAffineLine K) :=
+  congrArg (fun U : (Spec (CommRingCat.of (Polynomial K))).Opens =>
+    (U : Set (Spec (CommRingCat.of (Polynomial K)))))
+    ((overlap_snd_opensRange K).trans (laurentToAffineLine_opensRange K).symm)
 
 /-- The actual pullback of the two charts is the Laurent line. -/
 def overlapIsoLaurent :
