@@ -169,6 +169,22 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
     · change ν (ι₁ a * e + ι₁ b * (1 - e)) = b
       simp only [map_add, map_mul, map_sub, map_one, hνl, hνe, sub_zero, mul_one, mul_zero, zero_add]
 
+/-- The canonical equivalence and its pointwise formula are certified together. -/
+structure CertifiedComparison (σ : E ≃ₐ[A] E) where
+  equiv : (E ⊗[A] E) ≃ₐ[E] (E × E)
+  on_tmul (a b : E) : equiv (a ⊗ₜ[A] b) = (a * b, a * σ b)
+
+def certify (σ : E ≃ₐ[A] E)
+    (hInvol : Function.Involutive σ)
+    (hFixed : ∀ z : E, σ z = z → ∃ a : A, algebraMap A E a = z)
+    (h coefficient u v : E) (hHalfFixed : σ h = h) (hHalf : h + h = 1)
+    (hCoefficient : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
+    (hPartition : coefficient * u ^ 2 + v ^ 2 = 1) : CertifiedComparison A E σ where
+  equiv := AlgEquiv.ofBijective (comparison A E σ)
+    (comparison_bijective A E σ hInvol hFixed h coefficient u v hHalfFixed hHalf
+      hCoefficient hu hv hPartition)
+  on_tmul := comparison_tmul A E σ
+
 end
 
 end ManuscriptAudit.InvolutionTensorComparison
@@ -178,7 +194,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in
       [``ManuscriptAudit.InvolutionTensorComparison.comparison_tmul,
-        ``ManuscriptAudit.InvolutionTensorComparison.comparison_bijective] do
+        ``ManuscriptAudit.InvolutionTensorComparison.comparison_bijective,
+        ``ManuscriptAudit.InvolutionTensorComparison.certify] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

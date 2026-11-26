@@ -47,9 +47,9 @@ universe u
 
 variable (K : Type u) [Field K]
 
-private abbrev A := coordinates K
+private abbrev A : Type u := ↥(coordinates K)
 private abbrev B := Polynomial K
-private abbrev L := Cover K
+private abbrev L : Type u := Cover K
 
 private def witness : L K :=
   ⟨(X, -X), by
@@ -86,8 +86,11 @@ theorem no_algebra_retraction (h2 : (2 : K) ≠ 0) : IsEmpty (L K →ₐ[A K] A 
 abbrev nodeScheme := Spec (CommRingCat.of (A K))
 abbrev coverScheme := Spec (CommRingCat.of (L K))
 
+private def coverRingHom : CommRingCat.of (A K) ⟶ CommRingCat.of (L K) :=
+  CommRingCat.ofHom (algebraMap (A K) (L K))
+
 def coverMap : coverScheme K ⟶ nodeScheme K :=
-  Spec.map (CommRingCat.ofHom (algebraMap (A K) (L K)))
+  Spec.map (coverRingHom K)
 
 theorem coverMap_etale (h2 : (2 : K) ≠ 0) : Etale (coverMap K) :=
   (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
@@ -95,8 +98,7 @@ theorem coverMap_etale (h2 : (2 : K) ≠ 0) : Etale (coverMap K) :=
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coverMap_finite (h2 : (2 : K) ≠ 0) : IsFinite (coverMap K) := by
-  change IsFinite (Spec.map (CommRingCat.ofHom (algebraMap (A K) (L K))))
-  apply (IsFinite.SpecMap_iff (CommRingCat.ofHom (algebraMap (A K) (L K)))).2
+  apply (IsFinite.SpecMap_iff (coverRingHom K)).2
   change (algebraMap (A K) (L K)).Finite
   exact RingHom.finite_algebraMap.mpr (cover_finite_etale K h2).1
 
@@ -108,7 +110,7 @@ theorem coverMap_has_no_section (h2 : (2 : K) ≠ 0) :
     ¬ ∃ s : nodeScheme K ⟶ coverScheme K, s ≫ coverMap K = 𝟙 (nodeScheme K) := by
   rintro ⟨s, hs⟩
   obtain ⟨r, rfl⟩ := Spec.map_surjective s
-  have hr : CommRingCat.ofHom (algebraMap (A K) (L K)) ≫ r = 𝟙 (CommRingCat.of (A K)) := by
+  have hr : coverRingHom K ≫ r = 𝟙 (CommRingCat.of (A K)) := by
     apply Spec.map_injective
     simpa only [Spec.map_comp, Spec.map_id, coverMap] using hs
   let r' : L K →ₐ[A K] A K :=

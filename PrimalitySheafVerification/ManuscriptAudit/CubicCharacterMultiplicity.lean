@@ -109,7 +109,7 @@ private theorem cubeMultiplicity_eq_three (hdiv : 3 ∣ Fintype.card F - 1)
     _ = Nat.card {x : F // x ^ 3 = z} := Nat.card_eq_fintype_card.symm
     _ = _ := he
     _ = Nat.card (powMonoidHom 3 : Fˣ →* Fˣ).ker := Nat.card_congr (unitFiberKernel u)
-    _ = (Nat.card Fˣ).gcd 3 := IsCyclic.card_powMonoidHom_ker 3
+    _ = (Nat.card Fˣ).gcd 3 := IsCyclic.card_powMonoidHom_ker (Fˣ) 3
     _ = 3 := by rw [Nat.card_eq_fintype_card, Fintype.card_units, hGcd]
 
 /-- Every cube fiber has exactly the multiplicity given by the order-three character. -/
