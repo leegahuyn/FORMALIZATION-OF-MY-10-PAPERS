@@ -39,19 +39,23 @@ theorem fixedCurve_discriminant : fixedCurve.Δ = 512 := by
   norm_num [fixedCurve, WeierstrassCurve.Δ, WeierstrassCurve.b₂, WeierstrassCurve.b₄,
     WeierstrassCurve.b₆, WeierstrassCurve.b₈]
 
+private theorem smallNatCast_ne_zero {p n : ℕ} (hn : 0 < n) (hlt : n < p) :
+    (n : ZMod p) ≠ 0 := by
+  intro h
+  have hv : n = 0 := by
+    simpa only [ZMod.val_natCast, ZMod.val_zero, Nat.mod_eq_of_lt hlt] using congrArg ZMod.val h
+  omega
+
+theorem two_ne_zero_zmod {p : ℕ} (hp : 5 ≤ p) : (2 : ZMod p) ≠ 0 :=
+  smallNatCast_ne_zero (n := 2) (by omega) (by omega)
+
 theorem reduction_discriminant_ne_zero {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) :
     (reduction p).Δ ≠ 0 := by
-  have htwo : (2 : ZMod p) ≠ 0 := by
-    intro h
-    have hv : (2 : ℕ) = 0 := by
-      simpa only [ZMod.val_natCast, ZMod.val_zero, Nat.mod_eq_of_lt (by omega : 2 < p)] using
-        congrArg ZMod.val h
-    omega
   have hΔ : (reduction p).Δ = (2 : ZMod p) ^ 9 := by
     rw [reduction, WeierstrassCurve.map_Δ, fixedCurve_discriminant]
     norm_num
   rw [hΔ]
-  exact pow_ne_zero 9 htwo
+  exact pow_ne_zero 9 (two_ne_zero_zmod hp)
 
 private def cubic (p : ℕ) (x : ZMod p) : ZMod p := x ^ 3 - 2 * x
 
@@ -87,20 +91,27 @@ private theorem character_cubic_sum_zero {p : ℕ} [Fact p.Prime] (hr : p % 4 = 
     (∑ x : ZMod p, quadraticChar (ZMod p) (cubic p x)) = 0 := by
   have h : (∑ x : ZMod p, quadraticChar (ZMod p) (cubic p (-x))) =
       ∑ x : ZMod p, quadraticChar (ZMod p) (cubic p x) :=
-    (Equiv.neg (ZMod p)).sum_comp (fun x => quadraticChar (ZMod p) (cubic p x))
+    Equiv.sum_comp (Equiv.neg (ZMod p)) (fun x => quadraticChar (ZMod p) (cubic p x))
   simp_rw [character_cubic_neg hr, Finset.sum_neg_distrib] at h
   omega
+
+theorem square_fiber_card {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (hchar : ringChar F ≠ 2) (a : F) :
+    (Nat.card {x : F // x ^ 2 = a} : ℤ) = quadraticChar F a + 1 := by
+  simpa only [Set.toFinset_card, ← Nat.card_eq_fintype_card] using
+    quadraticChar_card_sqrts hchar a
 
 theorem affine_count {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) (hr : p % 4 = 3) :
     Nat.card (AffineSolutions p) = p := by
   classical
   have hchar : ringChar (ZMod p) ≠ 2 := by
-    rw [ringChar_zmod_n]
+    rw [ZMod.ringChar_zmod_n]
     omega
   have hfiber (x : ZMod p) :
       (Fintype.card {y : ZMod p // y ^ 2 = cubic p x} : ℤ) =
         quadraticChar (ZMod p) (cubic p x) + 1 := by
-    simpa only [Set.toFinset_card] using quadraticChar_card_sqrts hchar (cubic p x)
+    rw [← Nat.card_eq_fintype_card]
+    exact square_fiber_card hchar (cubic p x)
   have hcast : (Fintype.card (AffineSolutions p) : ℤ) = (p : ℤ) := by
     rw [Fintype.card_congr (affineSigma p), Fintype.card_sigma, Nat.cast_sum]
     simp only [hfiber, Finset.sum_add_distrib, character_cubic_sum_zero hr, zero_add]

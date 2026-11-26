@@ -59,13 +59,15 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The first projection of an identity patch gives a bijection after scalar extension. -/
 theorem normalizationMap_bijective_identity (hPair : Function.Bijective (pairMap q s)) :
     Function.Bijective (normalizationMap q s (1 : Matrix n n D)) := by
-  let e := (identityCoordinates q s hPair).baseChange A B _ _
+  let e : (B ⊗[A] (n → A)) ≃ₗ[B] B ⊗[A] patch q s (1 : Matrix n n D) :=
+    (identityCoordinates (n := n) q s hPair).baseChange A B (n → A)
+      (patch q s (1 : Matrix n n D))
   let eFree := freeCoordinatesBaseChange A B n
   have h : (normalizationMap q s (1 : Matrix n n D)).comp e.toLinearMap =
       eFree.toLinearMap := by
     apply TensorProduct.AlgebraTensorModule.ext
     intro b x
-    change b • (identityCoordinates q s hPair x).val.1 =
+    change b • (identityCoordinates (n := n) q s hPair x).val.1 =
       freeCoordinatesBaseChange A B n (b ⊗ₜ[A] x)
     rw [identityCoordinates_fst, freeCoordinatesBaseChange_tmul]
   have hf : ⇑(normalizationMap q s (1 : Matrix n n D)) = eFree ∘ e.symm := by
@@ -81,7 +83,7 @@ theorem normalizationMap_bijective (hq : Function.Surjective q)
     (hPair : Function.Bijective (pairMap q s)) (U : GL n D) :
     Function.Bijective (normalizationMap q s U.val) :=
   MilnorNormalizationRecovery.normalizationMap_bijective q s hq U
-    (normalizationMap_bijective_identity q s hPair)
+    (normalizationMap_bijective_identity (n := n ⊕ n) q s hPair)
 
 end
 

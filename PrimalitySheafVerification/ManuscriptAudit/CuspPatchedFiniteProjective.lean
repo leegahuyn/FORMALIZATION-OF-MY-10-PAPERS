@@ -31,19 +31,20 @@ private abbrev D := cuspSquareQuotient K
 private abbrev F := residueFiber K E
 private abbrev L := patchRing K E
 
+local instance normalizationResidueAlgebra : Algebra (Polynomial K) K :=
+  Polynomial.constantCoeff.toAlgebra
+
 local instance originAlgebra : Algebra (A K) K := (cuspOriginResidue K).toAlgebra
 
-local instance normalizationAlgebra : Algebra (A K) E :=
-  ((algebraMap (Polynomial K) E).comp (algebraMap (A K) (Polynomial K))).toAlgebra
+local instance normalizationTower : IsScalarTower (A K) (Polynomial K) E where
+  smul_assoc a b x := by
+    change ((a : Polynomial K) * b) • x = (a : Polynomial K) • (b • x)
+    exact mul_smul _ _ _
 
-local instance fiberAlgebra : Algebra (A K) (F K E) :=
-  ((algebraMap K (F K E)).comp (cuspOriginResidue K)).toAlgebra
-
-local instance normalizationTower : IsScalarTower (A K) (Polynomial K) E :=
-  IsScalarTower.of_algebraMap_eq fun _ => rfl
-
-local instance fiberTower : IsScalarTower (A K) K (F K E) :=
-  IsScalarTower.of_algebraMap_eq fun _ => rfl
+local instance fiberTower : IsScalarTower (A K) K (F K E) where
+  smul_assoc a k x := by
+    change ((a : Polynomial K) • k) • x = (a : Polynomial K) • (k • x)
+    exact smul_assoc _ _ _
 
 local instance descendedAlgebra : Algebra (A K) (L K E) := patchAlgebra K E
 
@@ -65,10 +66,15 @@ private def first : L K E →ₐ[A K] E :=
 private def second : L K E →ₐ[A K] F K E :=
   { (patchCone K E).snd.hom with
     commutes' := fun a => by
+      have h : (patchCone K E).snd.hom ((cuspToPatch K E).hom a) =
+          algebraMap K (F K E) (cuspOriginResidue K a) :=
+        DFunLike.congr_fun (congrArg CommRingCat.Hom.hom (cuspToPatch_snd K E)) a
       change (patchCone K E).snd.hom ((cuspToPatch K E).hom a) =
-        algebraMap K (F K E) (cuspOriginResidue K a)
-      exact DFunLike.congr_fun (congrArg CommRingCat.Hom.hom (cuspToPatch_snd K E)) a }
+        algebraMap (Polynomial K) (F K E) (a : Polynomial K)
+      rw [h, IsScalarTower.algebraMap_apply (Polynomial K) K (F K E)] <;> rfl }
 
+set_option maxHeartbeats 1200000 in
+set_option backward.isDefEq.respectTransparency false in
 private def coordinateMap : L K E →ₗ[A K] coordinatePatch K E :=
   let a := (normalizationCoordinates K E).toLinearMap.comp (first K E).toLinearMap
   let b := (residueCoordinates K E).toLinearMap.comp (second K E).toLinearMap
@@ -80,13 +86,18 @@ private def coordinateMap : L K E →ₗ[A K] coordinatePatch K E :=
     apply (conductor_coordinate_equation K E (first K E z) (second K E z)).mp
     exact DFunLike.congr_fun (congrArg CommRingCat.Hom.hom (patch_isPullback K E).w) z
 
+set_option maxHeartbeats 1200000 in
 set_option backward.isDefEq.respectTransparency false in
 private theorem coordinateMap_bijective : Function.Bijective (coordinateMap K E) := by
   constructor
   · intro x y h
-    have hPair := congrArg Subtype.val h
-    have hNorm := (normalizationCoordinates K E).injective (congrArg Prod.fst hPair)
-    have hRes := (residueCoordinates K E).injective (congrArg Prod.snd hPair)
+    have hf := congrArg (fun z : coordinatePatch K E => z.val.1) h
+    have hs := congrArg (fun z : coordinatePatch K E => z.val.2) h
+    change normalizationCoordinates K E (first K E x) =
+      normalizationCoordinates K E (first K E y) at hf
+    change residueCoordinates K E (second K E x) = residueCoordinates K E (second K E y) at hs
+    have hNorm := (normalizationCoordinates K E).injective hf
+    have hRes := (residueCoordinates K E).injective hs
     exact Subtype.ext (Prod.ext hNorm hRes)
   · intro x
     let a := (normalizationCoordinates K E).symm x.val.1
@@ -103,8 +114,10 @@ private theorem coordinateMap_bijective : Function.Bijective (coordinateMap K E)
       exact hCoord
     let z : L K E := ⟨(a, b), hCompat⟩
     refine ⟨z, Subtype.ext (Prod.ext ?_ ?_)⟩
-    · exact hA
-    · exact hB
+    · change (normalizationBasis K E).2.equivFun a = x.val.1
+      exact hA
+    · change (residueBasis K E).equivFun b = x.val.2
+      exact hB
 
 /-- Actual conductor patching of finite étale algebras is the native
 coordinate patch at the level of cusp modules. -/

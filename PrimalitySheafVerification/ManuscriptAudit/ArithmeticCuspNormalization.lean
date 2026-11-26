@@ -48,8 +48,7 @@ theorem paper2_arithmetic_delta_summand_refuted
     (CuspNormalizationConstants.normalizationCokernel_isZero K 5 coefficient).of_iso e.symm
   have hProjection : projection = 0 := hZero.eq_of_src _ _
   apply SmallEtaleClosedResidue.arithmetic_cusp_origin_cyclic_pushforward_not_isZero
-  apply IsZero.iff_id_eq_zero.mpr
-  rw [← split, hProjection, comp_zero]
+  rw [IsZero.iff_id_eq_zero, ← split, hProjection, comp_zero]
 
 end
 
