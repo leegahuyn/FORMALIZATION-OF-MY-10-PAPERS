@@ -44,8 +44,12 @@ theorem gaussianPrimitive_neg (x : ℝ) :
 def realSign (x : ℝ) : ℝ := if 0 < x then 1 else if x = 0 then 0 else -1
 
 theorem realSign_neg (x : ℝ) : realSign (-x) = -realSign x := by
-  unfold realSign
-  split_ifs <;> linarith
+  rcases lt_trichotomy x 0 with hx | rfl | hx
+  · have hn : 0 < -x := neg_pos.mpr hx
+    simp [realSign, hn, not_lt_of_gt hx, ne_of_lt hx]
+  · simp [realSign]
+  · have hn : -x < 0 := neg_lt_zero.mpr hx
+    simp [realSign, hx, not_lt_of_gt hn, ne_of_lt hn]
 
 def halfLattice (n : ℤ) : ℝ := (n : ℝ) + 1 / 2
 
@@ -65,7 +69,7 @@ def kernelTerm (τ : ℂ) (n : ℤ) : ℂ :=
 
 private theorem halfLattice_cast (n : ℤ) :
     (halfLattice n : ℂ) = (n : ℂ) + 1 / 2 := by
-  simp [halfLattice, Complex.ofReal_div]
+  simp [halfLattice]
 
 private theorem reduceCharacter (τ : ℂ) (n : ℤ) :
     (-1 : ℂ) ^ n *
@@ -87,23 +91,49 @@ private theorem reduceCharacter (τ : ℂ) (n : ℤ) :
           Complex.exp (phaseUnit / 2)) := by ring
     _ = _ := by rw [hsquare, one_mul]
 
+private theorem kernelTerm_eq_reduced (τ : ℂ) (n : ℤ) :
+    kernelTerm τ n =
+      ((realSign (halfLattice n) -
+        gaussianPrimitive (halfLattice n * Real.sqrt (2 * τ.im)) : ℝ) : ℂ) *
+      (Complex.exp (-phaseUnit * (halfLattice n : ℂ) ^ 2 * τ) *
+        Complex.exp (phaseUnit / 2)) := by
+  unfold kernelTerm
+  rw [← reduceCharacter τ n]
+  exact mul_assoc _ _ _
+
 theorem kernelTerm_reflection (τ : ℂ) (n : ℤ) :
     kernelTerm τ (-n - 1) = -kernelTerm τ n := by
-  simp only [kernelTerm, mul_assoc, reduceCharacter, halfLattice_reflection, realSign_neg,
-    neg_mul, gaussianPrimitive_neg, Complex.ofReal_neg, neg_sq]
-  rw [← neg_sub, Complex.ofReal_neg, neg_mul]
+  have hOdd : realSign (halfLattice (-n - 1)) -
+        gaussianPrimitive (halfLattice (-n - 1) * Real.sqrt (2 * τ.im)) =
+      -(realSign (halfLattice n) -
+        gaussianPrimitive (halfLattice n * Real.sqrt (2 * τ.im))) := by
+    rw [halfLattice_reflection, realSign_neg, neg_mul, gaussianPrimitive_neg]
+    ring
+  have hSq : (halfLattice (-n - 1) : ℂ) ^ 2 = (halfLattice n : ℂ) ^ 2 := by
+    rw [halfLattice_reflection, Complex.ofReal_neg, neg_sq]
+  rw [kernelTerm_eq_reduced τ (-n - 1), kernelTerm_eq_reduced τ n, hOdd, hSq]
+  simp only [Complex.ofReal_neg, neg_mul]
 
 /-- The actual bilateral correction in the real half-period specialization. -/
 def correction (τ : ℂ) : ℂ := ∑' n : ℤ, kernelTerm τ n
 
 theorem correction_eq_zero (τ : ℂ) : correction τ = 0 := by
   let e : ℤ ≃ ℤ :=
-    ⟨fun n => -n - 1, fun n => -n - 1, by intro n; omega, by intro n; omega⟩
+    ⟨fun n => -n - 1, fun n => -n - 1,
+      by
+        intro n
+        change -(-n - 1) - 1 = n
+        omega,
+      by
+        intro n
+        change -(-n - 1) - 1 = n
+        omega⟩
   have h := e.tsum_eq (kernelTerm τ)
   have hfun : (fun n => kernelTerm τ (e n)) = fun n => -kernelTerm τ n :=
     funext (kernelTerm_reflection τ)
   change (∑' n, kernelTerm τ (e n)) = correction τ at h
   rw [hfun, tsum_neg] at h
+  change -correction τ = correction τ at h
   have hsum := congrArg (fun z : ℂ => z + correction τ) h
   rw [neg_add_cancel, ← two_mul] at hsum
   exact (mul_eq_zero.mp hsum.symm).resolve_left two_ne_zero

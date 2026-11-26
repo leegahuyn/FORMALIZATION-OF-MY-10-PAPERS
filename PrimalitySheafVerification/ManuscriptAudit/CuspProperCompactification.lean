@@ -3,6 +3,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Ring
 import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
 
 /-!
@@ -126,11 +128,8 @@ private theorem constants_bijective : Function.Bijective (constants K) := by
 private instance constants_isIso : IsIso (CommRingCat.ofHom (constants K)) :=
   (RingEquiv.ofBijective (constants K) (constants_bijective K)).toCommRingCatIso.isIso_hom
 
-private instance planeRing_finiteType : Algebra.FiniteType (grading K 0) (PlaneRing K) := by
-  classical
-  constructor
-  refine ⟨Finset.univ.image (MvPolynomial.X : Fin 3 → PlaneRing K), ?_⟩
-  simp only [Finset.coe_image, Finset.coe_univ, Set.image_univ]
+private theorem variables_adjoin_eq_top :
+    Algebra.adjoin (grading K 0) (Set.range (MvPolynomial.X : Fin 3 → PlaneRing K)) = ⊤ := by
   apply top_unique
   intro p hpTop
   clear hpTop
@@ -141,6 +140,12 @@ private instance planeRing_finiteType : Algebra.FiniteType (grading K 0) (PlaneR
   | add p q hp hq => exact Subalgebra.add_mem _ hp hq
   | mul_X p i hp =>
       exact Subalgebra.mul_mem _ hp (Algebra.subset_adjoin (Set.mem_range_self i))
+
+private instance planeRing_finiteType : Algebra.FiniteType (grading K 0) (PlaneRing K) := by
+  classical
+  constructor
+  refine ⟨Finset.univ.image (MvPolynomial.X : Fin 3 → PlaneRing K), ?_⟩
+  simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ] using variables_adjoin_eq_top K
 
 private abbrev plane := Proj (grading K)
 
@@ -208,6 +213,132 @@ theorem affineOpen_toBase :
   apply RingHom.ext
   exact chartEvaluation_constants K
 
+/-- The homogeneous cubic \(Y^2Z-X^3\) vanishing on the projective cusp. -/
+def planeCubic : PlaneRing K :=
+  MvPolynomial.X (1 : Fin 3) ^ 2 * z K - MvPolynomial.X (0 : Fin 3) ^ 3
+
+private theorem planeCubic_mem : planeCubic K ∈ grading K 3 := by
+  change MvPolynomial.IsHomogeneous (planeCubic K) 3
+  exact (((MvPolynomial.isHomogeneous_X K (1 : Fin 3)).pow 2).mul
+    (MvPolynomial.isHomogeneous_X K (2 : Fin 3))).sub
+      ((MvPolynomial.isHomogeneous_X K (0 : Fin 3)).pow 3)
+
+private theorem evalPlaneCubic_zero : evalPolynomial K (planeCubic K) = 0 := by
+  simp only [planeCubic, evalPolynomial, map_sub, map_mul, map_pow, MvPolynomial.aeval_X, z]
+  change cuspCube K ^ 2 * (1 : CuspRing K) - cuspSquare K ^ 3 = 0
+  apply Subtype.ext
+  change (((Polynomial.X : Polynomial K) ^ 3) ^ 2 * 1 - (Polynomial.X ^ 2) ^ 3) = 0
+  ring
+
+private abbrev zChartι : Spec (CommRingCat.of (ChartRing K)) ⟶ plane K :=
+  Proj.awayι (grading K) (z K) (X_mem_one K 2) (by decide)
+
+private abbrev cuspToZChart : affineCusp K ⟶ Spec (CommRingCat.of (ChartRing K)) :=
+  Spec.map (CommRingCat.ofHom (chartEvaluation K))
+
+private theorem cuspInPlane_avoids_cubic_open (x : affineCusp K) :
+    cuspInPlane K x ∉ Proj.basicOpen (grading K) (planeCubic K) := by
+  intro h
+  change cuspToZChart K x ∈ (zChartι K) ⁻¹ᵁ Proj.basicOpen (grading K) (planeCubic K) at h
+  rw [Proj.awayι_preimage_basicOpen (𝒜 := grading K) (X_mem_one K 2) (by decide)
+    (planeCubic_mem K) (by decide)] at h
+  have hn := (PrimeSpectrum.mem_basicOpen _ _).mp h
+  apply hn
+  change chartEvaluation K (Away.isLocalizationElem (X_mem_one K 2) (planeCubic_mem K)) ∈
+    (x : PrimeSpectrum (CuspRing K)).asIdeal
+  have hZero :
+      chartEvaluation K (Away.isLocalizationElem (X_mem_one K 2) (planeCubic_mem K)) = 0 := by
+    unfold Away.isLocalizationElem
+    rw [chartEvaluation_mk, pow_one, evalPlaneCubic_zero]
+  rw [hZero]
+  exact (x : PrimeSpectrum (CuspRing K)).asIdeal.zero_mem
+
+private theorem image_range_eq_closure :
+    Set.range (cuspInPlane K).imageι = closure (Set.range (cuspInPlane K)) := by
+  change Set.range (cuspInPlane K).ker.subschemeι = _
+  rw [Scheme.IdealSheafData.range_subschemeι, Scheme.Hom.support_ker]
+
+/-- Every point of the proper closure lies on the homogeneous cubic. -/
+theorem cubic_mem_projectiveCusp (x : projectiveCusp K) :
+    planeCubic K ∈ ((cuspInPlane K).imageι x).asHomogeneousIdeal := by
+  classical
+  have hSubset : closure (Set.range (cuspInPlane K)) ⊆
+      ((Proj.basicOpen (grading K) (planeCubic K) : Set (plane K)))ᶜ :=
+    closure_minimal (by rintro _ ⟨p, rfl⟩; exact cuspInPlane_avoids_cubic_open K p)
+      (Proj.basicOpen (grading K) (planeCubic K)).isOpen.isClosed_compl
+  have hx : (cuspInPlane K).imageι x ∈ Set.range (cuspInPlane K).imageι := ⟨x, rfl⟩
+  rw [image_range_eq_closure] at hx
+  by_contra hn
+  exact (hSubset hx) ((Proj.mem_basicOpen _ _ _).mpr hn)
+
+private theorem mem_affine_image_of_z_open (x : projectiveCusp K)
+    (hx : (cuspInPlane K).imageι x ∈ Proj.basicOpen (grading K) (z K)) :
+    x ∈ Set.range (affineOpen K) := by
+  have hi : (cuspInPlane K).imageι x ∈ Set.range (zChartι K) := by
+    change (cuspInPlane K).imageι x ∈ (zChartι K).opensRange
+    rw [Proj.opensRange_awayι]
+    exact hx
+  obtain ⟨q, hq⟩ := hi
+  have hqClosure : zChartι K q ∈ closure (Set.range (cuspInPlane K)) := by
+    rw [hq, ← image_range_eq_closure]
+    exact ⟨x, rfl⟩
+  haveI : IsClosedImmersion (cuspToZChart K) :=
+    IsClosedImmersion.spec_of_surjective _ (chartEvaluation_surjective K)
+  have hClosed := (cuspToZChart K).isClosedEmbedding.isClosed_range
+  have hRange : Set.range (cuspInPlane K) = (zChartι K) '' Set.range (cuspToZChart K) := by
+    change Set.range ((zChartι K) ∘ (cuspToZChart K)) = _
+    exact Set.range_comp _ _
+  have he := (zChartι K).isOpenEmbedding.isEmbedding.closure_eq_preimage_closure_image
+    (Set.range (cuspToZChart K))
+  rw [hClosed.closure_eq, ← hRange] at he
+  have hqImage : q ∈ Set.range (cuspToZChart K) := by
+    rw [he]
+    exact hqClosure
+  obtain ⟨t, ht⟩ := hqImage
+  refine ⟨t, (cuspInPlane K).imageι.isClosedEmbedding.injective ?_⟩
+  calc
+    _ = cuspInPlane K t := by
+      change ((affineOpen K) ≫ (cuspInPlane K).imageι) t = _
+      rw [affineOpen, Scheme.Hom.toImage_imageι]
+    _ = zChartι K q := by
+      change zChartι K (cuspToZChart K t) = _
+      rw [ht]
+    _ = _ := hq
+
+/-- Outside the affine chart the image in the projective plane is supported
+where \(X\) and \(Z\) vanish and \(Y\) does not vanish. -/
+theorem boundary_plane_coordinates (x : projectiveCusp K)
+    (hx : x ∉ Set.range (affineOpen K)) :
+    (MvPolynomial.X (0 : Fin 3) : PlaneRing K) ∈ ((cuspInPlane K).imageι x).asHomogeneousIdeal ∧
+      (MvPolynomial.X (2 : Fin 3) : PlaneRing K) ∈ ((cuspInPlane K).imageι x).asHomogeneousIdeal ∧
+      (MvPolynomial.X (1 : Fin 3) : PlaneRing K) ∉ ((cuspInPlane K).imageι x).asHomogeneousIdeal := by
+  classical
+  let p := (cuspInPlane K).imageι x
+  have hz : z K ∈ p.asHomogeneousIdeal := by
+    by_contra hn
+    exact hx (mem_affine_image_of_z_open K x ((Proj.mem_basicOpen _ _ _).mpr hn))
+  have hc : (MvPolynomial.X (1 : Fin 3)) ^ 2 * z K -
+      (MvPolynomial.X (0 : Fin 3)) ^ 3 ∈ p.asHomogeneousIdeal.toIdeal :=
+    cubic_mem_projectiveCusp K x
+  have hMul := p.asHomogeneousIdeal.toIdeal.mul_mem_left ((MvPolynomial.X (1 : Fin 3)) ^ 2)
+    (show z K ∈ p.asHomogeneousIdeal.toIdeal from hz)
+  have hCube : (MvPolynomial.X (0 : Fin 3) : PlaneRing K) ^ 3 ∈ p.asHomogeneousIdeal.toIdeal := by
+    simpa only [sub_sub_cancel] using p.asHomogeneousIdeal.toIdeal.sub_mem hMul hc
+  have ha : (MvPolynomial.X (0 : Fin 3) : PlaneRing K) ∈ p.asHomogeneousIdeal :=
+    p.isPrime.mem_of_pow_mem 3 hCube
+  have hCover := Proj.iSup_basicOpen_eq_top' (grading K)
+    (MvPolynomial.X : Fin 3 → PlaneRing K) (fun i => ⟨1, X_mem_one K i⟩)
+    (variables_adjoin_eq_top K)
+  have hTop : p ∈ (⊤ : (plane K).Opens) := trivial
+  rw [← hCover] at hTop
+  obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp hTop
+  have hni := (Proj.mem_basicOpen _ _ _).mp hi
+  refine ⟨ha, hz, ?_⟩
+  fin_cases i
+  · exact (hni ha).elim
+  · exact hni
+  · exact (hni hz).elim
+
 end
 
 end ManuscriptAudit.CuspProperCompactification
@@ -218,7 +349,9 @@ run_cmd do
   for name in [``ManuscriptAudit.CuspProperCompactification.projectiveCusp_isProper,
       ``ManuscriptAudit.CuspProperCompactification.affineOpen_isOpenImmersion,
       ``ManuscriptAudit.CuspProperCompactification.affineOpen_isDominant,
-      ``ManuscriptAudit.CuspProperCompactification.affineOpen_toBase] do
+      ``ManuscriptAudit.CuspProperCompactification.affineOpen_toBase,
+      ``ManuscriptAudit.CuspProperCompactification.cubic_mem_projectiveCusp,
+      ``ManuscriptAudit.CuspProperCompactification.boundary_plane_coordinates] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
