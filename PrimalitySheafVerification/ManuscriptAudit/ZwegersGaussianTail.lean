@@ -76,7 +76,8 @@ private theorem gaussianPrimitive_tendsto : Tendsto gaussianPrimitive atTop (�
   have h : Tendsto gaussian atTop (𝓝 0) :=
     Real.tendsto_exp_atBot.comp
       ((tendsto_pow_atTop two_ne_zero).const_mul_atTop_of_neg (neg_lt_zero.2 Real.pi_pos))
-  simpa [gaussianPrimitive] using Tendsto.const_mul (-(2 * Real.pi)⁻¹) h
+  change Tendsto (fun x : ℝ => -(2 * Real.pi)⁻¹ * gaussian x) atTop (𝓝 0)
+  simpa only [mul_zero] using Tendsto.const_mul (-(2 * Real.pi)⁻¹) h
 
 private theorem integral_weighted_gaussian_tail (x : ℝ) :
     (∫ t in Ioi x, t * gaussian t) = gaussian x / (2 * Real.pi) := by

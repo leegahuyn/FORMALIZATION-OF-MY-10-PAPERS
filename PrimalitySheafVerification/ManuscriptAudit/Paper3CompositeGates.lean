@@ -36,8 +36,8 @@ theorem discriminant_good :
 
 /-- The four explicit local predicates and their coprime overlap. -/
 def passes (r : ℕ) (c : ℝ) : Prop :=
-  let Y := 23 ^ r
-  let X := Y + 3
+  let Y : ℕ := 23 ^ r
+  let X : ℕ := Y + 3
   (23 : ℝ) ^ (-c * (r : ℝ)) ≤ |(X : ℝ) - (Y : ℝ)| ∧
   |(X : ℝ) - (Y : ℝ)| ≤ 23 / (r : ℝ) ∧
   (∃ y : ℤ, (2 : ℤ) = (r : ℤ) * y - (23 - 1)) ∧
@@ -65,11 +65,7 @@ theorem indexed_prime_composite_passes (c : ℝ) (hc : 1 < c) :
   have hv : padicValNat 3 (23 ^ 3) = 0 :=
     padicValNat.eq_zero_of_not_dvd (by decide)
   have he : |((23 ^ 3 + 3 : ℕ) : ℝ) - ((23 ^ 3 : ℕ) : ℝ)| = 3 := by norm_num
-  change (23 : ℝ) ^ (-c * (3 : ℝ)) ≤ _ ∧ _ ≤ 23 / (3 : ℝ) ∧
-    (∃ y : ℤ, (2 : ℤ) = 3 * y - (23 - 1)) ∧
-    2 ∣ 23 ^ 3 + 3 ∧
-    padicValNat 3 (23 ^ 3) + 1 ≤ padicValNat 3 ((23 ^ 3 + 3) - 23 ^ 3) ∧
-    _ ∧ _
+  simp only [passes]
   rw [he, hv, show (23 ^ 3 + 3) - 23 ^ 3 = 3 by decide, padicValNat_self]
   exact ⟨lower_bound c hc 3 (by decide), by norm_num, ⟨8, by norm_num⟩,
     by decide, le_rfl, discriminant_good, by decide⟩
@@ -81,11 +77,7 @@ theorem product_exponent_composite_passes (c : ℝ) (hc : 1 < c) :
   have hv : padicValNat 3 (23 ^ 6) = 0 :=
     padicValNat.eq_zero_of_not_dvd (by decide)
   have he : |((23 ^ 6 + 3 : ℕ) : ℝ) - ((23 ^ 6 : ℕ) : ℝ)| = 3 := by norm_num
-  change (23 : ℝ) ^ (-c * (6 : ℝ)) ≤ _ ∧ _ ≤ 23 / (6 : ℝ) ∧
-    (∃ y : ℤ, (2 : ℤ) = 6 * y - (23 - 1)) ∧
-    2 ∣ 23 ^ 6 + 3 ∧
-    padicValNat 3 (23 ^ 6) + 1 ≤ padicValNat 3 ((23 ^ 6 + 3) - 23 ^ 6) ∧
-    _ ∧ _
+  simp only [passes]
   rw [he, hv, show (23 ^ 6 + 3) - 23 ^ 6 = 3 by decide, padicValNat_self]
   exact ⟨lower_bound c hc 6 (by decide), by norm_num, ⟨4, by norm_num⟩,
     by decide, le_rfl, discriminant_good, by decide⟩

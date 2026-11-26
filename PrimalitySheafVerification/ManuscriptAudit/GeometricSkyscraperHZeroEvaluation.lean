@@ -45,8 +45,9 @@ theorem constantEtaleGerm_surjective (T : X.Etale) (t : Φ.fiber.obj T) :
   let e : Φ.presheafFiber.obj P ≅ M := IsColimit.coconePointUniqueUpToIso a d
   have h₀ : b ≫ e.hom = 𝟙 M :=
     IsColimit.comp_coconePointUniqueUpToIso_hom a d (op ⟨T, t⟩)
-  letI : IsIso (b ≫ e.hom) := by rw [h₀]; infer_instance
-  letI : IsIso b := IsIso.of_isIso_comp_right b e.hom
+  have hb : b = e.inv :=
+    (cancel_mono e.hom).mp (h₀.trans e.inv_hom_id.symm)
+  letI : IsIso b := by rw [hb]; exact e.isIso_inv
   letI : IsIso (Φ.presheafFiber.map η) :=
     inferInstanceAs (IsIso (Φ.presheafFiber.map (toSheafify X.smallEtaleTopology P)))
   have h : η.app (op T) ≫ c = b ≫ Φ.presheafFiber.map η :=
@@ -77,9 +78,12 @@ theorem HZero_surjective_of_stalkAdjoint_iso (N : C.{u})
   let k : Φ.presheafFiber.obj F.obj ⟶ N := (a.homEquiv F N).symm f
   have hk : k = Φ.sheafFiber.map f ≫ a.counit.app N :=
     (a.homEquiv_counit F N f).symm
-  letI : IsIso k := hk ▸ hf
-  have h : f.hom.app (op T) ≫ q = Φ.toPresheafFiber T t F.obj ≫ k :=
-    (Φ.toPresheafFiber_skyscraperPresheafHomEquiv_symm f.hom T t).symm
+  letI : IsIso k := by rw [hk]; exact hf
+  have hk' : k = Φ.skyscraperPresheafHomEquiv.symm f.hom :=
+    Φ.skyscraperSheafAdjunction_homEquiv_symm_apply f
+  have h : f.hom.app (op T) ≫ q = Φ.toPresheafFiber T t F.obj ≫ k := by
+    rw [hk']
+    exact (Φ.toPresheafFiber_skyscraperPresheafHomEquiv_symm f.hom T t).symm
   have hs : Function.Surjective (f.hom.app (op T) ≫ q) := by
     rw [h]
     exact (ConcreteCategory.bijective_of_isIso k).surjective.comp

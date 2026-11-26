@@ -59,7 +59,9 @@ private theorem keepY_sub_mem (I : Ideal (A K))
     fin_cases i
     · rw [if_neg (by decide), mul_zero, sub_zero]
       exact I.mul_mem_left p hX
-    · rw [if_pos rfl, ← sub_mul]
+    · change (p * planeY K - keepY K p *
+        (if (1 : Fin 3) = 1 then planeY K else 0)) ∈ I
+      rw [if_pos rfl, ← sub_mul]
       exact I.mul_mem_right _ hp
     · rw [if_neg (by decide), mul_zero, sub_zero]
       exact I.mul_mem_left p hZ
@@ -78,6 +80,7 @@ private theorem mem_iff_keepY_mem (I : Ideal (A K))
 
 private theorem keepY_map_one :
     (grading K 1).map (keepY K).toLinearMap = Submodule.span K ({planeY K} : Set (A K)) := by
+  change (MvPolynomial.homogeneousSubmodule (Fin 3) K 1).map (keepY K).toLinearMap = _
   rw [MvPolynomial.homogeneousSubmodule_one_eq_span_X, Submodule.map_span, ← Set.range_comp]
   apply le_antisymm <;> rw [Submodule.span_le]
   · rintro _ ⟨i, rfl⟩
@@ -97,7 +100,9 @@ private theorem keepY_homogeneous {n : ℕ} {p : A K} (hp : p ∈ grading K n) :
     ∃ c : K, c • (planeY K) ^ n = keepY K p := by
   have hm : (grading K n).map (keepY K).toLinearMap =
       Submodule.span K ({(planeY K) ^ n} : Set (A K)) := by
-    rw [← MvPolynomial.homogeneousSubmodule_one_pow, Submodule.map_pow, keepY_map_one]
+    have hGrade : (grading K 1) ^ n = grading K n :=
+      MvPolynomial.homogeneousSubmodule_one_pow (σ := Fin 3) (R := K) n
+    rw [← hGrade, Submodule.map_pow, keepY_map_one]
     exact (map_pow (Submodule.spanSingleton K) (planeY K) n).symm
   have hMem : keepY K p ∈ (grading K n).map (keepY K).toLinearMap :=
     Submodule.mem_map_of_mem hp
