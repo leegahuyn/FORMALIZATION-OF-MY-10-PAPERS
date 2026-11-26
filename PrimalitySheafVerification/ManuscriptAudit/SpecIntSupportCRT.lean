@@ -41,7 +41,7 @@ theorem crt_cover_and_intersection :
       intro h3
       have h : (1 : ℤ) ∈ x.asIdeal := by
         simpa only [show (3 : ℤ) - 2 = 1 by decide] using x.asIdeal.sub_mem h3 h2
-      exact x.2.ne_top (Ideal.eq_top_iff_one.mpr h)
+      exact x.2.ne_top ((Ideal.eq_top_iff_one x.asIdeal).mpr h)
     · exact Or.inl ((PrimeSpectrum.mem_basicOpen (2 : ℤ) x).2 h2)
   · simpa only [show (2 : ℤ) * 3 = 6 by decide] using
       PrimeSpectrum.basicOpen_mul (2 : ℤ) 3
