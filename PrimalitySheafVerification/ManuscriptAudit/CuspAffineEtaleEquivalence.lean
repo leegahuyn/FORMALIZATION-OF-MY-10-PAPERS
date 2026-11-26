@@ -19,7 +19,8 @@ noncomputable section
 universe u
 
 variable (K : Type u) [Field K]
-variable (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (p : ℕ) [pPrime : Fact p.Prime] [kCharP : CharP K p]
+include p pPrime kCharP
 
 /-- Every affine étale scheme over the normalization descends in prime characteristic. -/
 theorem affinePullback_essSurj : (affinePullback K).EssSurj :=

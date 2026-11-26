@@ -21,13 +21,15 @@ open CuspAffineEtale AffineEtaleBaseChange
 
 noncomputable section
 
-variable (K : Type) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (K : Type) [Field K] (p : ℕ) [pPrime : Fact p.Prime] [kCharP : CharP K p]
 
 private abbrev cuspSite := (Cusp K).smallEtaleTopology
 private abbrev normalizationSite := (Normalization K).smallEtaleTopology
 
 private theorem cusp_surjective : Function.Surjective (CuspScheme.cuspMap K) :=
   (surjective_iff (CuspScheme.cuspMap K)).mp (CuspScheme.paper2_cusp_map_surjective K)
+
+include p pPrime kCharP
 
 /-- The full étale sheaf equivalence with normalization direct image as its forward functor. -/
 def normalizationDirectImageEquiv :

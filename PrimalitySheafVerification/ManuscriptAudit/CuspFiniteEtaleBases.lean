@@ -98,6 +98,40 @@ theorem transitionMatrix_mulVec (v : I K E → D K) :
         ((commonQuotientComparison K E).symm ((quotientResidueBasis K E).equivFun.symm v)) :=
   LinearMap.toMatrix'_mulVec (transitionEquiv K E).toLinearMap v
 
+
+/-- Extending a normalization vector to the common quotient applies the
+polynomial reduction to each of its basis coordinates. -/
+theorem normalization_quotient_coordinates (x : E) :
+    (quotientNormalizationBasis K E).equivFun
+        ((1 : D K) ⊗ₜ[Polynomial K] x) =
+      algebraMap (Polynomial K) (D K) ∘ (normalizationBasis K E).2.equivFun x := by
+  funext i
+  change (quotientNormalizationBasis K E).repr ((1 : D K) ⊗ₜ[Polynomial K] x) i =
+    algebraMap (Polynomial K) (D K) ((normalizationBasis K E).2.repr x i)
+  rw [quotientNormalizationBasis, Module.Basis.baseChange_repr_tmul, Algebra.smul_def, mul_one]
+
+/-- Extending a residue vector applies the constants map to each coordinate. -/
+theorem residue_quotient_coordinates (y : residueFiber K E) :
+    (quotientResidueBasis K E).equivFun ((1 : D K) ⊗ₜ[K] y) =
+      algebraMap K (D K) ∘ (residueBasis K E).equivFun y := by
+  funext i
+  change (quotientResidueBasis K E).repr ((1 : D K) ⊗ₜ[K] y) i =
+    algebraMap K (D K) ((residueBasis K E).repr y i)
+  rw [quotientResidueBasis, Module.Basis.baseChange_repr_tmul, Algebra.smul_def, mul_one]
+
+/-- Equality of the two actual images in the common quotient is exactly the
+native coordinate gluing equation with the invertible transition matrix. -/
+theorem conductor_coordinate_equation (x : E) (y : residueFiber K E) :
+    ((1 : D K) ⊗ₜ[Polynomial K] x =
+        (commonQuotientComparison K E).symm ((1 : D K) ⊗ₜ[K] y)) ↔
+      (algebraMap (Polynomial K) (D K) ∘ (normalizationBasis K E).2.equivFun x) =
+        (transitionMatrix K E).val *ᵥ
+          (algebraMap K (D K) ∘ (residueBasis K E).equivFun y) := by
+  rw [← normalization_quotient_coordinates K E x,
+    ← residue_quotient_coordinates K E y, transitionMatrix_mulVec,
+    LinearEquiv.symm_apply_apply]
+  exact (quotientNormalizationBasis K E).equivFun.injective.eq_iff.symm
+
 end
 
 end ManuscriptAudit.CuspFiniteEtaleBases
@@ -108,7 +142,10 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.CuspFiniteEtaleBases.normalization_and_residue_finrank,
       ``ManuscriptAudit.CuspFiniteEtaleBases.transitionMatrix,
-      ``ManuscriptAudit.CuspFiniteEtaleBases.transitionMatrix_mulVec] do
+      ``ManuscriptAudit.CuspFiniteEtaleBases.transitionMatrix_mulVec,
+      ``ManuscriptAudit.CuspFiniteEtaleBases.normalization_quotient_coordinates,
+      ``ManuscriptAudit.CuspFiniteEtaleBases.residue_quotient_coordinates,
+      ``ManuscriptAudit.CuspFiniteEtaleBases.conductor_coordinate_equation] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

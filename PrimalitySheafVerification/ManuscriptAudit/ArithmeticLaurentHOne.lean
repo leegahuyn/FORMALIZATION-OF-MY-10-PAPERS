@@ -212,9 +212,15 @@ private theorem classes_ker (j : ZMod 2 × ZMod 2) (hj : classes R e j = 0) : j 
   have hcases : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by decide
   rcases hcases x with rfl | rfl <;> rcases hcases y with rfl | rfl
   · rfl
-  · exact False.elim (hq (by simpa only [classes, map_zero, zero_add, cyclicClass_one] using hj))
-  · exact False.elim (ht (by simpa only [classes, map_zero, add_zero, cyclicClass_one] using hj))
-  · exact False.elim (htq (by simpa only [classes, cyclicClass_one] using hj))
+  · change cyclicClass R t 0 + cyclicClass R q 1 = 0 at hj
+    simp only [map_zero, zero_add, cyclicClass_one] at hj
+    exact (hq hj).elim
+  · change cyclicClass R t 1 + cyclicClass R q 0 = 0 at hj
+    simp only [map_zero, add_zero, cyclicClass_one] at hj
+    exact (ht hj).elim
+  · change cyclicClass R t 1 + cyclicClass R q 1 = 0 at hj
+    simp only [cyclicClass_one] at hj
+    exact (htq hj).elim
 
 private theorem classes_injective : Function.Injective (classes R e) := by
   intro x y h

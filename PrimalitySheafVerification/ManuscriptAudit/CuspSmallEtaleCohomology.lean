@@ -18,13 +18,15 @@ open CuspAffineEtale SmallEtaleCohomologyComparison
 
 noncomputable section
 
-variable (K : Type) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (K : Type) [Field K] (p : ℕ) [pPrime : Fact p.Prime] [kCharP : CharP K p]
 
 private abbrev cuspRing := CommRingCat.of (CuspPunctured.CuspSubalgebra K)
 private abbrev normalizationRing := CommRingCat.of (Polynomial K)
 
 private abbrev affineCuspSite := Scheme.AffineEtale.topology (Cusp K)
 private abbrev affineNormalizationSite := Scheme.AffineEtale.topology (Normalization K)
+
+include p pPrime kCharP
 
 private def affineComparison :
     Sheaf (affineCuspSite K) AddCommGrpCat.{0} ≌
