@@ -29,22 +29,9 @@ variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C.{u})
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-private def cokernelShortExactData {D : Type*} [Category* D] [Abelian D]
-    {A B : D} (f : A ⟶ B) (hf : Mono f) : {S : ShortComplex D // S.ShortExact} := by
-  letI : Mono f := hf
-  exact ⟨ShortComplex.cokernelSequence f,
-    ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
-      (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))⟩
-
-set_option backward.isDefEq.respectTransparency true in
-private def nestedOpenQuotientData :
-    {S : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) // S.ShortExact} :=
-  cokernelShortExactData (D := Sheaf X.smallEtaleTopology C.{u})
-    (nestedOpenConstantMap i j M) (nestedOpenConstantMap_mono i j M)
-
 /-- The short complex of the native nested-open map and its cokernel projection. -/
 def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) :=
-  (nestedOpenQuotientData i j M).val
+  ShortComplex.cokernelSequence (nestedOpenConstantMap i j M)
 
 @[simp]
 theorem nestedOpenQuotientSequence_f :
@@ -53,10 +40,6 @@ theorem nestedOpenQuotientSequence_f :
 @[simp]
 theorem nestedOpenQuotientSequence_g :
     (nestedOpenQuotientSequence i j M).g = cokernel.π (nestedOpenConstantMap i j M) := rfl
-
-set_option backward.isDefEq.respectTransparency true in
-theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact :=
-  (nestedOpenQuotientData i j M).property
 
 variable {Ω : Type u} [Field Ω] [IsSepClosed Ω]
 
@@ -130,7 +113,8 @@ end ManuscriptAudit.OpenEtaleExtension
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.OpenEtaleExtension.nestedOpenQuotientSequence_shortExact,
+  for name in [``ManuscriptAudit.OpenEtaleExtension.nestedOpenQuotientSequence_f,
+      ``ManuscriptAudit.OpenEtaleExtension.nestedOpenQuotientSequence_g,
       ``ManuscriptAudit.OpenEtaleExtension.nestedOpenConstantMap_stalk_isIso,
       ``ManuscriptAudit.OpenEtaleExtension.nestedOpenQuotient_stalk_isZero_inside,
       ``ManuscriptAudit.OpenEtaleExtension.nestedOpenQuotientStalkIso,

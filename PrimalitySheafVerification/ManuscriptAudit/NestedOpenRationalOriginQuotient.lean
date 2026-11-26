@@ -3,6 +3,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.ClosedRationalPointUniqueRefinements
 import PrimalitySheafVerification.ManuscriptAudit.ClosedRationalSkyscraperOffSupport
 import PrimalitySheafVerification.ManuscriptAudit.CuspOriginGeometricDirectImage
+import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionQuotientExact
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionToSkyscraper
 import PrimalitySheafVerification.ManuscriptAudit.RationalPointStalkConservative
 
@@ -106,8 +107,8 @@ theorem nestedOpenRationalOriginSequence_shortExact
     (nestedOpenRationalOriginSequence i j M s hRange).ShortExact := by
   let e : nestedOpenQuotientSequence i j M ≅ nestedOpenRationalOriginSequence i j M s hRange :=
     ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (nestedOpenQuotientRationalOriginIso i j M s hRange)
-      (by simp [nestedOpenQuotientSequence, nestedOpenRationalOriginSequence])
-      (by simp [nestedOpenQuotientSequence, nestedOpenRationalOriginSequence])
+      (by simp [nestedOpenRationalOriginSequence])
+      (by simp [nestedOpenRationalOriginSequence])
   exact ShortComplex.shortExact_of_iso e (nestedOpenQuotientSequence_shortExact i j M)
 
 end

@@ -31,15 +31,18 @@ def restrictionIndex (U : Opens X) : ℕ∞ :=
 theorem crt_cover_and_intersection :
     IsCoprime (2 : ℤ) 3 ∧ D 2 ⊔ D 3 = ⊤ ∧ D 6 = D 2 ⊓ D 3 := by
   refine ⟨⟨-1, 1, by norm_num⟩, ?_, ?_⟩
-  · ext x
-    simp only [Opens.mem_sup, PrimeSpectrum.mem_basicOpen, Opens.mem_top, iff_true]
+  · apply le_antisymm le_top
+    intro x _
+    change x ∈ D 2 ⊔ D 3
+    apply Opens.mem_sup.mpr
     by_cases h2 : (2 : ℤ) ∈ x.asIdeal
     · right
+      apply (PrimeSpectrum.mem_basicOpen (3 : ℤ) x).2
       intro h3
       have h : (1 : ℤ) ∈ x.asIdeal := by
         simpa only [show (3 : ℤ) - 2 = 1 by decide] using x.asIdeal.sub_mem h3 h2
       exact x.2.ne_top (Ideal.eq_top_iff_one.mpr h)
-    · exact Or.inl h2
+    · exact Or.inl ((PrimeSpectrum.mem_basicOpen (2 : ℤ) x).2 h2)
   · simpa only [show (2 : ℤ) * 3 = 6 by decide] using
       PrimeSpectrum.basicOpen_mul (2 : ℤ) 3
 

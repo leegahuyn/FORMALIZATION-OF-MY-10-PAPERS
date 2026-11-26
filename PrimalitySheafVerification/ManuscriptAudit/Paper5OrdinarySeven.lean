@@ -59,9 +59,13 @@ set_option maxRecDepth 12000 in
 private theorem solutions_card : Fintype.card Solutions = 6 := by decide
 
 theorem rational_affine_card : Nat.card (Points (ZMod 7)) = 7 := by
+  have hp :
+      (fun xy : ZMod 7 × ZMod 7 => (ordinaryCurve (ZMod 7)).toAffine.Equation xy.1 xy.2) =
+        (fun xy : ZMod 7 × ZMod 7 => xy.2 ^ 2 = xy.1 ^ 3 + 5) := by
+    funext xy
+    exact propext (equation_iff (ZMod 7) xy.1 xy.2)
   let e : Points (ZMod 7) ≃ Option Solutions :=
-    ((ordinaryCurve (ZMod 7)).toAffine.pointEquiv).trans
-      (Equiv.subtypeEquivProp (fun xy => equation_iff (ZMod 7) xy.1 xy.2)).optionCongr
+    ((ordinaryCurve (ZMod 7)).toAffine.pointEquiv).trans (Equiv.subtypeEquivProp hp).optionCongr
   rw [Nat.card_congr e, Nat.card_eq_fintype_card, Fintype.card_option, solutions_card]
 
 theorem rational_projective_card : Nat.card (ordinaryCurve (ZMod 7)).toProjective.Point = 7 := by
@@ -74,8 +78,8 @@ theorem rational_trace_one :
   decide
 
 theorem rational_point_is_seven_torsion (P : Points (ZMod 7)) : (7 : ℕ) • P = 0 := by
-  rw [← rational_affine_card]
-  exact card_nsmul_eq_zero'
+  have ht : Nat.card (Points (ZMod 7)) • P = 0 := card_nsmul_eq_zero'
+  simpa only [rational_affine_card] using ht
 
 theorem exists_nonzero_rational_seven_torsion :
     ∃ P : Points (ZMod 7), P ≠ 0 ∧ (7 : ℕ) • P = 0 := by

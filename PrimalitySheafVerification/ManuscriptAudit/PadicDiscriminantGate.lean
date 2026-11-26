@@ -31,8 +31,12 @@ theorem mapped_resultant_ne_zero_of_monic_discr {R S : Type*} [CommRing R] [Fiel
   have hPad : resultant f g F.natDegree (F.natDegree - 1) ≠ 0 := by
     have hSign : (-1 : S) ^ (F.natDegree * (F.natDegree - 1) / 2) ≠ 0 :=
       pow_ne_zero _ (neg_ne_zero.mpr one_ne_zero)
+    have hLead : ρ F.leadingCoeff ≠ 0 := by
+      rw [hMonic.leadingCoeff, map_one]
+      exact one_ne_zero
     simpa only [f, g, Polynomial.resultant_map_map, Polynomial.resultant_deriv hDeg,
-      map_mul, map_pow, map_neg, hMonic, map_one, mul_one] using mul_ne_zero hSign hDisc
+      map_mul, map_pow, map_neg, map_one] using
+        mul_ne_zero (mul_ne_zero hSign hLead) hDisc
   have hSize := Polynomial.resultant_add_right_deg f g f.natDegree g.natDegree
     (F.natDegree - 1 - g.natDegree) (le_rfl : g.natDegree ≤ g.natDegree)
   rw [Nat.add_sub_cancel' hg, Polynomial.coeff_natDegree, hf, one_pow, one_mul] at hSize
@@ -61,7 +65,9 @@ theorem monic_integral_discr_unique_lift {p : ℕ} [Fact p.Prime]
       (PadicInt.toZMod : ℤ_[p] →+* ZMod p).comp (Int.castRingHom (ℤ_[p])) =
         Int.castRingHom (ZMod p) := Subsingleton.elim _ _
   have hF : Fpadic.map PadicInt.toZMod = Fp := by
-    rw [Fpadic, Fp, Polynomial.map_map, hComp]
+    change (F.map (Int.castRingHom (ℤ_[p]))).map PadicInt.toZMod =
+      F.map (Int.castRingHom (ZMod p))
+    rw [Polynomial.map_map, hComp]
   have hf : Fp ≠ 0 := (hMonic.map _).ne_zero
   have h : resultant Fp (derivative Fp) ≠ 0 :=
     mapped_resultant_ne_zero_of_monic_discr F _ hMonic hDeg hDisc

@@ -2,6 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHZero
 
@@ -69,14 +70,15 @@ private theorem geometricSkyscraper_succ_of_epi_HMap
   letI : G.PreservesEpimorphisms := geometricSkyscraper_preservesEpimorphisms Φ
   letI : ∀ {A B : AddCommGrpCat.{u}} (f : A ⟶ B),
       PreservesLimit (parallelPair f 0) G := fun _ => inferInstance
-  letI : G.PreservesHomology := preservesHomology_of_preservesEpis_and_kernels G
+  letI : G.PreservesHomology := Functor.preservesHomology_of_preservesEpis_and_kernels G
   letI : G.PreservesInjectiveObjects :=
     Functor.preservesInjectiveObjects_of_adjunction_of_preservesMonomorphisms Φ.skyscraperSheafAdjunction
   let S₀ := ShortComplex.cokernelSequence (Injective.ι M)
+  letI : Mono S₀.f := inferInstanceAs (Mono (Injective.ι M))
+  letI : Epi S₀.g := inferInstanceAs (Epi (cokernel.π (Injective.ι M)))
   have h₀ : S₀.ShortExact :=
-    ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact _) inferInstance inferInstance
-  letI : Mono S₀.f := h₀.mono_f
-  letI : Epi S₀.g := h₀.epi_g
+    ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact (Injective.ι M))
+      (inferInstanceAs (Mono S₀.f)) (inferInstanceAs (Epi S₀.g))
   let S := S₀.map G
   have hS : S.ShortExact := h₀.map G
   letI : Injective S.X₂ := by
