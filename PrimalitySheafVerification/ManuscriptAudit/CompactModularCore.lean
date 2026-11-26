@@ -77,11 +77,11 @@ theorem core_eq_complement_highOrbits (Y : ℝ) : core Y = (highOrbits Y)ᶜ := 
     exact h ⟨g⁻¹, g • z, hgt,
       congrArg orbitPoint (by rw [← mul_smul, inv_mul_cancel, one_smul])⟩
 
-private def chooseLift (r : Reduced) : SL(2, ℤ) := by
+def chooseLift (r : Reduced) : SL(2, ℤ) := by
   classical
   exact if h : ∃ a : SL(2, ℤ), reduceTwo a = r then Classical.choose h else 1
 
-private theorem reduce_chooseLift (g : SL(2, ℤ)) :
+theorem reduce_chooseLift (g : SL(2, ℤ)) :
     reduceTwo (chooseLift (reduceTwo g)) = reduceTwo g := by
   have h : ∃ a : SL(2, ℤ), reduceTwo a = reduceTwo g := ⟨g, rfl⟩
   rw [chooseLift, dif_pos h]
@@ -145,3 +145,4 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

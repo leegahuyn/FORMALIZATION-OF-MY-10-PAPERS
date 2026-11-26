@@ -29,11 +29,12 @@ variable {D : Type*} [CommRing D] [Algebra K D]
 
 private theorem evaluate_equation (a b : D) (h : b ^ 2 = a ^ 2 * (a + 1)) :
     (equation K).eval₂ (Polynomial.aeval a : Polynomial K →ₐ[K] D).toRingHom b = 0 := by
-  have hx : (Polynomial.aeval a : Polynomial K →ₐ[K] D).toRingHom Polynomial.X = a :=
-    Polynomial.aeval_X (R := K) a
-  simpa only [equation, Polynomial.eval₂_sub, Polynomial.eval₂_pow,
-    Polynomial.eval₂_X, Polynomial.eval₂_C, map_mul, map_pow, map_add, map_one, hx]
-    using sub_eq_zero.mpr h
+  unfold equation
+  rw [Polynomial.eval₂_sub, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C]
+  change b ^ 2 - (Polynomial.aeval a : Polynomial K →ₐ[K] D)
+    ((Polynomial.X : Polynomial K) ^ 2 * (Polynomial.X + 1)) = 0
+  rw [map_mul, map_pow, map_add, map_one, Polynomial.aeval_X]
+  exact sub_eq_zero.mpr h
 
 private def evalPresentation (a b : D) (h : b ^ 2 = a ^ 2 * (a + 1)) : C K →ₐ[K] D :=
   AdjoinRoot.liftAlgHom (equation K) (Polynomial.aeval a) b (evaluate_equation K a b h)
@@ -123,7 +124,8 @@ theorem affineNode_not_formallySmooth : ¬ Algebra.FormallySmooth K (coordinates
     have hdiv : (Polynomial.X : Polynomial K) ^ 3 ∣ Polynomial.X ^ 2 :=
       Ideal.mem_span_singleton.mp (Ideal.Quotient.eq_zero_iff_mem.mp h)
     have hc := (Polynomial.X_pow_dvd_iff.mp hdiv) 2 (by decide)
-    exact one_ne_zero (by simpa using hc)
+    have he : (1 : K) = 0 := by simpa using hc
+    exact one_ne_zero he
   exact not_formallySmooth_from_truncation K t ht₃ ht₂
 
 theorem affineNode_not_smooth : ¬ Algebra.Smooth K (coordinates K) :=

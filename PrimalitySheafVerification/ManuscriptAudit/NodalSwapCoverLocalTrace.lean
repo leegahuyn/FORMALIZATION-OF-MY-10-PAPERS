@@ -1,7 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.LocallySurjective
-import PrimalitySheafVerification.ManuscriptAudit.CertifiedTorsorSplit
-import PrimalitySheafVerification.ManuscriptAudit.CertifiedTorsorSplitTrace
+import PrimalitySheafVerification.ManuscriptAudit.CertifiedTorsorBaseChangeSplitTrace
 import PrimalitySheafVerification.ManuscriptAudit.KummerSiteCover
 import PrimalitySheafVerification.ManuscriptAudit.NodalSwapCoverSheafTrace
 
@@ -42,21 +41,13 @@ variable (M : AddCommGrpCat.{u}) [TopologicalSpace M] [DiscreteTopology M] [IsTo
 
 set_option maxHeartbeats 1600000 in
 theorem affineTrace_surjective_of_section (h2 : (2 : K) ≠ 0) (g : E K →ₐ[A K] R) :
-    Function.Surjective (affineTrace K R M h2) := by
-  letI : Algebra (E K) R := g.toRingHom.toAlgebra
-  letI : IsScalarTower (A K) (E K) R := IsScalarTower.of_algHom g
-  let sw : E K ≃ₐ[A K] E K := swap K
-  let c : InvolutionTensorComparison.CertifiedComparison (A K) (E K) sw :=
-    NodalSwapCoverTorsor.certificate K h2
-  have hsw : Function.Involutive sw := swap_twice K
-  let e := CertifiedTorsorSplit.firstIdempotent (A K) (E K) R sw c
-  let f := CertifiedTorsorSplit.secondIdempotent (A K) (E K) R sw c
-  exact CertifiedTorsorSpectrumTrace.spectrumTrace_surjective_of_idempotents R (coverOver K R)
-    (M := M) (coverOverSwap K R) (coverOverSwap_involutive K R)
-    (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2) e f
-    (CertifiedTorsorSplit.idempotents_mul (A K) (E K) R sw c)
-    (CertifiedTorsorSplit.idempotents_add (A K) (E K) R sw c)
-    (CertifiedTorsorSplit.deck_firstIdempotent (A K) (E K) R sw c hsw)
+    Function.Surjective (affineTrace K R M h2) :=
+  @CertifiedTorsorBaseChangeSplitTrace.surjective (A K) (E K) R
+    (coordinates K).toCommRing (crossedPairs K).toCommRing inferInstance
+    (crossedPairs K).algebra inferInstance M inferInstance inferInstance inferInstance
+    (swap K) (swap_twice K) (NodalSwapCoverTorsor.certificate K h2) g
+    (coverOverSwap_involutive K R) (coverOverCertificate K R h2)
+    (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
 
 variable (U : aff K)
 
@@ -83,8 +74,8 @@ def refinementArrow (h2 : (2 : K) ≠ 0) : refinement K U h2 ⟶ U :=
 theorem refinement_cover (h2 : (2 : K) ≠ 0) :
     Sieve.ofArrows (fun _ : Unit => refinement K U h2)
       (fun _ : Unit => refinementArrow K U h2) ∈ site K U := by
-  rw [Scheme.AffineEtale.topology, Functor.mem_inducedTopology_iff_of_isCoverDense,
-    Sieve.functorPushforward_ofArrows]
+  change _ ∈ ((Scheme.AffineEtale.Spec (X K)).inducedTopology (X K).smallEtaleTopology) U
+  rw [Functor.mem_inducedTopology_iff_of_isCoverDense, Sieve.functorPushforward_ofArrows]
   apply KummerSiteCover.singleton_mem_smallEtaleTopology
   letI : Module.FaithfullyFlat (objectRing (A K) U) (tensorRing (A K) (E K) U) :=
     coverOver_faithfullyFlat K (objectRing (A K) U) h2
@@ -92,16 +83,18 @@ theorem refinement_cover (h2 : (2 : K) ≠ 0) :
     (algebraMap (objectRing (A K) U) (tensorRing (A K) (E K) U)))
   exact PrimeSpectrum.comap_surjective_of_faithfullyFlat
 
+private def tensorRightRing : CommRingCat.of (E K) ⟶ CommRingCat.of (tensorRing (A K) (E K) U) :=
+  CommRingCat.ofHom (Algebra.TensorProduct.includeRight :
+    E K →ₐ[A K] tensorRing (A K) (E K) U).toRingHom
+
 set_option maxHeartbeats 1500000 in
 def refinementSection (h2 : (2 : K) ≠ 0) :
     E K →ₐ[A K] objectRing (A K) (refinement K U h2) where
-  __ := (Algebra.TensorProduct.includeRight :
-    E K →ₐ[A K] tensorRing (A K) (E K) U).toRingHom
+  __ := (tensorRightRing K U).hom
   commutes' := by
     intro a
     have hcomm :
-        CommRingCat.ofHom (algebraMap (A K) (E K)) ≫ CommRingCat.ofHom
-          ((Algebra.TensorProduct.includeRight : E K →ₐ[A K] tensorRing (A K) (E K) U).toRingHom) =
+        CommRingCat.ofHom (algebraMap (A K) (E K)) ≫ tensorRightRing K U =
           structureRingHom (A K) (refinement K U h2) := by
       apply Spec.map_injective
       rw [Spec.map_comp, spec_structureRingHom]

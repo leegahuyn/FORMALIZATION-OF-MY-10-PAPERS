@@ -97,7 +97,8 @@ theorem prime_eq_origin_iff_x_mem (p : PrimeSpectrum (A K)) :
     let q : A K →ₐ[K] A K ⧸ p.asIdeal := Ideal.Quotient.mkₐ K p.asIdeal
     let c := Algebra.ofId K (A K ⧸ p.asIdeal)
     have hq : q = c.comp (originAlgebra K) := by
-      apply algebraMap_ext K
+      refine algebraMap_ext K (B := A K ⧸ p.asIdeal) (f := q)
+        (g := c.comp (originAlgebra K)) ?_ ?_
       · change q (nodeX K) = c (originAlgebra K (nodeX K))
         rw [originAlgebra_x, map_zero]
         exact Ideal.Quotient.eq_zero_iff_mem.mpr hx
