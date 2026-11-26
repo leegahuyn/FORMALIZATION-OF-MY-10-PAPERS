@@ -172,8 +172,16 @@ private theorem phi_sum (P : Points F) : phi F P + phi F (phi F P) = -P := by
         simpa [hy] using hE.symm
       have hh : y ≠ -y := y_ne_neg_y F hy
       have hh' : y ≠ (W F).negY 0 y := by simpa only [negY_eq] using hh
+      have hs : (W F).slope 0 0 y y = 0 := by
+        rw [tangent_slope F 0 y hh]
+        simp
       rw [Affine.Point.add_self_of_Y_ne hh']
-      simp [tangent_slope F _ _ hh, addX_eq, addY_eq, negY_eq, W, ordinaryCurve]
+      simp only [Affine.Point.some.injEq]
+      constructor
+      · rw [addX_eq, hs]
+        simp
+      · rw [addY_eq, hs, negY_eq]
+        simp
     · have hh : (2 : F) * x ≠ 2 * (2 * x) := by
         intro he
         apply hx

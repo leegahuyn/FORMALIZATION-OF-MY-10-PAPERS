@@ -32,7 +32,7 @@ attribute [local irreducible] nestedOpenConstantMap
 set_option maxHeartbeats 500000 in
 private theorem quotientMono : Mono (nestedOpenQuotientSequence i j M).f := by
   rw [nestedOpenQuotientSequence_f]
-  exact nestedOpenConstantMap_mono i j M
+  exact nestedOpenConstantMap_mono j i M
 
 set_option maxHeartbeats 500000 in
 private def quotientCokernelIso :
@@ -49,9 +49,13 @@ private theorem quotientProjection :
 
 set_option maxHeartbeats 500000 in
 private theorem quotientExactAndEpi :
-    (nestedOpenQuotientSequence i j M).Exact ∧ Epi (nestedOpenQuotientSequence i j M).g :=
-  exactAndEpiOfCokernelProjection (nestedOpenQuotientSequence i j M)
-    (quotientCokernelIso i j M) (quotientProjection i j M)
+    (nestedOpenQuotientSequence i j M).Exact ∧ Epi (nestedOpenQuotientSequence i j M).g := by
+  let Q : ShortComplex (Sheaf X.smallEtaleTopology AddCommGrpCat.{u}) :=
+    nestedOpenQuotientSequence.{u} i j M
+  let e : cokernel Q.f ≅ Q.X₃ := quotientCokernelIso i j M
+  have h : cokernel.π Q.f ≫ e.hom = Q.g := quotientProjection i j M
+  exact exactAndEpiOfCokernelProjection
+    (D := Sheaf X.smallEtaleTopology AddCommGrpCat.{u}) Q e h
 
 set_option maxHeartbeats 500000 in
 /-- The actual quotient sequence of nested extension-by-zero maps is short exact. -/
