@@ -27,7 +27,7 @@ private theorem parameter_nonzero {t : K} (ht : t ≠ 1 ∧ t ≠ -1) : t ^ 2 - 
 def affinePunctureEquiv : twoRemoved K ≃ smoothAffine K where
   toFun t := ⟨⟨(t.val ^ 2 - 1, t.val * (t.val ^ 2 - 1)), by
     simpa using nodal_parameter_satisfies_projective_equation t.val (1 : K)⟩,
-    parameter_nonzero t.property⟩
+    parameter_nonzero K t.property⟩
   invFun q := by
     refine ⟨q.val.val.2 / q.val.val.1, ?_⟩
     have he := (nodal_affine_inverse_off_node q.property q.val.property).1
@@ -35,7 +35,7 @@ def affinePunctureEquiv : twoRemoved K ≃ smoothAffine K where
       exact q.property he.symm
   left_inv t := by
     apply Subtype.ext
-    exact mul_div_cancel_right₀ _ (parameter_nonzero t.property)
+    exact mul_div_cancel_right₀ _ (parameter_nonzero K t.property)
   right_inv q := by
     apply Subtype.ext
     apply Subtype.ext
@@ -55,8 +55,9 @@ private theorem affine_x_zero_iff (q : affinePoints K) : q.val.1 = 0 ↔ q = nod
 
 /-- Adding the affine node accounts for all points of the affine equation. -/
 noncomputable def affineEquiv : Option (smoothAffine K) ≃ affinePoints K := by
+  classical
   let e : smoothAffine K ≃ {q : affinePoints K // q ≠ node K} :=
-    Equiv.subtypeEquivProp (fun q => not_congr (affine_x_zero_iff K q))
+    Equiv.subtypeEquivProp (funext fun q => propext (not_congr (affine_x_zero_iff K q)))
   exact (Equiv.optionCongr e).trans (Equiv.optionSubtypeNe (node K))
 
 theorem twoRemoved_card [Finite K] (h2 : (2 : K) ≠ 0) :

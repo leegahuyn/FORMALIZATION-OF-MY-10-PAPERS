@@ -56,7 +56,7 @@ private theorem eval_substitution {K ι τ : Type*} [CommRing K]
   rw [hComp] at h
   exact h
 
-private def genericPolynomial {K : Type*} [CommRing K] {n N : ℕ}
+private noncomputable def genericPolynomial {K : Type*} [CommRing K] {n N : ℕ}
     (e : Fin n × Fin (N + 1) ≃ Fin (n * (N + 1))) (i : Fin n) :
     Polynomial (MvPolynomial (Fin (n * (N + 1))) K) :=
   ∑ j : Fin (N + 1), Polynomial.monomial j.val (X (e (i, j)))
@@ -89,12 +89,12 @@ theorem exists_polynomial_zero {K : Type*} [Field K] [IsAlgClosed K] {n d : ℕ}
   let N := L + 1
   let A := Fin (n * (N + 1))
   let e : Fin n × Fin (N + 1) ≃ A := Fintype.equivFinOfCardEq (by
-    simp [A, Fintype.card_prod])
+    simp [Fintype.card_prod])
   let g := genericPolynomial (K := K) e
   let Φ : Polynomial (MvPolynomial A K) :=
     P.eval₂ (Polynomial.mapRingHom MvPolynomial.C) g
   have hL (m) (hm : m ∈ P.support) : (P.coeff m).natDegree ≤ L :=
-    Finset.le_sup hm
+    Finset.le_sup (f := fun m => (P.coeff m).natDegree) hm
   have hg (i : Fin n) : (g i).natDegree ≤ N := by
     change (∑ j : Fin (N + 1), Polynomial.monomial j.val (X (e (i, j)))).natDegree ≤ N
     apply HomogeneousPolynomialSubstitution.natDegree_sum_le

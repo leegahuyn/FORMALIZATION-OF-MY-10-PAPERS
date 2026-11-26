@@ -17,7 +17,7 @@ multiplication and a nonzero one afterwards.
 namespace ManuscriptAudit.Paper10CoulombMultiplier
 
 open LiteralCuspTruncation (orbitPoint)
-open scoped UpperHalfPlane
+open scoped UpperHalfPlane ContDiff
 
 noncomputable section
 
@@ -46,19 +46,19 @@ def potential : ScalarField := fun x y => heightCutoff y * Real.sin (Real.pi * x
 def multipliedForm : OneForm := fun x y =>
   (potential x y * (witnessForm x y).1, potential x y * (witnessForm x y).2)
 
-private theorem heightCutoff_smooth : ContDiff ℝ ⊤ heightCutoff := by
-  have hFirst : ContDiff ℝ ⊤ (fun y : ℝ => y - 2) := contDiff_id.sub contDiff_const
-  have hSecond : ContDiff ℝ ⊤ (fun y : ℝ => 4 - y) := contDiff_const.sub contDiff_id
-  change ContDiff ℝ ⊤ (fun y => Real.smoothTransition (y - 2) * Real.smoothTransition (4 - y))
+private theorem heightCutoff_smooth : ContDiff ℝ ∞ heightCutoff := by
+  have hFirst : ContDiff ℝ ∞ (fun y : ℝ => y - 2) := contDiff_id.sub contDiff_const
+  have hSecond : ContDiff ℝ ∞ (fun y : ℝ => 4 - y) := contDiff_const.sub contDiff_id
+  change ContDiff ℝ ∞ (fun y => Real.smoothTransition (y - 2) * Real.smoothTransition (4 - y))
   exact (Real.smoothTransition.contDiff.comp hFirst).mul
     (Real.smoothTransition.contDiff.comp hSecond)
 
-theorem witnessForm_smooth : ContDiff ℝ ⊤ (Function.uncurry witnessForm) := by
+theorem witnessForm_smooth : ContDiff ℝ ∞ (Function.uncurry witnessForm) := by
   exact (heightCutoff_smooth.comp contDiff_snd).prodMk contDiff_const
 
-theorem potential_smooth : ContDiff ℝ ⊤ (Function.uncurry potential) := by
-  have h : ContDiff ℝ ⊤ (fun p : ℝ × ℝ => Real.pi * p.1) := contDiff_const.mul contDiff_fst
-  change ContDiff ℝ ⊤ (fun p : ℝ × ℝ => heightCutoff p.2 * Real.sin (Real.pi * p.1))
+theorem potential_smooth : ContDiff ℝ ∞ (Function.uncurry potential) := by
+  have h : ContDiff ℝ ∞ (fun p : ℝ × ℝ => Real.pi * p.1) := contDiff_const.mul contDiff_fst
+  change ContDiff ℝ ∞ (fun p : ℝ × ℝ => heightCutoff p.2 * Real.sin (Real.pi * p.1))
   exact (heightCutoff_smooth.comp contDiff_snd).mul (Real.contDiff_sin.comp h)
 
 theorem heightCutoff_zero_of_outside {y : ℝ} (hy : y ≤ 2 ∨ 4 ≤ y) : heightCutoff y = 0 := by
@@ -124,10 +124,10 @@ theorem originalForm_coulomb (x y : ℝ) : codifferential witnessForm x y = 0 :=
 
 theorem multipliedForm_codifferential_at_witness :
     codifferential multipliedForm 0 3 = -(9 * Real.pi) := by
+  have hPi : HasDerivAt (fun x : ℝ => Real.pi * x) Real.pi 0 := by
+    simpa only [mul_one] using ((hasDerivAt_id' (0 : ℝ)).const_mul Real.pi)
   have hs : HasDerivAt (fun x : ℝ => Real.sin (Real.pi * x)) Real.pi 0 := by
-    simpa only [Function.comp_apply, mul_zero, Real.cos_zero, one_mul, mul_one] using
-      (Real.hasDerivAt_sin (Real.pi * 0)).comp 0
-        ((hasDerivAt_id' (0 : ℝ)).const_mul Real.pi)
+    simpa only [mul_zero, Real.cos_zero, one_mul] using hPi.sin
   have hx : (fun t : ℝ => (hodgeOne (multipliedForm t 3)).2) =
       (fun t : ℝ => Real.sin (Real.pi * t)) := by
     funext t
