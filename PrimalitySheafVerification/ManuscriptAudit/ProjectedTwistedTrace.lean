@@ -145,7 +145,7 @@ theorem weightedTrace_twisted (d : Mat₂ˣ) : TwistedCyclic (weightedTrace d) (
 
 open scoped Matrix
 
-def density : Mat₂ˣ :=
+noncomputable def density : Mat₂ˣ :=
   ⟨!![2, 0; 0, 1], !![(1 / 2 : ℂ), 0; 0, 1],
     by
       norm_num [Matrix.mul_fin_two]

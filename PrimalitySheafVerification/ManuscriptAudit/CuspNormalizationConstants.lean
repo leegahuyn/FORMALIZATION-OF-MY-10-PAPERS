@@ -46,17 +46,22 @@ private def pullbackConstantIso (A : AddCommGrpCat.{0}) :
   exact (canonicalPullbackConstantComparison (CuspScheme.cuspMap K) (cusp_surjective K)
     (affinePullback K) (affinePullbackSpecIso K)).app A
 
+private def normalizationIso (A : AddCommGrpCat.{0}) :
+    (constantSheaf (cuspSite K) AddCommGrpCat.{0}).obj A ≅
+      (normalizationDirectImageEquiv K p).functor.obj
+        ((constantSheaf (normalizationSite K) AddCommGrpCat.{0}).obj A) :=
+  let e := normalizationDirectImageEquiv K p
+  e.symm.unitIso.app _ ≪≫ e.functor.mapIso (pullbackConstantIso K p A)
+
 /-- The canonical normalization arrow given by adjunction from pullback comparison. -/
 def normalizationMap (A : AddCommGrpCat.{0}) :
     (constantSheaf (cuspSite K) AddCommGrpCat.{0}).obj A ⟶
       (normalizationDirectImageEquiv K p).functor.obj
         ((constantSheaf (normalizationSite K) AddCommGrpCat.{0}).obj A) :=
-  let e := normalizationDirectImageEquiv K p
-  e.symm.unitIso.hom.app _ ≫ e.functor.map (pullbackConstantIso K p A).hom
+  (normalizationIso K p A).hom
 
-theorem normalizationMap_isIso (A : AddCommGrpCat.{0}) : IsIso (normalizationMap K p A) := by
-  unfold normalizationMap
-  infer_instance
+theorem normalizationMap_isIso (A : AddCommGrpCat.{0}) : IsIso (normalizationMap K p A) :=
+  (normalizationIso K p A).isIso_hom
 
 /-- The coefficient cokernel in the normalization sequence is the zero sheaf. -/
 theorem normalizationCokernel_isZero (A : AddCommGrpCat.{0}) :

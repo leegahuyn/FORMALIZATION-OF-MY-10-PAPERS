@@ -86,6 +86,21 @@ theorem arithmetic_cusp_signed_bump :
   obtain ⟨hc, hp⟩ := cusp_and_puncture_finranks
   rw [hc, hp] <;> norm_num
 
+
+/-- The combinatorial side of the printed identity is nonnegative for all
+finite branch-graph Betti numbers and local delta sums. -/
+theorem arithmetic_cusp_bump_ne_betti_plus_delta (betti delta : ℕ) :
+    letI := cuspModule
+    letI := punctureModule
+    (Module.finrank F (cyclicHOne cuspRing) : ℤ) -
+      (Module.finrank F (cyclicHOne punctureRing) : ℤ) ≠ (betti : ℤ) + (delta : ℤ) := by
+  letI := cuspModule
+  letI := punctureModule
+  rw [arithmetic_cusp_signed_bump]
+  have h : 0 ≤ (betti : ℤ) + (delta : ℤ) :=
+    add_nonneg (Int.ofNat_nonneg betti) (Int.ofNat_nonneg delta)
+  exact ne_of_lt (lt_of_lt_of_le (by decide : (-1 : ℤ) < 0) h)
+
 end
 
 end ManuscriptAudit.ArithmeticCuspBump
@@ -96,7 +111,8 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.ArithmeticCuspBump.cuspCyclicHOneEquiv,
       ``ManuscriptAudit.ArithmeticCuspBump.cusp_and_puncture_finranks,
-      ``ManuscriptAudit.ArithmeticCuspBump.arithmetic_cusp_signed_bump] do
+      ``ManuscriptAudit.ArithmeticCuspBump.arithmetic_cusp_signed_bump,
+      ``ManuscriptAudit.ArithmeticCuspBump.arithmetic_cusp_bump_ne_betti_plus_delta] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
