@@ -37,7 +37,7 @@ noncomputable def kernelProductEquiv (f : V →ₗ[K] W) (hf : Function.Surjecti
     have hker : a - g (f a) = b - g (f b) :=
       congrArg (fun z : f.ker × W => (z.1 : V)) h
     rw [hmap] at hker
-    exact sub_right_inj.mp hker
+    exact sub_left_inj.mp hker
   · rintro ⟨a, b⟩
     have hab : f ((a : V) + g b) = b := by
       rw [map_add, show f (a : V) = 0 from a.property, zero_add, hg]

@@ -45,6 +45,7 @@ theorem continuousMapGlobalGerm_injective {X : Scheme.{u}} [PreconnectedSpace X]
   let t := identityEtalePoint s
   let P := (continuousMapSheaf X M).obj
   intro a b h
+  change C(X, M) at a b
   obtain ⟨V, f, v, _, hv⟩ := (Φ.toPresheafFiber_eq_iff' (P := P) W t a b).mp h
   let v₀ : V.left := v.left (default : Spec (CommRingCat.of Ω))
   have h₀ : a (f.left v₀) = b (f.left v₀) :=
@@ -82,15 +83,15 @@ theorem extensionByZeroConstantHZero_subsingleton {U X : Scheme.{u}} [Preconnect
   have hinj : Function.Injective (Sheaf.H.map m 0) :=
     Ext.postcomp_mk₀_injective_of_mono T m
   have hgerm := continuousMapGlobalGerm_injective M s
-  letI : Subsingleton (Φ.sheafFiber.obj E) :=
-    AddCommGrpCat.subsingleton_of_isZero
-      (extensionByZero_stalk_isZero j s hs ((constantSheaf U.smallEtaleTopology AddCommGrpCat.{u}).obj M))
+  have hE : IsZero ((Φ.presheafFiber (A := AddCommGrpCat.{u})).obj E.obj) :=
+    extensionByZero_stalk_isZero j s hs ((constantSheaf U.smallEtaleTopology AddCommGrpCat.{u}).obj M)
+  have hsub := AddCommGrpCat.subsingleton_of_isZero hE
   have hzero (x : Sheaf.H E 0) : x = 0 := by
     apply hinj
     apply (Sheaf.H.equiv₀ F hW).injective
     apply hgerm
     have hx : Φ.toPresheafFiber W t E.obj (Sheaf.H.equiv₀ E hW x) = 0 :=
-      Subsingleton.elim _ _
+      hsub.allEq _ _
     calc
       Φ.toPresheafFiber W t F.obj (Sheaf.H.equiv₀ F hW (Sheaf.H.map m 0 x)) =
           Φ.sheafFiber.map m (Φ.toPresheafFiber W t E.obj (Sheaf.H.equiv₀ E hW x)) := by
