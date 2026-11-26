@@ -51,6 +51,8 @@ private theorem range_pullback_map {X Y : Scheme.{u}} (f : X ⟶ Y)
   constructor
   · rintro ⟨a, rfl⟩
     refine ⟨pullback.fst A.hom f a, ?_⟩
+    change @Eq (↥B.left) (g.left ((pullback.fst A.hom f) a))
+      ((pullback.fst B.hom f) (((etaleBaseChange f).map g).left a))
     have hw := congrArg (fun k : pullback A.hom f ⟶ B.left => k a) h.w
     simpa only [Scheme.Hom.comp_apply] using hw.symm
   · rintro ⟨a, ha⟩
@@ -99,6 +101,33 @@ def sheafEquivalence {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : Function.Surjective 
   letI : e.inverse.IsDenseSubsite Y.smallEtaleTopology X.smallEtaleTopology := isDenseSubsite f hf
   Equivalence.sheafCongr X.smallEtaleTopology Y.smallEtaleTopology e C
 
+/-- Base change on étale objects preserves finite limits. -/
+theorem preservesFiniteLimits {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    PreservesFiniteLimits (etaleBaseChange f) := by
+  let ex := Scheme.Etale.forget X
+  let ey := Scheme.Etale.forget Y
+  letI : PreservesFiniteLimits (ey ⋙ CategoryTheory.Over.pullback f) :=
+    comp_preservesFiniteLimits _ _
+  let c : etaleBaseChange f ⋙ ex ≅ ey ⋙ CategoryTheory.Over.pullback f :=
+    MorphismProperty.Over.pullbackCompForgetIso (P := @AlgebraicGeometry.Etale) (Q := ⊤) f
+  letI := preservesFiniteLimits_of_natIso c.symm
+  exact preservesFiniteLimits_of_reflects_of_preserves (etaleBaseChange f) ex
+
+/-- The actual small étale base-change functor along a surjection is continuous. -/
+theorem isContinuous {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : Function.Surjective f) :
+    (etaleBaseChange f).IsContinuous Y.smallEtaleTopology X.smallEtaleTopology := by
+  letI := preservesFiniteLimits f
+  letI := flat_of_preservesFiniteLimits (etaleBaseChange f)
+  apply (Functor.isContinuous_iff_coverPreserving).2
+  exact ⟨(functorPushforward_mem_iff f hf).mpr⟩
+
+/-- The direct image on actual small étale sheaves induced by base change. -/
+def sheafPushforward {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : Function.Surjective f)
+    (C : Type v) [Category.{w} C] :
+    Sheaf X.smallEtaleTopology C ⥤ Sheaf Y.smallEtaleTopology C :=
+  letI := isContinuous f hf
+  (etaleBaseChange f).sheafPushforwardContinuous C Y.smallEtaleTopology X.smallEtaleTopology
+
 end
 
 end ManuscriptAudit.SmallEtaleBaseChange
@@ -109,7 +138,10 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.SmallEtaleBaseChange.functorPushforward_mem_iff,
       ``ManuscriptAudit.SmallEtaleBaseChange.isDenseSubsite,
-      ``ManuscriptAudit.SmallEtaleBaseChange.sheafEquivalence] do
+      ``ManuscriptAudit.SmallEtaleBaseChange.sheafEquivalence,
+      ``ManuscriptAudit.SmallEtaleBaseChange.preservesFiniteLimits,
+      ``ManuscriptAudit.SmallEtaleBaseChange.isContinuous,
+      ``ManuscriptAudit.SmallEtaleBaseChange.sheafPushforward] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

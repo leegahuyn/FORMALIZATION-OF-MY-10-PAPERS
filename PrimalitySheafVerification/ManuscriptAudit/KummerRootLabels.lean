@@ -32,7 +32,7 @@ def mapRoots (d : ℕ) (f : A →+* B) : rootsOfUnity d A →* rootsOfUnity d B 
 private abbrev rootValue {R : Type*} [CommRing R] {d : ℕ} (a : rootsOfUnity d R) : R :=
   ((a : Rˣ) : R)
 
-variable [IsAlgClosed K] [Algebra K A] {d : ℕ} [NeZero d] [NeZero (d : K)]
+variable [Algebra K A] {d : ℕ} [NeZero d] [NeZero (d : K)] [HasEnoughRootsOfUnity K d]
 
 private abbrev coefficientResidue (P : PrimeSpectrum A) : K →+* A ⧸ P.asIdeal :=
   (Ideal.Quotient.mk P.asIdeal).comp (algebraMap K A)

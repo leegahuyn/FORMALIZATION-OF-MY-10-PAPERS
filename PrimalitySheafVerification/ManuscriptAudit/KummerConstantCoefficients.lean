@@ -128,7 +128,7 @@ theorem constantToRoots_locallyInjective (d : ℕ) :
       rw [hxy, Presheaf.equalizerSieve_self_eq_top]
       exact (Scheme.AffineEtale.topology (Spec R)).top_mem _
 
-variable [IsAlgClosed K] {d : ℕ} [NeZero d] [NeZero (d : K)]
+variable {d : ℕ} [NeZero d] [NeZero (d : K)] [HasEnoughRootsOfUnity K d]
 
 /-- Each root section is the image of a constant coefficient root locally.
 The actual covers are the affine opens cut out by the fiber idempotents. -/

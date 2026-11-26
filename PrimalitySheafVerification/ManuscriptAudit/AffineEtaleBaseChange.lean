@@ -1,6 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleBaseChange
 
 /-!
@@ -13,7 +15,7 @@ comparison equivalences for abelian-group-valued sheaves.
 
 namespace ManuscriptAudit.AffineEtaleBaseChange
 
-open AlgebraicGeometry CategoryTheory SmallEtaleBaseChange
+open AlgebraicGeometry CategoryTheory CategoryTheory.Limits SmallEtaleBaseChange
 
 universe u v w
 
@@ -67,11 +69,15 @@ theorem functorPushforward_mem_iff {W : Y.AffineEtale} {S : Sieve W} :
     _ ↔ S ∈ Scheme.AffineEtale.topology Y W :=
       (Scheme.AffineEtale.Spec Y).functorPushforward_mem_iff _ _
 
+/-- The affine base-change equivalence is an equivalence of covering sieves. -/
+theorem isDenseSubsite [E.IsEquivalence] :
+    E.IsDenseSubsite (Scheme.AffineEtale.topology Y) (Scheme.AffineEtale.topology X) where
+  functorPushforward_mem_iff := functorPushforward_mem_iff f hf E e
+
 /-- An equivalence on affine étale objects identifies sheaf categories on the affine sites. -/
 def affineSheafEquivalence [E.IsEquivalence] (C : Type v) [Category.{w} C] :
     Sheaf (Scheme.AffineEtale.topology X) C ≌ Sheaf (Scheme.AffineEtale.topology Y) C := by
-  letI : E.IsDenseSubsite (Scheme.AffineEtale.topology Y) (Scheme.AffineEtale.topology X) where
-    functorPushforward_mem_iff := functorPushforward_mem_iff f hf E e
+  letI := isDenseSubsite f hf E e
   let eCat : X.AffineEtale ≌ Y.AffineEtale := E.asEquivalence.symm
   letI : eCat.inverse.IsDenseSubsite (Scheme.AffineEtale.topology Y)
       (Scheme.AffineEtale.topology X) :=
@@ -86,6 +92,71 @@ def fullSheafEquivalence [E.IsEquivalence] :
     ((affineSheafEquivalence f hf E e AddCommGrpCat.{u}).trans
       (Scheme.AffineEtale.sheafEquiv Y AddCommGrpCat.{u}))
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The actual full direct image is an equivalence whenever it is so on affine étale objects. -/
+theorem fullPushforward_isEquivalence [E.IsEquivalence] :
+    (sheafPushforward f hf AddCommGrpCat.{u}).IsEquivalence := by
+  let fx := Scheme.AffineEtale.Spec X
+  let fy := Scheme.AffineEtale.Spec Y
+  let gx := Scheme.AffineEtale.topology X
+  let gy := Scheme.AffineEtale.topology Y
+  letI := isDenseSubsite f hf E e
+  letI := SmallEtaleBaseChange.isContinuous f hf
+  letI := Functor.isContinuous_comp E fx gy gx X.smallEtaleTopology
+  letI := Functor.isContinuous_comp fy (etaleBaseChange f) gy Y.smallEtaleTopology X.smallEtaleTopology
+  let px := fx.sheafPushforwardContinuous AddCommGrpCat.{u} gx X.smallEtaleTopology
+  let py := fy.sheafPushforwardContinuous AddCommGrpCat.{u} gy Y.smallEtaleTopology
+  let pe := E.sheafPushforwardContinuous AddCommGrpCat.{u} gy gx
+  let pf := sheafPushforward f hf AddCommGrpCat.{u}
+  letI : px.IsEquivalence := inferInstanceAs
+    ((Scheme.AffineEtale.Spec X).sheafPushforwardContinuous AddCommGrpCat.{u}
+      (Scheme.AffineEtale.topology X) X.smallEtaleTopology).IsEquivalence
+  letI : py.IsEquivalence := inferInstanceAs
+    ((Scheme.AffineEtale.Spec Y).sheafPushforwardContinuous AddCommGrpCat.{u}
+      (Scheme.AffineEtale.topology Y) Y.smallEtaleTopology).IsEquivalence
+  letI : pe.IsEquivalence := (affineSheafEquivalence f hf E e AddCommGrpCat.{u}).isEquivalence_functor
+  let h : px ⋙ pe ≅ pf ⋙ py :=
+    Functor.sheafPushforwardContinuousComp (F := E) (G := fx) (A := AddCommGrpCat.{u})
+      (J := gy) (K := gx) (L := X.smallEtaleTopology) ≪≫
+    Functor.sheafPushforwardContinuousIso e (A := AddCommGrpCat.{u})
+      (J := gy) (K := X.smallEtaleTopology) ≪≫
+    (Functor.sheafPushforwardContinuousComp (F := fy) (G := etaleBaseChange f)
+      (A := AddCommGrpCat.{u}) (J := gy) (K := Y.smallEtaleTopology) (L := X.smallEtaleTopology)).symm
+  letI : (pf ⋙ py).IsEquivalence := Functor.isEquivalence_of_iso h
+  exact Functor.isEquivalence_of_comp_right pf py
+
+/-- The canonical equivalence whose forward functor is the actual full direct image. -/
+def canonicalFullSheafEquivalence [E.IsEquivalence] :
+    Sheaf X.smallEtaleTopology AddCommGrpCat.{u} ≌ Sheaf Y.smallEtaleTopology AddCommGrpCat.{u} :=
+  letI := fullPushforward_isEquivalence f hf E e
+  (sheafPushforward f hf AddCommGrpCat.{u}).asEquivalence
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The inverse of the actual direct-image equivalence takes constant sheaves to constants. -/
+def canonicalPullbackConstantComparison [E.IsEquivalence] :
+    constantSheaf Y.smallEtaleTopology AddCommGrpCat.{u} ⋙
+      (canonicalFullSheafEquivalence f hf E e).inverse ≅
+        constantSheaf X.smallEtaleTopology AddCommGrpCat.{u} := by
+  letI := SmallEtaleBaseChange.preservesFiniteLimits f
+  let k := canonicalFullSheafEquivalence f hf E e
+  let ay := constantSheafAdj Y.smallEtaleTopology AddCommGrpCat.{u}
+    (terminalIsTerminal (C := Y.Etale))
+  let ax := constantSheafAdj X.smallEtaleTopology AddCommGrpCat.{u}
+    (isLimitOfHasTerminalOfPreservesLimit (etaleBaseChange f))
+  exact (ay.comp k.symm.toAdjunction).leftAdjointUniq ax
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The actual direct image takes constant sheaves to constants. -/
+def canonicalConstantComparison [E.IsEquivalence] :
+    constantSheaf X.smallEtaleTopology AddCommGrpCat.{u} ⋙
+      sheafPushforward f hf AddCommGrpCat.{u} ≅
+        constantSheaf Y.smallEtaleTopology AddCommGrpCat.{u} := by
+  let k := canonicalFullSheafEquivalence f hf E e
+  let cy := constantSheaf Y.smallEtaleTopology AddCommGrpCat.{u}
+  let c := canonicalPullbackConstantComparison f hf E e
+  exact (isoWhiskerRight c k.functor).symm ≪≫ Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft cy k.counitIso ≪≫ cy.rightUnitor
+
 end
 
 end ManuscriptAudit.AffineEtaleBaseChange
@@ -96,7 +167,11 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.AffineEtaleBaseChange.functorPushforward_mem_iff,
       ``ManuscriptAudit.AffineEtaleBaseChange.affineSheafEquivalence,
-      ``ManuscriptAudit.AffineEtaleBaseChange.fullSheafEquivalence] do
+      ``ManuscriptAudit.AffineEtaleBaseChange.fullSheafEquivalence,
+      ``ManuscriptAudit.AffineEtaleBaseChange.fullPushforward_isEquivalence,
+      ``ManuscriptAudit.AffineEtaleBaseChange.canonicalFullSheafEquivalence,
+      ``ManuscriptAudit.AffineEtaleBaseChange.canonicalPullbackConstantComparison,
+      ``ManuscriptAudit.AffineEtaleBaseChange.canonicalConstantComparison] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

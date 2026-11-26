@@ -26,7 +26,7 @@ abbrev Normalization : Scheme.{u} := Spec (CommRingCat.of (Polynomial K))
 
 /-- The native base change on the small étale categories. -/
 def etalePullback : (Cusp K).Etale ⥤ (Normalization K).Etale :=
-  MorphismProperty.Over.pullback @Etale ⊤ (CuspScheme.cuspMap K)
+  MorphismProperty.Over.pullback @AlgebraicGeometry.Etale.{u} ⊤ (CuspScheme.cuspMap K)
 
 private abbrev toEtale : (Cusp K).AffineEtale ⥤ (Normalization K).Etale :=
   Scheme.AffineEtale.Spec (Cusp K) ⋙ etalePullback K
@@ -69,8 +69,8 @@ private abbrev overPullback : (Cusp K).AffineEtale ⥤ Over (Normalization K) :=
 private def etalePullbackForgetIso :
     toEtale K ⋙ Scheme.Etale.forget (Normalization K) ≅ overPullback K :=
   Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (MorphismProperty.Over.pullbackCompForgetIso
-      (P := @Etale) (Q := ⊤) (CuspScheme.cuspMap K)) ≪≫
+    Functor.isoWhiskerLeft _ (MorphismProperty.Over.pullbackCompForgetIso
+      (P := @AlgebraicGeometry.Etale.{u}) (Q := ⊤) (CuspScheme.cuspMap K)) ≪≫
     (Functor.associator _ _ _).symm
 
 set_option backward.isDefEq.respectTransparency false in

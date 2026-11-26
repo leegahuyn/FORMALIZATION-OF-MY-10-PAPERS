@@ -98,16 +98,18 @@ theorem degreeZeroUnits_power (R : CommRingCat.{0}) (d : ℕ)
 
 /-- The source of the degree-one Kummer sequence is actual cohomology of the
 constant sheaf of coefficient roots. -/
-def degreeOneConstantRoots {K : Type} [Field K] [IsAlgClosed K]
-    (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)] :
+def degreeOneConstantRoots {K : Type} [Field K]
+    (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    [HasEnoughRootsOfUnity K d] :
     Sheaf.H ((constantSheaf (affineTopology R) AddCommGrpCat.{0}).obj
       (coefficientGroup K d)) 1 ≃+ Sheaf.H (powerKernel R d) 1 :=
   ((Sheaf.functorH (affineTopology R) 1).mapIso
     (constantPowerKernelIso (K := K) R d)).addCommGroupIsoToAddEquiv
 
 /-- The connecting map from units to actual constant-coefficient H¹. -/
-def unitBoundary {K : Type} [Field K] [IsAlgClosed K]
+def unitBoundary {K : Type} [Field K]
     (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    [HasEnoughRootsOfUnity K d]
     (hpos : 0 < d) (hd : IsUnit (d : R)) :
     Additive Rˣ →+ Sheaf.H ((constantSheaf (affineTopology R) AddCommGrpCat.{0}).obj
       (coefficientGroup K d)) 1 :=
@@ -115,8 +117,9 @@ def unitBoundary {K : Type} [Field K] [IsAlgClosed K]
     ((connecting R d hpos hd).comp (degreeZeroUnits R).symm.toAddMonoidHom)
 
 /-- A unit has zero connecting class exactly when it is a (d)-th power. -/
-theorem unitBoundary_eq_zero_iff {K : Type} [Field K] [IsAlgClosed K]
+theorem unitBoundary_eq_zero_iff {K : Type} [Field K]
     (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    [HasEnoughRootsOfUnity K d]
     (hpos : 0 < d) (hd : IsUnit (d : R)) (y : Additive Rˣ) :
     unitBoundary (K := K) R d hpos hd y = 0 ↔ ∃ x : Rˣ, x ^ d = y.toMul := by
   let E := degreeZeroUnits R
@@ -144,8 +147,9 @@ theorem unitBoundary_eq_zero_iff {K : Type} [Field K] [IsAlgClosed K]
 
 /-- Vanishing of the unit sheaf's actual first cohomology makes the
 Kummer boundary surjective. -/
-theorem unitBoundary_surjective_of_unitHOne {K : Type} [Field K] [IsAlgClosed K]
+theorem unitBoundary_surjective_of_unitHOne {K : Type} [Field K]
     (R : CommRingCat.{0}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    [HasEnoughRootsOfUnity K d]
     (hpos : 0 < d) (hd : IsUnit (d : R))
     (hUnit : Subsingleton (Sheaf.H (unitSheaf (Spec R)) 1)) :
     Function.Surjective (unitBoundary (K := K) R d hpos hd) := by

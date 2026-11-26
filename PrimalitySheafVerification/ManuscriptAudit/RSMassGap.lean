@@ -26,7 +26,7 @@ noncomputable section
 
 abbrev E := EuclideanSpace ℝ (Fin 2)
 
-def diagonal (a b : ℝ) : E →ₗ[ℝ] E where
+def diagonal (a b : ℝ) : Module.End ℝ E where
   toFun x := WithLp.toLp 2 (fun i => (if i = 0 then a else b) * x i)
   map_add' x y := by
     apply PiLp.ext
@@ -70,10 +70,10 @@ theorem boundedDiagonal_selfAdjoint (a b : ℝ) : IsSelfAdjoint (boundedDiagonal
 def axis (i : Fin 2) : E := EuclideanSpace.single i 1
 
 theorem axis_ne_zero (i : Fin 2) : axis i ≠ 0 := by
-  simp [axis, EuclideanSpace.single_eq_zero_iff]
+  simp [axis, PiLp.single_eq_zero_iff]
 
 theorem diagonal_axis_eigenvector (a b : ℝ) (i : Fin 2) :
-    (diagonal a b).HasEigenvector (if i = 0 then a else b) (axis i) := by
+    HasEigenvector (diagonal a b) (if i = 0 then a else b) (axis i) := by
   refine ⟨mem_eigenspace_iff.mpr ?_, axis_ne_zero i⟩
   apply PiLp.ext
   intro j
@@ -81,7 +81,7 @@ theorem diagonal_axis_eigenvector (a b : ℝ) (i : Fin 2) :
   by_cases h : j = i
   · subst j
     rw [diagonal_apply]
-  · simp [diagonal_apply, axis, EuclideanSpace.single_apply, h]
+  · simp [diagonal_apply, axis, h]
 
 theorem diagonal_spectrum_iff (a b μ : ℝ) :
     μ ∈ spectrum ℝ (diagonal a b) ↔ μ = a ∨ μ = b := by
@@ -110,9 +110,12 @@ theorem diagonal_spectrum_iff (a b μ : ℝ) :
         simpa only [diagonal_zero, PiLp.smul_apply, smul_eq_mul] using h'
       have hm : (a - μ) * x 0 = 0 := by rw [sub_mul, he, sub_self]
       exact (sub_eq_zero.mp ((mul_eq_zero.mp hm).resolve_right hzero)).symm
-  · rintro (rfl | rfl)
-    · simpa using hasEigenvalue_of_hasEigenvector (diagonal_axis_eigenvector a b 0)
-    · simpa using hasEigenvalue_of_hasEigenvector (diagonal_axis_eigenvector a b 1)
+  · intro h
+    rcases h with h | h
+    · rw [h]
+      simpa using hasEigenvalue_of_hasEigenvector (diagonal_axis_eigenvector a b 0)
+    · rw [h]
+      simpa using hasEigenvalue_of_hasEigenvector (diagonal_axis_eigenvector a b 1)
 
 def matched : Submodule ℝ E := LinearMap.ker (EuclideanSpace.projₗ 1)
 
@@ -120,26 +123,27 @@ def matched : Submodule ℝ E := LinearMap.ker (EuclideanSpace.projₗ 1)
 
 theorem matched_ne_bot : matched ≠ ⊥ := by
   intro h
-  have hx : axis 0 ∈ matched := by simp [axis, EuclideanSpace.single_apply]
-  exact axis_ne_zero 0 (Submodule.mem_bot.mp (h ▸ hx))
+  have hx : axis 0 ∈ matched := by simp [axis]
+  have hbot : axis 0 ∈ (⊥ : Submodule ℝ E) := h ▸ hx
+  exact axis_ne_zero 0 (by simpa using hbot)
 
 theorem matched_ne_top : matched ≠ ⊤ := by
   intro h
   have hx : axis 1 ∈ matched := h.symm ▸ Submodule.mem_top
-  simpa [axis, EuclideanSpace.single_apply] using hx
+  simpa [axis] using hx
 
 @[simp] theorem mem_matched_orthogonal (x : E) :
     x ∈ matchedᗮ ↔ x 0 = 0 := by
   rw [Submodule.mem_orthogonal]
   constructor
   · intro h
-    have haxis : axis 0 ∈ matched := by simp [axis, EuclideanSpace.single_apply]
-    simpa [axis, inner_coordinates, EuclideanSpace.single_apply] using h (axis 0) haxis
+    have haxis : axis 0 ∈ matched := by simp [axis]
+    simpa [axis, inner_coordinates] using h (axis 0) haxis
   · intro h y hy
     simp [inner_coordinates, h, (mem_matched y).mp hy]
 
 theorem matched_eq_ground_eigenspace {b : ℝ} (hb : 2 < b) :
-    matched = (diagonal 2 b).eigenspace 2 := by
+    matched = eigenspace (diagonal 2 b) 2 := by
   ext x
   rw [mem_matched, mem_eigenspace_iff]
   constructor
@@ -182,7 +186,7 @@ theorem mass_le_hamiltonianForm {b : ℝ} (hb : 1 ≤ b) (x : E) :
 /-- Proposition 4.23's proposed gap estimate fails with `α = cRS = 1` and `β = 0`
 even when the matched space is the full ground eigenspace. -/
 theorem prop4_23_gap_bound_refuted :
-    matched = (diagonal 2 (5 / 2)).eigenspace 2 ∧
+    matched = eigenspace (diagonal 2 (5 / 2)) 2 ∧
     (∀ μ : ℝ, μ ∈ spectrum ℝ (diagonal 2 (5 / 2)) ↔ μ = 2 ∨ μ = 5 / 2) ∧
     (∀ x : E, 0 ≤ mass x ∧ mass x ≤ hamiltonianForm (5 / 2) x) ∧
     (∀ x ∈ matchedᗮ, ‖x‖ ^ 2 = mass x) ∧
@@ -227,7 +231,7 @@ theorem gap_liminf_zero : Filter.liminf gap Filter.atTop = 0 := by
 The exact off-ground gap is positive at every truncation and tends to zero. -/
 theorem cor4_25_uniformly_coercive_gap_limit_counterexample :
     Monotone admissible ∧ (⨆ Y : ℝ, admissible Y) = ⊤ ∧
-    (∀ Y : ℝ, matched = (diagonal 2 (upperLevel Y)).eigenspace 2 ∧
+    (∀ Y : ℝ, matched = eigenspace (diagonal 2 (upperLevel Y)) 2 ∧
       (∀ μ : ℝ, μ ∈ spectrum ℝ (diagonal 2 (upperLevel Y)) ↔ μ = 2 ∨ μ = upperLevel Y) ∧
       (∀ x : E, 0 ≤ mass x ∧ mass x ≤ hamiltonianForm (upperLevel Y) x) ∧
       (∀ x ∈ matchedᗮ, ‖x‖ ^ 2 = mass x) ∧

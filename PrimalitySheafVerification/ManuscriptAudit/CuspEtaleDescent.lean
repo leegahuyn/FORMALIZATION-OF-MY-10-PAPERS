@@ -27,7 +27,7 @@ universe u
 noncomputable section
 
 variable (K : Type u) [Field K]
-variable (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (p : ℕ) [pPrime : Fact p.Prime] [kCharP : CharP K p]
 
 private abbrev Normalization : Scheme.{u} := Spec (CommRingCat.of (Polynomial K))
 private abbrev Cusp : Scheme.{u} := Spec (CommRingCat.of (CuspSubalgebra K))
@@ -86,8 +86,10 @@ theorem affine_etale_algebra_descends (B : Type u) [CommRing B] [CharP B p]
   · simp [j]
   · simpa only [Iso.refl_hom, Category.comp_id] using ha
   · simp [d]
-  · simp
+  · simp only [Iso.refl_hom, Category.id_comp, Category.comp_id]
+    rfl
 
+include p pPrime kCharP in
 /-- Every affine étale morphism over the normalization comes from an actual pullback square
 along the cusp map. The empty affine scheme descends as the empty affine scheme. -/
 theorem affine_etale_descends (T : CommRingCat.{u}) (f : Spec T ⟶ Normalization K) [Etale f] :
@@ -101,7 +103,7 @@ theorem affine_etale_descends (T : CommRingCat.{u}) (f : Spec T ⟶ Normalizatio
     letI : Etale d := inferInstance
     have hcomm : 𝟙 (Spec T) ≫ d = f ≫ ν := (isInitialOfIsEmpty (X := Spec T)).hom_ext _ _
     let j : Spec T ⟶ pullback d ν := pullback.lift (𝟙 (Spec T)) f hcomm
-    letI : IsEmpty (pullback d ν) := (pullback.fst d ν).base.hom.1.isEmpty
+    letI : IsEmpty ↥(pullback d ν) := (pullback.fst d ν).base.hom.1.isEmpty
     letI : IsIso j := inferInstance
     refine ⟨T, d, inferInstance, 𝟙 _, IsPullback.of_iso_pullback ⟨hcomm⟩ (asIso j) ?_ ?_⟩
     · exact pullback.lift_fst (𝟙 (Spec T)) f hcomm

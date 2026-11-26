@@ -107,9 +107,10 @@ def sheafifiedRootsIsoKernel (X : Scheme.{u}) (d : ℕ) :
   exact F.mapIso e ≪≫ PreservesKernel.iso F (power X d)
 
 /-- The Kummer power kernel is the constant sheaf associated to the roots
-of unity of the algebraically closed coefficient field. -/
-def constantPowerKernelIso {K : Type u} [Field K] [IsAlgClosed K]
-    (R : CommRingCat.{u}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)] :
+of unity of a coefficient field containing a primitive root of the stated order. -/
+def constantPowerKernelIso {K : Type u} [Field K]
+    (R : CommRingCat.{u}) [Algebra K R] (d : ℕ) [NeZero d] [NeZero (d : K)]
+    [HasEnoughRootsOfUnity K d] :
     (constantSheaf (Scheme.AffineEtale.topology (Spec R)) AddCommGrpCat.{u}).obj
         (coefficientGroup K d) ≅
       kernel (KummerSheafSequence.sheafPower (Spec R) d) :=
