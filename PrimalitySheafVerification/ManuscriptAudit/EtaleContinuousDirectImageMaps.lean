@@ -69,7 +69,7 @@ def diagonal (p : Y ⟶ Z) : continuousMapSheaf Z M ⟶ functionsOver M p :=
        let c' : ContinuousMap U.unop.left M := c
        change c' ((pullback.fst V.unop.hom p ≫ f.unop.left) x) =
          c' ((((etaleBaseChange p).map f.unop).left ≫ pullback.fst U.unop.hom p) x)
-       simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst] }⟩
+       simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst] <;> rfl }⟩
 
 /-- Pullback of local functions along a scheme map over the common base. -/
 def restriction (g : X ⟶ Y) (hg : g ≫ p = q) : functionsOver M p ⟶ functionsOver M q :=
@@ -99,7 +99,7 @@ theorem diagonal_restriction (g : X ⟶ Y) (hg : g ≫ p = q) :
   let c' : ContinuousMap U.unop.left M := c
   change c' ((baseChangeMap g hg U.unop ≫ pullback.fst U.unop.hom p) x) =
     c' (pullback.fst U.unop.hom q x)
-  rw [baseChangeMap_fst]
+  rw [baseChangeMap_fst] <;> rfl
 
 end
 end ManuscriptAudit.EtaleContinuousDirectImageMaps

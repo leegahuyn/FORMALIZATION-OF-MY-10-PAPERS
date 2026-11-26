@@ -67,8 +67,9 @@ theorem coordinateMap_chart_comm (g : V ⟶ U)
   change Spec.map (𝟙 (coordinateRing K V)) ≫ Spec.map g.left.unop =
     Spec.map (CommRingCat.ofHom (coordinateMap K g).toRingHom) ≫
       Spec.map (𝟙 (coordinateRing K U))
-  rw [Spec.map_id, Spec.map_id, Category.id_comp, Category.comp_id]
-  exact congrArg Spec.map (CommRingCat.ofHom_hom g.left.unop).symm
+  rw [Spec.map_id, Spec.map_id, Category.id_comp]
+  exact (congrArg Spec.map (CommRingCat.ofHom_hom g.left.unop).symm).trans
+    (Category.comp_id _).symm
 
 end
 

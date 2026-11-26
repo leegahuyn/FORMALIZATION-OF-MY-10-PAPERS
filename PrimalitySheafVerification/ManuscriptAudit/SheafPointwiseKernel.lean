@@ -62,7 +62,7 @@ def kernel_isLimit
   refine ⟨lHom, ?_⟩
   apply Sheaf.hom_ext
   apply NatTrans.ext
-  intro U
+  funext U
   apply ConcreteCategory.hom_ext
   intro s
   exact hl U s

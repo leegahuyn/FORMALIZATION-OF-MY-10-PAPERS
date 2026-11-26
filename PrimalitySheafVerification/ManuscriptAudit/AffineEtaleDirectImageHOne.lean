@@ -75,7 +75,7 @@ theorem fullDirectImage_HOne_subsingleton (R S : CommRingCat.{u}) (f : Spec S �
   obtain ⟨y, hy⟩ := hSurj (k.hom.app (op TY) x)
   refine ⟨y, SheafSectionDifference.section_injective k TY ?_⟩
   have eq := congrArg (fun g : S₁.X₂ ⟶ S₁.X₃ ↦ g.hom.app (op TY))
-    (cokernel.π_desc S₁.g S₁.zero)
+    (cokernel.π_desc S₁.f S₁.g S₁.zero)
   exact (ConcreteCategory.congr_hom eq y).trans hy
 
 end

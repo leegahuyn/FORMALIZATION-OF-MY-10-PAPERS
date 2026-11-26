@@ -85,7 +85,9 @@ theorem directImage_units_cokernel_π_epi
       apply S.superset_covering _ (S.top_mem (I.obj U))
       intro V g _
       refine ⟨(R.obj ((D A F).obj M)).obj.map g.op x, ?_⟩
-      rw [NatTrans.naturality_apply n.hom g.op x, hx])
+      have hx' : n.hom.app (op (I.obj U)) x = s := hx
+      exact (NatTrans.naturality_apply n.hom g.op x).trans
+        (congrArg ((R.obj ((D A F).obj (cokernel i))).obj.map g.op) hx'))
   have h : Epi n := inferInstance
   exact R.epi_of_epi_map h
 

@@ -16,8 +16,8 @@ noncomputable section
 
 private theorem invariant_density (g : GammaTwoEffective) (z : ℍ) :
     thetaDensity jacobiTheta (g • z) = thetaDensity jacobiTheta z := by
-  obtain ⟨γ, rfl⟩ := effective_exists_gamma g
-  rw [gammaTwoEffectiveElement_smul]
+  obtain ⟨γ, hγ⟩ := effective_exists_gamma g
+  rw [hγ z]
   exact thetaDensity_invariant (γ : SL(2, ℤ)) γ.property z
 
 private theorem density_continuous : Continuous (thetaDensity jacobiTheta) := by
@@ -38,7 +38,7 @@ theorem weightedDensity_integrableOn_chosenDomain :
       rintro z ⟨w, hw, rfl⟩
       exact Set.mem_smul_set.mpr ⟨w, ModularGroup.fdo_subset_fd hw, rfl⟩
     · exact Summable.of_finite
-  exact hOpen.congr_set_ae gammaTwoOpenCarrier_closure_ae_eq.symm
+  exact hOpen.congr_set_ae gammaTwoOpenCarrier_closure_ae_eq
 
 def quotientDensity : GammaTwoQuotient → ℝ :=
   descendInvariant (thetaDensity jacobiTheta) invariant_density
@@ -56,7 +56,7 @@ theorem quotientDensity_integrable (D : GammaTwoFundamentalDomain) :
   have hI := (chosenGammaTwoFundamentalDomain.integrableOn_iff D
     (thetaDensity jacobiTheta) invariant_density).mp weightedDensity_integrableOn_chosenDomain
   apply (integrable_map_measure hd.aestronglyMeasurable hOrbit).mpr
-  simpa only [Function.comp_def, quotientDensity, descendInvariant_mk] using hI
+  simpa only [IntegrableOn, Function.comp_def, quotientDensity, descendInvariant_mk] using hI
 
 theorem quotientDensity_integral_pos (D : GammaTwoFundamentalDomain) :
     0 < ∫ q, quotientDensity q ∂D.quotientMeasure := by

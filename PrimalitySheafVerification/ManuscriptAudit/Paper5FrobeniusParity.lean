@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper5FrobeniusModTwo
 import PrimalitySheafVerification.ManuscriptAudit.FrobeniusModTwoRecurrence
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassFrobeniusExtensionTrace
 
 /-! Actual Frobenius trace powers modulo two and the six printed columns. -/
 
@@ -29,12 +30,9 @@ theorem actualFrobenius_trace_power_eq_point_count (hp : 5 ≤ p) {A : ZMod p} (
       ((actualFrobenius p L hp hA).toLinearMap ^ Module.finrank (ZMod p) E) =
       (((Fintype.card E : ℤ) + 1 -
         (Nat.card ((paper5TraceCurve p A).baseChange E).toProjective.Point : ℤ)) : ZMod 2) := by
-  have h := Paper5PrintedActualExtensionCounts.actual_extension_trace_eq_recurrence
-    hp (E := E) hA
-  have hCast := congrArg (fun a : ℤ => (a : ZMod 2)) h
-  exact (trace_pow_eq_recurrence_mod_two _ (torsionBasis p L hp hA)
-    (actualFrobenius p L hp hA) p (firstTrace p A)
-    (actualFrobenius_trace p L hp hA) (actualFrobenius_det p L hp hA) _).trans hCast.symm
+  simpa only [actualFrobenius, Int.cast_sub, Int.cast_add, Int.cast_natCast, Int.cast_one] using
+    WeierstrassFrobeniusExtensionTrace.projective_trace_pow_eq_signed_point_count_of_isAlgClosed
+      p L E (paper5TraceCurve p A).toProjective (geometricTwoTorsion_card p L hp hA) (by omega)
 
 end
 

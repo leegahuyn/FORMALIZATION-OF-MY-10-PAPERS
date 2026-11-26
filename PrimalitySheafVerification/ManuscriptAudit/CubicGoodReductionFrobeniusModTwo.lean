@@ -72,8 +72,17 @@ theorem actualFrobenius_det (hpTwo : p ≠ 2) {c A : ZMod p}
     LinearMap.det (actualFrobenius p L hpTwo hΔ).toLinearMap = (p : ZMod 2) :=
   det_eq_prime_cast p L _ (geometricTwoTorsion_card p L hpTwo hΔ) hpTwo
 
+private theorem finiteModule (hpTwo : p ≠ 2) {c A : ZMod p}
+    (hΔ : (shortCubic c A).Δ ≠ 0) :
+    Module.Finite (ZMod 2) (geometricTwoTorsion p L (baseAffine p c A)) := by
+  have h := geometricTwoTorsion_card p L hpTwo hΔ
+  letI : Finite (geometricTwoTorsion p L (baseAffine p c A)) :=
+    Nat.finite_of_card_ne_zero (by rw [h]; decide)
+  infer_instance
+
 theorem actualFrobenius_charpoly (hpTwo : p ≠ 2) {c A : ZMod p}
     (hΔ : (shortCubic c A).Δ ≠ 0) :
+    letI := finiteModule p L hpTwo hΔ
     (actualFrobenius p L hpTwo hΔ).toLinearMap.charpoly =
       X ^ 2 - C (arithmeticTrace p c A : ZMod 2) * X + C (p : ZMod 2) := by
   let V := geometricTwoTorsion p L (baseAffine p c A)
@@ -81,7 +90,7 @@ theorem actualFrobenius_charpoly (hpTwo : p ≠ 2) {c A : ZMod p}
   letI : Finite V := Nat.finite_of_card_ne_zero (by rw [hcard]; decide)
   let b : Module.Basis (Fin 2) (ZMod 2) V :=
     FrobeniusModTwoLinear.basisOfCardFour _ hcard
-  letI : Module.Finite (ZMod 2) V := Module.Finite.of_basis b
+  letI : Module.Finite (ZMod 2) V := finiteModule p L hpTwo hΔ
   have hp : (p : ZMod 2) = 1 :=
     ZMod.natCast_eq_one_iff_odd.mpr ((Fact.out : p.Prime).odd_of_ne_two hpTwo)
   rw [FrobeniusModTwoRecurrence.linear_characteristic_polynomial V b,

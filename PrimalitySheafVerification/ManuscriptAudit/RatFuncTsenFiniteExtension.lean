@@ -95,9 +95,9 @@ theorem exists_finiteExtension_zero (K L : Type*) [Field K] [IsAlgClosed K] [Fie
   have hComp : aeval v Q = aeval x P := by
     change aeval v (aeval (basisForm b) P) = _
     rw [comp_aeval_apply]
-    congr 1
-    funext i
-    exact aeval_basisForm b z i
+    have hv : (fun i : Fin n ↦ aeval v (basisForm b i)) = x :=
+      funext (fun i ↦ aeval_basisForm b z i)
+    rw [hv]
   exact ⟨x, hx, hComp.symm.trans hEval⟩
 
 end

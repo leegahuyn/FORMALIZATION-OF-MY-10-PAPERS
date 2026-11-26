@@ -63,49 +63,69 @@ theorem relation (h2 : (2 : K) ≠ 0) :
     recovery_z, recovery_t, recovery_idempotent]
   ext <;> simp <;> ring
 
-private theorem residue_two_ne_zero (h2 : (2 : K) ≠ 0) (P : PrimeSpectrum (E K)) :
-    (2 : E K ⧸ P.asIdeal) ≠ 0 := by
-  letI : IsDomain (E K ⧸ P.asIdeal) := (Ideal.Quotient.isDomain_iff_prime _).mpr P.isPrime
-  let f : K →+* E K ⧸ P.asIdeal := (Ideal.Quotient.mk P.asIdeal).comp
-    ((Algebra.TensorProduct.includeLeft : B K →ₐ[A K] E K).toRingHom.comp Polynomial.C)
-  have ht := (map_ne_zero_iff f f.injective).mpr h2
-  simpa only [map_ofNat] using ht
+private theorem two_isUnit (h2 : (2 : K) ≠ 0) : IsUnit (2 : E K) := by
+  let f : K →+* E K :=
+    (Algebra.TensorProduct.includeLeft : B K →ₐ[A K] E K).toRingHom.comp Polynomial.C
+  simpa only [map_ofNat] using (isUnit_iff_ne_zero.mpr h2).map f
+
+section PrimeLabels
+
+variable {R : Type*} [CommRing R] (P : Ideal R) [P.IsPrime]
+
+private theorem mem_iff_of_sub_mem {a b : R} (h : a - b ∈ P) :
+    a ∈ P ↔ b ∈ P :=
+  ⟨fun ha => by simpa only [sub_sub_cancel] using P.sub_mem ha h,
+    fun hb => by simpa only [sub_add_cancel] using P.add_mem h hb⟩
+
+private theorem mul_two_mem_iff (h2 : IsUnit (2 : R)) (x : R) :
+    2 * x ∈ P ↔ x ∈ P :=
+  ⟨fun h => (show P.IsPrime from inferInstance).mem_or_mem h |>.resolve_left
+      (P.notMem_of_isUnit h2),
+    P.mul_mem_left _⟩
+
+private theorem positiveLabel (h2 : IsUnit (2 : R)) (z e t : R)
+    (h : z = (2 * e - 1) * t) (he : e * e = e) (ht : t - 1 ∈ P) :
+    z - 1 ∈ P ↔ e ∉ P := by
+  have hdi : (z - 1) - 2 * (e - 1) ∈ P := by
+    rw [h, show (2 * e - 1) * t - 1 - 2 * (e - 1) = (2 * e - 1) * (t - 1) by ring]
+    exact P.mul_mem_left _ ht
+  rw [mem_iff_of_sub_mem P hdi, mul_two_mem_iff P h2]
+  have hep : e * (e - 1) ∈ P := by
+    rw [mul_sub, mul_one, he, sub_self]
+    exact P.zero_mem
+  constructor
+  · intro h₁ h₂
+    exact (show P.IsPrime from inferInstance).one_notMem
+      (by simpa only [sub_sub_cancel] using P.sub_mem h₂ h₁)
+  · intro h
+    exact (show P.IsPrime from inferInstance).mem_or_mem hep |>.resolve_left h
+
+private theorem negativeLabel (h2 : IsUnit (2 : R)) (z e t : R)
+    (h : z = (2 * e - 1) * t) (ht : t + 1 ∈ P) :
+    z - 1 ∈ P ↔ e ∈ P := by
+  have hdi : (z - 1) - (-(2 * e)) ∈ P := by
+    rw [h, show (2 * e - 1) * t - 1 - (-(2 * e)) = (2 * e - 1) * (t + 1) by ring]
+    exact P.mul_mem_left _ ht
+  rw [mem_iff_of_sub_mem P hdi, Ideal.neg_mem_iff, mul_two_mem_iff P h2]
+
+end PrimeLabels
 
 /-- At the positive branch, the cover coordinate equals 1 precisely on
 the first polynomial component. -/
 theorem positive_branch_label (h2 : (2 : K) ≠ 0) (P : PrimeSpectrum (E K))
     (ht : t K - 1 ∈ P.asIdeal) :
     z K - 1 ∈ P.asIdeal ↔ idempotent K h2 ∉ P.asIdeal := by
-  letI : IsDomain (E K ⧸ P.asIdeal) := (Ideal.Quotient.isDomain_iff_prime _).mpr P.isPrime
-  let q := Ideal.Quotient.mk P.asIdeal
-  have hqt : q (t K) = 1 := by
-    have h : q (t K - 1) = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr ht
-    rwa [map_sub, map_one, sub_eq_zero] at h
-  have he : IsIdempotentElem (q (idempotent K h2)) :=
-    (show IsIdempotentElem (idempotent K h2) from idempotent_mul K h2).map q
-  have hqz : q (z K - 1) = 2 * (q (idempotent K h2) - 1) := by
-    rw [relation K h2, map_sub, map_mul, map_sub, map_mul, map_ofNat, map_one, hqt]
-    ring
-  rw [← Ideal.Quotient.eq_zero_iff_mem, hqz, ← Ideal.Quotient.eq_zero_iff_mem]
-  rw [mul_eq_zero, or_iff_right (residue_two_ne_zero K h2 P), sub_eq_zero]
-  rcases IsIdempotentElem.iff_eq_zero_or_one.mp he with h | h <;> simp [h]
+  letI : P.asIdeal.IsPrime := P.isPrime
+  exact positiveLabel P.asIdeal (two_isUnit K h2) _ _ _ (relation K h2)
+    (idempotent_mul K h2) ht
 
 /-- At the negative branch, the same cover coordinate equals 1 precisely
 on the other component. -/
 theorem negative_branch_label (h2 : (2 : K) ≠ 0) (P : PrimeSpectrum (E K))
     (ht : t K + 1 ∈ P.asIdeal) :
     z K - 1 ∈ P.asIdeal ↔ idempotent K h2 ∈ P.asIdeal := by
-  letI : IsDomain (E K ⧸ P.asIdeal) := (Ideal.Quotient.isDomain_iff_prime _).mpr P.isPrime
-  let q := Ideal.Quotient.mk P.asIdeal
-  have hqt : q (t K) = -1 := by
-    have h : q (t K + 1) = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr ht
-    rw [map_add, map_one] at h
-    exact eq_neg_of_add_eq_zero_left h
-  have hqz : q (z K - 1) = -(2 * q (idempotent K h2)) := by
-    rw [relation K h2, map_sub, map_mul, map_sub, map_mul, map_ofNat, map_one, hqt]
-    ring
-  rw [← Ideal.Quotient.eq_zero_iff_mem, hqz, neg_eq_zero,
-    mul_eq_zero, or_iff_right (residue_two_ne_zero K h2 P), ← Ideal.Quotient.eq_zero_iff_mem]
+  letI : P.asIdeal.IsPrime := P.isPrime
+  exact negativeLabel P.asIdeal (two_isUnit K h2) _ _ _ (relation K h2) ht
 
 end
 end ManuscriptAudit.NodalSwapBranchIdempotent

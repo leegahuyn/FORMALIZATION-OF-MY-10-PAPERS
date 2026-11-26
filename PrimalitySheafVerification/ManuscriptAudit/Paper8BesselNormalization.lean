@@ -26,8 +26,9 @@ theorem gammaWeight_eq (n : ℕ) :
     gammaWeight n = Real.sqrt Real.pi * ((2 * n + 1).factorial : ℝ) / 2 ^ (2 * n + 1) := by
   induction n with
   | zero =>
-    change 1 * Real.Gamma ((0 : ℝ) + 3 / 2) = Real.sqrt Real.pi * 1 / 2 ^ (1 : ℕ)
-    rw [show (0 : ℝ) + 3 / 2 = 1 / 2 + 1 by norm_num,
+    simp only [gammaWeight, Nat.factorial_zero, Nat.cast_one, Nat.cast_zero, one_mul,
+      zero_add, mul_zero, Nat.factorial_one, mul_one, pow_one]
+    rw [show (3 / 2 : ℝ) = 1 / 2 + 1 by norm_num,
       Real.Gamma_add_one (by norm_num), Real.Gamma_one_half_eq]
     ring
   | succ n h =>
@@ -70,9 +71,9 @@ private theorem standard_factor (x : ℝ) (hx : 0 < x) :
 
 theorem halfBessel_eq (x : ℝ) (hx : 0 < x) :
     halfBessel x = Real.sqrt (2 / (Real.pi * x)) * Real.sinh x := by
-  have hs := ((Real.hasSum_sinh x).mul_left (2 / (Real.sqrt Real.pi * x))).congr
-    (fun n => (series_term_eq x hx n).symm)
-  rw [halfBessel, hs.tsum_eq, ← mul_assoc, standard_factor x hx]
+  unfold halfBessel
+  simp_rw [series_term_eq x hx]
+  rw [tsum_mul_left, ← Real.sinh_eq_tsum x, ← mul_assoc, standard_factor x hx]
 
 theorem printedBessel_eq_pi_over_two_mul_halfBessel (x : ℝ) (hx : 0 < x) :
     printedBessel x = (Real.pi / 2) * halfBessel x := by

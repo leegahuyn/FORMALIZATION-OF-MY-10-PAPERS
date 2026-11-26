@@ -121,15 +121,15 @@ theorem affineNormalization_quotient (h2 : (2 : K) ≠ 0) :
   exact (affineNormalization K).isClosedMap.isQuotientMap
     (affineNormalization K).continuous (affineNormalization_surjective K h2)
 
-private def fiberFirst : Spec (CommRingCat.of (fiberRing K)) ⟶ Spec (CommRingCat.of K) :=
+def fiberFirst : Spec (CommRingCat.of (fiberRing K)) ⟶ Spec (CommRingCat.of K) :=
   Spec.map (CommRingCat.ofHom
     ((Algebra.TensorProduct.includeLeft : K →ₐ[A K] fiberRing K).toRingHom))
 
-private def fiberSecond : Spec (CommRingCat.of (fiberRing K)) ⟶ affineLine K :=
+def fiberSecond : Spec (CommRingCat.of (fiberRing K)) ⟶ affineLine K :=
   Spec.map (CommRingCat.ofHom
     ((Algebra.TensorProduct.includeRight : B K →ₐ[A K] fiberRing K).toRingHom))
 
-private theorem tensor_isPullback :
+theorem tensor_isPullback :
     IsPullback (fiberFirst K) (fiberSecond K) (NodalAffineOrigin.originMap K) (affineNormalization K) := by
   change IsPullback (fiberFirst K) (fiberSecond K)
     (Spec.map (CommRingCat.ofHom (algebraMap (A K) K))) (affineNormalization K)
@@ -144,31 +144,6 @@ def conductorFiberIso (h2 : (2 : K) ≠ 0) :
   (tensor_isPullback K).isoPullback.symm ≪≫
     Scheme.Spec.mapIso (fiberRingEquiv K h2).symm.toCommRingCatIso.op
 
-set_option maxHeartbeats 1400000 in
-/-- Under the scheme fiber identification, its second projection is
-the morphism defined by evaluation on the two ordered branches. -/
-theorem conductorFiberIso_second (h2 : (2 : K) ≠ 0) :
-    (conductorFiberIso K h2).hom ≫ Spec.map (NodalConductorSquare.branches K) =
-      pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) := by
-  let e := (tensor_isPullback K).isoPullback
-  let r := fiberRingEquiv K h2
-  let i := Scheme.Spec.mapIso r.symm.toCommRingCatIso.op
-  have he : (conductorFiberIso K h2).hom = e.inv ≫ i.hom := rfl
-  have hi : i.hom = Spec.map (CommRingCat.ofHom r.symm.toRingHom) := rfl
-  have hp : e.hom ≫ pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) =
-      fiberSecond K := (tensor_isPullback K).isoPullback_hom_snd
-  apply (cancel_epi e.hom).mp
-  simp only [he, Category.assoc, Iso.hom_inv_id_assoc, hp, hi]
-  rw [← Spec.map_comp]
-  unfold fiberSecond
-  apply congrArg Spec.map
-  apply CommRingCat.hom_ext
-  apply RingHom.ext
-  intro f
-  change (fiberRingEquiv K h2).symm (f.eval 1, f.eval (-1)) = (1 ⊗ₜ[A K] f)
-  apply (fiberRingEquiv K h2).injective
-  rw [RingEquiv.apply_symm_apply, fiberRingEquiv_polynomial]
-
 end
 end ManuscriptAudit.NodalNormalizationFiber
 
@@ -180,8 +155,7 @@ run_cmd do
       ``ManuscriptAudit.NodalNormalizationFiber.fiberRingEquiv_polynomial,
       ``ManuscriptAudit.NodalNormalizationFiber.affineNormalization_finite,
       ``ManuscriptAudit.NodalNormalizationFiber.affineNormalization_quotient,
-      ``ManuscriptAudit.NodalNormalizationFiber.conductorFiberIso,
-      ``ManuscriptAudit.NodalNormalizationFiber.conductorFiberIso_second] do
+      ``ManuscriptAudit.NodalNormalizationFiber.conductorFiberIso] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
