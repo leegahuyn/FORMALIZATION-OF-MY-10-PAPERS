@@ -42,6 +42,7 @@ theorem rationalPoint_default (a : K) :
     rationalPoint K a (default : Spec (CommRingCat.of K)) =
       (⟨(closedPoint K a).asIdeal, (closedPoint K a).isPrime⟩ : PrimeSpectrum (Polynomial K)) := by
   apply PrimeSpectrum.ext
+  rw [rationalPoint, Spec.map_apply]
   change Ideal.comap (evalRingHom a) (default : PrimeSpectrum K).asIdeal =
     RingHom.ker (evalRingHom a)
   have h : (default : PrimeSpectrum K).asIdeal = ⊥ :=
@@ -61,7 +62,7 @@ theorem closedPoint_bijective [IsAlgClosed K] : Function.Bijective (closedPoint 
   · intro p
     letI : p.asIdeal.IsPrime := p.isPrime
     let g := Submodule.IsPrincipal.generator p.asIdeal
-    have hg : Prime g := Ideal.prime_generator_of_isPrime p.asIdeal p.ne_bot
+    have hg : Prime g := Submodule.IsPrincipal.prime_generator_of_isPrime p.asIdeal p.ne_bot
     obtain ⟨a, ha⟩ := IsAlgClosed.exists_root g (fun hd ↦ hg.not_unit
       (Polynomial.isUnit_iff_degree_eq_zero.mpr hd))
     have hle : p.asIdeal ≤ (closedPoint K a).asIdeal := by

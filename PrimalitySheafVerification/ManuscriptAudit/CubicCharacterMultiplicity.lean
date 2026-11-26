@@ -28,7 +28,7 @@ private theorem orderThree_value {χ : MulChar F ℂ} (hχ : orderOf χ = 3) {z 
   rw [← MulChar.pow_apply' χ (by decide : (3 : ℕ) ≠ 0) z, orderThree_pow_three hχ,
     MulChar.one_apply hz.isUnit]
 
-private theorem cube_iff_character_one {χ : MulChar F ℂ} (hχ : orderOf χ = 3) {z : F}
+theorem cube_iff_character_one {χ : MulChar F ℂ} (hχ : orderOf χ = 3) {z : F}
     (hz : z ≠ 0) : (∃ x : F, x ^ 3 = z) ↔ χ z = 1 := by
   constructor
   · rintro ⟨x, rfl⟩

@@ -73,7 +73,7 @@ private theorem trace_bound_of_orderThree (hF : ringChar F ≠ 2)
   exact cubicTraceSum_norm_le hF hchar χ hA
     (cubeMultiplicity_character hdiv hχ) hχ₁ hχ₂ (quadraticComplex_ne_one hF) hχφ hχ₂φ
 
-private theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
+theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
     Function.Injective (fun x : F => x ^ (3 : ℕ)) := by
   intro x y h
   change x ^ (3 : ℕ) = y ^ (3 : ℕ) at h

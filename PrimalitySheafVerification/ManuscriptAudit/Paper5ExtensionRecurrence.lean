@@ -30,7 +30,7 @@ theorem recurrence_cast_eq_root_powers (p : ℕ) (a : ℤ) (α β : ℂ)
 variable {p : ℕ} [Fact p.Prime]
   {E : Type*} [Field E] [Fintype E] [DecidableEq E] [Algebra (ZMod p) E]
 
-private theorem reducedK_good (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
+theorem reducedK_good (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
     (shortCubic (0 : E) (algebraMap (ZMod p) E A)).Δ ≠ 0 := by
   rw [← printed_cubic_baseChange_eq_zero p A, WeierstrassCurve.baseChange, WeierstrassCurve.map_Δ]
   intro h

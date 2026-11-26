@@ -31,7 +31,10 @@ private theorem character_sq_one_generator {χ : MulChar E ℂ} (hn : χ ≠ 1)
     rw [← MulChar.pow_apply_coe, hs, MulChar.one_apply_coe]
   have hf : (χ (g : E) - 1) * (χ (g : E) + 1) = 0 := by
     linear_combination hsq
-  exact eq_neg_of_add_eq_zero_left ((mul_eq_zero.mp hf).resolve_left (sub_ne_zero.mpr hgen))
+  have he := (mul_eq_zero.mp hf).resolve_left (sub_ne_zero.mpr hgen)
+  calc
+    χ (g : E) = (χ (g : E) + 1) - 1 := by ring
+    _ = -1 := by rw [he, zero_sub]
 
 theorem norm_quadraticComplex (hF : ringChar F ≠ 2) (hE : ringChar E ≠ 2) :
     normMulChar F E (quadraticComplex : MulChar F ℂ) = quadraticComplex := by
@@ -58,7 +61,7 @@ private theorem normCharacter_orderThree {χ : MulChar F ℂ} (hχ : orderOf χ 
   apply (normMulChar_ne_one_iff F E χ).mpr
   simpa only [pow_one] using ne_one_of_orderThree_pow hχ (by decide : ¬ 3 ∣ (1 : ℕ))
 
-private theorem orderThree_sq {χ : MulChar F ℂ} (hχ : orderOf χ = 3) :
+theorem orderThree_sq {χ : MulChar F ℂ} (hχ : orderOf χ = 3) :
     orderOf (χ ^ (2 : ℕ)) = 3 := by
   letI : Fact (Nat.Prime 3) := ⟨by decide⟩
   apply (orderOf_eq_prime_iff (p := 3)).mpr

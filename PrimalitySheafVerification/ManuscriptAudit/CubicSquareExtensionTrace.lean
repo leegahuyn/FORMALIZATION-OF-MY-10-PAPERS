@@ -52,7 +52,7 @@ private theorem cubicChar_neg_one {χ : MulChar F ℂ} (hχ : orderOf χ = 3) :
   have h₃ : χ (-1) ^ (3 : ℕ) = 1 := by
     have h : χ ^ (3 : ℕ) = 1 := by simpa only [hχ] using pow_orderOf_eq_one χ
     rw [← MulChar.pow_apply' χ (by decide : (3 : ℕ) ≠ 0), h,
-      MulChar.one_apply (isUnit_neg.mpr isUnit_one)]
+      MulChar.one_apply ((neg_ne_zero.mpr (one_ne_zero : (1 : F) ≠ 0)).isUnit)]
   simpa only [pow_succ _ 2, h₂, one_mul] using h₃
 
 theorem jacobiRoots_eq_at_one (hp3 : p % 3 = 2) (hp2 : p % 2 = 1)
@@ -80,7 +80,7 @@ theorem square_extension_jacobiRoot (hp3 : p % 3 = 2) (hp2 : p % 2 = 1)
       exact (ZMod.natCast_eq_natCast_iff p 2 3).mpr (by simpa [Nat.ModEq] using hp3)
     have hqcast : (Fintype.card F : ZMod 3) = 1 := by
       rw [hq, Nat.cast_pow, hpcast] <;> decide
-    have hdiv := MulChar.orderOf_dvd_card_sub_one χ
+    have hdiv := MulChar.orderOf_dvd_card_sub_one F χ
     rw [hχ] at hdiv
     have hcount := count_cast_zmod_three_zero hF hqcast hdiv hΔ
     have htrace := (projective_count_trace_complex hF hΔ).trans

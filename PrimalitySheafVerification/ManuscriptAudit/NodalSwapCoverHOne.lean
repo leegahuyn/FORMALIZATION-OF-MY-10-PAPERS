@@ -82,10 +82,10 @@ private theorem terminal_tensor_connected :
       tensorScheme (A K) (E K) (term K) => f p) e.inv_hom_id
   exact hs.connectedSpace e.hom.continuous
 
-private def terminalOne : (baseFunctions K cyclic).obj.obj (op (term K)) :=
+def terminalOne : (baseFunctions K cyclic).obj.obj (op (term K)) :=
   ContinuousMap.const (PrimeSpectrum (A K)) (1 : ZMod 2)
 
-private theorem terminal_one_unlifted :
+theorem terminal_one_unlifted :
     ¬ ∃ s : (coverFunctions K cyclic).obj.obj (op (term K)),
       (trace K cyclic h2).hom.app (op (term K)) s = terminalOne K := by
   rintro ⟨s, hs⟩

@@ -17,7 +17,8 @@ private theorem power_mod_three (hp : p % 3 = 2) {d : ℕ} (hd : Odd d) :
   have hp' : p ≡ 2 [MOD 3] := by simpa [Nat.ModEq] using hp
   have he : 2 ^ d ≡ 2 [MOD 3] := by
     obtain ⟨k, hk⟩ := hd
-    rw [hk, pow_add, pow_mul, pow_one]
+    have hk' : d = 2 * k + 1 := by omega
+    rw [hk', pow_add, pow_mul, pow_one]
     change 4 ^ k * 2 ≡ 2 [MOD 3]
     simpa only [one_pow, one_mul] using
       ((by decide : 4 ≡ 1 [MOD 3]).pow k).mul (Nat.ModEq.refl 2)

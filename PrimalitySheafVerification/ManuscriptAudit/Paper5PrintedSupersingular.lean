@@ -15,17 +15,19 @@ namespace ManuscriptAudit.Paper5PrintedSupersingular
 open Paper5PrintedRecurrence (Row printedRows printedRows_prime)
 open CubicGeometricTorsion (geometricPTorsionTrivial)
 
-private theorem printedRows_prime_at_least_five :
+private theorem printedRows_prime_checks :
     printedRows.all (fun r => decide (5 ≤ r.prime)) = true := by
   decide
+
+theorem printedRows_prime_at_least_five {r : Row} (hr : r ∈ printedRows) : 5 ≤ r.prime :=
+  of_decide_eq_true (List.all_eq_true.mp printedRows_prime_checks r hr)
 
 /-- Triviality of the actual geometric p-torsion is equivalent to a zero
 first trace for every row in the table. -/
 theorem printedRows_geometric_p_torsion_trivial_iff {r : Row} (hr : r ∈ printedRows) :
     geometricPTorsionTrivial r.prime (printedRows_prime hr) (1 : ZMod r.prime) ↔ r.a1 = 0 := by
   letI : Fact r.prime.Prime := ⟨printedRows_prime hr⟩
-  have hp5 : 5 ≤ r.prime :=
-    of_decide_eq_true (List.all_eq_true.mp printedRows_prime_at_least_five r hr)
+  have hp5 := printedRows_prime_at_least_five hr
   have h := CubicGeometricClassification.paper5_trace_zero_iff_trivial_geometric_p_torsion
     hp5 (A := (1 : ZMod r.prime)) one_ne_zero
   rw [Paper5PrintedPointCounts.printedRows_actual_firstTrace hr] at h

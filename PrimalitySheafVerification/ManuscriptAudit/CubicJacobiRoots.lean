@@ -32,7 +32,7 @@ theorem projective_count_trace_complex (hF : ringChar F ≠ 2) {A : F}
 theorem cubicTraceSum_eq_neg_jacobiRoots (hF : ringChar F ≠ 2)
     {χ : MulChar F ℂ} (hχ : orderOf χ = 3) {A : F} (hA : A ≠ 0) :
     -cubicTraceSum A = jacobiRoot χ A + jacobiRoot (χ ^ 2) A := by
-  have hdiv := MulChar.orderOf_dvd_card_sub_one χ
+  have hdiv := MulChar.orderOf_dvd_card_sub_one F χ
   rw [hχ] at hdiv
   rw [cubicTraceSum_eq hF χ hA (cubeMultiplicity_character hdiv hχ)]
   unfold jacobiRoot
@@ -85,7 +85,7 @@ theorem jacobiRoots_product (hF : ringChar F ≠ 2) {χ : MulChar F ℂ}
     (hχ : orderOf χ = 3) {A : F} (hA : A ≠ 0) :
     jacobiRoot χ A * jacobiRoot (χ ^ 2) A = (Fintype.card F : ℂ) := by
   rw [jacobiRoots_conjugate hχ A, Complex.mul_conj', jacobiRoot_norm hF hχ hA,
-    Real.sq_sqrt (Nat.cast_nonneg _), Complex.ofReal_natCast]
+    ← Complex.ofReal_pow, Real.sq_sqrt (Nat.cast_nonneg _), Complex.ofReal_natCast]
 
 end
 end ManuscriptAudit.CubicJacobiRoots

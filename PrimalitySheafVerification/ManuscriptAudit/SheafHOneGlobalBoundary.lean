@@ -23,7 +23,7 @@ private noncomputable abbrev integerConstant : Sheaf J AddCommGrpCat.{w} :=
   (constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift.{w} ℤ))
 
 /-- The native connecting class of a section evaluated at a terminal object. -/
-def boundaryAtTerminal (S : ShortComplex (Sheaf J AddCommGrpCat.{w})) (hS : S.ShortExact)
+noncomputable def boundaryAtTerminal (S : ShortComplex (Sheaf J AddCommGrpCat.{w})) (hS : S.ShortExact)
     {T : C} (hT : IsTerminal T) (z : S.X₃.obj.obj (op T)) : Sheaf.H S.X₁ 1 :=
   hS.extClass.postcomp (integerConstant (J := J)) (show 0 + 1 = 1 by rfl)
     ((Sheaf.H.equiv₀ S.X₃ hT).symm z)
@@ -44,6 +44,8 @@ theorem boundaryAtTerminal_eq_zero_iff (S : ShortComplex (Sheaf J AddCommGrpCat.
   · rintro ⟨y, hy⟩
     apply (exactness ((Sheaf.H.equiv₀ S.X₃ hT).symm z)).2
     refine ⟨(Sheaf.H.equiv₀ S.X₂ hT).symm y, ?_⟩
+    change Sheaf.H.map S.g 0 ((Sheaf.H.equiv₀ S.X₂ hT).symm y) =
+      (Sheaf.H.equiv₀ S.X₃ hT).symm z
     rw [Sheaf.H.equiv₀_symm_naturality (hT := hT) S.g, hy]
 
 theorem hOne_nontrivial_of_unlifted_global_section
