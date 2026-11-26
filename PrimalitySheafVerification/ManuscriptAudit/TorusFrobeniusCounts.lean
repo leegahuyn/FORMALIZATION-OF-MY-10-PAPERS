@@ -101,7 +101,18 @@ theorem five_two_distinct_second_coordinates :
       ((4 : ZMod 5) ^ (5 : ℕ) + 1 ^ (2 : ℕ) = 0) ∧
       ((4 : ZMod 5) ^ (5 : ℕ) + 4 ^ (2 : ℕ) = 0) ∧
       ((4 : ZMod 5) ^ (-5 : ℤ) + 1 ^ (2 : ℕ) = 0) ∧
-      ((4 : ZMod 5) ^ (-5 : ℤ) + 4 ^ (2 : ℕ) = 0) := by decide
+      ((4 : ZMod 5) ^ (-5 : ℤ) + 4 ^ (2 : ℕ) = 0) := by
+  have hpos : (4 : ZMod 5) ^ (5 : ℕ) = 4 := by decide
+  have hs : (4 : ZMod 5) * 4 = 1 := by decide
+  have hinv : (4 : ZMod 5)⁻¹ = 4 := by
+    calc
+      _ = (4 : ZMod 5)⁻¹ * 1 := (mul_one _).symm
+      _ = (4 : ZMod 5)⁻¹ * (4 * 4) := by rw [hs]
+      _ = 4 := by rw [← mul_assoc, inv_mul_cancel₀ (by decide : (4 : ZMod 5) ≠ 0), one_mul]
+  have hneg : (4 : ZMod 5) ^ (-5 : ℤ) = 4 := by
+    rw [show (-5 : ℤ) = -(5 : ℤ) by decide, zpow_neg, zpow_natCast, hpos, hinv]
+  rw [hneg]
+  decide
 
 end ManuscriptAudit.TorusFrobeniusCounts
 

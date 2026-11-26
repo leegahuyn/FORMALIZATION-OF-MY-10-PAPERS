@@ -23,8 +23,9 @@ noncomputable section
 variable (K : Type*) [Field K]
 
 /-- The finite root cycle of a polynomial with coefficients in the ground field. -/
-def rootCycle (p : Polynomial K) : K →₀ ℤ :=
-  Finsupp.mapRange (fun n : ℕ => (n : ℤ)) rfl p.roots.toFinsupp
+def rootCycle (p : Polynomial K) : K →₀ ℤ := by
+  classical
+  exact Finsupp.mapRange (fun n : ℕ => (n : ℤ)) rfl p.roots.toFinsupp
 
 @[simp] theorem rootCycle_one : rootCycle K 1 = 0 := by
   ext a

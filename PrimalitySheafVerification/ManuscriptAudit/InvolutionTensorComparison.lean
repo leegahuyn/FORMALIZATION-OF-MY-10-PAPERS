@@ -58,9 +58,9 @@ theorem comparison_tmul (σ : E ≃ₐ[A] E) (a b : E) :
 private theorem tensor_partition_mul_difference (σ : E ≃ₐ[A] E)
     (hInvol : Function.Involutive σ)
     (hFixed : ∀ z : E, σ z = z → ∃ a : A, algebraMap A E a = z)
-    (λ₀ u v : E) (hλ : σ λ₀ = λ₀) (hu : σ u = -u) (hv : σ v = -v)
-    (hPartition : λ₀ * u ^ 2 + v ^ 2 = 1) (b : E) :
-    (ι₁ λ₀ * ι₁ u * ι₂ u + ι₁ v * ι₂ v) * ι₁ (b - σ b) = ι₂ (b - σ b) := by
+    (coefficient u v : E) (hλ : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
+    (hPartition : coefficient * u ^ 2 + v ^ 2 = 1) (b : E) :
+    (ι₁ coefficient * ι₁ u * ι₂ u + ι₁ v * ι₂ v) * ι₁ (b - σ b) = ι₂ (b - σ b) := by
   let d := b - σ b
   have hd : σ d = -d := by
     dsimp [d]
@@ -70,14 +70,14 @@ private theorem tensor_partition_mul_difference (σ : E ≃ₐ[A] E)
     left_eq_right A E (hFixed _ (by rw [map_mul, hu, hd, neg_mul_neg]))
   have hShiftV : ι₁ (v * d) = ι₂ (v * d) :=
     left_eq_right A E (hFixed _ (by rw [map_mul, hv, hd, neg_mul_neg]))
-  change (ι₁ λ₀ * ι₁ u * ι₂ u + ι₁ v * ι₂ v) * ι₁ d = ι₂ d
+  change (ι₁ coefficient * ι₁ u * ι₂ u + ι₁ v * ι₂ v) * ι₁ d = ι₂ d
   calc
-    _ = ι₁ λ₀ * ι₁ (u * d) * ι₂ u + ι₁ (v * d) * ι₂ v := by
+    _ = ι₁ coefficient * ι₁ (u * d) * ι₂ u + ι₁ (v * d) * ι₂ v := by
       simp only [map_mul]
       ring
-    _ = ι₂ λ₀ * ι₂ (u * d) * ι₂ u + ι₂ (v * d) * ι₂ v := by
-      rw [left_eq_right A E (hFixed λ₀ hλ), hShiftU, hShiftV]
-    _ = ι₂ ((λ₀ * u ^ 2 + v ^ 2) * d) := by
+    _ = ι₂ coefficient * ι₂ (u * d) * ι₂ u + ι₂ (v * d) * ι₂ v := by
+      rw [left_eq_right A E (hFixed coefficient hλ), hShiftU, hShiftV]
+    _ = ι₂ ((coefficient * u ^ 2 + v ^ 2) * d) := by
       simp only [map_mul, map_add, map_pow]
       ring
     _ = _ := by rw [hPartition, one_mul]
@@ -86,13 +86,13 @@ set_option maxHeartbeats 1200000 in
 theorem comparison_bijective (σ : E ≃ₐ[A] E)
     (hInvol : Function.Involutive σ)
     (hFixed : ∀ z : E, σ z = z → ∃ a : A, algebraMap A E a = z)
-    (h λ₀ u v : E) (hHalfFixed : σ h = h) (hHalf : h + h = 1)
-    (hλ : σ λ₀ = λ₀) (hu : σ u = -u) (hv : σ v = -v)
-    (hPartition : λ₀ * u ^ 2 + v ^ 2 = 1) :
+    (h coefficient u v : E) (hHalfFixed : σ h = h) (hHalf : h + h = 1)
+    (hλ : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
+    (hPartition : coefficient * u ^ 2 + v ^ 2 = 1) :
     Function.Bijective (comparison A E σ) := by
   let μ := evaluate A E (AlgHom.id A E)
   let ν := evaluate A E σ.toAlgHom
-  let w : E ⊗[A] E := ι₁ λ₀ * ι₁ u * ι₂ u + ι₁ v * ι₂ v
+  let w : E ⊗[A] E := ι₁ coefficient * ι₁ u * ι₂ u + ι₁ v * ι₂ v
   let e : E ⊗[A] E := ι₁ h * (1 + w)
   have hμl (a : E) : μ (ι₁ a) = a := evaluate_left A E _ a
   have hνl (a : E) : ν (ι₁ a) = a := evaluate_left A E _ a
@@ -102,7 +102,7 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
     simpa only [w, map_add, map_mul, hμl, hμr, pow_two, mul_assoc] using hPartition
   have hνw : ν w = -1 := by
     calc
-      ν w = -(λ₀ * u ^ 2 + v ^ 2) := by
+      ν w = -(coefficient * u ^ 2 + v ^ 2) := by
         simp only [w, map_add, map_mul, hνl, hνr, hu, hv]
         ring
       _ = _ := by rw [hPartition]
@@ -117,7 +117,7 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
       rw [map_add, hInvol b]
       exact add_comm _ _
     have hw : w * ι₁ (b - σ b) = ι₂ (b - σ b) :=
-      tensor_partition_mul_difference A E σ hInvol hFixed λ₀ u v hλ hu hv hPartition b
+      tensor_partition_mul_difference A E σ hInvol hFixed coefficient u v hλ hu hv hPartition b
     calc
       ι₂ b = ι₂ h * (ι₂ (b + σ b) + ι₂ (b - σ b)) := by
         symm

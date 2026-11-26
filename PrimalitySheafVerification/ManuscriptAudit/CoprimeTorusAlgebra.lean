@@ -57,11 +57,11 @@ private theorem lattice_expansion {m n : ℕ} (h : m.Coprime n) (v : Lattice) :
   apply Prod.ext
   · change i = Nat.gcdA n m * ((n : ℤ) * i + (m : ℤ) * j) +
       (Nat.gcdB n m * i - Nat.gcdA n m * j) • (m : ℤ)
-    rw [zsmul_eq_mul]
+    simp only [zsmul_eq_mul, Int.cast_id]
     linear_combination -i * (bezout h)
   · change j = Nat.gcdB n m * ((n : ℤ) * i + (m : ℤ) * j) +
       (Nat.gcdB n m * i - Nat.gcdA n m * j) • (-(n : ℤ))
-    rw [zsmul_eq_mul]
+    simp only [zsmul_eq_mul, Int.cast_id]
     linear_combination -j * (bezout h)
 
 private def project (m n : ℕ) : TwoTorus R →ₐ[R] LaurentPolynomial R :=
@@ -112,7 +112,8 @@ private theorem quotientMonomial_add (m n : ℕ) (v w : Lattice) :
   simp [monomial]
 
 private theorem quotientMonomial_zero (m n : ℕ) : quotientMonomial R m n 0 = 1 := by
-  simp [quotientMonomial, monomial]
+  change quotientMap R m n (1 : TwoTorus R) = 1
+  exact map_one _
 
 private theorem quotientMonomial_relation (m n : ℕ) :
     quotientMonomial R m n ((m : ℤ), -(n : ℤ)) = 1 := by
@@ -128,9 +129,9 @@ private theorem quotientMonomial_relation (m n : ℕ) :
           congr 1
           ext <;> simp
     _ = 1 := by
-      rw [hf, ← quotientMonomial_add]
-      convert quotientMonomial_zero R m n using 1
-      ext <;> simp
+      have hv : ((0, (n : ℤ)) : Lattice) + (0, -(n : ℤ)) = 0 := by
+        apply Prod.ext <;> simp
+      rw [hf, ← quotientMonomial_add, hv, quotientMonomial_zero]
 
 private def trivialExponents (m n : ℕ) : AddSubgroup Lattice where
   carrier := {v | quotientMonomial R m n v = 1}

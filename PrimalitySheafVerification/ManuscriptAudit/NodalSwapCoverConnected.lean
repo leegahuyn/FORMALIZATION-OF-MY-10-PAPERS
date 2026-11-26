@@ -40,24 +40,22 @@ theorem secondProjection_surjective (h2 : (2 : K) ≠ 0) :
     Function.Surjective (secondProjection K) :=
   (firstProjection_surjective K h2).comp (swap K).surjective
 
-set_option backward.isDefEq.respectTransparency false in
+private theorem mem_comap_range_of_ker_le {R S : Type*} [CommRing R] [CommRing S]
+    (f : R →+* S) (hf : Function.Surjective f) (p : PrimeSpectrum R)
+    (h : RingHom.ker f ≤ p.asIdeal) : p ∈ Set.range (comap f) := by
+  rw [range_comap_of_surjective S f hf]
+  exact h
+
+set_option maxHeartbeats 1500000 in
 private theorem images_cover (h2 : (2 : K) ≠ 0) :
     Set.range (comap (firstProjection K)) ∪ Set.range (comap (secondProjection K)) =
       (Set.univ : Set (PrimeSpectrum (Cover K))) := by
-  have hFirst : Set.range (comap (firstProjection K)) =
-      zeroLocus (RingHom.ker (firstProjection K) : Set (Cover K)) :=
-    range_comap_of_surjective (Polynomial K) (firstProjection K) (firstProjection_surjective K h2)
-  have hSecond : Set.range (comap (secondProjection K)) =
-      zeroLocus (RingHom.ker (secondProjection K) : Set (Cover K)) :=
-    range_comap_of_surjective (Polynomial K) (secondProjection K) (secondProjection_surjective K h2)
-  rw [hFirst, hSecond]
   apply Set.eq_univ_of_forall
   intro p
-  change RingHom.ker (firstProjection K) ≤ p.asIdeal ∨
-    RingHom.ker (secondProjection K) ≤ p.asIdeal
   by_cases hf : RingHom.ker (firstProjection K) ≤ p.asIdeal
-  · exact Or.inl hf
-  · right
+  · exact Or.inl (mem_comap_range_of_ker_le (firstProjection K) (firstProjection_surjective K h2) p hf)
+  · apply Or.inr
+    apply mem_comap_range_of_ker_le (secondProjection K) (secondProjection_surjective K h2) p
     intro b hb
     by_contra hn
     apply hf

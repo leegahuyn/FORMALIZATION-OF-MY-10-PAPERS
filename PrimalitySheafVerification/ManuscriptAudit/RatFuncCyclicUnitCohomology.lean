@@ -58,7 +58,7 @@ theorem cyclic_units_even_subsingleton (K E : Type) [Field K] [IsAlgClosed K] [F
     apply Rep.toAdditive.injective
     apply Additive.toMul.injective
     apply Units.ext
-    exact (groupCohomology.Hilbert90.norm_ofAlgebraAutOnUnits_eq u).trans
+    exact (groupCohomology.norm_ofAlgebraAutOnUnits_eq u).trans
       ((congrArg (algebraMap F E) hv).trans ha)
   exact ⟨fun x y => (hzero x).trans (hzero y).symm⟩
 
