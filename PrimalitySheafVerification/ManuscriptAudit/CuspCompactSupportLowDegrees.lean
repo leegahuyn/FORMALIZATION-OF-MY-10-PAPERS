@@ -22,7 +22,7 @@ noncomputable section
 
 variable (K : Type u) [Field K] [IsSepClosed K]
 
-attribute [local instance] SmallEtaleCohomologyComparison.fullSiteHasExt
+attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
 private abbrev J : GrothendieckTopology (CuspProperCompactification.projectiveCusp K).Etale :=
   (CuspProperCompactification.projectiveCusp K).smallEtaleTopology
@@ -65,8 +65,8 @@ theorem compactSupportFiveTerm (M : AddCommGrpCat.{u}) :
       (Ext.covariant_sequence_exact₁' (freeConstant K) hQ 0 1 (by rfl))
   · intro x
     have h : Sheaf.H.map Q.g 1 x = 0 :=
-      (CuspCompactSupportHigherComparison.compactSupportBoundaryH_succ_subsingleton K M 0).elim _ _
-    exact Ext.covariant_sequence_exact₂ (freeConstant K) hQ x h
+      (compactSupportBoundaryH_succ_subsingleton K M 0).allEq _ _
+    exact Ext.covariant_sequence_exact₂ (X := freeConstant K) hQ x h
 
 end
 

@@ -17,7 +17,7 @@ difference one whenever its low-degree groups have finite dimension.
 namespace ManuscriptAudit.CuspCompactSupportEuler
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits CategoryTheory.Abelian
-open OpenEtaleExtension CuspCompactSupportSequence CuspCompactSupportHigherComparison
+open OpenEtaleExtension CuspCompactSupportSequence
 open CuspCompactSupportLowDegrees SmallEtaleGeometricBaseChange Opposite
 open scoped BigOperators
 
@@ -27,7 +27,7 @@ noncomputable section
 
 variable (K : Type u) [Field K] [IsSepClosed K] (ℓ : ℕ) [Fact ℓ.Prime]
 
-attribute [local instance] SmallEtaleCohomologyComparison.fullSiteHasExt
+attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
 private abbrev G := AddCommGrpCat.{u}
 private abbrev coeff : G.{u} := AddCommGrpCat.of (ULift.{u} (ZMod ℓ))

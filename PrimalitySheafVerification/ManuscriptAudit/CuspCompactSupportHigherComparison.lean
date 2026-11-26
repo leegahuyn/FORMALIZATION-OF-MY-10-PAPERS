@@ -69,14 +69,14 @@ theorem compactSupportHigherMap_bijective (M : AddCommGrpCat.{u}) (n : ℕ) :
     have hxy₀ : (Sheaf.H.map S.f (n + 2)) (x - y) = 0 := by
       rw [map_sub, hxy, sub_self]
     have hz : (x - y).comp (Ext.mk₀ S.f) (add_zero (n + 2)) = 0 := hxy₀
-    obtain ⟨t, ht⟩ := Ext.covariant_sequence_exact₁ Z hS (x - y) hz
+    obtain ⟨t, ht⟩ := Ext.covariant_sequence_exact₁ (X := Z) hS (x - y) hz
       (show (n + 1) + 1 = n + 2 by rfl)
     have ht₀ : t = 0 := h₁.allEq _ _
     apply sub_eq_zero.mp
     rw [← ht, ht₀, Ext.zero_comp]
   · intro y
     have hy : y.comp (Ext.mk₀ S.g) (add_zero (n + 2)) = 0 := h₂.allEq _ _
-    exact Ext.covariant_sequence_exact₂ Z hS y hy
+    exact Ext.covariant_sequence_exact₂ (X := Z) hS y hy
 
 /-- The native map identifies compactly supported groups in degree `n + 2`. -/
 def compactSupportHigherEquiv (M : AddCommGrpCat.{u}) (n : ℕ) :
@@ -102,3 +102,4 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

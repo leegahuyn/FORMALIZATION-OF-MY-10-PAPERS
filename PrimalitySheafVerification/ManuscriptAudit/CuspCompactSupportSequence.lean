@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CuspOpenOriginSequence
 import PrimalitySheafVerification.ManuscriptAudit.CuspProperCompactification
-import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleCohomologyComparison
+import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHZero
 
 /-!
 # Compact-support localization in the proper cusp compactification
@@ -23,7 +23,7 @@ noncomputable section
 
 variable (K : Type u) [Field K] [IsSepClosed K]
 
-attribute [local instance] SmallEtaleCohomologyComparison.fullSiteHasExt
+attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
 private theorem originToBase :
     (cuspOrigin K ≫ affineOpen K) ≫ projectiveCuspToBase K =
