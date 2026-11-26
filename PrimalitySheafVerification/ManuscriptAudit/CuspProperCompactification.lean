@@ -339,6 +339,43 @@ theorem boundary_plane_coordinates (x : projectiveCusp K)
   · exact hni
   · exact (hni hz).elim
 
+/-- Restriction of functions on the \(Z\ne0\) plane chart to the affine cusp. -/
+abbrev affineChartEvaluation := chartEvaluation K
+
+theorem affineChartEvaluation_mk_coe (n : ℕ) (p : PlaneRing K)
+    (hp : p ∈ grading K (n • 1)) :
+    ((affineChartEvaluation K (Away.mk (grading K) (X_mem_one K 2) n p hp)) : Polynomial K) =
+      MvPolynomial.aeval (fun i : Fin 3 =>
+        if i = 0 then (Polynomial.X : Polynomial K) ^ 2
+        else if i = 1 then Polynomial.X ^ 3 else 1) p := by
+  unfold affineChartEvaluation
+  rw [chartEvaluation_mk]
+  change ((CuspSubalgebra K).val.comp (evalPolynomial K)) p = _
+  unfold evalPolynomial
+  rw [MvPolynomial.comp_aeval]
+  apply congrArg (fun coords : Fin 3 → Polynomial K => MvPolynomial.aeval coords p)
+  funext i
+  fin_cases i <;> rfl
+
+abbrev affineZChartι := zChartι K
+
+theorem cuspInPlane_as_Z_chart :
+    cuspInPlane K = Spec.map (CommRingCat.ofHom (affineChartEvaluation K)) ≫ affineZChartι K :=
+  rfl
+
+theorem affineOpen_opensRange_eq :
+    (affineOpen K).opensRange =
+      (cuspInPlane K).imageι ⁻¹ᵁ Proj.basicOpen (grading K) (z K) := by
+  ext x
+  constructor
+  · rintro ⟨t, rfl⟩
+    change ((affineOpen K) ≫ (cuspInPlane K).imageι) t ∈ Proj.basicOpen (grading K) (z K)
+    rw [affineOpen, Scheme.Hom.toImage_imageι, ← Proj.opensRange_awayι (grading K) (z K)
+      (X_mem_one K 2) (by decide)]
+    exact ⟨cuspToZChart K t, rfl⟩
+  · intro h
+    exact mem_affine_image_of_z_open K x h
+
 end
 
 end ManuscriptAudit.CuspProperCompactification
@@ -351,7 +388,10 @@ run_cmd do
       ``ManuscriptAudit.CuspProperCompactification.affineOpen_isDominant,
       ``ManuscriptAudit.CuspProperCompactification.affineOpen_toBase,
       ``ManuscriptAudit.CuspProperCompactification.cubic_mem_projectiveCusp,
-      ``ManuscriptAudit.CuspProperCompactification.boundary_plane_coordinates] do
+      ``ManuscriptAudit.CuspProperCompactification.boundary_plane_coordinates,
+      ``ManuscriptAudit.CuspProperCompactification.affineChartEvaluation_mk_coe,
+      ``ManuscriptAudit.CuspProperCompactification.cuspInPlane_as_Z_chart,
+      ``ManuscriptAudit.CuspProperCompactification.affineOpen_opensRange_eq] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

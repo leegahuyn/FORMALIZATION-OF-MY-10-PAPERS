@@ -146,7 +146,10 @@ theorem aeval_scale {B : Type*} [CommRing B] [Algebra K B] (v : Fin 3 → B) (c 
     MvPolynomial.aeval (fun i => c * v i) p =
       c ^ n * MvPolynomial.aeval v p := by
   change p.IsWeightedHomogeneous (1 : Fin 3 → ℕ) n at hp
-  refine hp.induction_on ?_ ?_ ?_
+  refine MvPolynomial.IsWeightedHomogeneous.induction_on
+    (motive := fun (q : PlaneRing K) _ =>
+      MvPolynomial.aeval (fun i => c * v i) q = c ^ n * MvPolynomial.aeval v q)
+    ?_ ?_ ?_ hp
   · simp only [map_zero, mul_zero]
   · intro f g _ _ hf hg
     simp only [map_add, hf, hg, mul_add]

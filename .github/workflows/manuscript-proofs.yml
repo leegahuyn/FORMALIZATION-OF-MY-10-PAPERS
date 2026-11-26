@@ -12,7 +12,7 @@ on:
 permissions:
   contents: read
 env:
-  CORE_PROOFS: LiteralRefutations Paper3CompositeGates ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex FiveTermEuler DerivedSheafShift SpecIntContinuousSections ProEtDirectImage RationalProEtaleCoefficients RationalProEtaleClosedShift RationalProEtaleLocalization WeierstrassFrobeniusFixed CubicTrace Paper5FixedTraceZero Paper5FixedPositiveTraceZero Paper5OrdinarySeven Paper5OrdinarySevenGeometry Paper5OrdinarySevenTorsion ReciprocalWeight BackwardHeatModes AppellNumerator CrossCharacteristicTensor CuspAtOrigin CuspPointCounts CuspPointCountSeries CuspHasseWeilSeries FiniteKernelRank ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit PadicHenselGate PadicDiscriminantGate PadicDiscriminantDegreeDrop LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian Paper8XiShadow ZwegersGaussianTail ZwegersGaussianSummable ZwegersHalfPeriod ZwegersHalfPeriodConvergence ThetaInfinityCusp LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation HighInfinityCusp ModularQRadius InverseHalfInvariantNorm CompactModularCore ThreeCuspNeighborhoods TwoOpenDerivedComparison CyclicInclusionCokernel PrincipalOpenSectionLoss UnitCocycleTensor FaithfullyFlatCoalgebra MahlerTail MahlerContinuity AffineUnitDescent FixedCoverCechCounterexample FixedCoverGlobalDerived ClosedSupportDetection SkyscraperHOne ExactSupportDetection SpecIntSupportReduction SpecIntSupportLocalization ClosedPointCoproduct FiniteSkyscraperSumHOne FiniteClosedSkyscraperDecomposition ZariskiSkyscraperHigherCohomology FiniteClosedSkyscraperHigherCohomology ClosedPointCoproductStalk ClosedPointSupportDetection GenericPointSupportDetection SpecIntSkyscraperSumHOne CofiniteSupportDetection SpecIntExactDetection FinitePrimeSample SpecIntOpenSupport SpecIntCechDetection SpecIntSupportCRT AffineEtaleCoverProduct AffineEtaleLiftingCover AffineEtaleProductGluing AffineEtaleTensorOverlap SheafH1Descent SheafSectionDifference AddCommGrpImageFactorization SheafCoboundaryLift AffineEtaleUnitCocycle AffineEtaleProductDescent AffineEtaleCuspHOne OriginMonomialLength OriginTjurinaInfiniteLength PrincipalOpenFiniteProfiles UnramifiedEqualizerSections CuspReductionBaseChange CuspUnramifiedNormalization CuspFlatNormalization CuspFlatUnramifiedSections SheafFreeAbelianLimits CuspNormalizationHom CuspFiniteEtaleCategory MaassPrintedFactorization SmallEtaleCohomologyComparison ArithmeticLineHOne ArithmeticResidueHOne ArithmeticLaurentHOne SmallEtaleCuspHOne CuspFrobenius SmoothGaugeBracket AffineAbsoluteFrobenius AffineRelativeFrobenius AffineFrobeniusFactorization EtaleRadicial EtaleOfSurjectiveSpecBaseChange RelativeFrobeniusEtale AffineEtaleRelativeFrobenius AffineFrobeniusPullback SmallEtaleBaseChange SmallEtaleSkyscraper SmallEtaleClosedResidue EtaleContinuousMapSheaf OpenEtaleExtension OpenEtaleExtensionStalk OpenEtaleExtensionInsideStalk OpenEtaleExtensionComposition OpenEtaleExtensionMono OpenEtaleExtensionCounit OpenEtaleExtensionQuotient OpenEtaleExtensionToSkyscraper OpenEtaleExtensionQuotientExact GeometricSkyscraperHZero GeometricSkyscraperHigherCohomology OpenEtaleLocalLifts OpenEtaleExtensionHZero AffineEtaleBaseChange SmallEtaleEquivalenceCohomology SmoothGaugeCurvature PeriodicExactGauge ProjectedTwistedTrace ScalarTwistCompatibility RSMassGap SpectralQuarterShift WeylWindow EtaleSquareZeroLift EtaleSplitSquareZero MilnorStabilizedMatrix MilnorIdentityGluing MilnorCoordinatePatch MilnorProjectivePatch MilnorNormalizationMap MilnorNormalizationRecovery MilnorIdentityRecovery
+  CORE_PROOFS: LiteralRefutations Paper3CompositeGates ResidueCompatibility FixedProfile OddTheta CuspDelta ConstantPresheaf UnfoldedIntegral PointComplex FiveTermEuler DerivedSheafShift SpecIntContinuousSections ProEtDirectImage RationalProEtaleCoefficients RationalProEtaleClosedShift RationalProEtaleLocalization WeierstrassFrobeniusFixed CubicTrace Paper5FixedTraceZero Paper5FixedPositiveTraceZero Paper5OrdinarySeven Paper5OrdinarySevenGeometry Paper5OrdinarySevenTorsion ReciprocalWeight BackwardHeatModes AppellNumerator AppellSameIntegerShift CrossCharacteristicTensor CuspAtOrigin CuspPointCounts CuspPointCountSeries CuspHasseWeilSeries FiniteKernelRank ValuationProfiles FourierSelection ThetaHalfPeriod CommonParameterEuler JacobianLength AppellDoubleRidge BenchmarkOrigin WindowEndpoint PadicBinomialLimit PadicHenselGate PadicDiscriminantGate PadicDiscriminantDegreeDrop LaurentUnits CuspPicard CuspPunctured CubicHasseCoefficient TentBoundaryActivity CuspRootCoefficients KummerEtale NodalNormalizationCoordinates FiniteFieldPowerSums EllipticFiniteDescent CauchySampling LaurentUnitRepresentation EnergyDissipationModal NoetherNormalization TracePairing ProfileRestriction KummerSiteCover KummerUnitsPresheaf KummerSheafSequence KummerUnitsSheaf KummerCohomologySequence KummerRootLabels KummerConstantCoefficients KummerKernel KummerAffineCohomology PrintedRademacherTail InverseHalfNormDescent CauchyContour DirichletEuler ScatteringNormalization MaassLaplacian Paper8XiShadow ZwegersGaussianTail ZwegersGaussianSummable ZwegersHalfPeriod ZwegersHalfPeriodConvergence ThetaInfinityCusp LaurentEtaleCohomology TentRegularity FourierPositiveSigned FaithfullyFlatRankOne LiteralCuspTruncation HighInfinityCusp ModularQRadius InverseHalfInvariantNorm CompactModularCore ThreeCuspNeighborhoods TwoOpenDerivedComparison CyclicInclusionCokernel PrincipalOpenSectionLoss UnitCocycleTensor FaithfullyFlatCoalgebra MahlerTail MahlerContinuity AffineUnitDescent FixedCoverCechCounterexample FixedCoverGlobalDerived ClosedSupportDetection SkyscraperHOne ExactSupportDetection SpecIntSupportReduction SpecIntSupportLocalization ClosedPointCoproduct FiniteSkyscraperSumHOne FiniteClosedSkyscraperDecomposition ZariskiSkyscraperHigherCohomology FiniteClosedSkyscraperHigherCohomology ClosedPointCoproductStalk ClosedPointSupportDetection GenericPointSupportDetection SpecIntSkyscraperSumHOne CofiniteSupportDetection SpecIntExactDetection FinitePrimeSample SpecIntOpenSupport SpecIntCechDetection SpecIntSupportCRT AffineEtaleCoverProduct AffineEtaleLiftingCover AffineEtaleProductGluing AffineEtaleTensorOverlap SheafH1Descent SheafSectionDifference TwoOpenCokernelLift AddCommGrpImageFactorization SheafCoboundaryLift AffineEtaleUnitCocycle AffineEtaleProductDescent AffineEtaleCuspHOne OriginMonomialLength OriginTjurinaInfiniteLength PrincipalOpenFiniteProfiles UnramifiedEqualizerSections CuspReductionBaseChange CuspUnramifiedNormalization CuspFlatNormalization CuspFlatUnramifiedSections SheafFreeAbelianLimits CuspNormalizationHom CuspFiniteEtaleCategory MaassPrintedFactorization SmallEtaleCohomologyComparison ArithmeticLineHOne ArithmeticResidueHOne ArithmeticLaurentHOne SmallEtaleCuspHOne CuspFrobenius SmoothGaugeBracket AffineAbsoluteFrobenius AffineRelativeFrobenius AffineFrobeniusFactorization EtaleRadicial EtaleOfSurjectiveSpecBaseChange RelativeFrobeniusEtale AffineEtaleRelativeFrobenius AffineFrobeniusPullback SmallEtaleBaseChange SmallEtaleSkyscraper SmallEtaleClosedResidue EtaleContinuousMapSheaf EtaleConstantRestriction OpenEtaleExtension OpenEtaleExtensionStalk OpenEtaleExtensionInsideStalk OpenEtaleExtensionComposition OpenEtaleExtensionMono OpenEtaleExtensionCounit OpenEtaleExtensionQuotient OpenEtaleExtensionToSkyscraper OpenEtaleExtensionQuotientExact GeometricSkyscraperHZero GeometricSkyscraperHigherCohomology OpenEtaleLocalLifts OpenEtaleExtensionHZero AffineEtaleBaseChange SmallEtaleEquivalenceCohomology SmoothGaugeCurvature PeriodicExactGauge ProjectedTwistedTrace ScalarTwistCompatibility RSMassGap SpectralQuarterShift WeylWindow EtaleSquareZeroLift EtaleSplitSquareZero MilnorStabilizedMatrix MilnorIdentityGluing MilnorCoordinatePatch MilnorProjectivePatch MilnorNormalizationMap MilnorNormalizationRecovery MilnorIdentityRecovery
 jobs:
   pinned:
     name: Vendored Mathlib
@@ -39,12 +39,15 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness CuspCotangent Paper3OverlapCotangent PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspProperYChart CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness CuspCotangent Paper3OverlapCotangent PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
           for proof in "${proofs[@]}"; do
             awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
           done | sort -u > "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           test -s "${RUNNER_TEMP}/manuscript-proof-imports.txt"
           printf 'hash=%s\n' "$(sha256sum "${RUNNER_TEMP}/manuscript-proof-imports.txt" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+          environment="$(git ls-tree HEAD Mathlib Mathlib.lean lakefile.lean lakefile.toml lake-manifest.json lean-toolchain |
+            sha256sum | cut -d ' ' -f 1)"
+          printf 'environment=%s\n' "$environment" >> "$GITHUB_OUTPUT"
       - name: Restore compiled modules
         id: compiled
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
@@ -79,40 +82,85 @@ jobs:
           lake build PrimalitySheafVerification.Spt2 PrimalitySheafVerification.Spt3 PrimalitySheafVerification.Spt5 > "$log" 2>&1 || status=$?
           tail -n 60 "$log"
           exit "$status"
+      - name: Restore checked vendored proof files
+        if: steps.vendored-dependencies.outcome == 'success'
+        id: vendored-checked-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/manuscript-vendored-proof-modules
+          key: manuscript-vendored-checked-linux-arm64-v1-${{ steps.vendored-inputs.outputs.environment }}-${{ github.sha }}
+          restore-keys: manuscript-vendored-checked-linux-arm64-v1-${{ steps.vendored-inputs.outputs.environment }}-
       - name: Check the proofs and their transitive axioms
+        id: vendored-check
         if: ${{ !cancelled() && steps.vendored-dependencies.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
           proof_dir=PrimalitySheafVerification/ManuscriptAudit
-          compiled="$GITHUB_WORKSPACE/.lake/build/lib/lean"
-          mkdir -p "$compiled/$proof_dir"
+          compiled="${RUNNER_TEMP}/manuscript-vendored-proof-modules"
+          records="$compiled/checks"
+          project_compiled="$GITHUB_WORKSPACE/.lake/build/lib/lean"
+          mkdir -p "$compiled/$proof_dir" "$records"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
-          export LEAN_PATH="$compiled:$audit_lean_path"
+          export LEAN_PATH="$compiled:$project_compiled:$audit_lean_path"
+          project_stamp="$(
+            sha256sum PrimalitySheafVerification/Spt{2,3,5}.lean | sha256sum | cut -d ' ' -f 1
+          )"
           status=0
-          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness CuspCotangent Paper3OverlapCotangent PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
+          read -ra proofs <<< "$CORE_PROOFS NodalCotangent CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspProperYChart CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness CuspCotangent Paper3OverlapCotangent PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification Spt2BenchmarkLength"
           for proof in "${proofs[@]}"; do
             echo "Checking $proof_dir/$proof.lean" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
+            source="$GITHUB_WORKSPACE/$proof_dir/$proof.lean"
+            object="$compiled/$proof_dir/$proof.olean"
+            stamp="$records/$proof.sha256"
+            proof_log="$records/$proof.log"
             missing=0
+            deps=()
             while IFS= read -r prerequisite; do
-              if [[ ! -f "$compiled/$prerequisite.olean" ]]; then
+              if [[ ! -f "$compiled/$proof_dir/$prerequisite.olean" ||
+                    ! -s "$records/$prerequisite.sha256" ]]; then
                 echo "Missing current build of $prerequisite" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
                 missing=1
+              else
+                deps+=("$records/$prerequisite.sha256")
               fi
-            done < <(awk '$1 == "import" && $2 ~ /^PrimalitySheafVerification\.ManuscriptAudit\./ {gsub(/[.]/,"/",$2); print $2}' "$proof_dir/$proof.lean")
+            done < <(awk '$1 == "import" && $2 ~ /^PrimalitySheafVerification\.ManuscriptAudit\./ {sub(/^.*\./,"",$2); print $2}' "$source")
             if [[ "$missing" == 1 ]]; then
+              rm -f "$object" "$stamp" "$proof_log"
               status=1
               continue
             fi
-            if timeout --verbose --kill-after=15s 5m lean --root="$GITHUB_WORKSPACE" \
-                -o "$compiled/$proof_dir/$proof.olean" "$GITHUB_WORKSPACE/$proof_dir/$proof.lean" 2>&1 |
-                tee -a "${RUNNER_TEMP}/manuscript-proofs.log"; then
+            fingerprint="$({
+              sha256sum < "$source"
+              for dep in "${deps[@]}"; do cat "$dep"; done
+              if awk '$1 == "import" && $2 ~ /^PrimalitySheafVerification\.Spt[235]$/ {found=1} END {exit !found}' "$source"; then
+                printf '%s\n' "$project_stamp"
+              fi
+            } | sha256sum | cut -d ' ' -f 1)"
+            if [[ -f "$object" && -f "$proof_log" && -f "$stamp" &&
+                  "$(cat "$stamp")" == "$fingerprint" ]]; then
+              echo "Reused checked source and imports: $fingerprint" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
+              cat "$proof_log" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"
               continue
             fi
-            rm -f "$compiled/$proof_dir/$proof.olean"
-            status=1
+            rm -f "$object" "$stamp" "$proof_log"
+            if timeout --verbose --kill-after=15s 5m lean --root="$GITHUB_WORKSPACE" \
+                -o "$object" "$source" 2>&1 |
+                tee "$proof_log" | tee -a "${RUNNER_TEMP}/manuscript-proofs.log"; then
+              printf '%s\n' "$fingerprint" > "$stamp"
+            else
+              rm -f "$object" "$stamp" "$proof_log"
+              status=1
+            fi
           done
           exit "$status"
+      - name: Keep checked vendored proof files on GitHub
+        if: ${{ !cancelled() && steps.vendored-check.outcome != 'skipped' && steps.vendored-checked-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/manuscript-vendored-proof-modules
+          key: ${{ steps.vendored-checked-cache.outputs.cache-primary-key }}
       - name: Keep the vendored-build logs on GitHub
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -226,7 +274,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_dir=../PrimalitySheafVerification/ManuscriptAudit
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspProperYChart CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
           mapfile -t modules < <(
             for proof in "${proofs[@]}"; do
               awk '$1 == "import" && $2 ~ /^Mathlib(\.|$)/ {print $2}' "$proof_dir/$proof.lean"
@@ -260,7 +308,7 @@ jobs:
           : > "$output"
           audit_lean_path="$(lake env printenv LEAN_PATH)"
           export LEAN_PATH="$compiled:$audit_lean_path"
-          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
+          read -ra proofs <<< "$CORE_PROOFS CubicTraceInfinitude CuspScheme CuspConductorSquare SkyscraperUniqueRefinements SmallEtaleGeometricBaseChange ClosedRationalPointUniqueRefinements ClosedRationalSkyscraperOffSupport SmallEtaleGeometricSkyscraperPushforward CuspOriginGeometricDirectImage RationalPointStalkConservative NestedOpenRationalOriginQuotient GeometricSkyscraperHZeroEvaluation RationalPointQuotientHZero CuspOpenOriginSequence CuspProperCompactification CuspProperBoundary EtaleConstantHZero CuspRationalInfinity CuspInfinitySupport CuspYChartAlgebra CuspProperYChart CuspCompactSupportSequence CuspCompactSupportHigherComparison CuspCompactSupportHZero CuspCompactSupportLowDegrees CuspCompactSupportEuler CuspCompactSupportExcess CuspCompactSupportRank CuspCompactSupportProjectiveComparison CuspEtaleCommonQuotient CuspFiniteEtaleBases CuspEtaleConductorPatch CuspMilnorCoefficients CuspPatchedFiniteProjective CuspNormalizationRecovery CuspPatchedFiniteEtale CuspFiniteEtaleDescent CuspEtaleDescent CuspEtaleHom CuspAffineEtale CuspAffineEtaleEquivalence CuspSmallEtaleCohomology GeometricCuspBump ArithmeticCuspBump CuspNormalizationConstants ArithmeticCuspNormalization CuspPlaneSmoothness PadicLogNonzero FiniteFieldPointCount Paper5FixedGeometricTorsion Paper5FixedPositiveGeometricTorsion CubicFiniteTorsion CubicGeometricTorsion CubicGeometricConverse CubicTraceClassification CubicGeometricClassification"
           for proof in "${proofs[@]}"; do
             source="$GITHUB_WORKSPACE/$package_path/$proof.lean"
             stamp="$records/$proof.sha256"

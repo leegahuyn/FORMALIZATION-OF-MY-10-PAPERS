@@ -61,7 +61,7 @@ theorem rationalPointQuotient_HZero_surjective
   let n := nestedOpenConstantMap i (𝟙 X) M
   let b := (extensionByZeroIdIso X).app F
   let c := rationalPointConstantDirectImageIso K (s ≫ 𝟙 X) M
-  let f : F ⟶ Φ.skyscraperSheaf M := b.inv ≫ Q.g ≫ c.hom
+  let f := b.inv ≫ Q.g ≫ c.hom
   have hOutside : ¬ ∃ t : Spec (CommRingCat.of K) ⟶ V,
       t ≫ (i ≫ 𝟙 X) = s ≫ 𝟙 X := by
     rintro ⟨t, ht⟩
@@ -99,7 +99,9 @@ theorem rationalPointQuotient_HZero_surjective
   obtain ⟨x, hx⟩ := hf (e y)
   refine ⟨Sheaf.H.map b.inv 0 x, e.injective ?_⟩
   change Sheaf.H.map c.hom 0 (Sheaf.H.map Q.g 0 (Sheaf.H.map b.inv 0 x)) = e y
-  simpa only [f, Sheaf.H.map_comp_apply] using hx
+  change Sheaf.H.map (b.inv ≫ Q.g ≫ c.hom) 0 x = e y at hx
+  rw [Sheaf.H.map_comp_apply, Sheaf.H.map_comp_apply] at hx
+  exact hx
 
 end
 
