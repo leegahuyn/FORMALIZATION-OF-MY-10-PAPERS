@@ -164,7 +164,9 @@ private theorem hom_ext_monomials {A B : Type*} [AddMonoid A] [CommRing B] [Alge
     (h : ∀ v : A, f (AddMonoidAlgebra.single v 1) = g (AddMonoidAlgebra.single v 1)) : f = g := by
   apply AlgHom.ext
   intro x
-  refine AddMonoidAlgebra.induction_on x ?_ ?_ ?_
+  first
+  | refine AddMonoidAlgebra.induction_on (p := fun y => f y = g y) x ?_ ?_ ?_
+  | refine AddMonoidAlgebra.induction_on (motive := fun y => f y = g y) x ?_ ?_ ?_
   · exact h
   · intro x y hx hy
     simp only [map_add, hx, hy]

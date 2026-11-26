@@ -107,7 +107,8 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
         ring
       _ = _ := by rw [hPartition]
   have hμe : μ e = 1 := by
-    rw [e, map_mul, map_add, map_one, hμl, hμw, mul_add, mul_one, hHalf]
+    change μ (ι₁ h * (1 + w)) = 1
+    rw [map_mul, map_add, map_one, hμl, hμw, mul_add, mul_one, hHalf]
   have hνe : ν e = 0 := by
     simp only [e, map_mul, map_add, map_one, hνl, hνw, add_neg_cancel, mul_zero]
   have hHalfLeft : ι₁ h + ι₁ h = 1 := by rw [← map_add, hHalf, map_one]

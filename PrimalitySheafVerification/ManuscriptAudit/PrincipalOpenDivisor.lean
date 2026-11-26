@@ -26,9 +26,10 @@ abbrev OpenPoint (f : Polynomial K) := {a : K // f.eval a ≠ 0}
 
 /-- The rational function divisor restricted to the displayed principal open. -/
 def divisorOnOpen (f : Polynomial K) : Additive (RatFunc K)ˣ →+ (OpenPoint K f →₀ ℤ) :=
-  (Finsupp.subtypeDomainAddMonoidHom (fun a : K => f.eval a ≠ 0)).comp (divisor K)
+  (Finsupp.subtypeDomainAddMonoidHom (p := fun a : K => f.eval a ≠ 0)).comp (divisor K)
 
 theorem divisorOnOpen_surjective (f : Polynomial K) : Function.Surjective (divisorOnOpen K f) := by
+  classical
   intro d
   obtain ⟨z, hz⟩ := divisor_surjective K d.extendDomain
   refine ⟨z, ?_⟩

@@ -7,7 +7,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CompactModularCore
 # The unbarred product of the two positive half-weight factors
 
 Paper 9, physical page 420, Section 3.1. Multiplication of two
-positive half-weight factors in the stated scalar convention leaves
+positive half-weight factors with the standard Jacobi-theta laws leaves
 a nonreal factor along a level-two parabolic action. A positive real
 height power cannot remove this factor at a point where the product
 is nonzero. The standard Jacobi theta supplies genuine test factors.
@@ -47,14 +47,14 @@ private def weightFactor (z : ℍ) : ℂ := (-Complex.I * (z : ℂ)) ^ (1 / 2 : 
 
 private theorem weightFactor_sq (z : ℍ) : weightFactor z ^ 2 = -Complex.I * (z : ℂ) := by
   simpa only [weightFactor, one_div] using
-    Complex.cpow_nat_inv_pow (-Complex.I * (z : ℂ)) (n := 2) (by decide)
+    Complex.cpow_ofNat_inv_pow (-Complex.I * (z : ℂ)) 2
 
-def StatedPositiveCovariance (F : ℍ → ℂ) : Prop :=
+def StandardPositiveThetaCovariance (F : ℍ → ℂ) : Prop :=
   (∀ z : ℍ, F (S • z) = weightFactor z * F z) ∧
     (∀ z : ℍ, F (T ^ (2 : ℕ) • z) = F z)
 
 private theorem product_parabolic (F G : ℍ → ℂ)
-    (hF : StatedPositiveCovariance F) (hG : StatedPositiveCovariance G) (z : ℍ) :
+    (hF : StandardPositiveThetaCovariance F) (hG : StandardPositiveThetaCovariance G) (z : ℍ) :
     F (parabolic • z) * G (parabolic • z) =
       (1 - 2 * (z : ℂ)) * (F z * G z) := by
   have hS (w : ℍ) : F (S • w) * G (S • w) =
@@ -75,7 +75,7 @@ def heightWeightedProduct (a : ℝ) (F G : ℍ → ℂ) (z : ℍ) : ℂ :=
   ((z.im ^ a : ℝ) : ℂ) * (F z * G z)
 
 theorem no_invariant_unbarred_product (a : ℝ) (F G : ℍ → ℂ)
-    (hF : StatedPositiveCovariance F) (hG : StatedPositiveCovariance G)
+    (hF : StandardPositiveThetaCovariance F) (hG : StandardPositiveThetaCovariance G)
     (z : ℍ) (hz : F z * G z ≠ 0) :
     ¬ ∃ K : OrbitQuotient → ℂ,
       ∀ w : ℍ, K (orbitPoint w) = heightWeightedProduct a F G w := by
@@ -122,7 +122,7 @@ theorem jacobi_theta_unbarred_product_does_not_descend (a : ℝ) :
     ¬ ∃ K : OrbitQuotient → ℂ, ∀ w : ℍ,
       K (orbitPoint w) =
         heightWeightedProduct a (fun z => jacobiTheta z) (fun z => jacobiTheta z) w := by
-  have hc : StatedPositiveCovariance (fun z => jacobiTheta z) :=
+  have hc : StandardPositiveThetaCovariance (fun z => jacobiTheta z) :=
     ⟨jacobiTheta_S_smul, jacobiTheta_T_sq_smul⟩
   exact no_invariant_unbarred_product a _ _ hc hc ⟨Complex.I, by simp⟩
     (mul_ne_zero jacobiTheta_I_ne_zero jacobiTheta_I_ne_zero)

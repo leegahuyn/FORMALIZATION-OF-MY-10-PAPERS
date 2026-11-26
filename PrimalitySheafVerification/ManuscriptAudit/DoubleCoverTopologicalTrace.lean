@@ -116,7 +116,7 @@ theorem trace_surjective_of_split (e : (U ⊕ U) ≃ₜ V)
   intro t
   let s₀ : C(U ⊕ U, M) := ⟨Sum.elim t (fun _ => 0),
     t.continuous.sumElim continuous_const⟩
-  let s : C(V, M) := s₀.comp e.symm.toContinuousMap
+  let s : C(V, M) := s₀.comp ⟨e.symm, e.symm.continuous⟩
   refine ⟨s, ?_⟩
   apply ContinuousMap.ext
   intro y

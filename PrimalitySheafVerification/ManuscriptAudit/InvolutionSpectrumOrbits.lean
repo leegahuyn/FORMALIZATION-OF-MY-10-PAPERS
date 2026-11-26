@@ -98,7 +98,7 @@ theorem spectrum_fiber_orbit (σ : E ≃ₐ[A] E) (e : T A E ≃ₐ[E] (E × E))
   have hR₂ : (RingHom.snd E E).comp (e.toRingHom.comp (right A E)) = σ.toRingHom := by
     ext b
     change (e ((1 : E) ⊗ₜ[A] b)).2 = σ b
-    rw [he, one_mul]
+    simp only [he, one_mul]
   rcases prime_of_product z' with ⟨r, hr⟩ | ⟨r, hr⟩
   · left
     rw [← hz, ← hr, ← comap_comp_apply, ← comap_comp_apply, hL₁] at hz₁

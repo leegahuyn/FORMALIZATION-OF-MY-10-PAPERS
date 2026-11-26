@@ -30,7 +30,7 @@ theorem invCharacter_eq_conj (χ : MulChar F ℂ) (a : F) :
   rw [MulChar.inv_apply_eq_inv']
   by_cases ha : a = 0
   · subst a
-    simp
+    rw [χ.map_zero, inv_zero, map_zero]
   · exact Complex.inv_eq_conj (character_norm_one χ ha)
 
 theorem jacobiSum_inv_eq_conj (χ ψ : MulChar F ℂ) :
@@ -47,8 +47,9 @@ theorem norm_jacobiSum (hchar : ringChar ℂ ≠ ringChar F)
     ‖jacobiSum χ ψ‖ = Real.sqrt (Fintype.card F : ℝ) := by
   have h := jacobiSum_mul_jacobiSum_inv hchar hχ hψ hχψ
   rw [jacobiSum_inv_eq_conj] at h
-  have he : (↑(‖jacobiSum χ ψ‖ ^ 2) : ℂ) = (Fintype.card F : ℂ) :=
-    (Complex.mul_conj' (jacobiSum χ ψ)).symm.trans h
+  have he : (↑(‖jacobiSum χ ψ‖ ^ 2) : ℂ) = (Fintype.card F : ℂ) := by
+    rw [Complex.ofReal_pow]
+    exact (Complex.mul_conj' (jacobiSum χ ψ)).symm.trans h
   have he' : ‖jacobiSum χ ψ‖ ^ 2 = (Fintype.card F : ℝ) := by exact_mod_cast he
   rw [← he', Real.sqrt_sq (norm_nonneg _)]
 
@@ -60,8 +61,12 @@ theorem shifted_sum_eq_jacobi (χ ψ : MulChar F ℂ) {A : F} (hA : A ≠ 0) :
   let e : F ≃ F :=
     { toFun := fun x => (-A) * x
       invFun := fun x => (-A)⁻¹ * x
-      left_inv := fun x => by rw [← mul_assoc, inv_mul_cancel₀ hn, one_mul]
-      right_inv := fun x => by rw [← mul_assoc, mul_inv_cancel₀ hn, one_mul] }
+      left_inv := fun x => by
+        change (-A)⁻¹ * ((-A) * x) = x
+        rw [← mul_assoc, inv_mul_cancel₀ hn, one_mul]
+      right_inv := fun x => by
+        change (-A) * ((-A)⁻¹ * x) = x
+        rw [← mul_assoc, mul_inv_cancel₀ hn, one_mul] }
   calc
     _ = ∑ a : F, χ ((-A) * a) * ψ ((-A) * a + A) :=
       (Equiv.sum_comp e (fun a : F => χ a * ψ (a + A))).symm

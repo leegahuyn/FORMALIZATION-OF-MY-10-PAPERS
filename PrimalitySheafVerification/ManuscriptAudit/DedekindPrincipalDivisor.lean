@@ -23,9 +23,10 @@ variable (R F : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R]
   [Field F] [Algebra R F] [IsFractionRing R F]
 
 /-- The finite cycle of a fractional ideal, using its native ideal valuations. -/
-def idealCycle (I : FractionalIdeal R⁰ F) : HeightOneSpectrum R →₀ ℤ :=
-  let h := FractionalIdeal.finite_factors F I
-  Finsupp.mk h.toFinset (fun v => FractionalIdeal.count F v I) (fun _ => h.mem_toFinset)
+def idealCycle (I : FractionalIdeal R⁰ F) : HeightOneSpectrum R →₀ ℤ := by
+  classical
+  let h := FractionalIdeal.finite_factors I
+  exact Finsupp.mk h.toFinset (fun v => FractionalIdeal.count F v I) (fun _ => h.mem_toFinset)
 
 theorem idealCycle_apply (I : FractionalIdeal R⁰ F) (v : HeightOneSpectrum R) :
     idealCycle R F I v = FractionalIdeal.count F v I := rfl
@@ -84,11 +85,11 @@ theorem principalDivisor_exact : Function.Exact (unitInclusion R F) (principalDi
       congrArg (fun d : HeightOneSpectrum R →₀ ℤ => d v) h
     have hI : I ≠ 0 := FractionalIdeal.spanSingleton_ne_zero_iff.mpr x.toMul.ne_zero
     have hOne : I = 1 := by
-      rw [← FractionalIdeal.finprod_heightOneSpectrum_factorization' hI]
+      rw [← FractionalIdeal.finprod_heightOneSpectrum_factorization' F hI]
       simp [hv]
     have hSpan : FractionalIdeal.spanSingleton R⁰ (1 : F) = I :=
-      (FractionalIdeal.spanSingleton_one R⁰).trans hOne.symm
-    obtain ⟨u, hu⟩ := (FractionalIdeal.spanSingleton_eq_spanSingleton R⁰).1 hSpan
+      FractionalIdeal.spanSingleton_one.trans hOne.symm
+    obtain ⟨u, hu⟩ := FractionalIdeal.spanSingleton_eq_spanSingleton.1 hSpan
     refine ⟨Additive.ofMul u, ?_⟩
     apply Additive.ext
     apply Units.ext
@@ -97,7 +98,7 @@ theorem principalDivisor_exact : Function.Exact (unitInclusion R F) (principalDi
   · rintro ⟨u, rfl⟩
     have hSpan : FractionalIdeal.spanSingleton R⁰ (1 : F) =
         FractionalIdeal.spanSingleton R⁰ (algebraMap R F (u.toMul : R)) := by
-      apply (FractionalIdeal.spanSingleton_eq_spanSingleton R⁰).2
+      apply FractionalIdeal.spanSingleton_eq_spanSingleton.2
       exact ⟨u.toMul, by simp [Algebra.smul_def]⟩
     apply Finsupp.ext
     intro v

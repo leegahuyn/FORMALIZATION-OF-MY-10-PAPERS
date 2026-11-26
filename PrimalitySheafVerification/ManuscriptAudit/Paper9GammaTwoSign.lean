@@ -3,7 +3,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum
-import PrimalitySheafVerification.ManuscriptAudit.ThreeCuspNeighborhoods
+import PrimalitySheafVerification.ManuscriptAudit.Paper9ThetaCuspPhases
 
 /-!
 # Cusp phases depend on the multiplier
@@ -112,13 +112,13 @@ theorem upperRightSign_cuspParabolic (i : Fin 3) :
 
 /-- The standard Jacobi theta phase table after the actual character twist. -/
 theorem twisted_theta_phases (i : Fin 3) :
-    upperRightSign (cuspParabolic i) * ![(1 : ℂ), 1, Complex.I] i =
+    upperRightSign (cuspParabolic i) * Paper9ThetaCuspPhases.parabolicPhase i =
       ![(-1 : ℂ), 1, -Complex.I] i := by
   rw [upperRightSign_cuspParabolic]
-  fin_cases i <;> norm_num
+  fin_cases i <;> norm_num [Paper9ThetaCuspPhases.parabolicPhase]
 
 theorem twisted_theta_phase_one_iff (i : Fin 3) :
-    upperRightSign (cuspParabolic i) * ![(1 : ℂ), 1, Complex.I] i = 1 ↔ i = 1 := by
+    upperRightSign (cuspParabolic i) * Paper9ThetaCuspPhases.parabolicPhase i = 1 ↔ i = 1 := by
   rw [twisted_theta_phases]
   have hn : (-Complex.I : ℂ) ≠ 1 := by
     intro h
