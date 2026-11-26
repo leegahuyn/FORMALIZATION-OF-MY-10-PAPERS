@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import PrimalitySheafVerification.ManuscriptAudit.CuspEtaleHom
+import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleBaseChange
 
 /-!
 # The pullback functor of affine étale cusp schemes
@@ -17,6 +18,9 @@ open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 universe u
 
 variable (K : Type u) [Field K]
@@ -25,8 +29,8 @@ abbrev Cusp : Scheme.{u} := Spec (CommRingCat.of (CuspPunctured.CuspSubalgebra K
 abbrev Normalization : Scheme.{u} := Spec (CommRingCat.of (Polynomial K))
 
 /-- The native base change on the small étale categories. -/
-def etalePullback : (Cusp K).Etale ⥤ (Normalization K).Etale :=
-  MorphismProperty.Over.pullback @AlgebraicGeometry.Etale.{u} ⊤ (CuspScheme.cuspMap K)
+abbrev etalePullback : (Cusp K).Etale ⥤ (Normalization K).Etale :=
+  SmallEtaleBaseChange.etaleBaseChange (CuspScheme.cuspMap K)
 
 private abbrev toEtale : (Cusp K).AffineEtale ⥤ (Normalization K).Etale :=
   Scheme.AffineEtale.Spec (Cusp K) ⋙ etalePullback K
@@ -68,10 +72,7 @@ private abbrev overPullback : (Cusp K).AffineEtale ⥤ Over (Normalization K) :=
 
 private def etalePullbackForgetIso :
     toEtale K ⋙ Scheme.Etale.forget (Normalization K) ≅ overPullback K :=
-  Functor.associator _ _ _ ≪≫
-    Functor.isoWhiskerLeft _ (MorphismProperty.Over.pullbackCompForgetIso
-      (P := @AlgebraicGeometry.Etale.{u}) (Q := ⊤) (CuspScheme.cuspMap K)) ≪≫
-    (Functor.associator _ _ _).symm
+  Iso.refl _
 
 set_option backward.isDefEq.respectTransparency false in
 private theorem overPullback_map_bijective (X Y : (Cusp K).AffineEtale) :
@@ -108,8 +109,14 @@ theorem affinePullback_essSurj_of_descent
     obtain ⟨R, d, hd, j, hj⟩ := h (unop Y.left) Y.hom Y.prop
     letI : Etale d := hd
     let X := Scheme.AffineEtale.mk d
+    let eScheme :
+        ((Scheme.AffineEtale.Spec (Normalization K)).obj Y).left ≅ ((toEtale K).obj X).left := by
+      change Spec (unop Y.left) ≅ pullback d (CuspScheme.cuspMap K)
+      exact hj.isoPullback
     let e : (Scheme.AffineEtale.Spec (Normalization K)).obj Y ≅ (toEtale K).obj X :=
-      MorphismProperty.Over.isoMk hj.isoPullback hj.isoPullback_hom_snd
+      MorphismProperty.Over.isoMk eScheme (by
+        change hj.isoPullback.hom ≫ pullback.snd d (CuspScheme.cuspMap K) = Y.hom
+        exact hj.isoPullback_hom_snd)
     exact ⟨X, ⟨(Scheme.AffineEtale.Spec (Normalization K)).preimageIso
       ((affinePullbackSpecIso K).app X ≪≫ e.symm)⟩⟩
 

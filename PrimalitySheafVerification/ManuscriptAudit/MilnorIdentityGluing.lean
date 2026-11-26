@@ -52,16 +52,21 @@ def pairMap : A →ₗ[A] compatiblePair q s where
     apply Subtype.ext
     change (algebraMap A B (a * b), algebraMap A C (a * b)) =
       (a • algebraMap A B b, a • algebraMap A C b)
-    exact Prod.ext (by rw [map_mul, Algebra.smul_def]) (by rw [map_mul, Algebra.smul_def])
+    have hB : algebraMap A B (a * b) = a • algebraMap A B b := by
+      rw [map_mul, Algebra.smul_def]
+    have hC : algebraMap A C (a * b) = a • algebraMap A C b := by
+      rw [map_mul, Algebra.smul_def]
+    exact Prod.ext hB hC
 
+include q s
 variable (ι : Type*)
 
 /-- Identity gluing as a submodule of a genuine pair of coordinate spaces. -/
 def identityPatch : Submodule A ((ι → B) × (ι → C)) where
   carrier := {x | ∀ i, (x.1 i, x.2 i) ∈ compatiblePair q s}
   zero_mem' := fun _ => (compatiblePair q s).zero_mem
-  add_mem' hx hy := fun i => (compatiblePair q s).add_mem (hx i) (hy i)
-  smul_mem' a hx := fun i => (compatiblePair q s).smul_mem a (hx i)
+  add_mem' {_ _} hx hy := fun i => (compatiblePair q s).add_mem (hx i) (hy i)
+  smul_mem' a {_} hx := fun i => (compatiblePair q s).smul_mem a (hx i)
 
 /-- Transpose an array of compatible scalar pairs into compatible vectors. -/
 def coordinatesEquiv : (ι → compatiblePair q s) ≃ₗ[A] identityPatch q s ι where
