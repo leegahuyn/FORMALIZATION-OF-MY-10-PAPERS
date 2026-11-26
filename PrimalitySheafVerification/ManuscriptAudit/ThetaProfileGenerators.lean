@@ -8,7 +8,7 @@ namespace ManuscriptAudit.ThetaProfileGenerators
 open Paper9ThetaCuspPhases Paper9ThetaCuspLTwo
 open Matrix
 open ModularGroup (S T)
-open scoped UpperHalfPlane
+open scoped MatrixGroups UpperHalfPlane
 
 noncomputable section
 
@@ -99,7 +99,7 @@ theorem thetaDensity_S_half (z : ℍ) :
     thetaDensity thetaHalfShift (S • z) = thetaDensity thetaAlternating z := by
   have h := thetaDensity_S_alternating (S • z)
   have hS : S • (S • z) = z := by
-    have hneg : S * S = (-1 : SL(2, ℤ)) := by decide
+    have hneg : S * S = (-1 : SL(2, ℤ)) := Subtype.ext ModularGroup.S_mul_S_eq
     rw [← mul_smul, hneg, ModularGroup.SL_neg_smul, one_smul]
   rw [hS] at h
   exact h.symm

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleTensorPresentation
 import PrimalitySheafVerification.ManuscriptAudit.NodalChartIntersection
 import PrimalitySheafVerification.ManuscriptAudit.NodalSwapCoverOverlap
 

@@ -140,8 +140,8 @@ theorem fullConstantHOneClass_ne_zero : fullConstantHOneClass K h2 ≠ 0 := by
   change classTransport K (affineFunctionHOneClass K h2) = 0 at h
   simpa only [map_zero] using h
 
-/-- Ordinary native small étale H¹ of the split affine node with constant Z/2 is nonzero. -/
 include h2 in
+/-- Ordinary native small étale H¹ of the split affine node with constant Z/2 is nonzero. -/
 theorem full_constant_HOne_nontrivial :
     Nontrivial (Sheaf.H ((constantSheaf (X K).smallEtaleTopology AddCommGrpCat.{0}).obj cyclic) 1) :=
   ⟨⟨fullConstantHOneClass K h2, 0, fullConstantHOneClass_ne_zero K h2⟩⟩

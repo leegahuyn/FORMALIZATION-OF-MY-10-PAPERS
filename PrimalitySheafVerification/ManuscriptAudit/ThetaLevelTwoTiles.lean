@@ -8,7 +8,7 @@ namespace ManuscriptAudit.ThetaLevelTwoTiles
 open Set MeasureTheory Matrix
 open CompactModularCore LiteralCuspTruncation
 open ThetaProfileGenerators ThetaGammaTwoMetric ThetaHyperbolicTile
-open scoped UpperHalfPlane Pointwise
+open scoped MatrixGroups UpperHalfPlane Pointwise
 
 noncomputable section
 

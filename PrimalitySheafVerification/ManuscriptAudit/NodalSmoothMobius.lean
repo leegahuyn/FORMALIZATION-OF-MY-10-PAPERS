@@ -28,10 +28,10 @@ def u : uRing K := algebraMap (Polynomial K) (uRing K) Polynomial.X
 private theorem t_factors_unit : IsUnit ((t K - 1) * (t K + 1)) := by
   let f := algebraMap (Polynomial K) (tRing K)
   have h : f (tDenominator K) = (t K - 1) * (t K + 1) := by
-    unfold tDenominator
-    rw [f.map_sub, map_pow f, f.map_one]
-    change t K ^ 2 - 1 = _
-    ring
+    calc
+      _ = f ((Polynomial.X : Polynomial K) ^ 2) - f 1 := f.map_sub _ _
+      _ = t K ^ 2 - 1 := congrArg₂ (· - ·) (map_pow f Polynomial.X 2) f.map_one
+      _ = _ := by ring
   exact h ▸ IsLocalization.Away.algebraMap_isUnit (S := tRing K) (tDenominator K)
 
 private theorem t_minus_one_unit : IsUnit (t K - 1) := (IsUnit.mul_iff.mp (t_factors_unit K)).1
@@ -40,8 +40,10 @@ private theorem t_plus_one_unit : IsUnit (t K + 1) := (IsUnit.mul_iff.mp (t_fact
 private theorem u_factors_unit : IsUnit (u K * (u K - 1)) := by
   let f := algebraMap (Polynomial K) (uRing K)
   have h : f (uDenominator K) = u K * (u K - 1) := by
-    unfold uDenominator
-    rw [f.map_mul, f.map_sub, f.map_one] <;> rfl
+    calc
+      _ = f Polynomial.X * f (Polynomial.X - 1) := f.map_mul _ _
+      _ = _ := congrArg (f Polynomial.X * ·)
+        ((f.map_sub Polynomial.X 1).trans (congrArg (f Polynomial.X - ·) f.map_one))
   exact h ▸ IsLocalization.Away.algebraMap_isUnit (S := uRing K) (uDenominator K)
 
 private theorem u_unit : IsUnit (u K) := (IsUnit.mul_iff.mp (u_factors_unit K)).1
@@ -71,7 +73,13 @@ theorem tAtU_times_uminus : tAtU K * (u K - 1) = -(u K + 1) := by
 
 private theorem two_unit {S : Type u} [CommRing S] [Algebra K S] (h2 : (2 : K) ≠ 0) :
     IsUnit (2 : S) := by
-  simpa using ((isUnit_iff_ne_zero.mpr h2).map (algebraMap K S))
+  let f := algebraMap K S
+  have hf : f (2 : K) = (2 : S) := by
+    have h : f ((1 : K) + 1) = (1 : S) + 1 :=
+      (f.map_add 1 1).trans (congrArg₂ (· + ·) f.map_one f.map_one)
+    simpa only [one_add_one_eq_two] using h
+  rw [← hf]
+  exact (isUnit_iff_ne_zero.mpr h2).map f
 
 private theorem uAtT_unit : IsUnit (uAtT K) :=
   (t_minus_one_unit K).mul ((t_plus_one_unit K).unit⁻¹).isUnit

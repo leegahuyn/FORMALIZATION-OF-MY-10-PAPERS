@@ -8,7 +8,7 @@ namespace ManuscriptAudit.ThetaGammaTwoMetric
 
 open CompactModularCore LiteralCuspTruncation ThetaProfileGenerators Paper9ThetaCuspPhases
 open Matrix ModularGroup
-open scoped UpperHalfPlane
+open scoped MatrixGroups UpperHalfPlane
 
 noncomputable section
 
@@ -17,10 +17,10 @@ abbrev Direction := Fin 2 → ZMod 2
 def direction (g : SL(2, ℤ)) (v : Direction) : Direction :=
   ((reduceTwo g : SL(2, ZMod 2)) : Matrix (Fin 2) (Fin 2) (ZMod 2)).mulVec v
 
-private theorem direction_one (v : Direction) : direction 1 v = v := by
+theorem direction_one (v : Direction) : direction 1 v = v := by
   simp [direction]
 
-private theorem direction_mul (g h : SL(2, ℤ)) (v : Direction) :
+theorem direction_mul (g h : SL(2, ℤ)) (v : Direction) :
     direction (g * h) v = direction g (direction h v) := by
   simp [direction, Matrix.mulVec_mulVec]
 

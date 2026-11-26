@@ -27,6 +27,9 @@ attribute [local instance] ManuscriptAudit.GeometricSkyscraperCohomology.etaleSi
 private abbrev F := ZMod 2
 private abbrev cyclic := AddCommGrpCat.of F
 
+local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+local instance : Fact (Nat.Prime 2) := ⟨by decide⟩
+
 abbrev fiberHOne :=
   Sheaf.H ((constantSheaf fiberFive.smallEtaleTopology AddCommGrpCat.{0}).obj cyclic) 1
 
@@ -54,9 +57,10 @@ theorem fiber_finrank :
 private instance singularFintype : Fintype ↥singularPoints where
   elems := ∅
   complete x := by
-    have hx := x.property
-    rw [singularPoints_eq_empty] at hx
-    exact False.elim hx
+    let v : Spec (CommRingCat.of (Polynomial Five)) := x.val
+    have h := congrArg (fun U : Set (Spec (CommRingCat.of (Polynomial Five))) => v ∈ U)
+      singularPoints_eq_empty
+    exact False.elim (Eq.mp h x.property)
 
 /-- The connected dual graph has one vertex and zero edges. -/
 def dualGraphBetti : ℕ :=
