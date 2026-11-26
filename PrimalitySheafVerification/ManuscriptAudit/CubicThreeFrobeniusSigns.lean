@@ -21,7 +21,7 @@ theorem signed_mul (s t : Bool) (x y : K) :
 
 theorem signed_div (s : Bool) (x y : K) :
     signed s x / y = signed s (x / y) := by
-  cases s <;> simp [signed]
+  cases s <;> simp [signed, neg_div]
 
 theorem signScalar_mul (s t : Bool) :
     signScalar s * signScalar t = signScalar (s == t) := by
@@ -73,7 +73,7 @@ theorem map_sqrt_neg_three (q : ℕ) (σ : K →+* K) (hσ : ∀ x : K, σ x = x
   have hm : σ s = 2 * z ^ (q % 3) + 1 := by
     calc
       _ = σ (2 * z + 1) := congrArg σ hsum.symm
-      _ = 2 * σ z + 1 := by simp
+      _ = 2 * σ z + 1 := by rw [map_add, map_mul, map_one, map_ofNat]
       _ = _ := by rw [hσ z, pow_cube_reduce z q hcube]
   by_cases hr : q % 3 = 1
   · have hpos : σ s = s := hm.trans (by simpa [hr] using hsum)
@@ -89,6 +89,7 @@ theorem map_sqrt_neg_three (q : ℕ) (σ : K →+* K) (hσ : ∀ x : K, σ x = x
 /-- In the cardinality-one residue class the finite field contains a primitive cube root. -/
 theorem finite_exists_primitive_cube_root [Fintype K] (hq : Fintype.card K % 3 = 1) :
     ∃ z : K, IsPrimitiveRoot z 3 := by
+  classical
   obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := Kˣ)
   have hpr : IsPrimitiveRoot g (Nat.card Kˣ) := IsPrimitiveRoot.iff_orderOf.mpr hg
   have hc : Nat.card Kˣ = Fintype.card K - 1 := by rw [Nat.card_eq_fintype_card, Fintype.card_units]

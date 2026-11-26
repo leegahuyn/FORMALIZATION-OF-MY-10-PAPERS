@@ -57,7 +57,7 @@ def compactHOneEquiv (h2 : (2 : K) ≠ 0) :
 are additively isomorphic. -/
 def properSmoothHOneEquiv (h2 : (2 : K) ≠ 0) :
     projectiveHOne K ≃+
-      Sheaf.H ((constantSheaf (NodalSmoothLocus.smoothScheme K).smallEtaleTopology
+      Sheaf.H ((constantSheaf (NodalSmoothLocusOverlap.smoothScheme K).smallEtaleTopology
         AddCommGrpCat.{0}).obj A) 1 := by
   letI : NeZero (2 : K) := ⟨h2⟩
   exact (projectiveHOneEquiv K h2).trans

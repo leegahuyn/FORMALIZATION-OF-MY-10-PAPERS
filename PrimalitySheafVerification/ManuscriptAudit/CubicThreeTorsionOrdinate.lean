@@ -37,12 +37,14 @@ private theorem negY_eq (x y : K) : (Curve A).negY x y = -y := by
 
 @[simp] theorem abscissa_neg (P : (Curve A).Point) : abscissa (-P) = abscissa P := by
   cases P with
-  | zero => rw [neg_zero]
+  | zero => rfl
   | some x y h => simp only [Affine.Point.neg_some, abscissa_some]
 
 @[simp] theorem ordinate_neg (P : (Curve A).Point) : ordinate (-P) = -ordinate P := by
   cases P with
-  | zero => simp
+  | zero =>
+    change (0 : K) = -0
+    exact neg_zero.symm
   | some x y h => simp only [Affine.Point.neg_some, ordinate_some, negY_eq]
 
 theorem nonsingular_iff (hΔ : (shortCubic (0 : K) A).Δ ≠ 0) (x y : K) :

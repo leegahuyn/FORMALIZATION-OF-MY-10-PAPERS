@@ -54,7 +54,7 @@ theorem H2_subsingleton_of_normal
     have hd (g h : G) : coboundary d (g, h) =
         ((c - coboundary a) + coboundary b) (g, h) := by
       have hv := congrArg (fun f : (G ⧸ S) × (G ⧸ S) → Q.V ↦ (f (q g, q h)).1) hr
-      change g • (r (q h)).1 - (r (q g * q h)).1 + (r (q g)).1 =
+      change g • (show A from (r (q h)).1) - (r (q g * q h)).1 + (r (q g)).1 =
         (t (q g, q h)).1 at hv
       rw [← q.map_mul g h, ht] at hv
       exact hv

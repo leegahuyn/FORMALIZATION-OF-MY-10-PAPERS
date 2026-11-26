@@ -69,8 +69,8 @@ theorem exists_finiteGalois_spec_factor (K : Type) [Field K] (B : CommRingCat.{0
     Spec.map (CommRingCat.ofHom b.toRingHom), ?_⟩
   rw [← Spec.map_comp]
   congr 1
-  ext1 x
-  exact b.commutes x
+  ext1
+  exact RingHom.ext fun x => b.commutes x
 
 end
 end ManuscriptAudit.FieldEtaleGaloisPoints

@@ -110,7 +110,6 @@ theorem frobeniusLinear_pow_eq_pointMap (n : ℕ) :
     frobeniusLinear m p L W ^ n =
       pointMap m W ((FiniteField.frobeniusAlgHom (ZMod p) L) ^ n) := by
   ext P
-  apply inclusion_injective m (W.baseChange L).Point
   exact frobeniusLinear_pow_inclusion m p L W n P
 
 end Frobenius

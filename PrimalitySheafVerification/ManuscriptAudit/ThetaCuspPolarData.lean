@@ -19,7 +19,8 @@ def quarterParameter (τ : ℂ) : ℂ :=
 private theorem quarterParameter_fourth (τ : ℂ) : quarterParameter τ ^ 4 = cuspQ τ := by
   rw [quarterParameter, cuspQ, ← Complex.exp_nat_mul]
   congr 1
-  norm_num <;> ring
+  norm_num
+  ring
 
 private def halfTerm (n : ℕ) (q : ℂ) : ℂ := q ^ (4 * n * (n + 1))
 
@@ -63,11 +64,18 @@ theorem profileQ_differentiableOn_unit_disk (i : Fin 3) :
   intro q hq
   have hNorm : ‖q‖ < 1 := by simpa only [Metric.mem_ball, dist_zero_right] using hq
   by_cases hi : i = 2
-  · simp only [profileQ, if_pos hi, halfProfileQ]
+  · have he : profileQ i = halfProfileQ := by
+      funext w
+      simp [profileQ, hi]
+    rw [he]
+    change DifferentiableWithinAt ℂ (fun w => w * (2 * halfSum w)) (Metric.ball 0 1) q
     have hc : DifferentiableAt ℂ (fun _ : ℂ => (2 : ℂ)) q := differentiableAt_const _
     have hId : DifferentiableAt ℂ (fun w : ℂ => w) q := by fun_prop
     exact (hId.mul (hc.mul (halfSum_differentiableAt hNorm))).differentiableWithinAt
-  · simp only [profileQ, if_neg hi]
+  · have he : profileQ i = fun w => thetaQ (w ^ (4 : ℕ)) := by
+      funext w
+      simp [profileQ, hi]
+    rw [he]
     have hq4 : q ^ (4 : ℕ) ∈ Metric.ball (0 : ℂ) 1 := by
       rw [Metric.mem_ball, dist_zero_right, norm_pow]
       exact pow_lt_one₀ (norm_nonneg _) hNorm (by decide)
@@ -79,12 +87,15 @@ theorem profileQ_differentiableOn_unit_disk (i : Fin 3) :
 theorem normalizedProfile_eq (i : Fin 3) (z : ℍ) :
     normalizedProfile i z = profileQ i (quarterParameter z) := by
   fin_cases i
-  · rw [normalizedProfile_zero, jacobiTheta_eq_thetaQ z.im_pos]
-    simp [profileQ, quarterParameter_fourth]
-  · rw [normalizedProfile_one, jacobiTheta_eq_thetaQ z.im_pos]
-    simp [profileQ, quarterParameter_fourth]
-  · rw [normalizedProfile_two, thetaHalfShift_eq_quarter_series z.im_pos]
-    simp [profileQ, halfProfileQ, halfSum, halfTerm, quarterParameter]
+  · change normalizedProfile 0 z = profileQ 0 (quarterParameter z)
+    rw [normalizedProfile_zero, jacobiTheta_eq_thetaQ z.im_pos]
+    simp only [profileQ, if_neg (by decide : (0 : Fin 3) ≠ 2), quarterParameter_fourth]
+  · change normalizedProfile 1 z = profileQ 1 (quarterParameter z)
+    rw [normalizedProfile_one, jacobiTheta_eq_thetaQ z.im_pos]
+    simp only [profileQ, if_neg (by decide : (1 : Fin 3) ≠ 2), quarterParameter_fourth]
+  · change normalizedProfile 2 z = profileQ 2 (quarterParameter z)
+    rw [normalizedProfile_two, thetaHalfShift_eq_quarter_series z.im_pos]
+    simp only [profileQ, if_pos rfl, halfProfileQ, halfSum, halfTerm, quarterParameter]
 
 theorem profileQ_at_zero (i : Fin 3) :
     profileQ i 0 = if i = 2 then 0 else 1 := by
@@ -120,9 +131,9 @@ theorem nonzero_profiles_with_zero_polar_data :
     rw [profileQ_negativeCoefficients_zero i hR n,
       negativeCoefficient_eq_zero_of_holomorphic (by fun_prop) hR n]
   · intro h
-    have hz := congrFun h 0
-    rw [profileQ_at_zero] at hz
-    norm_num at hz
+    have hz : profileQ 0 0 = 0 := congrFun h 0
+    rw [profileQ_at_zero, if_neg (by decide : (0 : Fin 3) ≠ 2)] at hz
+    exact one_ne_zero hz
 
 end
 end ManuscriptAudit.ThetaCuspPolarData

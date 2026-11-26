@@ -50,10 +50,11 @@ private theorem boundary_surjective (d : ℕ) (hd : 0 < d) [NeZero (d : K)] :
   let hS := sequence_shortExact k d hd
   let J := X.smallEtaleTopology
   let U := Scheme.Etale.mk j
-  letI := unitTerm_HOne_subsingleton j d
   intro c
+  have hz₀ : c.comp (Ext.mk₀ S.f) (add_zero 1) = 0 :=
+    (unitTerm_HOne_subsingleton j d).allEq _ _
   obtain ⟨z, hz⟩ := Ext.covariant_sequence_exact₁ ((freeYoneda J).obj U) hS c
-    (Subsingleton.elim _ _) (n₀ := 0) rfl
+    hz₀ (n₀ := 0) rfl
   obtain ⟨f, rfl⟩ := (Ext.mk₀_bijective ((freeYoneda J).obj U) S.X₃).surjective z
   refine ⟨sectionEquiv J S.X₃ U f, ?_⟩
   change (Ext.mk₀ ((sectionEquiv J S.X₃ U).symm (sectionEquiv J S.X₃ U f))).comp
@@ -89,21 +90,24 @@ theorem restriction_firstTerm_injective [IsIntegrallyClosed R] (hs : s ≠ 0)
   obtain ⟨w, hw⟩ := (boundaryOfSection_eq_zero_iff J S hS V _).mp hc
   let EU := coordinateUnitsIso d j
   let EV := coordinateUnitsIso d j'
-  have hwr : (EV.hom w).toMul ^ d =
-      Units.map (algebraMap R (Localization.Away s)).toMonoidHom (EU.hom v).toMul := by
+  let vR : Additive Rˣ := EU.hom v
+  let wR : Additive (Localization.Away s)ˣ := EV.hom w
+  have hwr : wR.toMul ^ d =
+      Units.map (algebraMap R (Localization.Away s)).toMonoidHom vR.toMul := by
     have h₁ := congrArg (fun x : S.X₂.obj.obj (op V) => EV.hom x)
-      ((coordinateUnitsIso_power w).symm.trans hw)
+      ((coordinateUnitsIso_power (d := d) w).symm.trans hw)
     have h₂ := congrArg (fun f : S.X₂.obj.obj (op U) ⟶
         AddCommGrpCat.of (Additive (Localization.Away s)ˣ) => f v)
       (coordinateUnitsIso_restrict d r j)
     have h₃ : d • EV.hom w = (ringUnits.map r) (EU.hom v) := by
       rw [← map_nsmul]
       exact h₁.trans h₂
-    exact congrArg Additive.toMul h₃
+    exact congrArg (fun z : Additive (Localization.Away s)ˣ => z.toMul) h₃
   obtain ⟨u, hu, _⟩ := NormalLocalizationUnitRoots.unit_root_extends R s hs d hd _ _ hwr
   refine (boundaryOfSection_eq_zero_iff J S hS U v).mpr ⟨EU.inv (Additive.ofMul u), ?_⟩
-  apply (ConcreteCategory.injective_of_mono EU.hom)
-  rw [coordinateUnitsIso_power, map_nsmul]
+  apply EU.addCommGroupIsoToAddEquiv.injective
+  change EU.hom _ = EU.hom v
+  rw [coordinateUnitsIso_power (d := d), map_nsmul]
   have h : EU.hom (EU.inv (Additive.ofMul u)) = Additive.ofMul u :=
     Iso.inv_hom_id_apply EU _
   rw [h, ← Additive.ofMul_pow]
@@ -122,7 +126,7 @@ theorem restriction_constant_injective [IsIntegrallyClosed R] (hs : s ≠ 0)
   intro x y h
   let U := op (Scheme.Etale.mk j)
   let V := op (Scheme.Etale.mk (Spec.map (locHom s) ≫ j))
-  apply ConcreteCategory.injective_of_mono (e.hom.app U)
+  apply (e.app U).addCommGroupIsoToAddEquiv.injective
   apply restriction_firstTerm_injective k j s hs d hd
   have hn := e.hom.naturality a.op
   have hx := ConcreteCategory.congr_hom hn x

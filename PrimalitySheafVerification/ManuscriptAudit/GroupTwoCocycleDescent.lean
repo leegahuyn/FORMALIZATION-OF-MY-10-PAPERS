@@ -63,7 +63,7 @@ theorem exists_quotient_cocycle₂ (c : G × G → A) (hc : IsCocycle₂ c)
   obtain ⟨j, rfl⟩ := (QuotientGroup.mk'_surjective S) z
   apply Subtype.ext
   change (t (q g * q h, q j)).1 + (t (q g, q h)).1 =
-    g • (t (q h, q j)).1 + (t (q g, q h * q j)).1
+    g • (show A from (t (q h, q j)).1) + (t (q g, q h * q j)).1
   rw [← q.map_mul g h, ← q.map_mul h j, hValue, hValue, hValue, hValue]
   exact hc g h j
 
