@@ -61,7 +61,8 @@ theorem homEquiv_apply (f : P →ₐ[A K] T) :
   change e (eN (eL f) ((1 : T) ⊗ₜ[A K] p)) =
     Algebra.TensorProduct.map (AlgHom.id (B K) (B K)) f ((1 : B K) ⊗ₜ[A K] p)
   have hEval :
-      eN (eL f) ((1 : T) ⊗ₜ[A K] p) = eL f ((1 : T) ⊗ₜ[A K] p) ⊗ₜ[A K] (1 : B K) := rfl
+      eN (eL f) ((1 : T) ⊗ₜ[A K] p) = eL f ((1 : T) ⊗ₜ[A K] p) ⊗ₜ[A K] (1 : B K) :=
+    CuspFlatUnramifiedSections.flatSectionsEquiv_apply K T (eL f) _
   have hLift : eL f ((1 : T) ⊗ₜ[A K] p) = f p := by
     change Algebra.TensorProduct.lift (Algebra.ofId T T) f (fun _ _ => .all _ _)
       ((1 : T) ⊗ₜ[A K] p) = f p

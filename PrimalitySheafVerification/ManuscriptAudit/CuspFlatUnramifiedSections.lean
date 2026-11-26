@@ -45,6 +45,11 @@ private abbrev normalization := T ⊗[A K] B K
 private abbrev reduction := T ⊗[A K] D K
 private abbrev inclusion := Algebra.ofId T (normalization K T)
 
+private theorem inclusion_apply (t : T) :
+    inclusion K T t = t ⊗ₜ[A K] (1 : B K) := by
+  simp only [inclusion, Algebra.ofId_apply, Algebra.TensorProduct.algebraMap_apply,
+    Algebra.TensorProduct.includeLeft_apply, Algebra.algebraMap_self_apply]
+
 private theorem flatReduction_toLinearMap :
     ((reductionAlg K).toLinearMap).lTensor T =
       ((q K T).restrictScalars (A K)).toLinearMap := by
@@ -66,8 +71,8 @@ theorem flat_reduction_equalizer (z : normalization K T) :
   have h := flat_exact_from_inclusion K T _ (reduction_difference_exact K)
   rw [LinearMap.lTensor_sub, flatReduction_toLinearMap, flatConstantReduction_toLinearMap] at h
   simpa only [LinearMap.sub_apply, sub_eq_zero, AlgHom.toLinearMap_apply,
-    AlgHom.restrictScalars_apply, Set.mem_range, inclusion, Algebra.ofId_apply,
-    Algebra.TensorProduct.algebraMap_apply, Algebra.TensorProduct.includeLeft_apply] using h z
+    AlgHom.restrictScalars_apply, Set.mem_range, Algebra.TensorProduct.includeLeft_apply,
+    inclusion_apply] using h z
 
 private def inclusionToEqualizer :
     T →ₐ[T] AlgHom.equalizer (q K T) (c K T) :=
@@ -98,16 +103,28 @@ private def postcomposeAlgEquiv {R P V W : Type*}
 
 variable {P : Type*} [CommRing P] [Algebra T P] [Algebra.FormallyUnramified T P]
 
-set_option maxHeartbeats 1800000 in
 set_option backward.isDefEq.respectTransparency false in
+private def reductionSectionsEquiv :
+    (P →ₐ[T] AlgHom.equalizer (q K T) (c K T)) ≃ (P →ₐ[T] normalization K T) := by
+  let J := baseChangedOriginIdeal K T
+  have hJ := baseChangedOriginIdeal_square K T
+  have hReduction := flatReduction_equal_mod_origin K T
+  exact @UnramifiedEqualizerSections.sectionsEquiv T (normalization K T) (reduction K T) P
+    ‹CommRing T› (by infer_instance) (by infer_instance) ‹CommRing P›
+    (by infer_instance) (by infer_instance) ‹Algebra T P› ‹Algebra.FormallyUnramified T P›
+    J hJ (q K T) (c K T) hReduction
+
 /-- A formally unramified algebra has the same sections before and after
 base change from a flat cusp algebra to its polynomial normalization. -/
-def flatSectionsEquiv : (P →ₐ[T] T) ≃ (P →ₐ[T] normalization K T) := by
-  let s := UnramifiedEqualizerSections.sectionsEquiv (R := T)
-    (A := normalization K T) (B := reduction K T) (P := P)
-    (baseChangedOriginIdeal K T) (baseChangedOriginIdeal_square K T)
-    (q K T) (c K T) (flatReduction_equal_mod_origin K T)
-  exact (postcomposeAlgEquiv (P := P) (flatBaseEquivEqualizer K T)).trans s
+def flatSectionsEquiv : (P →ₐ[T] T) ≃ (P →ₐ[T] normalization K T) :=
+  (postcomposeAlgEquiv (P := P) (flatBaseEquivEqualizer K T)).trans
+    (reductionSectionsEquiv K T)
+
+/-- The forward section map is evaluation followed by the original base inclusion. -/
+theorem flatSectionsEquiv_apply (f : P →ₐ[T] T) (p : P) :
+    flatSectionsEquiv K T f p = f p ⊗ₜ[A K] (1 : B K) := by
+  change inclusion K T (f p) = _
+  exact inclusion_apply K T _
 
 end
 
@@ -118,7 +135,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.CuspFlatUnramifiedSections.flat_reduction_equalizer,
       ``ManuscriptAudit.CuspFlatUnramifiedSections.flatBaseEquivEqualizer,
-      ``ManuscriptAudit.CuspFlatUnramifiedSections.flatSectionsEquiv] do
+      ``ManuscriptAudit.CuspFlatUnramifiedSections.flatSectionsEquiv,
+      ``ManuscriptAudit.CuspFlatUnramifiedSections.flatSectionsEquiv_apply] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
