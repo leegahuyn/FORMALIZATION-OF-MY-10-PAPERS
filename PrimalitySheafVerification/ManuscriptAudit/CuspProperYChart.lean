@@ -220,7 +220,7 @@ private def imageIso : (lineInPlane K).image ≅ projectiveCusp K :=
 def lineOpen : Spec (CommRingCat.of (Polynomial K)) ⟶ projectiveCusp K :=
   (lineInPlane K).toImage ≫ (imageIso K).hom
 
-theorem lineOpen_isOpenImmersion : IsOpenImmersion (lineOpen K) := by
+instance lineOpen_isOpenImmersion : IsOpenImmersion (lineOpen K) := by
   letI := lineInPlane_isImmersion K
   letI : QuasiCompact (lineInPlane K) := quasiCompact_of_compactSpace _
   unfold lineOpen

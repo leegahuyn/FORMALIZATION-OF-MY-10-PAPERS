@@ -60,7 +60,8 @@ theorem exists_global_lift {T U V D : C}
   let π : I ⟶ Q := cokernel.π i
   have hπ : π.hom.app (op D) (I.obj.map p.op a) = π.hom.app (op D) (I.obj.map q.op b) := by
     rw [NatTrans.naturality_apply π.hom p.op a, NatTrans.naturality_apply π.hom q.op b, ha, hb]
-    simp only [restrict_restrict, hD.w]
+    change Q.obj.map p.op (Q.obj.map u.op x) = Q.obj.map q.op (Q.obj.map v.op x)
+    rw [restrict_restrict Q.obj p u x, restrict_restrict Q.obj q v x, hD.w]
   obtain ⟨d, hd, _⟩ := SheafSectionDifference.existsUnique_difference i D
     (I.obj.map p.op a) (I.obj.map q.op b) hπ
   obtain ⟨c, hc⟩ := hRestrict d

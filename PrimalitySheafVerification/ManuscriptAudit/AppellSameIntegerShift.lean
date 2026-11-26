@@ -23,6 +23,7 @@ private abbrev phase (z : ℂ) := (Real.pi : ℂ) * Complex.I * z
 
 private theorem expPhase_add (a b : ℂ) :
     Complex.exp (phase (a + b)) = Complex.exp (phase a) * Complex.exp (phase b) := by
+  change Complex.exp (((Real.pi : ℂ) * Complex.I) * (a + b)) = _
   rw [mul_add, Complex.exp_add]
 
 private theorem expPhase_sub_one (a : ℂ) :
@@ -61,7 +62,9 @@ theorem numerator_simultaneous_shift (u v τ : ℂ) :
       Complex.exp (phase (-2 * (τ + v) - 1)) * numerator u v τ := by
   unfold numerator
   simp_rw [numeratorTerm_simultaneous_shift, tsum_mul_left]
-  rw [(Equiv.addRight (1 : ℤ)).tsum_eq (numeratorTerm u v τ)]
+  have h : (∑' n : ℤ, numeratorTerm u v τ (n + 1)) = ∑' n : ℤ, numeratorTerm u v τ n :=
+    (Equiv.addRight (1 : ℤ)).tsum_eq (numeratorTerm u v τ)
+  rw [h]
 
 /-- The genuine odd theta in the Appell denominator. -/
 def oddTheta (v τ : ℂ) : ℂ :=
@@ -76,7 +79,7 @@ theorem oddTheta_hasSum (v τ : ℂ) (hτ : 0 < τ.im) :
   have hTerm (n : ℤ) : Complex.exp (phase
       (((n : ℂ) + 1 / 2) ^ 2 * τ + 2 * ((n : ℂ) + 1 / 2) * (v + 1 / 2))) =
       Complex.exp (phase (τ / 4 + v + 1 / 2)) *
-        jacobiTheta₂_term (v + 1 / 2 + τ / 2) τ n := by
+        jacobiTheta₂_term n (v + 1 / 2 + τ / 2) τ := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
     congr 1
     push_cast
@@ -95,8 +98,12 @@ theorem oddTheta_shift (v τ : ℂ) :
   calc
     _ = Complex.exp (phase (τ / 4 + (v + τ) + 1 / 2) +
         (-(Real.pi : ℂ) * Complex.I * (τ + 2 * (v + 1 / 2 + τ / 2)))) *
-        jacobiTheta₂ (v + 1 / 2 + τ / 2) τ := by rw [Complex.exp_add, mul_assoc]
-    _ = _ := by rw [hphase, Complex.exp_add, mul_assoc]
+        jacobiTheta₂ (v + 1 / 2 + τ / 2) τ := by
+      rw [Complex.exp_add]
+      exact (mul_assoc _ _ _).symm
+    _ = _ := by
+      rw [hphase, Complex.exp_add]
+      exact mul_assoc _ _ _
 
 /-- The Appell function specified by the bilateral numerator and odd theta. -/
 def mu (u v τ : ℂ) : ℂ :=
