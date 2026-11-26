@@ -28,6 +28,10 @@ private def countLog (counts : Series) : Series :=
 private def expAt (f : Series) : Series :=
   (PowerSeries.exp ℚ).subst f
 
+/-- The exponential zeta series obtained from the positive-degree point counts. -/
+def zetaOfCountSeries (counts : Series) : Series :=
+  expAt (countLog counts)
+
 private theorem countLog_constantCoeff (counts : Series) :
     constantCoeff (countLog counts) = 0 := by
   simp [countLog, constantCoeff_mk]
