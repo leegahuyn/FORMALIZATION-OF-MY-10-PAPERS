@@ -152,9 +152,13 @@ theorem flatReduction_comp_sections {P : Type*} [CommRing P] [Algebra T P]
     (flatReductionAlg K T).comp s = (flatConstantReductionAlg K T).comp s := by
   have hJ : IsNilpotent (baseChangedOriginIdeal K T) :=
     ⟨2, baseChangedOriginIdeal_square K T⟩
-  refine Algebra.FormallyUnramified.ext (baseChangedOriginIdeal K T) hJ ?_
+  refine Algebra.FormallyUnramified.ext (R := T) (A := P)
+    (B := T ⊗[CuspSubalgebra K] cuspSquareQuotient K)
+    (baseChangedOriginIdeal K T) hJ
+    (g₁ := (flatReductionAlg K T).comp s) (g₂ := (flatConstantReductionAlg K T).comp s) ?_
   intro x
-  exact AlgHom.congr_fun (flatReduction_equal_mod_origin K T) (s x)
+  simpa only [AlgHom.comp_apply, Ideal.Quotient.mkₐ_eq_mk] using
+    AlgHom.congr_fun (flatReduction_equal_mod_origin K T) (s x)
 
 end
 
