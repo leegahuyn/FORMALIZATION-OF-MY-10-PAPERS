@@ -48,8 +48,8 @@ private theorem extendedIdeal_sq (h : augmentationIdeal D k ^ 2 = ⊥) :
 set_option backward.isDefEq.respectTransparency false in
 private def quotientEquiv :
     (V ⧸ extendedIdeal D k V) ≃ₐ[D] (k ⊗[D] V) :=
-  ((Algebra.TensorProduct.quotIdealMapEquivQuotTensor V (augmentationIdeal D k))
-    .restrictScalars D).trans
+  (AlgEquiv.restrictScalars D
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor V (augmentationIdeal D k))).trans
       (Algebra.TensorProduct.congr (augmentationEquiv D k) (AlgEquiv.refl : V ≃ₐ[D] V))
 
 variable (B E : Type*) [CommRing B] [CommRing E]

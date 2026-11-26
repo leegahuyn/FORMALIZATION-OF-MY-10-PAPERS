@@ -14,7 +14,7 @@ namespace ManuscriptAudit.MilnorStabilizedMatrix
 
 open Matrix
 
-universe u v w
+universe u v
 
 variable {n : Type u} [Fintype n] [DecidableEq n]
 variable {R : Type v} [CommRing R]
@@ -38,7 +38,7 @@ private def rotation (n : Type u) [Fintype n] [DecidableEq n]
   val_inv := by simp [fromBlocks_multiply]
   inv_val := by simp [fromBlocks_multiply]
 
-/-- The unit with (U) and (U^{-1}) on its diagonal blocks. -/
+/-- The block diagonal unit with `U` and its inverse as its blocks. -/
 def stabilized (U : GL n R) : GL (n ⊕ n) R where
   val := fromBlocks U.val 0 0 U.inv
   inv := fromBlocks U.inv 0 0 U.val
@@ -53,7 +53,7 @@ private theorem factorization (U : GL n R) :
     fromBlocks U.val 0 0 U.inv
   simp [fromBlocks_multiply, U.val_inv, U.inv_val, mul_neg, neg_mul]
 
-variable {D : Type w} [CommRing D] (q : R →+* D)
+variable {D : Type v} [CommRing D] (q : R →+* D)
 
 private theorem map_one_matrix : (1 : Matrix n n R).map q = (1 : Matrix n n D) :=
   (q.mapMatrix : Matrix n n R →+* Matrix n n D).map_one

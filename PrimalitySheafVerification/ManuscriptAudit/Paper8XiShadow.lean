@@ -154,8 +154,8 @@ private theorem thetaImaginary_pos :
       (jacobiTheta₂ (Complex.I / 2) Complex.I).re := by
     simpa only [Complex.reCLM_apply, thetaImaginary_term, Complex.ofReal_re] using
       Complex.reCLM.hasSum h
-  have hle := hr.summable.sum_le_tsum {0} (fun n _ => (Real.exp_pos
-    (-Real.pi * ((n : ℝ) ^ 2 + (n : ℝ)))).le)
+  have hle := hr.summable.sum_le_tsum ({0} : Finset ℤ) (fun (n : ℤ) _ =>
+    (Real.exp_pos (-Real.pi * ((n : ℝ) ^ 2 + (n : ℝ)))).le)
   rw [hr.tsum_eq, Finset.sum_singleton] at hle
   exact (Real.exp_pos _).trans_le hle
 

@@ -81,8 +81,10 @@ theorem directImage_constant_not_isZero {X Y : Scheme.{u}} (f : X ⟶ Y)
   have hEval : IsZero (ev.obj N) := by
     apply (IsZero.iff_id_eq_zero _).2
     have hId : 𝟙 N = 0 := hN.eq_of_src _ _
-    simpa only [Functor.map_id, Functor.map_zero] using
-      congrArg (fun g : N ⟶ N => ev.map g) hId
+    calc
+      𝟙 (ev.obj N) = ev.map (𝟙 N) := (ev.map_id N).symm
+      _ = ev.map 0 := congrArg (fun g : N ⟶ N => ev.map g) hId
+      _ = 0 := ev.map_zero
   exact constant_sections_not_isZero Φ T x A hA hEval
 
 private abbrev K := ZMod 5

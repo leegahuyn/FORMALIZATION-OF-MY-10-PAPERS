@@ -49,6 +49,8 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : Function.Surjective f)
 variable (E : Y.AffineEtale ⥤ X.AffineEtale)
 variable (e : E ⋙ Scheme.AffineEtale.Spec X ≅ Scheme.AffineEtale.Spec Y ⋙ etaleBaseChange f)
 
+include f hf e
+
 /-- Affine étale base change along a surjective morphism preserves and reflects covering sieves. -/
 theorem functorPushforward_mem_iff {W : Y.AffineEtale} {S : Sieve W} :
     S.functorPushforward E ∈ Scheme.AffineEtale.topology X _ ↔
@@ -63,7 +65,7 @@ theorem functorPushforward_mem_iff {W : Y.AffineEtale} {S : Sieve W} :
       rw [← Sieve.functorPushforward_comp]
       exact functorPushforward_mem_iff_of_iso e X.smallEtaleTopology S
     _ ↔ (S.functorPushforward (Scheme.AffineEtale.Spec Y)).functorPushforward (etaleBaseChange f) ∈
-        X.smallEtaleTopology _ := by rw [Sieve.functorPushforward_comp]
+        X.smallEtaleTopology _ := by simp only [Sieve.functorPushforward_comp, Functor.comp_obj]
     _ ↔ S.functorPushforward (Scheme.AffineEtale.Spec Y) ∈ Y.smallEtaleTopology _ :=
       SmallEtaleBaseChange.functorPushforward_mem_iff f hf
     _ ↔ S ∈ Scheme.AffineEtale.topology Y W :=
