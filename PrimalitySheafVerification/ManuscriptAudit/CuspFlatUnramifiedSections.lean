@@ -1,7 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CuspFlatNormalization
 import PrimalitySheafVerification.ManuscriptAudit.CuspReductionBaseChange
-import PrimalitySheafVerification.ManuscriptAudit.UnramifiedEqualizerSections
 
 /-!
 # Sections of unramified morphisms after flat cusp base change
@@ -17,8 +16,6 @@ open CuspDelta CuspFlatNormalization CuspReductionBaseChange
 open Polynomial TensorProduct
 
 noncomputable section
-
-attribute [local instance] squareQuotientAlgebra
 
 variable (K : Type*) [Field K]
 
@@ -92,35 +89,35 @@ def flatBaseEquivEqualizer : T ≃ₐ[T] AlgHom.equalizer (q K T) (c K T) :=
       ((AlgHom.mem_equalizer _ _ _).mp z.property)
     exact ⟨t, Subtype.ext ht⟩⟩
 
-private def postcomposeAlgEquiv {R P V W : Type*}
-    [CommSemiring R] [Semiring P] [Semiring V] [Semiring W]
-    [Algebra R P] [Algebra R V] [Algebra R W]
-    (e : V ≃ₐ[R] W) : (P →ₐ[R] V) ≃ (P →ₐ[R] W) where
-  toFun f := e.toAlgHom.comp f
-  invFun f := e.symm.toAlgHom.comp f
-  left_inv f := AlgHom.ext fun x => e.symm_apply_apply (f x)
-  right_inv f := AlgHom.ext fun x => e.apply_symm_apply (f x)
+section SectionEquivalence
+
+variable {R U V S : Type*}
+variable [CommSemiring R] [Semiring U] [Semiring V] [Semiring S]
+variable [Algebra R U] [Algebra R V] [Algebra R S]
+variable (f g : U →ₐ[R] V) (h : ∀ t : S →ₐ[R] U, f.comp t = g.comp t)
+
+private def restrictSectionToEqualizer (t : S →ₐ[R] U) :
+    S →ₐ[R] AlgHom.equalizer f g :=
+  t.codRestrict _ fun x => (AlgHom.mem_equalizer f g _).2 (AlgHom.congr_fun (h t) x)
+
+private def sectionsEquivOfCompEq (e : R ≃ₐ[R] AlgHom.equalizer f g) :
+    (S →ₐ[R] R) ≃ (S →ₐ[R] U) where
+  toFun t := (AlgHom.equalizer f g).val.comp (e.toAlgHom.comp t)
+  invFun t := e.symm.toAlgHom.comp (restrictSectionToEqualizer f g h t)
+  left_inv t := AlgHom.ext fun x => e.symm_apply_apply (t x)
+  right_inv t := AlgHom.ext fun x =>
+    congrArg Subtype.val (e.apply_symm_apply (restrictSectionToEqualizer f g h t x))
+
+end SectionEquivalence
 
 variable {P : Type*} [CommRing P] [Algebra T P] [Algebra.FormallyUnramified T P]
-
-set_option maxHeartbeats 2400000 in
-set_option backward.isDefEq.respectTransparency false in
-private def reductionSectionsEquiv :
-    (P →ₐ[T] AlgHom.equalizer (q K T) (c K T)) ≃ (P →ₐ[T] normalization K T) := by
-  let J := baseChangedOriginIdeal K T
-  have hJ := baseChangedOriginIdeal_square K T
-  have hReduction := flatReduction_equal_mod_origin K T
-  exact @UnramifiedEqualizerSections.sectionsEquiv T (normalization K T) (reduction K T) P
-    ‹CommRing T› (by infer_instance) (by infer_instance) ‹CommRing P›
-    (by infer_instance) (by infer_instance) ‹Algebra T P› ‹Algebra.FormallyUnramified T P›
-    J hJ (q K T) (c K T) hReduction
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A formally unramified algebra has the same sections before and after
 base change from a flat cusp algebra to its polynomial normalization. -/
 def flatSectionsEquiv : (P →ₐ[T] T) ≃ (P →ₐ[T] normalization K T) :=
-  (postcomposeAlgEquiv (P := P) (V := T) (W := ↥(AlgHom.equalizer (q K T) (c K T)))
-    (flatBaseEquivEqualizer K T)).trans (reductionSectionsEquiv K T)
+  sectionsEquivOfCompEq (R := T) (U := normalization K T) (V := reduction K T) (S := P)
+    (q K T) (c K T) (flatReduction_comp_sections K T) (flatBaseEquivEqualizer K T)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The forward section map is evaluation followed by the original base inclusion. -/

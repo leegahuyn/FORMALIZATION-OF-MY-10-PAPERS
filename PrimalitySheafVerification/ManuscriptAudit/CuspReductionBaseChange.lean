@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.TensorProduct.Maps
+import Mathlib.RingTheory.Unramified.Basic
 import PrimalitySheafVerification.ManuscriptAudit.CuspDelta
 import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
 
@@ -143,6 +144,18 @@ theorem flatReduction_equal_mod_origin :
   change reductionAlg K f - reductionAlg K (C (f.coeff 0)) = _
   rw [← map_sub, hq, map_mul]
 
+set_option backward.isDefEq.respectTransparency false in
+/-- A formally unramified section makes the two actual reductions equal. -/
+theorem flatReduction_comp_sections {P : Type*} [CommRing P] [Algebra T P]
+    [Algebra.FormallyUnramified T P]
+    (s : P →ₐ[T] T ⊗[CuspSubalgebra K] Polynomial K) :
+    (flatReductionAlg K T).comp s = (flatConstantReductionAlg K T).comp s := by
+  have hJ : IsNilpotent (baseChangedOriginIdeal K T) :=
+    ⟨2, baseChangedOriginIdeal_square K T⟩
+  refine Algebra.FormallyUnramified.ext (baseChangedOriginIdeal K T) hJ ?_
+  intro x
+  exact AlgHom.congr_fun (flatReduction_equal_mod_origin K T) (s x)
+
 end
 
 end ManuscriptAudit.CuspReductionBaseChange
@@ -153,7 +166,8 @@ run_cmd do
   for name in [``ManuscriptAudit.CuspReductionBaseChange.reductionAlg,
       ``ManuscriptAudit.CuspReductionBaseChange.constantReductionAlg,
       ``ManuscriptAudit.CuspReductionBaseChange.baseChangedOriginIdeal_square,
-      ``ManuscriptAudit.CuspReductionBaseChange.flatReduction_equal_mod_origin] do
+      ``ManuscriptAudit.CuspReductionBaseChange.flatReduction_equal_mod_origin,
+      ``ManuscriptAudit.CuspReductionBaseChange.flatReduction_comp_sections] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
