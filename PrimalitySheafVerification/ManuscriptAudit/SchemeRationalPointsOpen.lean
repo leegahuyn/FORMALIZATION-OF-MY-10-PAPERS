@@ -31,6 +31,7 @@ private theorem factors_through_residue (f : Spec (CommRingCat.of K) ⟶ X) :
 theorem imagePoint_injective :
     Function.Injective (fun p : PointsOver s => p.val (closedPoint K)) := by
   intro p q hpq
+  change p.val (closedPoint K) = q.val (closedPoint K) at hpq
   let x := p.val (closedPoint K)
   obtain ⟨a, ha⟩ := factors_through_residue p.val
   obtain ⟨b, hb⟩ : ∃ b : X.residueField x ⟶ CommRingCat.of K,
@@ -51,14 +52,13 @@ theorem imagePoint_injective :
     intro z
     refine ⟨a z, a.hom.injective ?_⟩
     exact ConcreteCategory.congr_hom hap (a z)
-  apply Subtype.ext
-  rw [← ha, ← hb]
-  congr 1
-  apply CommRingCat.hom_ext
-  apply RingHom.ext
-  intro z
-  obtain ⟨v, rfl⟩ := hsurj z
-  exact (ConcreteCategory.congr_hom hap v).trans (ConcreteCategory.congr_hom hbq v).symm
+  have hab : a = b := by
+    apply CommRingCat.hom_ext
+    apply RingHom.ext
+    intro z
+    obtain ⟨v, rfl⟩ := hsurj z
+    exact (ConcreteCategory.congr_hom hap v).trans (ConcreteCategory.congr_hom hbq v).symm
+  exact Subtype.ext (ha.symm.trans ((congrArg (fun u => Spec.map u ≫ r) hab).trans hb))
 
 variable (j : U ⟶ X) [IsOpenImmersion j]
 
@@ -74,6 +74,7 @@ def optionEquiv (p₀ : PointsOver s)
   classical
   let f : Option (PointsOver (j ≫ s)) → PointsOver s :=
     fun p => p.elim p₀ (includeOpen s j)
+  change (f none).val (closedPoint K) ∉ Set.range j at hOutside
   have hsome (p : PointsOver (j ≫ s)) :
       (f (some p)).val (closedPoint K) ∈ Set.range j :=
     ⟨p.val (closedPoint K), rfl⟩

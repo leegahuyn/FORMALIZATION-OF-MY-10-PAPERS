@@ -58,14 +58,14 @@ private theorem yChart_restriction_injective (h2 : (2 : K) ≠ 0) :
       (xCoeff K) (coordinate_ne_zero K) 2 (by decide)
   have hF : Function.Injective (((F K).cohomologyPresheaf 1).map a.op) := by
     intro x y hxy
-    apply ConcreteCategory.injective_of_mono (i.hom.app U)
+    apply (i.app U).addCommGroupIsoToAddEquiv.injective
     apply hG
     have hx := ConcreteCategory.congr_hom (i.hom.naturality a.op) x
     have hy := ConcreteCategory.congr_hom (i.hom.naturality a.op) y
     exact hx.symm.trans ((congrArg (i.hom.app V) hxy).trans hy)
   rw [← h, op_comp, Functor.map_comp]
-  exact (ConcreteCategory.injective_of_mono
-    (((F K).cohomologyPresheaf 1).map e.op)).comp hF
+  let e' := ((F K).cohomologyPresheaf 1).mapIso (overlapEtaleIso K).symm.op
+  exact e'.addCommGroupIsoToAddEquiv.injective.comp hF
 
 private theorem affine_restriction_injective (h2 : (2 : K) ≠ 0) :
     Function.Injective (((F K).cohomologyPresheaf 1).map (openArrow (affineOpen K)).op) := by

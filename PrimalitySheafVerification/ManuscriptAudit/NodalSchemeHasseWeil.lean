@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Tactic.Omega
+import Lean.Elab.Tactic.Omega
 import PrimalitySheafVerification.ManuscriptAudit.NodalHasseWeilSeries
 import PrimalitySheafVerification.ManuscriptAudit.NodalSchemePointCounts
 import PrimalitySheafVerification.ManuscriptAudit.NodalSmoothLocusOverlap
