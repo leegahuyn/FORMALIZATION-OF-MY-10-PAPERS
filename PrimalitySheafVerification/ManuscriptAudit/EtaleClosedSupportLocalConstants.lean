@@ -50,23 +50,24 @@ theorem exists_open_restriction_const (U : X.Etale)
       (functionsOver M i).obj.map (openArrow U W).op s =
         ContinuousMap.const ((etaleBaseChange i).obj (openObject U W)).left a := by
   classical
+  let s' : ContinuousMap ((etaleBaseChange i).obj U).left M := s
   let f := projection i U
   have hf := f.isClosedEmbedding
   by_cases hp : p ∈ Set.range f
   · obtain ⟨z, hz⟩ := hp
-    let a := s z
-    let C : Set ((etaleBaseChange i).obj U).left := {x | s x ≠ a}
-    have hC : IsClosed C := (isClosed_discrete ({a}ᶜ : Set M)).preimage s.continuous
+    let a := s' z
+    let C : Set ((etaleBaseChange i).obj U).left := {x | s' x ≠ a}
+    have hC : IsClosed C := (isClosed_discrete ({a}ᶜ : Set M)).preimage s'.continuous
     let W : U.left.Opens := ⟨(f '' C)ᶜ, (hf.isClosedMap _ hC).isOpen_compl⟩
     refine ⟨W, ?_, a, ?_⟩
     · rintro ⟨x, hx, he⟩
       change s x ≠ a at hx
       have h : x = z := hf.injective (he.trans hz.symm)
-      exact hx (congrArg s h)
+      exact hx (congrArg s' h)
     · apply ContinuousMap.ext
       intro q
       let v := ((etaleBaseChange i).map (openArrow U W)).left q
-      change s v = a
+      change s' v = a
       by_contra h
       have hm : f v ∈ W := restricted_point_in_open i U W q
       exact hm ⟨v, h, rfl⟩

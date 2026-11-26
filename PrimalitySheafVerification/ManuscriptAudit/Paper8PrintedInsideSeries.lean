@@ -48,7 +48,7 @@ theorem doubled_pochhammer_le_squared {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1) 
   · intro j _
     have hPow : q ^ (n + j + 1) ≤ q ^ (j + 1) :=
       pow_exponent_antitone hq h₁ (by omega)
-    exact add_le_add_left hPow 1
+    linarith only [hPow]
 
 private theorem summable_of_pochhammer_bound {q : ℝ} (hq : 0 ≤ q) (h₁ : q < 1)
     (denom : ℕ → ℝ) (hD : ∀ n, 1 ≤ denom n) :

@@ -16,6 +16,7 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 variable (K : Type u) [Field K]
 
+set_option synthInstance.maxHeartbeats 180000 in
 set_option maxHeartbeats 1400000 in
 /-- Under the scheme fiber identification, its second projection is
 the morphism defined by evaluation on the two ordered branches. -/
@@ -23,12 +24,11 @@ theorem conductorFiberIso_second (h2 : (2 : K) ≠ 0) :
     (conductorFiberIso K h2).hom ≫ Spec.map (NodalConductorSquare.branches K) =
       pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) := by
   let e := (tensor_isPullback K).isoPullback
-  let r := fiberRingEquiv K h2
   let i : Spec (CommRingCat.of (fiberRing K)) ≅ Spec (CommRingCat.of (K × K)) :=
     Scheme.Spec.mapIso (fiberRingEquiv K h2).symm.toCommRingCatIso.op
   have he : (conductorFiberIso K h2).hom = e.inv ≫ i.hom := rfl
   let d : CommRingCat.of (K × K) ⟶ CommRingCat.of (fiberRing K) :=
-    CommRingCat.ofHom r.symm.toRingHom
+    (fiberRingEquiv K h2).symm.toCommRingCatIso.hom
   have hi : i.hom = Spec.map d := rfl
   have hp : e.hom ≫ pullback.snd (NodalAffineOrigin.originMap K) (affineNormalization K) =
       fiberSecond K := (tensor_isPullback K).isoPullback_hom_snd

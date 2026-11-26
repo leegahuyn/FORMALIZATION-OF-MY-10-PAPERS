@@ -67,7 +67,7 @@ theorem det_map (α : Matrix I I K ≃ₐ[K] Matrix I I K) (M : Matrix I I K) :
       simp only [e, Matrix.mul_single_apply_same, mul_one] <;> rfl
     · rw [if_neg hh]
       change 0 = (P * Matrix.single i j (1 : K)) a b
-      exact (Matrix.mul_single_apply_of_ne (c := (1 : K)) i j a b hh.symm P).symm
+      exact (Matrix.mul_single_apply_of_ne (c := (1 : K)) i j a b (fun h ↦ hh h.symm) P).symm
   have hKernel (z : I → K) (hz : P.mulVec z = 0) : z = 0 := by
     funext j
     have h : P.mulVec ((e i₀ j).mulVec z) = 0 := by
@@ -84,7 +84,7 @@ theorem det_map (α : Matrix I I K ≃ₐ[K] Matrix I I K) (M : Matrix I I K) :
     apply hKernel
     rw [Matrix.mulVec_sub, hxy, sub_self]
   have hDet : P.det ≠ 0 :=
-    isUnit_iff_ne_zero.mp (Matrix.isUnit_iff_isUnit_det.mp
+    isUnit_iff_ne_zero.mp ((Matrix.isUnit_iff_isUnit_det P).mp
       (Matrix.mulVec_injective_iff_isUnit.mp hP))
   have hConj : α M * P = P * M := by
     refine Matrix.induction_on' M (by simp) ?_ ?_

@@ -7,7 +7,8 @@ arbitrary scheme over an algebraically closed field. -/
 namespace ManuscriptAudit.KummerRelativeCoefficients
 
 open AlgebraicGeometry CategoryTheory Opposite
-open KummerRootLabels KummerUnitsPresheaf KummerConstantCoefficients (roots coefficientGroup)
+open KummerRootLabels KummerUnitsPresheaf
+open KummerConstantCoefficients (roots coefficientGroup)
 
 universe u
 
@@ -31,7 +32,8 @@ theorem coefficientMap_natural {U V : X.AffineEtale} (f : U ⟶ V) :
     rw [Scheme.Spec.map_comp]
     change Scheme.Spec.map f.left ≫ Scheme.Spec.map (Scheme.Spec.preimage (V.hom ≫ k)) =
       Scheme.Spec.map (Scheme.Spec.preimage (U.hom ≫ k))
-    rw [Scheme.Spec.map_preimage, Scheme.Spec.map_preimage, ← Category.assoc, hf]
+    rw [Scheme.Spec.map_preimage, Scheme.Spec.map_preimage]
+    exact (Category.assoc _ _ _).symm.trans (congrArg (fun f => f ≫ k) hf)
   have hp := congrArg (fun a : U.left ⟶ op (CommRingCat.of K) => a.unop.hom) h
   rw [unop_comp, CommRingCat.hom_comp] at hp
   exact hp

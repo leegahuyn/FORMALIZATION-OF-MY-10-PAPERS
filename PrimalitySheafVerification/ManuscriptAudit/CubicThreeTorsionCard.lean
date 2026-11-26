@@ -104,7 +104,7 @@ private theorem optionFlexCoordinates_card {A : K} (h₂ : (2 : K) ≠ 0) (h₃ 
   letI : Fintype (PowerRoots 3 b) := Fintype.ofEquiv _ (powerRootsEquiv 3 b (by decide)).symm
   letI : Fintype (FlexAbscissas A) :=
     Fintype.ofEquiv _ (flexAbscissasEquiv (flexConstant_ne_zero h₂ hA)).symm
-  letI (x : FlexAbscissas A) : Fintype (Ordinates A x) :=
+  letI : ∀ x : FlexAbscissas A, Fintype (Ordinates A x) := fun x =>
     Fintype.ofEquiv _ (powerRootsEquiv 2 (x.val ^ 3 + A) (by decide)).symm
   have hx : Fintype.card (FlexAbscissas A) = 4 := by
     rw [← Nat.card_eq_fintype_card, flexAbscissas_card h₂ h₃ hA]

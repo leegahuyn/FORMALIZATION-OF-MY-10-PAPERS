@@ -49,7 +49,7 @@ theorem determinantForm_homogeneous : (determinantForm b r).IsHomogeneous n := b
 theorem eval_determinantForm (z : Fin m → F) :
     aeval (fun i ↦ algebraMap F L (z i)) (determinantForm b r) =
       (r (b.equivFun.symm z)).det := by
-  let f := aeval (fun i ↦ algebraMap F L (z i))
+  let f : MvPolynomial (Fin m) L →ₐ[L] L := aeval (fun i ↦ algebraMap F L (z i))
   change f (genericMatrix b r).det = _
   have h : f.mapMatrix (genericMatrix b r) = r (b.equivFun.symm z) := by
     ext i j
@@ -82,7 +82,7 @@ theorem determinantForm_anisotropic (z : Fin m → F)
     intro he
     exact hn (b.equivFun.symm.injective (he.trans b.equivFun.symm.map_zero.symm))
   have hi : IsUnit (r (b.equivFun.symm z)) := (isUnit_iff_ne_zero.mpr hx).map r.toMonoidHom
-  exact (isUnit_iff_ne_zero.mp (Matrix.isUnit_iff_isUnit_det.mp hi)) h
+  exact (isUnit_iff_ne_zero.mp ((Matrix.isUnit_iff_isUnit_det _).mp hi)) h
 
 end
 

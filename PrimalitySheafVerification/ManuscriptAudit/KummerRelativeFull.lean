@@ -9,7 +9,8 @@ with a morphism to an algebraically closed coefficient field. -/
 namespace ManuscriptAudit.KummerRelativeFull
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
-open KummerUnitsPresheaf KummerSheafSequence KummerConstantCoefficients (coefficientGroup)
+open KummerUnitsPresheaf KummerSheafSequence
+open KummerConstantCoefficients (coefficientGroup)
 open KummerRelativeCoefficients (coefficientMap)
 open SmallEtaleUnitSheaf
 

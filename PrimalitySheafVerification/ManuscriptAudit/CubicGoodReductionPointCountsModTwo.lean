@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import PrimalitySheafVerification.ManuscriptAudit.CubicGoodReductionFrobeniusModTwo
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassFrobeniusExtensionTrace
 
@@ -12,7 +13,6 @@ open CubicGoodReductionFrobeniusModTwo Paper5PrintedRecurrence
 noncomputable section
 
 variable (p : ℕ) [Fact p.Prime]
-variable (L : Type*) [Field L] [Algebra (ZMod p) L] [IsAlgClosed L] [DecidableEq L]
 variable (E : Type*) [Field E] [Fintype E] [Algebra (ZMod p) E] [DecidableEq E]
 
 /-- The native point count obeys the printed recurrence after reduction modulo two. -/
@@ -21,17 +21,21 @@ theorem extension_trace_eq_recurrence (hpTwo : p ≠ 2) {c A : ZMod p}
     (((Fintype.card E : ℤ) + 1 -
       (Nat.card ((shortCubic c A).toProjective.baseChange E).Point : ℤ)) : ZMod 2) =
       (recurrence p (arithmeticTrace p c A) (Module.finrank (ZMod p) E) : ZMod 2) := by
+  classical
+  let L := AlgebraicClosure (ZMod p)
   let W := (shortCubic c A).toProjective
   let V := geometricTwoTorsion p L W.toAffine
   have hcard : Nat.card V = 4 := geometricTwoTorsion_card p L hpTwo hΔ
   letI : Finite V := Nat.finite_of_card_ne_zero (by rw [hcard]; decide)
   let b : Module.Basis (Fin 2) (ZMod 2) V :=
     FrobeniusModTwoLinear.basisOfCardFour V hcard
-  rw [← WeierstrassFrobeniusExtensionTrace.projective_trace_pow_eq_signed_point_count_of_isAlgClosed
-    p L E W hcard hpTwo]
-  exact FrobeniusModTwoRecurrence.trace_pow_eq_recurrence_mod_two V b
+  have hActual :=
+    WeierstrassFrobeniusExtensionTrace.projective_trace_pow_eq_signed_point_count_of_isAlgClosed
+      p L E W hcard hpTwo
+  have hRec := FrobeniusModTwoRecurrence.trace_pow_eq_recurrence_mod_two V b
     (frobeniusOfCardFour p L W.toAffine hcard) p (arithmeticTrace p c A)
-    (actualFrobenius_trace p L hpTwo hΔ) (actualFrobenius_det p L hpTwo hΔ) _
+    (actualFrobenius_trace p L hpTwo hΔ) (actualFrobenius_det p L hpTwo hΔ) (Module.finrank (ZMod p) E)
+  exact hActual.symm.trans hRec
 
 end
 end ManuscriptAudit.CubicGoodReductionPointCountsModTwo

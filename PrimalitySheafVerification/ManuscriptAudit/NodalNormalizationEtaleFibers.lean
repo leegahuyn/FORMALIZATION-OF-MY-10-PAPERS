@@ -35,7 +35,7 @@ private theorem points_lift {P U V S : Scheme.{u}}
 
 private theorem projection_eq_of_isIso_nearby {X Y U D : Scheme.{u}}
     (f : X ⟶ Y) (a : U ⟶ Y) (g : D ⟶ Y) [IsIso (pullback.fst g f)]
-    (s t : pullback a f) (u : U) (d : D) (hd : a u = g d)
+    (s t : ↥(pullback a f)) (u : U) (d : D) (hd : a u = g d)
     (hs : pullback.fst a f s = u) (ht : pullback.fst a f t = u) : s = t := by
   let m := pullback.fst a g
   let q := pullback.snd a g
@@ -82,9 +82,10 @@ theorem points_equal_off_conductor (U : (affineNode K).Etale) (s t : (Norm K U).
     (hs : pullback.fst U.hom (affineNormalization K) s = u)
     (ht : pullback.fst U.hom (affineNormalization K) t = u) : s = t := by
   have h : U.hom u ∈ Set.range (nodePunctureMap K) := by
-    change U.hom u ∈ Set.range (Spec.map (CommRingCat.ofHom
-      (algebraMap (NodalNormalizationFiber.A K) (NodalNormalizationPuncture.nodeRing K))))
-    rw [PrimeSpectrum.localization_away_comap_range _ (NodalAwayNormalization.nodeX K)]
+    change U.hom u ∈ Set.range (PrimeSpectrum.comap
+      (algebraMap (NodalNormalizationFiber.A K) (NodalNormalizationPuncture.nodeRing K)))
+    rw [PrimeSpectrum.localization_away_comap_range (NodalNormalizationPuncture.nodeRing K)
+      (NodalAwayNormalization.nodeX K)]
     change nodeX K ∉ (U.hom u : PrimeSpectrum (NodalNormalizationFiber.A K)).asIdeal
     intro hx
     exact hu ((prime_eq_origin_iff_x_mem K _).mpr hx)
@@ -105,7 +106,7 @@ theorem point_lifts_to_branch (U : (affineNode K).Etale) (s : (Norm K U).left)
     rw [← h]
     change (pullback.snd U.hom (affineNormalization K) ≫ affineNormalization K) s =
       (pullback.fst U.hom (affineNormalization K) ≫ U.hom) s
-    rw [pullback.condition]
+    rw [pullback.condition] <;> rfl
   rcases (point_over_node K t).mp ht with h₁ | h₂
   · obtain ⟨c, hc, _⟩ := points_lift (restrictionSquare (branchMap K 1) (plus_over_node K) U)
       s (IsLocalRing.closedPoint K) h₁

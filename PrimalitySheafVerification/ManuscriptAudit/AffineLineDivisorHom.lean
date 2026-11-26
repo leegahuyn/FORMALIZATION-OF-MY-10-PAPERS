@@ -78,17 +78,17 @@ def integralDivisor :
     let V₀ := unop V
     let B := coordinateRing K U₀.obj
     let C := coordinateRing K V₀.obj
-    letI := coordinateAlgebra K U₀.obj
-    letI := coordinateAlgebra K V₀.obj
-    letI := coordinateAlgebra_etale K U₀.obj
-    letI := coordinateAlgebra_etale K V₀.obj
+    letI : Algebra (A K) B := coordinateAlgebra K U₀.obj
+    letI : Algebra (A K) C := coordinateAlgebra K V₀.obj
+    letI : Algebra.Etale (A K) B := coordinateAlgebra_etale K U₀.obj
+    letI : Algebra.Etale (A K) C := coordinateAlgebra_etale K V₀.obj
     letI : IsDomain B := U₀.property
     letI : IsDomain C := V₀.property
     let g := (I K).map h.unop
-    let f := coordinateMap K g
+    let f : B →ₐ[A K] C := coordinateMap K g
     letI : Algebra B C := f.toRingHom.toAlgebra
     letI : IsScalarTower (A K) B C := IsScalarTower.of_algebraMap_eq (fun r ↦ (f.commutes r).symm)
-    letI : Algebra.Etale B C := Algebra.Etale.of_restrictScalars (R := A K)
+    letI : Algebra.Etale B C := Algebra.Etale.of_restrictScalars (A K) B C
     let e := coordinateChartIso K U₀.obj U₀.property
     let e' := coordinateChartIso K V₀.obj V₀.property
     let b : (source K F).obj.obj (op (chartObject K B)) ⟶
@@ -97,8 +97,13 @@ def integralDivisor :
     let c : (source K F).obj.obj (op (chartObject K C)) ⟶
         (affineDivisorSheaf K).obj.obj (op (chartObject K C)) :=
       AddCommGrpCat.ofHom (chartDivisorMap K C F)
-    have hSquare : e'.hom ≫ g = chartArrow K B C ≫ e.hom :=
-      coordinateMap_chart_comm K g U₀.property V₀.property
+    have hAlg : IsScalarTower.toAlgHom (A K) B C = f := AlgHom.ext fun _ ↦ rfl
+    have hSquare : e'.hom ≫ g = chartArrow K B C ≫ e.hom := by
+      change e'.hom ≫ g = (Scheme.AffineEtale.Spec (X K)).preimage
+        (X := chartObject K C) (Y := chartObject K B)
+        (algebraEtaleMap (IsScalarTower.toAlgHom (A K) B C)) ≫ e.hom
+      rw [hAlg]
+      exact coordinateMap_chart_comm K g U₀.property V₀.property
     have hMap :
         (source K F).obj.map (chartArrow K B C).op ≫ c =
           b ≫ (affineDivisorSheaf K).obj.map (chartArrow K B C).op := by

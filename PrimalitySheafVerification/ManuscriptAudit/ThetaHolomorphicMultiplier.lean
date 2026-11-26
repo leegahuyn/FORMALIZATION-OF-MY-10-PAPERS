@@ -143,8 +143,10 @@ theorem ratio_eq_phase (γ : GammaTwo) (z : ℍ) : ratio γ z = phase γ := by
     let w : ℍ := ⟨τ, hτ⟩
     change ‖ratio γ w‖ ≤ ‖phase γ‖
     rw [ratio_norm, phase_norm]
-  exact Complex.eqOn_of_isPreconnected_of_isMaxOn_norm hConv.isPreconnected
-    UpperHalfPlane.isOpen_upperHalfPlaneSet (ratio_differentiable γ) hI hMax z z.im_pos
+  have hPhase := Complex.eqOn_of_isPreconnected_of_isMaxOn_norm hConv.isPreconnected
+    UpperHalfPlane.isOpen_upperHalfPlaneSet (ratio_differentiable γ) hI hMax
+  have hz : (z : ℂ) ∈ C := z.im_pos
+  exact hPhase hz
 
 theorem theta_transformation (γ : GammaTwo) (z : ℍ) :
     jacobiTheta ((γ • z : ℍ) : ℂ) =
@@ -153,6 +155,8 @@ theorem theta_transformation (γ : GammaTwo) (z : ℍ) :
   rw [ratio, mobius_coe] at h
   have hQ := (div_eq_iff (mul_ne_zero (halfFactor_ne_zero _ z)
     (jacobiTheta_ne_zero_upperHalfPlane z))).mp h
+  change jacobiTheta (((γ : SL(2, ℤ)) • z : ℍ) : ℂ) =
+    phase γ * halfFactor (γ : SL(2, ℤ)) z * jacobiTheta (z : ℂ)
   simpa only [mul_assoc] using hQ
 
 end

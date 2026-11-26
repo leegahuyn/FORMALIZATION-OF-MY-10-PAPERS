@@ -37,7 +37,7 @@ private theorem three_nsmul_eq_zero_iff {G : Type*} [AddCommGroup G] (P : G) :
   · intro h
     rw [h, neg_add_cancel]
 
-/-- The affine point is three-torsion exactly when its tangent meets it with multiplicity three. -/
+/-- The coordinate criterion for actual three-torsion on the affine chart. -/
 theorem three_nsmul_affine_some_iff {A x y : K}
     (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
     (h : (CubicAffine (0 : K) A).Nonsingular x y) :
@@ -50,7 +50,7 @@ theorem three_nsmul_affine_some_iff {A x y : K}
       intro hp
       rw [show (3 : ℕ) = 2 + 1 by decide, add_nsmul, htwo, zero_add, one_nsmul] at hp
       exact Affine.Point.some_ne_zero h hp
-    simp [hy, hnot]
+    exact ⟨fun hp => False.elim (hnot hp), fun hCoords => False.elim (hCoords.1 hy)⟩
   · have hnegY (a b : K) : W.negY a b = -b := by
       simp [W, CubicAffine, shortCubic, Affine.negY]
     have hd : (2 : K) * y ≠ 0 := mul_ne_zero h₂ hy
