@@ -41,6 +41,8 @@ private theorem etaleForget_continuous :
     (Scheme.Etale.forget X).IsContinuous X.smallEtaleTopology (Scheme.etaleTopology.over X) := by
   let G := Scheme.Etale.forget X
   let K := Scheme.etaleTopology.over X
+  letI : G.LocallyCoverDense K :=
+    Scheme.locallyCoverDense_of_le X (le_rfl : @AlgebraicGeometry.Etale ≤ @AlgebraicGeometry.Etale)
   letI : PreservesFiniteLimits G := inferInstanceAs
     (PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ X))
   letI : RepresentablyFlat G := flat_of_preservesFiniteLimits G
@@ -67,7 +69,8 @@ private def constantToContinuous :
       map_add' := by intros; ext w; rfl }
   naturality := by
     intro W W' f
-    ext a w <;> rfl
+    ext a
+    rfl
 
 private theorem constantToContinuous_locallyInjective :
     Presheaf.IsLocallyInjective X.smallEtaleTopology (constantToContinuous X M) where

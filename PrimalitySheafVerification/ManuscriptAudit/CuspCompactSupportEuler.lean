@@ -41,7 +41,6 @@ private theorem map_annihilated_id {C D : Type*} [Category C] [Category D]
 
 private theorem coeff_annihilated : ℓ • 𝟙 (coeff ℓ) = 0 := by
   ext x
-  apply ULift.ext
   change ℓ • x.down = 0
   rw [nsmul_eq_mul, ZMod.natCast_self, zero_mul]
 
@@ -58,6 +57,7 @@ private theorem extensionByZero_additive {U X : Scheme.{u}} (j : U ⟶ X)
   letI : (restriction j G.{u}).Additive := ⟨by intros; rfl⟩
   exact (abelianExtensionByZeroAdjunction j).left_adjoint_additive
 
+set_option maxHeartbeats 1400000 in
 private theorem extensionCohomology_annihilated {U X : Scheme.{u}} (j : U ⟶ X)
     [IsOpenImmersion j] (n : ℕ) (x : Sheaf.H
       ((extensionByZero j G.{u}).obj ((constantSheaf U.smallEtaleTopology G.{u}).obj (coeff ℓ))) n) :
@@ -70,7 +70,9 @@ private theorem extensionCohomology_annihilated {U X : Scheme.{u}} (j : U ⟶ X)
   have he := map_annihilated_id ℓ E (F.obj (coeff ℓ)) hf
   have hH := map_annihilated_id ℓ (Sheaf.functorH X.smallEtaleTopology n)
     (E.obj (F.obj (coeff ℓ))) he
-  exact ConcreteCategory.congr_hom hH x
+  have hx := congrArg (fun f => AddCommGrpCat.Hom.hom f x) hH
+  change ℓ • x = 0 at hx
+  exact hx
 
 local instance cuspModule (n : ℕ) :
     Module (ZMod ℓ) (cuspHc K (coeff ℓ) n) := by
@@ -122,7 +124,15 @@ theorem lowDegreeEulerDifference
     ((Sheaf.H.map s.g 0).toZModLinearMap ℓ)
     ((connecting K (coeff ℓ)).toZModLinearMap ℓ)
     ((Sheaf.H.map s.f 1).toZModLinearMap ℓ) hf hfg hgd hdi hi
-  simpa only [e.finrank_eq, Module.finrank_self, Nat.cast_one] using h
+  have hb : Module.finrank (ZMod ℓ) (boundaryHZero K ℓ) = 1 :=
+    e.finrank_eq.trans (Module.finrank_self (ZMod ℓ))
+  change ((Module.finrank (ZMod ℓ) (cuspHc K (coeff ℓ) 0) : ℤ) -
+    Module.finrank (ZMod ℓ) (cuspHc K (coeff ℓ) 1)) -
+    ((Module.finrank (ZMod ℓ) (punctureHc K (coeff ℓ) 0) : ℤ) -
+    Module.finrank (ZMod ℓ) (punctureHc K (coeff ℓ) 1)) =
+    (Module.finrank (ZMod ℓ) (boundaryHZero K ℓ) : ℤ) at h
+  rw [hb, Nat.cast_one] at h
+  exact h
 
 /-- The higher comparison preserves the dimensions in every degree at least two. -/
 theorem higherFinrank_eq (n : ℕ) :

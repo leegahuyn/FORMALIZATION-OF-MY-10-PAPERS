@@ -74,7 +74,9 @@ theorem projectiveCusp_irreducible : IrreducibleSpace (projectiveCusp K) := by
   have hClosure : closure (Set.range (affineOpen K)) = Set.univ :=
     dense_iff_closure_eq.mp (affineOpen K).denseRange
   rw [irreducibleSpace_def]
-  exact hClosure ▸ hRange.closure
+  change IsIrreducible (Set.univ : Set (projectiveCusp K))
+  rw [← hClosure]
+  exact hRange.closure
 
 theorem projectiveCusp_preconnected : PreconnectedSpace (projectiveCusp K) := by
   letI := projectiveCusp_irreducible K
