@@ -83,12 +83,12 @@ private theorem toProjective_surjective : Function.Surjective (toProjective K) :
     have hrel : P ≈ (![0, 1, 0] : Fin 3 → K) := by
       rw [← hs]
       exact smul_equiv _ (isUnit_iff_ne_zero.mpr hy)
-    exact ⟨none, Subtype.ext (Quotient.eq.mpr hrel.symm)⟩
+    exact ⟨none, Subtype.ext (Quotient.eq.mpr (Setoid.symm hrel))⟩
   · have hrel := equiv_some_of_Z_ne_zero hz
     have ha := (equation_some (P 0 / P 2) (P 1 / P 2)).mp
       ((equation_of_equiv hrel).mp he)
     exact ⟨some ⟨(P 0 / P 2, P 1 / P 2), (affine_equation K _ _).mp ha⟩,
-      Subtype.ext (Quotient.eq.mpr hrel.symm)⟩
+      Subtype.ext (Quotient.eq.mpr (Setoid.symm hrel))⟩
 
 /-- The projective points are the full affine nodal chart and the unique point at infinity. -/
 def projectiveEquiv : Option (affinePoints K) ≃ projectivePoints K :=

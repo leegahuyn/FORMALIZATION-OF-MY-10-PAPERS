@@ -7,8 +7,14 @@ on:
       - 'PrimalitySheafVerification/ManuscriptAudit/*.lean'
       - 'PrimalitySheafVerification/Spt5.lean'
       - 'PrimalitySheafVerification/Spt3.lean'
+      - 'PrimalitySheafVerification/Spt2.lean'
       - 'PrimalitySheafVerification/Spt1.lean'
       - 'PrimalitySheafVerification/Spt6.lean'
+      - 'Mathlib/**'
+      - 'Mathlib.lean'
+      - 'lakefile.lean'
+      - 'lake-manifest.json'
+      - 'lean-toolchain'
 permissions:
   contents: read
 env:

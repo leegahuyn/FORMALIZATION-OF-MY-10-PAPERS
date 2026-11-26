@@ -104,9 +104,13 @@ theorem exists_polynomial_zero {K : Type*} [Field K] [IsAlgClosed K] {n d : ℕ}
     HomogeneousPolynomialSubstitution.natDegree_eval₂_le P hP hL MvPolynomial.C g hg
   have hcount : L + d * N + 1 < n * (N + 1) := by
     have h : L + d * N + 1 < (d + 1) * (N + 1) := by
-      rw [Nat.add_mul, Nat.one_mul, Nat.mul_add, Nat.mul_one]
-      have hN : L < N := Nat.lt_succ_self L
-      omega
+      calc
+        L + d * N + 1 = d * N + N := by
+          change L + d * (L + 1) + 1 = d * (L + 1) + (L + 1)
+          ac_rfl
+        _ < d * N + N + (d + 1) := Nat.lt_add_of_pos_right (Nat.succ_pos d)
+        _ = (d + 1) * (N + 1) := by
+          simp only [Nat.mul_add, Nat.add_mul, Nat.one_mul, Nat.mul_one]
     exact h.trans_le (Nat.mul_le_mul_right _ (Nat.succ_le_of_lt hn))
   have hGZero (i : Fin n) : (g i).map (MvPolynomial.eval (0 : A → K)) = 0 := by
     change (∑ j : Fin (N + 1), Polynomial.monomial j.val (X (e (i, j)))).map _ = 0
