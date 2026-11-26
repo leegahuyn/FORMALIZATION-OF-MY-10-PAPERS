@@ -25,10 +25,8 @@ variable (K : Type u) [Field K]
 
 private theorem away_algebraMap_injective {R : Type*} [CommRing R] [IsDomain R]
     {a : R} (ha : a ≠ 0) : Function.Injective (algebraMap R (Localization.Away a)) := by
-  apply IsLocalization.injective (Localization.Away a)
-  apply le_nonZeroDivisors_of_noZeroDivisors
-  rintro ⟨n, hn⟩
-  exact pow_ne_zero n ha hn
+  exact IsLocalization.injective (M := Submonoid.powers a) (Localization.Away a)
+    (powers_le_nonZeroDivisors_of_noZeroDivisors ha)
 
 private theorem parameter_coefficient_ne_zero : (1 : Polynomial K) - Polynomial.X ^ 2 ≠ 0 := by
   intro h
@@ -56,14 +54,14 @@ theorem xCoeff_ne_zero : xCoeff K ≠ 0 := by
 
 instance yCoordinateRing_isDomain : IsDomain (yCoordinateRing K) := by
   letI : IsDomain (Localization.Away ((1 : Polynomial K) - Polynomial.X ^ 2)) :=
-    IsLocalization.Away.isDomain (parameter_coefficient_ne_zero K)
+    Localization.Away.isDomain (parameter_coefficient_ne_zero K)
   exact (coordinateEquiv K).toRingEquiv.toMulEquiv.isDomain _
 
 private theorem overlapEquiv_algebraMap (a : yCoordinateRing K) :
     overlapEquiv K (algebraMap (yCoordinateRing K) (overlapRing K) a) = yToParameter K a := by
   change toParameter K (algebraMap (yCoordinateRing K) (overlapRing K) a) = _
   unfold toParameter
-  rw [IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq]
+  rw [IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq] <;> rfl
 
 theorem yToParameter_injective : Function.Injective (yToParameter K) := by
   intro a b h

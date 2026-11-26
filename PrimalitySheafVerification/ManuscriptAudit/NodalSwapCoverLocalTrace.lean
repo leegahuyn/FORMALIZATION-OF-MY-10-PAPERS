@@ -45,18 +45,18 @@ theorem affineTrace_surjective_of_section (h2 : (2 : K) ≠ 0) (g : E K →ₐ[A
     Function.Surjective (affineTrace K R M h2) := by
   letI : Algebra (E K) R := g.toRingHom.toAlgebra
   letI : IsScalarTower (A K) (E K) R := IsScalarTower.of_algHom g
-  letI : Module.Finite (A K) (E K) := (cover_finite_etale K h2).1
-  letI : Module.FaithfullyFlat (A K) (E K) := cover_faithfullyFlat K h2
-  let c := NodalSwapCoverTorsor.certificate K h2
-  let e := CertifiedTorsorSplit.firstIdempotent (A K) (E K) R (swap K) c
-  let f := CertifiedTorsorSplit.secondIdempotent (A K) (E K) R (swap K) c
+  let sw : E K ≃ₐ[A K] E K := swap K
+  let c : InvolutionTensorComparison.CertifiedComparison (A K) (E K) sw :=
+    NodalSwapCoverTorsor.certificate K h2
+  have hsw : Function.Involutive sw := swap_twice K
+  let e := CertifiedTorsorSplit.firstIdempotent (A K) (E K) R sw c
+  let f := CertifiedTorsorSplit.secondIdempotent (A K) (E K) R sw c
   exact CertifiedTorsorSpectrumTrace.spectrumTrace_surjective_of_idempotents R (coverOver K R)
-    (coverOverSwap K R)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
-    (coverOverCertificate K R h2) inferInstance inferInstance e f
-    (CertifiedTorsorSplit.idempotents_mul (A K) (E K) R (swap K) c)
-    (CertifiedTorsorSplit.idempotents_add (A K) (E K) R (swap K) c)
-    (CertifiedTorsorSplit.deck_firstIdempotent (A K) (E K) R (swap K) c (swap_twice K))
+    (M := M) (coverOverSwap K R) (coverOverSwap_involutive K R)
+    (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2) e f
+    (CertifiedTorsorSplit.idempotents_mul (A K) (E K) R sw c)
+    (CertifiedTorsorSplit.idempotents_add (A K) (E K) R sw c)
+    (CertifiedTorsorSplit.deck_firstIdempotent (A K) (E K) R sw c hsw)
 
 variable (U : aff K)
 
@@ -86,7 +86,8 @@ theorem refinement_cover (h2 : (2 : K) ≠ 0) :
   rw [Scheme.AffineEtale.topology, Functor.mem_inducedTopology_iff_of_isCoverDense,
     Sieve.functorPushforward_ofArrows]
   apply KummerSiteCover.singleton_mem_smallEtaleTopology
-  letI : Module.FaithfullyFlat (A K) (E K) := cover_faithfullyFlat K h2
+  letI : Module.FaithfullyFlat (objectRing (A K) U) (tensorRing (A K) (E K) U) :=
+    coverOver_faithfullyFlat K (objectRing (A K) U) h2
   change Function.Surjective (PrimeSpectrum.comap
     (algebraMap (objectRing (A K) U) (tensorRing (A K) (E K) U)))
   exact PrimeSpectrum.comap_surjective_of_faithfullyFlat

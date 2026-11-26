@@ -29,9 +29,20 @@ variable (K : Type u) [Field K]
 private abbrev A : Type u := ↥(coordinates K)
 private abbrev E : Type u := Cover K
 
+private abbrev nodeSwap : E K ≃ₐ[A K] E K := swap K
+
+private theorem nodeSwap_involutive : Function.Involutive (nodeSwap K) := swap_twice K
+
+private theorem flatAfterBaseChange (A E R : Type u) [CommRing A] [CommRing E]
+    [CommRing R] [Algebra A E] [Algebra A R] (h : Module.FaithfullyFlat A E) :
+    Module.FaithfullyFlat R (R ⊗[A] E) := by
+  letI := h
+  infer_instance
+
 theorem cover_faithfullyFlat (h2 : (2 : K) ≠ 0) : Module.FaithfullyFlat (A K) (E K) := by
   letI : Algebra.Etale (A K) (E K) := (cover_finite_etale K h2).2
-  exact Module.FaithfullyFlat.of_comap_surjective (cover_spec_surjective K h2)
+  exact Module.FaithfullyFlat.of_comap_surjective (A := A K) (B := E K)
+    (cover_spec_surjective K h2)
 
 section ScalarExtension
 
@@ -40,29 +51,37 @@ variable (R : Type u) [CommRing R] [Algebra (A K) R]
 abbrev coverOver := R ⊗[A K] E K
 
 abbrev coverOverSwap :=
-  InvolutionTensorBaseChange.baseSwap (A K) (E K) R (swap K)
+  @InvolutionTensorBaseChange.baseSwap (A K) (E K) R
+    (coordinates K).toCommRing (crossedPairs K).toCommRing inferInstance
+    (crossedPairs K).algebra inferInstance (nodeSwap K)
+
+theorem coverOverSwap_involutive : Function.Involutive (coverOverSwap K R) :=
+  @InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R
+    (coordinates K).toCommRing (crossedPairs K).toCommRing inferInstance
+    (crossedPairs K).algebra inferInstance (nodeSwap K) (nodeSwap_involutive K)
 
 set_option maxHeartbeats 900000 in
 def coverOverCertificate (h2 : (2 : K) ≠ 0) :=
   @CertifiedTorsorBaseChange.liftCertified (A K) (E K) R
     (coordinates K).toCommRing (crossedPairs K).toCommRing inferInstance
-    (crossedPairs K).algebra inferInstance (swap K) (NodalSwapCoverTorsor.certificate K h2)
+    (crossedPairs K).algebra inferInstance (nodeSwap K) (NodalSwapCoverTorsor.certificate K h2)
 
-private theorem coverOver_finite (h2 : (2 : K) ≠ 0) : Module.Finite R (coverOver K R) := by
+theorem coverOver_finite (h2 : (2 : K) ≠ 0) : Module.Finite R (coverOver K R) := by
   letI : Module.Finite (A K) (E K) := (cover_finite_etale K h2).1
   infer_instance
 
-private theorem coverOver_faithfullyFlat (h2 : (2 : K) ≠ 0) :
-    Module.FaithfullyFlat R (coverOver K R) := by
-  letI : Module.FaithfullyFlat (A K) (E K) := cover_faithfullyFlat K h2
-  infer_instance
+theorem coverOver_faithfullyFlat (h2 : (2 : K) ≠ 0) :
+    Module.FaithfullyFlat R (coverOver K R) :=
+  @flatAfterBaseChange (A K) (E K) R
+    (coordinates K).toCommRing (crossedPairs K).toCommRing inferInstance
+    (crossedPairs K).algebra inferInstance (cover_faithfullyFlat K h2)
 
 variable (M : Type v) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGroup M]
 
 set_option maxHeartbeats 900000 in
 def affineTrace (h2 : (2 : K) ≠ 0) :=
   spectrumTrace R (coverOver K R) (M := M) (coverOverSwap K R)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+    (coverOverSwap_involutive K R)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
 
 set_option maxHeartbeats 950000 in
@@ -70,8 +89,8 @@ theorem affineTrace_kernel (h2 : (2 : K) ≠ 0) (htwo : ∀ m : M, m + m = 0)
     (s : C(PrimeSpectrum (coverOver K R), M)) :
     affineTrace K R M h2 s = 0 ↔
       ∃ t : C(PrimeSpectrum R, M), t.comp (projection R (coverOver K R)) = s :=
-  spectrumTrace_kernel R (coverOver K R) (coverOverSwap K R)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+  spectrumTrace_kernel R (coverOver K R) (M := M) (coverOverSwap K R)
+    (coverOverSwap_involutive K R)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
     htwo s
 
@@ -80,8 +99,8 @@ theorem affineTrace_eq_zero_of_connected (h2 : (2 : K) ≠ 0)
     [PreconnectedSpace (PrimeSpectrum (coverOver K R))] [TotallyDisconnectedSpace M]
     (htwo : ∀ m : M, m + m = 0) (s : C(PrimeSpectrum (coverOver K R), M)) :
     affineTrace K R M h2 s = 0 :=
-  spectrumTrace_zero_of_connected R (coverOver K R) (coverOverSwap K R)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+  spectrumTrace_zero_of_connected R (coverOver K R) (M := M) (coverOverSwap K R)
+    (coverOverSwap_involutive K R)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
     htwo s
 
@@ -117,11 +136,11 @@ theorem affineTrace_natural (h2 : (2 : K) ≠ 0) (f : R →ₐ[A K] S)
     (s : C(PrimeSpectrum (coverOver K R), M)) :
     affineTrace K S M h2 (s.comp (spectrumMap (coverOverMap K R S f).toRingHom)) =
       (affineTrace K R M h2 s).comp (spectrumMap f.toRingHom) :=
-  spectrumTrace_natural R (coverOver K R) (coverOverSwap K R)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) R (swap K) (swap_twice K))
+  spectrumTrace_natural R (coverOver K R) (M := M) (coverOverSwap K R)
+    (coverOverSwap_involutive K R)
     (coverOverCertificate K R h2) (coverOver_finite K R h2) (coverOver_faithfullyFlat K R h2)
     (coverOverSwap K S)
-    (InvolutionTensorBaseChange.baseSwap_involutive (A K) (E K) S (swap K) (swap_twice K))
+    (coverOverSwap_involutive K S)
     (coverOverCertificate K S h2) (coverOver_finite K S h2) (coverOver_faithfullyFlat K S h2)
     f.toRingHom (coverOverMap K R S f).toRingHom (coverOverMap_base K R S f)
     (coverOverMap_deck K R S f) s
@@ -134,7 +153,7 @@ variable (M : Type v) [TopologicalSpace M] [AddCommGroup M] [IsTopologicalAddGro
 
 set_option maxHeartbeats 950000 in
 def globalTrace (h2 : (2 : K) ≠ 0) :=
-  spectrumTrace (A K) (E K) (M := M) (swap K) (swap_twice K)
+  spectrumTrace (A K) (E K) (M := M) (nodeSwap K) (nodeSwap_involutive K)
     (NodalSwapCoverTorsor.certificate K h2) (cover_finite_etale K h2).1 (cover_faithfullyFlat K h2)
 
 set_option maxHeartbeats 950000 in
@@ -143,7 +162,7 @@ theorem globalTrace_eq_zero (h2 : (2 : K) ≠ 0) [TotallyDisconnectedSpace M]
     globalTrace K M h2 s = 0 := by
   letI : ConnectedSpace (PrimeSpectrum (E K)) :=
     NodalSwapCoverConnected.connected_spectrum K h2
-  exact spectrumTrace_zero_of_connected (A K) (E K) (swap K) (swap_twice K)
+  exact spectrumTrace_zero_of_connected (A K) (E K) (M := M) (nodeSwap K) (nodeSwap_involutive K)
     (NodalSwapCoverTorsor.certificate K h2) (cover_finite_etale K h2).1 (cover_faithfullyFlat K h2)
     htwo s
 

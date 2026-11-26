@@ -20,7 +20,7 @@ open PrimalitySheafVerification.ManuscriptAudit
   (paper5TraceCurve paper5_arbitrarily_large_good_trace_zero)
 open FiniteFieldPointCount (shortCubic)
 
-private theorem printed_cubic_baseChange_eq_zero (p : ℕ) {L : Type*} [Field L]
+theorem printed_cubic_baseChange_eq_zero (p : ℕ) {L : Type*} [Field L]
     [Fact p.Prime] [Algebra (ZMod p) L] (A : ZMod p) :
     (paper5TraceCurve p A).baseChange L =
       shortCubic (0 : L) (algebraMap (ZMod p) L A) := by

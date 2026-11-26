@@ -92,7 +92,7 @@ private def unitFiberKernel (u : Fˣ) :
   left_inv x := Subtype.ext (by change x.val * u⁻¹ * u = x.val; simp [mul_assoc])
   right_inv y := Subtype.ext (by change y.val * u * u⁻¹ = y.val; simp [mul_assoc])
 
-private theorem cubeMultiplicity_eq_three (hdiv : 3 ∣ Fintype.card F - 1)
+theorem cubeMultiplicity_eq_three (hdiv : 3 ∣ Fintype.card F - 1)
     {z : F} (hz : z ≠ 0) (h : ∃ x : F, x ^ 3 = z) : cubeMultiplicity z = 3 := by
   obtain ⟨x, hx⟩ := h
   have hn : x ≠ 0 := by

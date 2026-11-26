@@ -28,7 +28,7 @@ abbrev regularOrder (p : HeightOneSpectrum R) (a : R) : ℕ∞ :=
 
 private local instance localDVR (p : HeightOneSpectrum R) :
     IsDiscreteValuationRing (Localization.AtPrime p.asIdeal) :=
-  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain p.ne_bot _
+  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain R p.ne_bot _
 
 /-- The global ideal order is the additive order in the actual local ring. -/
 theorem local_addVal_eq_regularOrder (p : HeightOneSpectrum R) (a : R) :

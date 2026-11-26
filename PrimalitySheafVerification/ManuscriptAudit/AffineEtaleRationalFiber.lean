@@ -80,6 +80,28 @@ def rationalFiberEquiv :
     ((AlgHom.liftEquiv A K B K).trans
       (IntegralRationalPoints.primeSpectrumEquivAlgHom K (K ⊗[A] B)).symm)
 
+/-- The prime indexing a geometric lift contracts to the actual underlying
+point of that lift on the affine étale chart. -/
+theorem rationalFiberEquiv_under (x : (point A K).fiber.obj (algebraEtaleObject A B)) :
+    (rationalFiberEquiv A B K x).asIdeal.comap
+        (Algebra.TensorProduct.includeRight : B →ₐ[A] K ⊗[A] B) =
+      (x.left (default : Spec (CommRingCat.of K))).asIdeal := by
+  let E := specOverHomEquiv A B K
+  let f : B →ₐ[A] K := E.symm x
+  have hf : Spec.map (CommRingCat.ofHom f.toRingHom) = x.left :=
+    congrArg (fun g : Over.mk (specAlgebraMap A K) ⟶ Over.mk (specAlgebraMap A B) => g.left)
+      (E.apply_symm_apply x)
+  rw [← hf]
+  change _ = Ideal.comap f (default : PrimeSpectrum K).asIdeal
+  have hZero : (default : PrimeSpectrum K).asIdeal = ⊥ := Ideal.eq_bot_of_prime _
+  rw [hZero, ← RingHom.ker_eq_comap_bot]
+  let L := AlgHom.liftEquiv A K B K
+  change (RingHom.ker (L f)).comap
+      (Algebra.TensorProduct.includeRight : B →ₐ[A] K ⊗[A] B) = RingHom.ker f
+  calc
+    _ = RingHom.ker (L.symm (L f)) := rfl
+    _ = RingHom.ker f := congrArg (fun g : B →ₐ[A] K => RingHom.ker g) (L.symm_apply_apply f)
+
 /-- The sections of the actual étale skyscraper are indexed by the
 prime ideals of the scheme-theoretic affine fiber. -/
 def skyscraperAffineIso (M : AddCommGrpCat.{0}) :
@@ -96,6 +118,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.AffineEtaleRationalFiber.rationalFiberEquiv,
+      ``ManuscriptAudit.AffineEtaleRationalFiber.rationalFiberEquiv_under,
       ``ManuscriptAudit.AffineEtaleRationalFiber.skyscraperAffineIso] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

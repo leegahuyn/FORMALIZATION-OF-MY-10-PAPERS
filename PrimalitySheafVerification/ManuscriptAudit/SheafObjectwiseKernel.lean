@@ -1,9 +1,10 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Abelian
 
 /-!
 # Detecting a kernel on values of abelian sheaves
@@ -22,13 +23,14 @@ noncomputable section
 universe u v w
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
+variable [HasSheafify J AddCommGrpCat.{w}]
 variable {F G D : Sheaf J AddCommGrpCat.{w}} (a : F ⟶ G) (b : G ⟶ D)
 
 theorem mono_of_value_injective
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U)) : Mono a := by
   letI : Mono a.hom := (NatTrans.mono_iff_mono_app a.hom).mpr fun U =>
     ConcreteCategory.mono_of_injective _ (ha U)
-  exact Sheaf.Hom.mono_of_presheaf_mono a
+  exact Sheaf.Hom.mono_of_presheaf_mono J a
 
 private def lift {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0)
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U))
@@ -42,8 +44,8 @@ private def lift {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0
   let y (U : Cᵒᵖ) (x : H.obj.obj U) := Classical.choose (hex U x)
   have hy (U : Cᵒᵖ) (x : H.obj.obj U) : a.hom.app U (y U x) = k.hom.app U x :=
     Classical.choose_spec (hex U x)
-  refine ⟨{ app := fun U => AddCommGrpCat.ofHom {
-      toFun := y U
+  let app (U : Cᵒᵖ) : H.obj.obj U ⟶ F.obj.obj U := AddCommGrpCat.ofHom
+    { toFun := y U
       map_zero' := by
         apply ha U
         exact (hy U 0).trans ((k.hom.app U).hom.map_zero.trans (a.hom.app U).hom.map_zero.symm)
@@ -53,25 +55,27 @@ private def lift {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0
         change (k.hom.app U).hom (x + z) = (a.hom.app U).hom (y U x + y U z)
         rw [map_add, map_add]
         exact congrArg₂ (· + ·) (hy U x).symm (hy U z).symm }
-    naturality := fun {U V} f => by
-      apply ConcreteCategory.hom_ext
-      intro x
-      apply ha V
-      change a.hom.app V (y V (H.obj.map f x)) = a.hom.app V (F.obj.map f (y U x))
-      calc
-        _ = k.hom.app V (H.obj.map f x) := hy _ _
-        _ = G.obj.map f (k.hom.app U x) :=
-          ConcreteCategory.congr_hom (k.hom.naturality f) x
-        _ = G.obj.map f (a.hom.app U (y U x)) := congrArg (G.obj.map f) (hy U x).symm
-        _ = _ := (ConcreteCategory.congr_hom (a.hom.naturality f) (y U x)).symm }⟩
-  
+  refine ⟨{ app := app, naturality := ?_ }⟩
+  intro U V f
+  apply ConcreteCategory.hom_ext
+  intro x
+  apply ha V
+  change a.hom.app V (y V (H.obj.map f x)) = a.hom.app V (F.obj.map f (y U x))
+  calc
+    _ = k.hom.app V (H.obj.map f x) := hy _ _
+    _ = G.obj.map f (k.hom.app U x) :=
+      ConcreteCategory.congr_hom (k.hom.naturality f) x
+    _ = G.obj.map f (a.hom.app U (y U x)) := congrArg (G.obj.map f) (hy U x).symm
+    _ = _ := (ConcreteCategory.congr_hom (a.hom.naturality f) (y U x)).symm
+
 private theorem lift_fac {H : Sheaf J AddCommGrpCat.{w}} (k : H ⟶ G) (hk : k ≫ b = 0)
     (ha : ∀ U : Cᵒᵖ, Function.Injective (a.hom.app U))
     (hKer : ∀ (U : Cᵒᵖ) (s : G.obj.obj U), b.hom.app U s = 0 →
       ∃ t : F.obj.obj U, a.hom.app U t = s) :
     lift a b k hk ha hKer ≫ a = k := by
   apply Sheaf.hom_ext
-  ext U : 1
+  apply NatTrans.ext
+  funext U
   apply ConcreteCategory.hom_ext
   intro x
   exact Classical.choose_spec _
@@ -90,7 +94,8 @@ theorem zero_of_value_kernel
     (h : ∀ (U : Cᵒᵖ) (s : G.obj.obj U),
       b.hom.app U s = 0 ↔ ∃ t : F.obj.obj U, a.hom.app U t = s) : a ≫ b = 0 := by
   apply Sheaf.hom_ext
-  ext U : 1
+  apply NatTrans.ext
+  funext U
   apply ConcreteCategory.hom_ext
   intro t
   exact (h U (a.hom.app U t)).mpr ⟨t, rfl⟩

@@ -49,7 +49,7 @@ variable (R S : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R]
 private local instance dvrAtHeightOne {D : Type*} [CommRing D] [IsDomain D]
     [IsDedekindDomain D] (x : HeightOneSpectrum D) :
     IsDiscreteValuationRing (Localization.AtPrime x.asIdeal) :=
-  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain x.ne_bot _
+  IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain D x.ne_bot _
 
 /-- The actual map on localizations at height-one points of an étale algebra
 preserves normalized order. -/
@@ -67,8 +67,7 @@ theorem localRingHom_addVal (r : Localization.AtPrime p.asIdeal) :
   letI : Algebra.EssFiniteType RP SQ := Algebra.EssFiniteType.of_comp R RP SQ
   letI : Algebra.FormallyUnramified R SQ :=
     inferInstanceAs (Algebra.FormallyUnramified R (Localization q.asIdeal.primeCompl))
-  letI : Algebra.FormallyUnramified RP SQ := Algebra.FormallyUnramified.of_restrictScalars
-    (R := R)
+  letI : Algebra.FormallyUnramified RP SQ := Algebra.FormallyUnramified.of_restrictScalars R RP SQ
   change addVal SQ (algebraMap RP SQ r) = _
   exact addVal_algebraMap_of_map_maximalIdeal RP SQ
     Algebra.FormallyUnramified.map_maximalIdeal r

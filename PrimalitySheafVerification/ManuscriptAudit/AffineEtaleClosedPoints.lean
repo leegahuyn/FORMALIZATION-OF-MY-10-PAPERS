@@ -46,8 +46,11 @@ private theorem comap_ne_bot (q : HeightOneSpectrum B) :
   have hJ : J = ⊥ := Ideal.eq_bot_of_prime J
   have hUnder : J.under B = q.asIdeal :=
     IsLocalization.under_map_of_isPrime_disjoint M L q.isPrime hDisj
-  rw [hJ, Ideal.under_def, ← RingHom.ker_eq_comap_bot, RingHom.ker_eq_bot.mpr
-    (IsFractionRing.injective B L)] at hUnder
+  have hKer : RingHom.ker (algebraMap B L) = ⊥ := by
+    ext b
+    rw [RingHom.mem_ker, Ideal.mem_bot, ← map_zero (algebraMap B L)]
+    exact (IsFractionRing.injective B L).eq_iff
+  rw [hJ, Ideal.under_def, ← RingHom.ker_eq_comap_bot, hKer] at hUnder
   exact q.ne_bot hUnder.symm
 
 /-- The actual contraction on height-one points of integral affine étale charts. -/
