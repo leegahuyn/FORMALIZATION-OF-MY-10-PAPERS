@@ -96,7 +96,11 @@ private theorem coproduct_stalk_isZero {X : TopCat.{0}} {P : Set X} (A : P → G
   apply (IsZero.iff_id_eq_zero _).2
   apply coproduct_stalk_hom_ext A x
   intro p
-  exact (part_stalk_isZero A hClosed p (fun e => h (e.symm ▸ p.property))).eq_of_src _ _
+  have hz : IsZero ((stalkAt x).obj (part A p)) := by
+    apply part_stalk_isZero A hClosed p
+    intro e
+    exact h (by simpa [e] using p.property)
+  exact hz.eq_of_src _ _
 
 private theorem stalkProjection_injective {X : TopCat.{0}} {P : Set X} (A : P → G)
     (hClosed : ∀ p : P, IsClosed ({(p : X)} : Set X)) (p : P) :
@@ -123,7 +127,7 @@ private theorem eq_of_projections {X : TopCat.{0}} {P : Set X} (A : P → G)
     (s t : (pointCoproduct A).obj.obj (op U))
     (h : ∀ p : P, (projection A p).hom.app (op U) s = (projection A p).hom.app (op U) t) :
     s = t := by
-  refine TopCat.Sheaf.section_ext (show TopCat.Sheaf G X from pointCoproduct A) U s t fun x hx => ?_
+  refine TopCat.Presheaf.section_ext (show TopCat.Sheaf G X from pointCoproduct A) U s t fun x hx => ?_
   by_cases hxP : x ∈ P
   · let p : P := ⟨x, hxP⟩
     apply stalkProjection_injective A hClosed p
@@ -132,7 +136,8 @@ private theorem eq_of_projections {X : TopCat.{0}} {P : Set X} (A : P → G)
         (TopCat.Presheaf.stalkFunctor G x).map (projection A p).hom
           (TopCat.Presheaf.germ (pointCoproduct A).obj U x hx t)
     simp only [TopCat.Presheaf.stalkFunctor_map_germ_apply, h p]
-  · letI := AddCommGrpCat.subsingleton_of_isZero (coproduct_stalk_isZero A hClosed hxP)
+  · letI : Subsingleton (TopCat.Presheaf.stalk (C := G) (pointCoproduct A).obj x) :=
+      AddCommGrpCat.subsingleton_of_isZero (coproduct_stalk_isZero A hClosed hxP)
     exact Subsingleton.elim _ _
 
 private theorem point_restrict_isIso {X : TopCat.{0}} (p : X) (A : G)
@@ -141,7 +146,7 @@ private theorem point_restrict_isIso {X : TopCat.{0}} (p : X) (A : G)
   classical
   change IsIso ((skyscraperPresheaf p A).map i.op)
   rw [skyscraperPresheaf_map, dif_pos hp]
-  infer_instance
+  exact (eqToIso _).isIso_hom
 
 private theorem closed_prime {P : Set X₀} (hP : (⊥ : PrimeSpectrum ℤ) ∉ P) (p : P) :
     IsClosed ({(p : X₀)} : Set X₀) := by
@@ -168,7 +173,9 @@ theorem pointCoproduct_isFlasque {P : Set X₀} (A : P → G)
   · obtain ⟨x, hx⟩ := hV
     have hηV : η ∈ unop V :=
       ((PrimeSpectrum.le_iff_specializes η x).mp bot_le).mem_open (unop V).isOpen hx
-    letI := AddCommGrpCat.subsingleton_of_isZero (coproduct_stalk_isZero A hClosed hP)
+    letI : Subsingleton (TopCat.Presheaf.stalk (C := G) F.obj η) :=
+      AddCommGrpCat.subsingleton_of_isZero
+        (coproduct_stalk_isZero A hClosed (x := η) hP)
     have hZero : TopCat.Presheaf.germ F.obj (unop V) η hηV s = TopCat.Presheaf.germ F.obj (unop V) η hηV 0 :=
       Subsingleton.elim _ _
     obtain ⟨W, hηW, i, _, hW⟩ := TopCat.Presheaf.germ_eq F.obj η hηV hηV s 0 hZero
@@ -217,10 +224,10 @@ theorem pointCoproduct_isFlasque {P : Set X₀} (A : P → G)
         apply (AddCommGrpCat.mono_iff_injective _).1
           (inferInstance : Mono ((part A p).obj.map i.op))
         simpa only [map_zero] using hProj
-      simp only [hz, if_same, Finset.sum_const_zero]
+      simp [hz]
   · refine ⟨0, ?_⟩
     rw [map_zero]
-    exact TopCat.Sheaf.section_ext (show TopCat.Sheaf G X₀ from F) (unop V) 0 s
+    exact TopCat.Presheaf.section_ext (show TopCat.Sheaf G X₀ from F) (unop V) 0 s
       (fun x hx => (hV ⟨x, hx⟩).elim)
 
 local instance (X : TopCat.{0}) : HasExt.{0} (AbelianSheaf X) :=

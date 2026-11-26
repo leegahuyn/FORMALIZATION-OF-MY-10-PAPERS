@@ -16,7 +16,7 @@ set_option maxRecDepth 512
 private abbrev G := AddCommGrpCat.{0}
 private instance : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
 
-local instance pointFactor_hasCoproduct {X : TopCat.{0}} (P : Set X) :
+local instance stalkPointFactor_hasCoproduct {X : TopCat.{0}} (P : Set X) :
     HasCoproduct (pointFactor P) :=
   abelianSheaf_hasDiscreteColimit X (Discrete.functor (pointFactor P))
 
@@ -42,7 +42,8 @@ private theorem outside_stalk_isZero {X : TopCat.{0}} {P : Set X}
     intro hsp
     have hm : x ∈ ({(p : X)} : Set X) :=
       hsp.mem_closed (hClosed (p : X) p.property) (by simp)
-    exact hx ((Set.mem_singleton_iff.mp hm).symm ▸ p.property)
+    have he : x = (p : X) := Set.mem_singleton_iff.mp hm
+    exact hx (by simpa [he] using p.property)
   exact stalkAt_factor_isZero P p h
 
 /-- The stalk support is exactly the designated set of closed points. -/

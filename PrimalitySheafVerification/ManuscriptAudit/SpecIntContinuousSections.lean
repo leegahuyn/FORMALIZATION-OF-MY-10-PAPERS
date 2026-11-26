@@ -15,7 +15,7 @@ namespace ManuscriptAudit.SpecIntContinuousSections
 
 open AlgebraicGeometry
 
-abbrev arithBase : Scheme.{0} := Spec (CommRingCat.of ℤ)
+noncomputable abbrev arithBase : Scheme.{0} := Spec (CommRingCat.of ℤ)
 
 theorem values_equal {B : Type*} [TopologicalSpace B] [T2Space B]
     (f : C(arithBase, B)) (x y : arithBase) : f x = f y := by
@@ -55,3 +55,4 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

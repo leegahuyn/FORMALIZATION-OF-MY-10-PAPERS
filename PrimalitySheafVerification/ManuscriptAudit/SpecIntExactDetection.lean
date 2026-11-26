@@ -22,14 +22,6 @@ private abbrev X := TopCat.of (PrimeSpectrum ℤ)
 local instance (S : TopCat.{0}) : HasExt.{0} (AbelianSheaf S) :=
   IsGrothendieckAbelian.hasExt _
 
-/-- Exact support also has no detecting sheaf when the prescribed support is empty. -/
-theorem exactDetectionIndex_empty (S : TopCat.{0}) : exactDetectionIndex S ∅ = ⊤ := by
-  apply top_unique
-  rw [← ClosedSupportDetection.detectionIndex_empty S]
-  apply sInf_le_sInf
-  rintro i ⟨n, hi, F, hF, hH⟩
-  exact ⟨n, hi, F, hF.le, hH⟩
-
 /-- A support containing the generic point with infinite complement has no sheaf witness. -/
 theorem no_support_of_generic_and_infinite_compl {P : Set (PrimeSpectrum ℤ)}
     (hη : (⊥ : PrimeSpectrum ℤ) ∈ P) (hFin : ¬ (Pᶜ).Finite) :
@@ -72,6 +64,13 @@ theorem specInt_exactDetectionIndex_classification (P : Set (PrimeSpectrum ℤ))
     rw [if_neg (fun h => hNonempty h.1), hEmpty]
     exact exactDetectionIndex_empty X
 
+/-- In particular the value 1 in the worked model on physical p. 202 is impossible. -/
+theorem paper6_worked_model_value_refuted (P : Set (PrimeSpectrum ℤ)) :
+    exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) P ≠ 1 := by
+  classical
+  rw [specInt_exactDetectionIndex_classification]
+  split <;> simp
+
 end
 
 end ManuscriptAudit.SpecIntExactDetection
@@ -80,9 +79,9 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
-      ``ManuscriptAudit.SpecIntExactDetection.exactDetectionIndex_empty,
       ``ManuscriptAudit.SpecIntExactDetection.no_support_of_generic_and_infinite_compl,
-      ``ManuscriptAudit.SpecIntExactDetection.specInt_exactDetectionIndex_classification] do
+      ``ManuscriptAudit.SpecIntExactDetection.specInt_exactDetectionIndex_classification,
+      ``ManuscriptAudit.SpecIntExactDetection.paper6_worked_model_value_refuted] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

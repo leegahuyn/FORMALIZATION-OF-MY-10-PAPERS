@@ -1,7 +1,8 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.NormNum
-import PrimalitySheafVerification.ManuscriptAudit.SpecIntExactDetection
+import PrimalitySheafVerification.ManuscriptAudit.ExactSupportDetection
 
 /-!
 # Reduction changes the exact-support detection index
@@ -16,7 +17,6 @@ namespace ManuscriptAudit.SpecIntSupportReduction
 
 open CategoryTheory CategoryTheory.Abelian
 open ManuscriptAudit.ClosedSupportDetection ManuscriptAudit.ExactSupportDetection
-open ManuscriptAudit.SpecIntExactDetection
 
 noncomputable section
 
@@ -70,19 +70,12 @@ theorem paper6_proposition7_2_reduction_refuted :
       exactDetectionIndex (TopCat.of (PrimeSpectrum (ZMod 2)))
         ((PrimeSpectrum.comap (Int.castRingHom (ZMod 2))) ⁻¹' {primeThree}) := by
   have hZero : exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) {primeThree} = 0 := by
-    apply ClosedPointSupportDetection.specInt_exactDetectionIndex_eq_zero _ ⟨primeThree, rfl⟩
-    intro x hx
-    rw [Set.mem_singleton_iff.mp hx]
-    exact primeThree_ne_generic
+    apply exactDetectionIndex_eq_zero_of_nonempty_closed _ ⟨primeThree, rfl⟩
+    exact (PrimeSpectrum.isClosed_singleton_iff_isMaximal primeThree).2
+      (IsPrime.to_maximal_ideal primeThree_ne_generic)
   rw [hZero, inverseImage_reductionTwo_primeThree, exactDetectionIndex_empty]
   simp
 
-/-- In particular the value 1 in the worked model on physical p. 202 is impossible. -/
-theorem paper6_worked_model_value_refuted (P : Set (PrimeSpectrum ℤ)) :
-    exactDetectionIndex (TopCat.of (PrimeSpectrum ℤ)) P ≠ 1 := by
-  classical
-  rw [specInt_exactDetectionIndex_classification]
-  split <;> simp
 
 end
 
@@ -97,8 +90,7 @@ run_cmd do
       ``ManuscriptAudit.SpecIntSupportReduction.primeThree_ne_generic,
       ``ManuscriptAudit.SpecIntSupportReduction.two_mem_reduction_comap,
       ``ManuscriptAudit.SpecIntSupportReduction.inverseImage_reductionTwo_primeThree,
-      ``ManuscriptAudit.SpecIntSupportReduction.paper6_proposition7_2_reduction_refuted,
-      ``ManuscriptAudit.SpecIntSupportReduction.paper6_worked_model_value_refuted] do
+      ``ManuscriptAudit.SpecIntSupportReduction.paper6_proposition7_2_reduction_refuted] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

@@ -92,7 +92,7 @@ private theorem kernel_stalk_isZero {X : TopCat.{0}} (η : X) (hη : ∀ x : X, 
   let q : ↑(Pᶜ : Set X) := ⟨x, hx⟩
   letI := map_testOmitted_mono η hη Pᶜ q
   exact (isZero_kernel_of_mono _).of_iso (PreservesKernel.iso (stalkAt x)
-    (testOmitted η hη Pᶜ)).symm
+    (testOmitted η hη Pᶜ))
 
 private theorem kernel_stalk_nontrivial {X : TopCat.{0}} (η : X)
     (hη : ∀ x : X, Specializes η x) {P : Set X} (hP : IsClosed Pᶜ) {x : X} (hx : x ∈ P) :

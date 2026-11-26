@@ -156,13 +156,21 @@ theorem exactDetectionIndex_eq_zero_of_nonempty_closed {X : TopCat.{0}} {P : Set
   exact sInf_le ⟨0, rfl, supportSheaf X P, supportSheaf_support_eq hClosed,
     supportSheaf_H0_nontrivial hNonempty⟩
 
+/-- Exact support also has no detecting sheaf when the prescribed support is empty. -/
+theorem exactDetectionIndex_empty (S : TopCat.{0}) : exactDetectionIndex S ∅ = ⊤ := by
+  apply top_unique
+  rw [← ClosedSupportDetection.detectionIndex_empty S]
+  apply sInf_le_sInf
+  rintro i ⟨n, hi, F, hF, hH⟩
+  exact ⟨n, hi, F, hF.le, hH⟩
+
 end
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``supportSheaf_support_eq, ``supportSheaf_H0_nontrivial,
-      ``exactDetectionIndex_eq_zero_of_nonempty_closed] do
+      ``exactDetectionIndex_eq_zero_of_nonempty_closed, ``exactDetectionIndex_empty] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
@@ -170,3 +178,4 @@ run_cmd do
     logInfo m!"{name} uses {dependencies}"
 
 end ManuscriptAudit.ExactSupportDetection
+

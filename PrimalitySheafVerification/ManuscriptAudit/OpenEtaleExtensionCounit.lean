@@ -43,7 +43,10 @@ private theorem extensionUnit_hom (F : Sheaf U.smallEtaleTopology C.{u}) :
   change (sheafToPresheaf U.smallEtaleTopology C.{u}).map (b.unit.app F) = _
   dsimp only [b]
   rw [Adjunction.map_restrictFullyFaithful_unit_app]
-  simp [a, Adjunction.comp_unit_app, Functor.lanAdjunction_unit, toSheafify]
+  simp only [Iso.refl_hom, NatTrans.id_app, Functor.map_id, Category.id_comp, Category.comp_id]
+  change ((G.lanAdjunction C.{u}).comp (sheafificationAdjunction X.smallEtaleTopology C.{u})).unit.app
+    F.obj = _
+  rw [Adjunction.comp_unit_app, Functor.lanAdjunction_unit] <;> rfl
 
 /-- The unit of extension by zero is an isomorphism at each geometric stalk of the open. -/
 theorem extensionUnit_stalk_isIso {Ω : Type u} [Field Ω] [IsSepClosed Ω]
@@ -60,7 +63,7 @@ theorem extensionUnit_stalk_isIso {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   let t := toSheafify X.smallEtaleTopology (G.lan.obj F.obj)
   have h : IsIso ((Ψ.presheafFiber (A := C.{u})).map t) := inferInstance
   letI : IsIso ((Φ.presheafFiber (A := C.{u})).map (Functor.whiskerLeft G t)) :=
-    ((presheafFiberComparisonNatIso j s).isIso_map_iff t).mp h
+    (NatIso.isIso_map_iff (presheafFiberComparisonNatIso j s) t).mp h
   change IsIso ((Φ.presheafFiber (A := C.{u})).map ((abelianExtensionByZeroAdjunction j).unit.app F).hom)
   rw [extensionUnit_hom, Functor.map_comp]
   infer_instance
@@ -74,7 +77,7 @@ theorem extensionCounit_stalk_isIso {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   let Φ := Scheme.pointSmallEtale s
   let R := restriction j C.{u}
   let e := restrictionStalkNatIso j s
-  apply (e.isIso_map_iff (a.counit.app F)).mp
+  apply (NatIso.isIso_map_iff e (a.counit.app F)).mp
   change IsIso ((Φ.sheafFiber (A := C.{u})).map (R.map (a.counit.app F)))
   let η := (Φ.sheafFiber (A := C.{u})).map (a.unit.app (R.obj F))
   let ε := (Φ.sheafFiber (A := C.{u})).map (R.map (a.counit.app F))

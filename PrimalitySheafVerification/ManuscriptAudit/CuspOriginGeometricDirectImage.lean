@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.Point.Conservative
+import PrimalitySheafVerification.ManuscriptAudit.SkyscraperUniqueRefinements
 import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleGeometricSkyscraperPushforward
 
 /-!
@@ -42,47 +43,24 @@ private abbrev p := Scheme.pointSmallEtale (𝟙 (S K))
 private abbrev T : (S K).Etale := Scheme.Etale.mk (𝟙 (S K))
 private abbrev x : (p K).fiber.obj (T K) := 𝟙 (Over.mk (𝟙 (S K)))
 
-private def identityPointInitial :
-    IsInitial (⟨T K, x K⟩ : (p K).fiber.Elements) := by
-  let e := Scheme.Etale.forgetFullyFaithful (S K)
-  refine IsInitial.ofUniqueHom (fun W => ⟨e.preimage W.2, ?_⟩) ?_
-  · change (𝟙 _ ≫ (Scheme.Etale.forget (S K)).map (e.preimage W.2)) = W.2
-    simp only [Category.id_comp, e.map_preimage]
-  · intro W f
-    apply Subtype.ext
-    apply (Scheme.Etale.forget (S K)).map_injective
-    have hf := f.property
-    change (𝟙 _ ≫ (Scheme.Etale.forget (S K)).map f.val) = W.2 at hf
-    simpa only [Category.id_comp, e.map_preimage] using hf
-
 private theorem identityPointCounitIsIso (M : C.{u}) :
     IsIso ((p K).skyscraperSheafAdjunction.counit.app M) := by
-  let Φ := p K
-  let P := Φ.skyscraperPresheaf M
-  let f := Φ.toPresheafFiber (T K) (x K) P
-  let a := Φ.skyscraperSheafAdjunction (A := C.{u})
-  letI : IsIso f := (Φ.isColimitPresheafFiberCocone P).isIso_ι_app_of_isTerminal _
-    (identityPointInitial K).op
-  letI : Unique (Φ.fiber.obj (T K)) :=
-    ⟨⟨x K⟩, fun y => (Over.mkIdTerminal (X := S K)).hom_ext y (x K)⟩
-  have hCounit : a.counit.app M = Φ.skyscraperPresheafHomEquiv.symm (𝟙 P) := by
-    rw [← Φ.skyscraperSheafAdjunction_homEquiv_symm_apply (𝟙 (Φ.skyscraperSheaf M)),
-      Adjunction.homEquiv_counit, Functor.map_id, Category.id_comp]
-  have h : f ≫ a.counit.app M = Pi.π (fun _ : Φ.fiber.obj (T K) => M) (x K) := by
-    rw [hCounit, Φ.toPresheafFiber_skyscraperPresheafHomEquiv_symm]
-    simp
-  letI : IsIso (f ≫ a.counit.app M) := by
-    rw [h]
-    exact (productUniqueIso (fun _ : Φ.fiber.obj (T K) => M)).isIso_hom
-  exact IsIso.of_isIso_comp_left f (a.counit.app M)
+  apply skyscraperCounit_isIso_of_unique_refinements (p K) _ M
+  intro W w
+  let e := Scheme.Etale.forgetFullyFaithful (S K)
+  let g : T K ⟶ W := e.preimage w
+  refine ⟨T K, g, x K, ?_, ⟨fun a b => (Over.mkIdTerminal (X := S K)).hom_ext a b⟩⟩
+  change (𝟙 _ ≫ (Scheme.Etale.forget (S K)).map g) = w
+  simpa only [Category.id_comp] using e.map_preimage w
 
 private theorem identityPointReflectsIso {F Q : Sheaf (S K).smallEtaleTopology C.{u}} (f : F ⟶ Q)
     [IsIso ((p K).sheafFiber.map f)] : IsIso f := by
   let P := ObjectProperty.ofObj (fun _ : Unit => p K)
   have hP : P.IsConservativeFamilyOfPoints :=
     Scheme.isConservative_pointSmallEtale (fun _ : Unit => 𝟙 (S K)) (by
-      ext y
-      simp)
+      rw [Set.eq_univ_iff_forall]
+      intro y
+      exact Set.mem_iUnion.mpr ⟨(), ⟨y, rfl⟩⟩)
   letI : ∀ q : P.FullSubcategory, IsIso (q.obj.sheafFiber.map f) := fun q => by
     obtain ⟨_, hq⟩ := (ObjectProperty.ofObj_iff (fun _ : Unit => p K) q.obj).mp q.property
     rw [← hq]
@@ -97,8 +75,9 @@ def separablyClosedConstantSkyscraperIso (M : C.{u}) :
   let e := constantEtaleStalkIso Φ M
   let f := (a.homEquiv _ M) e.hom
   have h : Φ.sheafFiber.map f ≫ a.counit.app M = e.hom := by
-    rw [← a.homEquiv_counit]
-    exact (a.homEquiv _ _).symm_apply_apply _
+    calc
+      _ = (a.homEquiv _ M).symm f := by symm; exact a.homEquiv_counit
+      _ = e.hom := (a.homEquiv _ M).symm_apply_apply _
   letI : IsIso (a.counit.app M) := identityPointCounitIsIso K M
   letI : IsIso (Φ.sheafFiber.map f ≫ a.counit.app M) := by rw [h]; infer_instance
   letI : IsIso (Φ.sheafFiber.map f) := IsIso.of_isIso_comp_right _ _

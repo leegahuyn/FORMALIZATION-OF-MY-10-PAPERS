@@ -55,7 +55,7 @@ theorem nestedOpenConstantMap_stalk_isIso (s : Spec (.of Ω) ⟶ V) :
     letI := extensionCounit_stalk_isIso i s F
     infer_instance
   letI : IsIso ((Ψ.sheafFiber (A := C.{u})).map ((extensionByZero j C.{u}).map m)) :=
-    ((extensionByZeroStalkNatIso j (s ≫ i)).isIso_map_iff m).mpr inferInstance
+    (NatIso.isIso_map_iff (extensionByZeroStalkNatIso j (s ≫ i)) m).mpr inferInstance
   unfold nestedOpenConstantMap
   rw [Functor.map_comp]
   infer_instance
