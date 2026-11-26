@@ -1,6 +1,9 @@
+import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 import Mathlib.AlgebraicGeometry.Sites.EtalePoint
+import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
@@ -26,8 +29,6 @@ set_option backward.isDefEq.respectTransparency false
 variable (X : Scheme.{u}) (M : AddCommGrpCat.{u}) [TopologicalSpace M]
 variable [DiscreteTopology M] [IsTopologicalAddGroup M]
 
-private abbrev toSchemes := Scheme.Etale.forget X ⋙ Over.forget X
-
 private theorem etale_le_fpqc : Scheme.etaleTopology.{u} ≤ Scheme.fpqcTopology := by
   apply le_trans _ Scheme.fppfTopology_le_fpqcTopology
   apply Precoverage.toGrothendieck_mono
@@ -44,7 +45,7 @@ private theorem etaleForget_continuous :
     (PreservesFiniteLimits (MorphismProperty.Over.forget @Etale ⊤ X))
   letI : RepresentablyFlat G := flat_of_preservesFiniteLimits G
   change G.IsContinuous (G.restrictedTopology K) K
-  exact (Functor.isContinuous_iff_coverPreserving _ _ _).mpr
+  exact Functor.isContinuous_iff_coverPreserving.mpr
     (G.coverPreserving_restrictedTopology K)
 
 /-- Continuous maps into the discrete coefficient group are a sheaf on the small étale site. -/
@@ -64,9 +65,9 @@ private def constantToContinuous :
     { toFun := ContinuousMap.const W.unop.left
       map_zero' := by ext w; rfl
       map_add' := by intros; ext w; rfl }
-  naturality f := by
-    ext a w
-    rfl
+  naturality := by
+    intro W W' f
+    ext a w <;> rfl
 
 private theorem constantToContinuous_locallyInjective :
     Presheaf.IsLocallyInjective X.smallEtaleTopology (constantToContinuous X M) where

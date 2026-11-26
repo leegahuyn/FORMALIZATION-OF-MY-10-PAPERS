@@ -48,7 +48,9 @@ private theorem map_app_epi {M N : AGrp} (f : M ⟶ N) [Epi f] (U : (Opens X)ᵒ
     infer_instance
   · have hZ : IsZero ((skyscraperSheaf p N).obj.obj U) :=
       (isTerminalSkyscraperSheafObjObjOfNotMem (A := N) hp).isZero
-    exact ⟨fun _ g h _ => hZ.eq_of_src g h⟩
+    constructor
+    intro Z g h he
+    exact hZ.eq_of_src g h
 
 private theorem sk_preservesEpimorphisms : (skFunctor p).PreservesEpimorphisms where
   preserves {M N} f hf := by
@@ -97,6 +99,8 @@ private theorem skyscraper_succ_of_epi_HMap (M : AGrp) (n : ℕ)
   letI : ∀ {A B : AGrp} (f : A ⟶ B), PreservesLimit (parallelPair f 0) K :=
     fun _ => inferInstance
   letI : K.PreservesHomology := Functor.preservesHomology_of_preservesEpis_and_kernels K
+  letI : (TopCat.Sheaf.forget AGrp X ⋙ TopCat.Presheaf.stalkFunctor AGrp p).PreservesMonomorphisms :=
+    TopCat.Presheaf.stalkFunctor_preserves_mono (C := AGrp) p
   letI : K.PreservesInjectiveObjects :=
     Functor.preservesInjectiveObjects_of_adjunction_of_preservesMonomorphisms adj
   let S₀ := ShortComplex.cokernelSequence (Injective.ι M)
@@ -120,8 +124,10 @@ theorem skyscraper_H_succ_subsingleton (M : AGrp) (n : ℕ) :
   | succ n ih =>
     apply skyscraper_succ_of_epi_HMap p M (n + 1)
     intro A B f _ y
-    letI := ih B
-    exact ⟨0, Subsingleton.elim _ _⟩
+    have hs : Subsingleton (Sheaf.H ((skFunctor p).obj B) (n + 1)) := by
+      change Subsingleton ((skyscraperSheaf p B).H (n + 1))
+      exact ih B
+    exact ⟨0, hs.elim _ _⟩
 
 end
 

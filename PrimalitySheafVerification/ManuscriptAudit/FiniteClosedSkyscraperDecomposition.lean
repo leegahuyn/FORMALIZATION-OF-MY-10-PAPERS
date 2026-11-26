@@ -158,13 +158,15 @@ local instance sheaf_hasCoproduct {X : TopCat.{0}} {ι : Type} (S : ι → Abeli
 theorem H1_subsingleton_of_finite_closed_support {X : TopCat.{0}} (F : AbelianSheaf X)
     (P : Set X) [Finite P] (hClosed : ∀ p ∈ P, IsClosed ({p} : Set X))
     (hSupport : stalkSupport F ⊆ P) : Subsingleton (F.H 1) := by
-  let e : F ≅ ∐ pointFactor F P :=
-    pointProductIso F P hClosed hSupport ≪≫ biproductIso (pointFactor F P)
-  letI : Subsingleton ((∐ pointFactor F P).H 1) :=
-    finiteCoproduct_H1_subsingleton (pointFactor F P)
+  let S : P → AbelianSheaf X := pointFactor F P
+  letI : HasBiproduct S := HasBiproduct.of_hasProduct S
+  let e : F ≅ ∐ S := pointProductIso F P hClosed hSupport ≪≫ biproductIso S
+  let H := Sheaf.functorH (Opens.grothendieckTopology X) 1
+  letI : Subsingleton (H.obj (∐ S)) := by
+    change Subsingleton ((∐ S).H 1)
+    exact finiteCoproduct_H1_subsingleton S
       (fun p => pointSummand_isFlasque (p : X) ((stalkAt (p : X)).obj F))
-  let h := (Sheaf.functorH (Opens.grothendieckTopology X) 1).mapIso e
-  exact h.addCommGroupIsoToAddEquiv.injective.subsingleton
+  exact (H.mapIso e).addCommGroupIsoToAddEquiv.injective.subsingleton
 
 end
 

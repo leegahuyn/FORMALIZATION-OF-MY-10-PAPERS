@@ -50,10 +50,12 @@ def compactSupportBoundaryHZeroEquiv (M : AddCommGrpCat.{u}) :
 /-- The actual closed term of the compact-support sequence is acyclic in positive degrees. -/
 theorem compactSupportBoundaryH_succ_subsingleton (M : AddCommGrpCat.{u}) (n : ℕ) :
     Subsingleton (Sheaf.H (compactSupportSequence K M).X₃ (n + 1)) := by
-  let e := ((Sheaf.functorH (projectiveCusp K).smallEtaleTopology (n + 1)).mapIso
-    (compactSupportBoundaryIso K M)).addCommGroupIsoToAddEquiv
-  letI := geometricSkyscraperH_succ_subsingleton (point K) M n
-  exact ⟨fun x y => e.injective (Subsingleton.elim _ _)⟩
+  let e : Sheaf.H (compactSupportSequence K M).X₃ (n + 1) ≃+
+      Sheaf.H ((point K).skyscraperSheaf M) (n + 1) :=
+    ((Sheaf.functorH (projectiveCusp K).smallEtaleTopology (n + 1)).mapIso
+      (compactSupportBoundaryIso K M)).addCommGroupIsoToAddEquiv
+  have h := geometricSkyscraperH_succ_subsingleton (point K) M n
+  exact ⟨fun x y => e.injective (h.allEq (e x) (e y))⟩
 
 /-- The native compact-support map is bijective in every degree at least two. -/
 theorem compactSupportHigherMap_bijective (M : AddCommGrpCat.{u}) (n : ℕ) :

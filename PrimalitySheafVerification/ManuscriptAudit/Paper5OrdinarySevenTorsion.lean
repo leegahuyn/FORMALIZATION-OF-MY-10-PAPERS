@@ -63,13 +63,13 @@ private theorem torsion_descends (P : PointsAt L) (hP : (7 : ℕ) • P = 0) :
     obtain ⟨hx, hy⟩ := field_torsion_coordinates L x y h hP
     have hx' : ∃ a : ZMod 7, f a = x := by
       rcases hx with rfl | rfl | rfl
-      · exact ⟨3, by simp [f]⟩
-      · exact ⟨5, by simp [f]⟩
-      · exact ⟨6, by simp [f]⟩
+      · exact ⟨3, by simpa only [Nat.cast_ofNat] using map_natCast f 3⟩
+      · exact ⟨5, by simpa only [Nat.cast_ofNat] using map_natCast f 5⟩
+      · exact ⟨6, by simpa only [Nat.cast_ofNat] using map_natCast f 6⟩
     have hy' : ∃ b : ZMod 7, f b = y := by
       rcases hy with rfl | rfl
-      · exact ⟨2, by simp [f]⟩
-      · exact ⟨5, by simp [f]⟩
+      · exact ⟨2, by simpa only [Nat.cast_ofNat] using map_natCast f 2⟩
+      · exact ⟨5, by simpa only [Nat.cast_ofNat] using map_natCast f 5⟩
     obtain ⟨a, ha⟩ := hx'
     obtain ⟨b, hb⟩ := hy'
     have hr : (baseCurve.baseChange (ZMod 7)).Nonsingular a b :=
