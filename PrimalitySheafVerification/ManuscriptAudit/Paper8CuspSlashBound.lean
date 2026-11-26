@@ -21,7 +21,7 @@ theorem qValue_norm (z : ℍ) :
     ‖qValue z‖ = Real.exp (-(2 * Real.pi * z.im)) := by
   rw [qValue, Complex.norm_exp]
   congr 1
-  simp [Complex.mul_re, Complex.mul_im, UpperHalfPlane.im] <;> ring
+  simp [Complex.mul_re, Complex.mul_im] <;> ring
 
 theorem height_gt_one_twelfth (z : ℍ) (hradius : ‖qValue z‖ = 9 / 20) :
     1 / 12 < z.im := by
@@ -46,7 +46,7 @@ private theorem integer_abs_ge_one_as_real {n : ℤ} (hn : n ≠ 0) :
 theorem slashDenominator_norm_ge_height_of_c_ne_zero (g : SL(2, ℤ)) (z : ℍ)
     (hc : g.val 1 0 ≠ 0) : z.im ≤ ‖slashDenominator g z‖ := by
   have him : (slashDenominator g z).im = (g.val 1 0 : ℝ) * z.im := by
-    simp [slashDenominator, Complex.mul_im, UpperHalfPlane.im]
+    simp [slashDenominator, Complex.mul_im]
   calc
     z.im = 1 * z.im := (one_mul _).symm
     _ ≤ |(g.val 1 0 : ℝ)| * z.im :=
@@ -60,9 +60,15 @@ theorem slashDenominator_norm_ge_one_of_c_eq_zero (g : SL(2, ℤ)) (z : ℍ)
   have hd : g.val 1 1 ≠ 0 := by
     intro hd
     have hDet : Matrix.det g.val = 1 := g.property
-    simpa [Matrix.det_fin_two, hc, hd] using hDet
+    rw [Matrix.det_fin_two, hc, hd] at hDet
+    simp only [mul_zero, sub_zero] at hDet
+    exact Int.zero_ne_one hDet
   have hRe : (slashDenominator g z).re = (g.val 1 1 : ℝ) := by simp [slashDenominator, hc]
-  exact (integer_abs_ge_one_as_real hd).trans (hRe ▸ Complex.abs_re_le_norm (slashDenominator g z))
+  calc
+    1 ≤ |(g.val 1 1 : ℝ)| := integer_abs_ge_one_as_real hd
+    _ = |(slashDenominator g z).re| := by rw [hRe]
+    _ ≤ _ := Complex.abs_re_le_norm _
+
 
 /-- The bound holds at every contour node for every valid modular representative. -/
 theorem slashDenominator_norm_gt_one_twelfth (g : SL(2, ℤ)) (z : ℍ)

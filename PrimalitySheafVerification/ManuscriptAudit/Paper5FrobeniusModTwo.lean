@@ -14,7 +14,8 @@ The determinant on the same representation is the reduction of p.
 
 namespace ManuscriptAudit.Paper5FrobeniusModTwo
 
-open WeierstrassCurve CubicTrace CubicGeometricTorsion CubicTwoTorsionCard
+open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
+open WeierstrassCurve CubicGeometricTorsion CubicTwoTorsionCard
 open WeierstrassFrobeniusTwoTorsionTrace Paper5ActualHasseWeil
 
 noncomputable section

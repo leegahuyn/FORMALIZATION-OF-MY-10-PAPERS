@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Topology.Connected.TotallyDisconnected
 import PrimalitySheafVerification.ManuscriptAudit.EtaleContinuousMapSheaf
-import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperCohomology
+import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHZero
 import PrimalitySheafVerification.ManuscriptAudit.SheafPresheafHOneBoundary
 
 /-! Actual sections of a constant abelian sheaf on a preconnected étale
@@ -9,7 +9,7 @@ object all extend as constants to any larger étale object over the base. -/
 
 namespace ManuscriptAudit.EtaleConstantHZeroRestriction
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Opposite
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian Opposite
 open SheafPresheafHOneBoundary EtaleContinuousMapSheaf
 
 noncomputable section

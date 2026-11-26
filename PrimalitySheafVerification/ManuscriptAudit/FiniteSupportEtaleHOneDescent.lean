@@ -1,5 +1,6 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportEtaleRetraction
 import PrimalitySheafVerification.ManuscriptAudit.SheafCoverLifts
 import PrimalitySheafVerification.ManuscriptAudit.SheafHOnePushout
@@ -123,7 +124,7 @@ theorem affineEtaleDirectSum_HOne_subsingleton {I : Type} (P : I → C S)
   have hP : Sheaf.H.map p 1 α = 0 := (hVanishing t).allEq _ _
   have hMap : H.map ρ = 𝟙 (H.obj D) - (H.map p ≫ H.map k) := by
     change H.map (𝟙 D - (p ≫ k)) = _
-    rw [Functor.map_sub, Functor.map_id, Functor.map_comp]
+    rw [H.map_sub, H.map_id D, H.map_comp p k]
   have hApply := ConcreteCategory.congr_hom hMap α
   change Sheaf.H.map ρ 1 α = α - Sheaf.H.map k 1 (Sheaf.H.map p 1 α) at hApply
   rw [hP, map_zero, sub_zero] at hApply

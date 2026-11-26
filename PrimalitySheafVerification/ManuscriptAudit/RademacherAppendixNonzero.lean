@@ -77,6 +77,8 @@ private theorem bessel_over_pos_nonneg (c : ℝ) (hc : 0 < c) :
   exact div_nonneg ((printedBessel_lower _ (div_pos hA hc)).trans'
     (mul_nonneg (Real.sqrt_nonneg _) (Real.sqrt_nonneg _))) hc.le
 
+include hWeight
+
 private theorem norm_contribution_two :
     ‖besselContribution weight 2‖ = printedBessel (argumentScale / 2) / 2 := by
   unfold besselContribution
@@ -102,15 +104,17 @@ private theorem norm_contribution_le_bessel {c : ℕ} (hc : 0 < c) :
   exact (mul_le_mul_of_nonneg_left hS (bessel_over_pos_nonneg c hc')).trans_eq
     (div_mul_cancel₀ _ hc'.ne')
 
+omit hWeight in
 private theorem sinh_scale_comparison :
     200 * Real.sinh (argumentScale / 3) < Real.sinh (argumentScale / 2) := by
   have h2 : (2 : ℝ) < Real.exp 1 := by
-    simpa using Real.add_one_lt_exp (show (1 : ℝ) ≠ 0 by norm_num)
+    have h := Real.add_one_lt_exp (show (1 : ℝ) ≠ 0 by norm_num)
+    linarith only [h]
   have h9 : (2 : ℝ) ^ (9 : ℕ) < Real.exp 9 := by
     rw [show (9 : ℝ) = (9 : ℕ) * (1 : ℝ) by norm_num, Real.exp_nat_mul]
     exact pow_lt_pow_left₀ h2 (by norm_num) (by decide)
   have h9le : (9 : ℝ) ≤ argumentScale / 6 := by linarith [scale_gt]
-  have he : (401 : ℝ) < Real.exp (argumentScale / 6) := by
+  have he : (201 : ℝ) < Real.exp (argumentScale / 6) := by
     have hmono := Real.exp_le_exp.mpr h9le
     norm_num at h9
     linarith
@@ -121,9 +125,21 @@ private theorem sinh_scale_comparison :
     ring
   have hS := Real.exp_lt_exp.mpr
     (show -(argumentScale / 2) < argumentScale / 3 by linarith [scale_gt])
+  let a := Real.exp (argumentScale / 3)
+  let d := Real.exp (-(argumentScale / 2))
+  let c := Real.exp (argumentScale / 6)
+  have hMul : a * 201 < a * c := mul_lt_mul_of_pos_left he (Real.exp_pos _)
+  have hDiff : 200 * a < a * c - d := calc
+    200 * a = a * 201 - a := by ring
+    _ ≤ a * 201 - d := sub_le_sub_left hS.le _
+    _ < a * c - d := sub_lt_sub_right hMul _
   rw [Real.sinh_eq, Real.sinh_eq, ← hProd]
-  have hm := mul_lt_mul_of_pos_left he (Real.exp_pos (argumentScale / 3))
-  linarith [(Real.exp_pos (-(argumentScale / 3))).le]
+  change 200 * ((a - Real.exp (-(argumentScale / 3))) / 2) < (a * c - d) / 2
+  calc
+    _ ≤ (200 * a) / 2 := by
+      have h := (Real.exp_pos (-(argumentScale / 3))).le
+      linarith
+    _ < _ := div_lt_div_of_pos_right hDiff (by norm_num)
 
 private theorem norm_contribution_tail_le {c : ℕ} (hlo : 3 ≤ c) (hhi : c ≤ 22) :
     ‖besselContribution weight c‖ ≤
@@ -137,9 +153,10 @@ private theorem norm_contribution_tail_le {c : ℕ} (hlo : 3 ≤ c) (hhi : c ≤
     exact Real.sqrt_le_sqrt (by linarith)
   have hA : 0 < argumentScale := by linarith [scale_gt]
   have hC := commonBesselScale_pos
-  apply (norm_contribution_le_bessel weight hWeight hc).trans
-  rw [bessel_rescale _ hc']
   calc
+    _ ≤ printedBessel (argumentScale / c) := norm_contribution_le_bessel weight hWeight hc
+    _ = (commonBesselScale * Real.sqrt (c : ℝ)) * Real.sinh (argumentScale / c) :=
+      bessel_rescale _ hc'
     _ ≤ (commonBesselScale * 5) * Real.sinh (argumentScale / 3) :=
       mul_le_mul (mul_le_mul_of_nonneg_left hSqrt hC.le)
         (Real.sinh_strictMono.monotone (div_le_div_of_nonneg_left hA.le (by norm_num) h₃))
@@ -160,7 +177,7 @@ private theorem norm_contribution_two_gt_tail :
       apply Finset.sum_le_sum
       intro j hj
       have hj' := Finset.mem_range.mp hj
-      exact norm_contribution_tail_le weight hWeight (by omega) (by omega)
+      exact norm_contribution_tail_le weight hWeight (c := j + 3) (by omega) (by omega)
     _ = 100 * commonBesselScale * Real.sinh (argumentScale / 3) := by simp; ring
     _ < commonBesselScale * Real.sinh (argumentScale / 2) / 2 := by
       have h := mul_lt_mul_of_pos_left sinh_scale_comparison hC

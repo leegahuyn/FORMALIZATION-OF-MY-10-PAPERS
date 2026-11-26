@@ -22,9 +22,10 @@ def killedByEquiv (h2 : (2 : K) ≠ 0) (d : ℕ) :
     rootsOfUnity d K ≃* killedBy K d where
   toFun u := ⟨picardEquiv K h2 u.val, by
     change (picardEquiv K h2 u.val) ^ d = 1
-    rw [← map_pow, (mem_rootsOfUnity' d _).mp u.prop, map_one]⟩
+    have hu : (u.val : Kˣ) ^ d = 1 := u.prop
+    rw [← map_pow, hu, map_one]⟩
   invFun p := ⟨(picardEquiv K h2).symm p.val, by
-    apply (mem_rootsOfUnity' d _).mpr
+    change ((picardEquiv K h2).symm p.val) ^ d = 1
     have hp : p.val ^ d = 1 := p.prop
     rw [← map_pow, hp, map_one]⟩
   left_inv u := Subtype.ext ((picardEquiv K h2).symm_apply_apply u.val)

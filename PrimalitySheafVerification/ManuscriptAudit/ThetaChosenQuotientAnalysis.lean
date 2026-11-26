@@ -8,7 +8,7 @@ import PrimalitySheafVerification.ManuscriptAudit.ThetaLevelTwoTiles
 namespace ManuscriptAudit.ThetaChosenQuotientAnalysis
 
 open MeasureTheory Set
-open Mock2FA.GammaTwoQuotientGeometry
+open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
 open ThetaProfileGenerators ThetaGammaTwoMetric ThetaGlobalSection ThetaLevelTwoTiles
 open scoped UpperHalfPlane Pointwise MatrixGroups
 

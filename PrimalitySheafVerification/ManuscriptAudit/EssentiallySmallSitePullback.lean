@@ -2,6 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.Algebra.Category.Grp.Colimits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Pullback
 
@@ -76,7 +77,8 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
     ⟨fun L _ _ ↦ Adjunction.hasLimitsOfShape_of_equivalence E.inverse⟩
   letI : PreservesFiniteLimits g := by
     change PreservesFiniteLimits (E.inverse ⋙ G ⋙ F.functor)
-    infer_instance
+    letI : PreservesFiniteLimits (G ⋙ F.functor) := comp_preservesFiniteLimits G F.functor
+    exact comp_preservesFiniteLimits E.inverse (G ⋙ F.functor)
   letI : RepresentablyFlat g := flat_of_preservesFiniteLimits g
   let R₀ := g.sheafPushforwardContinuous A.{u} J' K'
   let R₁ := F.inverse.sheafPushforwardContinuous A.{u} K' K
@@ -85,6 +87,11 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
     inferInstanceAs ((F.sheafCongr K K' A.{u}).functor.IsEquivalence)
   letI : R₂.IsEquivalence :=
     inferInstanceAs ((E.sheafCongr J J' A.{u}).inverse.IsEquivalence)
+  letI : HasSheafify K' A.{u} := inferInstance
+  letI : ∀ P : (SmallModel.{u} C)ᵒᵖ ⥤ A.{u}, g.op.HasLeftKanExtension P :=
+    fun _ ↦ inferInstance
+  letI : R₀.IsRightAdjoint :=
+    (Functor.sheafPullbackConstruction.sheafAdjunctionContinuous g A.{u} J' K').isRightAdjoint
   let L₀ := g.sheafPullback A.{u} J' K'
   let L₁ := R₁.asEquivalence.inverse
   let L₂ := R₂.asEquivalence.inverse
@@ -107,7 +114,9 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
   let a₀ : L₀ ⊣ R₀ := g.sheafAdjunctionContinuous A.{u} J' K'
   let a₁ : L₁ ⊣ R₁ := R₁.asEquivalence.symm.toAdjunction
   let a₂ : L₂ ⊣ R₂ := R₂.asEquivalence.symm.toAdjunction
-  exact ⟨L, ⟨((a₂.comp a₀).comp a₁).ofNatIsoRight e₂⟩, inferInstance⟩
+  letI : PreservesFiniteLimits (L₂ ⋙ L₀) := comp_preservesFiniteLimits L₂ L₀
+  exact ⟨L, ⟨((a₂.comp a₀).comp a₁).ofNatIsoRight e₂⟩,
+    comp_preservesFiniteLimits (L₂ ⋙ L₀) L₁⟩
 
 end
 

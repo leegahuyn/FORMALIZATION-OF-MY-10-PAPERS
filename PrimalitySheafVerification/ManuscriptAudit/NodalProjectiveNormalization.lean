@@ -10,8 +10,8 @@ namespace ManuscriptAudit.NodalProjectiveNormalization
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 open NodalProjectiveClosure (projectiveNode projectiveNodeToBase projectiveNode_isProper)
 open NodalSmoothLocusOverlap (smoothOpen smoothScheme zSmooth ySmooth ySmooth_ambient
-  smooth_charts_cover)
-open NodalYChartImmersion (nodeYChart)
+  smooth_charts_cover puncturedZ puncturedZRing)
+open NodalYChartImmersion (nodeYChart yCoordinateRing)
 open NodalProperYChart (chartOpen)
 
 noncomputable section
@@ -22,10 +22,14 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 variable (K : Type u) [Field K]
 
-private instance smoothScheme_compactSpace : CompactSpace (smoothScheme K) :=
-  isCompact_univ_iff.mp (by
-    rw [← smooth_charts_cover K]
-    exact (isCompact_range (zSmooth K).continuous).union (isCompact_range (ySmooth K).continuous))
+private instance smoothScheme_compactSpace : CompactSpace (smoothScheme K) := by
+  letI : CompactSpace (puncturedZ K) :=
+    inferInstanceAs (CompactSpace (PrimeSpectrum (puncturedZRing K)))
+  letI : CompactSpace (nodeYChart K) :=
+    inferInstanceAs (CompactSpace (PrimeSpectrum (yCoordinateRing K)))
+  apply isCompact_univ_iff.mp
+  rw [← smooth_charts_cover K]
+  exact (isCompact_range (zSmooth K).continuous).union (isCompact_range (ySmooth K).continuous)
 
 abbrev smoothInclusion : smoothScheme K ⟶ projectiveNode K := (smoothOpen K).ι
 
@@ -50,10 +54,12 @@ theorem inclusion_factors :
 private instance baseChangeSmoothInclusion_iso :
     IsIso (pullback.snd (smoothInclusion K) (chartOpen K)) := by
   let p := pullback.snd (smoothInclusion K) (chartOpen K)
-  let i := pullback.lift (ySmooth K) (𝟙 (nodeYChart K)) (by
+  have h : ySmooth K ≫ smoothInclusion K = 𝟙 (nodeYChart K) ≫ chartOpen K := by
     rw [Category.id_comp]
-    exact ySmooth_ambient K)
-  have hi : i ≫ p = 𝟙 _ := pullback.lift_snd _ _ _
+    exact ySmooth_ambient K
+  let i : nodeYChart K ⟶ pullback (smoothInclusion K) (chartOpen K) :=
+    pullback.lift (ySmooth K) (𝟙 _) h
+  have hi : i ≫ p = 𝟙 _ := by simp [i, p]
   refine ⟨⟨i, ?_, hi⟩⟩
   apply (cancel_mono p).mp
   rw [Category.assoc, hi, Category.comp_id, Category.id_comp]
@@ -67,14 +73,14 @@ theorem normalizationMap_pullback_Y_iso :
   haveI : IsIso p := baseChangeSmoothInclusion_iso K
   haveI : IsIso p.toNormalization := inferInstance
   have h : p.fromNormalization = inv p.toNormalization ≫ p :=
-    IsIso.eq_inv_comp (p.toNormalization_fromNormalization)
+    (IsIso.eq_inv_comp p.toNormalization).mpr p.toNormalization_fromNormalization
   haveI : IsIso p.fromNormalization := h.symm ▸ inferInstanceAs
     (IsIso (inv p.toNormalization ≫ p))
   haveI : Smooth g := inferInstance
   haveI : IsIso (f.normalizationPullback g) := inferInstance
   have h' : pullback.snd f.fromNormalization g = inv (f.normalizationPullback g) ≫
       p.fromNormalization :=
-    IsIso.eq_inv_comp (f.normalizationPullback_snd g)
+    (IsIso.eq_inv_comp (f.normalizationPullback g)).mpr (f.normalizationPullback_snd g)
   change IsIso (pullback.snd f.fromNormalization g)
   rw [h']
   infer_instance

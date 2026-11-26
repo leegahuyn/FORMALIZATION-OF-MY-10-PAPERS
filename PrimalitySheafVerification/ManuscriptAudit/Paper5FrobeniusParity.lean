@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.FrobeniusModTwoRecurrence
 
 namespace ManuscriptAudit.Paper5FrobeniusParity
 
-open WeierstrassCurve CubicTrace Paper5FrobeniusModTwo Paper5ActualHasseWeil
+open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
+open WeierstrassCurve Paper5FrobeniusModTwo Paper5ActualHasseWeil
 open WeierstrassFrobeniusTwoTorsionTrace FrobeniusModTwoLinear FrobeniusModTwoRecurrence
 open Paper5PrintedRecurrence
 

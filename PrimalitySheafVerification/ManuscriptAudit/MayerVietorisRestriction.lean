@@ -9,7 +9,7 @@ restriction from the second chart to the overlap is injective. -/
 namespace ManuscriptAudit.MayerVietorisRestriction
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Abelian
-open CategoryTheory.Opposite ComposableArrows
+open Opposite ComposableArrows
 
 universe w v u
 
@@ -40,8 +40,9 @@ theorem first_restriction_injective
     have h := ConcreteCategory.congr_hom (S.toBiprod_fromBiprod F (n + 1)) x
     change S.fromBiprod F (n + 1) (S.toBiprod F (n + 1) x) = 0 at h
     rw [S.toBiprod_apply, S.fromBiprod_biprodIsoProd_inv_apply] at h
-    change r x - (F.cohomologyPresheaf (n + 1)).map S.f₁₃.op (r' x) = 0 at h
-    rw [hx, zero_sub, neg_eq_zero] at h
+    change (F.cohomologyPresheaf (n + 1)).map S.f₁₂.op (r x) -
+      (F.cohomologyPresheaf (n + 1)).map S.f₁₃.op (r' x) = 0 at h
+    rw [hx, map_zero, zero_sub, neg_eq_zero] at h
     have hx' : r' x = 0 := hHigher (h.trans (map_zero _).symm)
     have hb : S.toBiprod F (n + 1) x = 0 := by
       rw [S.toBiprod_apply]

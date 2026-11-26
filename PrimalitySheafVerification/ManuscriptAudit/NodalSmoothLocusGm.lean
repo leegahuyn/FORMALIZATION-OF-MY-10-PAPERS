@@ -172,7 +172,7 @@ private theorem parameterToY_range :
   rw [← intersectionIsoParameter_inv_snd]
   change (↑(((intersectionIsoParameter K).inv ≫
     pullback.snd (affineOpen K) (chartOpen K)).opensRange) : Set (nodeYChart K)) = _
-  rw [Scheme.Hom.opensRange_comp_of_isIso, intersection_snd_opensRange]
+  rw [Scheme.Hom.opensRange_comp_of_isIso, intersection_snd_opensRange] <;> rfl
 
 private theorem gmSnd_range (h2 : (2 : K) ≠ 0) :
     (pullback.snd (zGm K h2) (yGm K h2)).opensRange = PrimeSpectrum.basicOpen (xCoeff K) := by

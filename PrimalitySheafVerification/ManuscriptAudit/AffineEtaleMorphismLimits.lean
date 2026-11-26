@@ -55,7 +55,7 @@ theorem spec_preservesFiniteLimits (R : CommRingCat.{u}) :
   letI : PreservesLimitsOfShape WalkingCospan G :=
     inferInstanceAs (PreservesLimitsOfShape WalkingCospan
       (MorphismProperty.CostructuredArrow.toOver @Etale Scheme.Spec X))
-  infer_instance
+  exact preservesFiniteLimits_of_preservesTerminal_and_pullbacks G
 
 variable (R S : CommRingCat.{u}) (f : Spec S ⟶ Spec R)
 
@@ -80,9 +80,12 @@ theorem baseChange_coverPreserving :
     let H := SmallEtaleBaseChange.etaleBaseChange f
     let K := (Spec S).smallEtaleTopology
     let e := baseChangeSpecIso f
-    have hG : T.functorPushforward (F ⋙ H) ∈ K ((F ⋙ H).obj U) :=
-      ((Functor.IsDenseSubsite.coverPreserving (Scheme.AffineEtale.topology (Spec R))
-        (Spec R).smallEtaleTopology F).comp (SmallEtaleBaseChange.coverPreserving f)).cover_preserve hT
+    have hF : T.functorPushforward F ∈ (Spec R).smallEtaleTopology (F.obj U) :=
+      (Functor.IsDenseSubsite.coverPreserving (Scheme.AffineEtale.topology (Spec R))
+        (Spec R).smallEtaleTopology F).cover_preserve hT
+    have hG : T.functorPushforward (F ⋙ H) ∈ K ((F ⋙ H).obj U) := by
+      rw [Sieve.functorPushforward_comp]
+      exact (SmallEtaleBaseChange.coverPreserving f).cover_preserve hF
     apply (G.functorPushforward_mem_iff (Scheme.AffineEtale.topology (Spec S)) K).mp
     rw [← Sieve.functorPushforward_comp]
     apply K.superset_covering _ (K.pullback_stable (e.hom.app U) hG)
@@ -92,7 +95,9 @@ theorem baseChange_coverPreserving :
     calc
       k = (k ≫ e.hom.app U) ≫ e.inv.app U := by simp
       _ = (a ≫ (F ⋙ H).map g) ≫ e.inv.app U := by rw [ha]
-      _ = _ := by simp only [Category.assoc, e.inv.naturality]
+      _ = _ := by
+        simp only [Category.assoc]
+        exact congrArg (fun b ↦ a ≫ b) (e.inv.naturality g)
 
 /-- The native affine base change is continuous. -/
 theorem baseChange_isContinuous :

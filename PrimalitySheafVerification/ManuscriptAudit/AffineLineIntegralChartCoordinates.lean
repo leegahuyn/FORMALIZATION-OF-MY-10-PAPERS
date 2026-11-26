@@ -38,7 +38,9 @@ theorem coordinateAlgebra_etale :
   let a := coordinateHom K U
   have ha : Spec.map a = U.hom := Spec.map_preimage U.hom
   have h : Etale (Spec.map a) := ha.symm ▸ U.prop
-  exact RingHom.etale_algebraMap.mp ((HasRingHomProperty.Spec_iff (P := @Etale) (φ := a)).mp h)
+  have he : (algebraMap (Polynomial K) (coordinateRing K U)).Etale :=
+    (HasRingHomProperty.Spec_iff (P := @Etale) (φ := a)).mp h
+  exact RingHom.etale_algebraMap.mp he
 
 /-- The actual chart of the coordinate algebra identifies with the
 original integral affine étale object. -/
