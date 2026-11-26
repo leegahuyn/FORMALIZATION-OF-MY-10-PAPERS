@@ -85,9 +85,11 @@ theorem swap_fixed_iff_from_node (h2 : (2 : K) ≠ 0) (z : Cover K) :
   constructor
   · intro h
     have hf : z.val.2 = z.val.1 := congrArg (fun w : Cover K => w.val.1) h
-    have hz : z.val.1 ∈ coordinates K := by
-      rw [coordinates_eq_equalBranchValues K h2, mem_equalBranchValues]
-      exact (condition K z).1.trans (congrArg (fun f : K[X] => f.eval (-1)) hf)
+    have hle : equalBranchValues K ≤ coordinates K :=
+      (coordinates_eq_equalBranchValues K h2).ge
+    have hz : z.val.1 ∈ coordinates K :=
+      hle ((mem_equalBranchValues K z.val.1).mpr
+        ((condition K z).1.trans (congrArg (fun f : K[X] => f.eval (-1)) hf)))
     refine ⟨⟨z.val.1, hz⟩, Subtype.ext ?_⟩
     exact Prod.ext rfl hf.symm
   · rintro ⟨a, rfl⟩

@@ -49,6 +49,7 @@ theorem cyclic_units_even_subsingleton (K E : Type*) [Field K] [IsAlgClosed K] [
     obtain ⟨v, hv⟩ := norm_surjective K E a
     have hvn : v ≠ 0 := by
       rintro rfl
+      change Algebra.norm (RatFunc K) (0 : E) = a at hv
       rw [Algebra.norm_zero] at hv
       exact ux.ne_zero (by rw [← ha, ← hv, map_zero])
     let u := Units.mk0 v hvn

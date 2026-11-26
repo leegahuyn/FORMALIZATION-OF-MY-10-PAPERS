@@ -58,7 +58,7 @@ private theorem eval_normMatrix_det {F E : Type*} [Field F] [Field E]
     change aeval z (∑ k : Fin n, C (Algebra.leftMulMatrix b (b k) i j) *
       X k.castSucc) = Algebra.leftMulMatrix b x i j
     rw [hX]
-    simp [map_sum, Matrix.sum_apply, Matrix.smul_apply, aeval_C, smul_eq_mul, mul_comm]
+    simp [map_sum, Matrix.sum_apply, Matrix.smul_apply, smul_eq_mul, mul_comm]
   change aeval z (normMatrix b).det = Algebra.norm F x
   rw [AlgHom.map_det, hMatrix, Algebra.norm_eq_matrix_det b x]
 
@@ -106,6 +106,7 @@ theorem norm_units_surjective (K E : Type*) [Field K] [IsAlgClosed K] [Field E]
   obtain ⟨x, hx⟩ := norm_surjective K E (u : RatFunc K)
   have hx' : x ≠ 0 := by
     rintro rfl
+    change Algebra.norm (RatFunc K) (0 : E) = (u : RatFunc K) at hx
     rw [Algebra.norm_zero] at hx
     exact u.ne_zero hx.symm
   exact ⟨Units.mk0 x hx', Units.ext hx⟩
