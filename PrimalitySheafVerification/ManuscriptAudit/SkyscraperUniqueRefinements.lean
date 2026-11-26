@@ -38,7 +38,14 @@ theorem skyscraperCounit_isIso_of_unique_refinements
     calc
       ε = (adj.homEquiv F M).symm (𝟙 F) := by
         symm
-        simp only [Adjunction.homEquiv_counit, Functor.map_id, Category.id_comp, ε]
+        calc
+          (adj.homEquiv F M).symm (𝟙 F) =
+              (Φ.sheafFiber (A := AddCommGrpCat.{u})).map (𝟙 F) ≫ adj.counit.app M :=
+            adj.homEquiv_counit
+          _ = 𝟙 ((Φ.sheafFiber (A := AddCommGrpCat.{u})).obj F) ≫ adj.counit.app M :=
+            congrArg (fun g => g ≫ adj.counit.app M)
+              ((Φ.sheafFiber (A := AddCommGrpCat.{u})).map_id F)
+          _ = ε := Category.id_comp _
       _ = Φ.skyscraperPresheafHomEquiv.symm (𝟙 P) :=
         Φ.skyscraperSheafAdjunction_homEquiv_symm_apply (𝟙 F)
   have projection (W : D) (w : Φ.fiber.obj W) :
@@ -47,9 +54,9 @@ theorem skyscraperCounit_isIso_of_unique_refinements
       Φ.toPresheafFiber W w P ≫ ε =
           Φ.toPresheafFiber W w P ≫ Φ.skyscraperPresheafHomEquiv.symm (𝟙 P) :=
         congrArg (fun f : Φ.presheafFiber.obj P ⟶ M => Φ.toPresheafFiber W w P ≫ f) hCounit
-      _ = _ := by
-        simpa only [NatTrans.id_app, Category.id_comp] using
-          Φ.toPresheafFiber_skyscraperPresheafHomEquiv_symm (𝟙 P) W w
+      _ = _ :=
+        (Φ.toPresheafFiber_skyscraperPresheafHomEquiv_symm (𝟙 P) W w).trans
+          (Category.id_comp _)
   rw [← isIso_iff_of_reflects_iso ε (forget AddCommGrpCat.{u}), isIso_iff_bijective]
   constructor
   · intro b c hbc
