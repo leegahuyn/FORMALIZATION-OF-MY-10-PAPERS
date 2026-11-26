@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import PrimalitySheafVerification.ManuscriptAudit.CuspEtaleHom
@@ -41,7 +42,12 @@ private theorem toEtale_mem_affine (X : (Cusp K).AffineEtale) :
   let Y := (toEtale K).obj X
   letI : IsAffine Y.left := by
     change IsAffine (pullback X.hom (CuspScheme.cuspMap K))
-    infer_instance
+    exact @Scheme.Pullback.isAffine_of_isAffine_isAffine_isAffine
+      (Spec (unop X.left)) (Normalization K) (Cusp K)
+      X.hom (CuspScheme.cuspMap K)
+      (inferInstanceAs (IsAffine (Spec (unop X.left))))
+      (inferInstanceAs (IsAffine (Spec (CommRingCat.of (Polynomial K)))))
+      (inferInstanceAs (IsAffine (Spec (CommRingCat.of (CuspPunctured.CuspSubalgebra K)))))
   let e : Y.left ≅ Spec Γ(Y.left, ⊤) := Y.left.isoSpec
   let f : Spec Γ(Y.left, ⊤) ⟶ Normalization K := e.inv ≫ Y.hom
   letI : Etale f := by

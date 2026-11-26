@@ -35,14 +35,14 @@ local instance normalizationResidueAlgebra : Algebra (Polynomial K) K :=
 variable [Algebra.Etale (Polynomial K) E] [Module.Finite (Polynomial K) E]
 
 /-- A finite free basis of the actual normalization algebra over K[t]. -/
-def normalizationBasis : Σ n : ℕ, Basis (Fin n) (Polynomial K) E := by
+def normalizationBasis : Σ n : ℕ, Module.Basis (Fin n) (Polynomial K) E := by
   letI : Module.Flat (Polynomial K) E := inferInstance
   letI : Module.IsTorsionFree (Polynomial K) E := inferInstance
   exact Module.basisOfFiniteTypeTorsionFree' (R := Polynomial K) (M := E)
 
 /-- The actual origin fiber is free on the same finite index set. -/
 def residueBasis :
-    Basis (Fin (normalizationBasis K E).1) K (residueFiber K E) :=
+    Module.Basis (Fin (normalizationBasis K E).1) K (residueFiber K E) :=
   (normalizationBasis K E).2.baseChange K
 
 theorem normalization_and_residue_finrank :
@@ -53,12 +53,12 @@ theorem normalization_and_residue_finrank :
     _ = _ := (Module.finrank_eq_card_basis (residueBasis K E)).symm
 
 private def quotientNormalizationBasis :
-    Basis (Fin (normalizationBasis K E).1) (cuspSquareQuotient K)
+    Module.Basis (Fin (normalizationBasis K E).1) (cuspSquareQuotient K)
       (cuspSquareQuotient K ⊗[Polynomial K] E) :=
   (normalizationBasis K E).2.baseChange (cuspSquareQuotient K)
 
 private def quotientResidueBasis :
-    Basis (Fin (normalizationBasis K E).1) (cuspSquareQuotient K)
+    Module.Basis (Fin (normalizationBasis K E).1) (cuspSquareQuotient K)
       (cuspSquareQuotient K ⊗[K] residueFiber K E) :=
   (residueBasis K E).baseChange (cuspSquareQuotient K)
 
@@ -72,7 +72,7 @@ private def transitionEquiv : (I K E → D K) ≃ₗ[D K] (I K E → D K) :=
 
 /-- The transition from residue basis coordinates to normalization basis
 coordinates is an actual invertible matrix over the conductor quotient. -/
-def transitionMatrix : Matrix.GL (I K E) (D K) where
+def transitionMatrix : Matrix.GeneralLinearGroup (I K E) (D K) where
   val := LinearMap.toMatrix' (transitionEquiv K E).toLinearMap
   inv := LinearMap.toMatrix' (transitionEquiv K E).symm.toLinearMap
   val_inv := by

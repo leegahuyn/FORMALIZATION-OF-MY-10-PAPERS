@@ -18,6 +18,7 @@ namespace ManuscriptAudit.ArithmeticLaurentHOne
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian LaurentPolynomial
 open KummerAffineCohomology SmallEtaleCohomologyComparison
+open scoped nonZeroDivisors
 
 noncomputable section
 
@@ -156,7 +157,7 @@ private def cyclicClass (u : Rˣ) : ZMod 2 →+ HR R := by
 private theorem cyclicClass_intCast (u : Rˣ) (n : ℤ) :
     cyclicClass R u (n : ZMod 2) = n • boundary R (Additive.ofMul u) := by
   unfold cyclicClass
-  rw [ZMod.lift_coe]
+  rw [ZMod.lift_coe] <;> rfl
 
 private theorem cyclicClass_one (u : Rˣ) :
     cyclicClass R u 1 = boundary R (Additive.ofMul u) := by
@@ -171,7 +172,7 @@ private theorem coordinateClass_intCast (n : ℤ) :
   change n • boundary R (exponentUnit R e 1) = _
   let h := (boundary R).comp (exponentUnit R e)
   change n • h 1 = h n
-  rw [← map_zsmul, zsmul_one]
+  rw [← map_zsmul, zsmul_one] <;> simp
 
 private theorem scalarClass_covers (a : Kˣ) :
     ∃ j : ZMod 2, scalarClass R j = boundary R (Additive.ofMul (scalarUnit R a)) := by
@@ -192,8 +193,8 @@ private def classes : (ZMod 2 × ZMod 2) →+ HR R where
     change scalarClass R (x.1 + y.1) + coordinateClass R e (x.2 + y.2) =
       (scalarClass R x.1 + coordinateClass R e x.2) +
         (scalarClass R y.1 + coordinateClass R e y.2)
-    rw [map_add, map_add]
-    ac_rfl
+    simp only [map_add]
+    exact add_add_add_comm _ _ _ _
 
 private theorem classes_ker (j : ZMod 2 × ZMod 2) (hj : classes R e j = 0) : j = 0 := by
   let t := scalarUnit R twoK
@@ -203,8 +204,7 @@ private theorem classes_ker (j : ZMod 2 × ZMod 2) (hj : classes R e j = 0) : j 
   have hq : boundary R (Additive.ofMul q) ≠ 0 := boundary_coordinate_nonzero R e
   have hEval : evalR R e ((t * q : Rˣ) : R) = 2 := by
     change evalR R e ((t : R) * (q : R)) = 2
-    rw [map_mul, evalR_scalar, evalR_coordinate, mul_one]
-    rfl
+    rw [map_mul, evalR_scalar, evalR_coordinate, mul_one] <;> rfl
   have htq : boundary R (Additive.ofMul t) + boundary R (Additive.ofMul q) ≠ 0 := by
     rw [← map_add]
     exact boundary_nonsquare_scalar R e (t * q) hEval

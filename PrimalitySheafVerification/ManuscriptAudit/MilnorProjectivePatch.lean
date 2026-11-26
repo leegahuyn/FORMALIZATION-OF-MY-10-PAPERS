@@ -27,9 +27,11 @@ variable (q : B →ₐ[A] D) (s : C →ₐ[A] D)
 
 private def submoduleProdEquiv {M N : Type*} [AddCommMonoid M] [AddCommMonoid N]
     [Module A M] [Module A N] (P : Submodule A M) (Q : Submodule A N) :
-    P × Q ≃ₗ[A] P.prod Q where
-  toFun x := ⟨(x.1.val, x.2.val), ⟨x.1.property, x.2.property⟩⟩
-  invFun x := (⟨x.val.1, x.property.1⟩, ⟨x.val.2, x.property.2⟩)
+    (P × Q) ≃ₗ[A] P.prod Q where
+  toFun x := ⟨(x.1.val, x.2.val), Submodule.mem_prod.mpr ⟨x.1.property, x.2.property⟩⟩
+  invFun x :=
+    let h := Submodule.mem_prod.mp x.property
+    (⟨x.val.1, h.1⟩, ⟨x.val.2, h.2⟩)
   left_inv x := by
     apply Prod.ext <;> apply Subtype.ext <;> rfl
   right_inv x := Subtype.ext rfl
