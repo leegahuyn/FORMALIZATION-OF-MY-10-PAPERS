@@ -41,7 +41,9 @@ def geometricSkyscraperDirectImageIso :
   letI := SmallEtaleBaseChange.preservesFiniteLimits i
   letI := flat_of_preservesFiniteLimits G
   letI := isContinuous_of_baseChange i
-  let eElements := Cat.equivOfIso (Functor.elementsFunctor.mapIso e)
+  let eElements : (G ⋙ Φ.fiber).Elements ≌ Ψ.fiber.Elements :=
+    Cat.equivOfIso (Functor.elementsFunctor.mapIso e)
+  letI : InitiallySmall.{u} Ψ.fiber.Elements := Ψ.initiallySmall
   letI : InitiallySmall.{u} (G ⋙ Φ.fiber).Elements :=
     initiallySmall_of_initial_of_initiallySmall eElements.inverse
   let cov := SmallEtaleBaseChange.coverPreserving i

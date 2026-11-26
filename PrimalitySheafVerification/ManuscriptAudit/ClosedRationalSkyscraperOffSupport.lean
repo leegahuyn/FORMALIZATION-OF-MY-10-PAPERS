@@ -31,7 +31,7 @@ variable {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ X)
 /-- A geometric stalk off the closed image of a rational point is zero
 for the genuine skyscraper at that point. -/
 theorem closedRationalSkyscraper_stalk_isZero
-    (hs : Set.Disjoint (Set.range s) (Set.range o))
+    (hs : Disjoint (Set.range s) (Set.range o))
     (M : AddCommGrpCat.{u}) :
     IsZero ((Scheme.pointSmallEtale s).sheafFiber.obj ((Scheme.pointSmallEtale o).skyscraperSheaf M)) := by
   let U : X.Opens := ⟨(Set.range o)ᶜ, o.isClosedEmbedding.isClosed_range.isOpen_compl⟩
@@ -57,8 +57,8 @@ theorem closedRationalSkyscraper_stalk_isZero
     have h : b.left ≫ (B.hom ≫ j) = o := Over.w b
     let x : Spec (CommRingCat.of K) := default
     have eq : j (B.hom (b.left x)) = o x := by
-      simpa only [Scheme.Hom.comp_apply] using
-        congrArg (fun f : Spec (CommRingCat.of K) ⟶ X => f x) h
+      change (b.left ≫ (B.hom ≫ j)) x = o x
+      exact congrArg (fun f : Spec (CommRingCat.of K) ⟶ X => f x) h
     have hx : o x ∈ Set.range j := ⟨B.hom (b.left x), eq⟩
     rw [hrange] at hx
     exact (hx ⟨x, rfl⟩).elim

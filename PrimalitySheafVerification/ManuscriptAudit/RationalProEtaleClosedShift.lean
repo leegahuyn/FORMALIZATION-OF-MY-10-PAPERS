@@ -38,8 +38,13 @@ local instance : HasExt.{1} (Sheaf J A) := IsGrothendieckAbelian.hasExt _
 def closedPoint : Z ⟶ S :=
   Spec.map (CommRingCat.ofHom (Int.castRingHom (ZMod 5)))
 
-theorem closedPoint_isClosedImmersion : IsClosedImmersion closedPoint :=
-  IsClosedImmersion.spec_of_surjective _ ZMod.intCast_surjective
+theorem closedPoint_isClosedImmersion : IsClosedImmersion closedPoint := by
+  apply IsClosedImmersion.spec_of_surjective
+  intro a
+  obtain ⟨m, hm⟩ := (ZMod.intCast_surjective (n := 5)) a
+  refine ⟨m, ?_⟩
+  change (↑m : ZMod 5) = a
+  exact hm
 
 private def point : Z := (default : PrimeSpectrum (ZMod 5))
 

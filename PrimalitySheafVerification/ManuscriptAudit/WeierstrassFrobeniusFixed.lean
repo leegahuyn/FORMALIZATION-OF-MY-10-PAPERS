@@ -39,6 +39,8 @@ private theorem algebraFrobenius_apply (x : L) :
   change x ^ Fintype.card (ZMod p) = x ^ p
   rw [ZMod.card]
 
+variable [DecidableEq L]
+
 /-- Frobenius on nonsingular points, including the point at infinity. -/
 def frobeniusOnPoints (W : Affine (ZMod p)) : (W.baseChange L).Point →+ (W.baseChange L).Point :=
   Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) L)
