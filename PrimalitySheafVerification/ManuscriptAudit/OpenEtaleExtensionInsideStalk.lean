@@ -84,6 +84,45 @@ private def presheafFiberComparison (P : X.Etaleᵒᵖ ⥤ AddCommGrpCat.{u}) :
   change colimit R ≅ colimit ((pointedPostcompose j s).op ⋙ R)
   exact (Functor.Final.colimitIso (pointedPostcompose j s).op R).symm
 
+private def presheafFiberComparisonNatIso :
+    (ambientPoint j s).presheafFiber (A := AddCommGrpCat.{u}) ≅
+      (Functor.whiskeringLeft _ _ AddCommGrpCat.{u}).obj (etalePostcompose j).op ⋙
+        (openPoint s).presheafFiber := by
+  letI := pointedPostcompose_initial j s
+  let I := (pointedPostcompose j s).op
+  let π := (CategoryOfElements.π (ambientPoint j s).fiber).op
+  refine (NatIso.ofComponents (fun P => (presheafFiberComparison j s P).symm) ?_).symm
+  intro P Q f
+  change colim.map (Functor.whiskerLeft I (Functor.whiskerLeft π f)) ≫ colimit.pre (π ⋙ Q) I =
+    colimit.pre (π ⋙ P) I ≫ colim.map (Functor.whiskerLeft π f)
+  exact (colimit.pre_map (Functor.whiskerLeft π f) I).symm
+
+/-- Stalk comparison inside the open, naturally in the sheaf being restricted. -/
+def restrictionStalkNatIso :
+    restriction j AddCommGrpCat.{u} ⋙ (openPoint s).sheafFiber ≅
+      (ambientPoint j s).sheafFiber :=
+  (Functor.isoWhiskerLeft (sheafToPresheaf X.smallEtaleTopology AddCommGrpCat.{u})
+    (presheafFiberComparisonNatIso j s)).symm
+
+/-- Stalk comparison inside the open, naturally in the sheaf being extended. -/
+def extensionByZeroStalkNatIso :
+    extensionByZero j AddCommGrpCat.{u} ⋙ (ambientPoint j s).sheafFiber ≅
+      (openPoint s).sheafFiber := by
+  let C := AddCommGrpCat.{u}
+  let G := (etalePostcompose j).op
+  letI := (postcomposeFullyFaithful j).full
+  letI := (postcomposeFullyFaithful j).faithful
+  letI := hasLeftKanExtension j C
+  letI := hasPointwiseLeftKanExtension j C
+  let incl := sheafToPresheaf U.smallEtaleTopology C
+  let a := (ambientPoint j s).presheafToSheafCompSheafFiberIso C
+  let b := presheafFiberComparisonNatIso j s
+  let c := asIso (G.lanUnit (H := C))
+  exact Functor.isoWhiskerLeft incl (Functor.isoWhiskerLeft G.lan a) ≪≫
+    Functor.isoWhiskerLeft incl (Functor.isoWhiskerLeft G.lan b) ≪≫
+    Functor.isoWhiskerLeft incl (Functor.isoWhiskerRight c.symm (openPoint s).presheafFiber) ≪≫
+    Functor.isoWhiskerLeft incl (Functor.leftUnitor _)
+
 /-- At a geometric point of the open, the actual extension by zero has
 the same stalk as the original sheaf. -/
 def extensionByZeroStalkIso (F : Sheaf U.smallEtaleTopology AddCommGrpCat.{u}) :
@@ -108,10 +147,12 @@ end ManuscriptAudit.OpenEtaleExtension
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.OpenEtaleExtension.extensionByZeroStalkIso
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.OpenEtaleExtension.extensionByZeroStalkIso,
+      ``ManuscriptAudit.OpenEtaleExtension.restrictionStalkNatIso,
+      ``ManuscriptAudit.OpenEtaleExtension.extensionByZeroStalkNatIso] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
