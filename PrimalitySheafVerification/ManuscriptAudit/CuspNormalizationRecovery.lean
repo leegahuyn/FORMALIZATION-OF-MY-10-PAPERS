@@ -12,7 +12,7 @@ ring pullback. In basis coordinates it is the checked Milnor recovery map.
 namespace ManuscriptAudit.CuspNormalizationRecovery
 
 open Polynomial
-open CuspPunctured CuspEtaleConductorPatch CuspFiniteEtaleBases
+open CuspDelta CuspPunctured CuspEtaleConductorPatch CuspFiniteEtaleBases
 open CuspMilnorCoefficients CuspPatchedFiniteProjective
 open scoped TensorProduct
 

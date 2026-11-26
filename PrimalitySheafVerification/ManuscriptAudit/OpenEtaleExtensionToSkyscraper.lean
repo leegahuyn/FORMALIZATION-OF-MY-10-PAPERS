@@ -21,11 +21,11 @@ universe u
 private abbrev C := AddCommGrpCat.{u}
 
 variable {V U X : Scheme.{u}} (i : V ⟶ U) (j : U ⟶ X)
-variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C)
+variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C.{u})
 variable {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ U)
 
 private abbrev coefficient :=
-  (Scheme.pointSmallEtale s).sheafFiber.obj ((constantSheaf U.smallEtaleTopology C).obj M)
+  (Scheme.pointSmallEtale s).sheafFiber.obj ((constantSheaf U.smallEtaleTopology C.{u}).obj M)
 
 /-- The adjoint of the quotient stalk comparison at a geometric point of the difference. -/
 def nestedOpenQuotientToSkyscraper (hs : ¬ ∃ t : Spec (.of Ω) ⟶ V, t ≫ i = s) :
@@ -48,9 +48,8 @@ theorem nestedOpenQuotientToSkyscraper_stalk_comp_counit
     (Scheme.pointSmallEtale (s ≫ j)).sheafFiber.map (nestedOpenQuotientToSkyscraper i j M s hs) ≫
       (Scheme.pointSmallEtale (s ≫ j)).skyscraperSheafAdjunction.counit.app (coefficient M s) =
     (nestedOpenQuotientStalkIso i j M s hs).hom := by
-  let a := (Scheme.pointSmallEtale (s ≫ j)).skyscraperSheafAdjunction (A := C)
-  exact (a.homEquiv_counit (g := nestedOpenQuotientToSkyscraper i j M s hs)).symm.trans
-    ((a.homEquiv _ _).symm_apply_apply _)
+  let a := (Scheme.pointSmallEtale (s ≫ j)).skyscraperSheafAdjunction (A := C.{u})
+  rw [← a.homEquiv_counit] <;> exact (a.homEquiv _ _).symm_apply_apply _
 
 end
 

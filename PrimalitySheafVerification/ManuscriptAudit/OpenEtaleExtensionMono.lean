@@ -27,7 +27,7 @@ private abbrev C := AddCommGrpCat.{u}
 
 /-- Geometric stalks on the small étale site jointly detect monomorphisms. -/
 theorem mono_of_geometric_stalks {X : Scheme.{u}}
-    {F G : Sheaf X.smallEtaleTopology C} (f : F ⟶ G)
+    {F G : Sheaf X.smallEtaleTopology C.{u}} (f : F ⟶ G)
     (h : ∀ {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ X),
       Mono ((Scheme.pointSmallEtale s).sheafFiber.map f)) : Mono f := by
   let geometricPoint (x : X) : Spec (.of (SeparableClosure (X.residueField x))) ⟶ X :=
@@ -37,21 +37,22 @@ theorem mono_of_geometric_stalks {X : Scheme.{u}}
   have hP : P.IsConservativeFamilyOfPoints :=
     Scheme.isConservativeFamilyOfPoints_pointSmallEtale' X
   letI : ∀ p : P.FullSubcategory, Mono (p.obj.sheafFiber.map f) := fun p => by
-    obtain ⟨x, hx⟩ := (ObjectProperty.ofObj_iff p.obj).mp p.property
+    obtain ⟨x, hx⟩ := (ObjectProperty.ofObj_iff
+      (fun x : X => Scheme.pointSmallEtale (geometricPoint x)) p.obj).mp p.property
     rw [← hx]
     exact h (geometricPoint x)
-  exact (hP.jointlyReflectMonomorphisms C).mono f
+  exact (hP.jointlyReflectMonomorphisms C.{u}).mono f
 
 /-- The actual extension by zero takes monomorphisms of sheaves to monomorphisms. -/
 theorem extensionByZero_map_mono {U X : Scheme.{u}} (j : U ⟶ X) [IsOpenImmersion j]
-    {F G : Sheaf U.smallEtaleTopology C} (f : F ⟶ G) [Mono f] :
-    Mono ((extensionByZero j C).map f) := by
+    {F G : Sheaf U.smallEtaleTopology C.{u}} (f : F ⟶ G) [Mono f] :
+    Mono ((extensionByZero j C.{u}).map f) := by
   apply mono_of_geometric_stalks
   intro Ω _ _ s
   by_cases hs : ∃ t : Spec (.of Ω) ⟶ U, t ≫ j = s
   · obtain ⟨t, rfl⟩ := hs
     let e := extensionByZeroStalkNatIso j t
-    let m := (Scheme.pointSmallEtale (t ≫ j)).sheafFiber.map ((extensionByZero j C).map f)
+    let m := (Scheme.pointSmallEtale (t ≫ j)).sheafFiber.map ((extensionByZero j C.{u}).map f)
     let n := (Scheme.pointSmallEtale t).sheafFiber.map f
     letI : Mono n := inferInstance
     have hn : m ≫ e.hom.app G = e.hom.app F ≫ n := e.hom.naturality f

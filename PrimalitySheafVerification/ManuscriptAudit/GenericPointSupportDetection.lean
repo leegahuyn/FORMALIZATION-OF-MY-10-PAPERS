@@ -36,7 +36,7 @@ theorem exists_open_subset_support {X : TopCat.{0}} (F : AbelianSheaf X)
   have hxU : x ∈ U := hx
   have hnz : TopCat.Presheaf.germ F.obj U x hxU s ≠ 0 := by
     intro hzero
-    have h := DFunLike.congr_fun (TopCat.Presheaf.germ_stalkSpecializes F.obj hxU (hgen x)) s
+    have h := ConcreteCategory.congr_hom (TopCat.Presheaf.germ_stalkSpecializes F.obj hxU (hgen x)) s
     change (TopCat.Presheaf.stalkSpecializes F.obj (hgen x)) (TopCat.Presheaf.germ F.obj U x hxU s) =
       TopCat.Presheaf.germ F.obj U η ((hgen x).mem_open U.isOpen hxU) s at h
     rw [hzero, map_zero] at h

@@ -24,13 +24,13 @@ universe u
 private abbrev C := AddCommGrpCat.{u}
 
 variable {V U X : Scheme.{u}} (i : V ⟶ U) (j : U ⟶ X)
-variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C)
+variable [IsOpenImmersion i] [IsOpenImmersion j] (M : C.{u})
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
 /-- The short complex of the native nested-open map and its cokernel projection. -/
-def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C) :=
+def nestedOpenQuotientSequence : ShortComplex (Sheaf X.smallEtaleTopology C.{u}) :=
   ShortComplex.mk (nestedOpenConstantMap i j M) (cokernel.π (nestedOpenConstantMap i j M))
     (cokernel.condition (nestedOpenConstantMap i j M))
 
@@ -44,17 +44,17 @@ theorem nestedOpenConstantMap_stalk_isIso (s : Spec (.of Ω) ⟶ V) :
     IsIso ((Scheme.pointSmallEtale ((s ≫ i) ≫ j)).sheafFiber.map
       (nestedOpenConstantMap i j M)) := by
   let a := abelianExtensionByZeroAdjunction i
-  let F := (constantSheaf U.smallEtaleTopology C).obj M
+  let F := (constantSheaf U.smallEtaleTopology C.{u}).obj M
   let e := (restrictionConstantIso i).inv.app M
   let m := (a.homEquiv _ F).symm e
   let Φ := Scheme.pointSmallEtale (s ≫ i)
   let Ψ := Scheme.pointSmallEtale ((s ≫ i) ≫ j)
-  have h : m = (extensionByZero i C).map e ≫ a.counit.app F := a.homEquiv_counit
-  letI : IsIso ((Φ.sheafFiber (A := C)).map m) := by
+  have h : m = (extensionByZero i C.{u}).map e ≫ a.counit.app F := a.homEquiv_counit
+  letI : IsIso ((Φ.sheafFiber (A := C.{u})).map m) := by
     rw [h, Functor.map_comp]
     letI := extensionCounit_stalk_isIso i s F
     infer_instance
-  letI : IsIso ((Ψ.sheafFiber (A := C)).map ((extensionByZero j C).map m)) :=
+  letI : IsIso ((Ψ.sheafFiber (A := C.{u})).map ((extensionByZero j C.{u}).map m)) :=
     ((extensionByZeroStalkNatIso j (s ≫ i)).isIso_map_iff m).mpr inferInstance
   unfold nestedOpenConstantMap
   rw [Functor.map_comp]
@@ -66,8 +66,8 @@ theorem nestedOpenQuotient_stalk_isZero_inside (s : Spec (.of Ω) ⟶ V) :
       (cokernel (nestedOpenConstantMap i j M))) := by
   let Φ := Scheme.pointSmallEtale ((s ≫ i) ≫ j)
   let f := nestedOpenConstantMap i j M
-  letI : IsIso ((Φ.sheafFiber (A := C)).map f) := nestedOpenConstantMap_stalk_isIso i j M s
-  exact (isZero_cokernel_of_epi ((Φ.sheafFiber (A := C)).map f)).of_iso
+  letI : IsIso ((Φ.sheafFiber (A := C.{u})).map f) := nestedOpenConstantMap_stalk_isIso i j M s
+  exact (isZero_cokernel_of_epi ((Φ.sheafFiber (A := C.{u})).map f)).of_iso
     (PreservesCokernel.iso Φ.sheafFiber f)
 
 /-- At a geometric point of the larger open that does not lie in the smaller one,
@@ -75,17 +75,17 @@ the stalk of the quotient is the constant sheaf stalk of the larger open. -/
 def nestedOpenQuotientStalkIso (s : Spec (.of Ω) ⟶ U)
     (hs : ¬ ∃ t : Spec (.of Ω) ⟶ V, t ≫ i = s) :
     (Scheme.pointSmallEtale (s ≫ j)).sheafFiber.obj (cokernel (nestedOpenConstantMap i j M)) ≅
-      (Scheme.pointSmallEtale s).sheafFiber.obj ((constantSheaf U.smallEtaleTopology C).obj M) := by
+      (Scheme.pointSmallEtale s).sheafFiber.obj ((constantSheaf U.smallEtaleTopology C.{u}).obj M) := by
   let Φ := Scheme.pointSmallEtale (s ≫ j)
   let f := nestedOpenConstantMap i j M
   have hs' : ¬ ∃ t : Spec (.of Ω) ⟶ V, t ≫ (i ≫ j) = s ≫ j := by
     rintro ⟨t, ht⟩
     exact hs ⟨t, (cancel_mono j).mp (by simpa only [Category.assoc] using ht)⟩
   have hz := extensionByZero_stalk_isZero (i ≫ j) (s ≫ j) hs'
-    ((constantSheaf V.smallEtaleTopology C).obj M)
-  have hf : (Φ.sheafFiber (A := C)).map f = 0 := hz.eq_of_src _ _
+    ((constantSheaf V.smallEtaleTopology C.{u}).obj M)
+  have hf : (Φ.sheafFiber (A := C.{u})).map f = 0 := hz.eq_of_src _ _
   exact PreservesCokernel.iso Φ.sheafFiber f ≪≫ cokernelIsoOfEq hf ≪≫ cokernelZeroIsoTarget ≪≫
-    extensionByZeroStalkIso j s ((constantSheaf U.smallEtaleTopology C).obj M)
+    extensionByZeroStalkIso j s ((constantSheaf U.smallEtaleTopology C.{u}).obj M)
 
 /-- The quotient of the extended constants has zero stalk outside the larger open. -/
 theorem nestedOpenQuotient_stalk_isZero_outside (s : Spec (.of Ω) ⟶ X)
@@ -97,9 +97,9 @@ theorem nestedOpenQuotient_stalk_isZero_outside (s : Spec (.of Ω) ⟶ X)
     rintro ⟨t, ht⟩
     exact hs ⟨t ≫ i, by simpa only [Category.assoc] using ht⟩
   have hz := extensionByZero_stalk_isZero (i ≫ j) s hs'
-    ((constantSheaf V.smallEtaleTopology C).obj M)
-  have hf : (Φ.sheafFiber (A := C)).map f = 0 := hz.eq_of_src _ _
-  exact (extensionByZero_stalk_isZero j s hs ((constantSheaf U.smallEtaleTopology C).obj M)).of_iso
+    ((constantSheaf V.smallEtaleTopology C.{u}).obj M)
+  have hf : (Φ.sheafFiber (A := C.{u})).map f = 0 := hz.eq_of_src _ _
+  exact (extensionByZero_stalk_isZero j s hs ((constantSheaf U.smallEtaleTopology C.{u}).obj M)).of_iso
     (PreservesCokernel.iso Φ.sheafFiber f ≪≫ cokernelIsoOfEq hf ≪≫ cokernelZeroIsoTarget)
 
 end

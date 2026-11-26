@@ -32,7 +32,7 @@ variable {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ Z)
 /-- Direct image on the actual small étale sites carries a geometric
 skyscraper to the skyscraper at the composite geometric point. -/
 def geometricSkyscraperDirectImageIso :
-    (Scheme.pointSmallEtale s).skyscraperSheafFunctor ⋙ directImage i C ≅
+    (Scheme.pointSmallEtale s).skyscraperSheafFunctor ⋙ directImage i C.{u} ≅
       (Scheme.pointSmallEtale (s ≫ i)).skyscraperSheafFunctor := by
   let Φ := Scheme.pointSmallEtale s
   let Ψ := Scheme.pointSmallEtale (s ≫ i)
@@ -50,7 +50,7 @@ def geometricSkyscraperDirectImageIso :
   let g : Ψ ⟶ T := ⟨e.hom⟩
   have hfg : f ≫ g = 𝟙 T := GrothendieckTopology.Point.hom_ext e.hom_inv_id
   have hgf : g ≫ f = 𝟙 Ψ := GrothendieckTopology.Point.hom_ext e.inv_hom_id
-  let eFib : T.sheafFiber (A := C) ≅ Ψ.sheafFiber :=
+  let eFib : T.sheafFiber (A := C.{u}) ≅ Ψ.sheafFiber :=
     { hom := g.sheafFiber
       inv := f.sheafFiber
       hom_inv_id := by
@@ -59,14 +59,14 @@ def geometricSkyscraperDirectImageIso :
       inv_hom_id := by
         rw [← GrothendieckTopology.Point.Hom.sheafFiber_comp, hgf,
           GrothendieckTopology.Point.Hom.sheafFiber_id] }
-  exact Φ.skyscraperSheafFunctorCompSheafPushforwardContinuous G cov C ≪≫
+  exact Φ.skyscraperSheafFunctorCompSheafPushforwardContinuous G cov C.{u} ≪≫
     (T.skyscraperSheafAdjunction.ofNatIsoLeft eFib).rightAdjointUniq Ψ.skyscraperSheafAdjunction
 
 /-- Direct image from the exact rational cusp origin sends the geometric
 skyscraper on the residue field to the geometric origin skyscraper. -/
 def cuspOriginSkyscraperDirectImageIso (K : Type u) [Field K] [IsSepClosed K] :
     (Scheme.pointSmallEtale (𝟙 (Spec (CommRingCat.of K)))).skyscraperSheafFunctor ⋙
-        directImage (cuspOrigin K) C ≅
+        directImage (cuspOrigin K) C.{u} ≅
       (Scheme.pointSmallEtale (cuspOrigin K)).skyscraperSheafFunctor :=
   geometricSkyscraperDirectImageIso (cuspOrigin K) (𝟙 _) ≪≫
     eqToIso (by rw [Category.id_comp])

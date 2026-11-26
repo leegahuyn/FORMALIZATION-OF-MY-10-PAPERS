@@ -16,6 +16,10 @@ set_option maxRecDepth 512
 private abbrev G := AddCommGrpCat.{0}
 private instance : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
 
+local instance pointFactor_hasCoproduct {X : TopCat.{0}} (P : Set X) :
+    HasCoproduct (pointFactor P) :=
+  abelianSheaf_hasDiscreteColimit X (Discrete.functor (pointFactor P))
+
 private abbrev stalkAt {X : TopCat.{0}} (x : X) : AbelianSheaf X ⥤ G :=
   TopCat.Sheaf.forget G X ⋙ TopCat.Presheaf.stalkFunctor G x
 

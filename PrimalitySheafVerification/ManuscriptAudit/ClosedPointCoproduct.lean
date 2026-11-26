@@ -22,6 +22,20 @@ def pointFactor {X : TopCat.{0}} (P : Set X) (p : P) : AbelianSheaf X := by
   classical
   exact skyscraperSheaf (p : X) (AddCommGrpCat.of (ZMod 2))
 
+/-- Abelian sheaves have each small discrete colimit by their native
+Grothendieck abelian structure. Keeping the shape explicit avoids searching
+through unrelated general colimit constructions at each use. -/
+set_option synthInstance.maxHeartbeats 30000 in
+set_option maxHeartbeats 50000 in
+theorem abelianSheaf_hasDiscreteColimit (X : TopCat.{0}) {ι : Type}
+    (D : Discrete ι ⥤ AbelianSheaf X) : HasColimit D :=
+  let h : HasColimitsOfSize.{0, 0} (AbelianSheaf X) := IsGrothendieckAbelian.hasColimits
+  (h.has_colimits_of_shape (Discrete ι)).has_colimit D
+
+local instance pointFactor_hasCoproduct {X : TopCat.{0}} (P : Set X) :
+    HasCoproduct (pointFactor P) :=
+  abelianSheaf_hasDiscreteColimit X (Discrete.functor (pointFactor P))
+
 /-- Coproduct of the point factors, also for an infinite indexing set. -/
 def supportSheaf (X : TopCat.{0}) (P : Set X) : AbelianSheaf X :=
   ∐ pointFactor P

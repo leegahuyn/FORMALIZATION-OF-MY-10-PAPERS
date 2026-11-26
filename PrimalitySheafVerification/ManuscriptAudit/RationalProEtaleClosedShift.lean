@@ -89,6 +89,15 @@ theorem paper7_shifted_closed_point_hyperH_one_nonzero :
   degreeOne_hyperH_not_subsingleton J closedPushforward (terminalObjectIsTerminal S)
     closedPushforward_sections_not_subsingleton
 
+/-- The finite support and nonzero hypercohomology occur for the same complex. -/
+theorem paper7_finite_support_does_not_imply_hyperH_one_zero :
+    (Set.range closedPoint).Finite ∧
+    (∀ U : S.ProEt, Disjoint (Set.range U.hom) (Set.range closedPoint) →
+      IsZero (closedPushforward.obj.obj (op U))) ∧
+    ¬ Subsingleton (hyperH J (degreeOne J closedPushforward) 1) :=
+  ⟨by rw [closedPoint_range]; exact Set.finite_singleton _,
+    closedPushforward_sections_isZero_outside, paper7_shifted_closed_point_hyperH_one_nonzero⟩
+
 end
 
 end ManuscriptAudit.RationalProEtaleClosedShift
@@ -101,7 +110,8 @@ run_cmd do
       ``ManuscriptAudit.RationalProEtaleClosedShift.closedPoint_range,
       ``ManuscriptAudit.RationalProEtaleClosedShift.closedPushforward_sections_isZero_outside,
       ``ManuscriptAudit.RationalProEtaleClosedShift.closedPushforward_sections_not_subsingleton,
-      ``ManuscriptAudit.RationalProEtaleClosedShift.paper7_shifted_closed_point_hyperH_one_nonzero] do
+      ``ManuscriptAudit.RationalProEtaleClosedShift.paper7_shifted_closed_point_hyperH_one_nonzero,
+      ``ManuscriptAudit.RationalProEtaleClosedShift.paper7_finite_support_does_not_imply_hyperH_one_zero] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

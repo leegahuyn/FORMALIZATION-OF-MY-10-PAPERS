@@ -22,7 +22,7 @@ open FiniteFieldPointCount (shortCubic)
 
 noncomputable section
 
-private theorem partner_comparison {F : Type*} [Field F] [Fintype F]
+private theorem partner_comparison {F : Type*} [Field F] [Fintype F] [DecidableEq F]
     (h2 : (2 : F) ≠ 0) (hchar : ringChar F ≠ 2) :
     (∑ x : F, quadraticChar F (x ^ 3 - x)) =
       ∑ x : F, quadraticChar F (x ^ 3 - 11 * x + 14) := by
@@ -73,8 +73,7 @@ theorem projective_count_cast_eq_one {F : Type*} [Field F] [Fintype F]
   simp only [one_mul, add_zero] at hOne
   rw [FiniteFieldPointCount.shortCubic_projective_count_cast hchar hGood,
     ← hCast (fun x : F => x ^ 3 - 11 * x + 14), ← hSum,
-    hCast (fun x : F => x ^ 3 - x)]
-  exact hOne
+    hCast (fun x : F => x ^ 3 - x)] <;> exact hOne
 
 private theorem reduction_baseChange_eq_short {p : ℕ} [Fact p.Prime] {L : Type*}
     [Field L] [Algebra (ZMod p) L] :

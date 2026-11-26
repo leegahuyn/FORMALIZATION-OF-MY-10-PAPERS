@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.RingTheory.PrincipalIdealDomain
+import PrimalitySheafVerification.ManuscriptAudit.ClosedPointCoproduct
 import PrimalitySheafVerification.ManuscriptAudit.FiniteSkyscraperSumHOne
 import PrimalitySheafVerification.ManuscriptAudit.GenericPointSupportDetection
 
@@ -19,7 +20,7 @@ namespace ManuscriptAudit.SpecIntSkyscraperSumHOne
 
 open CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite TopologicalSpace
 open ManuscriptAudit.ClosedSupportDetection ManuscriptAudit.SkyscraperHOne
-open ManuscriptAudit.FiniteSkyscraperSumHOne
+open ManuscriptAudit.FiniteSkyscraperSumHOne ManuscriptAudit.ClosedPointSupportDetection
 open scoped BigOperators ZeroObject
 
 noncomputable section
@@ -31,6 +32,9 @@ private abbrev X₀ := TopCat.of (PrimeSpectrum ℤ)
 
 private abbrev part {X : TopCat.{0}} {P : Set X} (A : P → G) (p : P) :
     AbelianSheaf X := pointSummand (p : X) (A p)
+
+local instance part_hasCoproduct {X : TopCat.{0}} {P : Set X} (A : P → G) :
+    HasCoproduct (part A) := abelianSheaf_hasDiscreteColimit X (Discrete.functor (part A))
 
 /-- The coproduct in the category of native abelian sheaves. -/
 def pointCoproduct {X : TopCat.{0}} {P : Set X} (A : P → G) : AbelianSheaf X :=
@@ -183,7 +187,7 @@ theorem pointCoproduct_isFlasque {P : Set X₀} (A : P → G)
     have hEach (q : P) :
         (projection A p).hom.app V (F.obj.map r ((inclusion A q).hom.app U (a q))) =
           if q = p then (projection A p).hom.app V s else 0 := by
-      have hn := DFunLike.congr_fun ((inclusion A q).hom.naturality r) (a q)
+      have hn := ConcreteCategory.congr_hom ((inclusion A q).hom.naturality r) (a q)
       change (inclusion A q).hom.app V ((part A q).obj.map r (a q)) =
         F.obj.map r ((inclusion A q).hom.app U (a q)) at hn
       rw [← hn]
@@ -204,7 +208,7 @@ theorem pointCoproduct_isFlasque {P : Set X₀} (A : P → G)
         by_contra h
         exact hp (by simpa [J, B] using h)
       have hProj : (part A p).obj.map i.op ((projection A p).hom.app V s) = 0 := by
-        have hn := (DFunLike.congr_fun ((projection A p).hom.naturality i.op) s).symm
+        have hn := (ConcreteCategory.congr_hom ((projection A p).hom.naturality i.op) s).symm
         change (part A p).obj.map i.op ((projection A p).hom.app V s) =
           (projection A p).hom.app (op W) (F.obj.map i.op s) at hn
         simpa only [hW0, map_zero] using hn

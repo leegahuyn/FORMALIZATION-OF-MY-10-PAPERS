@@ -24,10 +24,10 @@ noncomputable section
 abbrev Reduced := SL(2, ZMod 2)
 
 def reduceTwo : SL(2, ℤ) →* Reduced :=
-  SpecialLinearGroup.map (Int.castRingHom (ZMod 2))
+  Matrix.SpecialLinearGroup.map (Int.castRingHom (ZMod 2))
 
 theorem mem_gamma_iff_reduced_one (g : SL(2, ℤ)) :
-    g ∈ GammaTwo ↔ reduceTwo g = 1 := CongruenceSubgroup.Gamma_mem'
+    g ∈ GammaTwo ↔ reduceTwo g = 1 := Iff.rfl
 
 def boundedHeights (Y : ℝ) : Set ℍ :=
   {z | ∀ g : SL(2, ℤ), (g • z).im ≤ Y}
@@ -101,7 +101,7 @@ theorem isCompact_core (Y : ℝ) : IsCompact (core Y) := by
       let r := reduceTwo g⁻¹
       have hred : reduceTwo (chooseLift r * g) = 1 := by
         change reduceTwo (chooseLift (reduceTwo g⁻¹) * g) = 1
-        simp only [map_mul, reduce_chooseLift, map_inv, inv_mul_cancel]
+        rw [map_mul, reduce_chooseLift (g⁻¹), map_inv, inv_mul_cancel]
       let k : GammaTwo := ⟨chooseLift r * g, (mem_gamma_iff_reduced_one _).mpr hred⟩
       have hk : k • z = chooseLift r • (g • z) := by
         change (chooseLift r * g) • z = _
