@@ -98,8 +98,11 @@ private theorem character_cubic_sum_zero {p : ℕ} [Fact p.Prime] (hr : p % 4 = 
 theorem square_fiber_card {F : Type*} [Field F] [Fintype F] [DecidableEq F]
     (hchar : ringChar F ≠ 2) (a : F) :
     (Nat.card {x : F // x ^ 2 = a} : ℤ) = quadraticChar F a + 1 := by
-  simpa only [Set.toFinset_card, ← Nat.card_eq_fintype_card] using
-    quadraticChar_card_sqrts hchar a
+  have hcard : Fintype.card {y : F // y ^ 2 = a} =
+      {y : F | y ^ 2 = a}.toFinset.card :=
+    Fintype.card_of_subtype _ (fun y => by simpa only [Set.mem_toFinset, Set.mem_setOf_eq])
+  rw [Nat.card_eq_fintype_card, hcard]
+  exact quadraticChar_card_sqrts hchar a
 
 theorem affine_count {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) (hr : p % 4 = 3) :
     Nat.card (AffineSolutions p) = p := by

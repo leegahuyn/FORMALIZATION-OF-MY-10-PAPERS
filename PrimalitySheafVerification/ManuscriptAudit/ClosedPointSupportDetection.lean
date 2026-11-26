@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Spectrum.Prime.Topology
@@ -21,13 +23,9 @@ open scoped ZeroObject
 
 noncomputable section
 
-set_option synthInstance.maxHeartbeats 120000
-set_option maxHeartbeats 1200000
+set_option synthInstance.maxHeartbeats 12000
 
 private abbrev G := AddCommGrpCat.{0}
-
-local instance (X : TopCat.{0}) : HasExt.{0} (AbelianSheaf X) :=
-  IsGrothendieckAbelian.hasExt _
 
 private instance : Fact (1 < (2 : ℕ)) := ⟨by decide⟩
 
@@ -48,12 +46,24 @@ private theorem stalkAt_factor_isZero {X : TopCat.{0}} (P : Set X) (p : P) {x : 
   exact (skyscraperPresheafStalkOfNotSpecializesIsTerminal
     (p : X) (AddCommGrpCat.of (ZMod 2)) h).isZero
 
+private theorem mapCoproduct_isZero {C D : Type*} [Category C] [Category D]
+    [HasZeroMorphisms D] {ι : Type*} (F : C ⥤ D) (objects : ι → C)
+    [HasCoproduct objects] [PreservesColimit (Discrete.functor objects) F]
+    (h : ∀ i, IsZero (F.obj (objects i))) : IsZero (F.obj (∐ objects)) := by
+  apply (IsZero.iff_id_eq_zero _).mpr
+  exact Cofan.IsColimit.hom_ext
+    (isColimitOfHasCoproductOfPreservesColimit F objects) _ _
+    (fun i => (h i).eq_of_src _ _)
+
 private theorem outside_stalk_isZero {X : TopCat.{0}} {P : Set X}
     (hClosed : ∀ x ∈ P, IsClosed ({x} : Set X)) {x : X} (hx : x ∉ P) :
     IsZero ((stalkAt x).obj (supportSheaf X P)) := by
-  apply (IsZero.iff_id_eq_zero _).mpr
-  refine Cofan.IsColimit.hom_ext
-    (isColimitOfHasCoproductOfPreservesColimit (stalkAt x) (factor P)) _ _ fun p => ?_
+  classical
+  letI : PreservesColimitsOfSize.{0, 0} (stalkAt x) :=
+    (stalkSkyscraperSheafAdjunction (C := G) x).leftAdjoint_preservesColimits
+  change IsZero ((stalkAt x).obj (∐ factor P))
+  apply mapCoproduct_isZero (stalkAt x) (factor P)
+  intro p
   have h : ¬ Specializes (p : X) x := by
     intro hsp
     have hm : x ∈ ({(p : X)} : Set X) :=
@@ -101,6 +111,9 @@ theorem supportSheaf_support_eq {X : TopCat.{0}} {P : Set X}
         (specializes_rfl : Specializes x x)
       exact e.symm.addCommGroupIsoToAddEquiv.injective.nontrivial
     exact nontrivial_of_factor P p (stalkAt x) hp
+
+local instance (X : TopCat.{0}) : HasExt.{0} (AbelianSheaf X) :=
+  IsGrothendieckAbelian.hasExt _
 
 private def topIsTerminal (X : TopCat.{0}) : IsTerminal (⊤ : Opens X) :=
   IsTerminal.ofUniqueHom (fun _ => homOfLE le_top) (fun _ _ => Subsingleton.elim _ _)
