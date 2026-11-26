@@ -57,7 +57,9 @@ private theorem derivative_expAt (f : Series) (hf : constantCoeff f = 0) :
     derivative ℚ (expAt f) = expAt f * derivative ℚ f := by
   have hSubst : HasSubst f := HasSubst.of_constantCoeff_zero' hf
   unfold expAt
-  rw [derivative_subst ℚ hSubst, derivative_exp ℚ]
+  first
+  | rw [derivative_subst ℚ hSubst, derivative_exp ℚ]
+  | rw [derivative_subst hSubst, derivative_exp ℚ]
 
 private theorem derivative_one : derivative ℚ (1 : Series) = 0 :=
   PowerSeries.derivativeFun_one
