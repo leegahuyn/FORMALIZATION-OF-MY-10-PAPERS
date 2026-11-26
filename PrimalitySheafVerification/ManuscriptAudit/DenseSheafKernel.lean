@@ -62,7 +62,15 @@ noncomputable def isLimit {P Q R : Sheaf J AddCommGrpCat.{u}}
             rw [hl, map_zero, map_zero]
           map_add' := fun x y ↦ by
             apply ha U
-            rw [hl, map_add, hl, hl, map_add] }
+            change a.hom.app (I.op.obj U) (l U (x + y)) =
+              a.hom.app (I.op.obj U) (l U x + l U y)
+            calc
+              _ = k.hom.app (I.op.obj U) (x + y) := hl U _
+              _ = k.hom.app (I.op.obj U) x + k.hom.app (I.op.obj U) y :=
+                (k.hom.app (I.op.obj U)).hom.map_add x y
+              _ = a.hom.app (I.op.obj U) (l U x) + a.hom.app (I.op.obj U) (l U y) := by
+                rw [hl U x, hl U y]
+              _ = _ := ((a.hom.app (I.op.obj U)).hom.map_add (l U x) (l U y)).symm }
       naturality {U V} f := by
         apply ConcreteCategory.hom_ext
         intro x

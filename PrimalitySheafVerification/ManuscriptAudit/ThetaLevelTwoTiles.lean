@@ -18,7 +18,7 @@ theorem thetaDensity_integrableOn_translate (g : SL(2, ℤ)) :
       MeasurePreserving (fun z : ℍ => γ • z) volume volume := by
     change MeasurePreserving (fun z : ℍ => (γ : GL (Fin 2) ℝ) • z) volume volume
     exact measurePreserving_smul _ _
-  let e : ℍ ≃ₘ ℍ :=
+  let e : MeasurableEquiv ℍ ℍ :=
     ⟨MulAction.toPerm g, (hp g).measurable, (hp g⁻¹).measurable⟩
   have he : MeasurePreserving e volume volume := hp g
   have hC : (fun z : ℍ => thetaDensity jacobiTheta (g • z)) =
@@ -42,7 +42,7 @@ theorem levelTwo_tiles_integrable :
   apply integrableOn_iUnion_of_summable_integral_norm
   · intro r
     exact thetaDensity_integrableOn_translate (chooseLift r)
-  · exact summable_of_finite _
+  · exact Summable.of_finite
 
 theorem orbitPoint_image_tileCarrier : orbitPoint '' tileCarrier = univ := by
   apply eq_univ_of_forall

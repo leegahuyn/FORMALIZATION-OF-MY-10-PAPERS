@@ -23,6 +23,8 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
 variable (S : ShortComplex (Sheaf J AddCommGrpCat.{w})) (hS : S.ShortExact)
 
+include hS
+
 private noncomputable abbrev Z :=
   (constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift.{w} ℤ))
 
@@ -55,14 +57,14 @@ theorem sections_surjective_of_HOne {T : C} (hT : IsTerminal T)
 /-- If the quotient has zero H¹, the inclusion is injective on H². -/
 theorem HTwo_map_injective_of_HOne (hVanishing : Subsingleton (Sheaf.H S.X₃ 1)) :
     Function.Injective (Sheaf.H.map S.f 2) := by
-  let f : Sheaf.H S.X₁ 2 →+ Sheaf.H S.X₂ 2 := (Sheaf.H.map S.f 2).hom
-  refine (AddMonoidHom.injective_iff_map_eq_zero f).mpr ?_
-  intro x hx
-  change x.comp (Ext.mk₀ S.f) (add_zero 2) = 0 at hx
-  obtain ⟨y, hy⟩ := Ext.covariant_sequence_exact₁ (Z (J := J)) hS x hx
+  intro x y hxy
+  have hx : Sheaf.H.map S.f 2 (x - y) = 0 := by rw [map_sub, hxy, sub_self]
+  change (x - y).comp (Ext.mk₀ S.f) (add_zero 2) = 0 at hx
+  obtain ⟨z, hz⟩ := Ext.covariant_sequence_exact₁ (Z (J := J)) hS (x - y) hx
     (show 1 + 1 = 2 by rfl)
-  have hz : y = 0 := hVanishing.allEq _ _
-  rw [← hy, hz, Ext.zero_comp]
+  have hz' : z = 0 := hVanishing.allEq _ _
+  apply sub_eq_zero.mp
+  rw [← hz, hz', Ext.zero_comp]
 
 end ManuscriptAudit.SheafShortExactSections
 

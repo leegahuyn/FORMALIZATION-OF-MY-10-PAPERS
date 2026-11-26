@@ -26,17 +26,19 @@ private def projection : pushout f r ⟶ cokernel f :=
 @[reassoc (attr := simp)]
 private theorem inl_projection :
     pushout.inl f r ≫ projection f r = cokernel.π f := by
-  simp [projection]
+  unfold projection
+  rw [pushout.inl_desc]
 
-@[reassoc (attr := simp)]
 /-- The new inclusion is killed by the projection to the original cokernel. -/
+@[reassoc (attr := simp)]
 theorem inr_projection : pushout.inr f r ≫ projection f r = 0 := by
-  simp [projection]
+  unfold projection
+  rw [pushout.inr_desc]
 
 private theorem projection_epi : Epi (projection f r) := by
   refine ⟨fun {_} a b h ↦ ?_⟩
   apply (cancel_epi (cokernel.π f)).mp
-  simpa only [Category.assoc, inl_projection] using
+  simpa only [inl_projection_assoc] using
     congrArg (fun k ↦ pushout.inl f r ≫ k) h
 
 private def projectionIsCokernel :
@@ -65,6 +67,14 @@ theorem sequence_shortExact [Mono f] : (sequence f r).ShortExact := by
 /-- The inclusion of the original middle object still has its original image in the quotient. -/
 theorem inl_sequence_g : pushout.inl f r ≫ (sequence f r).g = cokernel.π f :=
   inl_projection f r
+
+/-- The canonical comparison of the original and pushed-out sequences. -/
+def comparison : ShortComplex.cokernelSequence f ⟶ sequence f r where
+  τ₁ := r
+  τ₂ := pushout.inl f r
+  τ₃ := 𝟙 _
+  comm₁₂ := (pushout.condition (f := f) (g := r)).symm
+  comm₂₃ := (inl_sequence_g f r).trans (Category.comp_id _).symm
 
 end
 

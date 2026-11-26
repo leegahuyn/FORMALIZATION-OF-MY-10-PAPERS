@@ -94,7 +94,11 @@ private theorem yGenerator_normalized (h2 : (2 : K) ≠ 0) :
   simp only [laurentToY, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
     AlgEquiv.restrictScalars_symm_apply, Algebra.algHom_apply, yMobiusEquiv,
     AlgEquiv.symm_trans_apply]
-  rw [AlgEquiv.apply_symm_apply, plusEquiv_T, signedEquiv_inv_X]
+  have h : ((NodalSmoothMobiusY.localizationEquiv K).symm.restrictScalars K)
+      ((Algebra.algHom K (laurentRing K) (plusRing K)) (LaurentPolynomial.T 1)) =
+      algebraMap (Polynomial K) (uPlusRing K) Polynomial.X :=
+    plusEquiv_T K
+  rw [AlgEquiv.apply_symm_apply, h, signedEquiv_inv_X]
   change (uToT K h2) (-NodalSmoothMobius.u K) = -uAtT K
   rw [map_neg, uToT_u]
 

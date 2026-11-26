@@ -49,6 +49,8 @@ variable (hImage : ∀ P : (W.baseChange L).Point,
   (∃ v : V, i v = P) ↔ (2 : ℕ) • P = 0)
 variable (hF : ∀ v : V, i (F v) = frobeniusOnPoints p L W (i v))
 
+include hi hImage hF
+
 /-- Fixed nonzero geometric two-torsion is exactly rational nonzero two-torsion. -/
 theorem nonzero_fixed_iff_rational_two_torsion :
     (∃ v : V, v ≠ 0 ∧ F v = v) ↔

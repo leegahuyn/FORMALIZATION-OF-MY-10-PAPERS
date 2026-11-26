@@ -37,7 +37,7 @@ def punctureToFraction : L K →ₐ[A K] F K :=
 
 theorem punctureToFraction_injective : Function.Injective (punctureToFraction K) := by
   letI : IsFractionRing (A K) (F K) := NodalNormalization.common_fraction_field K
-  apply IsLocalization.injective_of_map_algebraMap_zero (Submonoid.powers (nodeX K))
+  apply IsLocalization.injective_of_map_algebraMap_zero (M := Submonoid.powers (nodeX K))
     (punctureToFraction K).toRingHom
   intro a ha
   change punctureToFraction K (algebraMap (A K) (L K) a) = 0 at ha
@@ -48,9 +48,9 @@ theorem punctureToFraction_injective : Function.Injective (punctureToFraction K)
 private theorem normalize_algebraMap (a : A K) :
     normalizationEquiv K (algebraMap (A K) (L K) a) =
       algebraMap (B K) (Localization.Away (x K)) a.val := by
-  change (IsLocalization.Away.map (L K) (Localization.Away (x K))
-    (coordinates K).val.toRingHom (nodeX K)) (algebraMap (A K) (L K) a) = _
-  exact IsLocalization.map_eq _ _
+  change (Localization.awayMapₐ (coordinates K).val (nodeX K))
+    (algebraMap (A K) (L K) a) = _
+  simp only [IsLocalization.Away.mapₐ_apply, IsLocalization.Away.map, IsLocalization.map_eq] <;> rfl
 
 /-- Pull polynomial functions back to the actual puncture via the conductor
 localization equivalence. -/

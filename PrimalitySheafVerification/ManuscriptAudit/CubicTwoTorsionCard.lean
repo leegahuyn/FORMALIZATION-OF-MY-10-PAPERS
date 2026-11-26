@@ -41,13 +41,22 @@ theorem cubicRoots_card {A : K} (h3 : (3 : K) ≠ 0) (hA : A ≠ 0) :
   have hc := Polynomial.card_rootSet_eq_natDegree (K := K) hs (IsAlgClosed.splits _)
   rw [Nat.card_congr (cubicRootSetEquiv A), Nat.card_eq_fintype_card, hc, cubicPolynomial_degree]
 
-theorem projectiveTwoTorsion_card {A : K} (h2 : (2 : K) ≠ 0) (h3 : (3 : K) ≠ 0)
-    (hA : A ≠ 0) (hΔ : (shortCubic (0 : K) A).Δ ≠ 0) :
-    Nat.card {P : (shortCubic (0 : K) A).toProjective.Point // 2 • P = 0} = 4 := by
+private theorem optionCubicRoots_card {A : K} (h3 : (3 : K) ≠ 0) (hA : A ≠ 0) :
+    Nat.card (Option (CubicRoots (0 : K) A)) = 4 := by
   classical
   letI : Fintype (CubicRoots (0 : K) A) := Fintype.ofEquiv _ (cubicRootSetEquiv A).symm
-  rw [Nat.card_congr (projectiveTwoTorsionEquiv hΔ h2), Nat.card_eq_fintype_card,
-    Fintype.card_option, ← Nat.card_eq_fintype_card, cubicRoots_card h3 hA]
+  rw [Nat.card_eq_fintype_card, Fintype.card_option, ← Nat.card_eq_fintype_card,
+    cubicRoots_card h3 hA]
+
+theorem affineTwoTorsion_card {A : K} (h2 : (2 : K) ≠ 0) (h3 : (3 : K) ≠ 0)
+    (hA : A ≠ 0) (hΔ : (shortCubic (0 : K) A).Δ ≠ 0) :
+    Nat.card (TwoTorsion (0 : K) A) = 4 :=
+  (Nat.card_congr (affineTwoTorsionEquiv hΔ h2)).trans (optionCubicRoots_card h3 hA)
+
+theorem projectiveTwoTorsion_card {A : K} (h2 : (2 : K) ≠ 0) (h3 : (3 : K) ≠ 0)
+    (hA : A ≠ 0) (hΔ : (shortCubic (0 : K) A).Δ ≠ 0) :
+    Nat.card {P : (shortCubic (0 : K) A).toProjective.Point // 2 • P = 0} = 4 :=
+  (Nat.card_congr (projectiveTwoTorsionEquiv hΔ h2)).trans (optionCubicRoots_card h3 hA)
 
 end
 end ManuscriptAudit.CubicTwoTorsionCard
@@ -57,6 +66,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CubicTwoTorsionCard.cubicRoots_card,
+      ``ManuscriptAudit.CubicTwoTorsionCard.affineTwoTorsion_card,
       ``ManuscriptAudit.CubicTwoTorsionCard.projectiveTwoTorsion_card] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

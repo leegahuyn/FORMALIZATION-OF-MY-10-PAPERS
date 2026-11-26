@@ -77,7 +77,7 @@ def basisOfCardFour [Finite V] (hV : Nat.card V = 4) : Module.Basis (Fin 2) (ZMo
   rw [hV, hTwo] at hpow
   have hp : Function.Injective (fun n : ℕ => 2 ^ n) := Nat.pow_right_injective (by decide)
   have hdim : Module.finrank (ZMod 2) V = 2 := hp hpow.symm
-  exact Module.finBasisOfFinrankEq hdim
+  exact Module.finBasisOfFinrankEq (ZMod 2) V hdim
 
 end
 

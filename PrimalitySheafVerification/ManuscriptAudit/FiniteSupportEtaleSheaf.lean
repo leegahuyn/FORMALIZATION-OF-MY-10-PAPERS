@@ -85,7 +85,11 @@ theorem directSum_isSheaf (hFinite : HasFiniteCoverFamilies J) {ι : Type}
       _ = (x' i ≫ Q.map gi.op) ≫ e.app (op W) := by
         rw [Category.assoc, ← e.naturality, Category.assoc]
       _ = (x' j ≫ Q.map gj.op) ≫ e.app (op W) := by rw [hh]
-      _ = _ := by simp only [Category.assoc, e.naturality gj.op]
+      _ = x' j ≫ (Q.map gj.op ≫ e.app (op W)) := Category.assoc _ _ _
+      _ = x' j ≫ (e.app (op (V j)) ≫ (F a).map gj.op) :=
+        congrArg (fun k : Q.obj (op (V j)) ⟶ (F a).obj (op W) ↦ x' j ≫ k)
+          (e.naturality gj.op)
+      _ = _ := (Category.assoc _ _ _).symm
   have hGlue (a : ι) :
       ∃! y : E ⟶ (F a).obj (op U), ∀ i, y ≫ (F a).map (f i).op = q a i :=
     (Presieve.isSheafFor_arrows_iff (P := F a ⋙ coyoneda.obj (op E)) (π := f)).mp
