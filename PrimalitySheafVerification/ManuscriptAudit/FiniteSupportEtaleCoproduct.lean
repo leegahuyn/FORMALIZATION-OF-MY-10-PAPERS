@@ -33,7 +33,8 @@ private def injection (i : I) : P i ⟶ directSum P where
     apply ConcreteCategory.hom_ext
     intro x
     change DFinsupp.single i ((P i).map f x) =
-      DFinsupp.mapRange (fun a ↦ ((P a).map f).hom) _ (DFinsupp.single i x)
+      DFinsupp.mapRange (fun a ↦ ((P a).map f).hom)
+        (fun a ↦ ((P a).map f).hom.map_zero) (DFinsupp.single i x)
     rw [DFinsupp.mapRange_single]
 
 private def desc {Q : Cᵒᵖ ⥤ AddCommGrpCat.{0}} (f : ∀ i, P i ⟶ Q) : directSum P ⟶ Q where
@@ -46,7 +47,8 @@ private def desc {Q : Cᵒᵖ ⥤ AddCommGrpCat.{0}} (f : ∀ i, P i ⟶ Q) : di
     apply DFinsupp.addHom_ext
     intro a x
     change DFinsupp.sumAddHom (fun b ↦ ((f b).app Y).hom)
-        (DFinsupp.mapRange (fun b ↦ ((P b).map g).hom) _ (DFinsupp.single a x)) =
+        (DFinsupp.mapRange (fun b ↦ ((P b).map g).hom)
+          (fun b ↦ ((P b).map g).hom.map_zero) (DFinsupp.single a x)) =
       Q.map g (DFinsupp.sumAddHom (fun b ↦ ((f b).app X).hom) (DFinsupp.single a x))
     rw [DFinsupp.mapRange_single, DFinsupp.sumAddHom_single, DFinsupp.sumAddHom_single]
     exact ConcreteCategory.congr_hom ((f a).naturality g) x
@@ -58,7 +60,9 @@ private theorem injection_desc {Q : Cᵒᵖ ⥤ AddCommGrpCat.{0}}
   funext X
   apply ConcreteCategory.hom_ext
   intro x
-  exact DFinsupp.sumAddHom_single _ _ _
+  change DFinsupp.sumAddHom (fun j ↦ ((f j).app X).hom) (DFinsupp.single i x) =
+    ((f i).app X).hom x
+  exact DFinsupp.sumAddHom_single (fun j ↦ ((f j).app X).hom) i x
 
 private theorem desc_unique {Q : Cᵒᵖ ⥤ AddCommGrpCat.{0}}
     (f : ∀ i, P i ⟶ Q) (m : directSum P ⟶ Q) (hm : ∀ i, injection P i ≫ m = f i) :
@@ -70,7 +74,10 @@ private theorem desc_unique {Q : Cᵒᵖ ⥤ AddCommGrpCat.{0}}
   apply DFinsupp.addHom_ext
   intro i x
   have h := ConcreteCategory.congr_hom (NatTrans.congr_app (hm i) X) x
-  exact h.trans (DFinsupp.sumAddHom_single _ _ _).symm
+  change m.app X (DFinsupp.single i x) =
+    DFinsupp.sumAddHom (fun j ↦ ((f j).app X).hom) (DFinsupp.single i x)
+  rw [DFinsupp.sumAddHom_single]
+  exact h
 
 end Presheaves
 

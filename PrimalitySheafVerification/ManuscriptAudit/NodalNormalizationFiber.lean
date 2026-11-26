@@ -92,7 +92,7 @@ def conductorFiberIso (h2 : (2 : K) ≠ 0) :
     pullback (NodalAffineOrigin.originMap K) (affineNormalization K) ≅
       Spec (CommRingCat.of (K × K)) :=
   (tensor_isPullback K).isoPullback.symm ≪≫
-    Scheme.Spec.mapIso (CommRingCat.ofIso (fiberRingEquiv K h2).symm).op
+    Scheme.Spec.mapIso (fiberRingEquiv K h2).symm.toCommRingCatIso.op
 
 end
 end ManuscriptAudit.NodalNormalizationFiber

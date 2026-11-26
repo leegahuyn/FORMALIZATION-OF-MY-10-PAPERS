@@ -24,11 +24,11 @@ noncomputable section
 set_option backward.isDefEq.respectTransparency false
 
 private def productAddEquiv {I : Type} (M : AddCommGrpCat.{0}) :
-    (∏ᶜ (fun _ : I ↦ M)) ≃+ (I → M) where
-  __ := productEquiv (fun _ : I ↦ M)
+    ↥(∏ᶜ (fun _ : I ↦ M) : AddCommGrpCat.{0}) ≃+ (I → ↥M) where
+  __ := Concrete.productEquiv (fun _ : I ↦ M)
   map_add' x y := by
     funext i
-    simp only [productEquiv_apply_apply, Pi.add_apply]
+    simp only [Concrete.productEquiv_apply_apply, Pi.add_apply]
     exact (Pi.π (fun _ : I ↦ M) i).hom.map_add x y
 
 variable (K B : Type) [Field K] [IsAlgClosed K] [CommRing B] [IsDomain B]

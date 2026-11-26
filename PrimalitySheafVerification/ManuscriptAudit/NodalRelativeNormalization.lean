@@ -37,7 +37,7 @@ def punctureToFraction : L K →ₐ[A K] F K :=
 
 theorem punctureToFraction_injective : Function.Injective (punctureToFraction K) := by
   letI : IsFractionRing (A K) (F K) := NodalNormalization.common_fraction_field K
-  apply IsLocalization.injective_of_map_algebraMap_zero (M := Submonoid.powers (nodeX K))
+  apply IsLocalization.injective_of_map_algebraMap_zero (M := Submonoid.powers (nodeX K)) (L K)
     (punctureToFraction K).toRingHom
   intro a ha
   change punctureToFraction K (algebraMap (A K) (L K) a) = 0 at ha

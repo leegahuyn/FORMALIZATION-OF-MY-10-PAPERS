@@ -85,7 +85,7 @@ theorem trace_eq_point_count_mod_two (b : Module.Basis (Fin 2) (ZMod 2) V) :
     LinearMap.trace (ZMod 2) V F.toLinearMap =
       (Nat.card (W.baseChange (ZMod p)).Point : ZMod 2) := by
   letI : Finite (W.baseChange (ZMod p)).Point :=
-    Finite.of_injective _ (Affine.Point.nonsingularPointEquiv (W.baseChange (ZMod p))).injective
+    Finite.of_injective _ (Affine.nonsingularPointEquiv (W.baseChange (ZMod p))).injective
   apply scalar_eq_of_zero_iff
   rw [ZMod.natCast_eq_zero_iff, trace_zero_iff_nonzero_fixed V b F,
     nonzero_fixed_iff_rational_two_torsion p L V W F i hi hImage hF,

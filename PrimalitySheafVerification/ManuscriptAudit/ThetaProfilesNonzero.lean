@@ -22,18 +22,20 @@ private theorem exp_neg_height_lt_third {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im)
   rw [neg_mul, Real.exp_neg, one_div]
   exact (inv_lt_inv₀ (Real.exp_pos _) (by norm_num)).mpr he
 
-theorem jacobiTheta_ne_zero_at_height {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im) :
-    jacobiTheta τ ≠ 0 := by
+theorem jacobiTheta_sub_one_norm_lt_one_at_height {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im) :
+    ‖jacobiTheta τ - 1‖ < 1 := by
   have hy : 0 < τ.im := (by norm_num : (0 : ℝ) < 2 / 3).trans hτ
   let q := Real.exp (-Real.pi * τ.im)
   have hq : q < 1 / 3 := exp_neg_height_lt_third hτ
-  have hB : ‖jacobiTheta τ - 1‖ < 1 := by
-    refine (norm_jacobiTheta_sub_one_le hy).trans_lt ?_
-    change 2 / (1 - q) * q < 1
-    rw [div_mul_eq_mul_div]
-    exact (div_lt_iff₀ (by linarith : 0 < 1 - q)).mpr (by linarith)
+  refine (norm_jacobiTheta_sub_one_le hy).trans_lt ?_
+  change 2 / (1 - q) * q < 1
+  rw [div_mul_eq_mul_div]
+  exact (div_lt_iff₀ (by linarith : 0 < 1 - q)).mpr (by linarith)
+
+theorem jacobiTheta_ne_zero_at_height {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im) :
+    jacobiTheta τ ≠ 0 := by
   intro hz
-  simpa [hz] using hB
+  simpa [hz] using jacobiTheta_sub_one_norm_lt_one_at_height hτ
 
 theorem thetaAlternating_ne_zero_at_height {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im) :
     thetaAlternating τ ≠ 0 := by
@@ -133,6 +135,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.ThetaProfilesNonzero.jacobiTheta_sub_one_norm_lt_one_at_height,
       ``ManuscriptAudit.ThetaProfilesNonzero.jacobiTheta_ne_zero_at_height,
       ``ManuscriptAudit.ThetaProfilesNonzero.thetaAlternating_ne_zero_at_height,
       ``ManuscriptAudit.ThetaProfilesNonzero.thetaHalfShift_ne_zero_at_height] do

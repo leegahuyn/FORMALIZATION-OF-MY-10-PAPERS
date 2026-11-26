@@ -15,7 +15,9 @@ theorem thetaWeightedMode_coord (z : ℍ) :
     thetaWeightedMode z = weighted (1 / 4) jacobiTheta z.re z.im := by
   have h : complexPoint z.re z.im = (z : ℂ) := by
     apply Complex.ext <;> simp [complexPoint]
-  rw [thetaWeightedMode, weighted, h]
+  change ((z.im ^ (1 / 4 : ℝ) : ℝ) : ℂ) * jacobiTheta (z : ℂ) =
+    ((z.im ^ (1 / 4 : ℝ) : ℝ) : ℂ) * jacobiTheta (complexPoint z.re z.im)
+  rw [h]
 
 theorem thetaWeightedMode_square_integrable_on_tiles :
     IntegrableOn (fun z : ℍ => ‖thetaWeightedMode z‖ ^ (2 : ℕ))

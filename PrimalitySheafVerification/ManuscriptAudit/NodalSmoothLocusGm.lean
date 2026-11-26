@@ -74,13 +74,21 @@ instance yGm_open (h2 : (2 : K) ≠ 0) : IsOpenImmersion (yGm K h2) := by
   infer_instance
 
 theorem zGm_range (h2 : (2 : K) ≠ 0) : (zGm K h2).opensRange = minusOpen K := by
-  rw [zGm_as_open, Scheme.Hom.opensRange_comp_of_isIso]
   apply SetLike.coe_injective
+  change Set.range (zGm K h2) = (minusOpen K : Set (Gm K))
+  rw [zGm_as_open]
+  change (↑(((nodalPunctureIsoMinusOpen K h2).hom ≫ (minusOpen K).ι).opensRange) :
+    Set (Gm K)) = _
+  rw [Scheme.Hom.opensRange_comp_of_isIso]
   exact Scheme.Opens.range_ι _
 
 theorem yGm_range (h2 : (2 : K) ≠ 0) : (yGm K h2).opensRange = plusOpen K := by
-  rw [yGm_as_open, Scheme.Hom.opensRange_comp_of_isIso]
   apply SetLike.coe_injective
+  change Set.range (yGm K h2) = (plusOpen K : Set (Gm K))
+  rw [yGm_as_open]
+  change (↑(((nodalYIsoPlusOpen K h2).hom ≫ (plusOpen K).ι).opensRange) :
+    Set (Gm K)) = _
+  rw [Scheme.Hom.opensRange_comp_of_isIso]
   exact Scheme.Opens.range_ι _
 
 private theorem two_unit {R : Type u} [CommRing R] [Algebra K R]
@@ -159,8 +167,12 @@ private instance parameterToY_open : IsOpenImmersion (toNodeYChart K) := by
 
 private theorem parameterToY_range :
     (toNodeYChart K).opensRange = PrimeSpectrum.basicOpen (xCoeff K) := by
-  rw [← intersectionIsoParameter_inv_snd, Scheme.Hom.opensRange_comp_of_isIso,
-    intersection_snd_opensRange]
+  apply SetLike.coe_injective
+  change Set.range (toNodeYChart K) = (PrimeSpectrum.basicOpen (xCoeff K) : Set (nodeYChart K))
+  rw [← intersectionIsoParameter_inv_snd]
+  change (↑(((intersectionIsoParameter K).inv ≫
+    pullback.snd (affineOpen K) (chartOpen K)).opensRange) : Set (nodeYChart K)) = _
+  rw [Scheme.Hom.opensRange_comp_of_isIso, intersection_snd_opensRange]
 
 private theorem gmSnd_range (h2 : (2 : K) ≠ 0) :
     (pullback.snd (zGm K h2) (yGm K h2)).opensRange = PrimeSpectrum.basicOpen (xCoeff K) := by

@@ -39,9 +39,10 @@ theorem map_connecting_eq_zero_of_lift {T : C} (hT : IsTerminal T)
   let α : Sheaf.H (cokernel i) 0 := (Sheaf.H.equiv₀ (cokernel i) hT).symm x
   let β : Sheaf.H (pushout i r) 0 := (Sheaf.H.equiv₀ (pushout i r) hT).symm y
   have hα : Sheaf.H.map S'.g 0 β = α := by
-    apply (Sheaf.H.equiv₀ (cokernel i) hT).injective
-    rw [Sheaf.H.equiv₀_naturality]
-    simpa only [α, β, AddEquiv.apply_symm_apply] using hy
+    change Sheaf.H.map (CokernelPushout.sequence i r).g 0
+      ((Sheaf.H.equiv₀ (pushout i r) hT).symm y) =
+        (Sheaf.H.equiv₀ (cokernel i) hT).symm x
+    rw [Sheaf.H.equiv₀_symm_naturality, hy]
   have hExact := Ext.covariant_sequence_exact₃' Z hS' 0 1 rfl
   rw [ShortComplex.ab_exact_iff_function_exact] at hExact
   have hz := (hExact α).mpr ⟨β, hα⟩

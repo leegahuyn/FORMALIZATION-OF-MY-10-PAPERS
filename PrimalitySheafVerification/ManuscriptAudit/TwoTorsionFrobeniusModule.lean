@@ -54,7 +54,7 @@ def mapAdd (f : G →+ H) : TwoTorsion G →+ TwoTorsion H where
   toFun P := ⟨f P, (mem_iff H (f P)).mpr (by
     rw [← map_nsmul, (mem_iff G P).mp P.property, map_zero])⟩
   map_zero' := Subtype.ext (map_zero f)
-  map_add' P Q := Subtype.ext (map_add f P Q)
+  map_add' P Q := Subtype.ext (map_add f (P : G) (Q : G))
 
 /-- Every additive map restricts to a linear map on the actual two-torsion. -/
 def mapLinear (f : G →+ H) : TwoTorsion G →ₗ[ZMod 2] TwoTorsion H :=

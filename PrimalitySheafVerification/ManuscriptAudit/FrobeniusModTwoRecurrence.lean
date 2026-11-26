@@ -76,8 +76,9 @@ theorem trace_pow_eq_recurrence_mod_two (p : ℕ) (a : ℤ)
       constructor
       · change LinearMap.trace (ZMod 2) V (F.toLinearMap ^ (0 : ℕ)) = (2 : ZMod 2)
         rw [pow_zero, LinearMap.trace_eq_matrix_trace (ZMod 2) b, LinearMap.toMatrix_one,
-          Matrix.trace_one, Fintype.card_fin]
-      · simpa only [T, pow_one, recurrence] using ha
+          Matrix.trace_one, Fintype.card_fin] <;> decide
+      · change LinearMap.trace (ZMod 2) V (F.toLinearMap ^ (1 : ℕ)) = (a : ZMod 2)
+        rwa [pow_one]
     | succ n ih =>
       refine ⟨ih.2, ?_⟩
       change T V F (n + 2) = (recurrence p a (n + 2) : ZMod 2)

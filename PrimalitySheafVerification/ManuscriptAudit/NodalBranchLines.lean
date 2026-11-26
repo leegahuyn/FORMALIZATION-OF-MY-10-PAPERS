@@ -65,6 +65,7 @@ theorem branchLine_one (h2 : (2 : K) ≠ 0) :
   constructor
   · intro hf
     refine ⟨⟨f, ?_⟩, rfl⟩
+    change f ∈ coordinates K
     rw [coordinates_eq_equalBranchValues K h2, mem_equalBranchValues]
     exact hf
   · rintro ⟨a, rfl⟩

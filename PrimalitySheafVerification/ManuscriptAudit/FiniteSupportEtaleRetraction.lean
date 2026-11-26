@@ -48,8 +48,8 @@ def finiteInclusion : affineEtaleDirectSum S (fun a : t ↦ P a.val) ⟶
       intro x
       apply DFinsupp.ext
       intro a
-      change DFinsupp.mk t (fun b : t ↦ (F S P b.val).map g (x b)) a =
-        (F S P a).map g (DFinsupp.mk t (fun b : t ↦ x b) a)
+      change DFinsupp.mk t (fun b : t ↦ (F S P b.val).map g (DFinsupp.toFun x b)) a =
+        (F S P a).map g (DFinsupp.mk t (fun b : t ↦ DFinsupp.toFun x b) a)
       by_cases ha : a ∈ t
       · rw [DFinsupp.mk_of_mem ha, DFinsupp.mk_of_mem ha]
       · rw [DFinsupp.mk_of_notMem ha, DFinsupp.mk_of_notMem ha]
