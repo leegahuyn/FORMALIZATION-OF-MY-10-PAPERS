@@ -70,11 +70,14 @@ private theorem scaledSlope (x₁ x₂ y₁ y₂ : F) :
   by_cases hx : x₁ = x₂
   · subst x₂
     by_cases hy : y₁ = -y₂
-    · simp [Affine.slope, negY_eq, hy]
+    · have h₁ : y₁ = (W F).negY x₁ y₂ := by simpa only [negY_eq] using hy
+      have h₂ : y₁ = (W F).negY (2 * x₁) y₂ := by simpa only [negY_eq] using hy
+      simp only [Affine.slope_of_Y_eq rfl h₂, Affine.slope_of_Y_eq rfl h₁, mul_zero]
     · have h₁ : y₁ ≠ (W F).negY x₁ y₂ := by simpa only [negY_eq] using hy
       have h₂ : y₁ ≠ (W F).negY (2 * x₁) y₂ := by simpa only [negY_eq] using hy
       rw [Affine.slope_of_Y_ne rfl h₂, Affine.slope_of_Y_ne rfl h₁]
-      simp only [ordinaryCurve, negY_eq, WeierstrassCurve.toAffine, mul_zero, zero_mul,
+      simp only [negY_eq]
+      simp only [W, ordinaryCurve, WeierstrassCurve.toAffine, mul_zero, zero_mul,
         add_zero, sub_zero, div_eq_mul_inv]
       ring
   · have hx' : (2 : F) * x₁ ≠ 2 * x₂ := fun h => hx (mul_left_cancel₀ (two_ne_zero F) h)
@@ -170,7 +173,7 @@ private theorem phi_sum (P : Points F) : phi F P + phi F (phi F P) = -P := by
       have hh : y ≠ -y := y_ne_neg_y F hy
       have hh' : y ≠ (W F).negY 0 y := by simpa only [negY_eq] using hh
       rw [Affine.Point.add_self_of_Y_ne hh']
-      simp [tangent_slope F _ _ hh, addX_eq, addY_eq, negY_eq]
+      simp [tangent_slope F _ _ hh, addX_eq, addY_eq, negY_eq, W, ordinaryCurve]
     · have hh : (2 : F) * x ≠ 2 * (2 * x) := by
         intro he
         apply hx
@@ -189,14 +192,17 @@ private theorem doubling_x {x y u v : F} {h : (W F).Nonsingular x y}
     9 * x ^ 4 = (u + 2 * x) * (4 * y ^ 2) := by
   have hy : y ≠ 0 := by
     intro hy
-    have hn : y = (W F).negY x y := by simp [negY_eq, hy]
+    have hn : y = (W F).negY x y := by rw [negY_eq, hy, neg_zero]
     rw [two_nsmul, Affine.Point.add_self_of_Y_eq hn] at hP
     change Affine.Point.zero = Affine.Point.some u v h' at hP
     cases hP
   have hn := y_ne_neg_y F hy
   have hn' : y ≠ (W F).negY x y := by simpa only [negY_eq] using hn
   rw [two_nsmul, Affine.Point.add_self_of_Y_ne hn'] at hP
-  have he := (Affine.Point.some.injEq.mp hP).1
+  have hxy : (W F).addX x x ((W F).slope x x y y) = u ∧
+      (W F).addY x x y ((W F).slope x x y y) = v := by
+    simpa only [Affine.Point.some.injEq] using hP
+  have he := hxy.1
   rw [addX_eq, tangent_slope F x y hn] at he
   have hs : (3 * x ^ 2 / (2 * y)) ^ 2 = u + 2 * x := by linear_combination he
   rw [div_pow, div_eq_iff (pow_ne_zero _ (mul_ne_zero (two_ne_zero F) hy))] at hs

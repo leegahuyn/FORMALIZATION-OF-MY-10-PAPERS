@@ -5,39 +5,61 @@ import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionQuotient
 /-!
 # Exactness of the native nested-open cokernel sequence
 
-The exactness argument is the abelian cokernel sequence of the
-monomorphism given by the actual nested-open map.
+The third object and projection of the actual quotient complex provide
+its cokernel universal property. The first arrow is a monomorphism.
 -/
 
 namespace ManuscriptAudit.OpenEtaleExtension
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 
+noncomputable section
+
 universe u
 
-private theorem shortExactCokernelOfMono {D : Type*} [Category* D] [Abelian D]
-    {A B : D} (f : A ⟶ B) (hf : Mono f) : (ShortComplex.cokernelSequence f).ShortExact := by
-  letI : Mono f := hf
-  exact ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact f)
-    (inferInstanceAs (Mono f)) (inferInstanceAs (Epi (cokernel.π f)))
+private theorem exactAndEpiOfCokernelProjection {D : Type*} [Category* D] [Abelian D]
+    (Q : ShortComplex D) (e : cokernel Q.f ≅ Q.X₃)
+    (h : cokernel.π Q.f ≫ e.hom = Q.g) : Q.Exact ∧ Epi Q.g :=
+  have hc : IsColimit (CokernelCofork.ofπ Q.g Q.zero) :=
+    cokernel.cokernelIso Q.f Q.g e h
+  ⟨Q.exact_of_g_is_cokernel hc, epi_of_isColimit_cofork hc⟩
 
-set_option maxHeartbeats 2500000 in
-set_option maxRecDepth 8192 in
-set_option backward.isDefEq.respectTransparency true in
+variable {V U X : Scheme.{u}} (i : V ⟶ U) (j : U ⟶ X)
+variable [IsOpenImmersion i] [IsOpenImmersion j] (M : AddCommGrpCat.{u})
+
+attribute [local irreducible] nestedOpenConstantMap
+
+set_option maxHeartbeats 500000 in
+private theorem quotientMono : Mono (nestedOpenQuotientSequence i j M).f := by
+  rw [nestedOpenQuotientSequence_f]
+  exact nestedOpenConstantMap_mono i j M
+
+set_option maxHeartbeats 500000 in
+private def quotientCokernelIso :
+    cokernel (nestedOpenQuotientSequence i j M).f ≅ (nestedOpenQuotientSequence i j M).X₃ :=
+  Iso.refl _
+
+set_option maxHeartbeats 500000 in
+private theorem quotientProjection :
+    cokernel.π (nestedOpenQuotientSequence i j M).f ≫ (quotientCokernelIso i j M).hom =
+      (nestedOpenQuotientSequence i j M).g := by
+  change cokernel.π (nestedOpenConstantMap i j M) ≫ 𝟙 _ =
+    cokernel.π (nestedOpenConstantMap i j M)
+  exact Category.comp_id _
+
+set_option maxHeartbeats 500000 in
+private theorem quotientExactAndEpi :
+    (nestedOpenQuotientSequence i j M).Exact ∧ Epi (nestedOpenQuotientSequence i j M).g :=
+  exactAndEpiOfCokernelProjection (nestedOpenQuotientSequence i j M)
+    (quotientCokernelIso i j M) (quotientProjection i j M)
+
+set_option maxHeartbeats 500000 in
 /-- The actual quotient sequence of nested extension-by-zero maps is short exact. -/
-theorem nestedOpenQuotientSequence_shortExact {V U X : Scheme.{u}}
-    (i : V ⟶ U) (j : U ⟶ X) [IsOpenImmersion i] [IsOpenImmersion j] (M : AddCommGrpCat.{u}) :
-    (nestedOpenQuotientSequence i j M).ShortExact := by
-  let D := Sheaf X.smallEtaleTopology AddCommGrpCat.{u}
-  let A : D := (extensionByZero (i ≫ j) AddCommGrpCat.{u}).obj
-    ((constantSheaf V.smallEtaleTopology AddCommGrpCat.{u}).obj M)
-  let B : D := (extensionByZero j AddCommGrpCat.{u}).obj
-    ((constantSheaf U.smallEtaleTopology AddCommGrpCat.{u}).obj M)
-  let f : A ⟶ B := nestedOpenConstantMap i j M
-  have hf : Mono f := nestedOpenConstantMap_mono i j M
-  let proveExact : ∀ g : A ⟶ B, Mono g → (ShortComplex.cokernelSequence g).ShortExact :=
-    fun g hg => shortExactCokernelOfMono (D := D) (A := A) (B := B) g hg
-  exact proveExact f hf
+theorem nestedOpenQuotientSequence_shortExact : (nestedOpenQuotientSequence i j M).ShortExact :=
+  ShortComplex.ShortExact.mk' (quotientExactAndEpi i j M).1 (quotientMono i j M)
+    (quotientExactAndEpi i j M).2
+
+end
 
 end ManuscriptAudit.OpenEtaleExtension
 
