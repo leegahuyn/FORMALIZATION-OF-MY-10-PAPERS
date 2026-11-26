@@ -76,6 +76,7 @@ private theorem trace_bound_of_orderThree (hF : ringChar F ≠ 2)
 private theorem cube_injective (hdiv : ¬ 3 ∣ Fintype.card F - 1) :
     Function.Injective (fun x : F => x ^ (3 : ℕ)) := by
   intro x y h
+  change x ^ (3 : ℕ) = y ^ (3 : ℕ) at h
   rcases eq_or_ne x 0 with rfl | hx
   · by_contra hn
     exact pow_ne_zero 3 (Ne.symm hn) (by simpa using h.symm)

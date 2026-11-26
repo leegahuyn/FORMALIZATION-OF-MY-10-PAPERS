@@ -85,6 +85,15 @@ theorem affineOpen_isDominant : IsDominant (affineOpen K) := by
   unfold affineOpen
   infer_instance
 
+theorem affineOpen_toBase :
+    affineOpen K ≫ projectiveNodeToBase K =
+      Spec.map (CommRingCat.ofHom (algebraMap K (coordinates K))) := by
+  unfold affineOpen projectiveNodeToBase
+  rw [← Category.assoc, Scheme.Hom.toImage_imageι]
+  unfold nodeInPlane chartEvaluation
+  rw [Category.assoc]
+  exact standardZChartPoint_toBase K (chartValues K) (chartValues_Z K)
+
 /-- The homogeneous defining relation evaluated at the affine parametrization. -/
 def homogeneousEquation : MvPolynomial (Fin 3) K :=
   MvPolynomial.X 1 ^ 2 * MvPolynomial.X 2 -
@@ -118,6 +127,7 @@ run_cmd do
       ``ManuscriptAudit.NodalProjectiveClosure.projectiveNode_isProper,
       ``ManuscriptAudit.NodalProjectiveClosure.affineOpen_isOpenImmersion,
       ``ManuscriptAudit.NodalProjectiveClosure.affineOpen_isDominant,
+      ``ManuscriptAudit.NodalProjectiveClosure.affineOpen_toBase,
       ``ManuscriptAudit.NodalProjectiveClosure.homogeneousEquation_degree,
       ``ManuscriptAudit.NodalProjectiveClosure.homogeneousEquation_eval] do
     let dependencies ← collectAxioms name

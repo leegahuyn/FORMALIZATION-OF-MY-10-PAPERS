@@ -73,7 +73,7 @@ private theorem weight_fixed : swap K (weight K) = weight K :=
 
 set_option maxHeartbeats 1450000 in
 set_option backward.isDefEq.respectTransparency false in
-private def certificate (h2 : (2 : K) ≠ 0) :=
+def certificate (h2 : (2 : K) ≠ 0) :=
   @InvolutionTensorComparison.certify (A K) (T K)
     (coordinates K).toCommRing (crossedPairs K).toCommRing (crossedPairs K).algebra
     (swap K) (swap_twice K) (fixed_lifts K h2) (half K) (weight K) (skewT K) (skewX K)

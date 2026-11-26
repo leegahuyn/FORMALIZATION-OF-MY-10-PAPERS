@@ -32,7 +32,10 @@ private def projection {X Y : Scheme.{0}} (f : X ⟶ Y) :
     intro U V h
     change ((Over.pullback f).map ((Scheme.Etale.forget Y).map h)).left ≫
         pullback.fst V.hom f = pullback.fst U.hom f ≫ h.left
-    have hh : h.left ≫ V.hom = U.hom := by simpa only [Functor.id_map] using h.w
+    have hh : h.left ≫ V.hom = U.hom := by
+      have hw := h.w
+      change h.left ≫ V.hom = U.hom ≫ 𝟙 Y at hw
+      exact hw.trans (Category.comp_id U.hom)
     have hw : (pullback.fst U.hom f ≫ h.left) ≫ V.hom =
         pullback.snd U.hom f ≫ f := by
       rw [Category.assoc, hh, pullback.condition]
@@ -41,7 +44,7 @@ private def projection {X Y : Scheme.{0}} (f : X ⟶ Y) :
 private def projectionUnits {X Y : Scheme.{0}} (f : X ⟶ Y) :
     (underlying Y).op ⋙ (Scheme.Γ ⋙ ringUnits) ⟶
       (etaleBaseChange f ⋙ underlying X).op ⋙ (Scheme.Γ ⋙ ringUnits) :=
-  Functor.whiskerRight (projection f).op (Scheme.Γ ⋙ ringUnits)
+  Functor.whiskerRight (NatTrans.op (projection f)) (Scheme.Γ ⋙ ringUnits)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 800000 in

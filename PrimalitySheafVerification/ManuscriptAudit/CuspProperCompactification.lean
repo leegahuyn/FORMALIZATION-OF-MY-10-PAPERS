@@ -364,7 +364,7 @@ theorem cuspInPlane_as_Z_chart :
   rfl
 
 theorem affineOpen_opensRange_eq :
-    (affineOpen K).opensRange =
+    @Scheme.Hom.opensRange _ _ (affineOpen K) (affineOpen_isOpenImmersion K) =
       (cuspInPlane K).imageι ⁻¹ᵁ Proj.basicOpen (grading K) (z K) := by
   ext x
   constructor
@@ -447,6 +447,26 @@ theorem standardZChartEvaluation_C {R : Type u} [CommRing R] [Algebra K R]
           (by simpa only [zero_nsmul] using C_mem_zero K a)) = algebraMap K R a :=
   (standardZChartEvaluation_mk K coordinates hz _ _ _).trans (MvPolynomial.aeval_C coordinates a)
 
+
+/-- The normalized affine coordinates give the stated structure map to the base. -/
+theorem standardZChartPoint_toBase {R : Type u} [CommRing R] [Algebra K R]
+    (coordinates : Fin 3 → R) (hz : coordinates 2 = 1) :
+    Spec.map (CommRingCat.ofHom (standardZChartEvaluation K coordinates hz)) ≫
+        affineZChartι K ≫ projectivePlaneToBase K =
+      Spec.map (CommRingCat.ofHom (algebraMap K R)) := by
+  unfold projectivePlaneToBase planeToBase affineZChartι zChartι
+  simp only [Category.assoc, Proj.awayι_toSpecZero_assoc, ← Spec.map_comp]
+  apply congrArg Spec.map
+  apply CommRingCat.hom_ext
+  apply RingHom.ext
+  intro a
+  change standardZChartEvaluation K coordinates hz
+    (fromZeroRingHom (grading K) _ (constants K a)) = _
+  change standardZChartEvaluation K coordinates hz
+    (Away.mk (grading K) (X_mem_one K 2) 0 (MvPolynomial.C a)
+      (by simpa only [zero_nsmul] using C_mem_zero K a)) = _
+  exact standardZChartEvaluation_C K coordinates hz a
+
 end
 
 end ManuscriptAudit.CuspProperCompactification
@@ -465,7 +485,8 @@ run_cmd do
       ``ManuscriptAudit.CuspProperCompactification.affineOpen_opensRange_eq,
       ``ManuscriptAudit.CuspProperCompactification.standardPlane_basicOpens_cover,
       ``ManuscriptAudit.CuspProperCompactification.projectivePlaneToBase_isProper,
-      ``ManuscriptAudit.CuspProperCompactification.standardZChartEvaluation_mk] do
+      ``ManuscriptAudit.CuspProperCompactification.standardZChartEvaluation_mk,
+      ``ManuscriptAudit.CuspProperCompactification.standardZChartPoint_toBase] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
