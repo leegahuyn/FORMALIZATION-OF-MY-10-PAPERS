@@ -25,7 +25,7 @@ def actualCounts (p : ℕ) [Fact p.Prime] (A : ZMod p) : Series :=
 def actualZeta (p : ℕ) [Fact p.Prime] (A : ZMod p) : Series :=
   zetaOfCountSeries (actualCounts p A)
 
-private theorem exist_two_roots (a q : ℂ) :
+theorem exist_two_roots (a q : ℂ) :
     ∃ α β : ℂ, α + β = a ∧ α * β = q := by
   obtain ⟨d, hd⟩ := IsAlgClosed.exists_pow_nat_eq (a ^ 2 - 4 * q) zero_lt_two
   refine ⟨(a + d) / 2, (a - d) / 2, by ring, ?_⟩

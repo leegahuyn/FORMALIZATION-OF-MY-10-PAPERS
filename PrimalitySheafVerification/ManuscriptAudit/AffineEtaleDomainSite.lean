@@ -27,7 +27,7 @@ private abbrev X := Spec (CommRingCat.of A)
 
 /-- The full subcategory of integral affine objects in the actual affine étale site. -/
 def integralCharts : ObjectProperty (X A).AffineEtale :=
-  fun U ↦ IsDomain (unop U.left)
+  fun U ↦ IsDomain ((unop U.left : CommRingCat.{u}) : Type u)
 
 /-- The fully faithful inclusion of the native integral affine charts. -/
 abbrev inclusion := (integralCharts A).ι
@@ -57,7 +57,9 @@ theorem integralCharts_coverDense :
       letI : Algebra.Etale A (D i) := hEt i
       letI : Etale (specAlgebraMap A (D i)) := (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
         (RingHom.etale_algebraMap.mpr inferInstance)
-      exact ⟨Scheme.AffineEtale.mk (specAlgebraMap A (D i)), hDom i⟩
+      refine ⟨Scheme.AffineEtale.mk (specAlgebraMap A (D i)), ?_⟩
+      change IsDomain (D i)
+      exact hDom i
     let C (i : I) := (inclusion A).obj (V i)
     let f (i : I) : C i ⟶ U := by
       refine MorphismProperty.CostructuredArrow.homMk
@@ -87,8 +89,8 @@ theorem integralCharts_coverDense :
       rw [hr, PrimeSpectrum.localization_away_comap_range (D i) (e i)]
       exact hx
     apply (Scheme.AffineEtale.topology (X A)).superset_covering _ hf
-    apply Sieve.generate_le_iff.mpr
-    apply Presieve.ofArrows_le_iff.mpr
+    change Sieve.generate (Presieve.ofArrows C f) ≤ _
+    rw [Sieve.generate_le_iff, Presieve.ofArrows_le_iff]
     intro i
     exact Presieve.in_coverByImage (inclusion A) (Y := V i) (f i)
 

@@ -2,6 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHigherCohomology
+import PrimalitySheafVerification.ManuscriptAudit.ClosedPointCoproduct
 
 /-!
 # Positive étale cohomology of finite sums of skyscrapers
@@ -21,6 +22,14 @@ universe u
 
 attribute [local instance] etaleSiteHasExt
 
+private local instance etaleSiteHasCoproduct {X : Scheme.{u}} {I : Type u}
+    (F : I → Sheaf X.smallEtaleTopology AddCommGrpCat.{u}) : HasCoproduct F := by
+  let C := Sheaf X.smallEtaleTopology AddCommGrpCat.{u}
+  letI : IsGrothendieckAbelian.{u} C :=
+    Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology X AddCommGrpCat.{u}
+  let h : HasColimitsOfSize.{u, u} C := IsGrothendieckAbelian.hasColimits _
+  exact (h.has_colimits_of_shape (Discrete I)).has_colimit (Discrete.functor F)
+
 /-- A finite sum of actual geometric skyscrapers has zero positive
 cohomology on the small étale site. -/
 theorem finiteSkyscraperCoproduct_H_succ_subsingleton {X : Scheme.{u}}
@@ -29,12 +38,13 @@ theorem finiteSkyscraperCoproduct_H_succ_subsingleton {X : Scheme.{u}}
     Subsingleton (Sheaf.H (∐ fun i ↦ (p i).skyscraperSheaf (M i)) (n + 1)) := by
   let S : I → Sheaf X.smallEtaleTopology AddCommGrpCat.{u} := fun i ↦ (p i).skyscraperSheaf (M i)
   let H := Sheaf.functorH X.smallEtaleTopology (n + 1)
+  letI : H.Additive := inferInstanceAs ((Sheaf.functorH X.smallEtaleTopology (n + 1)).Additive)
   letI : PreservesBiproduct S H := inferInstance
   letI : PreservesColimit (Discrete.functor S) H :=
     preservesCoproduct_of_preservesBiproduct H
   have hZero (i : I) : IsZero (H.obj (S i)) :=
     AddCommGrpCat.isZero_iff_subsingleton.mpr (geometricSkyscraperH_succ_subsingleton (p i) (M i) n)
-  exact AddCommGrpCat.subsingleton_of_isZero (mapCoproduct_isZero H S hZero)
+  exact AddCommGrpCat.subsingleton_of_isZero (ClosedPointSupportDetection.mapCoproduct_isZero H S hZero)
 
 end
 

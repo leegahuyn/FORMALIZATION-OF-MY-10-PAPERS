@@ -49,7 +49,7 @@ private theorem chart_column_injective :
   fin_cases i <;> fin_cases j <;>
     simp_all [chart_column_0, chart_column_1, chart_column_2]
 
-private theorem zmod_two_cases (a : ZMod 2) : a = 0 ∨ a = 1 := by
+theorem zmod_two_cases (a : ZMod 2) : a = 0 ∨ a = 1 := by
   have hv := ZMod.val_lt a
   have h : a.val = 0 ∨ a.val = 1 := by omega
   rcases h with h | h
@@ -228,3 +228,4 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

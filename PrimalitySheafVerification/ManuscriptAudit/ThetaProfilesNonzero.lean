@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Real.Pi.Bounds
 import PrimalitySheafVerification.ManuscriptAudit.ThetaProfileGenerators
 
 /-! The three genuine theta profiles have no zeros above height two thirds. -/
@@ -82,8 +83,8 @@ private theorem norm_halfTail {τ : ℂ} (hτ : 0 < τ.im) :
   let q := Real.exp (-Real.pi * τ.im)
   have hlt : q < 1 := Real.exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr Real.pi_pos) hτ)
   have hs : HasSum (fun n : ℕ => q ^ (n + 1)) (q / (1 - q)) := by
-    simp_rw [pow_succ', div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
-    exact hasSum_geometric_of_lt_one (Real.exp_pos _).le hlt
+    have h := hasSum_geometric_of_lt_one (show 0 ≤ q from (Real.exp_pos _).le) hlt
+    simpa only [pow_succ', div_eq_mul_inv] using h.mul_left q
   have hd (n : ℕ) : ‖normalizedHalfTerm ((n : ℤ) + 1) τ‖ ≤ q ^ (n + 1) := by
     rw [normalizedHalfTerm_norm]
     change _ ≤ Real.exp (-Real.pi * τ.im) ^ (n + 1)
@@ -106,7 +107,8 @@ theorem thetaHalfShift_ne_zero_at_height {τ : ℂ} (hτ : (2 / 3 : ℝ) < τ.im
     simpa only [normalizedHalfTerm_eq] using
       (hasSum_jacobiTheta₂_term (τ / 2) hy).summable
   have hNat : Summable (fun n : ℕ => normalizedHalfTerm (n : ℤ) τ) :=
-    hs.comp_injective Int.natCast_injective
+    hs.comp_injective (show Function.Injective (fun n : ℕ => (n : ℤ)) from
+      fun _ _ h => Int.ofNat.inj h)
   have hSplit : (∑' n : ℕ, normalizedHalfTerm (n : ℤ) τ) =
       1 + ∑' n : ℕ, normalizedHalfTerm ((n : ℤ) + 1) τ := by
     rw [hNat.tsum_eq_zero_add]

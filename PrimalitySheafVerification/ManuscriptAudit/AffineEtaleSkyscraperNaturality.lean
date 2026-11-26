@@ -69,8 +69,8 @@ theorem rationalSkyscraperHeightOneIso_naturality (p : HeightOneSpectrum A)
       Pi.map' (f := pointB) (g := pointC) (contractFiber A B C p) (fun _ ↦ 𝟙 M)
   apply Pi.hom_ext
   intro q
-  simp only [Category.assoc, Pi.whiskerEquiv_hom, Pi.map'_comp_π, Iso.refl_inv, eqToHom_refl,
-    Category.comp_id, h]
+  simp only [Category.assoc, Pi.whiskerEquiv_hom, Pi.map'_comp_π, Pi.map'_comp_π_assoc,
+    Iso.refl_inv, eqToHom_refl, Category.id_comp, Category.comp_id, h]
 
 end
 

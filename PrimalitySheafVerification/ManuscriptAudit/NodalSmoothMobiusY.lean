@@ -28,11 +28,11 @@ private theorem squareDenominators_associated :
 private instance : IsLocalization.Away (tDenominator K) (yLocalized K) :=
   IsLocalization.Away.of_associated (S := yLocalized K) (squareDenominators_associated K)
 
-private def yToT : yCoordinateRing K ≃ₐ[Polynomial K] tRing K :=
+def yToT : yCoordinateRing K ≃ₐ[Polynomial K] tRing K :=
   (coordinateEquiv K).trans
     (IsLocalization.algEquiv (Submonoid.powers (tDenominator K)) (yLocalized K) (tRing K))
 
-private def negatePolynomial : Polynomial K ≃ₐ[K] Polynomial K := by
+def negatePolynomial : Polynomial K ≃ₐ[K] Polynomial K := by
   let f : Polynomial K →ₐ[K] Polynomial K := Polynomial.aeval (-Polynomial.X)
   have h : f.comp f = AlgHom.id K (Polynomial K) := by
     apply Polynomial.algHom_ext
@@ -41,7 +41,7 @@ private def negatePolynomial : Polynomial K ≃ₐ[K] Polynomial K := by
     rw [hX, map_neg, hX, neg_neg]
   exact AlgEquiv.ofAlgHom f f h h
 
-private theorem negatePolynomial_X :
+theorem negatePolynomial_X :
     negatePolynomial K (Polynomial.X : Polynomial K) = -Polynomial.X :=
   Polynomial.aeval_X _
 
@@ -54,7 +54,7 @@ private theorem negatePolynomial_denominator :
   rw [map_mul, map_sub, map_one, negatePolynomial_X]
   ring
 
-private def signedCoordinateEquiv : uRing K ≃ₐ[K] uPlusRing K :=
+def signedCoordinateEquiv : uRing K ≃ₐ[K] uPlusRing K :=
   IsLocalization.algEquivOfAlgEquiv
     (M := Submonoid.powers (uDenominator K)) (T := Submonoid.powers (uPlusDenominator K))
     (uRing K) (uPlusRing K) (negatePolynomial K)
@@ -74,23 +74,27 @@ theorem uPlusOne_laurent :
 
 abbrev plusRing := Localization.Away (uPlusOne K)
 
-private instance : IsLocalization.Away (uPlusDenominator K) (plusRing K) :=
-  IsLocalization.Away.mul' (laurentRing K) (plusRing K)
+private instance : IsLocalization.Away (uPlusDenominator K) (plusRing K) := by
+  letI : IsLocalization.Away (algebraMap (Polynomial K) (laurentRing K) (Polynomial.X + 1))
+      (plusRing K) := by
+    change IsLocalization.Away (uPlusOne K) (Localization.Away (uPlusOne K))
+    infer_instance
+  exact IsLocalization.Away.mul' (laurentRing K) (plusRing K)
     (Polynomial.X : Polynomial K) (Polynomial.X + 1)
 
-private def localizationEquiv : uPlusRing K ≃ₐ[Polynomial K] plusRing K :=
+def localizationEquiv : uPlusRing K ≃ₐ[Polynomial K] plusRing K :=
   IsLocalization.algEquiv (Submonoid.powers (uPlusDenominator K)) (uPlusRing K) (plusRing K)
 
 /-- The multiplicative-group open in which u+1 is invertible. -/
 def plusOpen : (Gm K).Opens := PrimeSpectrum.basicOpen (uPlusOne K)
 
-private def plusInGm : Spec (CommRingCat.of (plusRing K)) ⟶ Gm K :=
+def plusInGm : Spec (CommRingCat.of (plusRing K)) ⟶ Gm K :=
   Spec.map (CommRingCat.ofHom (algebraMap (laurentRing K) (plusRing K)))
 
 private instance : IsOpenImmersion (plusInGm K) :=
   IsOpenImmersion.of_isLocalization (S := plusRing K) (uPlusOne K)
 
-private def localizationOpenIso : Spec (CommRingCat.of (plusRing K)) ≅ (plusOpen K).toScheme :=
+def localizationOpenIso : Spec (CommRingCat.of (plusRing K)) ≅ (plusOpen K).toScheme :=
   IsOpenImmersion.isoOfRangeEq (plusInGm K) (plusOpen K).ι (by
     rw [Scheme.Opens.range_ι]
     exact PrimeSpectrum.localization_away_comap_range (plusRing K) (uPlusOne K))

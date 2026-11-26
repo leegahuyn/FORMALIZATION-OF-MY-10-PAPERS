@@ -35,7 +35,7 @@ def profileDensity (v : Direction) (z : ℍ) : ℝ := thetaDensity (profile v) z
 
 theorem direction_cases (v : Direction) :
     v = ![0, 0] ∨ v = ![1, 1] ∨ v = ![0, 1] ∨ v = ![1, 0] := by
-  have h (x : ZMod 2) : x = 0 ∨ x = 1 := by fin_cases x <;> decide
+  let h := ThreeCuspNeighborhoods.zmod_two_cases
   rcases h (v 0) with h0 | h0 <;> rcases h (v 1) with h1 | h1
   · exact Or.inl (funext fun i => by fin_cases i <;> simpa [h0, h1])
   · exact Or.inr (Or.inr (Or.inl (funext fun i => by fin_cases i <;> simpa [h0, h1])))
@@ -104,7 +104,7 @@ theorem full_modular_density_covariance (g : SL(2, ℤ)) :
   | one => intro v z; simp [direction_one]
   | mul g h _ _ ig ih =>
     intro v z
-    rw [mul_smul, ig, ih, mul_inv_rev, direction_mul]
+    rw [mul_smul, ig, ih, _root_.mul_inv_rev g h, direction_mul]
   | inv g _ ig =>
     intro v z
     have he := ig (direction g v) (g⁻¹ • z)

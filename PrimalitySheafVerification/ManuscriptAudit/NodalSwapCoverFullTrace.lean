@@ -81,8 +81,14 @@ def shortComplex : ShortComplex (Sheaf (J K) AddCommGrpCat.{0}) :=
 private def restrictIso :
     (shortComplex K h2).map (restrict K) ≅ NodalSwapCoverHOne.shortComplex K h2 :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simpa only [Iso.refl_hom, Category.id_comp, Category.comp_id] using (restrict_diagonal K).symm)
-    (by simpa only [Iso.refl_hom, Category.id_comp, Category.comp_id] using (restrict_trace K h2).symm)
+    (by
+      simp only [Iso.refl_hom, Category.id_comp, Category.comp_id, ShortComplex.map,
+        shortComplex, NodalSwapCoverHOne.shortComplex]
+      exact (restrict_diagonal K).symm)
+    (by
+      simp only [Iso.refl_hom, Category.id_comp, Category.comp_id, ShortComplex.map,
+        shortComplex, NodalSwapCoverHOne.shortComplex]
+      exact (restrict_trace K h2).symm)
 
 set_option maxHeartbeats 1400000 in
 theorem shortComplex_shortExact : (shortComplex K h2).ShortExact := by

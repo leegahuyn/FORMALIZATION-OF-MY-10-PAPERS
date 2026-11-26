@@ -119,6 +119,20 @@ def affineDivisorHom : source K F ⟶ affineDivisorSheaf K := by
     AffineEtaleDomainSite.integralCharts_coverDense (A K)
   exact ⟨Functor.IsCoverDense.sheafHom (integralDivisor K F)⟩
 
+/-- The extended morphism restricts to the specified natural transformation
+on the integral affine charts. -/
+theorem affineDivisorHom_restrict :
+    Functor.whiskerLeft (I K).op (affineDivisorHom K F).hom = integralDivisor K F := by
+  letI : (I K).IsCoverDense (T K) :=
+    AffineEtaleDomainSite.integralCharts_coverDense (A K)
+  exact Functor.IsCoverDense.sheafHom_restrict_eq (integralDivisor K F)
+
+/-- The extended divisor agrees with its actual chosen chart model. -/
+theorem affineDivisorHom_app_integral
+    (U : (AffineEtaleDomainSite.integralCharts (A K)).FullSubcategory) :
+    (affineDivisorHom K F).hom.app (op U.obj) = divisorAtIntegral K F U :=
+  NatTrans.congr_app (affineDivisorHom_restrict K F) (op U)
+
 /-- The actual generic-unit divisor morphism on the full small étale site. -/
 def divisorHom : genericUnitImage (A K) F ⟶ divisorSheaf K :=
   ((E K).counitIso.app (genericUnitImage (A K) F)).inv ≫
@@ -133,6 +147,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.AffineLineDivisorSheaf.integralDivisor,
       ``ManuscriptAudit.AffineLineDivisorSheaf.affineDivisorHom,
+      ``ManuscriptAudit.AffineLineDivisorSheaf.affineDivisorHom_restrict,
       ``ManuscriptAudit.AffineLineDivisorSheaf.divisorHom] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

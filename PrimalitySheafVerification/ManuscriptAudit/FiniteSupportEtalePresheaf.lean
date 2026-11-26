@@ -56,7 +56,8 @@ def component (a : ι) : directSum P ⟶ P a where
     rfl
 
 @[simp] theorem directSum_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (z : sections P X) (a : ι) :
-    ((directSum P).map f z : sections P Y) a = (P a).map f (z a) := rfl
+    DFinsupp.toFun (β := fun i ↦ (P i).obj Y) ((directSum P).map f z) a =
+      (P a).map f (z a) := rfl
 
 @[simp] theorem component_app_apply (a : ι) (X : Cᵒᵖ) (z : sections P X) :
     (component P a).app X z = z a := rfl

@@ -29,7 +29,7 @@ def scaledRoot (p : Primes) (α s : ℂ) : ℂ := α * (p : ℂ) ^ (-s)
 def localLogDerivative (p : Primes) (α s : ℂ) : ℂ :=
   -(Complex.log (p : ℂ) * scaledRoot p α s / (1 - scaledRoot p α s))
 
-private theorem scaledRoot_norm_le (p : Primes) {α s : ℂ} {W : ℝ}
+theorem scaledRoot_norm_le (p : Primes) {α s : ℂ} {W : ℝ}
     (hα : ‖α‖ ≤ (p : ℝ) ^ W) :
     ‖scaledRoot p α s‖ ≤ (p : ℝ) ^ (W - s.re) := by
   have hp : (0 : ℝ) < p := Nat.cast_pos.mpr p.prop.pos

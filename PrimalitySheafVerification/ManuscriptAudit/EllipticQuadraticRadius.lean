@@ -28,7 +28,7 @@ def localPolynomial (p a : ℝ) : ℂ[X] :=
 
 private abbrev expression (p a : ℝ) (z : ℂ) : ℂ := 1 - (a : ℂ) * z + (p : ℂ) * z ^ 2
 
-private theorem eval_localPolynomial (p a : ℝ) (z : ℂ) :
+theorem eval_localPolynomial (p a : ℝ) (z : ℂ) :
     (localPolynomial p a).eval z = expression p a z := by
   simp [localPolynomial, expression]
 
