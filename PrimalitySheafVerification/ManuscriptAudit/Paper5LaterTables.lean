@@ -1,3 +1,4 @@
+import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import Mathlib.Data.Nat.Sqrt
 import PrimalitySheafVerification.ManuscriptAudit.Paper5PrintedRecurrence
@@ -121,9 +122,20 @@ theorem trace_disagreement_primes :
 theorem paired_primes_agree :
     ∀ r ∈ pairedCounts, r.1.prime = r.2.prime := by decide
 
+private theorem floor_flag_iff (m p : ℕ) :
+    m ≤ 2 * Nat.sqrt p ↔ ((m + 1) / 2) ^ 2 ≤ p := by
+  rw [← Nat.le_sqrt']
+  omega
+
+private theorem printed_flags_check :
+    ∀ r ∈ countRows, r.hasseFlag = decide (((r.trace.natAbs + 1) / 2) ^ 2 ≤ r.prime) := by
+  decide
+
 /-- The floors in the page 169 script reproduce exactly the later table's flags. -/
 theorem printed_flags_match_integer_sqrt :
-    ∀ r ∈ countRows, r.hasseFlag = decide (r.trace.natAbs ≤ 2 * Nat.sqrt r.prime) := by decide
+    ∀ r ∈ countRows, r.hasseFlag = decide (r.trace.natAbs ≤ 2 * Nat.sqrt r.prime) := by
+  intro r hr
+  exact (printed_flags_check r hr).trans (decide_eq_decide.mpr (floor_flag_iff _ _).symm)
 
 /-- The actual squared inequality holds in every row for the printed trace. -/
 theorem all_printed_traces_satisfy_squared_hasse :

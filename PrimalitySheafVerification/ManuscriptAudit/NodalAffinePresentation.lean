@@ -23,8 +23,12 @@ def nodeY : coordinates K := ⟨y K, Algebra.subset_adjoin (by simp)⟩
 private def baseMap : K[X] →ₐ[K] coordinates K := Polynomial.aeval (nodeX K)
 
 private theorem equation_eval : (equation K).eval₂ (baseMap K).toRingHom (nodeY K) = 0 := by
-  simp only [equation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, map_mul, map_add,
-    map_one, map_pow, baseMap, aeval_X]
+  unfold equation
+  rw [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
+  change nodeY K ^ 2 - baseMap K (((X : K[X]) ^ 2) * (X + 1)) = 0
+  rw [map_mul, map_pow, map_add, map_one]
+  have hx : baseMap K X = nodeX K := Polynomial.aeval_X _
+  rw [hx]
   apply Subtype.ext
   change y K ^ 2 - x K ^ 2 * (x K + 1) = 0
   unfold y x
@@ -129,11 +133,14 @@ private theorem parameter_injective : Function.Injective (parameter K) := by
       ((parameter_mk K f).symm.trans hq)
   have heval : baseMap K (r.coeff 1) * nodeY K + baseMap K (r.coeff 0) = 0 := by
     rw [hlin] at hrem
-    simpa only [eval₂_add, eval₂_mul, eval₂_C, eval₂_X] using hrem
+    simp only [eval₂_add, eval₂_mul, eval₂_C, eval₂_X] at hrem
+    exact hrem
   have hsplit :
       (baseMap K (r.coeff 0)).val + (baseMap K (r.coeff 1)).val * y K = 0 := by
     have hyp := congrArg (coordinates K).val heval
-    simpa only [map_add, map_mul, map_zero, nodeY, add_comm] using hyp
+    simp only [map_add, map_mul, map_zero] at hyp
+    change (baseMap K (r.coeff 1)).val * y K + (baseMap K (r.coeff 0)).val = 0 at hyp
+    exact (add_comm _ _).trans hyp
   obtain ⟨h0, h1⟩ := shifted_linear_eq_zero K _ _ hsplit
   have hzero : r = 0 := hlin.trans (by simp only [h0, h1, map_zero, zero_mul, zero_add])
   exact AdjoinRoot.mk_eq_zero.mpr ((Polynomial.modByMonic_eq_zero_iff_dvd hm).mp hzero)

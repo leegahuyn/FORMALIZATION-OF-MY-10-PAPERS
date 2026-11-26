@@ -54,8 +54,10 @@ theorem clearDenominator {ι : Type*} {d : ℕ} (P : MvPolynomial ι (RatFunc K)
         rw [Finset.mul_sum]
         simp only [C_mul_monomial]
       _ = C (a q.val) * P := by
-        rw [Finset.sum_attach]
-        exact congrArg (fun p => C (a q.val) * p) (support_sum_monomial_coeff P)
+        have hSum : (∑ i ∈ s.attach, monomial i.val (c i.val)) = P :=
+          (Finset.sum_attach s (fun i => monomial i (c i))).trans
+            (support_sum_monomial_coeff P)
+        rw [hSum]
 
 /-- A polynomial-vector solution of the cleared equation solves the original
 one after embedding the polynomial ring in the rational function field. -/
@@ -71,11 +73,15 @@ theorem evaluateCleared {ι : Type*} {P : MvPolynomial ι (RatFunc K)}
   · intro hy
     apply hx
     funext i
-    apply RatFunc.algebraMap_injective K
-    simpa only [map_zero] using congrFun hy i
+    have hi : a (x i) = 0 := by
+      change y i = 0
+      rw [hy, Pi.zero_apply]
+    rw [Pi.zero_apply]
+    exact (RatFunc.algebraMap_injective K) (hi.trans (map_zero a).symm)
   · have he : a (aeval x Q) = aeval y (MvPolynomial.map a Q) := by
-      simpa only [aeval_eq_eval, RingHom.comp_id, eval₂_eq_eval_map] using
-        (map_eval₂Hom (RingHom.id (Polynomial K)) x a Q)
+      have hEval := MvPolynomial.hom_eval₂ Q (RingHom.id (Polynomial K)) a x
+      rw [RingHom.comp_id, eval₂_id, eval₂_eq_eval_map] at hEval
+      exact hEval
     rw [hxQ, map_zero, h, map_mul, aeval_C] at he
     exact (mul_eq_zero.mp he.symm).resolve_left (by
       simpa using RatFunc.algebraMap_ne_zero hq)

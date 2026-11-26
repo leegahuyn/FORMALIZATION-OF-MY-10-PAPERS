@@ -52,7 +52,7 @@ private theorem presheafPower_eq_nsmul_id (X : Scheme.{u}) (d : ℕ) :
   intro x
   let a : Additive (coordinateRing U.unop)ˣ := x
   change Additive.ofMul (a.toMul ^ d) = d • a
-  exact Additive.ofMul_pow d a.toMul
+  exact ofMul_pow d a.toMul
 
 theorem sheafPower_eq_nsmul_id (X : Scheme.{u}) (d : ℕ) :
     sheafPower X d = d • 𝟙 (unitSheaf X) := by

@@ -18,52 +18,53 @@ open PrimalitySheafVerification.ManuscriptAudit
 open Paper5PrintedRecurrence
 open scoped BigOperators
 
-private abbrev residueEquation (p : ℕ) (x y : Fin p) : Prop :=
-  y.val ^ 2 % p = (x.val ^ 3 + 1) % p
+private abbrev residueEquation (p A : ℕ) (x y : Fin p) : Prop :=
+  y.val ^ 2 % p = (x.val ^ 3 + A) % p
 
-private abbrev residueSolutions (p : ℕ) :=
-  {xy : Fin p × Fin p // residueEquation p xy.1 xy.2}
+private abbrev residueSolutions (p A : ℕ) :=
+  {xy : Fin p × Fin p // residueEquation p A xy.1 xy.2}
 
-private theorem zmod_equation_iff_mod (p x y : ℕ) :
-    (y : ZMod p) ^ 2 = (x : ZMod p) ^ 3 + 1 ↔
-      y ^ 2 % p = (x ^ 3 + 1) % p := by
+private theorem zmod_equation_iff_mod (p A x y : ℕ) :
+    (y : ZMod p) ^ 2 = (x : ZMod p) ^ 3 + (A : ZMod p) ↔
+      y ^ 2 % p = (x ^ 3 + A) % p := by
   let f := Nat.castRingHom (ZMod p)
-  change f y ^ 2 = f x ^ 3 + 1 ↔ y ^ 2 % p = (x ^ 3 + 1) % p
-  rw [← map_pow f y 2, ← map_pow f x 3, ← map_one f, ← map_add f]
-  exact ZMod.natCast_eq_natCast_iff' (y ^ 2) (x ^ 3 + 1) p
+  change f y ^ 2 = f x ^ 3 + f A ↔ y ^ 2 % p = (x ^ 3 + A) % p
+  rw [← map_pow f y 2, ← map_pow f x 3, ← map_add f]
+  exact ZMod.natCast_eq_natCast_iff' (y ^ 2) (x ^ 3 + A) p
 
-private def affineResidueEquiv (p : ℕ) [NeZero p] :
-    Paper5TraceAffine p (1 : ZMod p) ≃ residueSolutions p := by
+private def affineResidueEquiv (p A : ℕ) [NeZero p] :
+    Paper5TraceAffine p (A : ZMod p) ≃ residueSolutions p A := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · rintro ⟨⟨x, y⟩, h⟩
     refine ⟨(⟨x.val, ZMod.val_lt x⟩, ⟨y.val, ZMod.val_lt y⟩), ?_⟩
-    apply (zmod_equation_iff_mod p x.val y.val).mp
+    apply (zmod_equation_iff_mod p A x.val y.val).mp
     simpa only [ZMod.natCast_zmod_val, ZMod.natCast_self, zero_mul, sub_zero] using h
   · rintro ⟨⟨x, y⟩, h⟩
     refine ⟨((x.val : ZMod p), (y.val : ZMod p)), ?_⟩
     simpa only [ZMod.natCast_self, zero_mul, sub_zero] using
-      (zmod_equation_iff_mod p x.val y.val).mpr h
+      (zmod_equation_iff_mod p A x.val y.val).mpr h
   · rintro ⟨⟨x, y⟩, h⟩
     exact Subtype.ext (Prod.ext (ZMod.natCast_zmod_val x) (ZMod.natCast_zmod_val y))
   · rintro ⟨⟨x, y⟩, h⟩
     exact Subtype.ext
       (Prod.ext (Fin.ext (ZMod.val_natCast_of_lt x.isLt)) (Fin.ext (ZMod.val_natCast_of_lt y.isLt)))
 
-private def residueFibers (p : ℕ) :
-    residueSolutions p ≃ Σ x : Fin p, {y : Fin p // residueEquation p x y} where
+private def residueFibers (p A : ℕ) :
+    residueSolutions p A ≃ Σ x : Fin p, {y : Fin p // residueEquation p A x y} where
   toFun xy := ⟨xy.1.1, ⟨xy.1.2, xy.2⟩⟩
   invFun xy := ⟨(xy.1, xy.2.1), xy.2.2⟩
   left_inv := by rintro ⟨⟨x, y⟩, h⟩; rfl
   right_inv := by rintro ⟨x, y, h⟩; rfl
 
-private noncomputable def projectiveAffineEquiv {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) :
-    (paper5TraceCurve p (1 : ZMod p)).toProjective.Point ≃
-      Option (Paper5TraceAffine p (1 : ZMod p)) := by
-  let W := (paper5TraceCurve p (1 : ZMod p)).toProjective
+private noncomputable def projectiveAffineEquiv {p A : ℕ} [Fact p.Prime]
+    (hp : 5 ≤ p) (hA : (A : ZMod p) ≠ 0) :
+    (paper5TraceCurve p (A : ZMod p)).toProjective.Point ≃
+      Option (Paper5TraceAffine p (A : ZMod p)) := by
+  let W := (paper5TraceCurve p (A : ZMod p)).toProjective
   have hNonsing (x y : ZMod p) :
-      W.toAffine.Nonsingular x y ↔ y ^ 2 = x ^ 3 - (p : ZMod p) * x + 1 := by
+      W.toAffine.Nonsingular x y ↔ y ^ 2 = x ^ 3 - (p : ZMod p) * x + (A : ZMod p) := by
     rw [← WeierstrassCurve.Affine.equation_iff_nonsingular_of_Δ_ne_zero
-      (paper5_traceCurve_discriminant_ne_zero hp (one_ne_zero : (1 : ZMod p) ≠ 0))]
+      (paper5_traceCurve_discriminant_ne_zero hp hA)]
     rw [WeierstrassCurve.Affine.equation_iff]
     simp [paper5TraceCurve]
   let e₁ : W.Point ≃ W.toAffine.Point :=
@@ -71,34 +72,53 @@ private noncomputable def projectiveAffineEquiv {p : ℕ} [Fact p.Prime] (hp : 5
   let e₂ : W.toAffine.Point ≃ Option {xy : ZMod p × ZMod p // W.toAffine.Nonsingular xy.1 xy.2} :=
     W.toAffine.nonsingularPointEquiv
   let e₃ : {xy : ZMod p × ZMod p // W.toAffine.Nonsingular xy.1 xy.2} ≃
-      Paper5TraceAffine p (1 : ZMod p) :=
+      Paper5TraceAffine p (A : ZMod p) :=
     { toFun := fun xy => ⟨xy.1, (hNonsing _ _).mp xy.2⟩
       invFun := fun xy => ⟨xy.1, (hNonsing _ _).mpr xy.2⟩
       left_inv := fun _ => Subtype.ext rfl
       right_inv := fun _ => Subtype.ext rfl }
   exact e₁.trans (e₂.trans e₃.optionCongr)
 
-/-- The modular count, summed one first coordinate at a time. -/
-def enumeratedPoints (p : ℕ) : ℕ :=
-  (∑ x : Fin p, (Finset.univ.filter (residueEquation p x)).card) + 1
+/-- The modular count with a given constant, summed one first coordinate at a time. -/
+def enumeratedPointsFor (p A : ℕ) : ℕ :=
+  (∑ x : Fin p, (Finset.univ.filter (residueEquation p A x)).card) + 1
+
+theorem projective_count_eq_enumeratedFor {p A : ℕ} [Fact p.Prime]
+    (hp : 5 ≤ p) (hA : (A : ZMod p) ≠ 0) :
+    Nat.card (paper5TraceCurve p (A : ZMod p)).toProjective.Point = enumeratedPointsFor p A := by
+  let e := (projectiveAffineEquiv hp hA).trans
+    ((affineResidueEquiv p A).trans (residueFibers p A)).optionCongr
+  rw [Nat.card_congr e, Nat.card_eq_fintype_card, Fintype.card_option, Fintype.card_sigma]
+  simp only [enumeratedPointsFor, Fintype.card_subtype]
+
+def enumeratedPoints (p : ℕ) : ℕ := enumeratedPointsFor p 1
 
 theorem projective_count_eq_enumerated {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) :
     Nat.card (paper5TraceCurve p (1 : ZMod p)).toProjective.Point = enumeratedPoints p := by
-  let e := (projectiveAffineEquiv hp).trans
-    ((affineResidueEquiv p).trans (residueFibers p)).optionCongr
-  rw [Nat.card_congr e, Nat.card_eq_fintype_card, Fintype.card_option, Fintype.card_sigma]
-  simp only [enumeratedPoints, Fintype.card_subtype]
+  simpa only [Nat.cast_one, enumeratedPoints] using
+    (projective_count_eq_enumeratedFor hp (A := 1)
+      (by simpa only [Nat.cast_one] using (one_ne_zero : (1 : ZMod p) ≠ 0)))
 
-private def countedPoints (p : ℕ) : ℕ :=
-  if p % 3 = 2 then p + 1 else enumeratedPoints p
+/-- Use the cube permutation count for primes congruent to two modulo three. -/
+def countedPointsFor (p A : ℕ) : ℕ :=
+  if p % 3 = 2 then p + 1 else enumeratedPointsFor p A
+
+theorem projective_count_eq_countedFor {p A : ℕ} [Fact p.Prime]
+    (hp : 5 ≤ p) (hA : (A : ZMod p) ≠ 0) :
+    Nat.card (paper5TraceCurve p (A : ZMod p)).toProjective.Point = countedPointsFor p A := by
+  unfold countedPointsFor
+  split
+  · rename_i h
+    exact paper5_traceCurve_projective_count hp h hA
+  · exact projective_count_eq_enumeratedFor hp hA
+
+private def countedPoints (p : ℕ) : ℕ := countedPointsFor p 1
 
 private theorem projective_count_eq_counted {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p) :
     Nat.card (paper5TraceCurve p (1 : ZMod p)).toProjective.Point = countedPoints p := by
-  unfold countedPoints
-  split
-  · rename_i h
-    exact paper5_traceCurve_projective_count hp h one_ne_zero
-  · exact projective_count_eq_enumerated hp
+  simpa only [Nat.cast_one, countedPoints] using
+    (projective_count_eq_countedFor hp (A := 1)
+      (by simpa only [Nat.cast_one] using (one_ne_zero : (1 : ZMod p) ≠ 0)))
 
 set_option maxRecDepth 16000 in
 set_option maxHeartbeats 12000000 in
@@ -127,7 +147,9 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in
-      [``ManuscriptAudit.Paper5PrintedPointCounts.projective_count_eq_enumerated,
+      [``ManuscriptAudit.Paper5PrintedPointCounts.projective_count_eq_enumeratedFor,
+        ``ManuscriptAudit.Paper5PrintedPointCounts.projective_count_eq_countedFor,
+        ``ManuscriptAudit.Paper5PrintedPointCounts.projective_count_eq_enumerated,
         ``ManuscriptAudit.Paper5PrintedPointCounts.printedRows_actual_point_counts,
         ``ManuscriptAudit.Paper5PrintedPointCounts.printedRows_actual_firstTrace] do
     let dependencies ← collectAxioms name

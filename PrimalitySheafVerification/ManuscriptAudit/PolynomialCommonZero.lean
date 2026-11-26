@@ -51,7 +51,7 @@ private theorem coordinateIdeal_lt (n j : ℕ) (hj : j < n) :
       change eraseInitial K n (j + 1) (X i) = 0
       simp [eraseInitial, i]
     have hi : eraseInitial K n j (X i) = 0 := h hmem
-    exact X_ne_zero i (by simpa [eraseInitial, i] using hi)
+    exact X_ne_zero (R := K) i (by simpa [eraseInitial, i] using hi)
 
 private theorem coordinateIdeal_height (n j : ℕ) (hj : j ≤ n) :
     (j : ℕ∞) ≤ (coordinateIdeal K n j).height := by

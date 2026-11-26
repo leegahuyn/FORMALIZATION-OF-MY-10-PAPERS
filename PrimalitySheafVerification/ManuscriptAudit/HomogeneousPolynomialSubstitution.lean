@@ -17,7 +17,8 @@ namespace ManuscriptAudit.HomogeneousPolynomialSubstitution
 
 open scoped BigOperators
 
-private theorem natDegree_sum_le {ι R : Type*} [Semiring R] (s : Finset ι)
+/-- A finite sum of polynomials of bounded degree has the same degree bound. -/
+theorem natDegree_sum_le {ι R : Type*} [Semiring R] (s : Finset ι)
     (f : ι → Polynomial R) (m : ℕ) (h : ∀ i ∈ s, (f i).natDegree ≤ m) :
     (∑ i ∈ s, f i).natDegree ≤ m := by
   classical
