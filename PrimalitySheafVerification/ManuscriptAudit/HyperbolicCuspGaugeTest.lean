@@ -19,7 +19,6 @@ Christoffel coefficient.
 namespace ManuscriptAudit.HyperbolicCuspGaugeTest
 
 open MeasureTheory Paper10CoulombMultiplier Paper10CoulombProductRule
-open SmoothGaugeCurvature (partialX partialY)
 open LiteralCuspTruncation (orbitPoint)
 open scoped UpperHalfPlane
 
@@ -28,9 +27,12 @@ noncomputable section
 def cuspBump (y : ℝ) : ℝ :=
   Real.smoothTransition (y - 2) * Real.smoothTransition (5 - y)
 
-theorem cuspBump_smooth : ContDiff ℝ ⊤ cuspBump :=
-  (Real.smoothTransition.contDiff.comp (contDiff_id.sub contDiff_const)).mul
-    (Real.smoothTransition.contDiff.comp (contDiff_const.sub contDiff_id))
+theorem cuspBump_smooth : ContDiff ℝ (↑(⊤ : WithTop ℕ)) cuspBump := by
+  have hLeft : ContDiff ℝ (↑(⊤ : WithTop ℕ)) (fun y : ℝ => y - 2) :=
+    contDiff_id.sub contDiff_const
+  have hRight : ContDiff ℝ (↑(⊤ : WithTop ℕ)) (fun y : ℝ => 5 - y) :=
+    contDiff_const.sub contDiff_id
+  exact (Real.smoothTransition.contDiff.comp hLeft).mul (Real.smoothTransition.contDiff.comp hRight)
 
 theorem cuspBump_zero_of_height_outside {y : ℝ} (h : y ≤ 2 ∨ 5 ≤ y) :
     cuspBump y = 0 := by
@@ -47,7 +49,7 @@ def cuspOneForm : OneForm := fun _ y => (cuspBump y, 0)
 
 theorem cuspOneForm_coclosed (x y : ℝ) : codifferential cuspOneForm x y = 0 := by
   rw [codifferential_eq_coordinateDivergence]
-  simp [cuspOneForm, partialX, partialY]
+  simp [cuspOneForm]
 
 theorem cuspOneForm_same_on_high_orbit {z w : ℍ} (hz : 1 < z.im) (hw : 1 < w.im)
     (h : orbitPoint w = orbitPoint z) :
@@ -65,10 +67,10 @@ def christoffel_xy_x (y : ℝ) : ℝ :=
 
 theorem christoffel_xy_x_eq {y : ℝ} (hy : 0 < y) : christoffel_xy_x y = -1 / y := by
   have h := ((hasDerivAt_id y).pow 2).inv (pow_ne_zero 2 hy.ne')
-  rw [christoffel_xy_x, h.deriv]
-  dsimp [id]
-  field_simp [hy.ne']
-  <;> ring
+  have h' : HasDerivAt (fun t : ℝ => (t ^ 2)⁻¹) (-(2 * y) / (y ^ 2) ^ 2) y := by
+    convert h using 1 <;> norm_num [id]
+  rw [christoffel_xy_x, h'.deriv]
+  field_simp [hy.ne'] <;> ring
 
 /-- For this horizontal one-form, these are the xy and yx components of ∇a. -/
 def cuspCovariantComponents (y : ℝ) : ℝ × ℝ :=
@@ -79,8 +81,7 @@ theorem cuspCovariantComponents_norm_density {y : ℝ} (hy : 0 < y) :
       cuspBump y ^ 2 + (y * deriv cuspBump y + cuspBump y) ^ 2 := by
   rw [cuspCovariantComponents, christoffel_xy_x_eq hy]
   dsimp
-  field_simp [hy.ne']
-  <;> ring
+  field_simp [hy.ne'] <;> ring
 
 def cuspMass : ℝ := 2 * ∫ y : ℝ in (1 : ℝ)..6, cuspBump y ^ 2
 
@@ -95,7 +96,8 @@ theorem cuspMass_pos : 0 < cuspMass := by
   · intro y _
     exact sq_nonneg _
   · refine ⟨7 / 2, by constructor <;> norm_num, ?_⟩
-    rw [cuspBump_one_on_middle (by norm_num) (by norm_num)]
+    change 0 < cuspBump (7 / 2) ^ (2 : ℕ)
+    rw [cuspBump_one_on_middle (y := 7 / 2) (by norm_num) (by norm_num)]
     norm_num
 
 theorem cuspMass_le_cuspDerivativeEnergy : cuspMass ≤ cuspDerivativeEnergy := by

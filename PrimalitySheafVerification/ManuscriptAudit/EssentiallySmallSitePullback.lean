@@ -87,6 +87,7 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
     inferInstanceAs ((F.sheafCongr K K' A.{u}).functor.IsEquivalence)
   letI : R₂.IsEquivalence :=
     inferInstanceAs ((E.sheafCongr J J' A.{u}).inverse.IsEquivalence)
+  letI : HasSheafify J' A.{u} := inferInstance
   letI : HasSheafify K' A.{u} := inferInstance
   letI : ∀ P : (SmallModel.{u} C)ᵒᵖ ⥤ A.{u}, g.op.HasLeftKanExtension P :=
     fun _ ↦ inferInstance
@@ -95,9 +96,12 @@ theorem exists_leftExactLeftAdjoint [HasFiniteLimits C] [PreservesFiniteLimits G
   let L₀ := g.sheafPullback A.{u} J' K'
   let L₁ := R₁.asEquivalence.inverse
   let L₂ := R₂.asEquivalence.inverse
-  letI : PreservesFiniteLimits L₀ := by
-    change PreservesFiniteLimits (g.sheafPullback A.{u} J' K')
-    infer_instance
+  letI : ReflectsLimits (forget A.{u}) := reflectsLimits_of_reflectsIsomorphisms _
+  letI : PreservesFiniteLimits (g.op.lan :
+      ((SmallModel.{u} C)ᵒᵖ ⥤ A.{u}) ⥤ (SmallModel.{u} D)ᵒᵖ ⥤ A.{u}) :=
+    lan_preservesFiniteLimits_of_flat A.{u} g
+  letI : PreservesFiniteLimits L₀ :=
+    Functor.sheafPullbackConstruction.preservesFiniteLimits g A.{u} J' K'
   letI := Functor.isContinuous_comp g F.inverse J' K' K
   letI := Functor.isContinuous_comp E.functor (g ⋙ F.inverse) J J' K
   let e₁ : R₁ ⋙ R₀ ≅ (g ⋙ F.inverse).sheafPushforwardContinuous A.{u} J' K :=

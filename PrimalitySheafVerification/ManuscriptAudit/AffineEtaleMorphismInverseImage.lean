@@ -67,7 +67,8 @@ theorem fullDirectImage_hasLeftExactLeftAdjoint :
     D.rightUnitor
   let L := ((EX R).inverse ⋙ L₀) ⋙ (EX S).functor
   let a := (((EX R).symm.toAdjunction.comp a₀).comp (EX S).toAdjunction).ofNatIsoRight e
-  exact ⟨L, ⟨a⟩, inferInstance⟩
+  letI : PreservesFiniteLimits ((EX R).inverse ⋙ L₀) := comp_preservesFiniteLimits (EX R).inverse L₀
+  exact ⟨L, ⟨a⟩, comp_preservesFiniteLimits _ _⟩
 
 /-- The actual full small étale direct image preserves injective sheaves. -/
 theorem fullDirectImage_preservesInjectiveObjects :

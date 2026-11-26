@@ -42,7 +42,7 @@ theorem geometricTwoTorsion_card (hpTwo : p ≠ 2) {c A : ZMod p}
   have hΔL : ((shortCubic c A).baseChange L).Δ ≠ 0 := by
     change ((shortCubic c A).map (algebraMap (ZMod p) L)).Δ ≠ 0
     rw [WeierstrassCurve.map_Δ]
-    exact map_ne_zero (algebraMap (ZMod p) L) hΔ
+    exact (map_ne_zero (algebraMap (ZMod p) L)).mpr hΔ
   rw [shortCubic_baseChange p L] at hΔL
   rw [Nat.card_congr (TwoTorsionFrobeniusModule.carrierEquiv _)]
   change Nat.card {P : (((shortCubic c A).baseChange L).toProjective.toAffine).Point //
@@ -61,9 +61,11 @@ def arithmeticTrace (c A : ZMod p) : ℤ :=
 theorem actualFrobenius_trace (hpTwo : p ≠ 2) {c A : ZMod p}
     (hΔ : (shortCubic c A).Δ ≠ 0) :
     LinearMap.trace (ZMod 2) (geometricTwoTorsion p L (baseAffine p c A))
-      (actualFrobenius p L hpTwo hΔ).toLinearMap = (arithmeticTrace p c A : ZMod 2) :=
-  trace_eq_signed_projective_count p L (shortCubic c A).toProjective
-    (geometricTwoTorsion_card p L hpTwo hΔ) hpTwo
+      (actualFrobenius p L hpTwo hΔ).toLinearMap = (arithmeticTrace p c A : ZMod 2) := by
+  simpa only [actualFrobenius, arithmeticTrace, Int.cast_sub, Int.cast_add, Int.cast_natCast,
+    Int.cast_one] using
+    (trace_eq_signed_projective_count p L (shortCubic c A).toProjective
+      (geometricTwoTorsion_card p L hpTwo hΔ) hpTwo)
 
 theorem actualFrobenius_det (hpTwo : p ≠ 2) {c A : ZMod p}
     (hΔ : (shortCubic c A).Δ ≠ 0) :

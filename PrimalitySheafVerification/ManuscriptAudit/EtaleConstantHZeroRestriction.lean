@@ -20,13 +20,11 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
-private abbrev C := AddCommGrpCat.{u}
-
-private def fromSection {X : Scheme.{u}} (F : Sheaf X.smallEtaleTopology C)
+private def fromSection {X : Scheme.{u}} (F : Sheaf X.smallEtaleTopology AddCommGrpCat.{u})
     (U : X.Etale) : F.obj.obj (op U) ≃ F.H' 0 U :=
   (sectionEquiv X.smallEtaleTopology F U).symm.trans Ext.homEquiv₀.symm
 
-private theorem fromSection_restrict {X : Scheme.{u}} (F : Sheaf X.smallEtaleTopology C)
+private theorem fromSection_restrict {X : Scheme.{u}} (F : Sheaf X.smallEtaleTopology AddCommGrpCat.{u})
     {U V : X.Etale} (f : V ⟶ U) (s : F.obj.obj (op U)) :
     (F.cohomologyPresheaf 0).map f.op (fromSection F U s) =
       fromSection F V (F.obj.map f.op s) := by
@@ -35,14 +33,14 @@ private theorem fromSection_restrict {X : Scheme.{u}} (F : Sheaf X.smallEtaleTop
       Ext.mk₀ (sectionHom X.smallEtaleTopology F V (F.obj.map f.op s))
   rw [Ext.mk₀_comp_mk₀, sectionHom_restrict]
 
-private theorem sections_restrict_surjective {X : Scheme.{u}} (M : C)
+private theorem sections_restrict_surjective {X : Scheme.{u}} (M : AddCommGrpCat.{u})
     {U V : X.Etale} (f : V ⟶ U) [PreconnectedSpace V.left] [Nonempty V.left] :
-    Function.Surjective (((constantSheaf X.smallEtaleTopology C).obj M).obj.map f.op) := by
+    Function.Surjective (((constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M).obj.map f.op) := by
   letI : TopologicalSpace M := ⊥
   letI : DiscreteTopology M := ⟨rfl⟩
-  let F := (constantSheaf X.smallEtaleTopology C).obj M
+  let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M
   let G := continuousMapSheaf X M
-  let e := (sheafToPresheaf X.smallEtaleTopology C).mapIso (constantSheafContinuousMapIso X M)
+  let e := (sheafToPresheaf X.smallEtaleTopology AddCommGrpCat.{u}).mapIso (constantSheafContinuousMapIso X M)
   intro y
   let c : ContinuousMap V.left M := e.hom.app (op V) y
   let p : V.left := Classical.choice inferInstance
@@ -62,11 +60,11 @@ private theorem sections_restrict_surjective {X : Scheme.{u}} (M : C)
 
 /-- Native degree-zero restriction to a nonempty preconnected étale object
 is surjective for constant coefficients. -/
-theorem restriction_surjective {X : Scheme.{u}} (M : C)
+theorem restriction_surjective {X : Scheme.{u}} (M : AddCommGrpCat.{u})
     {U V : X.Etale} (f : V ⟶ U) [PreconnectedSpace V.left] [Nonempty V.left] :
-    let F := (constantSheaf X.smallEtaleTopology C).obj M
+    let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M
     Function.Surjective ((F.cohomologyPresheaf 0).map f.op) := by
-  let F := (constantSheaf X.smallEtaleTopology C).obj M
+  let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).obj M
   intro y
   obtain ⟨s, rfl⟩ := (fromSection F V).surjective y
   obtain ⟨t, ht⟩ := sections_restrict_surjective M f s

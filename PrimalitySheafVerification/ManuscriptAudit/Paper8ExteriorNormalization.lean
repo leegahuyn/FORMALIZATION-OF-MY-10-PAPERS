@@ -33,7 +33,7 @@ private theorem negPochhammer_succ (q : ℝ) (n : ℕ) :
   unfold negPochhammer
   rw [Finset.prod_range_succ]
 
-private theorem one_le_negPochhammer {q : ℝ} (hq : 0 ≤ q) (n : ℕ) :
+theorem one_le_negPochhammer {q : ℝ} (hq : 0 ≤ q) (n : ℕ) :
     1 ≤ negPochhammer q n := by
   induction n with
   | zero => simp [negPochhammer]

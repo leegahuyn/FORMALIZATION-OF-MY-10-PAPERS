@@ -52,6 +52,8 @@ theorem spec_preservesFiniteLimits (R : CommRingCat.{u}) :
   letI : PreservesLimit (Functor.empty.{0} X.AffineEtale) G :=
     preservesTerminal_of_iso G (G.mapIso (terminalIsTerminal.uniqueUpToIso (affineTerminal_isTerminal R)) ≪≫
       (imageTerminal R).uniqueUpToIso terminalIsTerminal)
+  letI : PreservesLimitsOfShape (Discrete PEmpty.{1}) G :=
+    preservesLimitsOfShape_pempty_of_preservesTerminal G
   letI : PreservesLimitsOfShape WalkingCospan G :=
     inferInstanceAs (PreservesLimitsOfShape WalkingCospan
       (MorphismProperty.CostructuredArrow.toOver @Etale Scheme.Spec X))

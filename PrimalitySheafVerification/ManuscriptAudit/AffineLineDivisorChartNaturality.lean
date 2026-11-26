@@ -107,8 +107,7 @@ theorem chartSectionsEquiv_restrict (d : familySections K B) :
     let G := Scheme.AffineEtale.Spec (X K)
     change (skyscraper K ((closedPointEquiv K).symm p)).obj.map
       ((G.map (chartArrow K B C)).op) (d p) = _
-    exact congrArg (fun f ↦ (skyscraper K ((closedPointEquiv K).symm p)).obj.map f.op (d p))
-      (chartArrow_map K B C)
+    erw [chartArrow_map] <;> rfl
   calc
     _ = chartComponentEquiv K C p (r p) q' := chartSectionsEquiv_coordinate K C r p q'
     _ = chartComponentEquiv K B p (d p) (contractFiber (A K) B C p q') := by

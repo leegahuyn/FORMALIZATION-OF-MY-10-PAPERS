@@ -36,7 +36,7 @@ theorem geometricTwoTorsion_card (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
   have h₃ : (3 : L) ≠ 0 := by
     simpa only [Nat.cast_ofNat] using hsmall 3 (by decide) (by omega)
   have ha : algebraMap (ZMod p) L A ≠ 0 :=
-    map_ne_zero (algebraMap (ZMod p) L) hA
+    (map_ne_zero (algebraMap (ZMod p) L)).mpr hA
   have hΔ := CubicFiniteTorsion.shortCubic_zero_discriminant_ne_zero p hp ha
   rw [Nat.card_congr (TwoTorsionFrobeniusModule.carrierEquiv _)]
   change Nat.card {P : (((paper5TraceCurve p A).baseChange L).toProjective.toAffine).Point //
@@ -51,9 +51,10 @@ def actualFrobenius (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
 
 theorem actualFrobenius_trace (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
     LinearMap.trace (ZMod 2) (geometricTwoTorsion p L (printedAffine p A))
-      (actualFrobenius p L hp hA).toLinearMap = (firstTrace p A : ZMod 2) :=
-  trace_eq_signed_projective_count p L (paper5TraceCurve p A).toProjective
-    (geometricTwoTorsion_card p L hp hA) (by omega)
+      (actualFrobenius p L hp hA).toLinearMap = (firstTrace p A : ZMod 2) := by
+  simpa only [actualFrobenius, firstTrace, Int.cast_sub, Int.cast_add, Int.cast_natCast, Int.cast_one]
+    using trace_eq_signed_projective_count p L (paper5TraceCurve p A).toProjective
+      (geometricTwoTorsion_card p L hp hA) (by omega)
 
 theorem actualFrobenius_det (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) :
     LinearMap.det (actualFrobenius p L hp hA).toLinearMap = (p : ZMod 2) :=

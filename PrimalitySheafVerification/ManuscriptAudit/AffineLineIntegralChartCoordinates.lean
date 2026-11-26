@@ -35,6 +35,7 @@ def coordinateAlgebra : Algebra (Polynomial K) (coordinateRing K U) :=
 theorem coordinateAlgebra_etale :
     letI := coordinateAlgebra K U
     Algebra.Etale (Polynomial K) (coordinateRing K U) := by
+  letI : Algebra (Polynomial K) (coordinateRing K U) := coordinateAlgebra K U
   let a := coordinateHom K U
   have ha : Spec.map a = U.hom := Spec.map_preimage U.hom
   have h : Etale (Spec.map a) := ha.symm ▸ U.prop

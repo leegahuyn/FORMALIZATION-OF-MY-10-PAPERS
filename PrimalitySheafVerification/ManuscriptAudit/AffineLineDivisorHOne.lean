@@ -1,10 +1,9 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleSheafCohomology
 import PrimalitySheafVerification.ManuscriptAudit.AffineLineDivisorSheaf
-import PrimalitySheafVerification.ManuscriptAudit.EtaleFiniteSkyscraperCohomology
-import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportEtaleCoproduct
+import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHigherCohomology
+import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportEtaleCohomology
 import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportEtaleHOneDescent
 
 /-!
@@ -44,30 +43,23 @@ private abbrev fullPiece (p : P K) : Full K :=
 
 private abbrev affinePiece (p : P K) := (E K).inverse.obj (fullPiece K p)
 
-set_option maxHeartbeats 2200000 in
+set_option maxHeartbeats 700000 in
 /-- Every chosen finite sum of the actual affine-line divisor pieces has zero H¹. -/
 theorem finiteDivisor_HOne_subsingleton (t : Finset (P K)) :
     Subsingleton (Sheaf.H (affineEtaleDirectSum (X K) (fun p : t ↦ affinePiece K p.val)) 1) := by
-  letI : IsGrothendieckAbelian.{0} (Full K) :=
-    Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology (X K) AddCommGrpCat.{0}
-  let hCol : HasColimitsOfSize.{0, 0} (Full K) := IsGrothendieckAbelian.hasColimits _
-  letI : HasColimitsOfShape (Discrete ↥t) (Full K) := hCol.has_colimits_of_shape _
-  let D (p : t) := affinePiece K p.val
-  let A := affineEtaleDirectSum (X K) D
-  let H (p : t) := (E K).functor.obj (D p)
-  let G (p : t) := fullPiece K p.val
-  let h₁ := affineEtaleDirectSumIsColimit (X K) D
-  let h₂ := isColimitCofanMkObjOfIsColimit (E K).functor D (summand (X K) D) h₁
-  let e₀ : (E K).functor.obj A ≅ ∐ H := h₂.coconePointUniqueUpToIso (coproductIsCoproduct H)
-  let e₁ : ∐ H ≅ ∐ G := Sigma.mapIso (fun p ↦ (E K).counitIso.app (G p))
-  let e₂ := ((Sheaf.functorH (X K).smallEtaleTopology 1).mapIso
-    (e₀ ≪≫ e₁)).addCommGroupIsoToAddEquiv
-  let e := (SmallEtaleCohomologyComparison.sheafCohomologyEquiv
-    (CommRingCat.of (Polynomial K)) A 1).trans e₂
-  have hG : Subsingleton (Sheaf.H (∐ G) 1) :=
-    finiteSkyscraperCoproduct_H_succ_subsingleton
-      (fun p : t ↦ Scheme.pointSmallEtale (x K p.val)) (fun _ ↦ AddCommGrpCat.of ℤ) 0
-  exact ⟨fun a b ↦ e.injective (hG.allEq (e a) (e b))⟩
+  refine finiteDirectSum_H_subsingleton (X K) (fun p : t ↦ affinePiece K p.val) 1 ?_
+  intro p
+  let G : Full K := fullPiece K p.val
+  let D := (E K).inverse.obj G
+  let R := CommRingCat.of (Polynomial K)
+  let H := Sheaf.functorH (X K).smallEtaleTopology 1
+  let e₀ := SmallEtaleCohomologyComparison.sheafCohomologyEquiv R D 1
+  let e₁ := (H.mapIso ((E K).counitIso.app G)).addCommGroupIsoToAddEquiv
+  let e := e₀.trans e₁
+  have h : Subsingleton (Sheaf.H G 1) :=
+    geometricSkyscraperH_succ_subsingleton
+      (Scheme.pointSmallEtale (x K p.val)) (AddCommGrpCat.of ℤ) 0
+  exact ⟨fun a b ↦ e.injective (h.allEq (e a) (e b))⟩
 
 /-- The finite-support divisor sheaf has zero H¹ on the affine site. -/
 theorem affineDivisor_HOne_subsingleton : Subsingleton (Sheaf.H (affineDivisorSheaf K) 1) := by

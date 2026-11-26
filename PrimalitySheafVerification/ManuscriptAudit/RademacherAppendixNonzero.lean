@@ -84,8 +84,9 @@ private theorem norm_contribution_two :
   unfold besselContribution
   rw [unitNumerators_two, Finset.sum_singleton, norm_mul, norm_mul,
     hWeight 2 1 (by simp [unitNumerators_two]), phase_norm, one_mul, mul_one,
-    Complex.norm_real, Real.norm_eq_abs,
-    abs_of_nonneg (bessel_over_pos_nonneg 2 (by norm_num))] <;> norm_num
+    Complex.norm_real, Real.norm_eq_abs]
+  simp only [Nat.cast_ofNat]
+  exact abs_of_nonneg (bessel_over_pos_nonneg 2 (by norm_num))
 
 private theorem norm_contribution_le_bessel {c : ℕ} (hc : 0 < c) :
     ‖besselContribution weight c‖ ≤ printedBessel (argumentScale / c) := by

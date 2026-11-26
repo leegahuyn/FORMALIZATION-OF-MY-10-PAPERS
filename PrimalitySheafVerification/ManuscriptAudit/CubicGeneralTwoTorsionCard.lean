@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.Separable
+import Mathlib.Tactic.NormNum
 import PrimalitySheafVerification.ManuscriptAudit.CubicTwoTorsion
 
 /-! The geometric two-torsion count for every nonsingular short Weierstrass cubic. -/
@@ -41,12 +42,13 @@ variable [IsAlgClosed K]
 theorem cubicPolynomial_separable {c A : K} (hΔ : (shortCubic c A).Δ ≠ 0) :
     (cubicPolynomial c A).Separable := by
   rw [separable_def]
-  refine (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed K _ _).mpr ?_
+  refine (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed K K
+    (cubicPolynomial c A) (derivative (cubicPolynomial c A))).mpr ?_
   intro x
   by_cases hx : x ^ 3 - c * x + A = 0
   · right
     have hn : (CubicAffine c A).Nonsingular x 0 :=
-      (shortCubic_nonsingular_iff hΔ x 0).mpr (by simpa only [zero_pow (by decide)] using hx.symm)
+      (shortCubic_nonsingular_iff hΔ x 0).mpr (by simpa using hx.symm)
     have hp := ((CubicAffine c A).nonsingular_iff x 0).mp hn
     have hd : (0 : K) ≠ 3 * x ^ 2 - c := by
       simpa [CubicAffine, shortCubic, sub_eq_add_neg] using hp.2
