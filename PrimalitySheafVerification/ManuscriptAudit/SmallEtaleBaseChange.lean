@@ -51,7 +51,8 @@ private theorem range_pullback_map {X Y : Scheme.{u}} (f : X ⟶ Y)
   constructor
   · rintro ⟨a, rfl⟩
     refine ⟨pullback.fst A.hom f a, ?_⟩
-    rw [← Scheme.Hom.comp_apply, ← h.w, Scheme.Hom.comp_apply]
+    have hw := congrArg (fun k : pullback A.hom f ⟶ B.left => k a) h.w
+    simpa only [Scheme.Hom.comp_apply] using hw.symm
   · rintro ⟨a, ha⟩
     obtain ⟨z, hz, _⟩ := Scheme.Pullback.exists_preimage_pullback
       (f := pullback.fst B.hom f) (g := g.left) b a ha.symm
@@ -62,8 +63,10 @@ private theorem range_pullback_map {X Y : Scheme.{u}} (f : X ⟶ Y)
 private theorem pullback_fst_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     (hf : Function.Surjective f) (B : Y.Etale) :
     Function.Surjective (pullback.fst B.hom f) := by
-  simpa only [← Set.range_eq_univ, Scheme.Pullback.range_fst,
-    Set.range_eq_univ.mpr hf, Set.preimage_univ]
+  intro b
+  obtain ⟨x, hx⟩ := hf (B.hom b)
+  obtain ⟨z, hz, _⟩ := Scheme.Pullback.exists_preimage_pullback (f := B.hom) (g := f) b x hx.symm
+  exact ⟨z, hz⟩
 
 /-- Surjective base change preserves and reflects small étale covering sieves. -/
 theorem functorPushforward_mem_iff {X Y : Scheme.{u}} (f : X ⟶ Y)

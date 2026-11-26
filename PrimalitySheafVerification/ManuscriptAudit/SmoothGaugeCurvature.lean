@@ -92,14 +92,12 @@ theorem curvature_affine_covariance_at
       (-(inverse x y * partialX g x y * inverse x y)) x := by
     have h := derivativeInverse hgx.hasDerivAt hix.hasDerivAt
       (fun t => inverse_mul t y) (mul_inverse x y)
-    rw [← h]
-    exact hix.hasDerivAt
+    exact hix.hasDerivAt.congr_deriv h
   have diy : HasDerivAt (inverse x)
       (-(inverse x y * partialY g x y * inverse x y)) y := by
     have h := derivativeInverse hgy.hasDerivAt hiy.hasDerivAt
       (inverse_mul x) (mul_inverse x y)
-    rw [← h]
-    exact hiy.hasDerivAt
+    exact hiy.hasDerivAt.congr_deriv h
   have dax : partialX (affineComponent g inverse ay (partialY g)) x y =
       (((-(inverse x y * partialX g x y * inverse x y) * ay x y +
           inverse x y * partialX ay x y) * g x y +
@@ -123,8 +121,9 @@ theorem curvature_affine_covariance_at
 
 private theorem hasDerivAtSliceX (f : Field2 A) (x y : ℝ)
     (hf : DifferentiableAt ℝ (Function.uncurry f) (x, y)) :
-    HasDerivAt (fun t => f t y) (fderiv ℝ (Function.uncurry f) (x, y) (1, 0)) x :=
-  hf.hasFDerivAt.comp_hasDerivAt x ((hasDerivAt_id' x).prodMk (hasDerivAt_const x y))
+    HasDerivAt (fun t => f t y) (fderiv ℝ (Function.uncurry f) (x, y) (1, 0)) x := by
+  have h := hf.hasFDerivAt.comp_hasDerivAt x ((hasDerivAt_id' x).prodMk (hasDerivAt_const x y))
+  exact h
 
 private theorem hasDerivAtSliceY (f : Field2 A) (x y : ℝ)
     (hf : DifferentiableAt ℝ (Function.uncurry f) (x, y)) :
@@ -191,9 +190,17 @@ theorem curvature_affine_covariance
     (hasDerivAtSliceY ax x y (hax.differentiable_one (x, y))).differentiableAt
     hxy.differentiableAt hyx.differentiableAt (hxy.deriv.trans hyx.deriv.symm)
 
-#print axioms curvature_affine_covariance_at
-#print axioms curvature_affine_covariance
-
 end
 
 end ManuscriptAudit.SmoothGaugeCurvature
+
+open Lean Elab Command in
+run_cmd do
+  let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+  for name in [``ManuscriptAudit.SmoothGaugeCurvature.curvature_affine_covariance_at,
+      ``ManuscriptAudit.SmoothGaugeCurvature.curvature_affine_covariance] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

@@ -61,12 +61,12 @@ theorem frobenius_square_isPullback_of_relative_isIso
       Spec.map (CommRingCat.ofHom (frobenius B p)) ≫ 𝟙 _
     rw [Category.comp_id, ← Spec.map_comp, hi]
   · change Spec.map r ≫ Spec.map j = Spec.map f ≫ 𝟙 _
-    rw [Category.comp_id, ← Spec.map_comp, hj]
+    rw [Category.comp_id, ← Spec.map_comp, hj] <;> rfl
   · change 𝟙 _ ≫ Spec.map f = Spec.map f ≫ 𝟙 _
     simp only [Category.id_comp, Category.comp_id]
   · change 𝟙 _ ≫ Spec.map F =
       Spec.map (CommRingCat.ofHom (frobenius A p)) ≫ 𝟙 _
-    rw [Category.id_comp, Category.comp_id, hF]
+    rw [Category.id_comp, Category.comp_id, hF] <;> rfl
 
 /-- The actual square of absolute Frobenius maps is cartesian for an affine étale morphism. -/
 theorem frobenius_square_isPullback [Algebra.Etale A B] :

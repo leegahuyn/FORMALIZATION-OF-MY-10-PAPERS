@@ -40,7 +40,7 @@ private def specOverHomEquiv (R P T : Type u) [CommRing R] [CommRing P] [CommRin
     Over.homMk (Spec.map (CommRingCat.ofHom f.toRingHom)) (by
       change Spec.map (CommRingCat.ofHom f.toRingHom) ≫ specAlgebraMap R P =
         specAlgebraMap R T
-      rw [specAlgebraMap, specAlgebraMap, ← Spec.map_comp]
+      simp only [specAlgebraMap, ← Spec.map_comp]
       apply congrArg Spec.map
       apply CommRingCat.hom_ext
       apply RingHom.ext
@@ -69,8 +69,10 @@ variable (K : Type u) [Field K]
 
 private def chart (P : Type u) [CommRing P] [Algebra (A K) P] :
     pullback (specAlgebraMap (A K) P) (CuspScheme.cuspMap K) ≅
-      Spec (CommRingCat.of (B K ⊗[A K] P)) :=
-  pullbackSymmetry (specAlgebraMap (A K) P) (CuspScheme.cuspMap K) ≪≫
+      Spec (CommRingCat.of (B K ⊗[A K] P)) := by
+  change pullback (specAlgebraMap (A K) P) (specAlgebraMap (A K) (B K)) ≅
+    Spec (CommRingCat.of (B K ⊗[A K] P))
+  exact pullbackSymmetry (specAlgebraMap (A K) P) (specAlgebraMap (A K) (B K)) ≪≫
     pullbackSpecIso (A K) (B K) P
 
 private abbrev specRight (P : Type u) [CommRing P] [Algebra (A K) P] :
@@ -82,13 +84,13 @@ private abbrev specRight (P : Type u) [CommRing P] [Algebra (A K) P] :
 private theorem chart_hom_fst (P : Type u) [CommRing P] [Algebra (A K) P] :
     (chart K P).hom ≫ specRight K P =
       pullback.fst (specAlgebraMap (A K) P) (CuspScheme.cuspMap K) := by
-  simp [chart, Category.assoc]
+  simp [chart, specAlgebraMap, specRight, CuspScheme.cuspMap, CuspScheme.inclusion, Category.assoc]
 
 @[reassoc (attr := simp)]
 private theorem chart_hom_snd (P : Type u) [CommRing P] [Algebra (A K) P] :
     (chart K P).hom ≫ specAlgebraMap (B K) (B K ⊗[A K] P) =
       pullback.snd (specAlgebraMap (A K) P) (CuspScheme.cuspMap K) := by
-  simp [chart, Category.assoc]
+  simp [chart, specAlgebraMap, specRight, CuspScheme.cuspMap, CuspScheme.inclusion, Category.assoc]
 
 @[reassoc (attr := simp)]
 private theorem chart_inv_fst (P : Type u) [CommRing P] [Algebra (A K) P] :

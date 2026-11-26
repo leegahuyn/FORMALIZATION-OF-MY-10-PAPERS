@@ -39,12 +39,13 @@ private abbrev sheafComparison := e.sheafCongr (site R) (site T) AddCommGrpCat.{
 
 private def mappedIdentity_isTerminal : IsTerminal (e.functor.obj (identityEtale R)) := by
   let h := identityEtale_isTerminal R
-  refine IsTerminal.ofUniqueHom (fun U =>
-    (e.symm.toAdjunction.homEquiv U (identityEtale R)) (h.from (e.inverse.obj U))) ?_
+  let homEquiv (U : (Spec T).Etale) :
+      (e.inverse.obj U ⟶ identityEtale R) ≃ (U ⟶ e.functor.obj (identityEtale R)) :=
+    e.symm.toAdjunction.homEquiv U (identityEtale R)
+  refine IsTerminal.ofUniqueHom (fun U => homEquiv U (h.from (e.inverse.obj U))) ?_
   intro U f
-  apply (e.symm.toAdjunction.homEquiv U (identityEtale R)).symm.injective
-  rw [Equiv.symm_apply_apply]
-  apply h.hom_ext
+  apply (homEquiv U).symm.injective
+  exact (h.hom_ext _ _).trans ((homEquiv U).symm_apply_apply _).symm
 
 /-- The sheaf equivalence from the small étale site comparison preserves constant sheaves. -/
 def constantComparison :

@@ -93,7 +93,7 @@ def flatBaseEquivEqualizer : T ≃ₐ[T] AlgHom.equalizer (q K T) (c K T) :=
     exact ⟨t, Subtype.ext ht⟩⟩
 
 private def postcomposeAlgEquiv {R P V W : Type*}
-    [CommRing R] [CommRing P] [CommRing V] [CommRing W]
+    [CommSemiring R] [Semiring P] [Semiring V] [Semiring W]
     [Algebra R P] [Algebra R V] [Algebra R W]
     (e : V ≃ₐ[R] W) : (P →ₐ[R] V) ≃ (P →ₐ[R] W) where
   toFun f := e.toAlgHom.comp f
@@ -103,6 +103,7 @@ private def postcomposeAlgEquiv {R P V W : Type*}
 
 variable {P : Type*} [CommRing P] [Algebra T P] [Algebra.FormallyUnramified T P]
 
+set_option maxHeartbeats 2400000 in
 set_option backward.isDefEq.respectTransparency false in
 private def reductionSectionsEquiv :
     (P →ₐ[T] AlgHom.equalizer (q K T) (c K T)) ≃ (P →ₐ[T] normalization K T) := by
@@ -114,12 +115,14 @@ private def reductionSectionsEquiv :
     (by infer_instance) (by infer_instance) ‹Algebra T P› ‹Algebra.FormallyUnramified T P›
     J hJ (q K T) (c K T) hReduction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formally unramified algebra has the same sections before and after
 base change from a flat cusp algebra to its polynomial normalization. -/
 def flatSectionsEquiv : (P →ₐ[T] T) ≃ (P →ₐ[T] normalization K T) :=
-  (postcomposeAlgEquiv (P := P) (flatBaseEquivEqualizer K T)).trans
-    (reductionSectionsEquiv K T)
+  (postcomposeAlgEquiv (P := P) (V := T) (W := ↥(AlgHom.equalizer (q K T) (c K T)))
+    (flatBaseEquivEqualizer K T)).trans (reductionSectionsEquiv K T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forward section map is evaluation followed by the original base inclusion. -/
 theorem flatSectionsEquiv_apply (f : P →ₐ[T] T) (p : P) :
     flatSectionsEquiv K T f p = f p ⊗ₜ[A K] (1 : B K) := by
