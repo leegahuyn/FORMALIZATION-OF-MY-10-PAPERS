@@ -80,7 +80,7 @@ def derivedAdjunction (a : F ⊣ G) : F.mapDerivedCategory ⊣ G.mapDerivedCateg
 theorem mapDerivedCategory_additive : F.mapDerivedCategory.Additive := by
   rw [Localization.functor_additive_iff
     (DerivedCategory.Qh (C := C)) (HomotopyCategory.subcategoryAcyclic C).trW]
-  exact Functor.additive_of_iso F.mapDerivedCategoryFactorsh
+  exact Functor.additive_of_iso F.mapDerivedCategoryFactorsh.symm
 
 end Derived
 

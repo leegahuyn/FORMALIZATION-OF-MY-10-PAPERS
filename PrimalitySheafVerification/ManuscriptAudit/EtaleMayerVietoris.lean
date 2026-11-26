@@ -40,6 +40,7 @@ private theorem openArrow_isMono {B X : Scheme.{u}} (f : B ⟶ X) [IsOpenImmersi
     apply (cancel_mono f).mp
     exact congrArg (fun g => g.left) e
 
+include hCover in
 private theorem twoArrows_cover :
     Sieve.ofTwoArrows (openArrow j) (openArrow k) ∈ X.smallEtaleTopology (identityObject X) := by
   rw [Scheme.ofArrows_mem_smallEtaleTopology_iff]
@@ -50,13 +51,18 @@ private theorem twoArrows_cover :
   · exact Set.mem_iUnion.2 ⟨WalkingPair.left, hj⟩
   · exact Set.mem_iUnion.2 ⟨WalkingPair.right, hk⟩
 
+include hD hCover in
 /-- The native Mayer–Vietoris square of a two-open cover on the small étale site. -/
 def openCoverSquare : X.smallEtaleTopology.MayerVietorisSquare := by
   let sq : Square X.Etale :=
     { f₁₂ := a, f₁₃ := b, f₂₄ := openArrow j, f₃₄ := openArrow k, fac := hD.w }
   letI : Mono sq.f₂₄ := openArrow_isMono j
   letI : Mono sq.f₃₄ := openArrow_isMono k
-  exact GrothendieckTopology.MayerVietorisSquare.mk_of_isPullback sq hD (twoArrows_cover j k hCover)
+  have hPullback : sq.IsPullback := hD
+  have hCover' : Sieve.ofTwoArrows sq.f₂₄ sq.f₃₄ ∈ X.smallEtaleTopology sq.X₄ :=
+    twoArrows_cover j k hCover
+  exact GrothendieckTopology.MayerVietorisSquare.mk_of_isPullback
+    (J := X.smallEtaleTopology) sq hPullback hCover'
 
 variable (F : Sheaf X.smallEtaleTopology AddCommGrpCat.{u}) (n : ℕ)
 

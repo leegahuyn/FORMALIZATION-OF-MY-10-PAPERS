@@ -100,7 +100,7 @@ private theorem roots_classes (g : Kˣ) (hg : ∀ x : Kˣ, x ∈ Subgroup.zpower
       n • b = (n % 2 + 2 * (n / 2)) • b :=
         congrArg (fun d : ℕ => d • b) (Nat.mod_add_div n 2).symm
       _ = _ := by
-        rw [add_nsmul, mul_comm 2 (n / 2), mul_nsmul, hTwo, smul_zero, add_zero]
+        rw [add_nsmul, mul_nsmul, hTwo, smul_zero, add_zero]
   change n • b = 0 ∨ n • b = b
   rw [hReduce]
   have hp : n % 2 = 0 ∨ n % 2 = 1 := by omega

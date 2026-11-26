@@ -35,7 +35,8 @@ theorem arbitrarily_large_geometric_torsion (N : ℕ) :
   obtain ⟨e⟩ := paper5_geometric_p_torsion_contains_fin h5 hMod
     (one_ne_zero : (1 : ZMod p) ≠ 0)
   obtain ⟨f⟩ := h
-  have hSize := Fintype.card_le_of_injective (f.comp e) (f.comp e).injective
+  have hSize := Fintype.card_le_of_injective (fun x : Fin p => f (e x))
+    (f.injective.comp e.injective)
   have hpSize : p ≤ N := by simpa using hSize
   exact (not_le_of_gt hN) hpSize
 
@@ -55,8 +56,8 @@ theorem no_finite_stratum_bounds {I : Type*} [Fintype I] (bound : I → ℕ) :
     ⟨fun j => ⟨j.val, lt_of_lt_of_le j.isLt hi⟩,
       by
         intro j k hj
-        exact Fin.ext (congrArg Fin.val hj)⟩
-  exact h ⟨f.comp e⟩
+        exact Fin.ext (congrArg (fun v : Fin N => v.val) hj)⟩
+  exact h ⟨⟨fun x => f (e x), f.injective.comp e.injective⟩⟩
 
 end
 

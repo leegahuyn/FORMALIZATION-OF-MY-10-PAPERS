@@ -58,45 +58,56 @@ theorem lineOpen_inPlane : lineOpen K ≫ (cuspInPlane K).imageι = lineInPlane 
 def yOpen : (projectiveCusp K).Opens :=
   (cuspInPlane K).imageι ⁻¹ᵁ Proj.basicOpen (grading K) (y K)
 
+private theorem range_of_closed_chart {X U P : Type*}
+    [TopologicalSpace U] [TopologicalSpace P] (f : X → U) (j : U → P)
+    (hf : IsClosed (Set.range f)) (hj : Topology.IsEmbedding j) :
+    Set.range (j ∘ f) = closure (Set.range (j ∘ f)) ∩ Set.range j := by
+  rw [Set.range_comp]
+  have h := hj.closure_eq_preimage_closure_image (Set.range f)
+  rw [hf.closure_eq] at h
+  calc
+    j '' Set.range f = j '' (j ⁻¹' closure (j '' Set.range f)) :=
+      congrArg (fun S : Set U => j '' S) h
+    _ = _ := Set.image_preimage_eq_inter_range
+
+private theorem lineInPlane_range_closure :
+    closure (Set.range (lineInPlane K)) = Set.range (cuspInPlane K).imageι := by
+  letI : QuasiCompact (lineInPlane K) := quasiCompact_of_compactSpace _
+  rw [← Scheme.Hom.support_ker, ← cuspKernel_lineKernel]
+  exact (Scheme.IdealSheafData.range_subschemeι _).symm
+
+set_option maxHeartbeats 250000 in
+private theorem lineInPlane_range :
+    Set.range (lineInPlane K) = Set.range (cuspInPlane K).imageι ∩
+      (Proj.basicOpen (grading K) (y K) : Set (plane K)) := by
+  let g := Spec.map (CommRingCat.ofHom (evalYChart K))
+  letI : IsClosedImmersion g :=
+    IsClosedImmersion.spec_of_surjective _ (evalYChart_surjective K)
+  have h := range_of_closed_chart g (yChartι K) g.isClosedEmbedding.isClosed_range
+    (yChartι K).isOpenEmbedding.isEmbedding
+  change Set.range (lineInPlane K) =
+    closure (Set.range (lineInPlane K)) ∩ Set.range (yChartι K) at h
+  have hChart : Set.range (yChartι K) =
+      (Proj.basicOpen (grading K) (y K) : Set (plane K)) :=
+    congrArg (fun U : (plane K).Opens => (U : Set (plane K)))
+      (Proj.opensRange_awayι (grading K) (y K) (X_mem_one K 1) (by decide))
+  rw [lineInPlane_range_closure, hChart] at h
+  exact h
+
+set_option maxHeartbeats 250000 in
 theorem lineOpen_range : (lineOpen K).opensRange = yOpen K := by
-  ext x
-  constructor
-  · rintro ⟨t, rfl⟩
-    change ((lineOpen K) ≫ (cuspInPlane K).imageι) t ∈ Proj.basicOpen (grading K) (y K)
-    rw [lineOpen_inPlane,
-      ← Proj.opensRange_awayι (grading K) (y K) (X_mem_one K 1) (by decide)]
-    exact ⟨Spec.map (CommRingCat.ofHom (evalYChart K)) t, rfl⟩
-  · intro hx
-    let g := Spec.map (CommRingCat.ofHom (evalYChart K))
-    haveI : IsClosedImmersion g :=
-      IsClosedImmersion.spec_of_surjective _ (evalYChart_surjective K)
-    have hi : (cuspInPlane K).imageι x ∈ Set.range (yChartι K) := by
-      change (cuspInPlane K).imageι x ∈ (yChartι K).opensRange
-      rw [Proj.opensRange_awayι]
-      exact hx
-    obtain ⟨q, hq⟩ := hi
-    have hClose : closure (Set.range (lineInPlane K)) = Set.range (cuspInPlane K).imageι := by
-      letI : QuasiCompact (lineInPlane K) := quasiCompact_of_compactSpace _
-      rw [← Scheme.Hom.support_ker, ← cuspKernel_lineKernel]
-      exact (Scheme.IdealSheafData.range_subschemeι _).symm
-    have hqClosure : yChartι K q ∈ closure (Set.range (lineInPlane K)) := by
-      rw [hq, hClose]
-      exact ⟨x, rfl⟩
-    have hRange : Set.range (lineInPlane K) = (yChartι K) '' Set.range g := by
-      change Set.range ((yChartι K) ∘ g) = _
-      exact Set.range_comp _ _
-    have he := (yChartι K).isOpenEmbedding.isEmbedding.closure_eq_preimage_closure_image
-      (Set.range g)
-    rw [g.isClosedEmbedding.isClosed_range.closure_eq, ← hRange] at he
-    have hqImage : q ∈ Set.range g := by rw [he]; exact hqClosure
-    obtain ⟨t, ht⟩ := hqImage
-    refine ⟨t, (cuspInPlane K).imageι.isClosedEmbedding.injective ?_⟩
-    calc
-      _ = lineInPlane K t := by
-        change ((lineOpen K) ≫ (cuspInPlane K).imageι) t = _
-        rw [lineOpen_inPlane]
-      _ = yChartι K q := by change yChartι K (g t) = _; rw [ht]
-      _ = _ := hq
+  apply SetLike.coe_injective
+  change Set.range (lineOpen K) =
+    (cuspInPlane K).imageι ⁻¹' (Proj.basicOpen (grading K) (y K) : Set (plane K))
+  let j := (cuspInPlane K).imageι
+  have hComp : Set.range (j ∘ lineOpen K) = Set.range (lineInPlane K) := by
+    change Set.range (lineOpen K ≫ (cuspInPlane K).imageι) = _
+    rw [lineOpen_inPlane]
+  have hPre : j ⁻¹' Set.range (j ∘ lineOpen K) = Set.range (lineOpen K) := by
+    rw [Set.range_comp, Set.preimage_image_eq _ j.isClosedEmbedding.injective]
+  have hAll : j ⁻¹' Set.range j = Set.univ :=
+    Set.eq_univ_of_forall (fun x => ⟨x, rfl⟩)
+  rw [← hPre, hComp, lineInPlane_range, Set.preimage_inter, hAll, Set.univ_inter]
 
 /-- The native open \(Y\ne0\) of the proper cusp is isomorphic to the affine line. -/
 def yOpenIsoAffineLine : (yOpen K).toScheme ≅ Spec (CommRingCat.of (Polynomial K)) := by
@@ -123,7 +134,7 @@ theorem affine_chart_cover :
     exact (Proj.mem_basicOpen _ _ _).mpr (boundary_plane_coordinates K p hp).2.2
 
 theorem affine_chart_overlap_isConnected :
-    IsConnected ((((affineOpen K).opensRange ⊓ (lineOpen K).opensRange :
+    _root_.IsConnected ((((affineOpen K).opensRange ⊓ (lineOpen K).opensRange :
       (projectiveCusp K).Opens)) : Set (projectiveCusp K)) := by
   have hImage :
       (lineOpen K) '' ((lineOpen K) ⁻¹ᵁ (affineOpen K).opensRange :

@@ -144,8 +144,10 @@ private theorem unilateralTail_norm_le (n : ℕ) :
 
 theorem unilateralTheta_testQ_ge : (5 : ℝ) / 6 ≤ unilateralTheta testQ := by
   have hGeo : HasSum (fun n : ℕ => (1 / 8 : ℝ) * (1 / 4 : ℝ) ^ n) (1 / 6 : ℝ) := by
-    convert (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 / 4 : ℝ))
-      (by norm_num : (1 / 4 : ℝ) < 1)).mul_left (1 / 8 : ℝ) using 1 <;> norm_num
+    have hValue : (1 / 8 : ℝ) * (1 - (1 / 4 : ℝ))⁻¹ = (1 / 6 : ℝ) := by norm_num
+    simpa only [hValue] using
+      (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 / 4 : ℝ))
+        (by norm_num : (1 / 4 : ℝ) < 1)).mul_left (1 / 8 : ℝ)
   have hTail := hGeo.summable.of_norm_bounded unilateralTail_norm_le
   have hBound : |∑' n : ℕ, partialThetaTerm testQ ((n + 2 : ℕ) : ℤ)| ≤ (1 / 6 : ℝ) := by
     simpa only [Real.norm_eq_abs] using tsum_of_norm_bounded hGeo unilateralTail_norm_le

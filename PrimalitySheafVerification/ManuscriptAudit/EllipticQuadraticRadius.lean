@@ -72,7 +72,9 @@ private theorem radius_of_hasse (p a : ℝ) (hp : 0 < p)
         linear_combination (4 * p) * hRe
       have hZero : (2 * p * z.re - a) ^ 2 = 0 :=
         le_antisymm (hD.le.trans (sub_nonpos.mpr haSq)) (sq_nonneg _)
-      exact pow_eq_zero hZero
+      have hh : (2 * p * z.re - a) * (2 * p * z.re - a) = 0 := by
+        simpa only [pow_two] using hZero
+      exact (mul_eq_zero.mp hh).elim id id
     · exact he
   apply radius_of_weighted_norm p hp z
   rw [Complex.normSq_apply]

@@ -16,3 +16,8 @@ Mock2_FunctionalAnalysis_Integrated.lean	1–13	Import bridge
 QYM.lean	1–62604	Full file reviewed. Literal counterexamples, quotient geometry, abstract operator theory, and continuum Hamiltonian requirements
 Mock3.lean	1–12	Import bridge
 Verification.lean	1–197	Focused arithmetic file reviewed for scope and trust dependencies
+FA_Blocker_WrapperCandidates/Candidate01.lean	1–104	Historical hard and tail pairing splitting probe. Requires generated FA_Blocker_Prefix.
+FA_Blocker_WrapperCandidates/Candidate02.lean	1–80	Historical weighted hard and tail splitting probe. Requires generated FA_Blocker_Prefix.
+FA_Blocker_WrapperCandidates/Candidate03.lean	1–126	Historical weak-operator splitting probe. Requires generated FA_Blocker_Prefix.
+FA_Blocker_WrapperCandidates/Candidate04.lean	1–126	Historical weak-operator splitting probe with explicit identity transport. Requires generated FA_Blocker_Prefix.
+FA_Blocker_WrapperCandidates/Candidate05.lean	1–135	Historical integrated hard and tail probe. The corresponding active result is weightedFull_sub_weightedHard_eq_weightedTail in Mock2_FunctionalAnalysis.lean.
