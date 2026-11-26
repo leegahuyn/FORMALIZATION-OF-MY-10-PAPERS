@@ -64,6 +64,23 @@ theorem affinePoints_count_cast (hF : ringChar F ≠ 2) (f : F → F) :
       FiniteField.cast_card_eq_zero F
   rw [hConst, zero_add]
 
+/-- The actual affine point count as an integer, before reduction into the field. -/
+theorem affinePoints_count_int (hF : ringChar F ≠ 2) (f : F → F) :
+    (Fintype.card (QuadraticAffinePoints f) : ℤ) =
+      (Fintype.card F : ℤ) + ∑ x : F, quadraticChar F (f x) := by
+  rw [Fintype.card_congr (affineEquivSigma f), Fintype.card_sigma, Nat.cast_sum]
+  have hFiber (x : F) : (Fintype.card {y : F // y ^ 2 = f x} : ℤ) =
+      quadraticChar F (f x) + 1 := by
+    have hCard : Fintype.card {y : F // y ^ 2 = f x} =
+        {y : F | y ^ 2 = f x}.toFinset.card :=
+      Fintype.card_of_subtype _ (fun y => by
+        simpa only [Set.mem_toFinset, Set.mem_setOf_eq])
+    rw [hCard]
+    exact quadraticChar_card_sqrts hF (f x)
+  simp_rw [hFiber]
+  rw [Finset.sum_add_distrib]
+  simp [Finset.sum_const, add_comm]
+
 /-- The short Weierstrass equation of the printed family over F. -/
 def shortCubic (c A : F) : WeierstrassCurve F where
   a₁ := 0
@@ -111,6 +128,21 @@ theorem shortCubic_projective_count_cast (hF : ringChar F ≠ 2) {c A : F}
   rw [hCard, Nat.cast_add, Nat.cast_one, affinePoints_count_cast hF]
   exact add_comm _ _
 
+/-- The exact projective count with the quadratic character over the integers. -/
+theorem shortCubic_projective_count_int (hF : ringChar F ≠ 2) {c A : F}
+    (hΔ : (shortCubic c A).Δ ≠ 0) :
+    (Nat.card (shortCubic c A).toProjective.Point : ℤ) =
+      (Fintype.card F : ℤ) + 1 + ∑ x : F, quadraticChar F (x ^ 3 - c * x + A) := by
+  classical
+  have hCard : Nat.card (shortCubic c A).toProjective.Point =
+      Fintype.card (QuadraticAffinePoints (fun x : F => x ^ 3 - c * x + A)) + 1 := by
+    calc
+      _ = Nat.card (Option (QuadraticAffinePoints (fun x : F => x ^ 3 - c * x + A))) :=
+        Nat.card_congr (shortCubicProjectiveEquiv hΔ)
+      _ = _ := by rw [Nat.card_eq_fintype_card, Fintype.card_option]
+  rw [hCard, Nat.cast_add, Nat.cast_one, affinePoints_count_int hF]
+  ac_rfl
+
 /-- The projective point count of the reduced cubic is one minus
 the indicated polynomial coefficient after reduction to the field. -/
 theorem shortCubic_zero_count_cast_eq_one_sub_coeff (hF : ringChar F ≠ 2)
@@ -146,7 +178,9 @@ run_cmd do
   for name in [
     ``ManuscriptAudit.FiniteFieldPointCount.squareRootFiber_count_cast,
     ``ManuscriptAudit.FiniteFieldPointCount.affinePoints_count_cast,
+    ``ManuscriptAudit.FiniteFieldPointCount.affinePoints_count_int,
     ``ManuscriptAudit.FiniteFieldPointCount.shortCubic_projective_count_cast,
+    ``ManuscriptAudit.FiniteFieldPointCount.shortCubic_projective_count_int,
     ``ManuscriptAudit.FiniteFieldPointCount.shortCubic_zero_count_cast_eq_one_sub_coeff] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

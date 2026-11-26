@@ -164,10 +164,12 @@ private theorem hom_ext_monomials {A B : Type*} [AddMonoid A] [CommRing B] [Alge
     (h : ∀ v : A, f (AddMonoidAlgebra.single v 1) = g (AddMonoidAlgebra.single v 1)) : f = g := by
   apply AlgHom.ext
   intro x
-  induction x using AddMonoidAlgebra.induction_on with
-  | hM v => exact h v
-  | hadd x y hx hy => simp only [map_add, hx, hy]
-  | hsmul r x hx => simp only [Algebra.smul_def, map_mul, AlgHom.commutes, hx]
+  refine AddMonoidAlgebra.induction_on x ?_ ?_ ?_
+  · exact h
+  · intro x y hx hy
+    simp only [map_add, hx, hy]
+  · intro r x hx
+    simp only [Algebra.smul_def, map_mul, AlgHom.commutes, hx]
 
 private theorem backward_monomial (m n : ℕ) (j : ℤ) :
     backward R m n (AddMonoidAlgebra.single j 1) = quotientMonomial R m n (liftWeight m n j) := by

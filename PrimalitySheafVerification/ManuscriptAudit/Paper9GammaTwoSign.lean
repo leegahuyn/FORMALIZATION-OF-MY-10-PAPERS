@@ -124,7 +124,11 @@ theorem twisted_theta_phase_one_iff (i : Fin 3) :
     intro h
     have he := congrArg Complex.re h
     norm_num at he
-  fin_cases i <;> simp [hn]
+  have hNegOne : (-1 : ℂ) ≠ 1 := by
+    intro h
+    have he := congrArg Complex.re h
+    norm_num at he
+  fin_cases i <;> simp [hn, hNegOne]
 
 end
 

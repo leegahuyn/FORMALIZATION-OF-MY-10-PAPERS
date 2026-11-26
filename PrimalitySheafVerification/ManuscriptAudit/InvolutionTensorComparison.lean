@@ -58,7 +58,7 @@ theorem comparison_tmul (σ : E ≃ₐ[A] E) (a b : E) :
 private theorem tensor_partition_mul_difference (σ : E ≃ₐ[A] E)
     (hInvol : Function.Involutive σ)
     (hFixed : ∀ z : E, σ z = z → ∃ a : A, algebraMap A E a = z)
-    (coefficient u v : E) (hλ : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
+    (coefficient u v : E) (hCoefficient : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
     (hPartition : coefficient * u ^ 2 + v ^ 2 = 1) (b : E) :
     (ι₁ coefficient * ι₁ u * ι₂ u + ι₁ v * ι₂ v) * ι₁ (b - σ b) = ι₂ (b - σ b) := by
   let d := b - σ b
@@ -76,7 +76,7 @@ private theorem tensor_partition_mul_difference (σ : E ≃ₐ[A] E)
       simp only [map_mul]
       ring
     _ = ι₂ coefficient * ι₂ (u * d) * ι₂ u + ι₂ (v * d) * ι₂ v := by
-      rw [left_eq_right A E (hFixed coefficient hλ), hShiftU, hShiftV]
+      rw [left_eq_right A E (hFixed coefficient hCoefficient), hShiftU, hShiftV]
     _ = ι₂ ((coefficient * u ^ 2 + v ^ 2) * d) := by
       simp only [map_mul, map_add, map_pow]
       ring
@@ -87,7 +87,7 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
     (hInvol : Function.Involutive σ)
     (hFixed : ∀ z : E, σ z = z → ∃ a : A, algebraMap A E a = z)
     (h coefficient u v : E) (hHalfFixed : σ h = h) (hHalf : h + h = 1)
-    (hλ : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
+    (hCoefficient : σ coefficient = coefficient) (hu : σ u = -u) (hv : σ v = -v)
     (hPartition : coefficient * u ^ 2 + v ^ 2 = 1) :
     Function.Bijective (comparison A E σ) := by
   let μ := evaluate A E (AlgHom.id A E)
@@ -117,7 +117,7 @@ theorem comparison_bijective (σ : E ≃ₐ[A] E)
       rw [map_add, hInvol b]
       exact add_comm _ _
     have hw : w * ι₁ (b - σ b) = ι₂ (b - σ b) :=
-      tensor_partition_mul_difference A E σ hInvol hFixed coefficient u v hλ hu hv hPartition b
+      tensor_partition_mul_difference A E σ hInvol hFixed coefficient u v hCoefficient hu hv hPartition b
     calc
       ι₂ b = ι₂ h * (ι₂ (b + σ b) + ι₂ (b - σ b)) := by
         symm

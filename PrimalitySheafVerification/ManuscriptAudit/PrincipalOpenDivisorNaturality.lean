@@ -31,7 +31,8 @@ def restrictRing (f g : Polynomial K) (h : PrimeSpectrum.basicOpen g ≤ PrimeSp
     (h : PrimeSpectrum.basicOpen g ≤ PrimeSpectrum.basicOpen f) (p : Polynomial K) :
     restrictRing K f g h (algebraMap (Polynomial K) (Localization.Away f) p) =
       algebraMap (Polynomial K) (Localization.Away g) p :=
-  IsLocalization.Away.lift_eq f _ p
+  IsLocalization.Away.lift_eq f ((PrimeSpectrum.basicOpen_le_basicOpen_iff_algebraMap_isUnit
+    (S := Localization.Away g)).mp h) p
 
 theorem restrictRing_id (f : Polynomial K) : restrictRing K f f le_rfl = RingHom.id _ := by
   apply IsLocalization.ringHom_ext (Submonoid.powers f)

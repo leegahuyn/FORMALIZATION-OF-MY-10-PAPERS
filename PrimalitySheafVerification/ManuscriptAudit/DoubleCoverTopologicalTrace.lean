@@ -27,6 +27,8 @@ variable (hfiber : ∀ x y : V, p y = p x → y = x ∨ y = σ x)
 private def traceFunction (s : C(V, M)) (y : U) : M :=
   s (Function.surjInv hquot.surjective y) + s (σ (Function.surjInv hquot.surjective y))
 
+include hinvol hfiber
+
 theorem traceFunction_on_fiber (s : C(V, M)) (x : V) :
     traceFunction p σ hquot s (p x) = s x + s (σ x) := by
   let y := Function.surjInv hquot.surjective (p x)

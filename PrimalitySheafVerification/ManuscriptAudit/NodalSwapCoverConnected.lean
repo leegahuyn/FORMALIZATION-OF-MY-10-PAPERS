@@ -40,34 +40,39 @@ theorem secondProjection_surjective (h2 : (2 : K) ≠ 0) :
     Function.Surjective (secondProjection K) :=
   (firstProjection_surjective K h2).comp (swap K).surjective
 
-private theorem mem_comap_range_of_ker_le {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (hf : Function.Surjective f) (p : PrimeSpectrum R)
-    (h : RingHom.ker f ≤ p.asIdeal) : p ∈ Set.range (comap f) := by
-  rw [range_comap_of_surjective S f hf]
-  exact h
+private theorem connected_of_projections {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [ConnectedSpace (PrimeSpectrum S)] [ConnectedSpace (PrimeSpectrum T)]
+    (f : R →+* S) (g : R →+* T) (hf : Function.Surjective f) (hg : Function.Surjective g)
+    (hprod : ∀ a b, f a = 0 → g b = 0 → a * b = 0)
+    (hMeet : (Set.range (comap f) ∩ Set.range (comap g)).Nonempty) :
+    ConnectedSpace (PrimeSpectrum R) := by
+  have hCover : Set.range (comap f) ∪ Set.range (comap g) = Set.univ := by
+    rw [range_comap_of_surjective S f hf, range_comap_of_surjective T g hg]
+    apply Set.eq_univ_of_forall
+    intro p
+    change RingHom.ker f ≤ p.asIdeal ∨ RingHom.ker g ≤ p.asIdeal
+    by_cases hf' : RingHom.ker f ≤ p.asIdeal
+    · exact Or.inl hf'
+    · right
+      intro b hb
+      by_contra hn
+      apply hf'
+      intro a ha
+      have hzero : a * b = 0 := hprod a b ha hb
+      have hm : a * b ∈ p.asIdeal := hzero.symm ▸ p.asIdeal.zero_mem
+      exact (p.isPrime.mem_or_mem hm).resolve_right hn
+  rw [connectedSpace_iff_univ, ← hCover]
+  exact IsConnected.union hMeet (isConnected_range (continuous_comap f))
+    (isConnected_range (continuous_comap g))
 
-set_option maxHeartbeats 1500000 in
-private theorem images_cover (h2 : (2 : K) ≠ 0) :
-    Set.range (comap (firstProjection K)) ∪ Set.range (comap (secondProjection K)) =
-      (Set.univ : Set (PrimeSpectrum (Cover K))) := by
-  apply Set.eq_univ_of_forall
-  intro p
-  by_cases hf : RingHom.ker (firstProjection K) ≤ p.asIdeal
-  · exact Or.inl (mem_comap_range_of_ker_le (firstProjection K) (firstProjection_surjective K h2) p hf)
-  · apply Or.inr
-    apply mem_comap_range_of_ker_le (secondProjection K) (secondProjection_surjective K h2) p
-    intro b hb
-    by_contra hn
-    apply hf
-    intro a ha
-    have hzero : a * b = 0 := by
-      change a.val.1 = 0 at ha
-      change b.val.2 = 0 at hb
-      apply Subtype.ext
-      exact Prod.ext (by change a.val.1 * b.val.1 = 0; rw [ha, zero_mul])
-        (by change a.val.2 * b.val.2 = 0; rw [hb, mul_zero])
-    have hm : a * b ∈ p.asIdeal := hzero.symm ▸ p.asIdeal.zero_mem
-    exact (p.isPrime.mem_or_mem hm).resolve_right hn
+private theorem projection_zero_product (a b : Cover K)
+    (ha : firstProjection K a = 0) (hb : secondProjection K b = 0) :
+    a * b = 0 := by
+  change a.val.1 = 0 at ha
+  change b.val.2 = 0 at hb
+  apply Subtype.ext
+  exact Prod.ext (by change a.val.1 * b.val.1 = 0; rw [ha, zero_mul])
+    (by change a.val.2 * b.val.2 = 0; rw [hb, mul_zero])
 
 private theorem images_meet :
     (Set.range (comap (firstProjection K)) ∩ Set.range (comap (secondProjection K))).Nonempty := by
@@ -80,13 +85,14 @@ private theorem images_meet :
     rw [(condition K z).1]
   exact ⟨_, ⟨p, rfl⟩, ⟨q, h.symm⟩⟩
 
+set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.respectTransparency false in
 /-- The actual affine spectrum of the crossed algebra is connected. -/
 theorem connected_spectrum (h2 : (2 : K) ≠ 0) :
-    ConnectedSpace (PrimeSpectrum (Cover K)) := by
-  rw [connectedSpace_iff_univ, ← images_cover K h2]
-  exact IsConnected.union (images_meet K)
-    (isConnected_range (continuous_comap (firstProjection K)))
-    (isConnected_range (continuous_comap (secondProjection K)))
+    ConnectedSpace (PrimeSpectrum (Cover K)) :=
+  connected_of_projections (R := Cover K) (S := Polynomial K) (T := Polynomial K)
+    (firstProjection K) (secondProjection K) (firstProjection_surjective K h2)
+    (secondProjection_surjective K h2) (projection_zero_product K) (images_meet K)
 
 end ManuscriptAudit.NodalSwapCoverConnected
 

@@ -35,10 +35,8 @@ private theorem coe_ne_zero (z : ℍ) : (z : ℂ) ≠ 0 := by
   exact z.im_pos.ne' (by simpa using hi)
 
 private theorem thetaWeightFactor_ne_zero (z : ℍ) : thetaWeightFactor z ≠ 0 := by
-  intro h
-  change (-Complex.I * (z : ℂ)) ^ (1 / 2 : ℂ) = 0 at h
-  have hz := (Complex.cpow_eq_zero_iff.mp h).1
-  exact (mul_ne_zero (neg_ne_zero.mpr Complex.I_ne_zero) (coe_ne_zero z)) hz
+  exact Complex.cpow_ne_zero_iff.mpr
+    (Or.inl (mul_ne_zero (neg_ne_zero.mpr Complex.I_ne_zero) (coe_ne_zero z)))
 
 /-- The native half-shifted Jacobi theta profile. -/
 def thetaHalfShift (τ : ℂ) : ℂ :=
@@ -173,8 +171,12 @@ theorem normalizedProfile_width_two (i : Fin 3) (z : ℍ) :
   fin_cases i
   · simpa [parabolicPhase, normalizedProfile_zero] using jacobiTheta_T_sq_smul z
   · simpa [parabolicPhase, normalizedProfile_one] using jacobiTheta_T_sq_smul z
-  · simpa [normalizedProfile_two, coe_T_sq_smul, parabolicPhase] using
-      thetaHalfShift_add_two (z : ℂ)
+  · change normalizedProfile 2 (T ^ (2 : ℕ) • z) = Complex.I * normalizedProfile 2 z
+    calc
+      _ = thetaHalfShift ((T ^ (2 : ℕ) • z : ℍ) : ℂ) := normalizedProfile_two _
+      _ = thetaHalfShift ((z : ℂ) + 2) := congrArg thetaHalfShift (coe_T_sq_smul z)
+      _ = Complex.I * thetaHalfShift (z : ℂ) := thetaHalfShift_add_two _
+      _ = _ := congrArg (fun c => Complex.I * c) (normalizedProfile_two z).symm
 
 def PeriodicCusp (i : Fin 3) : Prop :=
   ∀ z : ℍ, normalizedProfile i (T ^ (2 : ℕ) • z) = normalizedProfile i z

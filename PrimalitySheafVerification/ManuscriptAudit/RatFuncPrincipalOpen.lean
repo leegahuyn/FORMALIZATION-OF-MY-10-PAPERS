@@ -26,7 +26,7 @@ def toRatFunc (f : Polynomial K) (hf : f ≠ 0) : Localization.Away f →+* RatF
 @[simp] theorem toRatFunc_algebraMap (f : Polynomial K) (hf : f ≠ 0) (p : Polynomial K) :
     toRatFunc K f hf (algebraMap (Polynomial K) (Localization.Away f) p) =
       algebraMap (Polynomial K) (RatFunc K) p :=
-  IsLocalization.Away.lift_eq f _ p
+  IsLocalization.Away.lift_eq f (isUnit_iff_ne_zero.mpr (RatFunc.algebraMap_ne_zero hf)) p
 
 theorem toRatFunc_injective (f : Polynomial K) (hf : f ≠ 0) :
     Function.Injective (toRatFunc K f hf) := by

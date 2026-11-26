@@ -110,7 +110,9 @@ theorem five_two_distinct_second_coordinates :
       _ = (4 : ZMod 5)⁻¹ * (4 * 4) := by rw [hs]
       _ = 4 := by rw [← mul_assoc, inv_mul_cancel₀ (by decide : (4 : ZMod 5) ≠ 0), one_mul]
   have hneg : (4 : ZMod 5) ^ (-5 : ℤ) = 4 := by
-    rw [show (-5 : ℤ) = -(5 : ℤ) by decide, zpow_neg, zpow_natCast, hpos, hinv]
+    rw [show (-5 : ℤ) = -(5 : ℤ) by decide, zpow_neg]
+    change ((4 : ZMod 5) ^ (5 : ℕ))⁻¹ = 4
+    rw [hpos, hinv]
   rw [hneg]
   decide
 
