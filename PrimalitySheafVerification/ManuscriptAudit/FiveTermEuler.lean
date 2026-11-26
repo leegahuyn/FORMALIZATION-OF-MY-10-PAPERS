@@ -36,7 +36,10 @@ theorem alternating_finrank
   have hD := i.finrank_range_add_finrank_ker
   rw [LinearMap.exact_iff.mp hfg, LinearMap.finrank_range_of_inj hf] at hB
   rw [LinearMap.exact_iff.mp hgh] at hC
-  rw [LinearMap.exact_iff.mp hhi, LinearMap.range_eq_top.mpr hi, Submodule.finrank_top] at hD
+  let e : (LinearMap.range i) ≃ₗ[K] E :=
+    LinearEquiv.ofBijective (LinearMap.range i).subtype
+      ⟨Subtype.val_injective, fun y => ⟨⟨y, LinearMap.mem_range.mpr (hi y)⟩, rfl⟩⟩
+  rw [LinearMap.exact_iff.mp hhi, e.finrank_eq] at hD
   omega
 
 end ManuscriptAudit.FiveTermEuler

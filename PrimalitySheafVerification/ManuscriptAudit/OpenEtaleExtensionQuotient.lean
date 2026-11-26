@@ -49,7 +49,8 @@ theorem nestedOpenConstantMap_stalk_isIso (s : Spec (.of Ω) ⟶ V) :
   let m := (a.homEquiv _ F).symm e
   let Φ := Scheme.pointSmallEtale (s ≫ i)
   let Ψ := Scheme.pointSmallEtale ((s ≫ i) ≫ j)
-  have h : m = (extensionByZero i C.{u}).map e ≫ a.counit.app F := a.homEquiv_counit
+  have h : m = (extensionByZero i C.{u}).map e ≫ a.counit.app F :=
+    a.homEquiv_counit _ F e
   letI : IsIso ((Φ.sheafFiber (A := C.{u})).map m) := by
     rw [h, Functor.map_comp]
     letI := extensionCounit_stalk_isIso i s F

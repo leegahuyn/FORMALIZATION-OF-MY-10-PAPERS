@@ -51,7 +51,6 @@ private theorem geometricSkyscraperHZeroMap_surjective
     {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f] :
     Function.Surjective (Sheaf.H.map (Φ.skyscraperSheafFunctor.map f) 0) := by
   let T := ⊤_ X.Etale
-  let p := Φ.skyscraperSheafFunctor.map f
   let hT : IsTerminal T := terminalIsTerminal
   let hEpi := geometricSkyscraper_map_app_epi Φ f (op T)
   intro y
@@ -89,8 +88,10 @@ private theorem geometricSkyscraper_succ_of_epi_HMap
 theorem geometricSkyscraperH_succ_subsingleton (M : AddCommGrpCat.{u}) (n : ℕ) :
     Subsingleton (Sheaf.H (Φ.skyscraperSheaf M) (n + 1)) := by
   induction n generalizing M with
-  | zero => exact geometricSkyscraper_succ_of_epi_HMap Φ M 0
-      (fun f => geometricSkyscraperHZeroMap_surjective Φ f)
+  | zero =>
+    apply geometricSkyscraper_succ_of_epi_HMap Φ M 0
+    intro A B f _
+    exact geometricSkyscraperHZeroMap_surjective Φ f
   | succ n ih =>
     apply geometricSkyscraper_succ_of_epi_HMap Φ M (n + 1)
     intro A B f _ y

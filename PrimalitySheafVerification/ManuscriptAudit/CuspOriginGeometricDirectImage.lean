@@ -76,7 +76,7 @@ def separablyClosedConstantSkyscraperIso (M : C.{u}) :
   let f := (a.homEquiv _ M) e.hom
   have h : Φ.sheafFiber.map f ≫ a.counit.app M = e.hom := by
     calc
-      _ = (a.homEquiv _ M).symm f := by symm; exact a.homEquiv_counit
+      _ = (a.homEquiv _ M).symm f := (a.homEquiv_counit _ M f).symm
       _ = e.hom := (a.homEquiv _ M).symm_apply_apply _
   letI : IsIso (a.counit.app M) := identityPointCounitIsIso K M
   letI : IsIso (Φ.sheafFiber.map f ≫ a.counit.app M) := by rw [h]; infer_instance

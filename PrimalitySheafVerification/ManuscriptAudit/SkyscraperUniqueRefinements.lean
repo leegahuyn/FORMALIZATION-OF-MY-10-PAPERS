@@ -41,7 +41,7 @@ theorem skyscraperCounit_isIso_of_unique_refinements
         calc
           (adj.homEquiv F M).symm (𝟙 F) =
               (Φ.sheafFiber (A := AddCommGrpCat.{u})).map (𝟙 F) ≫ adj.counit.app M :=
-            adj.homEquiv_counit
+            adj.homEquiv_counit F M (𝟙 F)
           _ = 𝟙 ((Φ.sheafFiber (A := AddCommGrpCat.{u})).obj F) ≫ adj.counit.app M :=
             congrArg (fun g => g ≫ adj.counit.app M)
               ((Φ.sheafFiber (A := AddCommGrpCat.{u})).map_id F)

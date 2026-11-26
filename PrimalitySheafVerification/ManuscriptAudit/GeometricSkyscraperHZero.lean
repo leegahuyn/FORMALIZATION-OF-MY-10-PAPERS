@@ -2,6 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.AlgebraicGeometry.Sites.AffineEtale
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
@@ -33,9 +34,7 @@ theorem etaleSiteHasExt (S : Scheme.{u}) :
   let D := Sheaf S.smallEtaleTopology AddCommGrpCat.{u}
   letI : IsGrothendieckAbelian.{u} D :=
     Scheme.isGrothendieckAbelian_sheaf_smallEtaleTopology S AddCommGrpCat.{u}
-  letI : LocallySmall.{u} D := IsGrothendieckAbelian.locallySmall (C := D)
-  letI : EnoughInjectives D := IsGrothendieckAbelian.enoughInjectives.{u} (C := D)
-  exact hasExt_of_enoughInjectives D
+  exact IsGrothendieckAbelian.hasExt D
 
 attribute [local instance] etaleSiteHasExt
 
@@ -50,7 +49,7 @@ def geometricSkyscraperHZeroEquiv (M : AddCommGrpCat.{u}) :
   exact (Sheaf.H.equiv₀ (Φ.skyscraperSheaf M) (terminalIsTerminal (C := S.Etale))).trans e
 
 private theorem epi_productMap {I : Type u} {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f] :
-    Epi (Pi.map fun _ : I => f) := by
+    Epi (Pi.map (f := fun _ : I => M) (g := fun _ : I => N) (fun _ => f)) := by
   classical
   let A : I → AddCommGrpCat.{u} := fun _ => M
   let B : I → AddCommGrpCat.{u} := fun _ => N
@@ -71,13 +70,15 @@ private theorem epi_productMap {I : Type u} {M N : AddCommGrpCat.{u}} (f : M ⟶
 theorem geometricSkyscraper_map_app_epi {M N : AddCommGrpCat.{u}} (f : M ⟶ N) [Epi f]
     (W : S.Etaleᵒᵖ) :
     Epi (((Φ.skyscraperSheafFunctor.map f).hom).app W) := by
-  change Epi (Pi.map fun _ : Φ.fiber.obj W.unop => f)
+  change Epi (Pi.map (f := fun _ : Φ.fiber.obj W.unop => M)
+    (g := fun _ : Φ.fiber.obj W.unop => N) (fun _ => f))
   exact epi_productMap f
 
 /-- Taking the geometric skyscraper preserves epimorphisms. -/
 theorem geometricSkyscraper_preservesEpimorphisms :
     (Φ.skyscraperSheafFunctor (A := AddCommGrpCat.{u})).PreservesEpimorphisms where
   preserves {M N} f hf := by
+    letI : Epi f := hf
     let F := sheafToPresheaf S.smallEtaleTopology AddCommGrpCat.{u}
     let g := Φ.skyscraperSheafFunctor.map f
     letI : Epi (F.map g) := (NatTrans.epi_iff_epi_app _).mpr (geometricSkyscraper_map_app_epi Φ f)

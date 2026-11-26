@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.RingHoms
+import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 /-!
 # Simple-root lifting on the actual p-adic integer ring
@@ -75,6 +76,25 @@ theorem good_residue_root_iff_unique_lift (F : Polynomial (ℤ_[p])) (r : ZMod p
       rw [← hResidue, Polynomial.eval_map_apply, hRoot, map_zero]
     exact ⟨h, hGood h⟩
 
+/-- Nonvanishing of the actual residual resultant certifies simplicity
+at every residue root. -/
+theorem resultant_good_residue_lift (F : Polynomial (ℤ_[p])) (r : ZMod p)
+    (hNonzero : F.map reduction ≠ 0)
+    (hResultant : resultant (F.map reduction) (derivative (F.map reduction)) ≠ 0) :
+    ((F.map reduction).eval r = 0) ↔
+      ∃! z : ℤ_[p], F.eval z = 0 ∧ reduction z = r := by
+  have hCoprime : IsCoprime (F.map reduction) (derivative (F.map reduction)) := by
+    by_contra h
+    exact hResultant (Polynomial.resultant_eq_zero_iff.mpr ⟨Or.inl hNonzero, h⟩)
+  have hSimple : (F.map reduction).eval r = 0 →
+      (derivative (F.map reduction)).eval r ≠ 0 := by
+    intro hRoot hBad
+    obtain ⟨A, B, hAB⟩ := hCoprime
+    have h := congrArg (Polynomial.eval r) hAB
+    simp [hRoot, hBad] at h
+  exact ⟨fun h => residue_simple_root_unique_lift F r h (hSimple h),
+    fun h => ((good_residue_root_iff_unique_lift F r hSimple).mpr h).1⟩
+
 /-- A repeated root can have a unique p-adic lift in the absence of the good-locus condition. -/
 theorem repeated_root_unique_lift :
     (derivative ((X : Polynomial (ZMod p)) ^ 2)).eval 0 = 0 ∧
@@ -96,6 +116,7 @@ run_cmd do
       ``ManuscriptAudit.PadicHenselGate.unique_lift_from_simple,
       ``ManuscriptAudit.PadicHenselGate.residue_simple_root_unique_lift,
       ``ManuscriptAudit.PadicHenselGate.good_residue_root_iff_unique_lift,
+      ``ManuscriptAudit.PadicHenselGate.resultant_good_residue_lift,
       ``ManuscriptAudit.PadicHenselGate.repeated_root_unique_lift] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -49,7 +49,8 @@ theorem nestedOpenQuotientToSkyscraper_stalk_comp_counit
       (Scheme.pointSmallEtale (s ≫ j)).skyscraperSheafAdjunction.counit.app (coefficient M s) =
     (nestedOpenQuotientStalkIso i j M s hs).hom := by
   let a := (Scheme.pointSmallEtale (s ≫ j)).skyscraperSheafAdjunction (A := C.{u})
-  rw [← a.homEquiv_counit] <;> exact (a.homEquiv _ _).symm_apply_apply _
+  exact (a.homEquiv_counit _ _ (nestedOpenQuotientToSkyscraper i j M s hs)).symm.trans
+    ((a.homEquiv _ _).symm_apply_apply _)
 
 end
 
