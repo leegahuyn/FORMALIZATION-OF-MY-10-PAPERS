@@ -52,8 +52,12 @@ private def transportedSegment : ComposableArrows C.{u} 5 :=
 private theorem transportedSegment_exact (h : (mk₅ f₀ f₁ f₂ f₃ f₄).Exact) :
     (transportedSegment f₀ f₁ f₂ f₃ f₄ e₀ e₁ e₂ e₃ e₄ e₅).Exact := by
   let e : mk₅ f₀ f₁ f₂ f₃ f₄ ≅ transportedSegment f₀ f₁ f₂ f₃ f₄ e₀ e₁ e₂ e₃ e₄ e₅ :=
-    isoMk₅ e₀ e₁ e₂ e₃ e₄ e₅ (by simp [transportedSegment]) (by simp [transportedSegment])
-      (by simp [transportedSegment]) (by simp [transportedSegment]) (by simp [transportedSegment])
+    isoMk₅ e₀ e₁ e₂ e₃ e₄ e₅
+      (by change f₀ ≫ e₁.hom = e₀.hom ≫ e₀.inv ≫ f₀ ≫ e₁.hom; simp)
+      (by change f₁ ≫ e₂.hom = e₁.hom ≫ e₁.inv ≫ f₁ ≫ e₂.hom; simp)
+      (by change f₂ ≫ e₃.hom = e₂.hom ≫ e₂.inv ≫ f₂ ≫ e₃.hom; simp)
+      (by change f₃ ≫ e₄.hom = e₃.hom ≫ e₃.inv ≫ f₃ ≫ e₄.hom; simp)
+      (by change f₄ ≫ e₅.hom = e₄.hom ≫ e₄.inv ≫ f₄ ≫ e₅.hom; simp)
   exact exact_of_iso e h
 
 end Transport

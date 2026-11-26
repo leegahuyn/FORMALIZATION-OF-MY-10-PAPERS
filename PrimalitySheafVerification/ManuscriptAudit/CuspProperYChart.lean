@@ -4,10 +4,8 @@ import PrimalitySheafVerification.ManuscriptAudit.CuspYChartImage
 /-!
 # The second affine chart of the proper cusp
 
-The (Y
-e0) chart of the proper cusp is the line
-([X:Y:Z]=[s:1:s^3]). Its overlap with the original affine cusp
-is the connected nonempty open (D(s)).
+The chart where Y is nonzero is the line with coordinates `[s:1:s^3]`.
+Its overlap with the original affine cusp is the connected nonempty open `D(s)`.
 -/
 
 namespace ManuscriptAudit.CuspProperYChart
@@ -141,7 +139,9 @@ theorem affine_chart_overlap_isConnected :
         Set (Spec (CommRingCat.of (Polynomial K)))) =
         (((affineOpen K).opensRange ⊓ (lineOpen K).opensRange :
           (projectiveCusp K).Opens) : Set (projectiveCusp K)) := by
-    exact Set.image_preimage_eq_inter_range
+    have h := (lineOpen K).image_preimage_eq_opensRange_inf (affineOpen K).opensRange
+    rw [inf_comm] at h
+    exact congrArg (fun U : (projectiveCusp K).Opens => (U : Set (projectiveCusp K))) h
   rw [← hImage, lineOpen_preimage_affine]
   exact ((punctured_line_irreducible K).image _ (lineOpen K).continuous.continuousOn).isConnected
 
