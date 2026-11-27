@@ -89,6 +89,39 @@ def constantIso :
   exact asIso (P.map (constantToContinuous X M)) ≪≫
     (sheafificationIso (liftedContinuous X M)).symm
 
+private theorem constantIso_unit :
+    toSheafify (J X) ((Functor.const X.ProEtᵒᵖ).obj (coefficient M)) ≫
+      (constantIso X M).hom.hom = constantToContinuous X M := by
+  let Q := liftedContinuous X M
+  let a := constantToContinuous X M
+  change toSheafify (J X) ((Functor.const X.ProEtᵒᵖ).obj (coefficient M)) ≫
+    (sheafifyMap (J X) a ≫ (isoSheafify (J X) Q.property).inv) = a
+  rw [← toSheafify_naturality_assoc]
+  change a ≫ (isoSheafify (J X) Q.property).hom ≫ (isoSheafify (J X) Q.property).inv = a
+  rw [Iso.hom_inv_id, Category.comp_id]
+
+/-- The constant sheaf identification is natural for a map acting on
+constant sections by the coefficient homomorphism. -/
+theorem constantIso_naturality
+    {N : Type} [AddCommGroup N] [TopologicalSpace N] [DiscreteTopology N] [IsTopologicalAddGroup N]
+    (f : coefficient M ⟶ coefficient N)
+    (g : liftedContinuous X M ⟶ liftedContinuous X N)
+    (hg : ∀ (U : X.ProEtᵒᵖ) (m : coefficient M),
+      g.hom.app U ((constantToContinuous X M).app U m) = (constantToContinuous X N).app U (f m)) :
+    (constantSheaf (J X) G).map f ≫ (constantIso X N).hom = (constantIso X M).hom ≫ g := by
+  let c := (Functor.const X.ProEtᵒᵖ).map f
+  apply Sheaf.hom_ext
+  apply sheafify_hom_ext (J X) _ _ (liftedContinuous X N).property
+  change toSheafify (J X) _ ≫ (sheafifyMap (J X) c ≫ (constantIso X N).hom.hom) =
+    toSheafify (J X) _ ≫ ((constantIso X M).hom.hom ≫ g.hom)
+  rw [← toSheafify_naturality_assoc, constantIso_unit, ← Category.assoc, constantIso_unit]
+  apply NatTrans.ext
+  funext U
+  apply AddCommGrpCat.hom_ext
+  apply AddMonoidHom.ext
+  intro m
+  exact (hg U m).symm
+
 end
 
 section Residue
@@ -104,6 +137,16 @@ noncomputable def nativeResidueIso (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]
         ProetaleAdicHOneDetection.finiteCoefficient X ℓ n :=
   constantIso X (ZMod (ℓ ^ n))
 
+/-- Actual native residue reduction is the constant sheaf of reduction between cyclic residues. -/
+theorem nativeResidueIso_naturality (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) :
+    (constantSheaf (Scheme.ProEt.topology X) AddCommGrpCat.{1}).map
+        (AddCommGrpCat.uliftFunctor.{1}.map
+          (AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ n)).toAddMonoidHom)) ≫
+      (nativeResidueIso X ℓ n).hom =
+    (nativeResidueIso X ℓ (n + 1)).hom ≫
+      (ProetaleCoefficientUniverseLift.lift X).map (ProetaleResidueSheaves.residueTransition X ℓ n) := by
+  exact constantIso_naturality X (ZMod (ℓ ^ (n + 1))) _ _ (fun U m ↦ rfl)
+
 end Residue
 
 end ManuscriptAudit.ProetaleDiscreteConstant
@@ -112,7 +155,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleDiscreteConstant.constantIso,
-      ``ManuscriptAudit.ProetaleDiscreteConstant.nativeResidueIso] do
+      ``ManuscriptAudit.ProetaleDiscreteConstant.nativeResidueIso,
+      ``ManuscriptAudit.ProetaleDiscreteConstant.nativeResidueIso_naturality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

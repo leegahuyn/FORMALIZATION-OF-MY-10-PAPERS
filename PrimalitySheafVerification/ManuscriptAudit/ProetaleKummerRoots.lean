@@ -131,7 +131,13 @@ theorem rootsKernelIso_hom_ι :
   let P := sheafToPresheaf (J X) G
   let h := (KernelFork.ofι (kernel.ι (power X d)) (kernel.condition (power X d))).mapIsLimit
     (kernelIsKernel (power X d)) P
-  exact (rootsIsKernel X d).conePointUniqueUpToIso_hom_comp h WalkingParallelPair.zero
+  change P.map (rootsKernelIso X d).hom ≫ P.map (kernel.ι (power X d)) = inclusion X d
+  rw [rootsKernelIso, Functor.preimageIso_hom]
+  change P.map (P.preimage (rootsPresheafIso X d).hom) ≫ P.map (kernel.ι (power X d)) = _
+  rw [P.map_preimage]
+  have e := (rootsIsKernel X d).conePointUniqueUpToIso_hom_comp h WalkingParallelPair.zero
+  change (rootsPresheafIso X d).hom ≫ P.map (kernel.ι (power X d)) = inclusion X d at e
+  exact e
 
 end
 end ManuscriptAudit.ProetaleKummerRoots

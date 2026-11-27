@@ -38,6 +38,17 @@ def antiInvariant : AddSubgroup (Points A) where
     change sigma A (-P) = -(-P)
     rw [map_neg, hP]
 
+/-- Constructor equality for points over the generic quadratic field. -/
+theorem some_eq_iff {x y u v : Model A}
+    {h : (Curve (algebraMap K (Model A) A)).Nonsingular x y}
+    {h' : (Curve (algebraMap K (Model A) A)).Nonsingular u v} :
+    (Affine.Point.some x y h : Points A) = .some u v h' ↔ x = u ∧ y = v := by
+  constructor
+  · intro he
+    exact ⟨congrArg (fun P : Points A => P.xRep 0) he, congrArg ordinate he⟩
+  · rintro ⟨rfl, rfl⟩
+    rfl
+
 /-- The abscissa of an anti-invariant finite point is literally a rational function in X. -/
 theorem abscissa_fixed {x y : Model A} {hP : (Curve (algebraMap K (Model A) A)).Nonsingular x y}
     (h : (Affine.Point.some x y hP : Points A) ∈ antiInvariant A) :
@@ -46,7 +57,7 @@ theorem abscissa_fixed {x y : Model A} {hP : (Curve (algebraMap K (Model A) A)).
   obtain ⟨h', he⟩ := pointMapAt_some K (Model A) (Curve A) (Curve (algebraMap K (Model A) A))
     (centered_baseChange K (Model A) A) ((conjugation A).restrictScalars K) x y hP
   change sigma A (.some x y hP) = .some (conjugation A x) (conjugation A y) h' at he
-  rw [he, Affine.Point.neg_some, Affine.Point.some.injEq] at h
+  rw [he, Affine.Point.neg_some, some_eq_iff A] at h
   exact h.1
 
 /-- The actual generic point of the centered cubic. -/
@@ -71,7 +82,7 @@ theorem genericPoint_mem_antiInvariant (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
     (genericX A) (genericY A) h
   change sigma A (.some (genericX A) (genericY A) h) =
     .some (conjugation A (genericX A)) (conjugation A (genericY A)) h' at he'
-  rw [he, he', Affine.Point.neg_some, Affine.Point.some.injEq, conjugation_genericY]
+  rw [he, he', Affine.Point.neg_some, some_eq_iff A, conjugation_genericY]
   constructor
   · exact (conjugation A).commutes _
   · simp [Curve, CubicAffine, shortCubic, Affine.negY]

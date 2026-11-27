@@ -17,16 +17,23 @@ open Paper8ReducedCutoffMeanSquare (reduced_cutoff_frequency_average_bounded)
 
 noncomputable section
 
+private def rawSample (M : ℕ) : (ℕ → ℂ) →ₗ[ℂ] (Fin M → ℂ) where
+  toFun f j := f j.val
+  map_add' f g := by funext j; rfl
+  map_smul' a f := by funext j; rfl
+
 private def sample (M : ℕ) : (ℕ → ℂ) →ₗ[ℂ] EuclideanSpace ℂ (Fin M) :=
-  (WithLp.linearEquiv 2 ℂ (Fin M → ℂ)).symm.toLinearMap.comp
-    { toFun := fun f j => f j.val
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
+  (WithLp.linearEquiv 2 ℂ (Fin M → ℂ)).symm.toLinearMap.comp (rawSample M)
+
+private theorem sample_ofLp_apply (M : ℕ) (f : ℕ → ℂ) (j : Fin M) :
+    (sample M f).ofLp j = f j.val := by
+  change ((WithLp.linearEquiv 2 ℂ (Fin M → ℂ)).symm (rawSample M f)).ofLp j = _
+  rw [WithLp.coe_symm_linearEquiv, WithLp.ofLp_toLp]
+  rfl
 
 private theorem sample_norm_sq (M : ℕ) (f : ℕ → ℂ) :
     ‖sample M f‖ ^ 2 = ∑ n ∈ Finset.range M, ‖f n‖ ^ 2 := by
-  rw [EuclideanSpace.norm_sq_eq]
-  change (∑ j : Fin M, ‖f j.val‖ ^ 2) = _
+  simp only [EuclideanSpace.norm_sq_eq, sample_ofLp_apply]
   exact Fin.sum_univ_eq_sum_range _ _
 
 private theorem sample_odd_sum (N M : ℕ) :

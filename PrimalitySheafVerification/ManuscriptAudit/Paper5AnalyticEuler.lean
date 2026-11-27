@@ -34,7 +34,7 @@ private theorem reciprocal_root_norm {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p)
   rw [norm_inv, one_div] at h
   exact inv_injective h
 
-private theorem exists_actual_roots {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p)
+theorem exists_actual_roots {p : ℕ} [Fact p.Prime] (hp : 5 ≤ p)
     {A : ZMod p} (hA : A ≠ 0) :
     ∃ α β : ℂ, α + β = (firstTrace p A : ℂ) ∧ α * β = (p : ℂ) ∧
       ‖α‖ = Real.sqrt (p : ℝ) ∧ ‖β‖ = Real.sqrt (p : ℝ) := by

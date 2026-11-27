@@ -49,8 +49,8 @@ private theorem exists_lift (n : ℕ) {x : K} (hx : IsPrimitiveRoot x (ℓ ^ (n 
 private def positiveRoots (n : ℕ) : {x : K // IsPrimitiveRoot x (ℓ ^ (n + 1))} :=
   Nat.rec
     (by
-      obtain ⟨x, hx⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot K ℓ
-      exact ⟨x, by simpa only [pow_one] using hx⟩)
+      let h := HasEnoughRootsOfUnity.exists_primitiveRoot K ℓ
+      exact ⟨Classical.choose h, by simpa only [Nat.zero_add, pow_one] using Classical.choose_spec h⟩)
     (fun n x ↦
       ⟨Classical.choose (exists_lift K ℓ n x.property),
         (Classical.choose_spec (exists_lift K ℓ n x.property)).1⟩) n
@@ -68,7 +68,7 @@ theorem root_primitive (n : ℕ) : IsPrimitiveRoot (root K ℓ n) (ℓ ^ n) := b
 theorem root_pow (n : ℕ) : (root K ℓ (n + 1)) ^ ℓ = root K ℓ n := by
   cases n with
   | zero =>
-    simpa only [root, pow_one] using (positiveRoots K ℓ 0).property.pow_eq_one
+    simpa only [root, Nat.zero_add, pow_one] using (positiveRoots K ℓ 0).property.pow_eq_one
   | succ n =>
     exact (Classical.choose_spec (exists_lift K ℓ n (positiveRoots K ℓ n).property)).2
 
@@ -84,10 +84,12 @@ theorem fromExponent_transition (n : ℕ) (a : ZMod (ℓ ^ (n + 1))) :
     rootTransition K ℓ n (fromExponent K ℓ (n + 1) (Multiplicative.ofAdd a)) =
       fromExponent K ℓ n (Multiplicative.ofAdd (PadicResidueSystems.reduction ℓ (Nat.le_succ n) a)) := by
   obtain ⟨z, rfl⟩ := ZMod.intCast_surjective a
-  rw [map_intCast]
+  have hz : PadicResidueSystems.reduction ℓ (Nat.le_succ n) (z : ZMod (ℓ ^ (n + 1))) =
+      (z : ZMod (ℓ ^ n)) := map_intCast (PadicResidueSystems.reduction ℓ (Nat.le_succ n)) z
+  rw [hz]
   apply Subtype.ext
   apply Units.ext
-  change (((fromExponent K ℓ (n + 1) (Multiplicative.ofAdd (z : ZMod (ℓ ^ (n + 1))))).val : K) ^ ℓ =
+  change (((fromExponent K ℓ (n + 1) (Multiplicative.ofAdd (z : ZMod (ℓ ^ (n + 1))))).val : K) ^ ℓ) =
     ((fromExponent K ℓ n (Multiplicative.ofAdd (z : ZMod (ℓ ^ n)))).val : K)
   simp only [fromExponent, rootsOfUnityEquivZModOfPrimitiveRoot_symm_val]
   calc

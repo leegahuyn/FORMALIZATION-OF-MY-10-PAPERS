@@ -31,7 +31,7 @@ theorem exist_two_roots (a q : ℂ) :
   refine ⟨(a + d) / 2, (a - d) / 2, by ring, ?_⟩
   linear_combination -(1 / 4 : ℂ) * hd
 
-private theorem actualCounts_eq (p : ℕ) [Fact p.Prime] (hp : 5 ≤ p)
+theorem actualCounts_eq (p : ℕ) [Fact p.Prime] (hp : 5 ≤ p)
     {A : ZMod p} (hA : A ≠ 0) (α β : ℂ)
     (ha : α + β = (firstTrace p A : ℂ)) (hm : α * β = (p : ℂ)) :
     actualCounts p A = twoRootCounts (p : ℂ) α β := by

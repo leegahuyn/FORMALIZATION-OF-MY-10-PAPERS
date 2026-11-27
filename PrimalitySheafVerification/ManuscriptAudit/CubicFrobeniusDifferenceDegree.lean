@@ -12,6 +12,7 @@ open CubicFrobeniusDifferenceCancellation CubicFrobeniusDifferenceGCD FiniteFiel
 open scoped BigOperators
 
 noncomputable section
+open scoped Classical
 
 variable (K : Type*) [Field K] [Fintype K]
 
@@ -49,13 +50,14 @@ theorem gcd_natDegree {k : ℕ} (hq : Fintype.card K = 2 * k + 1)
   rw [natDegree_eq_sum_multiplicity K hSplit]
   exact Finset.sum_congr rfl (fun x _ => cancellation_multiplicity K hq hk h₂ h₃ hchar hA x)
 
+set_option maxHeartbeats 900000 in
 /-- The normalized degree of a ratio is the larger original degree minus the gcd degree. -/
 theorem max_natDegree_div {f g : Polynomial K} (hf : f ≠ 0) (hg : g ≠ 0)
     (hdeg : g.natDegree ≤ f.natDegree) :
     let r : RatFunc K := algebraMap (Polynomial K) (RatFunc K) f /
       algebraMap (Polynomial K) (RatFunc K) g
     max r.num.natDegree r.denom.natDegree = f.natDegree - (gcd f g).natDegree := by
-  let d := gcd f g
+  let d : K[X] := gcd f g
   have hd : d ≠ 0 := by
     intro he
     have hz : (0 : Polynomial K) ∣ g := by
@@ -71,11 +73,7 @@ theorem max_natDegree_div {f g : Polynomial K} (hf : f ≠ 0) (hg : g ≠ 0)
     have he := congrArg Polynomial.natDegree hprod
     rw [natDegree_mul hd hquot] at he
     omega
-  have hgn : g / d ≠ 0 := by
-    intro he
-    have hprod := EuclideanDomain.mul_div_cancel' hd (show d ∣ g from gcd_dvd_right f g)
-    rw [he, mul_zero] at hprod
-    exact hg hprod.symm
+  have hgn : g / d ≠ 0 := right_div_gcd_ne_zero hg
   have hc : (g / d).leadingCoeff⁻¹ ≠ 0 := inv_ne_zero (leadingCoeff_ne_zero.mpr hgn)
   dsimp only
   rw [RatFunc.num_div, RatFunc.denom_div f hg]

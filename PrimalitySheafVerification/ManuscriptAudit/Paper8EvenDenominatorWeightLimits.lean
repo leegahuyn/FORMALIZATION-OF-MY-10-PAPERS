@@ -39,6 +39,7 @@ private theorem double_injective : Function.Injective (fun m : ℕ => 2 * m) :=
 private theorem double_succ_injective : Function.Injective (fun m : ℕ => 2 * m + 1) :=
   (add_left_injective 1).comp double_injective
 
+set_option maxHeartbeats 600000 in
 private theorem beta_on_positive_odd :
     (∑' j : ℕ, oddScale (2 * j + 1)) = betaWeight := by
   have hAll : Summable (fun j : ℕ => oddScale (j + 1)) := oddScale_norm_summable.of_norm
@@ -51,8 +52,11 @@ private theorem beta_on_positive_odd :
         have he : Even (2 * j + 1 + 1) := ⟨j + 1, by omega⟩
         rw [oddScale, if_neg (Nat.not_odd_iff_even.mpr he)]
       _ = _ := tsum_zero
-  unfold betaWeight
-  rw [← tsum_even_add_odd hEven hOdd, hZero, add_zero]
+  have hSplit : (∑' j : ℕ, oddScale (2 * j + 1)) + (∑' j : ℕ, oddScale (2 * j + 1 + 1)) =
+      betaWeight :=
+    tsum_even_add_odd (f := fun j : ℕ => oddScale (j + 1)) hEven hOdd
+  rw [hZero, add_zero] at hSplit
+  exact hSplit
 
 theorem even_weight_limit_zero_class {D : ℕ} (hD : D % 4 = 0) :
     evenWeightLimit D = alternatingWeight := by
@@ -79,13 +83,17 @@ private theorem positive_even_indices_sum {D : ℕ} (hD : Odd D) :
     sign_even_index_of_odd_denominator hD]
   ring
 
+set_option maxHeartbeats 600000 in
 private theorem odd_denominator_split (D : ℕ) :
     evenWeightLimit D =
       (∑' j : ℕ, evenWeight (2 * j + 1) D) + ∑' j : ℕ, evenWeight (2 * j + 1 + 1) D := by
   have hs : Summable (fun j : ℕ => evenWeight (j + 1) D) := (evenWeight_norm_summable D).of_norm
   have he : Summable (fun j : ℕ => evenWeight (2 * j + 1) D) := hs.comp_injective double_injective
   have ho : Summable (fun j : ℕ => evenWeight (2 * j + 1 + 1) D) := hs.comp_injective double_succ_injective
-  exact (tsum_even_add_odd he ho).symm
+  have hSplit : (∑' j : ℕ, evenWeight (2 * j + 1) D) +
+      (∑' j : ℕ, evenWeight (2 * j + 1 + 1) D) = evenWeightLimit D :=
+    tsum_even_add_odd (f := fun j : ℕ => evenWeight (j + 1) D) he ho
+  exact hSplit.symm
 
 theorem even_weight_limit_one_class {D : ℕ} (hD : D % 4 = 1) :
     evenWeightLimit D = inversePower 2 * alternatingWeight - betaWeight := by

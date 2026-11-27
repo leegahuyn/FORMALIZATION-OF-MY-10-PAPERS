@@ -49,6 +49,14 @@ private def integerCoordinate : ℤ →+ (Additive Kˣ × ℤ) where
 
 variable [IsAlgClosed K]
 
+local instance degreeNeZero (d : ℕ) [NeZero (d : K)] : NeZero d :=
+  NeZero.of_neZero_natCast K
+
+/-- Actual global unit with the given Laurent exponent and scalar coefficient one. -/
+def exponentUnit : ℤ →+ Sheaf.H (ProetaleUnitSheaf.unitSheaf (Y K)) 0 :=
+  ((unitsHZeroEquiv (R K)).trans (LaurentUnitProductCoordinates.unitCoordinates K).symm).symm.toAddMonoidHom.comp
+    (integerCoordinate K)
+
 private theorem scalar_root (d : ℕ) (hd : 0 < d) (a : Additive Kˣ) : ∃ b : Additive Kˣ, d • b = a := by
   obtain ⟨b, hb⟩ := IsAlgClosed.exists_pow_nat_eq (a.toMul : K) hd
   have hn : b ≠ 0 := by
@@ -59,13 +67,12 @@ private theorem scalar_root (d : ℕ) (hd : 0 < d) (a : Additive Kˣ) : ∃ b : 
   exact hb
 
 set_option maxHeartbeats 1500000 in
-/-- The generator 1 maps to the actual Kummer class of the Laurent coordinate. -/
-def cyclicToHOne (d : ℕ) [NeZero (d : K)] :
-    ZMod d ≃+ Sheaf.H (constant (Y K) (ZMod d)) 1 := by
-  letI : NeZero d := NeZero.of_neZero_natCast K
+/-- The Laurent exponent quotient is the native degree-one cohomology with actual root coefficients. -/
+def cyclicToRootsHOne (d : ℕ) [NeZero (d : K)] :
+    ZMod d ≃+ Sheaf.H ((constantSheaf (J (Y K)) G).obj (coefficientGroup K d)) 1 := by
   have hd : 0 < d := Nat.pos_of_ne_zero (NeZero.ne d)
   let e := (unitsHZeroEquiv (R K)).trans (LaurentUnitProductCoordinates.unitCoordinates K).symm
-  let v := e.symm.toAddMonoidHom.comp (integerCoordinate K)
+  let v := exponentUnit K
   let b := unitBoundary (k K) d
   let h := b.comp v
   have hv (n : ℤ) : e (v n) = (0, n) := e.apply_symm_apply _
@@ -118,10 +125,22 @@ def cyclicToHOne (d : ℕ) [NeZero (d : K)] :
       _ = b (d • z) + b (v r) := by rw [hz, zero_add]
       _ = b (d • z + v r) := (map_add b _ _).symm
       _ = a := by rw [he]; exact hx
+  exact AddEquiv.ofBijective q ⟨hqi, hqs⟩
+
+set_option maxHeartbeats 1200000 in
+/-- The root-coefficient isomorphism sends an actual integer exponent to its Kummer class. -/
+theorem cyclicToRootsHOne_intCast (d : ℕ) [NeZero (d : K)] (i : ℤ) :
+    cyclicToRootsHOne K d (i : ZMod d) = unitBoundary (k K) d (exponentUnit K i) := by
+  unfold cyclicToRootsHOne
+  simp only [AddEquiv.ofBijective_apply, ZMod.lift_coe] <;> rfl
+
+/-- The generator 1 maps to the actual Kummer class of the Laurent coordinate. -/
+def cyclicToHOne (d : ℕ) [NeZero (d : K)] :
+    ZMod d ≃+ Sheaf.H (constant (Y K) (ZMod d)) 1 := by
   let root := (CuspRootCoefficients.rootsOfUnityEquivZMod K d).toAdditive
   let rootsIso : coefficientGroup K d ≅ AddCommGrpCat.of (ULift.{1} (ZMod d)) :=
     (AddEquiv.ulift.trans (root.trans AddEquiv.ulift.symm)).toAddCommGrpIso
-  exact (AddEquiv.ofBijective q ⟨hqi, hqs⟩).trans
+  exact (cyclicToRootsHOne K d).trans
     (cohomologyIso (X := Y K) ((constantSheaf (J (Y K)) G).mapIso rootsIso) 1)
 
 end
@@ -129,10 +148,11 @@ end ManuscriptAudit.ProetaleLaurentCyclicHOne
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.ProetaleLaurentCyclicHOne.cyclicToHOne
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.ProetaleLaurentCyclicHOne.cyclicToHOne,
+      ``ManuscriptAudit.ProetaleLaurentCyclicHOne.cyclicToRootsHOne_intCast] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
