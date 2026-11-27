@@ -80,7 +80,9 @@ theorem trace_series_summable {M : Matrix ι ι ℂ} (hM : M.BlockTriangular id)
     (hz : ∀ i : ι, ‖z * M i i‖ < 1) : Summable (traceTerm M z) := by
   have hs (i : ι) : Summable (fun n => term n (z * M i i)) :=
     (term_norm_summable (hz i)).of_norm
-  simpa only [traceTerm_eq_sum hM] using (finite_tsum Finset.univ _ (fun i _ => hs i)).1
+  rw [show traceTerm M z = (fun n => ∑ i : ι, term n (z * M i i)) from
+    funext (traceTerm_eq_sum hM z)]
+  exact (finite_tsum Finset.univ _ (fun i _ => hs i)).1
 
 /-- The actual determinant of 1−zM is the inverse exponential of the
 convergent trace-of-powers series at every strictly allowed z. -/
@@ -90,8 +92,13 @@ theorem exp_trace_series_eq_inverse_det {M : Matrix ι ι ℂ} (hM : M.BlockTria
   have hs (i : ι) : Summable (fun n => term n (z * M i i)) :=
     (term_norm_summable (hz i)).of_norm
   have hSum := (finite_tsum Finset.univ _ (fun i _ => hs i)).2
-  simp only [traceTerm_eq_sum hM, hSum, ← traceLog, exp_finite_sum, exp_traceLog (hz _),
-    determinant_eq M hM z, Finset.prod_inv_distrib]
+  rw [show traceTerm M z = (fun n => ∑ i : ι, term n (z * M i i)) from
+    funext (traceTerm_eq_sum hM z), hSum]
+  change Complex.exp (∑ i : ι, traceLog (z * M i i)) = _
+  rw [exp_finite_sum, determinant_eq M hM z]
+  have hExp (i : ι) : Complex.exp (traceLog (z * M i i)) = (1 - z * M i i)⁻¹ :=
+    exp_traceLog (hz i)
+  simp only [hExp, Finset.prod_inv_distrib]
 
 end
 end ManuscriptAudit.LocalTriangularTraceDeterminant

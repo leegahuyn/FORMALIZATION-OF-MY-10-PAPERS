@@ -31,7 +31,7 @@ def restriction (f : Polynomial K) :
 def orderAtZero (f : Polynomial K) (hf : f ≠ 0) :
     Additive (Localization.Away (removeZero K f))ˣ →+ ℤ where
   toFun u := divisor K (unitMap K (removeZero K f) (removeZero_ne_zero K f hf) u) 0
-  map_zero' := by rw [map_zero, map_zero] <;> rfl
+  map_zero' := by simp only [map_zero, Finsupp.zero_apply]
   map_add' a b := by rw [map_add, map_add] <;> rfl
 
 private theorem restrict_to_function_field (f : Polynomial K) (hf : f ≠ 0)

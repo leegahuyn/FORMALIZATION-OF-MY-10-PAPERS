@@ -47,24 +47,53 @@ private theorem constant_additive (X : Scheme.{0}) :
   letI : ((sheafSections J A).obj (op T)).Additive := ⟨by intros; rfl⟩
   exact a.left_adjoint_additive
 
+private theorem annihilates_elements {V : AddCommGrpCat.{0}}
+    (h : ℓ • 𝟙 V = 0) (x : V) : ℓ • x = 0 := by
+  exact congrArg (fun f : V ⟶ V ↦ f.hom x) h
+
+/-- The coefficient order annihilates ordinary cohomology with those constant coefficients. -/
+theorem ordinary_annihilated (X : Scheme.{0}) (n : ℕ)
+    (x : Sheaf.H ((constantSheaf X.smallEtaleTopology A).obj (coefficient ℓ)) n) :
+    ℓ • x = 0 := by
+  let F := constantSheaf X.smallEtaleTopology A
+  letI : F.Additive := constant_additive X
+  have hF := map_annihilated_id ℓ F (coefficient ℓ) (coefficient_annihilated ℓ)
+  have hH := map_annihilated_id ℓ (Sheaf.functorH X.smallEtaleTopology n) _ hF
+  exact annihilates_elements ℓ hH x
+
+/-- The canonical ZMod action on ordinary cohomology with those constant coefficients. -/
+def ordinaryModule (X : Scheme.{0}) (n : ℕ) :
+    Module (ZMod ℓ) (Sheaf.H ((constantSheaf X.smallEtaleTopology A).obj (coefficient ℓ)) n) :=
+  AddCommGroup.zmodModule (ordinary_annihilated ℓ X n)
+
 set_option maxHeartbeats 1200000 in
-/-- The coefficient order annihilates the actual abelian compact groups. -/
-theorem compact_annihilated (n : ℕ) (x : nodalHc K (coefficient ℓ) n) : ℓ • x = 0 := by
-  let U := affineNode K
-  let X := projectiveNode K
+/-- The coefficient order annihilates cohomology after extension by zero along any open. -/
+theorem extension_annihilated {U X : Scheme.{0}} (j : U ⟶ X) [IsOpenImmersion j]
+    (n : ℕ) (x : Sheaf.H ((extensionByZero j A).obj
+      ((constantSheaf U.smallEtaleTopology A).obj (coefficient ℓ))) n) : ℓ • x = 0 := by
   let F := constantSheaf U.smallEtaleTopology A
-  let E := extensionByZero (affineOpen K) A
+  let E := extensionByZero j A
   letI : F.Additive := constant_additive U
-  letI : E.Additive := extensionByZero_additive (affineOpen K)
+  letI : E.Additive := extensionByZero_additive j
   have hF := map_annihilated_id ℓ F (coefficient ℓ) (coefficient_annihilated ℓ)
   have hE := map_annihilated_id ℓ E (F.obj (coefficient ℓ)) hF
   have hH := map_annihilated_id ℓ (Sheaf.functorH X.smallEtaleTopology n)
     (E.obj (F.obj (coefficient ℓ))) hE
-  exact congrArg (fun f ↦ AddCommGrpCat.Hom.hom f x) hH
+  exact annihilates_elements ℓ hH x
+
+/-- The canonical ZMod action on extension-by-zero cohomology. -/
+def extensionModule {U X : Scheme.{0}} (j : U ⟶ X) [IsOpenImmersion j] (n : ℕ) :
+    Module (ZMod ℓ) (Sheaf.H ((extensionByZero j A).obj
+      ((constantSheaf U.smallEtaleTopology A).obj (coefficient ℓ))) n) :=
+  AddCommGroup.zmodModule (extension_annihilated ℓ j n)
+
+/-- The coefficient order annihilates the actual abelian compact nodal groups. -/
+theorem compact_annihilated (n : ℕ) (x : nodalHc K (coefficient ℓ) n) : ℓ • x = 0 :=
+  extension_annihilated ℓ (affineOpen K) n x
 
 /-- The canonical ZMod action on actual compact nodal cohomology. -/
 def compactModule (n : ℕ) : Module (ZMod ℓ) (nodalHc K (coefficient ℓ) n) :=
-  AddCommGroup.zmodModule (compact_annihilated K ℓ n)
+  extensionModule ℓ (affineOpen K) n
 
 end
 end ManuscriptAudit.NodalCompactSupportScalar
@@ -72,7 +101,9 @@ end ManuscriptAudit.NodalCompactSupportScalar
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.NodalCompactSupportScalar.compact_annihilated,
+  for name in [``ManuscriptAudit.NodalCompactSupportScalar.ordinaryModule,
+      ``ManuscriptAudit.NodalCompactSupportScalar.extensionModule,
+      ``ManuscriptAudit.NodalCompactSupportScalar.compact_annihilated,
       ``ManuscriptAudit.NodalCompactSupportScalar.compactModule] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -25,7 +25,7 @@ set_option backward.isDefEq.respectTransparency false
 
 variable (K : Type u) [Field K]
 
-private def productFunctions : B K × B K ≃ₐ[B K] (Fin 2 → B K) :=
+private def productFunctions : (B K × B K) ≃ₐ[B K] (Fin 2 → B K) :=
   { (RingEquiv.piFinTwo (fun _ : Fin 2 ↦ B K)).symm with
     commutes' := by
       intro b
@@ -77,7 +77,7 @@ private theorem first_second_disjoint :
   have h : e.symm (Sum.inl x) = e.symm (Sum.inr y) :=
     (PrimeSpectrum.primeSpectrumProd_symm_inl x).trans
       (hy.symm.trans (PrimeSpectrum.primeSpectrumProd_symm_inr y).symm)
-  exact Sum.noConfusion (e.symm.injective h)
+  exact Sum.inl_ne_inr (e.symm.injective h)
 
 private theorem branches_disjoint (a b : Bool) (hab : a ≠ b) :
     Disjoint (Set.range (branch K a)) (Set.range (branch K b)) := by

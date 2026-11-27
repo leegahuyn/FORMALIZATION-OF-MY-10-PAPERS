@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Data.Int.NatPrime
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.NormNum
@@ -38,7 +39,7 @@ private theorem stalk_map_apply (x : R) :
     algebraMap R stalkRing x = algebraMap ℤ stalkRing x.1 := rfl
 
 theorem actual_first_prime_localization : IsLocalization firstPrime.primeCompl stalkRing := by
-  rw [IsLocalization.isLocalization_iff]
+  rw [isLocalization_iff]
   refine ⟨?_, ?_, ?_⟩
   · intro y
     change IsUnit (algebraMap ℤ stalkRing y.val.1)

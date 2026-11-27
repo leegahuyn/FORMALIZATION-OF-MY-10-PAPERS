@@ -22,7 +22,7 @@ private theorem euclidean_integrable (f : ℝ → ℝ) (hf : Continuous f) {b : 
   have hA : MeasurableSet A := UpperHalfPlane.measurableEmbedding_coe.measurableSet_image' strip_measurable
   have hB : MeasurableSet B := Metric.isClosed_closedBall.measurableSet
   have hCompact : IntegrableOn F B (volume : Measure ℂ) :=
-    (hf.comp Complex.continuous_im).continuousOn.integrableOn_compact Metric.isCompact_closedBall
+    (hf.comp Complex.continuous_im).continuousOn.integrableOn_compact isCompact_closedBall
   have hAB : IntegrableOn F (A ∩ B) (volume : Measure ℂ) := hCompact.mono_set inter_subset_right
   have he : A.indicator F = (A ∩ B).indicator F := by
     funext w

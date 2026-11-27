@@ -85,6 +85,14 @@ def finiteResidueHOneEquiv [Finite K] [NeZero d] [NeZero (d : K)]
     ZMod d ≃+ cyclicHOne d K :=
   (powerClassEquiv K d hζ).trans (powerClassHOneEquiv K d K hζ)
 
+def affineLineCyclicHOneEquiv [Finite K] [NeZero d] [NeZero (d : K)]
+    {ζ : K} (hζ : IsPrimitiveRoot ζ d) :
+    ZMod d ≃+ cyclicHOne d (Polynomial K) := by
+  let e := QuotientAddGroup.congr (powerSubgroup K d) (powerSubgroup (Polynomial K) d)
+    (ArithmeticKummerSquareClasses.polynomialUnitEquiv K).toAdditive
+    (ArithmeticKummerSquareClasses.map_powerSubgroup K d)
+  exact (powerClassEquiv K d hζ).trans (e.trans (powerClassHOneEquiv K d (Polynomial K) hζ))
+
 end
 end ManuscriptAudit.ArithmeticCyclicKummerClasses
 
@@ -95,7 +103,8 @@ run_cmd do
       ``ManuscriptAudit.ArithmeticCyclicKummerClasses.powerClass_card,
       ``ManuscriptAudit.ArithmeticCyclicKummerClasses.powerClassEquiv,
       ``ManuscriptAudit.ArithmeticCyclicKummerClasses.powerClassHOneEquiv,
-      ``ManuscriptAudit.ArithmeticCyclicKummerClasses.finiteResidueHOneEquiv] do
+      ``ManuscriptAudit.ArithmeticCyclicKummerClasses.finiteResidueHOneEquiv,
+      ``ManuscriptAudit.ArithmeticCyclicKummerClasses.affineLineCyclicHOneEquiv] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

@@ -32,6 +32,14 @@ private abbrev F := (constantSheaf (projectiveNode K).smallEtaleTopology A).obj 
 local instance : TopologicalSpace (ZMod ℓ) := ⊥
 local instance : DiscreteTopology (ZMod ℓ) := ⟨rfl⟩
 
+private theorem generates_from_cyclic_equiv {G : Type} [AddCommGroup G]
+    (e : G ≃+ ZMod ℓ) (t : G) (ht : t ≠ 0) (x : G) :
+    ∃ n : ℤ, n • t = x := by
+  have hUnit : e t ≠ 0 := fun h ↦ ht (e.injective (h.trans (map_zero e).symm))
+  obtain ⟨n, hn⟩ := ZMod.intCast_surjective (n := ℓ) (e x / e t)
+  refine ⟨n, e.injective ?_⟩
+  rw [map_zsmul, zsmul_eq_mul, hn, div_mul_cancel₀ _ hUnit]
+
 /-- Prime-order affine nodal classes vanish after restriction to the actual chart overlap. -/
 theorem restriction_eq_zero (h2 : (2 : K) ≠ 0) :
     (((F K ℓ).cohomologyPresheaf 1).map (fstLeg (affineOpen K) (chartOpen K)).op).hom = 0 := by
@@ -54,14 +62,10 @@ theorem restriction_eq_zero (h2 : (2 : K) ≠ 0) :
   let e₁ := ((Sheaf.functorH (affineNode K).smallEtaleTopology 1).mapIso
     ((restrictionConstantIso j).app (M ℓ))).addCommGroupIsoToAddEquiv
   let e₂ := (NodalConductorAbelianHOne.affineCyclicHOneEquiv K h2 ℓ).symm
-  let e := e₀.trans (e₁.trans e₂)
-  have hUnit : e t ≠ 0 := fun h ↦ ht (e.injective (h.trans (map_zero e).symm))
+  let e : ((F K ℓ).H' 1 (Scheme.Etale.mk j) : Type) ≃+ ZMod ℓ := e₀.trans (e₁.trans e₂)
   apply AddMonoidHom.ext
   intro x
-  obtain ⟨n, hn⟩ := ZMod.intCast_surjective (n := ℓ) (e x / e t)
-  have hx : n • t = x := by
-    apply e.injective
-    rw [map_zsmul, zsmul_eq_mul, hn, div_mul_cancel₀ _ hUnit]
+  obtain ⟨n, hx⟩ := generates_from_cyclic_equiv ℓ e t ht x
   change (P.map a.op).hom x = 0
   rw [← hx, map_zsmul, show (P.map a.op).hom t = 0 from ht0, smul_zero]
 

@@ -23,7 +23,8 @@ def rotateFirst (z : K) (hz : z ^ m = 1) : D₀ →ₐ[R] D₀ :=
   AdjoinRoot.liftAlgHom (relation n (algebraMap R C₀ b)) (onFirstAlgebra m n a b z hz)
     (secondRoot m n a b) (by
       simp only [relation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
-      rw [(onFirstAlgebra m n a b z hz).commutes, secondRoot_pow, sub_self])
+      exact sub_eq_zero.mpr ((secondRoot_pow m n a b).trans
+        ((onFirstAlgebra m n a b z hz).commutes b).symm))
 
 def rotateSecond (z : K) (hz : z ^ n = 1) : D₀ →ₐ[R] D₀ :=
   (rotation n (algebraMap R C₀ b) z hz).restrictScalars R

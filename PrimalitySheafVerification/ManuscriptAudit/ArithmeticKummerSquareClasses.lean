@@ -42,7 +42,7 @@ def squareClassHOneEquiv (R : Type) [CommRing R] [Algebra K R]
     (e.toAddCommGrpIso : coefficientGroup K 2 ≅ binary)
   exact (rootsHOneEquiv K R 2).trans ((Sheaf.functorH J 1).mapIso t).addCommGroupIsoToAddEquiv
 
-private def polynomialUnitEquiv : Kˣ ≃* (Polynomial K)ˣ :=
+def polynomialUnitEquiv : Kˣ ≃* (Polynomial K)ˣ :=
   MulEquiv.ofBijective (Units.map (Polynomial.C : K →+* Polynomial K).toMonoidHom)
     ⟨by
       intro a b hab
@@ -56,7 +56,7 @@ private def polynomialUnitEquiv : Kˣ ≃* (Polynomial K)ˣ :=
       change Polynomial.C (ha.unit : K) = (u : Polynomial K)
       rw [ha.unit_spec, hu]⟩
 
-private theorem map_powerSubgroup (d : ℕ) :
+theorem map_powerSubgroup (d : ℕ) :
     (powerSubgroup K d).map (polynomialUnitEquiv K).toAdditive.toAddMonoidHom =
       powerSubgroup (Polynomial K) d := by
   ext x

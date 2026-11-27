@@ -19,6 +19,8 @@ open scoped UpperHalfPlane Topology
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false
+
 def heightPower (s : ℂ) (y : ℝ) : ℂ := Complex.exp ((Real.log y : ℂ) * s)
 
 theorem heightPower_eq_cpow (s : ℂ) {y : ℝ} (hy : 0 < y) :
@@ -33,7 +35,9 @@ theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
   have he : heightPower s = fun t => (a t : ℂ) + (b t : ℂ) * Complex.I := by
     funext t
     apply Complex.ext <;>
-      simp [heightPower, a, b, Complex.exp_re, Complex.exp_im, Complex.mul_re, Complex.mul_im]
+      simp only [heightPower, a, b, Complex.exp_re, Complex.exp_im, Complex.mul_re,
+        Complex.mul_im, Complex.add_re, Complex.add_im, Complex.ofReal_re, Complex.ofReal_im,
+        Complex.I_re, Complex.I_im, mul_zero, zero_mul, sub_zero, add_zero, zero_add, mul_one]
   have hLogRe := (Real.hasDerivAt_log hy).mul_const s.re
   have hLogIm := (Real.hasDerivAt_log hy).mul_const s.im
   have hRe := (hLogRe.exp.mul hLogIm.cos).ofReal_comp
@@ -41,8 +45,13 @@ theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
   have h := hRe.add hIm
   have hCast : (y : ℂ)⁻¹ = ((y⁻¹ : ℝ) : ℂ) := (Complex.ofReal_inv y).symm
   rw [he, hCast]
-  convert h using 1 <;> apply Complex.ext <;>
-    simp [a, b, Complex.mul_re, Complex.mul_im, Complex.add_re, Complex.add_im] <;> ring
+  convert h using 1 <;> first
+    | rfl
+    | funext t; rfl
+    | apply Complex.ext <;>
+        simp only [a, b, Complex.mul_re, Complex.mul_im, Complex.add_re, Complex.add_im,
+          Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im,
+          mul_zero, zero_mul, sub_zero, add_zero, zero_add, mul_one] <;> ring
 
 theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :
     deriv (deriv (heightPower s)) y =

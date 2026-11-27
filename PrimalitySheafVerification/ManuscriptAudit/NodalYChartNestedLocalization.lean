@@ -19,21 +19,15 @@ variable (K : Type) [Field K]
 abbrev denominator : Polynomial K := 1 - Polynomial.X ^ 2
 abbrev overlapDenominator : Polynomial K := denominator K * Polynomial.X
 
-local instance polynomialOverlap : Algebra (Polynomial K) (overlapRing K) :=
-  Algebra.compHom (overlapRing K) (algebraMap (Polynomial K) (yCoordinateRing K))
-
-local instance polynomialOverlapTower :
-    IsScalarTower (Polynomial K) (yCoordinateRing K) (overlapRing K) :=
-  IsScalarTower.of_algebraMap_eq (R := Polynomial K) (S := yCoordinateRing K)
-    (A := overlapRing K) (fun _ ↦ rfl)
-
 private instance coordinateLocalization :
     IsLocalization.Away (denominator K) (yCoordinateRing K) :=
   IsLocalization.isLocalization_of_algEquiv _ (coordinateEquiv K).symm
 
 private instance overlapLocalization :
-    IsLocalization.Away (overlapDenominator K) (overlapRing K) :=
-  IsLocalization.Away.mul' (yCoordinateRing K) (overlapRing K) (denominator K) Polynomial.X
+    IsLocalization.Away (overlapDenominator K) (overlapRing K) := by
+  change IsLocalization.Away (denominator K * Polynomial.X)
+    (Localization.Away (algebraMap (Polynomial K) (yCoordinateRing K) Polynomial.X))
+  infer_instance
 
 /-- The true overlap ring is the polynomial localization at X times the Y-chart denominator. -/
 def overlapCoordinates :

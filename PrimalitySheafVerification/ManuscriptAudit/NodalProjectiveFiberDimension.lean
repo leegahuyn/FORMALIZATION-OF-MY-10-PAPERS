@@ -134,9 +134,23 @@ theorem projective_integral : IsIntegral (projectiveNode K) := by
     · exact inferInstanceAs (IsReduced (affineNode K))
     · letI : IsIntegral (nodeYChart K) := y_chart_integral K
       exact inferInstanceAs (IsReduced (nodeYChart K))
-  letI : IsReduced (projectiveNode K) := IsReduced.of_openCover U
+  letI : IsReduced (projectiveNode K) := IsReduced.of_openCover (projectiveNode K) U
   letI : IrreducibleSpace (projectiveNode K) := projective_irreducible K
   exact isIntegral_of_irreducibleSpace_of_isReduced _
+
+/-- Every field-valued fiber of the actual integer-base family is
+one-dimensional, including the rational generic fiber. -/
+theorem coefficient_fiber_dimension :
+    topologicalKrullDim (IntegralNodalArithmeticBump.fiber K) = 1 := by
+  let e := IntegralNodalArithmeticBump.fiberIso K
+  exact (e.hom.homeomorph.isHomeomorph.topologicalKrullDim_eq e.hom.homeomorph).trans
+    (dimension K)
+
+/-- Every field-valued fiber of the actual integer-base family is integral. -/
+theorem coefficient_fiber_integral :
+    IsIntegral (IntegralNodalArithmeticBump.fiber K) := by
+  letI : IsIntegral (projectiveNode K) := projective_integral K
+  exact IsIntegral.of_isIso (IntegralNodalArithmeticBump.fiberIso K).inv
 
 /-- All canonical closed-point fibers of the integral proper family
 are one-dimensional, also in characteristic two. -/
@@ -146,6 +160,12 @@ theorem canonical_fiber_dimension (p : ℕ) [Fact p.Prime] :
   exact (e.hom.homeomorph.isHomeomorph.topologicalKrullDim_eq e.hom.homeomorph).trans
     (dimension (ZMod p))
 
+/-- The whole canonical fiber is integral at each prime of the integer base. -/
+theorem canonical_fiber_integral (p : ℕ) [Fact p.Prime] :
+    IsIntegral (IntegralOddPrimeFibers.nodalFiber p) := by
+  letI : IsIntegral (projectiveNode (ZMod p)) := projective_integral (ZMod p)
+  exact IsIntegral.of_isIso (IntegralOddPrimeFibers.nodeIso p).inv
+
 end
 end ManuscriptAudit.NodalProjectiveFiberDimension
 
@@ -154,7 +174,10 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.NodalProjectiveFiberDimension.dimension,
       ``ManuscriptAudit.NodalProjectiveFiberDimension.canonical_fiber_dimension,
-      ``ManuscriptAudit.NodalProjectiveFiberDimension.projective_integral] do
+      ``ManuscriptAudit.NodalProjectiveFiberDimension.projective_integral,
+      ``ManuscriptAudit.NodalProjectiveFiberDimension.canonical_fiber_integral,
+      ``ManuscriptAudit.NodalProjectiveFiberDimension.coefficient_fiber_dimension,
+      ``ManuscriptAudit.NodalProjectiveFiberDimension.coefficient_fiber_integral] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
