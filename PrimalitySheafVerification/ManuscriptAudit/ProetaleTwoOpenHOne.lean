@@ -9,7 +9,7 @@ a union of two H¹-acyclic opens with connected nonempty intersection. -/
 
 namespace ManuscriptAudit.ProetaleTwoOpenHOne
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
 open OpenProetaleExtension (restriction)
 open ProetaleOpenRestriction (restrictionConstantIso)
 open ProetaleOpenLocalLifts
@@ -49,11 +49,19 @@ theorem twoOpenCover (hCover : Set.range j ∪ Set.range k = Set.univ) :
     · change Etale k
       infer_instance
 
+private abbrev R (j : U ⟶ X) [IsOpenImmersion j] :
+    Sheaf (J X) G ⥤ Sheaf (J U) G := restriction j G
+
+local instance nativeHasExt (W : Scheme.{0}) : HasExt.{1} (Sheaf (J W) G) :=
+  IsGrothendieckAbelian.hasExt (Sheaf (J W) G)
+
 private theorem restricted_HOne_subsingleton (M : Type) [AddCommGroup M]
     (h : Subsingleton (Sheaf.H (constant U M) 1)) :
-    Subsingleton (Sheaf.H ((restriction j G).obj (constant X M)) 1) := by
-  let e := ((Sheaf.functorH (J U) 1).mapIso
-    ((restrictionConstantIso j).app (AddCommGrpCat.of (ULift.{1} M)))).addCommGroupIsoToAddEquiv
+    Subsingleton (Sheaf.H ((R j).obj (constant X M)) 1) := by
+  let A : G := AddCommGrpCat.of (ULift.{1} M)
+  let hIso : (R j).obj (constant X M) ≅ constant U M :=
+    (restrictionConstantIso.{0} j).app A
+  let e := ((Sheaf.functorH (J U) 1).mapIso hIso).addCommGroupIsoToAddEquiv
   exact ⟨fun a b ↦ e.injective (h.elim _ _)⟩
 
 local instance : EnoughInjectives (Sheaf (J X) G) :=

@@ -110,12 +110,11 @@ theorem outer_hasDerivAt_zero (S : ∀ k : ℕ, Finset (Fin (2 * k))) :
       (𝓝[≠] (0 : ℂ)) (𝓝 ((Real.pi : ℂ) * normalizedDifference S 0)) :=
     hC.tendsto.mono_left nhdsWithin_le_nhds
   apply hT.congr'
-  have hP : ∀ᶠ q in 𝓝[≠] (0 : ℂ), q ≠ 0 := by
-    simpa only [mem_compl_iff, mem_singleton_iff] using
-      (self_mem_nhdsWithin : ({0}ᶜ : Set ℂ) ∈ 𝓝[≠] (0 : ℂ))
+  have hP : ({0}ᶜ : Set ℂ) ∈ 𝓝[≠] (0 : ℂ) := self_mem_nhdsWithin
   filter_upwards [hP] with q hq
+  have hq0 : q ≠ 0 := fun he => (mem_compl_iff.mp hq) (mem_singleton_iff.mpr he)
   simp only [outerDifference, zero_add, mul_zero, zero_mul, sub_zero, smul_eq_mul]
-  field_simp [hq] <;> ring
+  field_simp [hq0] <;> ring
 
 theorem reduced_derivative_real_positive :
     0 < (deriv (outerDifference reducedResidues) 0).re := by

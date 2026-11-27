@@ -65,6 +65,7 @@ theorem cube_fixed_patterns (B : Basis (Fin 2) (ZMod 4) V)
     (a b : ZMod 4) (hF : F = a • 1 + b • S)
     (hd : LinearMap.det F = 1 ∨ LinearMap.det F = 3) :
     CubeFixedPatterns F := by
+  letI : Fact (1 < (4 : ℕ)) := ⟨by decide⟩
   let M := fun v => action a b (action a b (action a b v))
   have hNorm : LinearMap.det F = norm a b := by
     rw [hF]

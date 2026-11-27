@@ -30,11 +30,14 @@ theorem card_mod_eight_of_torsion_four {G : Type*} [AddCommGroup G] [Finite G]
         have hQ : (2 : ℕ) • Q.val = 0 := Q.property
         change (4 : ℕ) • Q.val = 0
         rw [show (4 : ℕ) = 2 * 2 by decide, mul_nsmul', hQ, nsmul_zero]⟩
-    have hj : Function.Injective j := fun Q R h => Subtype.ext (congrArg Subtype.val h)
+    have hj : Function.Injective j := by
+      intro Q R h
+      apply Subtype.ext
+      exact congrArg (fun P : Torsion 4 G => P.val) h
     let P₄ : Torsion 4 G := ⟨P, hP₄⟩
     have hP : P₄ ∉ Set.range j := by
       rintro ⟨Q, hQ⟩
-      have hQP : Q.val = P := congrArg Subtype.val hQ
+      have hQP : Q.val = P := congrArg (fun R : Torsion 4 G => R.val) hQ
       apply hP₂
       rw [← hQP]
       exact Q.property

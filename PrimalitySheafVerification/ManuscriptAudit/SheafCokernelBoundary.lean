@@ -31,9 +31,10 @@ theorem boundary_eq_zero_iff (x : (cokernel i).obj.obj (op T)) :
   constructor
   · intro hx
     let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
-    have hS : S.ShortExact :=
-      ⟨ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel i),
-        inferInstanceAs (Mono i), inferInstanceAs (Epi (cokernel.π i))⟩
+    have hS : S.ShortExact := {
+      exact := ShortComplex.exact_of_g_is_cokernel S (cokernelIsCokernel i)
+      mono_f := inferInstanceAs (Mono i)
+      epi_g := inferInstanceAs (Epi (cokernel.π i)) }
     let Z := (constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift.{w} ℤ))
     let x₀ := (Sheaf.H.equiv₀ (cokernel i) hT).symm x
     change (hS.extClass.postcomp Z (show 0 + 1 = 1 by rfl)) x₀ = 0 at hx

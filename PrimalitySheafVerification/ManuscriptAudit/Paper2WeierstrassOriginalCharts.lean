@@ -22,8 +22,9 @@ def secondChartOriginal (W : WeierstrassCurve R) :
     have h := IsLocalization.Away.mul_of_isUnit (S := ReverseProjectionChart W)
       b (-1) (by simp)
     simpa only [mul_neg, mul_one] using h
-  apply IsLocalization.algEquivOfAlgEquiv (Localization.Away (xDerivative W))
-    (ReverseProjectionChart W) (swapPresentation W)
+  refine IsLocalization.algEquivOfAlgEquiv (M := Submonoid.powers (xDerivative W))
+    (T := Submonoid.powers (-b)) (Localization.Away (xDerivative W))
+    (ReverseProjectionChart W) (swapPresentation W) ?_
   change Submonoid.map (swapPresentation W).toRingEquiv (Submonoid.powers (xDerivative W)) =
     Submonoid.powers (-b)
   rw [Submonoid.map_powers]
