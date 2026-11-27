@@ -26,7 +26,7 @@ theorem all_frequency_sum_eq_divisor_sum {m : ℕ} (hm : 0 < m) (u : ℝ) :
   obtain ⟨n, rfl⟩ := hd
   have hg : 0 < g := Nat.pos_of_ne_zero fun h => by simp [h] at hm
   have hn : 0 < n := Nat.pos_of_ne_zero fun h => by simp [h] at hm
-  have hc : (g*n)/g = n := by rw [mul_comm, Nat.mul_div_cancel _ hg]
+  have hc : (g*n)/g = n := Nat.mul_div_cancel_left n hg
   rw [hc, reducedFrequencySum]
   exact gcd_class_eq_reduced_frequency_sum hg hn u
 

@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.GCD.Basic
 
 /-! An exact reindexing of the residues in one prescribed gcd class. -/
@@ -18,7 +19,7 @@ noncomputable def fiber_bijection {g n : ℕ} (hg : 0 < g) :
     {i : Fin n // Nat.Coprime i.val n} ≃ {d : Fin (g*n) // Nat.gcd d.val (g*n) = g} := by
   let f (i : {i : Fin n // Nat.Coprime i.val n}) :
       {d : Fin (g*n) // Nat.gcd d.val (g*n) = g} :=
-    ⟨multiplyResidue hg i, multiply_residue_gcd hg i i.property⟩
+    ⟨multiplyResidue hg i.val, multiply_residue_gcd hg i.val i.property⟩
   apply Equiv.ofBijective f
   constructor
   · intro i j he

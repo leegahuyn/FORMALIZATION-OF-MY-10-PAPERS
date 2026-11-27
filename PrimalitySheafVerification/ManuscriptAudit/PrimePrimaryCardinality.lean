@@ -13,9 +13,9 @@ noncomputable section
 variable (G : Type*) [AddCommGroup G] [Finite G]
 variable (l : ℕ) [Fact l.Prime]
 
-/-- In a group of order M² killed by M = l^n d, with d prime to l, the l^n-torsion has order l^(2n). -/
-theorem card_torsion_of_square_annihilator (n d : ℕ) (hd : ¬l ∣ d)
-    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = (l ^ n * d) ^ 2) :
+/-- The primary count depends only on the prime factors of the group order and annihilator. -/
+theorem card_torsion_of_annihilator (n d e : ℕ) (hd : ¬l ∣ d) (he : ¬l ∣ e)
+    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = (l ^ n) ^ 2 * e) :
     Nat.card (Torsion (l ^ n) G) = (l ^ 2) ^ n := by
   let f : G →+ G := nsmulAddMonoidHom (l ^ n)
   have hprod : Nat.card G = Nat.card f.range * Nat.card f.ker := by
@@ -45,11 +45,11 @@ theorem card_torsion_of_square_annihilator (n d : ℕ) (hd : ¬l ∣ d)
   obtain ⟨k, hk'⟩ := IsPGroup.iff_card.mp hKernel
   have hk : Nat.card f.ker = l ^ k :=
     (Nat.card_congr Multiplicative.ofAdd).trans hk'
-  have hG : Nat.card G = l ^ (n * 2) * d ^ 2 := by
-    rw [hCard, mul_pow, pow_mul]
+  have hG : Nat.card G = l ^ (n * 2) * e := by
+    rw [hCard, pow_mul]
   have hl : l.Prime := Fact.out
   have hDvdK : l ^ k ∣ l ^ (n * 2) := by
-    have hc := (((hl.coprime_iff_not_dvd).mpr hd).pow_left k).pow_right 2
+    have hc := ((hl.coprime_iff_not_dvd).mpr he).pow_left k
     apply hc.dvd_of_dvd_mul_right
     rw [← hG, hprod, hk]
     exact dvd_mul_left _ _
@@ -60,6 +60,13 @@ theorem card_torsion_of_square_annihilator (n d : ℕ) (hd : ¬l ∣ d)
     exact dvd_mul_right _ _
   change Nat.card f.ker = (l ^ 2) ^ n
   rw [hk, Nat.dvd_antisymm hDvdK hDvdG, ← pow_mul, Nat.mul_comm n 2]
+
+/-- The original square-order situation is a special case of the primary count. -/
+theorem card_torsion_of_square_annihilator (n d : ℕ) (hd : ¬l ∣ d)
+    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = (l ^ n * d) ^ 2) :
+    Nat.card (Torsion (l ^ n) G) = (l ^ 2) ^ n := by
+  have hPow : ¬l ∣ d ^ 2 := fun h => hd ((Fact.out : Nat.Prime l).dvd_of_dvd_pow h)
+  exact card_torsion_of_annihilator G l n d (d ^ 2) hd hPow hAnn (hCard.trans (mul_pow _ _ _))
 
 end
 end ManuscriptAudit.PrimePrimaryCardinality

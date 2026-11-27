@@ -93,8 +93,8 @@ theorem trace_det (hl : l = 2 ∨ l = 3) {A : ZMod 31} (hA : A ≠ 0) :
     (by
       change Paper5OrdinaryThirtyOneFrobenius.nativeFrobenius L =
         (1 : ℤ) • (1 : AddMonoid.End (Points L)) +
-          (6 : ℤ) • CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one
-            (discriminant_ne_zero L)
+          (6 : ℤ) • (CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one
+            (discriminant_ne_zero L) : AddMonoid.End (Points L))
       rw [one_zsmul, ofNat_zsmul, hRot]
       exact hF) l hl
   obtain ⟨ht, hd⟩ := h
