@@ -56,6 +56,7 @@ theorem exists_tripleBoundary_of_pairBoundary_eq_zero (x : FreeAbelianGroup (α 
   cases isEmpty_or_nonempty α with
   | inl h =>
     have h0 : x = 0 := by
+      clear hx
       induction x using FreeAbelianGroup.induction_on with
       | zero => rfl
       | of p => exact (h.false p.1).elim

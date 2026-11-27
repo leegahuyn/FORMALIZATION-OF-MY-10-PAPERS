@@ -45,8 +45,8 @@ private theorem exists_separator (σ τ : L ≃ₐ[F] L) (h : σ ≠ τ) :
 variable [FiniteDimensional F L]
 
 private theorem exists_coordinate (σ : L ≃ₐ[F] L) :
-    ∃ w : L ⊗[F] L, ∀ τ : L ≃ₐ[F] L,
-      evaluationHom F L w τ = if τ = σ then 1 else 0 := by
+    ∃ w : L ⊗[F] L, evaluationHom F L w σ = 1 ∧
+      ∀ τ : L ≃ₐ[F] L, τ ≠ σ → evaluationHom F L w τ = 0 := by
   classical
   letI := Fintype.ofFinite (L ≃ₐ[F] L)
   let c (τ : L ≃ₐ[F] L) : L ⊗[F] L :=
@@ -62,13 +62,10 @@ private theorem exists_coordinate (σ : L ≃ₐ[F] L) :
   have hprod (τ : L ≃ₐ[F] L) :
       evaluationHom F L w τ = ∏ ρ ∈ s, evaluationHom F L (c ρ) τ := by
     exact map_prod ((Pi.evalAlgHom L (fun _ : L ≃ₐ[F] L ↦ L) τ).comp (evaluationHom F L)) c s
-  refine ⟨w, fun τ ↦ ?_⟩
-  rw [hprod]
-  by_cases h : τ = σ
-  · subst τ
-    rw [if_pos rfl]
+  refine ⟨w, ?_, fun τ h ↦ ?_⟩
+  · rw [hprod]
     exact Finset.prod_eq_one (fun ρ hρ ↦ hσ ρ (Finset.mem_erase.mp hρ).1)
-  · rw [if_neg h]
+  · rw [hprod]
     exact Finset.prod_eq_zero (Finset.mem_erase.mpr ⟨h, Finset.mem_univ τ⟩) (hτ τ h)
 
 /-- The evaluation projections of the tensor square are jointly surjective
@@ -85,11 +82,10 @@ theorem evaluationHom_surjective : Function.Surjective (evaluationHom F L) := by
   rw [map_sum]
   simp only [map_smul, smul_eq_mul]
   change (∑ σ : L ≃ₐ[F] L, f σ * evaluationHom F L (w σ) τ) = f τ
-  simp only [hw]
   rw [Finset.sum_eq_single τ]
-  · simp
+  · rw [(hw τ).1, mul_one]
   · intro σ _ h
-    simp [h.symm]
+    rw [(hw σ).2 τ h.symm, mul_zero]
   · simp
 
 variable [IsGalois F L]

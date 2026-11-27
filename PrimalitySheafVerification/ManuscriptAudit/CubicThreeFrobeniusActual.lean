@@ -70,6 +70,19 @@ variable [Fintype E] [IsAlgClosed L]
 def actualFrobenius (A : E) : Module.End (ZMod 3) (ActualTorsion E L A) :=
   pointMap 3 (Curve A) (FiniteField.frobeniusAlgHom E L)
 
+/-- A two-element basis of the actual geometric three-torsion. -/
+def actualTorsionBasis {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
+    (hA : A ≠ 0) : Module.Basis (Fin 2) (ZMod 3) (ActualTorsion E L A) := by
+  have h₂L : (2 : L) ≠ 0 := by simpa using mapped_nonzero E L 2 h₂
+  have h₃L : (3 : L) ≠ 0 := by simpa using mapped_nonzero E L 3 h₃
+  have hAL := mapped_nonzero E L A hA
+  let D := Classical.choice (flexPair_nonempty h₂L hAL)
+  exact (basis h₂L h₃L hAL D).map (centeredTransport E L A).symm
+
+theorem finiteActualTorsionModule {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
+    (hA : A ≠ 0) : Module.Finite (ZMod 3) (ActualTorsion E L A) :=
+  Module.Finite.of_basis (actualTorsionBasis E L h₂ h₃ hA)
+
 /-- The actual q-power point map has the determinant and trace given by the vertical Frobenius sign. -/
 theorem actualFrobenius_trace_det {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
     (hA : A ≠ 0) (hq : Fintype.card E % 3 ≠ 0) :
@@ -107,9 +120,11 @@ end ManuscriptAudit.CubicThreeFrobeniusActual
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.CubicThreeFrobeniusActual.actualFrobenius_trace_det
-  let ax ← collectAxioms name
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.CubicThreeFrobeniusActual.actualTorsionBasis,
+      ``ManuscriptAudit.CubicThreeFrobeniusActual.actualFrobenius_trace_det] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

@@ -27,10 +27,14 @@ def galoisArrow (K L : Type) [Field K] [Field L] [Algebra K L]
 private theorem terminal_hom_eq (K : Type) [Field K] {U : (Spec (CommRingCat.of K)).Etale}
     (a b : U ⟶ terminalObject K) : a = b := by
   have ha : a.left = U.hom := by
-    simpa [terminalObject] using MorphismProperty.Over.w a
+    have hw := MorphismProperty.Over.w a
+    change a.left ≫ 𝟙 _ = U.hom at hw
+    simpa only [Category.comp_id] using hw
   have hb : b.left = U.hom := by
-    simpa [terminalObject] using MorphismProperty.Over.w b
-  ext : 1
+    have hw := MorphismProperty.Over.w b
+    change b.left ≫ 𝟙 _ = U.hom at hw
+    simpa only [Category.comp_id] using hw
+  apply ((Scheme.Etale.forget (Spec (CommRingCat.of K))) ⋙ Over.forget _).map_injective
   exact ha.trans hb.symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -59,7 +63,7 @@ theorem coveringSieve_has_finiteGalois_arrow (K : Type) [Field K]
   let f : Spec B ⟶ X := a ≫ (U ↘ X)
   letI : Etale f := inferInstanceAs (Etale (a ≫ (U ↘ X)))
   let m : CommRingCat.of K ⟶ B := (Scheme.Spec.preimage f).unop
-  have hm : Spec.map m = f := Scheme.Spec.image_preimage f
+  have hm : Spec.map m = f := Scheme.Spec.map_preimage f
   letI : Etale (Spec.map m) := hm.symm ▸ (inferInstance : Etale f)
   obtain ⟨L, hField, hAlg, hFinite, hGalois, g, hg⟩ := exists_finiteGalois_spec_factor K B m
   letI := hField
@@ -68,7 +72,7 @@ theorem coveringSieve_has_finiteGalois_arrow (K : Type) [Field K]
   letI := hGalois
   let Zi : X.Etale := U.asOverProp X (hEtale i)
   let v : Zi ⟶ terminalObject K := (V.f i).asOverProp X
-  have hv : R v := hCover (Presieve.ofArrows.mk i)
+  have hv : R v := hCover _ _ (Presieve.ofArrows.mk i)
   let u : galoisObject K L ⟶ Zi :=
     MorphismProperty.Over.homMk (g ≫ a) (by
       change (g ≫ a) ≫ (U ↘ X) = Spec.map (CommRingCat.ofHom (algebraMap K L))
@@ -85,7 +89,8 @@ open Lean Elab Command in
 run_cmd do
   let name := ``ManuscriptAudit.FieldEtaleGaloisCovers.coveringSieve_has_finiteGalois_arrow
   let ax ← collectAxioms name
-  let bad := ax.filter fun x => ![``propext, ``Classical.choice, ``Quot.sound].contains x
+  let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+  let bad := ax.filter fun x => !allowed.contains x
   unless bad.isEmpty do
     throwError m!"{name} depends on unexpected axioms {bad}"
   logInfo m!"{name} uses {ax}"

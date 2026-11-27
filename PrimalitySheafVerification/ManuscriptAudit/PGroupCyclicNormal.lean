@@ -23,7 +23,7 @@ theorem exists_cyclic_normal_smaller {G : Type*} [Group G] [Finite G] [Nontrivia
   have hz' : (z : G) ≠ 1 := fun h ↦ hz (Subtype.ext h)
   have hle : S ≤ Subgroup.center G := Subgroup.zpowers_le.mpr z.property
   have hNormal : S.Normal := ⟨fun y hy x ↦ by
-    rw [Subgroup.mem_center_iff.mp (hle hy) x, mul_assoc, inv_mul_cancel, mul_one]
+    rw [Subgroup.mem_center_iff.mp (hle hy) x, mul_assoc, mul_inv_cancel, mul_one]
     exact hy⟩
   have hCard : 1 < Nat.card S :=
     S.one_lt_card_iff_ne_bot.mpr (Subgroup.zpowers_ne_bot.mpr hz')

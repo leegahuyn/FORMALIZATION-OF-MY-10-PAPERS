@@ -45,6 +45,10 @@ variable (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) (D : FlexP
 
 abbrev T₃ (A : K) := Torsion 3 (Curve A).Point
 
+theorem scalar_cases : ∀ r : ZMod 3, r = 0 ∨ r = 1 ∨ r = -1 := by decide
+
+include h₂ h₃ hA
+
 private theorem vertical_nonsingular : (Curve A).Nonsingular 0 D.a :=
   (nonsingular_iff (shortCubic_discriminant_ne_zero h₂ h₃ hA) _ _).mpr
     (by simpa using D.a_square)
@@ -79,8 +83,6 @@ def horizontal : T₃ A := by
 
 @[simp] theorem ordinate_horizontal :
     ordinate (inclusion 3 _ (horizontal h₂ h₃ hA D)) = D.b := rfl
-
-theorem scalar_cases : ∀ r : ZMod 3, r = 0 ∨ r = 1 ∨ r = -1 := by decide
 
 theorem abscissa_smul_vertical (r : ZMod 3) :
     abscissa (inclusion 3 _ (r • vertical h₂ h₃ hA D)) = 0 := by

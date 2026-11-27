@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.NodalProjectivePoints
+import PrimalitySheafVerification.ManuscriptAudit.NodalAffineOrigin
 import PrimalitySheafVerification.ManuscriptAudit.NodalRationalInfinity
 import PrimalitySheafVerification.ManuscriptAudit.SchemeRationalPointsOpen
 
@@ -67,7 +68,7 @@ private theorem node_relation :
   ring
 
 private def fromAffinePoint (p : affinePoints K) : coordinates K →ₐ[K] K := by
-  let b := Polynomial.aeval p.val.1
+  let b : Polynomial K →ₐ[K] K := Polynomial.aeval p.val.1
   have hb : (equation K).eval₂ b.toRingHom p.val.2 = 0 := by
     unfold equation
     simp only [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
@@ -98,22 +99,6 @@ private theorem fromAffinePoint_y (p : affinePoints K) :
   unfold fromAffinePoint
   rw [AlgHom.comp_apply, AlgEquiv.coe_algHom, AlgEquiv.symm_apply_apply, AdjoinRoot.liftAlgHom_root]
 
-private theorem coordinateAlgHom_ext {f g : coordinates K →ₐ[K] K}
-    (hx : f (nodeX K) = g (nodeX K)) (hy : f (nodeY K) = g (nodeY K)) : f = g := by
-  let e := coordinateEquiv K
-  have hcomp : f.comp e.toAlgHom = g.comp e.toAlgHom := by
-    apply AdjoinRoot.algHom_ext'
-    · apply Polynomial.algHom_ext
-      change f (e (AdjoinRoot.of (equation K) Polynomial.X)) =
-        g (e (AdjoinRoot.of (equation K) Polynomial.X))
-      rw [generator_x, hx]
-    · change f (e (AdjoinRoot.root (equation K))) = g (e (AdjoinRoot.root (equation K)))
-      rw [generator_y, hy]
-  apply AlgHom.ext
-  intro q
-  obtain ⟨a, rfl⟩ := e.surjective q
-  exact DFunLike.congr_fun hcomp a
-
 /-- The actual affine nodal morphisms over K are exactly the affine equation's solutions. -/
 def affineEquiv :
     PointsOver (affineOpen K ≫ projectiveNodeToBase K) ≃ affinePoints K := by
@@ -125,7 +110,7 @@ def affineEquiv :
       right_inv := ?_ }
   · simpa only [map_pow, map_mul, map_add, map_one] using congrArg f (node_relation K)
   · intro f
-    exact coordinateAlgHom_ext K (fromAffinePoint_x K _) (fromAffinePoint_y K _)
+    exact NodalAffineOrigin.algebraMap_ext K (fromAffinePoint_x K _) (fromAffinePoint_y K _)
   · intro p
     exact Subtype.ext (Prod.ext (fromAffinePoint_x K p) (fromAffinePoint_y K p))
 

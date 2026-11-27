@@ -126,8 +126,9 @@ private theorem at_positive (c : (Conductor K (T K h2)).left) :
     exact RingHom.mem_ker.mpr (by simp)
   have h := (spec_mem_map_iff (lineHom K) q (Polynomial.X - 1)).mpr hq
   have ht : lineHom K (Polynomial.X - 1) = t K - 1 := by
-    change (lineHom K).hom (Polynomial.X - 1) = _
-    rw [map_sub, map_one] <;> rfl
+    let f : B K →ₐ[A K] E K := Algebra.TensorProduct.includeLeft
+    change f (Polynomial.X - 1) = t K - 1
+    exact (map_sub f (Polynomial.X : B K) 1).trans (congrArg (fun a : E K => t K - a) (map_one f))
   rw [ht] at h
   exact h
 
@@ -139,8 +140,9 @@ private theorem at_negative (c : (Conductor K (T K h2)).left) :
     exact RingHom.mem_ker.mpr (by simp)
   have h := (spec_mem_map_iff (lineHom K) q (Polynomial.X + 1)).mpr hq
   have ht : lineHom K (Polynomial.X + 1) = t K + 1 := by
-    change (lineHom K).hom (Polynomial.X + 1) = _
-    rw [map_add, map_one] <;> rfl
+    let f : B K →ₐ[A K] E K := Algebra.TensorProduct.includeLeft
+    change f (Polynomial.X + 1) = t K + 1
+    exact (map_add f (Polynomial.X : B K) 1).trans (congrArg (fun a : E K => t K + a) (map_one f))
   rw [ht] at h
   exact h
 
@@ -152,8 +154,9 @@ private theorem opposite_labels (c : (Conductor K (T K h2)).left) :
   let a : PrimeSpectrum (E K) := (normIso K h2).inv (plus K (T K h2) c)
   let b : PrimeSpectrum (E K) := (normIso K h2).inv (minus K (T K h2) c)
   have hz : coverHom K (skew K - 1) = z K - 1 := by
-    change (coverHom K).hom (skew K - 1) = _
-    rw [map_sub, map_one] <;> rfl
+    let f : Cover K →ₐ[A K] E K := Algebra.TensorProduct.includeRight
+    change f (skew K - 1) = z K - 1
+    exact (map_sub f (skew K) 1).trans (congrArg (fun a : E K => z K - a) (map_one f))
   have ha := spec_mem_map_iff (coverHom K) a (skew K - 1)
   have hb := spec_mem_map_iff (coverHom K) b (skew K - 1)
   rw [hz] at ha hb
@@ -173,6 +176,22 @@ private def clopenIndicator {R : Type} [CommRing R] (e : R) (he : e * e = e) :
   exact ⟨U.piecewise (fun _ => 1) (fun _ => 0),
     continuous_const.piecewise (by simp [hU.frontier_eq]) continuous_const⟩
 
+private theorem clopenIndicator_on {R : Type} [CommRing R] {e : R} (he : e * e = e)
+    (q : PrimeSpectrum R) (hq : e ∉ q.asIdeal) : clopenIndicator e he q = 1 := by
+  classical
+  have hU : q ∈ (PrimeSpectrum.basicOpen e : Set (PrimeSpectrum R)) :=
+    (PrimeSpectrum.mem_basicOpen _ _).mpr hq
+  change (if q ∈ (PrimeSpectrum.basicOpen e : Set (PrimeSpectrum R)) then (1 : C) else 0) = 1
+  exact if_pos hU
+
+private theorem clopenIndicator_off {R : Type} [CommRing R] {e : R} (he : e * e = e)
+    (q : PrimeSpectrum R) (hq : e ∈ q.asIdeal) : clopenIndicator e he q = 0 := by
+  classical
+  have hU : q ∉ (PrimeSpectrum.basicOpen e : Set (PrimeSpectrum R)) :=
+    fun h => (PrimeSpectrum.mem_basicOpen _ _).mp h hq
+  change (if q ∈ (PrimeSpectrum.basicOpen e : Set (PrimeSpectrum R)) then (1 : C) else 0) = 0
+  exact if_neg hU
+
 private def indicator : ContinuousMap (PrimeSpectrum (E K)) C :=
   clopenIndicator (idempotent K h2) (idempotent_mul K h2)
 
@@ -187,14 +206,20 @@ theorem unitLift_difference :
   classical
   apply ContinuousMap.ext
   intro c
-  change (indicator K h2) ((normIso K h2).inv (plus K (T K h2) c)) -
-    (indicator K h2) ((normIso K h2).inv (minus K (T K h2) c)) = 1
-  have h := opposite_labels K h2 c
-  by_cases hpos : idempotent K h2 ∉ ((normIso K h2).inv (plus K (T K h2) c)).asIdeal
-  · have hneg := h.mp hpos
-    simp [indicator, clopenIndicator, Set.piecewise, PrimeSpectrum.mem_basicOpen, hpos, hneg]
-  · have hneg := fun hm => hpos (h.mpr hm)
-    simp [indicator, clopenIndicator, Set.piecewise, PrimeSpectrum.mem_basicOpen, hpos, hneg] <;> decide
+  let a : PrimeSpectrum (E K) := (normIso K h2).inv (plus K (T K h2) c)
+  let b : PrimeSpectrum (E K) := (normIso K h2).inv (minus K (T K h2) c)
+  change (indicator K h2) a - (indicator K h2) b = 1
+  have h : idempotent K h2 ∉ a.asIdeal ↔ idempotent K h2 ∈ b.asIdeal :=
+    opposite_labels K h2 c
+  by_cases ha : idempotent K h2 ∈ a.asIdeal
+  · have hb : idempotent K h2 ∉ b.asIdeal := fun hb => h.mpr hb ha
+    have va : (indicator K h2) a = 0 := clopenIndicator_off (idempotent_mul K h2) a ha
+    have vb : (indicator K h2) b = 1 := clopenIndicator_on (idempotent_mul K h2) b hb
+    rw [va, vb] <;> exact (show (0 : ZMod 2) - 1 = 1 from by decide)
+  · have hb : idempotent K h2 ∈ b.asIdeal := h.mp ha
+    have va : (indicator K h2) a = 1 := clopenIndicator_on (idempotent_mul K h2) a ha
+    have vb : (indicator K h2) b = 0 := clopenIndicator_off (idempotent_mul K h2) b hb
+    rw [va, vb, sub_zero]
 
 end
 end ManuscriptAudit.NodalSwapConductorUnit

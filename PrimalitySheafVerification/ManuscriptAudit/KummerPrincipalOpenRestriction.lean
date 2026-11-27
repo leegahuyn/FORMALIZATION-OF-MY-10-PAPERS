@@ -110,7 +110,8 @@ theorem restriction_firstTerm_injective [IsIntegrallyClosed R] (hs : s ≠ 0)
   rw [coordinateUnitsIso_power (d := d), map_nsmul]
   have h : EU.hom (EU.inv (Additive.ofMul u)) = Additive.ofMul u :=
     Iso.inv_hom_id_apply EU _
-  rw [h, ← Additive.ofMul_pow]
+  rw [h]
+  change Additive.ofMul (u ^ d) = Additive.ofMul vR.toMul
   exact congrArg Additive.ofMul hu
 
 include k in

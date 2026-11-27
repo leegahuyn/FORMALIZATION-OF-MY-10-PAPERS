@@ -95,7 +95,7 @@ theorem normalizedProfile_eq (i : Fin 3) (z : ℍ) :
     simp only [profileQ, if_neg (by decide : (1 : Fin 3) ≠ 2), quarterParameter_fourth]
   · change normalizedProfile 2 z = profileQ 2 (quarterParameter z)
     rw [normalizedProfile_two, thetaHalfShift_eq_quarter_series z.im_pos]
-    simp only [profileQ, if_pos rfl, halfProfileQ, halfSum, halfTerm, quarterParameter]
+    simp only [profileQ, if_true, halfProfileQ, halfSum, halfTerm, quarterParameter]
 
 theorem profileQ_at_zero (i : Fin 3) :
     profileQ i 0 = if i = 2 then 0 else 1 := by

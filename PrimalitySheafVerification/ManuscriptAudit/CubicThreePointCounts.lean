@@ -48,8 +48,10 @@ private def nonverticalEquiv (A : E) :
     | ⟨c, x⟩ => ⟨⟨(x.val, c.val.2), by rw [x.property]; exact c.property.2⟩, by
         obtain ⟨r, hr, hr₀⟩ := c.property.1
         intro h0
-        have h : r ^ 3 = 0 := hr.trans (by simpa [h0] using x.property.symm)
-        exact (pow_ne_zero 3 hr₀) h⟩
+        have hx0 : x.val = 0 := h0
+        have hx : x.val ^ 3 = c.val.1 := x.property
+        rw [hx0, zero_pow (by decide : (3 : ℕ) ≠ 0)] at hx
+        exact (pow_ne_zero 3 hr₀) (hr.trans hx.symm)⟩
   left_inv xy := rfl
   right_inv := by
     rintro ⟨⟨⟨c, y⟩, hc⟩, ⟨x, hx⟩⟩
@@ -165,4 +167,3 @@ run_cmd do
     unless bad.isEmpty do
       throwError m!"{name} depends on unexpected axioms {bad}"
     logInfo m!"{name} uses {ax}"
-
