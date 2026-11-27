@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.RingTheory.Etale.StandardEtale
 
 /-! The Weierstrass projection is étale on its actual derivative open. -/
@@ -29,6 +30,13 @@ theorem projection_etale (W : WeierstrassCurve R) :
     Algebra.Etale (Polynomial R) (ProjectionChart W) := by
   exact Algebra.Etale.of_equiv (standardPair W).equivAwayAdjoinRoot
 
+/-- On spectra, the genuine derivative chart maps étale to the first-coordinate affine line. -/
+theorem projection_scheme_etale (W : WeierstrassCurve R) :
+    AlgebraicGeometry.Etale (AlgebraicGeometry.Spec.map
+      (CommRingCat.ofHom (algebraMap (Polynomial R) (ProjectionChart W)))) := by
+  apply (AlgebraicGeometry.HasRingHomProperty.Spec_iff (P := @AlgebraicGeometry.Etale)).mpr
+  exact RingHom.etale_algebraMap.mpr (projection_etale W)
+
 /-- Fixing the abscissa, the native derivative-open coordinate ring has unique square-zero lifts. -/
 theorem projection_square_zero_unique (W : WeierstrassCurve R)
     (B : Type*) [CommRing B] [Algebra (Polynomial R) B]
@@ -46,6 +54,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.Paper2WeierstrassEtaleProjection.projection_etale,
+      ``ManuscriptAudit.Paper2WeierstrassEtaleProjection.projection_scheme_etale,
       ``ManuscriptAudit.Paper2WeierstrassEtaleProjection.projection_square_zero_unique] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

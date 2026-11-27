@@ -48,7 +48,7 @@ def contraction : Triple A B →ₐ[A] Double A B :=
 @[simp] theorem second_apply (b : B) : second A B b = 1 ⊗ₜ[A] b := rfl
 
 @[simp] theorem multiplication_tmul (b c : B) :
-    multiplication A B (b ⊗ₜ[A] c) = b * c := Algebra.TensorProduct.lmul'_apply_tmul A _ _
+    multiplication A B (b ⊗ₜ[A] c) = b * c := Algebra.TensorProduct.lmul'_apply_tmul b c
 
 @[simp] theorem face01_tmul (b c : B) :
     face01 A B (b ⊗ₜ[A] c) = b ⊗ₜ[A] (c ⊗ₜ[A] 1) := by

@@ -33,7 +33,9 @@ private abbrev J := X.smallEtaleTopology
 private abbrev S := sequence X d
 
 /-- The actual additive Kummer boundary from coordinate units on an affine open. -/
-def boundary : Additive Rˣ →+ (S (X := X) d).X₁.H' 1 (Y j) :=
+def boundary (k : X ⟶ Spec (CommRingCat.of K))
+    (j : Spec (CommRingCat.of R) ⟶ X) [IsOpenImmersion j]
+    (d : ℕ) [NeZero (d : K)] (hd : 0 < d) : Additive Rˣ →+ (S (X := X) d).X₁.H' 1 (Y j) :=
   (boundaryAddHom (J (X := X)) (S (X := X) d) (sequence_shortExact k d hd) (Y j)).comp
     (coordinateUnitsIso d j).addCommGroupIsoToAddEquiv.symm.toAddMonoidHom
 

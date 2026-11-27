@@ -37,9 +37,10 @@ theorem six_of_coefficients (hr : r ∈ printedRows)
 private def basis (hr : r ∈ printedRows) (hl : l = 2 ∨ l = 3) :
     Basis (Fin 2) ℤ_[l] (Tate l (Points (r := r) L)) := by
   obtain ⟨h₂, h₃⟩ := small_char r.prime (ZMod r.prime) (printedRows_prime_at_least_five hr)
+  apply Classical.choice
   rcases hl with rfl | rfl
-  · exact twoAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)
-  · exact threeAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)
+  · exact ⟨twoAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)⟩
+  · exact ⟨threeAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)⟩
 
 /-- All nonsplit printed rows agree with the actual Tate powers at both coefficient primes. -/
 theorem six_nonsplit (hr : r ∈ printedRows) (hn : r.prime % 3 = 2) (hl : l = 2 ∨ l = 3) :

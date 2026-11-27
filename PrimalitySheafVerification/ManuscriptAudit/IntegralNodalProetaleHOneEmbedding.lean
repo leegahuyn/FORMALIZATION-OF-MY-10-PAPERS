@@ -49,7 +49,7 @@ def properEmbedding (p ℓ : ℕ) [Fact p.Prime] [Fact ℓ.Prime] (hp : 2 < p) :
     ℤ_[ℓ] →+ (geometricFiber p).EllAdicCohomology ℓ 1 :=
   let X := geometricFiber p
   letI : IsLocallyNoetherian X := LocallyOfFiniteType.isLocallyNoetherian (geometricToBase p)
-  let s := SchemeIsoSmallEtaleCohomology.schemeIsoCohomologyEquiv (projectiveIso p) (M ℓ) 1
+  let s := SmallEtaleEquivalenceCohomology.schemeIsoCohomologyEquiv (projectiveIso p) (M ℓ) 1
   let i := adicDirectImageIso X ℓ
   let c := EtaleProetaleHOneUniverseComparison.comparison X (X.ellAdicSheaf ℓ)
   c.comp ((Sheaf.H.map i.hom 1).comp (s.symm.toAddMonoidHom.comp
@@ -62,7 +62,7 @@ theorem properEmbedding_injective (p ℓ : ℕ) [Fact p.Prime] [Fact ℓ.Prime] 
     Function.Injective (properEmbedding p ℓ hp) := by
   let X := geometricFiber p
   letI : IsLocallyNoetherian X := LocallyOfFiniteType.isLocallyNoetherian (geometricToBase p)
-  let s := SchemeIsoSmallEtaleCohomology.schemeIsoCohomologyEquiv (projectiveIso p) (M ℓ) 1
+  let s := SmallEtaleEquivalenceCohomology.schemeIsoCohomologyEquiv (projectiveIso p) (M ℓ) 1
   let i := adicDirectImageIso X ℓ
   have hi : Function.LeftInverse (Sheaf.H.map i.inv 1) (Sheaf.H.map i.hom 1) := by
     intro z

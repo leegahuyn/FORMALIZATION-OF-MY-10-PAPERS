@@ -40,7 +40,7 @@ theorem weightedTerm_circle_integral (α : ℝ) (k m : ℕ) {r : ℝ} (hr : 0 < 
   change periodCoefficient⁻¹ * ((coefficient k m : ℂ) *
     ((periodCoefficient / (m.factorial : ℂ)) * iteratedDeriv m f 0)) = _
   have hDerivative : iteratedDeriv m f 0 = (α : ℂ) ^ m := by
-    have h := congrFun (Complex.iteratedDeriv_cexp_const_mul m (α : ℂ)) (0 : ℂ)
+    have h := congrFun (iteratedDeriv_cexp_const_mul m (α : ℂ)) (0 : ℂ)
     change iteratedDeriv m f 0 = (α : ℂ) ^ m * Complex.exp ((α : ℂ) * 0) at h
     simpa only [mul_zero, Complex.exp_zero, mul_one] using h
   rw [hDerivative]

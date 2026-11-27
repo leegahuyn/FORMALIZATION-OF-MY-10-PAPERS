@@ -48,8 +48,12 @@ private def kernelIso :
 private def labels :
     M →+ (sequence K M).X₃.obj.obj (op (identityObject (affineNode K))) where
   toFun := conductorLabel K M
-  map_zero' := by ext x; rfl
-  map_add' a b := by ext x; rfl
+  map_zero' := by
+    change ContinuousMap.const _ (0 : M) = (0 : ContinuousMap _ M)
+    exact ContinuousMap.ext fun _ ↦ rfl
+  map_add' a b := by
+    change ContinuousMap.const _ (a + b) = ContinuousMap.const _ a + ContinuousMap.const _ b
+    exact ContinuousMap.ext fun _ ↦ rfl
 
 private def affineClass (h2 : (2 : K) ≠ 0) :
     M →+ (F K M).H' 1 (Scheme.Etale.mk (j K)) :=

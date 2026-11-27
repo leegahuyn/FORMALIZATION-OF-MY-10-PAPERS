@@ -72,15 +72,17 @@ private theorem finite_tail_bound (t N : ℕ) (ht : 2 ≤ t) :
       have h := decay_telescope hN
       rw [Nat.cast_add] at h
       have h₁ : (n : ℝ) + (t : ℝ) - 1 = (n : ℝ) + ((t : ℝ) - 1) := by ring
-      have h₂ : (n : ℝ) + (t : ℝ) = (n : ℝ) + ((t : ℝ) - 1) + 1 := by ring
-      rw [← h₁, ← h₂]
+      have h₂ : (n : ℝ) + (t : ℝ) - 1 + 1 = (n : ℝ) + (t : ℝ) := by ring
+      rw [← h₁, h₂]
       exact h
     _ = (1 / 2 : ℝ) * (1 / ((t : ℝ) - 1) - 1 / ((N : ℝ) + ((t : ℝ) - 1))) := by
       rw [← Finset.mul_sum, finite_telescope]
     _ ≤ _ := by
+      have hN : 0 ≤ (N : ℝ) := Nat.cast_nonneg _
       have h : 0 ≤ 1 / ((N : ℝ) + ((t : ℝ) - 1)) :=
-        div_nonneg zero_le_one (by linarith [Nat.cast_nonneg (R := ℝ) N])
-      nlinarith only [h]
+        div_nonneg zero_le_one (by linarith)
+      rw [← mul_one_div (1 / 2 : ℝ) ((t : ℝ) - 1)]
+      exact mul_le_mul_of_nonneg_left (sub_le_self _ h) (by norm_num)
 
 theorem decay_tail_summable (t : ℕ) (ht : 2 ≤ t) : Summable (fun n => decay (n + t)) :=
   summable_of_sum_range_le (fun _ => decay_nonneg _) (fun N => finite_tail_bound t N ht)
@@ -91,7 +93,7 @@ theorem decay_tail_two_lt :
   have hTail : (∑' n : ℕ, decay (n + 3)) ≤ 1 / 4 := by
     apply Real.tsum_le_of_sum_range_le (fun _ => decay_nonneg _)
     intro N
-    simpa using finite_tail_bound 3 N (by decide)
+    convert finite_tail_bound 3 N (by decide) using 1 <;> norm_num
   have hTwo : decay 2 < 1 / 4 := by
     unfold decay
     norm_num only [Nat.cast_ofNat, show (2 : ℝ) ^ 2 = 4 by norm_num]
@@ -127,9 +129,9 @@ theorem signed_coefficient_pos (delta : ℕ → ℝ) (weights : ℕ → ℂ)
       _ ≤ ∑' n : ℕ, ‖T (n + 1)‖ := norm_tsum_le_tsum_norm hAbs
       _ ≤ ∑' n : ℕ, (2 * delta 1) * decay (n + 2) := hAbs.tsum_le_tsum hNorm hMaj
       _ = (2 * delta 1) * (∑' n : ℕ, decay (n + 2)) := tsum_mul_left
-      _ < delta 1 := by
-        have hh := mul_lt_mul_of_pos_left decay_tail_two_lt (mul_pos (by norm_num) hFirst)
-        linarith
+      _ < (2 * delta 1) * (1 / 2 : ℝ) :=
+        mul_lt_mul_of_pos_left decay_tail_two_lt (mul_pos (by norm_num : (0 : ℝ) < 2) hFirst)
+      _ = _ := by ring
   have hZero : T 0 = (delta 1 : ℂ) := by simp [T, hWeightOne]
   refine ⟨hSum, ?_⟩
   change 0 < (∑' n : ℕ, T n).re

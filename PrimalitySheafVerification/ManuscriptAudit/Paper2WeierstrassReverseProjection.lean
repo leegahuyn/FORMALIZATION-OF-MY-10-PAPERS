@@ -26,7 +26,7 @@ theorem swap_polynomial (W : WeierstrassCurve R) :
   unfold Affine.polynomial polynomialInX Cubic.toPoly
   simp only [map_add, map_sub, map_mul, map_pow, Bivariate.swap_C, Bivariate.swap_Y,
     Polynomial.map_add, Polynomial.map_pow, Polynomial.map_mul, Polynomial.map_C,
-    Polynomial.map_X, Cubic.a, Cubic.b, Cubic.c, Cubic.d, C_one, one_mul, C_sub]
+    Polynomial.map_X, Cubic.a, Cubic.b, Cubic.c, Cubic.d, map_one, one_mul, C_sub]
   ring
 
 /-- The actual original affine ring and the exchanged presentation describe the same curve. -/
@@ -54,7 +54,7 @@ theorem swapPresentation_x (W : WeierstrassCurve R) :
 theorem derivative_eval (W : WeierstrassCurve R) (x y : R) :
     (polynomialInX W).derivative.evalEval y x = -W.toAffine.polynomialX.evalEval x y := by
   rw [Affine.evalEval_polynomialX]
-  simp only [polynomialInX, Cubic.toPoly, Cubic.a, Cubic.b, Cubic.c, Cubic.d, C_one, one_mul,
+  simp only [polynomialInX, Cubic.toPoly, Cubic.a, Cubic.b, Cubic.c, Cubic.d, map_one, one_mul,
     derivative_add, derivative_C, derivative_C_mul, derivative_X_pow, derivative_X, mul_one,
     add_zero, evalEval_add, evalEval_mul, evalEval_pow, evalEval_X, evalEval_C, eval_add,
     eval_sub, eval_mul, eval_pow, eval_X, eval_C, eval_natCast]
@@ -72,6 +72,13 @@ abbrev ReverseProjectionChart (W : WeierstrassCurve R) :=
 theorem projection_etale (W : WeierstrassCurve R) :
     Algebra.Etale (Polynomial R) (ReverseProjectionChart W) :=
   Algebra.Etale.of_equiv (standardPair W).equivAwayAdjoinRoot
+
+/-- The second-coordinate projection on the native derivative open is a scheme étale morphism. -/
+theorem projection_scheme_etale (W : WeierstrassCurve R) :
+    AlgebraicGeometry.Etale (AlgebraicGeometry.Spec.map
+      (CommRingCat.ofHom (algebraMap (Polynomial R) (ReverseProjectionChart W)))) := by
+  apply (AlgebraicGeometry.HasRingHomProperty.Spec_iff (P := @AlgebraicGeometry.Etale)).mpr
+  exact RingHom.etale_algebraMap.mpr (projection_etale W)
 
 theorem projection_square_zero_unique (W : WeierstrassCurve R)
     (B : Type*) [CommRing B] [Algebra (Polynomial R) B]
@@ -93,6 +100,7 @@ run_cmd do
       ``ManuscriptAudit.Paper2WeierstrassReverseProjection.swapPresentation_x,
       ``ManuscriptAudit.Paper2WeierstrassReverseProjection.derivative_eval,
       ``ManuscriptAudit.Paper2WeierstrassReverseProjection.projection_etale,
+      ``ManuscriptAudit.Paper2WeierstrassReverseProjection.projection_scheme_etale,
       ``ManuscriptAudit.Paper2WeierstrassReverseProjection.projection_square_zero_unique] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

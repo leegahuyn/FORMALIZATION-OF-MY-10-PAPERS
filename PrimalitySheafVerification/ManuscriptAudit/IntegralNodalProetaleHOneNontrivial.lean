@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.IntegralNodalGeometricFiber
 import PrimalitySheafVerification.ManuscriptAudit.NodalProetaleHOneNontrivial
+import PrimalitySheafVerification.ManuscriptAudit.SchemeIsoSmallEtaleCohomology
 
 /-! Nontrivial native pro-étale adic H¹ on the literal proper odd
 geometric fibres of the same fixed integral nodal family. -/
@@ -34,7 +35,7 @@ theorem properHOne_nontrivial (p ℓ : ℕ) [Fact p.Prime] [Fact ℓ.Prime] (hp 
   have hm : m ≠ 0 := by
     simpa only [m, map_zero] using e.symm.injective.ne (one_ne_zero : (1 : ℤ_[ℓ]) ≠ 0)
   let F := (constantSheaf X.smallEtaleTopology AddCommGrpCat.{0}).obj M
-  let s := SchemeIsoSmallEtaleCohomology.schemeIsoCohomologyEquiv (projectiveIso p) M 1
+  let s := SmallEtaleEquivalenceCohomology.schemeIsoCohomologyEquiv (projectiveIso p) M 1
   letI := NodalProjectiveConductorClass.projectiveHOne_nontrivial (closureField p) M h2 m hm
   letI : Nontrivial (Sheaf.H F 1) := s.symm.injective.nontrivial
   let i := adicDirectImageIso X ℓ

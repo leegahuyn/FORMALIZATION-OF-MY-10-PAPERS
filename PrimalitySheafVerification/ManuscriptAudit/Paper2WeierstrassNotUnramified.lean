@@ -34,13 +34,13 @@ private def evaluation {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCu
 private theorem evaluation_x {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCurve K)
     (x y : R) (h : (W.map (algebraMap K R)).toAffine.Equation x y) :
     evaluation W x y h (AdjoinRoot.of W.toAffine.polynomial X) = x := by
-  unfold evaluation
+  dsimp only [evaluation]
   rw [AdjoinRoot.liftAlgHom_of, aeval_X]
 
 private theorem evaluation_y {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCurve K)
     (x y : R) (h : (W.map (algebraMap K R)).toAffine.Equation x y) :
     evaluation W x y h (AdjoinRoot.root W.toAffine.polynomial) = y := by
-  unfold evaluation
+  dsimp only [evaluation]
   rw [AdjoinRoot.liftAlgHom_root]
 
 /-- Evaluation on the actual affine coordinate algebra at the residual point. -/
