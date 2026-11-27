@@ -80,7 +80,7 @@ theorem chain_coordinates {A z : k} {term : Term} {u v : Fraction k}
   have he := (nonsingular_iff hΔ x y).mp hP
   induction chain with
   | identity =>
-    have hj : (scalar (1 : k)).evaluate t = (1 : L) := by simp
+    have hj : (scalar (1 : k)).evaluate (x ^ 3) = (1 : L) := by simp
     have hV : (scalar (1 : k)).ValidAt t := valid_polynomial _ _
     refine ⟨hV, hV, by simpa only [hj, mul_one] using hP, ?_⟩
     change Affine.Point.some x y hP = _
@@ -118,25 +118,32 @@ theorem chain_coordinates {A z : k} {term : Term} {u v : Fraction k}
   | @rotate f u v step ih =>
     obtain ⟨hu, hv, hQ, eQ⟩ := ih hGuard
     have hu' : (scalar z * u).ValidAt t := valid_mul (valid_polynomial _ _) hu
-    have hX : x * (scalar z * u).evaluate t = ι z * (x * u.evaluate t) := by
+    have hX : x * (scalar z * u).evaluate (x ^ 3) = ι z * (x * u.evaluate (x ^ 3)) := by
       rw [evaluate_mul, evaluate_scalar]
       ring
     have hR : (Curve (ι A)).Nonsingular (ι z * (x * u.evaluate t)) (y * v.evaluate t) := by
       exact ((nonsingular_iff hΔ _ _).mpr (by
-        rw [mul_pow, hz]
-        simpa only [one_mul] using (nonsingular_iff hΔ _ _).mp hQ))
-    refine ⟨hu', hv, by simpa only [hX] using hR, ?_⟩
+        rw [mul_pow (ι z) (x * u.evaluate t) 3, hz, one_mul]
+        exact (nonsingular_iff hΔ _ _).mp hQ))
+    have hNew : (Curve (ι A)).Nonsingular (x * (scalar z * u).evaluate (x ^ 3))
+        (y * v.evaluate (x ^ 3)) := by
+      rw [hX]
+      exact hR
+    refine ⟨hu', hv, hNew, ?_⟩
     change r (f.hom r P) = _
     rw [eQ, CubicCubeRotation.rotate_some, Affine.Point.some.injEq]
     exact ⟨hX.symm, rfl⟩
   | @neg f u v step ih =>
     obtain ⟨hu, hv, hQ, eQ⟩ := ih hGuard
     have hv' : (-v).ValidAt t := hv
-    have hY : (Curve (ι A)).negY (x * u.evaluate t) (y * v.evaluate t) = y * (-v).evaluate t := by
+    have hY : (Curve (ι A)).negY (x * u.evaluate (x ^ 3)) (y * v.evaluate (x ^ 3)) =
+        y * (-v).evaluate (x ^ 3) := by
       rw [CubicTriplingCoordinates.negY_eq, evaluate_neg]
       ring
     have hR := (Affine.nonsingular_neg ..).mpr hQ
-    refine ⟨hu, hv', by simpa only [← hY] using hR, ?_⟩
+    have hNew : (Curve (ι A)).Nonsingular (x * u.evaluate (x ^ 3))
+        (y * (-v).evaluate (x ^ 3)) := hY ▸ hR
+    refine ⟨hu, hv', hNew, ?_⟩
     change -(f.hom r P) = _
     rw [eQ, Affine.Point.neg_some, Affine.Point.some.injEq]
     exact ⟨rfl, hY⟩

@@ -37,6 +37,9 @@ instance : Mul (CoefficientFraction k) where
 instance : Div (CoefficientFraction k) where
   div f g := ⟨CubicCoefficientArithmetic.mul f.num g.den, CubicCoefficientArithmetic.mul f.den g.num⟩
 
+instance : Neg (CoefficientFraction k) where
+  neg f := ⟨CubicCoefficientArithmetic.neg f.num, f.den⟩
+
 instance : Pow (CoefficientFraction k) ℕ where
   pow f n := ⟨CubicCoefficientArithmetic.pow f.num n, CubicCoefficientArithmetic.pow f.den n⟩
 
@@ -58,29 +61,42 @@ noncomputable def toFraction (f : CoefficientFraction k) : Fraction k :=
 
 @[simp] theorem toFraction_add (f g : CoefficientFraction k) :
     (f + g).toFraction = f.toFraction + g.toFraction := by
-  change (⟨_, _⟩ : Fraction k) =
+  change (⟨expand (CubicCoefficientArithmetic.add (CubicCoefficientArithmetic.mul f.num g.den)
+      (CubicCoefficientArithmetic.mul g.num f.den)), expand (CubicCoefficientArithmetic.mul f.den g.den)⟩ : Fraction k) =
     ⟨expand f.num * expand g.den + expand g.num * expand f.den, expand f.den * expand g.den⟩
   simp only [CubicCoefficientArithmetic.expand_add, CubicCoefficientArithmetic.expand_mul]
 
 @[simp] theorem toFraction_sub (f g : CoefficientFraction k) :
     (f - g).toFraction = f.toFraction - g.toFraction := by
-  change (⟨_, _⟩ : Fraction k) =
+  change (⟨expand (CubicCoefficientArithmetic.sub (CubicCoefficientArithmetic.mul f.num g.den)
+      (CubicCoefficientArithmetic.mul g.num f.den)), expand (CubicCoefficientArithmetic.mul f.den g.den)⟩ : Fraction k) =
     ⟨expand f.num * expand g.den - expand g.num * expand f.den, expand f.den * expand g.den⟩
   simp only [CubicCoefficientArithmetic.expand_sub, CubicCoefficientArithmetic.expand_mul]
 
 @[simp] theorem toFraction_mul (f g : CoefficientFraction k) :
     (f * g).toFraction = f.toFraction * g.toFraction := by
-  change (⟨_, _⟩ : Fraction k) = ⟨expand f.num * expand g.num, expand f.den * expand g.den⟩
+  change (⟨expand (CubicCoefficientArithmetic.mul f.num g.num),
+      expand (CubicCoefficientArithmetic.mul f.den g.den)⟩ : Fraction k) =
+    ⟨expand f.num * expand g.num, expand f.den * expand g.den⟩
   simp only [CubicCoefficientArithmetic.expand_mul]
 
 @[simp] theorem toFraction_div (f g : CoefficientFraction k) :
     (f / g).toFraction = f.toFraction / g.toFraction := by
-  change (⟨_, _⟩ : Fraction k) = ⟨expand f.num * expand g.den, expand f.den * expand g.num⟩
+  change (⟨expand (CubicCoefficientArithmetic.mul f.num g.den),
+      expand (CubicCoefficientArithmetic.mul f.den g.num)⟩ : Fraction k) =
+    ⟨expand f.num * expand g.den, expand f.den * expand g.num⟩
   simp only [CubicCoefficientArithmetic.expand_mul]
+
+@[simp] theorem toFraction_neg (f : CoefficientFraction k) :
+    (-f).toFraction = -f.toFraction := by
+  change (⟨expand (CubicCoefficientArithmetic.neg f.num), expand f.den⟩ : Fraction k) =
+    ⟨-expand f.num, expand f.den⟩
+  simp only [CubicCoefficientArithmetic.expand_neg]
 
 @[simp] theorem toFraction_pow (f : CoefficientFraction k) (n : ℕ) :
     (f ^ n).toFraction = f.toFraction ^ n := by
-  change (⟨_, _⟩ : Fraction k) = ⟨expand f.num ^ n, expand f.den ^ n⟩
+  change (⟨expand (CubicCoefficientArithmetic.pow f.num n), expand (CubicCoefficientArithmetic.pow f.den n)⟩ : Fraction k) =
+    ⟨expand f.num ^ n, expand f.den ^ n⟩
   simp only [CubicCoefficientArithmetic.expand_pow]
 
 def Check (f g : CoefficientFraction k) : Prop :=

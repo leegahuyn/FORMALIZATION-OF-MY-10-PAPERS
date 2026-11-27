@@ -24,7 +24,7 @@ private def coordinateDifference : Q K :=
 
 private theorem coordinateDifference_ne_zero : coordinateDifference K ≠ 0 := by
   intro h
-  have h' := congrArg (MvPolynomial.tensorEquivSum (R := K) K Unit Unit) h
+  have h' := congrArg (MvPolynomial.tensorEquivSum (R := K) (S := K) (σ := Unit) (ι := Unit)) h
   simp only [coordinateDifference, map_sub, map_zero, MvPolynomial.tensorEquivSum_X_tmul_one,
     MvPolynomial.tensorEquivSum_one_tmul_X] at h'
   exact Sum.inl_ne_inr (MvPolynomial.X_injective (sub_eq_zero.mp h'))
@@ -40,7 +40,7 @@ theorem not_flat_parameter (φ : P K →ₐ[K] B)
   have hf : f.Flat := (RingHom.Flat.tensorProductMap hφ hφ).comp hμ
   letI : Algebra (Q K) B := f.toAlgebra
   letI : Module.Flat (Q K) B := hf
-  letI : IsDomain (Q K) := (MvPolynomial.tensorEquivSum (R := K) K Unit Unit).toRingEquiv.toMulEquiv.isDomain
+  letI : IsDomain (Q K) := (MvPolynomial.tensorEquivSum (R := K) (S := K) (σ := Unit) (ι := Unit)).toRingEquiv.toMulEquiv.isDomain
   let d := coordinateDifference K
   have hreg : IsSMulRegular (Q K) d := by
     intro a b h

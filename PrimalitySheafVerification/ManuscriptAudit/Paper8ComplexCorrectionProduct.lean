@@ -51,7 +51,8 @@ private theorem log_bound {q : ℂ} {r : ℝ} (hqr : ‖q‖ ≤ r) (h₁ : r < 
 
 private theorem majorant_summable {r : ℝ} (hr : 0 ≤ r) (h₁ : r < 1) :
     Summable (majorant r) := by
-  simpa only [majorant, pow_succ', mul_assoc] using
+  change Summable (fun n : ℕ => ((1 - r)⁻¹ / 2 + 1) * r ^ (n + 1))
+  simpa only [pow_succ', mul_assoc] using
     (summable_geometric_of_lt_one hr h₁).mul_left (((1 - r)⁻¹ / 2 + 1) * r)
 
 private theorem log_absolute_summable {q : ℂ} (hq : ‖q‖ < 1) :

@@ -56,7 +56,6 @@ def comparison (F : D X) : Sheaf.H ((directImage X).obj F) 1 →+ Sheaf.H F 1 :=
 
 /-- Actual direct-image degree-one cohomology embeds into pro-étale degree-one cohomology. -/
 theorem comparison_injective (F : D X) : Function.Injective (comparison X F) := by
-  apply Function.Injective.comp _ (ExtOneAdjunction.map_injective (adjunction X) (etaleZ X) F)
   have h : Function.LeftInverse
       ((Ext.mk₀ (constantIso X).hom).precomp F (zero_add 1))
       ((Ext.mk₀ (constantIso X).inv).precomp F (zero_add 1)) := by
@@ -64,7 +63,10 @@ theorem comparison_injective (F : D X) : Function.Injective (comparison X F) := 
     change (Ext.mk₀ (constantIso X).hom).comp
       ((Ext.mk₀ (constantIso X).inv).comp e (zero_add 1)) (zero_add 1) = e
     rw [Ext.mk₀_comp_mk₀_assoc, (constantIso X).hom_inv_id, Ext.mk₀_id_comp]
-  exact h.injective
+  intro a b hab
+  apply ExtOneAdjunction.map_injective (adjunction X) (etaleZ X) F
+  apply h.injective
+  exact hab
 
 variable (ℓ : ℕ) [Fact ℓ.Prime]
 

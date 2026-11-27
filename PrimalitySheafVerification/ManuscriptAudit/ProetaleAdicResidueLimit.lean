@@ -60,7 +60,10 @@ def lift : F ⟶ X.ellAdicSheaf ℓ where
         intro y
         change (compatibleAt X ℓ F ρ hρ V.unop (F.obj.map g x)).val n y =
           (sheafSectionsEquiv ℓ X V.unop ((X.ellAdicSheaf ℓ).obj.map g z)).val n y
-        rw [sheafSectionsEquiv_restrict ℓ X g.unop]
+        have hr := sheafSectionsEquiv_restrict ℓ X g.unop z n y
+        change (sheafSectionsEquiv ℓ X V.unop ((X.ellAdicSheaf ℓ).obj.map g z)).val n y =
+          (sheafSectionsEquiv ℓ X U.unop z).val n (g.unop.left y) at hr
+        rw [hr]
         change (ρ n).hom.app V (F.obj.map g x) y = (a (a.symm _)).val n (g.unop.left y)
         rw [AddEquiv.apply_symm_apply]
         exact congrArg (fun f : C(V.unop.left, ZMod (ℓ ^ n)) ↦ f y)

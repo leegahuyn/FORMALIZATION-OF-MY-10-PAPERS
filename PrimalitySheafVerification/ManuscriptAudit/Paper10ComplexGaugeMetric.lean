@@ -35,7 +35,7 @@ end Bilinear
 
 section Adjoint
 
-variable {L : Type*} [LieRing L] [Module ℂ L] [LieAlgebra ℂ L]
+variable {L : Type*} [LieRing L] [LieAlgebra ℂ L]
 
 /-- Even a real-valued positive pairing on the underlying additive group forces
 the full complex Lie bracket to vanish if all adjoint directions are skew. -/

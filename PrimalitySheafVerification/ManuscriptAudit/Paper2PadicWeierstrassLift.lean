@@ -61,7 +61,7 @@ theorem lift_second (W : WeierstrassCurve ℤ_[p]) {u v : ZMod p}
     rw [eval_y]
     simpa only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₃,
       WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆, map_add, map_mul, map_pow, map_sub,
-      hx, hy] using (Affine.equation_iff' _ u v).mp hEq
+      hx, hy] using (Affine.equation_iff' (W := (W.map red).toAffine) u v).mp hEq
   have hSimple : red ((yPolynomial W x).derivative.aeval y) ≠ 0 := by
     rw [derivative_y]
     simpa only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₃,
@@ -81,7 +81,7 @@ theorem lift_first (W : WeierstrassCurve ℤ_[p]) {u v : ZMod p}
     rw [eval_x]
     simpa only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₃,
       WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆, map_add, map_mul, map_pow, map_sub,
-      hx, hy] using (Affine.equation_iff' _ u v).mp hEq
+      hx, hy] using (Affine.equation_iff' (W := (W.map red).toAffine) u v).mp hEq
   have hSimple : red ((xPolynomial W y).derivative.aeval x) ≠ 0 := by
     rw [derivative_x]
     simpa only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₄,
@@ -109,7 +109,7 @@ private def coordinateLifts (u : ZMod p) : ℕ ↪ {x : ℤ_[p] // red x = u} :=
 /-- Each nonsingular affine residue point has infinitely many simultaneous p-adic lifts. -/
 theorem infinitely_many_lifts (W : WeierstrassCurve ℤ_[p]) {u v : ZMod p}
     (h : (W.map red).toAffine.Nonsingular u v) : Infinite (Lifts W u v) := by
-  obtain ⟨hEq, hX | hY⟩ := (Affine.nonsingular_iff' _ u v).mp h
+  obtain ⟨hEq, hX | hY⟩ := (Affine.nonsingular_iff' (W := (W.map red).toAffine) u v).mp h
   · let fy := coordinateLifts v
     let hLift (n : ℕ) := ExistsUnique.exists (lift_first W hEq hX (fy n).1 (fy n).2)
     let f (n : ℕ) : Lifts W u v :=
