@@ -21,7 +21,7 @@ variable (X : Scheme.{0})
 
 theorem map_power_apply (d n : ℕ) (a : Sheaf.H (unitSheaf X) n) :
     Sheaf.H.map (power X d) n a = d • a := by
-  let H := Sheaf.functorH (J X) n
+  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) n
   let A := H.obj (unitSheaf X)
   change (H.map (d • 𝟙 (unitSheaf X)) : A ⟶ A) a = d • a
   rw [Functor.map_nsmul, Functor.map_id]
@@ -30,6 +30,7 @@ theorem map_power_apply (d n : ℕ) (a : Sheaf.H (unitSheaf X) n) :
 variable {K : Type} [Field K] (k : X ⟶ Spec (CommRingCat.of K))
   (d : ℕ) [NeZero d] [NeZero (d : K)] [HasEnoughRootsOfUnity K d]
 
+include k in
 /-- Native degree-one root cohomology vanishes if coordinate powers
 are surjective in degree zero and the unit group in degree one has
 no nonzero d-torsion. -/
@@ -46,12 +47,12 @@ theorem roots_HOne_subsingleton
   rw [ShortComplex.ab_exact_iff_function_exact] at he₀ he₁
   have ex₀ : Function.Exact (Sheaf.H.map (power X d) 0) δ := he₀
   have ex₁ : Function.Exact δ (Sheaf.H.map (kernel.ι (power X d)) 1) := he₁
-  let r := ((Sheaf.functorH (J X) 1).mapIso (constantKernelIso k d)).addCommGroupIsoToAddEquiv
+  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) 1
+  let r := (H.mapIso (constantKernelIso k d)).addCommGroupIsoToAddEquiv
   refine subsingleton_of_forall_eq 0 (fun a ↦ ?_)
   have hz : Sheaf.H.map (kernel.ι (power X d)) 1 (r a) = 0 := by
     apply hOne
     rw [← map_power_apply X d 1, ← Sheaf.H.map_comp_apply, kernel.condition]
-    let H := Sheaf.functorH (J X) 1
     change (H.map (0 : kernel (power X d) ⟶ unitSheaf X)) (r a) = 0
     rw [Functor.map_zero]
     rfl

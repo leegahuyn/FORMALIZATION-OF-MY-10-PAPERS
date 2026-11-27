@@ -22,7 +22,7 @@ def restrictionUnitsIso :
   (sheafToPresheaf (Scheme.ProEt.topology U) AddCommGrpCat.{1}).preimageIso
     (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by
       intro A B f
-      rw [Category.comp_id, Category.id_comp] <;> rfl))
+      simp only [Iso.refl_hom, Category.comp_id, Category.id_comp] <;> rfl))
 
 end
 end ManuscriptAudit.ProetaleUnitRestriction

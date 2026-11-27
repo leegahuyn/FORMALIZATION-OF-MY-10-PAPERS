@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FinCases
 
@@ -19,7 +21,10 @@ theorem rotation_mul_linear (r : R) (hr : r ^ 2 + r + 1 = 0) (a b : ℤ) :
     calc
       r ^ 2 = (r ^ 2 + r + 1) - r - 1 := by abel
       _ = -r - 1 := by rw [hr, zero_sub]
-  rw [mul_add, mul_smul_comm, mul_smul_comm, mul_one, ← pow_two, h₂, smul_sub, smul_neg,
+  let f : R →+ R := ⟨fun x => r * x, mul_zero r, mul_add r⟩
+  have hZ (c : ℤ) (x : R) : r * (c • x) = c • (r * x) :=
+    map_zsmul f x c
+  rw [mul_add, hZ a 1, hZ b r, mul_one, ← pow_two, h₂, smul_sub, smul_neg,
     neg_smul, sub_smul]
   abel
 

@@ -13,13 +13,13 @@ noncomputable section
 
 variable {V : Type*} [AddCommGroup V] [Module (ZMod 4) V]
 
-private def coordinates (B : Basis (Fin 2) (ZMod 4) V) : V ≃ₗ[ZMod 4] Coordinates :=
+def coordinates (B : Basis (Fin 2) (ZMod 4) V) : V ≃ₗ[ZMod 4] Coordinates :=
   B.equivFun.trans (LinearEquiv.finTwoArrow (ZMod 4) (ZMod 4))
 
 private theorem coordinates_apply (B : Basis (Fin 2) (ZMod 4) V) (x : V) :
     coordinates B x = (B.repr x 0, B.repr x 1) := rfl
 
-private theorem coordinates_action (B : Basis (Fin 2) (ZMod 4) V)
+theorem coordinates_action (B : Basis (Fin 2) (ZMod 4) V)
     (S : Module.End (ZMod 4) V) (h₀ : S (B 0) = B 1) (h₁ : S (B 1) = -B 0 - B 1)
     (a b : ZMod 4) (x : V) :
     coordinates B ((a • (1 : Module.End (ZMod 4) V) + b • S) x) =
@@ -36,7 +36,7 @@ private theorem coordinates_action (B : Basis (Fin 2) (ZMod 4) V)
   rw [hSx]
   apply Prod.ext <;> simp [coordinates_apply, action, Basis.repr_self, p, q, smul_eq_mul] <;> ring
 
-private theorem fixed_card (e : V ≃ Coordinates) (F : V → V)
+theorem fixed_card (e : V ≃ Coordinates) (F : V → V)
     (M : Coordinates → Coordinates) (h : ∀ x, e (F x) = M (e x)) :
     Nat.card {x : V // F x = x} = fixedCount M := by
   let ee : {x : V // F x = x} ≃ {x : Coordinates // M x = x} :=

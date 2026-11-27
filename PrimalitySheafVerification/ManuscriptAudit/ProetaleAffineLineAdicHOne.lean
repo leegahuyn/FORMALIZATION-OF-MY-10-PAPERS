@@ -24,8 +24,10 @@ theorem finiteResidue_HOne_subsingleton (n : ℕ) :
     Subsingleton (Sheaf.H (finiteCoefficient (X K) ℓ n) 1) := by
   letI : NeZero ((ℓ ^ n : ℕ) : K) :=
     ⟨by rw [Nat.cast_pow]; exact pow_ne_zero n (NeZero.ne (ℓ : K))⟩
-  let e := ((Sheaf.functorH (Scheme.ProEt.topology (X K)) 1).mapIso
-    (nativeResidueIso (X K) ℓ n)).addCommGroupIsoToAddEquiv
+  let J := Scheme.ProEt.topology (X K)
+  let A := AddCommGrpCat.{1}
+  let H : Sheaf J A ⥤ A := Sheaf.functorH J 1
+  let e := (H.mapIso (nativeResidueIso (X K) ℓ n)).addCommGroupIsoToAddEquiv
   have h := ProetaleAffineLineCyclicHOne.affineLine_HOne_subsingleton K (ℓ ^ n)
   exact ⟨fun a b ↦ e.symm.injective (h.elim _ _)⟩
 

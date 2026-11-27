@@ -32,8 +32,8 @@ private theorem fix_two_of_four {G : Type*} [AddCommGroup G] (f : AddMonoid.End 
     change (4 : ℕ) • P.val = 0
     rw [show (4 : ℕ) = 2 * 2 by decide, mul_nsmul', h2, nsmul_zero]⟩
   have hQ : (2 : ℕ) • Q = 0 := Subtype.ext h2
-  exact ⟨Subtype.ext (congrArg Subtype.val (h Q hQ).1),
-    Subtype.ext (congrArg Subtype.val (h Q hQ).2)⟩
+  exact ⟨Subtype.ext (congrArg (fun R : Torsion 4 G => R.val) (h Q hQ).1),
+    Subtype.ext (congrArg (fun R : Torsion 4 G => R.val) (h Q hQ).2)⟩
 
 private theorem finite_points {E : Type*} [Field E] [Fintype E] [DecidableEq E] (B : E) :
     Finite (Curve B).Point := by
@@ -127,7 +127,7 @@ theorem native_determinant_eq_card {A z : K}
     intro he
     exact h₂E ((ringChar.spec E 2).mpr (by simpa only [he] using (dvd_rfl : (2 : ℕ) ∣ 2)))
   obtain ⟨d, hd⟩ := FiniteField.exists_nonsquare hchar
-  obtain ⟨s, hs⟩ := FiniteField.odd_card_of_char_ne_two hchar
+  have hOdd := FiniteField.odd_card_of_char_ne_two hchar
   have hzE := hz.map_of_injective (algebraMap K E).injective
   have hdv : 3 ∣ Fintype.card E - 1 := by
     rw [hzE.eq_orderOf]

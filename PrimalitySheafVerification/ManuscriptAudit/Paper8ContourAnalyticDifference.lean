@@ -112,7 +112,11 @@ theorem outer_hasDerivAt_zero (S : ∀ k : ℕ, Finset (Fin (2 * k))) :
   apply hT.congr'
   have hP : ({0}ᶜ : Set ℂ) ∈ 𝓝[≠] (0 : ℂ) := self_mem_nhdsWithin
   filter_upwards [hP] with q hq
-  have hq0 : q ≠ 0 := fun he => (mem_compl_iff.mp hq) (mem_singleton_iff.mpr he)
+  have hq0 : q ≠ 0 := by
+    intro he
+    change q ∉ ({0} : Set ℂ) at hq
+    apply hq
+    simpa only [Set.mem_singleton_iff] using he
   simp only [outerDifference, zero_add, mul_zero, zero_mul, sub_zero, smul_eq_mul]
   field_simp [hq0] <;> ring
 

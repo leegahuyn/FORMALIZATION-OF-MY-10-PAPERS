@@ -6,7 +6,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CubicCubeRotation
 
 namespace ManuscriptAudit.CubicOrdinatePreservingTwist
 
-open WeierstrassCurve CubicCurvePoints CubicDoublingCoordinates
+open WeierstrassCurve FiniteFieldPointCount CubicThreeTorsionOrdinate CubicDoublingCoordinates
 open CubicPointScaling CubicFrobeniusSexticTwists
 
 noncomputable section

@@ -101,6 +101,14 @@ def punctureNormalizationZIso :
         · simp }
   exact E ≪≫ relativeNormalizationZIso K
 
+/-- The comparison remains over the actual affine Z chart. -/
+theorem punctureNormalizationZIso_hom_snd :
+    (punctureNormalizationZIso K).hom ≫ pullback.snd (normalizationMap K) (affineOpen K) =
+      (puncturedZ_toAffine K).fromNormalization := by
+  simp only [punctureNormalizationZIso, relativeNormalizationZIso, Iso.trans_hom, asIso_hom,
+    Category.assoc, normalizationMap, Scheme.Hom.normalizationPullback_snd,
+    Scheme.Hom.normalizationDesc_comp]
+
 end
 end ManuscriptAudit.NodalNormalizationZChart
 
@@ -110,7 +118,8 @@ run_cmd do
   for name in [``ManuscriptAudit.NodalNormalizationZChart.smoothZChartIso_snd,
       ``ManuscriptAudit.NodalNormalizationZChart.smoothZChartIso_fst,
       ``ManuscriptAudit.NodalNormalizationZChart.relativeNormalizationZIso,
-      ``ManuscriptAudit.NodalNormalizationZChart.punctureNormalizationZIso] do
+      ``ManuscriptAudit.NodalNormalizationZChart.punctureNormalizationZIso,
+      ``ManuscriptAudit.NodalNormalizationZChart.punctureNormalizationZIso_hom_snd] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

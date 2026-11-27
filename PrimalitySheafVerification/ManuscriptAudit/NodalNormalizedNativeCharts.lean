@@ -9,7 +9,7 @@ displayed principal localization of the Y chart. -/
 namespace ManuscriptAudit.NodalNormalizedNativeCharts
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
-open NodalProjectiveClosure (projectiveNode affineOpen)
+open NodalProjectiveClosure (projectiveNode affineOpen affineNode)
 open NodalProjectiveNormalization (normalizedNode normalizationMap normalizationYChartIso)
 open NodalNormalizationZPolynomial (normalizationZPolynomialIso)
 open NodalProperYChart (chartOpen)
@@ -45,8 +45,8 @@ theorem yToNormalized_isPullback :
   let e := normalizationYChartIso K
   refine (IsPullback.of_hasPullback (m K) (y K)).of_iso' e.symm (Iso.refl _)
     (Iso.refl _) (Iso.refl _) ?_ ?_ ?_ ?_
-  · simp only [Iso.symm_hom, Iso.refl_hom, Category.comp_id, yToNormalized]
-  · simp only [Iso.symm_hom, Iso.refl_hom, Category.comp_id, ← y_chart_iso_hom,
+  · simp only [e, Iso.symm_hom, Iso.refl_hom, Category.comp_id, yToNormalized]
+  · simp only [e, Iso.symm_hom, Iso.refl_hom, Category.comp_id, ← y_chart_iso_hom,
       Iso.inv_hom_id]
   · simp
   · simp
@@ -58,7 +58,7 @@ abbrev zToNormalized : Spec (CommRingCat.of (Polynomial K)) ⟶ normalizedNode K
 
 instance zToNormalized_open : IsOpenImmersion (zToNormalized K h2) := inferInstance
 
-abbrev zToAffine : Spec (CommRingCat.of (Polynomial K)) ⟶ _ :=
+abbrev zToAffine : Spec (CommRingCat.of (Polynomial K)) ⟶ affineNode K :=
   (normalizationZPolynomialIso K h2).inv ≫ pullback.snd (m K) (z K)
 
 theorem zToNormalized_isPullback :
@@ -66,8 +66,8 @@ theorem zToNormalized_isPullback :
   let e := normalizationZPolynomialIso K h2
   refine (IsPullback.of_hasPullback (m K) (z K)).of_iso' e.symm (Iso.refl _)
     (Iso.refl _) (Iso.refl _) ?_ ?_ ?_ ?_
-  · simp only [Iso.symm_hom, Iso.refl_hom, Category.comp_id, zToNormalized]
-  · simp only [Iso.symm_hom, Iso.refl_hom, Category.comp_id, zToAffine]
+  · simp only [e, Iso.symm_hom, Iso.refl_hom, Category.comp_id, zToNormalized]
+  · simp only [e, Iso.symm_hom, Iso.refl_hom, Category.comp_id, zToAffine]
   · simp
   · simp
 

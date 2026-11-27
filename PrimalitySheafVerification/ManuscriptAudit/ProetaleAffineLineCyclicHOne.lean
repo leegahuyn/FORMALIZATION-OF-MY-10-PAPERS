@@ -59,8 +59,8 @@ theorem roots_HOne_subsingleton (d : ℕ) [NeZero d] [NeZero (d : K)]
     h.extClass.postcomp Z (show 0 + 1 = 1 by rfl)
   have h₀' : Function.Exact (Sheaf.H.map (power X d) 0) δ := h₀
   have h₁' : Function.Exact δ (Sheaf.H.map (kernel.ι (power X d)) 1) := h₁
-  let r := ((Sheaf.functorH (J X) 1).mapIso
-    (constantKernelIso (toField (K := K) A) d)).addCommGroupIsoToAddEquiv
+  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) 1
+  let r := (H.mapIso (constantKernelIso (toField (K := K) A) d)).addCommGroupIsoToAddEquiv
   have hUn := ProetalePIDUnitHOne.HOne_subsingleton A
   refine subsingleton_of_forall_eq 0 (fun a ↦ ?_)
   have hz : Sheaf.H.map (kernel.ι (power X d)) 1 (r a) = 0 := hUn.elim _ _
@@ -77,7 +77,7 @@ theorem roots_HOne_subsingleton (d : ℕ) [NeZero d] [NeZero (d : K)]
   apply r.injective
   rw [map_zero, ← hy, hy₀]
 
-variable (K : Type) [Field K] [IsAlgClosed K]
+variable (K) [IsAlgClosed K]
 
 /-- Native pro-étale degree-one cohomology of the actual affine line
 vanishes for every positive cyclic coefficient order invertible in K. -/
@@ -89,8 +89,11 @@ theorem affineLine_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :
     (CuspRootCoefficients.rootsOfUnityEquivZMod K d).toAdditive
   let v : ULift.{1} (Additive (rootsOfUnity d K)) ≃+ ULift.{1} (ZMod d) :=
     AddEquiv.ulift.trans (u.trans AddEquiv.ulift.symm)
-  let q := (constantSheaf (J (spectrum (Polynomial K))) G).mapIso v.toAddCommGrpIso
-  let e := ((Sheaf.functorH _ 1).mapIso q).addCommGroupIsoToAddEquiv
+  let L := J (spectrum (Polynomial K))
+  let i : coefficientGroup K d ≅ AddCommGrpCat.of (ULift.{1} (ZMod d)) := v.toAddCommGrpIso
+  let q := (constantSheaf L G).mapIso i
+  let H : Sheaf L G ⥤ G := Sheaf.functorH L 1
+  let e := (H.mapIso q).addCommGroupIsoToAddEquiv
   have h := roots_HOne_subsingleton (K := K) (Polynomial K) d
     (CuspPicard.paper2_polynomial_unit_power_surjective K d (Nat.pos_of_ne_zero (NeZero.ne d)))
   exact ⟨fun a b ↦ e.symm.injective (h.elim _ _)⟩

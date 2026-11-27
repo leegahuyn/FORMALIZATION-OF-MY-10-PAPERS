@@ -61,7 +61,8 @@ private theorem restricted_HOne_subsingleton (M : Type) [AddCommGroup M]
   let A : G := AddCommGrpCat.of (ULift.{1} M)
   let hIso : (R j).obj (constant X M) ≅ constant U M :=
     (restrictionConstantIso.{0} j).app A
-  let e := ((Sheaf.functorH (J U) 1).mapIso hIso).addCommGroupIsoToAddEquiv
+  let H : Sheaf (J U) G ⥤ G := Sheaf.functorH (J U) 1
+  let e := (H.mapIso hIso).addCommGroupIsoToAddEquiv
   exact ⟨fun a b ↦ e.injective (h.elim _ _)⟩
 
 local instance : EnoughInjectives (Sheaf (J X) G) :=

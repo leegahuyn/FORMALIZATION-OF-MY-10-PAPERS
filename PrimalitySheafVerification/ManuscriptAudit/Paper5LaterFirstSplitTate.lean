@@ -7,7 +7,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySixtyOneFrobeniu
 
 namespace ManuscriptAudit.Paper5LaterFirstSplitTate
 
-open WeierstrassCurve CubicCubeRotation CubicDoublingCoordinates
+open WeierstrassCurve FiniteFieldPointCount CubicThreeTorsionOrdinate CubicThreeTorsionCard
+open CubicCubeRotation CubicDoublingCoordinates
 open CubicFrobeniusSexticTwists CubicRotationCombination PowerTateModule
 
 noncomputable section
