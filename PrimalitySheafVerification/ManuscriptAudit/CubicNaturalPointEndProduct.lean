@@ -32,9 +32,10 @@ theorem eq_zero_or_eq_zero_of_composite (D E : Family K A)
     apply eq_zero_of_two_torsion_generic D h₂ h₃ hA
     have h' : (2 : ℕ) • D.atField (Model A) P.val = 0 := h
     rw [hP] at h'
-    have hEval := (eval_transcendental (double D) h₂ h₃ hA hxy hx).mp (by
-      simpa only [double, AddMonoidHom.nsmul_apply] using h')
-    simpa only [double, AddMonoidHom.nsmul_apply] using hEval
+    have hAt : (double D).atField (Model A) (.some x y hxy) = 0 := by
+      change (2 : ℕ) • D.atField (Model A) (.some x y hxy) = 0
+      exact h'
+    exact (eval_transcendental (double D) h₂ h₃ hA hxy hx).mp hAt
 
 end
 

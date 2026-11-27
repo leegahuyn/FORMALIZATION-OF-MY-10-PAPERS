@@ -33,11 +33,14 @@ theorem horizontal_mode_energy_bound (H : ℂ → ℂ) (frequency : ℝ)
   have hU : IsOpen {z : ℂ | 0 < z.im} := isOpen_lt continuous_const Complex.continuous_im
   have hcL : Continuous L := by
     refine continuous_iff_continuousAt.mpr (fun x => ?_)
-    have hIn : (x : ℂ) + (y : ℂ) * Complex.I ∈ {z : ℂ | 0 < z.im} := by
-      simpa [Complex.mul_im] using hy
-    have hc := hH.continuousOn.continuousAt (hU.mem_nhds hIn)
-    exact hc.comp (by fun_prop : ContinuousAt
-      (fun t : ℝ => (t : ℂ) + (y : ℂ) * Complex.I) x)
+    let γ (t : ℝ) : ℂ := (t : ℂ) + (y : ℂ) * Complex.I
+    have hIn : γ x ∈ {z : ℂ | 0 < z.im} := by
+      simpa [γ, Complex.mul_im] using hy
+    have hc : ContinuousAt H (γ x) :=
+      hH.continuousOn.continuousAt (hU.mem_nhds hIn)
+    have hp : ContinuousAt γ x := by unfold γ; fun_prop
+    change ContinuousAt (H ∘ γ) x
+    exact hc.comp hp
   have hV : Continuous v := hcL.norm
   have hPhase (x : ℝ) : ‖Complex.exp ((frequency : ℂ) * Complex.I * (x : ℂ))‖ = 1 := by
     rw [Complex.norm_exp]

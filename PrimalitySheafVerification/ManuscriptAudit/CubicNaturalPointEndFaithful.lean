@@ -90,7 +90,9 @@ theorem eq_zero_of_two_torsion_generic (D : Family K A)
     (hGeneric : (2 : ℕ) • D.atField (Model A) (genericPoint A h₂ h₃ hA) = 0) :
     D.atField L = 0 := by
   have hD : (double D).atField L = 0 := eq_zero_of_generic (double D) h₂ h₃ hA
-    (by simpa only [double, AddMonoidHom.nsmul_apply] using hGeneric)
+    (by
+      change (2 : ℕ) • D.atField (Model A) (genericPoint A h₂ h₃ hA) = 0
+      exact hGeneric)
   have h₂' : (2 : L) ≠ 0 := by
     simpa only [map_ofNat] using (map_ne_zero (algebraMap K L)).mpr h₂
   have h₃' : (3 : L) ≠ 0 := by

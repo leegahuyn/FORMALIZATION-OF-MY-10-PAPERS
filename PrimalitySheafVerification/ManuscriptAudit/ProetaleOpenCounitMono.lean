@@ -84,13 +84,13 @@ theorem extensionRestrictionMap_isIso (F : Sheaf (J (X := X)) A)
     (h : Presheaf.IsLocallySurjective (J (X := X)) (rawCounit j F)) :
     IsIso (extensionRestrictionMap j F) := by
   letI := h
-  letI : Presheaf.IsLocallyInjective (J (X := X)) (rawCounit j F) where
-    equalizerSieve_mem {W} a b hab := by
-      have hm := (NatTrans.mono_iff_mono_app (rawCounit j F)).mp (raw_mono j F) (op W)
-      have hEq := (AddCommGrpCat.mono_iff_injective _).mp hm hab
-      subst b
-      rw [Presheaf.equalizerSieve_self_eq_top]
-      exact (J (X := X)).top_mem _
+  letI : Presheaf.IsLocallyInjective (J (X := X)) (rawCounit j F) := ⟨by
+    intro W a b hab
+    have hm := (NatTrans.mono_iff_mono_app (rawCounit j F)).mp (raw_mono j F) (op W)
+    have hEq := (AddCommGrpCat.mono_iff_injective _).mp hm hab
+    subst b
+    rw [Presheaf.equalizerSieve_self_eq_top]
+    exact (J (X := X)).top_mem _⟩
   let Q := presheafToSheaf (J (X := X)) A
   letI : IsIso (Q.map (rawCounit j F)) :=
     ((J (X := X)).W_iff (rawCounit j F)).mp

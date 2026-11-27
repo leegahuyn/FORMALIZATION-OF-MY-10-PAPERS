@@ -13,7 +13,6 @@ of k.
 namespace ManuscriptAudit.Paper8OddReducedLevelEightRows
 
 open Matrix Paper8NormalizedKloostermanRows Paper8OddCrossCuspRows
-open Paper8OddCrossCuspNormalization (rightTranslation_entries)
 open scoped MatrixGroups
 
 def halfCuspMatrix : SL(2, ℤ) :=
@@ -29,21 +28,20 @@ theorem halfTranslate_entries (A : SL(2, ℤ)) (m : ℤ) :
     rw [Matrix.SpecialLinearGroup.coe_inv, Matrix.adjugate_fin_two]
     ext i j
     fin_cases i <;> fin_cases j <;> norm_num [halfCuspMatrix]
-  have hE := rightTranslation_entries A m
-  let B := A * ModularGroup.T ^ m
   constructor
-  · change (B.1 * (halfCuspMatrix⁻¹).1) 1 0 = _
-    rw [hInv]
-    simp [Matrix.mul_apply, Fin.sum_univ_two, hE.2.1, hE.2.2, B] <;> ring
-  · change (B.1 * (halfCuspMatrix⁻¹).1) 1 1 = _
-    rw [hInv]
-    simp [Matrix.mul_apply, Fin.sum_univ_two, hE.2.2, B]
+  · change ((A.1 * (ModularGroup.T ^ m).1) * (halfCuspMatrix⁻¹).1) 1 0 = _
+    rw [hInv, ModularGroup.coe_T_zpow]
+    simp [Matrix.mul_apply, Fin.sum_univ_two] <;> ring
+  · change ((A.1 * (ModularGroup.T ^ m).1) * (halfCuspMatrix⁻¹).1) 1 1 = _
+    rw [hInv, ModularGroup.coe_T_zpow]
+    simp [Matrix.mul_apply, Fin.sum_univ_two, add_comm]
 
 theorem levelEight_iff {k : ℕ} (A : NormalizedRow (2 * k)) (m : ℤ) :
     halfTranslate A.1 m ∈ CongruenceSubgroup.Gamma0 8 ↔
       (4 : ℤ) ∣ (k : ℤ) - (A.1 1 1 + 2 * (k : ℤ) * m) := by
   rw [CongruenceSubgroup.Gamma0_mem, ZMod.intCast_zmod_eq_zero_iff_dvd,
-    (halfTranslate_entries A.1 m).1, A.property.1, Nat.cast_mul, Nat.cast_ofNat]
+    (halfTranslate_entries A.1 m).1]
+  simp only [A.property.1, Nat.cast_mul, Nat.cast_ofNat]
   have hEq : 2 * (k : ℤ) - 2 * (A.1 1 1 + 2 * (k : ℤ) * m) =
       2 * ((k : ℤ) - (A.1 1 1 + 2 * (k : ℤ) * m)) := by ring
   rw [hEq]
@@ -86,7 +84,8 @@ theorem halfTranslate_character {k : ℕ} (A : NormalizedRow (2 * k)) (m : ℤ)
     chiFour (halfTranslate A.1 m 1 1 : ZMod 4) = chiFour (k : ZMod 4) := by
   have hf := (ZMod.intCast_zmod_eq_zero_iff_dvd _ 4).2 ((levelEight_iff A m).1 hm)
   rw [Int.cast_sub, sub_eq_zero] at hf
-  rw [(halfTranslate_entries A.1 m).2, A.property.1, Nat.cast_mul, Nat.cast_ofNat]
+  rw [(halfTranslate_entries A.1 m).2]
+  simp only [A.property.1, Nat.cast_mul, Nat.cast_ofNat]
   exact congrArg chiFour hf.symm
 
 end ManuscriptAudit.Paper8OddReducedLevelEightRows

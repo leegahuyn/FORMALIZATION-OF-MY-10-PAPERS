@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Tactic.LinearCombination
 
@@ -85,6 +85,8 @@ theorem vertical_adjoint {a b : ℝ} (ha : 0 < a) (hab : a ≤ b)
       ∫ t in a..b, -(star (f' t)*g t*w t) - star (f t)*g t*w' t := by
     apply intervalIntegral.integral_congr
     intro t ht
+    change star (-(t : ℂ)*f' t+f t)*g t/(t : ℂ)^2 =
+      -(star (f' t)*g t*w t) - star (f t)*g t*w' t
     simp only [star_add, star_mul, star_neg, Complex.conj_ofReal, w, w']
     field_simp [hT t ht] <;> ring
   have hFc : ContinuousOn (fun t => star (f t)) (uIcc a b) :=
@@ -92,9 +94,16 @@ theorem vertical_adjoint {a b : ℝ} (ha : 0 < a) (hab : a ≤ b)
   have hF'c : ContinuousOn (fun t => star (f' t)) (uIcc a b) :=
     Complex.conjCLE.continuous.comp_continuousOn hf'
   have hGc : ContinuousOn g (uIcc a b) := fun t ht => (hg t ht).continuousAt.continuousWithinAt
-  rw [hL, hR, intervalIntegral.integral_sub (((hF'c.mul hGc).mul hWC).neg.intervalIntegrable)
-    (((hFc.mul hGc).mul hW'C).intervalIntegrable), intervalIntegral.integral_neg]
-  exact hParts
+  let F : ℝ → ℂ := fun t => star (f' t)*g t*w t
+  let A : ℝ → ℂ := fun t => star (f t)*g t*w' t
+  have hF : IntervalIntegrable F volume a b := ((hF'c.mul hGc).mul hWC).intervalIntegrable
+  have hA : IntervalIntegrable A volume a b := ((hFc.mul hGc).mul hW'C).intervalIntegrable
+  rw [hL, hR]
+  have hInt : (∫ t in a..b, -F t - A t) =
+      (∫ t in a..b, -F t) - ∫ t in a..b, A t :=
+    intervalIntegral.integral_sub hF.neg hA
+  rw [intervalIntegral.integral_neg] at hInt
+  exact hParts.trans hInt.symm
 
 /-- The horizontal derivative times an imaginary scalar is its actual periodic formal adjoint. -/
 theorem horizontal_adjoint {a b : ℝ} (f f' g g' : ℝ → ℂ) (c : ℂ)
@@ -120,6 +129,7 @@ theorem horizontal_adjoint {a b : ℝ} (f f' g g' : ℝ → ℂ) (c : ℂ)
       rw [← intervalIntegral.integral_const_mul]
       apply intervalIntegral.integral_congr
       intro t _
+      change star c * (star (f' t) * g t) = star (c * f' t) * g t
       rw [star_mul]
       ring
 

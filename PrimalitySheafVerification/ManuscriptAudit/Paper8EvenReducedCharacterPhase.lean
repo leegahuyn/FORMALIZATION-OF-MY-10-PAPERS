@@ -35,7 +35,7 @@ private theorem i_pow_odd_character (n : ℕ) (hOdd : Odd n) :
     simp [h, hCast, chiFour]
   · have hCast : (n : ZMod 4) = (3 : ℕ) := (ZMod.natCast_eq_natCast_iff' n 3 4).2 (by simpa using h)
     rw [h, hCast, Complex.I_pow_three]
-    have hChi : chiFour (3 : ZMod 4) = -1 := by decide
+    have hChi : chiFour ((3 : ℕ) : ZMod 4) = -1 := by decide
     rw [hChi]
     simp
 

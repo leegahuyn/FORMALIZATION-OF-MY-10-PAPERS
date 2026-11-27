@@ -33,11 +33,11 @@ private abbrev k := lineOpen K
 private abbrev l := overlapOpen K
 private abbrev F := functions ℤ_[ℓ] (X K)
 
-private def restrictEquiv {U : Scheme.{0}} (f : U ⟶ X K) [IsOpenImmersion f] :
+def restrictEquiv {U : Scheme.{0}} (f : U ⟶ X K) [IsOpenImmersion f] :
     Sheaf.H ((restriction f A).obj (F K ℓ)) 1 ≃+ U.EllAdicCohomology ℓ 1 :=
   cohomologyIso (X := U) (restrictionFunctionsIso f ℤ_[ℓ]) 1
 
-private def overlapEquiv :
+def overlapEquiv :
     Sheaf.H ((restriction (l K) A).obj (F K ℓ)) 1 ≃+ ℤ_[ℓ] :=
   (restrictEquiv K ℓ (l K)).trans
     ((SchemeIsoProetaleCohomology.adicCohomologyEquiv (overlapIsoLaurent K) ℓ 1).trans

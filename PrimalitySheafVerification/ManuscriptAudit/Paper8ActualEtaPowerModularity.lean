@@ -5,9 +5,9 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8ActualEtaTranslation
 /-!
 # Integral-weight modularity of the twenty-fourth power of the actual eta product
 
-The actual square has a multiplicative scalar. Its values at the two
-integral modular generators are twelfth roots of unity. This identifies
-the weight-twelve transformation without postulating any multiplier.
+The existing native discriminant supplies the weight-twelve law.
+The additional results compute the multiplicative scalar of the square
+and its values at the two integral modular generators.
 -/
 
 namespace ManuscriptAudit.Paper8ActualEtaPowerModularity
@@ -83,34 +83,13 @@ theorem squaredMultiplier_T :
   exact mul_right_cancel₀ hEta h.symm
 
 theorem squaredMultiplier_pow_twelve (g : SL(2, ℤ)) :
-    squaredMultiplier g ^ 12 = 1 := by
-  have hg : g ∈ Subgroup.closure ({ModularGroup.S, ModularGroup.T} : Set SL(2, ℤ)) := by
-    simp [Matrix.SpecialLinearGroup.SL2Z_generators]
-  induction hg using Subgroup.closure_induction with
-  | one => rw [squaredMultiplier_one, one_pow]
-  | mem g hg =>
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hg
-      obtain rfl | rfl := hg
-      · rw [squaredMultiplier_S]
-        rw [show (12 : ℕ) = 2 * 6 by decide, pow_mul, neg_sq, Complex.I_sq]
-        norm_num
-      · rw [squaredMultiplier_T, ← pow_mul]
-        change Complex.exp (2 * (Real.pi : ℂ) * Complex.I / 24) ^ 24 = 1
-        rw [← Complex.exp_nat_mul]
-        simp only [Nat.cast_ofNat]
-        rw [show (24 : ℂ) * (2 * (Real.pi : ℂ) * Complex.I / 24) =
-          2 * (Real.pi : ℂ) * Complex.I by ring, Complex.exp_two_pi_mul_I]
-  | mul g h _ _ hg hh => rw [squaredMultiplier_mul, mul_pow, hg, hh, mul_one]
-  | inv g _ hg =>
-      have h : squaredMultiplier g ^ 12 * squaredMultiplier g⁻¹ ^ 12 = 1 := by
-        rw [← mul_pow, ← squaredMultiplier_mul, mul_inv_cancel, squaredMultiplier_one, one_pow]
-      simpa only [hg, one_mul] using h
+    squaredMultiplier g ^ 12 = 1 :=
+  Paper8ActualEtaSquaredModularity.squaredMultiplier_pow_twelve g
 
 theorem eta_pow_twentyFour_transform (g : SL(2, ℤ)) (z : ℍ) :
     ModularForm.eta ((g • z : ℍ) : ℂ) ^ 24 =
-      denominator g z ^ 12 * ModularForm.eta z ^ 24 := by
-  have h := congrArg (fun x : ℂ => x ^ (12 : ℕ)) (eta_squared_transform g z)
-  simpa only [mul_pow, ← pow_mul, squaredMultiplier_pow_twelve, one_mul] using h
+      denominator g z ^ 12 * ModularForm.eta z ^ 24 :=
+  Paper8ActualEtaSquaredModularity.eta_pow_twentyFour_transform g z
 
 end
 end ManuscriptAudit.Paper8ActualEtaPowerModularity

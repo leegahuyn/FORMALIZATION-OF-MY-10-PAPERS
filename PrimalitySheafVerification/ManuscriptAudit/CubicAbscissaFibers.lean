@@ -24,7 +24,8 @@ theorem same_abscissa_eq_or_neg (hΔ : (shortCubic (0 : L) A).Δ ≠ 0)
   have h : (z - y) * (z + y) = 0 := by linear_combination hz' - hy'
   rcases mul_eq_zero.mp h with h | h
   · left
-    exact Affine.Point.some.injEq.mpr ⟨rfl, sub_eq_zero.mp h⟩
+    rw [Affine.Point.some.injEq]
+    exact ⟨rfl, sub_eq_zero.mp h⟩
   · right
     rw [Affine.Point.neg_some, Affine.Point.some.injEq]
     exact ⟨rfl, by
@@ -40,7 +41,7 @@ def pointWithX (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) (x : L) : (Curve A).Point
   .some x (Classical.choose hs) ((nonsingular_iff hΔ x _).mpr (Classical.choose_spec hs))
 
 theorem pointWithX_spec (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) (x : L) :
-    ∃ y (hy : (Curve A).Nonsingular x y), pointWithX hΔ x = .some x y hy := ⟨_, _, rfl⟩
+    ∃ (y : L) (hy : (Curve A).Nonsingular x y), pointWithX hΔ x = .some x y hy := ⟨_, _, rfl⟩
 
 theorem abscissa_pointWithX (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) (x : L) :
     abscissa (pointWithX hΔ x) = x := rfl

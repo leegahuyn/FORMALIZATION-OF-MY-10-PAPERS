@@ -35,7 +35,7 @@ theorem exists_preimage_away {N D : L[X]} (hDegree : D.natDegree < N.natDegree)
   obtain ⟨x, hx⟩ := IsAlgClosed.exists_root p hpDegree
   have hx' : N.eval x = r * D.eval x := by
     apply sub_eq_zero.mp
-    simpa only [p, eval_sub, eval_mul, eval_C] using hx
+    simpa only [p, IsRoot.def, eval_sub, eval_mul, eval_C] using hx
   have hD : D.eval x ≠ 0 := by
     intro hd
     have hn : N.eval x = 0 := by rw [hx', hd, mul_zero]

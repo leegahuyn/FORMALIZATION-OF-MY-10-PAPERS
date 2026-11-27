@@ -30,7 +30,8 @@ local instance etaleHasExt : HasExt.{1} (E X) := by
 local instance inverseImageAdditive : (inverseImage X).Additive :=
   Functor.additive_of_preserves_binary_products (inverseImage X)
 
-private abbrev coefficientLift :=
+private abbrev coefficientLift :
+    Sheaf X.smallEtaleTopology AddCommGrpCat.{0} ⥤ E X :=
   sheafCompose X.smallEtaleTopology AddCommGrpCat.uliftFunctor.{1}
 
 def etaleSequence (d : ℕ) : ShortComplex (E X) :=
@@ -42,6 +43,13 @@ private def etaleSequenceUnits (d : ℕ) : etaleUnits X ≅ (etaleSequence X d).
 private theorem etale_sequence_power (d : ℕ) :
     (etaleSequence X d).g = d • 𝟙 (etaleSequence X d).X₂ := by
   let F := coefficientLift X
+  let P := sheafToPresheaf X.smallEtaleTopology AddCommGrpCat.{1}
+  letI : PreservesFiniteLimits (F ⋙ P) := by
+    change PreservesFiniteLimits (sheafToPresheaf X.smallEtaleTopology AddCommGrpCat.{0} ⋙
+      (Functor.whiskeringRight X.Etaleᵒᵖ AddCommGrpCat.{0} AddCommGrpCat.{1}).obj
+        AddCommGrpCat.uliftFunctor.{1})
+    infer_instance
+  letI : PreservesFiniteLimits F := preservesFiniteLimits_of_reflects_of_preserves F P
   letI : F.Additive := Functor.additive_of_preserves_binary_products F
   change F.map (KummerRelativeFull.sequence X d).g = _
   rw [KummerRelativeFull.power_nsmul, Functor.map_nsmul, F.map_id]

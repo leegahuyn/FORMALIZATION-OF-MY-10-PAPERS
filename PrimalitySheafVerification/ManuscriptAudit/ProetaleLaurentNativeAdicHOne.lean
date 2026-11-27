@@ -121,6 +121,13 @@ def adicEquiv : (X K).EllAdicCohomology ℓ 1 ≃+ ℤ_[ℓ] :=
   (AddEquiv.ofBijective (reductionMap (X K) ℓ)
     ⟨reductionMap_injective (X K) ℓ, reduction_surjective K ℓ⟩).trans (compatibleEquiv K ℓ).symm
 
+/-- The inverse adic coordinate really reduces to the compatible Kummer coordinates. -/
+theorem adicEquiv_inverse_reduction (a : ℤ_[ℓ]) :
+    reductionMap (X K) ℓ ((adicEquiv K ℓ).symm a) = compatibleEquiv K ℓ a := by
+  let e := AddEquiv.ofBijective (reductionMap (X K) ℓ)
+    ⟨reductionMap_injective (X K) ℓ, reduction_surjective K ℓ⟩
+  exact e.apply_symm_apply (compatibleEquiv K ℓ a)
+
 end
 end ManuscriptAudit.ProetaleLaurentNativeAdicHOne
 
@@ -129,7 +136,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleLaurentNativeAdicHOne.exists_product_class,
       ``ManuscriptAudit.ProetaleLaurentNativeAdicHOne.reduction_surjective,
-      ``ManuscriptAudit.ProetaleLaurentNativeAdicHOne.adicEquiv] do
+      ``ManuscriptAudit.ProetaleLaurentNativeAdicHOne.adicEquiv,
+      ``ManuscriptAudit.ProetaleLaurentNativeAdicHOne.adicEquiv_inverse_reduction] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

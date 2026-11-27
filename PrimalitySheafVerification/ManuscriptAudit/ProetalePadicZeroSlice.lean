@@ -32,7 +32,7 @@ theorem exists_spec_chart {R : CommRingCat.{0}} (f : C(Spec R, ℤ_[ℓ])) :
   choose e he hset using fun n ↦ PrimeSpectrum.exists_idempotent_basicOpen_eq_of_isClopen
     (residue_zero_clopen ℓ f n)
   refine ⟨CommRingCat.of (chartRing e), chartMap e, chart_weaklyEtale e he, ?_⟩
-  rw [chart_range]
+  refine (chart_range (R := (R : Type)) e).trans ?_
   ext x
   change (∀ n, x ∈ (PrimeSpectrum.basicOpen (e n) : Set (PrimeSpectrum R))) ↔ f x = 0
   constructor

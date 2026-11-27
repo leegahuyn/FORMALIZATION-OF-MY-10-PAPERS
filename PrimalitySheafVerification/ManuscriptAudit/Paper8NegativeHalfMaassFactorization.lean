@@ -45,7 +45,12 @@ private theorem raising_y (F : Profile) (x y : ℝ)
   have h := ((h₁.add h₂).sub h₃).deriv
   change partialY (raising F) x y = _ at h
   rw [h]
-  simp only [partialY]
+  change Complex.I*1*partialX F x y + Complex.I*(y : ℂ)*deriv (partialX F x) y +
+      (1*deriv (F x) y + (y : ℂ)*deriv (partialY F x) y) -
+        (1/4 : ℂ)*deriv (F x) y =
+    Complex.I*partialX F x y + Complex.I*(y : ℂ)*deriv (partialX F x) y +
+      deriv (F x) y + (y : ℂ)*deriv (partialY F x) y -
+        (1/4 : ℂ)*deriv (F x) y
   ring
 
 theorem factorization (F : Profile) (x y : ℝ)

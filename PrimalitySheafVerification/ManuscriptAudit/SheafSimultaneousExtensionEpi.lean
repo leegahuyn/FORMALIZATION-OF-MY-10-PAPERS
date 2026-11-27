@@ -61,8 +61,11 @@ theorem projection_epi
     CategoryTheory.Limits.Pi.map (f := X₂) (g := X₃) (fun n ↦ (S n).g)
   have hq (n : ℕ) : q ≫ E.map (Pi.π X₂ n) = fromInteger (b n) := by
     change (Pi.lift (fun n ↦ fromInteger (b n))) ≫ e₂.inv ≫ E.map (Pi.π X₂ n) = _
-    rw [show e₂.inv ≫ E.map (Pi.π X₂ n) = Pi.π (fun i ↦ E.obj (X₂ i)) n from
-      inv_piComparison_comp_map_π E X₂ n, Pi.lift_π]
+    have he₂ : e₂.inv ≫ E.map (Pi.π X₂ n) = Pi.π (fun i ↦ E.obj (X₂ i)) n := by
+      apply (cancel_epi e₂.hom).mp
+      have hh : e₂.hom = piComparison E X₂ := PreservesProduct.iso_hom E X₂
+      rw [← Category.assoc, e₂.hom_inv_id, Category.id_comp, hh, piComparison_comp_π]
+    rw [he₂, Pi.lift_π]
   have hd (n : ℕ) : E.map d ≫ E.map (Pi.π X₃ n) = E.map (a n) := by
     rw [← E.map_comp, Pi.lift_π]
   have hp (n : ℕ) : E.map p ≫ E.map (Pi.π X₃ n) = E.map (Pi.π X₂ n) ≫ E.map (S n).g := by

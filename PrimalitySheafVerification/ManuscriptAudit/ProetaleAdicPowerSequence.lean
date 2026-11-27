@@ -86,7 +86,9 @@ private theorem evaluated_shortExact (W : X.ProEtᵒᵖ) :
     have hs' (x : V) : PadicInt.toZModPow r ((show C(↥V, ℤ_[ℓ]) from s.down) x) = 0 :=
       congrArg (fun y : ULift.{1} (C(↥V, ZMod (ℓ ^ r))) ↦ y.down x) hs
     obtain ⟨f, hf⟩ := PadicPowerContinuousExact.exists_division ℓ r s.down hs'
-    exact ⟨⟨f⟩, ULift.ext (ContinuousMap.ext hf)⟩
+    refine ⟨⟨f⟩, ?_⟩
+    apply ULift.ext
+    exact ContinuousMap.ext hf
   · rintro ⟨a, rfl⟩
     exact ConcreteCategory.congr_hom S.zero a
 

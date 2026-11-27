@@ -72,15 +72,12 @@ theorem native_relation (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
   let F : S := native p L A l
   let t := arithmeticTrace (ZMod p) A
   change F ^ 2 - t • F + (p : ℤ) • (1 : S) = 0 at he
-  have ht : (t : S) = (t : ℤ_[l]) • (1 : S) := by
-    rw [← Algebra.algebraMap_eq_smul_one, map_intCast]
-  have hq : (p : S) = (p : ℤ_[l]) • (1 : S) := by
-    rw [← Algebra.algebraMap_eq_smul_one, map_natCast]
   change F ^ 2 - (t : ℤ_[l]) • F + (p : ℤ_[l]) • (1 : S) = 0
-  calc
-    _ = F ^ 2 - (t : S) * F + (p : S) := by
-      rw [ht, hq, smul_mul_assoc, one_mul]
-    _ = 0 := by simpa only [zsmul_eq_mul, mul_one, Int.cast_natCast] using he
+  have ht := Int.cast_smul_eq_zsmul ℤ_[l] t F
+  have hq : (p : ℤ_[l]) • (1 : S) = (p : ℤ) • (1 : S) := by
+    simpa only [Int.cast_natCast] using (Int.cast_smul_eq_zsmul ℤ_[l] (p : ℤ) (1 : S))
+  rw [ht, hq]
+  exact he
 
 /-- Exact signed arithmetic trace and determinant p, on the native 2-adic or 3-adic Tate module. -/
 theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) {A : ZMod p} (hA : A ≠ 0)
