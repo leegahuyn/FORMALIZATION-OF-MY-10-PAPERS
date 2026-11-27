@@ -37,12 +37,16 @@ private theorem theta_integrableOn (D : GammaTwoFundamentalDomain) :
       (hyperbolicMeasure.restrict D.carrier) := measurable_quotient_mk''.aemeasurable
   have h := quotientDensity_integrable D
   have h' := (integrable_map_measure h.aestronglyMeasurable hOrbit).mp h
+  change Integrable (fun z : ℍ => ‖thetaWeightedMode z‖ ^ (2 : ℕ))
+    (hyperbolicMeasure.restrict D.carrier)
   simpa only [Function.comp_def, quotientDensity_pullback] using h'
 
 theorem printedL_theta_square_integrable (D : GammaTwoFundamentalDomain) :
     IntegrableOn (fun z : ℍ => ‖printedL thetaCoordinates z‖ ^ (2 : ℕ))
       D.carrier hyperbolicMeasure := by
   have h := (theta_integrableOn D).const_mul (‖((-(3 / 16) : ℝ) : ℂ)‖ ^ (2 : ℕ))
+  change Integrable (fun z : ℍ => ‖printedL thetaCoordinates z‖ ^ (2 : ℕ))
+    (hyperbolicMeasure.restrict D.carrier)
   simpa only [printedL_theta, norm_mul, mul_pow] using h
 
 def thetaQuadraticDensity (q : GammaTwoQuotient) : ℝ :=

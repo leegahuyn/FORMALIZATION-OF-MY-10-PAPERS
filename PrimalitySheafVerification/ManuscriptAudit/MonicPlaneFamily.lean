@@ -61,28 +61,43 @@ private theorem polynomialBaseChange_tmul_one (f : Polynomial R) :
   change (polyEquivTensor R S).symm ((1 : S) ⊗ₜ[R] f) = f.map (algebraMap R S)
   rw [polyEquivTensor_symm_apply_tmul_eq_smul, one_smul]
 
+private theorem polynomial_map_quadratic {A B : Type u} [CommRing A] [CommRing B]
+    (f : A →+* B) (a : A) :
+    ((X : Polynomial A) ^ 2 - C a).map f = (X : Polynomial B) ^ 2 - C (f a) := by
+  rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C]
+
+private def quadraticAdjoinRootEquiv {A B : Type u} [CommRing A] [CommRing B]
+    [Algebra S A] [Algebra S B] (e : A ≃ₐ[S] B) (a : A) (b : B) (h : e a = b) :
+    AdjoinRoot ((X : Polynomial A) ^ 2 - C a) ≃ₐ[S]
+      AdjoinRoot ((X : Polynomial B) ^ 2 - C b) := by
+  subst b
+  apply AdjoinRoot.mapAlgEquiv e
+  rw [polynomial_map_quadratic e.toRingHom a]
+  exact Associated.refl _
+
+private def semiringOfCommRing (A : Type u) (h : CommRing A) : NonAssocSemiring A :=
+  letI : CommRing A := h
+  inferInstance
+
+set_option backward.isDefEq.respectTransparency true in
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 1600000 in
 /-- The actual tensor fiber is the displayed equation after mapping coefficients. -/
 def coordinateBaseChange (q : Polynomial R) :
     S ⊗[R] coordinateRing R q ≃ₐ[S] coordinateRing S (q.map (algebraMap R S)) := by
   let T := S ⊗[R] Polynomial R
-  letI : CommRing T := inferInstanceAs (CommRing (S ⊗[R] Polynomial R))
+  let c : CommRing T := inferInstanceAs (CommRing (S ⊗[R] Polynomial R))
+  letI : CommRing T := c
+  letI : NonAssocSemiring T := semiringOfCommRing T c
   let i : Polynomial R →ₐ[R] T := Algebra.TensorProduct.includeRight
+  let p' : Polynomial T := X ^ 2 - C (i q)
+  have hi : (equation R q).map i.toRingHom = p' :=
+    polynomial_map_quadratic i.toRingHom q
   let e : T ≃ₐ[S] Polynomial S := polynomialBaseChange R S
-  let p := equation R q
-  let p' : Polynomial T := p.map i.toRingHom
-  have hi : e.toRingHom.comp i.toRingHom = Polynomial.mapRingHom (algebraMap R S) := by
-    apply RingHom.ext
-    intro a
-    exact polynomialBaseChange_tmul_one R S a
-  have h : p'.map e.toRingHom = equation S (q.map (algebraMap R S)) := by
-    change (p.map i.toRingHom).map e.toRingHom = _
-    rw [Polynomial.map_map, hi]
-    simp only [p, equation, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C] <;> rfl
-  have ha : Associated (p'.map e.toRingHom) (equation S (q.map (algebraMap R S))) := by
-    rw [h] <;> exact Associated.refl _
-  exact (AdjoinRoot.tensorAlgEquiv p p' rfl).trans (AdjoinRoot.mapAlgEquiv e p' _ ha)
+  have hq : e (i q) = q.map (algebraMap R S) :=
+    polynomialBaseChange_tmul_one R S q
+  exact (AdjoinRoot.tensorAlgEquiv (equation R q) p' hi).trans
+    (quadraticAdjoinRootEquiv S e (i q) (q.map (algebraMap R S)) hq)
 
 private abbrev extendedRing (q : Polynomial R) := S ⊗[R] coordinateRing R q
 

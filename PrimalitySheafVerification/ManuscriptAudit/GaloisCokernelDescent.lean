@@ -62,7 +62,7 @@ theorem exists_global_cokernel_lift_of_HOne
         I.obj.map (automorphism K L σ).op (j (c τ)) :=
       NatTrans.naturality_apply i.hom (automorphism K L σ).op (c τ)
     rw [hn, hc σ, hc τ, automorphism_mul,
-      ← restrict_comp K L I (automorphism K L σ) (automorphism K L τ) y]
+      ← restrict_comp K I (automorphism K L σ) (automorphism K L τ) y]
     rw [(I.obj.map (automorphism K L σ).op).hom.map_sub]
     abel
   obtain ⟨bRep, hbRep⟩ := exists_principal_cocycle_of_HOne_subsingleton
@@ -97,8 +97,8 @@ theorem exists_global_cokernel_lift_of_HOne
     rw [pairSectionsEquiv_apply, pairSectionsEquiv_apply]
     change I.obj.map (pairComponentArrow K L σ).op (I.obj.map (pairFirst K L).op z) =
       I.obj.map (pairComponentArrow K L σ).op (I.obj.map (pairSecond K L).op z)
-    rw [restrict_comp K L I (pairComponentArrow K L σ) (pairFirst K L) z,
-      restrict_comp K L I (pairComponentArrow K L σ) (pairSecond K L) z,
+    rw [restrict_comp K I (pairComponentArrow K L σ) (pairFirst K L) z,
+      restrict_comp K I (pairComponentArrow K L σ) (pairSecond K L) z,
       pairComponentArrow_first, pairComponentArrow_second]
     have hId : I.obj.map (𝟙 (fieldObject K L)).op z = z := by
       rw [show (𝟙 (fieldObject K L)).op = 𝟙 _ by rfl, I.obj.map_id]
@@ -110,8 +110,8 @@ theorem exists_global_cokernel_lift_of_HOne
   have hd : I.obj.map (pairLift K L a b').op (I.obj.map (pairFirst K L).op z) =
       I.obj.map (pairLift K L a b').op (I.obj.map (pairSecond K L).op z) :=
     congrArg (I.obj.map (pairLift K L a b').op) hD
-  rw [restrict_comp K L I (pairLift K L a b') (pairFirst K L) z,
-    restrict_comp K L I (pairLift K L a b') (pairSecond K L) z,
+  rw [restrict_comp K I (pairLift K L a b') (pairFirst K L) z,
+    restrict_comp K I (pairLift K L a b') (pairSecond K L) z,
     pairLift_first, pairLift_second] at hd
   exact hd
 

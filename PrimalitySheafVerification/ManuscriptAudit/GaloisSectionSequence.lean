@@ -1,5 +1,6 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import PrimalitySheafVerification.ManuscriptAudit.GaloisCoverAction
 import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHZero
 import PrimalitySheafVerification.ManuscriptAudit.SheafSectionDifference

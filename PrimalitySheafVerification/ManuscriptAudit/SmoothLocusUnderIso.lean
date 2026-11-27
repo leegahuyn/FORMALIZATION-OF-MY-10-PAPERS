@@ -19,7 +19,9 @@ variable {X Y S : Scheme.{u}} (e : X ≅ Y) (f : X ⟶ S) (g : Y ⟶ S)
 private theorem range_eq (h : e.hom ≫ g = f) :
     Set.range (f.smoothLocus.ι ≫ e.hom) = Set.range g.smoothLocus.ι := by
   have hS : e.hom ⁻¹ᵁ g.smoothLocus = f.smoothLocus := by
-    rw [e.hom.preimage_smoothLocus_eq g, h]
+    refine (e.hom.preimage_smoothLocus_eq g).trans ?_
+    ext x
+    simp only [Scheme.Hom.mem_smoothLocus, h]
   rw [Scheme.Opens.range_ι]
   ext y
   constructor

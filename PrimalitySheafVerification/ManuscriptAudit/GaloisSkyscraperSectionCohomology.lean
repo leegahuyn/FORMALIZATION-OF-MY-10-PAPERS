@@ -32,10 +32,10 @@ private abbrev restrictedSkyscraper :=
 
 set_option backward.isDefEq.respectTransparency false in
 private def sectionsEquiv :
-    (restrictedSkyscraper x j M).obj.obj (op (galoisObject F L)) ≃ₗ[ℤ]
+    (restrictedSkyscraper x F j M).obj.obj (op (galoisObject F L)) ≃ₗ[ℤ]
       (fiber x F L j → M) := by
   let A : fiber x F L j → AddCommGrpCat.{0} := fun _ ↦ M
-  let e : (∏ᶜ A) ≃+ (fiber x F L j → M) :=
+  let e : ((∏ᶜ A : AddCommGrpCat.{0}) : Type) ≃+ (fiber x F L j → M) :=
     { toEquiv := Concrete.productEquiv A
       map_add' := by
         intro a b
@@ -48,7 +48,7 @@ set_option backward.isDefEq.respectTransparency false in
 on the geometric fiber with the actual Galois action. -/
 def sectionsRepIso :
     letI := rightAction x F L j
-    sectionsRep F L (restrictedSkyscraper x j M) ≅
+    sectionsRep F L (restrictedSkyscraper x F j M) ≅
       actionFunctions ℤ (L ≃ₐ[F] L) (fiber x F L j) M := by
   letI := rightAction x F L j
   refine Rep.mkIso <| .mk (sectionsEquiv x F L j M) (fun σ ↦ ?_)
@@ -58,7 +58,7 @@ def sectionsRepIso :
   let A : fiber x F L j → AddCommGrpCat.{0} := fun _ ↦ M
   let p : fiber x F L j → fiber x F L j :=
     (Scheme.pointSmallEtale x).fiber.map ((postcompose j).map (automorphism F L σ))
-  let h : (∏ᶜ A) ⟶ (∏ᶜ A) := Pi.map' p (fun _ ↦ 𝟙 M)
+  let h : (∏ᶜ A : AddCommGrpCat.{0}) ⟶ (∏ᶜ A) := Pi.map' p (fun _ ↦ 𝟙 M)
   change Concrete.productEquiv A (h a) t = Concrete.productEquiv A a (p t)
   rw [Concrete.productEquiv_apply_apply, Concrete.productEquiv_apply_apply,
     ← ConcreteCategory.comp_apply]
@@ -68,7 +68,7 @@ def sectionsRepIso :
 /-- All positive group cohomology of geometric skyscraper sections vanishes
 on any finite Galois field cover of an étale field chart. -/
 theorem sections_H_succ_isZero (n : ℕ) :
-    IsZero (groupCohomology (sectionsRep F L (restrictedSkyscraper x j M)) (n + 1)) := by
+    IsZero (groupCohomology (sectionsRep F L (restrictedSkyscraper x F j M)) (n + 1)) := by
   letI := rightAction x F L j
   exact (actionFunctions_H_succ_isZero ℤ (L ≃ₐ[F] L) (fiber x F L j) M
     (rightAction_free x F L j) n).of_iso <|

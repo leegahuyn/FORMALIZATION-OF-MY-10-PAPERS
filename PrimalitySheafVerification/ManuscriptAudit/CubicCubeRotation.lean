@@ -30,8 +30,8 @@ private theorem slope_rotate (hz : z ^ 3 = 1) (x₁ x₂ y₁ y₂ : K) :
       rw [Affine.slope_of_Y_eq hXZ hYZ, Affine.slope_of_Y_eq hX hY, mul_zero]
     · have hYZ : y₁ ≠ W.negY (z * x₂) y₂ := by simpa only [W, negY_eq] using hY
       rw [Affine.slope_of_Y_ne hXZ hYZ, Affine.slope_of_Y_ne hX hY]
-      simp only [W, Curve, CubicAffine, shortCubic, negY_eq, neg_zero, mul_zero, zero_mul, add_zero,
-        sub_zero]
+      simp only [W, Curve, CubicAffine, shortCubic, Affine.negY, neg_zero, mul_zero, zero_mul,
+        add_zero, sub_zero]
       rw [← mul_div_assoc]
       congr 1
       ring
@@ -39,6 +39,7 @@ private theorem slope_rotate (hz : z ^ 3 = 1) (x₁ x₂ y₁ y₂ : K) :
     have hXZ : z * x₁ ≠ z * x₂ := fun he => hX (mul_left_cancel₀ hz₀ he)
     rw [Affine.slope_of_X_ne hXZ, Affine.slope_of_X_ne hX, ← mul_sub]
     apply (div_eq_iff (mul_ne_zero hz₀ (sub_ne_zero.mpr hX))).mpr
+    symm
     calc
       _ = z ^ 3 * (((y₁ - y₂) / (x₁ - x₂)) * (x₁ - x₂)) := by ring
       _ = _ := by rw [hz, one_mul, div_mul_cancel₀ _ (sub_ne_zero.mpr hX)]

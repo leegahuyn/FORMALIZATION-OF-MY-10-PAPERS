@@ -92,13 +92,22 @@ private def quotientEquivOfSurjectiveOfKerEq {G H : Type*} [AddCommGroup G] [Add
 def unitSquareClassesEquiv :
     (Additive (LaurentPolynomial K)ˣ ⧸ powerSubgroup (LaurentPolynomial K) 2) ≃+
       scalarClasses K × ZMod 2 :=
-  quotientEquivOfSurjectiveOfKerEq (unitReduction K) (powerSubgroup (LaurentPolynomial K) 2)
+  quotientEquivOfSurjectiveOfKerEq (G := Additive (LaurentPolynomial K)ˣ)
+    (H := scalarClasses K × ZMod 2) (unitReduction K) (powerSubgroup (LaurentPolynomial K) 2)
     (unitReduction_ker K) ((pairReduction_surjective K).comp (unitCoordinates K).symm.surjective)
+
+private theorem laurentPID : IsPrincipalIdealRing (LaurentPolynomial K) := by
+  let M := Submonoid.powers (Polynomial.X : Polynomial K)
+  refine ⟨fun I => ?_⟩
+  rw [← IsLocalization.map_under M (LaurentPolynomial K) I]
+  exact Submodule.IsPrincipal.map_ringHom (algebraMap (Polynomial K) (LaurentPolynomial K))
+    (inferInstance : (I.under (Polynomial K)).IsPrincipal)
 
 def laurentBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
     (ZMod 2 × ZMod 2) ≃+
       Sheaf.H ((constantSheaf (Spec (CommRingCat.of (LaurentPolynomial K))).smallEtaleTopology
         AddCommGrpCat.{0}).obj (AddCommGrpCat.of (ZMod 2))) 1 := by
+  letI := laurentPID K
   let e := (residueBinaryHOneEquiv K h₂).trans (squareClassHOneEquiv K K h₂).symm
   exact (e.prodCongr (AddEquiv.refl (ZMod 2))).trans
     ((unitSquareClassesEquiv K).symm.trans (squareClassHOneEquiv K (LaurentPolynomial K) h₂))

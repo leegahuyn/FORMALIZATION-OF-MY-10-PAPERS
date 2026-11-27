@@ -30,14 +30,18 @@ def xY : yChart R := AdjoinRoot.of (yEquation R) X
 def zY : yChart R := AdjoinRoot.root (yEquation R)
 
 theorem z_relation : yZ R ^ 2 = xZ R ^ 2 * (xZ R + 1) := by
-  have h := AdjoinRoot.eval₂_root (zEquation R)
-  simpa only [zEquation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, map_mul, map_pow,
-    map_add, map_one, xZ, yZ, sub_eq_zero] using h
+  have h : (X ^ 2 - C ((X : Polynomial R) ^ 2 * (X + 1))).eval₂
+      (AdjoinRoot.of (zEquation R)) (yZ R) = 0 :=
+    AdjoinRoot.eval₂_root (zEquation R)
+  simp only [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C] at h
+  simpa only [map_mul, map_pow, map_add, map_one, xZ, sub_eq_zero] using h
 
 theorem y_relation : zY R = xY R ^ 2 * (xY R + zY R) := by
-  have h := AdjoinRoot.eval₂_root (yEquation R)
-  simpa only [yEquation, eval₂_sub, eval₂_mul, eval₂_add, eval₂_X, eval₂_C, map_pow,
-    xY, zY, sub_eq_zero] using h
+  have h : (X - C ((X : Polynomial R) ^ 2) * (C X + X)).eval₂
+      (AdjoinRoot.of (yEquation R)) (zY R) = 0 :=
+    AdjoinRoot.eval₂_root (yEquation R)
+  simp only [eval₂_sub, eval₂_mul, eval₂_add, eval₂_X, eval₂_C] at h
+  simpa only [map_pow, xY, sub_eq_zero] using h
 
 abbrev zOverlap := Localization.Away (yZ R)
 abbrev yOverlap := Localization.Away (zY R)
@@ -66,16 +70,21 @@ private theorem yOverlap_relation : zYO R = xYO R ^ 2 * (xYO R + zYO R) := by
 private theorem zInY_vanishes :
     (zEquation R).eval₂ (Polynomial.aeval (xYO R * zYOinv R)).toRingHom
       (zYOinv R) = 0 := by
-  simp only [zEquation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    map_pow, map_mul, map_add, map_one, Polynomial.aeval_X]
+  unfold zEquation
+  simp only [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
+  change zYOinv R ^ 2 - Polynomial.aeval (xYO R * zYOinv R) (X ^ 2 * (X + 1)) = 0
+  simp only [map_mul, map_pow, map_add, map_one, Polynomial.aeval_X]
   linear_combination zYOinv R ^ 3 * yOverlap_relation R +
     zYOinv R ^ 2 * ((xYO R)^2 - 1) * zYO_mul_inv R
 
 private theorem yInZ_vanishes :
     (yEquation R).eval₂ (Polynomial.aeval (xZO R * yZOinv R)).toRingHom
       (yZOinv R) = 0 := by
-  simp only [yEquation, eval₂_sub, eval₂_mul, eval₂_add, eval₂_X, eval₂_C,
-    AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_pow, Polynomial.aeval_X]
+  unfold yEquation
+  simp only [eval₂_sub, eval₂_mul, eval₂_add, eval₂_X, eval₂_C]
+  let a := Polynomial.aeval (xZO R * yZOinv R)
+  change yZOinv R - a (X ^ 2) * (a X + yZOinv R) = 0
+  simp only [a, map_pow, Polynomial.aeval_X]
   linear_combination yZOinv R ^ 3 * zOverlap_relation R -
     yZOinv R * (yZO R * yZOinv R + 1) * yZO_mul_inv R
 
@@ -120,11 +129,11 @@ def yToZ : yOverlap R →ₐ[R] zOverlap R :=
 
 @[simp] theorem zToY_algebraMap (a : zChart R) :
     zToY R (algebraMap (zChart R) (zOverlap R) a) = zInY R a :=
-  IsLocalization.Away.lift_eq _ _ _
+  IsLocalization.Away.lift_eq _ (zInY_unit R) a
 
 @[simp] theorem yToZ_algebraMap (a : yChart R) :
     yToZ R (algebraMap (yChart R) (yOverlap R) a) = yInZ R a :=
-  IsLocalization.Away.lift_eq _ _ _
+  IsLocalization.Away.lift_eq _ (yInZ_unit R) a
 
 @[simp] theorem zToY_inv : zToY R (yZOinv R) = zYO R := by
   have h := congrArg (fun a => zToY R a) (yZO_mul_inv R)
@@ -142,7 +151,7 @@ def yToZ : yOverlap R →ₐ[R] zOverlap R :=
       rw [← mul_assoc, yZO_mul_inv, one_mul]
     _ = _ := by rw [h, mul_one]
 
-private theorem chart_hom_ext {S : Type v} [CommRing S] [Algebra R S]
+theorem chart_hom_ext {S : Type v} [CommRing S] [Algebra R S]
     {p : Polynomial (Polynomial R)} {f g : AdjoinRoot p →ₐ[R] S}
     (hx : f (AdjoinRoot.of p X) = g (AdjoinRoot.of p X))
     (hy : f (AdjoinRoot.root p) = g (AdjoinRoot.root p)) : f = g := by
@@ -178,11 +187,13 @@ def transition : zOverlap R ≃ₐ[R] yOverlap R := by
     intro a
     change zToY R (yToZ R (algebraMap (yChart R) (yOverlap R) a)) = _
     rw [yToZ_algebraMap, y_section]
+    rfl
   · apply IsLocalization.algHom_ext (Submonoid.powers (yZ R))
     apply AlgHom.ext
     intro a
     change yToZ R (zToY R (algebraMap (zChart R) (zOverlap R) a)) = _
     rw [zToY_algebraMap, z_section]
+    rfl
 
 end
 end ManuscriptAudit.NodalIntegralChartTransition

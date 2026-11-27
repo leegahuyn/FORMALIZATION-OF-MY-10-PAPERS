@@ -32,7 +32,8 @@ theorem heightTest_deriv (Y y : ℝ) :
   have h₁ := ((contDiff_infty.mp cuspBump_smooth 1).differentiable (by decide)
     (y - Y)).hasDerivAt
   have h₂ := (hasDerivAt_id y).sub_const Y
-  simpa [heightTest, Function.comp_def] using (h₁.comp y h₂).deriv
+  change deriv (fun t => cuspBump (t - Y)) y = _
+  simpa [Function.comp_def] using (h₁.comp y h₂).deriv
 
 /-- The three norm terms with the paper's raising and lowering formulas, times y⁻². -/
 def energyDensity (Y t : ℝ) : ℝ :=
@@ -101,12 +102,15 @@ theorem energy_le (Y : ℝ) (hY : 1 ≤ Y) :
     (continuous_const.mul (cuspBump_smooth.continuous.pow 2)).add
       (continuous_const.mul (derivative_continuous.pow 2))
   unfold energy referenceEnergy
-  rw [← mul_assoc, mul_comm ((Y + 6) ^ 2) 2, mul_assoc, ← intervalIntegral.integral_const_mul]
-  apply mul_le_mul_of_nonneg_left _ (by norm_num)
-  apply intervalIntegral.integral_mono_on (by norm_num)
-  · exact (energyDensity_continuousOn Y hY).intervalIntegrable_of_Icc (by norm_num)
-  · exact (continuous_const.mul hc).intervalIntegrable 1 6
-  · exact fun t ht => energyDensity_le Y t hY ht
+  calc
+    _ ≤ 2 * (∫ t : ℝ in (1 : ℝ)..6,
+        (Y + 6) ^ 2 * (3 * cuspBump t ^ 2 + 3 * deriv cuspBump t ^ 2)) := by
+      apply mul_le_mul_of_nonneg_left _ (by norm_num)
+      apply intervalIntegral.integral_mono_on (by norm_num)
+      · exact (energyDensity_continuousOn Y hY).intervalIntegrable_of_Icc (by norm_num)
+      · exact (continuous_const.mul hc).intervalIntegrable 1 6
+      · exact fun t ht => energyDensity_le Y t hY ht
+    _ = _ := by rw [intervalIntegral.integral_const_mul]; ring
 
 theorem potential_ge (Y : ℝ) (hY : 1 ≤ Y) :
     Y ^ 4 * cuspMass ≤ potentialContribution Y := by
@@ -138,7 +142,8 @@ theorem no_bound (C : ℝ) (hC : 0 ≤ C) :
   have hYY : A < Y ^ 2 * cuspMass := by
     have he : Y ≤ Y ^ 2 := by nlinarith
     have hm := mul_le_mul_of_nonneg_right he cuspMass_pos.le
-    linarith
+    have hp := mul_pos (by norm_num : (0 : ℝ) < 7) cuspMass_pos
+    linarith only [hYm, hm, hp]
   have hh : (Y + 6) ^ 2 ≤ 4 * Y ^ 2 := by nlinarith
   have hm : 0 ≤ C * referenceEnergy := mul_nonneg hC referenceEnergy_nonneg
   refine ⟨Y, by linarith, (mul_le_mul_of_nonneg_left (energy_le Y (by linarith)) hC).trans_lt ?_⟩
@@ -148,8 +153,9 @@ theorem no_bound (C : ℝ) (hC : 0 ≤ C) :
       dsimp [A]
       nlinarith only [h]
     _ < Y ^ 4 * cuspMass := by
-      have h := mul_lt_mul_of_pos_left hYY (sq_pos_of_pos (by linarith : 0 < Y))
-      convert h using 1 <;> ring
+      have hEq : Y ^ 2 * (Y ^ 2 * cuspMass) = Y ^ 4 * cuspMass := by ring
+      rw [← hEq]
+      exact mul_lt_mul_of_pos_left hYY (by positivity)
     _ ≤ potentialContribution Y := potential_ge Y (by linarith)
 
 end
