@@ -7,6 +7,8 @@ vanishes over an algebraically closed field. -/
 
 namespace ManuscriptAudit.AffineLineEtaleHTwo
 
+noncomputable section
+
 open AlgebraicGeometry CategoryTheory KummerUnitsSheaf
 
 attribute [local instance] SmallEtaleCohomologyComparison.fullSiteHasExt
@@ -29,6 +31,7 @@ theorem units_HTwo_subsingleton :
   letI := RatFuncTsen.rationalFunction_etale_units_HTwo_subsingleton K
   exact (AffineLineDivisorSheaf.affineLineUnitsHTwoEmbedding K (RatFunc K)).property.subsingleton
 
+end
 end ManuscriptAudit.AffineLineEtaleHTwo
 
 open Lean Elab Command in

@@ -28,7 +28,10 @@ private theorem scalar_of_unit (u : W.CoordinateRingˣ) :
     have hd₂ : (0 : WithBot ℕ) ≤ 2 • q.degree := by
       simpa only [two_nsmul] using add_nonneg hd hd
     have hLo : (3 : WithBot ℕ) ≤ 2 • q.degree + 3 := by
-      simpa only [zero_add] using add_le_add_right hd₂ (3 : WithBot ℕ)
+      calc
+        (3 : WithBot ℕ) = 3 + 0 := (add_zero _).symm
+        _ ≤ 3 + 2 • q.degree := add_le_add_right hd₂ (3 : WithBot ℕ)
+        _ = 2 • q.degree + 3 := add_comm _ _
     have hHi : 2 • q.degree + 3 ≤ (0 : WithBot ℕ) := by
       rw [← hMax]
       exact le_max_right _ _

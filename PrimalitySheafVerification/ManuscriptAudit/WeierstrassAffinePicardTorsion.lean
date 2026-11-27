@@ -35,10 +35,8 @@ def powerTorsionToPicard (l n : ℕ) :
 
 theorem powerTorsionToPicard_injective (l n : ℕ) :
     Function.Injective (powerTorsionToPicard W l n) := by
-  intro x y h
-  apply Subtype.ext
-  apply pointToPicard_injective W
-  exact congrArg Subtype.val h
+  change Function.Injective (mapLinear (l ^ n) (pointToPicard W))
+  exact mapLinear_injective (l ^ n) _ (pointToPicard_injective W)
 
 theorem powerTorsionToPicard_transition (l n : ℕ) (x : PowerTorsion l W.Point (n + 1)) :
     transition l (Additive (CommRing.Pic W.CoordinateRing)) n (powerTorsionToPicard W l (n + 1) x) =

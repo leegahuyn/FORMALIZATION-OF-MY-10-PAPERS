@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 

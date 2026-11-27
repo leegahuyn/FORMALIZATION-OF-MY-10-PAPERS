@@ -37,6 +37,8 @@ theorem residueInclusion_transition (n : ℕ) (r : ZMod (ℓ ^ (n + 1))) :
     ← reduction_adicInclusion K ℓ a n]
   exact (reductionMap (X K) ℓ 2 (adicInclusion K ℓ a)).property n
 
+set_option maxRecDepth 2600 in
+set_option maxHeartbeats 1600000 in
 /-- Compatible classes that lie in the finite Laurent ranges have a unique adic coordinate. -/
 theorem existsUnique_adicCoordinate (x : nativeCompatible (X K) ℓ 2)
     (hx : ∀ n, x.val n ∈ (residueInclusion K ℓ n).range) :
@@ -58,11 +60,10 @@ theorem existsUnique_adicCoordinate (x : nativeCompatible (X K) ℓ 2)
     apply PadicInt.ext_of_toZModPow.mp
     intro n
     apply residueInclusion_injective K ℓ n
-    calc
-      _ = x.val n := ha n
-      _ = residueInclusion K ℓ n (r n) := (hr n).symm
-      _ = _ := congrArg (residueInclusion K ℓ n)
-        (congrArg (PadicResidueSystems.evaluate ℓ n) (e.apply_symm_apply s)).symm
+    have hn : PadicInt.toZModPow n (e.symm s) = r n :=
+      congrArg (PadicResidueSystems.evaluate ℓ n) (e.apply_symm_apply s)
+    rw [hn, hr n]
+    exact ha n
 
 end
 end ManuscriptAudit.CuspNativeAdicHTwoResidueRange
