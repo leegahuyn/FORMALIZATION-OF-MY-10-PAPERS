@@ -159,6 +159,25 @@ theorem theta_transformation (γ : GammaTwo) (z : ℍ) :
     phase γ * halfFactor (γ : SL(2, ℤ)) z * jacobiTheta (z : ℂ)
   simpa only [mul_assoc] using hQ
 
+/-- The complete holomorphic automorphy factor, including the branch phase. -/
+def automorphyFactor (γ : GammaTwo) (z : ℍ) : ℂ :=
+  phase γ * halfFactor (γ : SL(2, ℤ)) z
+
+theorem theta_transformation_factor (γ : GammaTwo) (z : ℍ) :
+    jacobiTheta ((γ • z : ℍ) : ℂ) =
+      automorphyFactor γ z * jacobiTheta (z : ℂ) :=
+  theta_transformation γ z
+
+theorem automorphyFactor_one (z : ℍ) : automorphyFactor 1 z = 1 := by
+  apply mul_right_cancel₀ (jacobiTheta_ne_zero_upperHalfPlane z)
+  rw [← theta_transformation_factor, one_smul, one_mul]
+
+theorem automorphyFactor_mul (γ δ : GammaTwo) (z : ℍ) :
+    automorphyFactor (γ * δ) z = automorphyFactor γ (δ • z) * automorphyFactor δ z := by
+  apply mul_right_cancel₀ (jacobiTheta_ne_zero_upperHalfPlane z)
+  rw [← theta_transformation_factor, mul_smul, theta_transformation_factor γ (δ • z),
+    theta_transformation_factor δ z, mul_assoc]
+
 end
 end ManuscriptAudit.ThetaHolomorphicMultiplier
 
@@ -169,7 +188,10 @@ run_cmd do
       ``ManuscriptAudit.ThetaHolomorphicMultiplier.ratio_norm,
       ``ManuscriptAudit.ThetaHolomorphicMultiplier.phase_norm,
       ``ManuscriptAudit.ThetaHolomorphicMultiplier.ratio_eq_phase,
-      ``ManuscriptAudit.ThetaHolomorphicMultiplier.theta_transformation] do
+      ``ManuscriptAudit.ThetaHolomorphicMultiplier.theta_transformation,
+      ``ManuscriptAudit.ThetaHolomorphicMultiplier.theta_transformation_factor,
+      ``ManuscriptAudit.ThetaHolomorphicMultiplier.automorphyFactor_one,
+      ``ManuscriptAudit.ThetaHolomorphicMultiplier.automorphyFactor_mul] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

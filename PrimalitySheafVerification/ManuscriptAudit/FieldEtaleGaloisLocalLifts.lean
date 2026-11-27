@@ -22,6 +22,8 @@ theorem galoisArrow_is_cover (K L : Type) [Field K] [Field L] [Algebra K L]
     intro y
     let x : (galoisObject K L).left := Classical.choice
       (inferInstance : Nonempty (PrimeSpectrum L))
+    letI : Subsingleton ((terminalObject K).left : Type) :=
+      inferInstanceAs (Subsingleton (PrimeSpectrum K))
     exact ⟨x, Subsingleton.elim _ _⟩)
 
 theorem exists_cokernel_lift_on_finiteGalois_cover (K : Type) [Field K]

@@ -33,6 +33,27 @@ private theorem cyclic_units_HTwo (K F L : Type) [Field K] [IsAlgClosed K] [Fiel
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := L ≃ₐ[F] L)
   exact finiteExtension_cyclic_units_even_subsingleton K F L g hg 2 (by decide)
 
+private theorem galoisUnits_HTwo_of_normal (F L : Type) [Field F] [Field L] [Algebra F L]
+    (S : Subgroup (L ≃ₐ[F] L)) [S.Normal]
+    (hOne : Subsingleton (groupCohomology (Rep.res S.subtype (Rep.ofAlgebraAutOnUnits F L)) 1))
+    (hTwo : Subsingleton (groupCohomology (Rep.res S.subtype (Rep.ofAlgebraAutOnUnits F L)) 2))
+    (hQuot : Subsingleton (groupCohomology ((Rep.ofAlgebraAutOnUnits F L).quotientToInvariants S) 2)) :
+    Subsingleton (groupCohomology (Rep.ofAlgebraAutOnUnits F L) 2) := by
+  let G := L ≃ₐ[F] L
+  let A := Additive Lˣ
+  let B := Rep.ofDistribMulAction ℤ G A
+  let C := Rep.ofDistribMulAction ℤ S A
+  have hb : B = Rep.ofAlgebraAutOnUnits F L := rfl
+  have hc : C = Rep.res S.subtype (Rep.ofAlgebraAutOnUnits F L) := rfl
+  have h₁ : Subsingleton (groupCohomology C 1) := by rw [hc]; exact hOne
+  have h₂ : Subsingleton (groupCohomology C 2) := by rw [hc]; exact hTwo
+  have h₃ : Subsingleton (groupCohomology (B.quotientToInvariants S) 2) := by
+    rw [hb]
+    exact hQuot
+  have h : Subsingleton (groupCohomology B 2) :=
+    GroupTwoCocycleConjugation.H2_subsingleton_of_normal (G := G) (A := A) S h₁ h₂ h₃
+  rwa [hb] at h
+
 set_option maxHeartbeats 1800000 in
 private theorem pGroup_units_HTwo_aux (K : Type) [Field K] [IsAlgClosed K]
     (p : ℕ) [Fact p.Prime] :
@@ -70,8 +91,7 @@ private theorem pGroup_units_HTwo_aux (K : Type) [Field K] [IsAlgClosed K]
         _ = n := hCard
     have hTwoQ := fromModuleIso (quotientCohomologyIso F L S 2)
       (ih _ hCardQ F M rfl hpQ)
-    exact GroupTwoCocycleConjugation.H2_subsingleton_of_normal
-      (A := Additive Lˣ) S (restricted_HOne_subsingleton F L S) hTwoS hTwoQ
+    exact galoisUnits_HTwo_of_normal F L S (restricted_HOne_subsingleton F L S) hTwoS hTwoQ
 
 /-- Degree-two cohomology of the unit representation vanishes for a
 finite Galois p-extension of any finite extension of K(t). -/

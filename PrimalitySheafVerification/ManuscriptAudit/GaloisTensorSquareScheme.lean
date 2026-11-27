@@ -114,7 +114,7 @@ theorem component_jointly_surjective (x : ↑(pullback (baseMap F L) (baseMap F 
     (AlgebraicGeometry.sigmaMk (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L))).surjective s
   refine ⟨σ, y, ?_⟩
   have hy' : Sigma.ι (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ y = s :=
-    (AlgebraicGeometry.sigmaMk_mk _ σ y).symm.trans hy
+    (AlgebraicGeometry.sigmaMk_mk (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ y).symm.trans hy
   calc
     _ = e.hom (Sigma.ι (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ y) := by
       rw [← sigmaIsoPullback_ι, Scheme.Hom.comp_apply]

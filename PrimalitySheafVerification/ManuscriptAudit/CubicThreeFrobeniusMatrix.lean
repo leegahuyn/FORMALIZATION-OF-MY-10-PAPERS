@@ -54,6 +54,8 @@ private theorem exists_sign (σ : K →+* K) {x : K}
 variable (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) (D : FlexPair A)
 variable (σ : K →+* K) (F : Module.End (ZMod 3) (T₃ A))
 
+include h₂ h₃ hA
+
 private theorem matrix_signs [IsAlgClosed K]
     (hxMap : ∀ P : T₃ A, abscissa (inclusion 3 _ (F P)) = σ (abscissa (inclusion 3 _ P)))
     (hyMap : ∀ P : T₃ A, ordinate (inclusion 3 _ (F P)) = σ (ordinate (inclusion 3 _ P)))
@@ -90,19 +92,19 @@ private theorem matrix_signs [IsAlgClosed K]
       change σ (ordinate (inclusion 3 _ (vertical h₂ h₃ hA D))) ≠ 0
       rw [ordinate_vertical]
       exact (map_ne_zero σ).mpr ha
-  have hColumn (i : Fin 2) : F (B i) = M 0 i • U + M 1 i • T := by
-    conv_lhs => rw [← B.sum_repr (F (B i))]
-    simp [M, LinearMap.toMatrix_apply, Fin.sum_univ_two, B, U, T]
   have hU : B 0 = U := basis_zero h₂ h₃ hA D
   have hT : B 1 = T := basis_one h₂ h₃ hA D
+  have hColumn (i : Fin 2) : F (B i) = M 0 i • U + M 1 i • T := by
+    simpa only [M, LinearMap.toMatrix_apply, Fin.sum_univ_two, hU, hT] using
+      (B.sum_repr (F (B i))).symm
+  have hFT' : F (B 1) = signScalar s • B 1 :=
+    (congrArg F hT).trans (hFT.trans (congrArg (fun z => signScalar s • z) hT).symm)
   have h01 : M 0 1 = 0 := by
     change LinearMap.toMatrix B B F 0 1 = _
-    rw [LinearMap.toMatrix_apply, hT, hFT, ← hT]
-    simp
+    simp [LinearMap.toMatrix_apply, hFT']
   have h11 : M 1 1 = signScalar s := by
     change LinearMap.toMatrix B B F 1 1 = _
-    rw [LinearMap.toMatrix_apply, hT, hFT, ← hT]
-    simp
+    simp [LinearMap.toMatrix_apply, hFT']
   have h00ne : M 0 0 ≠ 0 := by
     intro h
     have hh : σ D.x = 0 := by
@@ -148,8 +150,7 @@ theorem trace_det_of_coordinates [IsAlgClosed K] (q : ℕ) (hq : q % 3 ≠ 0)
   obtain ⟨s, hs⟩ := exists_sign σ (show (σ D.a) ^ 2 = D.a ^ 2 by
     rw [← map_pow, D.a_square, hσA])
   obtain ⟨t, ht⟩ := exists_sign σ (show (σ D.b) ^ 2 = D.b ^ 2 by
-    rw [← map_pow, D.b_square]
-    simp [hσA])
+    rw [← map_pow, D.b_square, map_neg, map_mul, map_ofNat, hσA])
   obtain ⟨hTr, hDet⟩ := matrix_signs h₂ h₃ hA D σ F hxMap hyMap hs ht
   let r := D.a * D.b / A
   have hr : r ^ 2 = -(3 : K) := by

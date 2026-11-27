@@ -36,12 +36,12 @@ private theorem normalizationPushforward_HOne_subsingleton (h2 : (2 : K) ≠ 0) 
     Subsingleton (Sheaf.H (normalizationFunctions K C) 1) := by
   let e := (Sheaf.functorH (affineLine K).smallEtaleTopology 1).mapIso
     (constantSheafContinuousMapIso (affineLine K) C)
-  letI := NodalNormalizationHOneComparison.normalization_HOne_subsingleton K h2
+  have hN := NodalNormalizationHOneComparison.normalization_HOne_subsingleton K h2
   have h : Subsingleton (Sheaf.H (F K) 1) := by
     constructor
     intro x y
     apply e.addCommGroupIsoToAddEquiv.symm.injective
-    exact Subsingleton.elim _ _
+    exact hN.allEq _ _
   exact AffineEtaleMorphism.fullDirectImage_HOne_subsingleton
     (CommRingCat.of (A K)) (CommRingCat.of (B K)) (affineNormalization K) (F K) h
 

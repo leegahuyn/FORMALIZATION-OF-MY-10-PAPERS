@@ -94,7 +94,8 @@ private theorem complex_exact (U : C) : (complex U).Exact := by
   have hE : (S.map E).Exact := by
     rw [(S.map E).ab_exact_iff]
     exact exists_tripleBoundary_of_pairBoundary_eq_zero (unop W ⟶ U)
-  have hZ := (S.map E).exact_iff_kernel_ι_comp_cokernel_π_zero.mp hE
+  have hZ : kernel.ι (E.map S.g) ≫ cokernel.π (E.map S.f) = 0 :=
+    (S.map E).exact_iff_kernel_ι_comp_cokernel_π_zero.mp hE
   change E.map (kernel.ι S.g) ≫ E.map (cokernel.π S.f) = 0
   rw [← kernelComparison_comp_ι S.g E, ← π_comp_cokernelComparison S.f E,
     Category.assoc, ← Category.assoc (kernel.ι (E.map S.g)), hZ, zero_comp, comp_zero]
@@ -133,7 +134,7 @@ theorem exists_coboundary (U : C) (I : Sheaf J AddCommGrpCat.{v}) [Injective I]
     apply lift_ext
     rintro ⟨a, b, d⟩
     rw [AddMonoidHom.comp_apply, tripleBoundary_of, m.map_add, m.map_sub]
-    exact hc a b d
+    simpa only [m, lift_apply_of, AddMonoidHom.zero_apply] using hc a b d
   let k := cokernel.desc (dTwo U) (dOne U) (dTwo_dOne U)
   letI : Mono k := (complex U).exact_iff_mono_cokernel_desc.mp (complex_exact U)
   let zbar := cokernel.desc (dTwo U) z hz
@@ -164,9 +165,12 @@ theorem exists_coboundary (U : C) (I : Sheaf J AddCommGrpCat.{v}) [Injective I]
     (m.app (op W)).hom (of (a, d))) hfac
   change (bPresheaf.app (op W)).hom (pairBoundary _ (of (a, d))) =
     lift (fun p => c p.1 p.2) (of (a, d)) at h
-  rw [pairBoundary_of, (bPresheaf.app (op W)).hom.map_sub, lift_apply_of] at h
+  let bMap : FreeAbelianGroup (W ⟶ U) →+ I.obj.obj (op W) :=
+    (bPresheaf.app (op W)).hom
+  change bMap (pairBoundary (W ⟶ U) (of (a, d))) = lift (fun p => c p.1 p.2) (of (a, d)) at h
+  rw [pairBoundary_of, lift_apply_of] at h
   rw [hmap a, hmap d]
-  exact h.symm
+  exact h.symm.trans (bMap.map_sub (of d) (of a))
 
 end
 end ManuscriptAudit.InjectiveCechOne

@@ -27,7 +27,8 @@ def unitSectionIso :
   apply Rep.mkIso
   refine Representation.Equiv.mk e.toIntLinearEquiv ?_
   intro σ
-  ext x
+  apply LinearMap.ext
+  intro x
   change e ((fieldUnitSheaf K).obj.map (automorphism K L σ).op x) =
     Additive.ofMul (Units.map σ.toRingHom.toMonoidHom (Additive.toMul (e x)))
   have h := ringUnits.congr_map
@@ -48,14 +49,15 @@ theorem unitSectionSequence_shortExact [Mono i] :
     (unitSectionSequence K L i).ShortExact := by
   let S := unitSectionSequence K L i
   let E := forget₂ (Rep ℤ (L ≃ₐ[K] L)) (ModuleCat ℤ)
-  refine ⟨?_, ?_, ?_⟩
-  · apply (S.exact_map_iff_of_faithful E).mp
-    rw [ShortComplex.moduleCat_exact_iff_function_exact]
+  have hExact : S.Exact := by
+    apply (S.exact_map_iff_of_faithful E).mp
+    refine (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact (S.map E)).mpr ?_
     exact SheafSectionDifference.cokernel_sections_exact i (U K L)
-  · exact (Rep.mono_iff_injective _).mpr
-      (SheafSectionDifference.section_injective i (U K L))
-  · exact (Rep.epi_iff_surjective _).mpr
-      (EtaleObjectRestriction.unitsCokernel_sections_surjective_of_field i (U K L) L (Iso.refl _))
+  have hMono : Mono S.f := (Rep.mono_iff_injective (sectionsRepMap K L i)).mpr
+    (SheafSectionDifference.section_injective i (U K L))
+  have hEpi : Epi S.g := (Rep.epi_iff_surjective (sectionsRepMap K L (cokernel.π i))).mpr
+    (EtaleObjectRestriction.unitsCokernel_sections_surjective_of_field i (U K L) L (Iso.refl _))
+  exact ShortComplex.ShortExact.mk' hExact hMono hEpi
 
 end
 end ManuscriptAudit.GaloisCoverAction
