@@ -40,7 +40,7 @@ theorem other_eigenvalue_lower_bound (H : D →ₗ[ℝ] E) (mass : D → ℝ)
     calc
       (α*c+β) * ‖(x : E)‖^2 = α * (c * ‖(x : E)‖^2) + β * ‖(x : E)‖^2 := by ring
       _ ≤ α * mass x + β * ‖(x : E)‖^2 :=
-        add_le_add_right (mul_le_mul_of_nonneg_left (hRS x hOrth) hα) _
+        add_le_add (mul_le_mul_of_nonneg_left (hRS x hOrth) hα) le_rfl
       _ ≤ inner ℝ (x : E) (H x) := hForm x
       _ = μ * ‖(x : E)‖^2 := by rw [hx, real_inner_smul_right, real_inner_self_eq_norm_sq]
   have hPos : 0 < ‖(x : E)‖^2 := pow_pos (norm_pos_iff.mpr hx₀) _

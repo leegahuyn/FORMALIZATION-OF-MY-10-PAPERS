@@ -55,7 +55,18 @@ theorem pullback_naturality {F G : C X} (f : F ⟶ G) (n : ℕ) (e : Sheaf.H F n
       ((e.comp (Ext.mk₀ f) (add_zero n)).mapExactFunctor (inverseImage X)) (zero_add n) =
     ((Ext.mk₀ (integersIso X).inv).comp (e.mapExactFunctor (inverseImage X)) (zero_add n)).comp
       (Ext.mk₀ ((inverseImage X).map f)) (add_zero n)
-  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀, Ext.comp_assoc]
+  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀, Ext.comp_assoc] <;> simp
+
+
+theorem pullback_boundary {S : ShortComplex (C X)} (hS : S.ShortExact) (n : ℕ)
+    (e : Sheaf.H S.X₃ n) :
+    pullback X S.X₁ (n+1) (e.comp hS.extClass rfl) =
+      (pullback X S.X₃ n e).comp (hS.map_of_exact (inverseImage X)).extClass rfl := by
+  change (Ext.mk₀ (integersIso X).inv).comp
+      ((e.comp hS.extClass rfl).mapExactFunctor (inverseImage X)) (zero_add (n+1)) =
+    ((Ext.mk₀ (integersIso X).inv).comp (e.mapExactFunctor (inverseImage X)) (zero_add n)).comp
+      (hS.map_of_exact (inverseImage X)).extClass rfl
+  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass, Ext.comp_assoc] <;> simp
 
 /-- The direct-image comparison uses the counit of the actual adjunction in every degree. -/
 def directImageComparison (F : D X) (n : ℕ) :
@@ -74,10 +85,14 @@ theorem constantComparison_naturality {M N : A.{u}} (f : M ⟶ N) (n : ℕ)
     constantComparison X N n (Sheaf.H.map ((constantSheaf X.smallEtaleTopology A.{u}).map f) n e) =
       Sheaf.H.map ((constantSheaf (Scheme.ProEt.topology X) A.{u}).map f) n
         (constantComparison X M n e) := by
-  simp only [constantComparison, AddMonoidHom.comp_apply, pullback_naturality]
+  simp only [constantComparison, AddMonoidHom.comp_apply]
+  rw [pullback_naturality X ((constantSheaf X.smallEtaleTopology A.{u}).map f) n e]
   rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply]
-  have h := (constantInverseImageIso X).hom.naturality f
-  exact congrArg (fun g => Sheaf.H.map g n (pullback X _ n e)) h
+  have h : (inverseImage X).map ((constantSheaf X.smallEtaleTopology A.{u}).map f) ≫
+      ((constantInverseImageIso X).app N).hom =
+    ((constantInverseImageIso X).app M).hom ≫ (constantSheaf (Scheme.ProEt.topology X) A.{u}).map f :=
+    (constantInverseImageIso X).hom.naturality f
+  rw [h]
 
 variable (Y : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]
 
@@ -93,6 +108,27 @@ def nativeResidueComparison (r n : ℕ) :
   (Sheaf.H.map (ProetaleDiscreteConstant.nativeResidueIso Y ℓ r).hom n).comp
     (constantComparison Y (residueCoefficient ℓ r) n)
 
+/-- The literal reduction in étale constant coefficients. -/
+def etaleResidueTransition (r : ℕ) :
+    (constantSheaf Y.smallEtaleTopology AddCommGrpCat.{1}).obj (residueCoefficient ℓ (r+1)) ⟶
+      (constantSheaf Y.smallEtaleTopology AddCommGrpCat.{1}).obj (residueCoefficient ℓ r) :=
+  (constantSheaf Y.smallEtaleTopology AddCommGrpCat.{1}).map
+    (AddCommGrpCat.uliftFunctor.{1}.map
+      (AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ r)).toAddMonoidHom))
+
+theorem nativeResidueComparison_transition (r n : ℕ) (e :
+    Sheaf.H ((constantSheaf Y.smallEtaleTopology AddCommGrpCat.{1}).obj
+      (residueCoefficient ℓ (r+1))) n) :
+    nativeResidueComparison Y ℓ r n (Sheaf.H.map (etaleResidueTransition Y ℓ r) n e) =
+      Sheaf.H.map ((ProetaleCoefficientUniverseLift.lift Y).map
+        (ProetaleResidueSheaves.residueTransition Y ℓ r)) n
+        (nativeResidueComparison Y ℓ (r+1) n e) := by
+  simp only [nativeResidueComparison, AddMonoidHom.comp_apply, etaleResidueTransition]
+  rw [constantComparison_naturality Y _ n e]
+  rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply,
+    ProetaleDiscreteConstant.nativeResidueIso_naturality]
+
+
 end
 end ManuscriptAudit.EtaleProetaleCohomologyMap
 
@@ -102,8 +138,10 @@ run_cmd do
   for name in [``ManuscriptAudit.EtaleProetaleCohomologyMap.pullback,
       ``ManuscriptAudit.EtaleProetaleCohomologyMap.pullback_naturality,
       ``ManuscriptAudit.EtaleProetaleCohomologyMap.directImageComparison,
+      ``ManuscriptAudit.EtaleProetaleCohomologyMap.pullback_boundary,
       ``ManuscriptAudit.EtaleProetaleCohomologyMap.constantComparison_naturality,
-      ``ManuscriptAudit.EtaleProetaleCohomologyMap.nativeResidueComparison] do
+      ``ManuscriptAudit.EtaleProetaleCohomologyMap.nativeResidueComparison,
+      ``ManuscriptAudit.EtaleProetaleCohomologyMap.nativeResidueComparison_transition] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

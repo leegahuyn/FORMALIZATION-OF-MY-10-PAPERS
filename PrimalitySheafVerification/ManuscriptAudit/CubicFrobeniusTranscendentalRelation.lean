@@ -30,7 +30,8 @@ theorem characteristicError_apply (A : K) (P : GeometricPoints K L A) :
     let F := arithmeticPointFrobenius K L A
     characteristicError K L A P =
       F (F P) - arithmeticTrace K A • F P + (Fintype.card K : ℤ) • P := by
-  simp [characteristicError, pow_two]
+  simp only [characteristicError, pow_two, AddMonoidHom.add_apply, AddMonoidHom.sub_apply,
+    AddMonoidHom.zsmul_apply, AddMonoid.End.one_apply] <;> rfl
 
 /-- On a point with transcendental abscissa, the actual characteristic error is two-torsion. -/
 theorem characteristicError_transcendental {k : ℕ} (hq : Fintype.card K = 2 * k + 1) (hk : 0 < k)
@@ -61,10 +62,12 @@ theorem characteristicError_transcendental {k : ℕ} (hq : Fintype.card K = 2 * 
   have hRel' := congrArg (fun P : antiInvariant A => P.val) hRel
   let F := arithmeticPointFrobenius K G A
   change (2 : ℕ) • (F (F Q) - arithmeticTrace K A • F Q + (Fintype.card K : ℤ) • Q) = 0 at hRel'
+  have hComm (P : GeometricPoints K G A) : pointsMap A g (F P) =
+      arithmeticPointFrobenius K L A (pointsMap A g P) :=
+    map_arithmeticFrobenius (K := K) (L := G) (M := L) A g P
   have hImage := congrArg (pointsMap A g) hRel'
   rw [characteristicError_apply]
-  simpa only [F, map_nsmul, map_add, map_sub, map_zsmul, map_zero,
-    map_arithmeticFrobenius, hQMap] using hImage
+  simpa only [map_nsmul, map_add, map_sub, map_zsmul, map_zero, hComm, hQMap] using hImage
 
 end
 

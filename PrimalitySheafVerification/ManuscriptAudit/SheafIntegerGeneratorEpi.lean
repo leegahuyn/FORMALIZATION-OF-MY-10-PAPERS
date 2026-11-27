@@ -66,9 +66,11 @@ theorem epi_of_local_generator {U : C} (f : U ⟶ T)
   apply (E.homEquiv Z F).injective
   have hg : (E.homEquiv Z F) g =
       (E.homEquiv Z (integerSheaf J) (𝟙 _)) ≫ g.hom.app (op T) := by
+    change (E.homEquiv Z F) g = _ ≫ ((sheafSections J G).obj (op T)).map g
     simpa only [Category.id_comp] using E.homEquiv_naturality_right (𝟙 (integerSheaf J)) g
   have hh : (E.homEquiv Z F) h =
       (E.homEquiv Z (integerSheaf J) (𝟙 _)) ≫ h.hom.app (op T) := by
+    change (E.homEquiv Z F) h = _ ≫ ((sheafSections J G).obj (op T)).map h
     simpa only [Category.id_comp] using E.homEquiv_naturality_right (𝟙 (integerSheaf J)) h
   have hOne : (E.homEquiv Z F) g ⟨1⟩ = (E.homEquiv Z F) h ⟨1⟩ := by
     rw [hg, hh]
@@ -78,7 +80,7 @@ theorem epi_of_local_generator {U : C} (f : U ⟶ T)
   have hz : z = z.down • (⟨1⟩ : Z) := by
     apply ULift.ext
     change z.down = z.down • (1 : ℤ)
-    rw [zsmul_eq_mul, mul_one]
+    simpa only [zsmul_eq_mul, mul_one, Int.cast_id]
   rw [hz]
   simp only [map_zsmul, hOne]
 

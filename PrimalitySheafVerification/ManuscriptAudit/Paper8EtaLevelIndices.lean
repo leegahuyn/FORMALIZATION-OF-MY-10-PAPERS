@@ -43,7 +43,7 @@ private def columnFour (a c : ZMod 4) : Fin 6 :=
   if c = 0 then 0 else if c = 2 then 1 else
     ⟨2 + (a * c).val, Nat.add_lt_add_left (ZMod.val_lt _) 2⟩
 
-private def primitive {N : ℕ} (a c : ZMod N) : Prop :=
+private abbrev primitive {N : ℕ} (a c : ZMod N) : Prop :=
   a * a = 1 ∨ c * c = 1
 
 private theorem primitive_two :
@@ -87,7 +87,7 @@ private theorem index_of_column {N k : ℕ} (f : SL(2, ℤ) → Fin k)
   let H := CongruenceSubgroup.Gamma0 N
   let map : SL(2, ℤ) ⧸ H → Fin k :=
     Quotient.lift f (fun g h hh => (hEq g h).2
-      ((QuotientGroup.leftRel_apply H).1 hh))
+      (QuotientGroup.leftRel_apply.1 hh))
   have hInj : Function.Injective map := by
     intro x y hxy
     obtain ⟨g, rfl⟩ := QuotientGroup.mk_surjective x

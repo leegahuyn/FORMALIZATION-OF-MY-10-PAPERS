@@ -40,7 +40,7 @@ def powerAlg : R K →ₐ[K] R K where
 
 private def evalRoot : B K d →+* R K :=
   AdjoinRoot.lift (link K d) (T 1) (by
-    simp only [P, KummerEtale.kummerPolynomial, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C,
+    simp only [P, KummerEtale.kummerPolynomial, eval₂_sub, eval₂_pow, eval₂_X, Polynomial.eval₂_C,
       link_T, T_pow, nsmul_eq_mul, mul_one, sub_self])
 
 private def evalRootAlg : B K d →ₐ[K] R K where
@@ -112,7 +112,7 @@ private abbrev coverMap : Spec (CommRingCat.of (R K)) ⟶ Spec (CommRingCat.of (
   Spec.map (CommRingCat.ofHom (link K d))
 
 /-- The actual finite Laurent power map is a surjective finite étale morphism. -/
-theorem coverMap_finite_etale (hu : IsUnit (d : K)) :
+theorem coverMap_finite_etale (hd : 0 < d) (hu : IsUnit (d : K)) :
     IsFinite (coverMap K d) ∧ Etale (coverMap K d) ∧ Surjective (coverMap K d) := by
   have hd' : IsUnit (d : R K) := by
     simpa only [map_natCast] using hu.map (algebraMap K (R K))

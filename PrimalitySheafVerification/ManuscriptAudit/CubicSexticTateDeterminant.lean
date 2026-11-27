@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Abel
 import PrimalitySheafVerification.ManuscriptAudit.CubicSexticRotation
 import PrimalitySheafVerification.ManuscriptAudit.PadicNoPrimitiveCube
 import PrimalitySheafVerification.ManuscriptAudit.RankTwoCoefficientIdentification
@@ -40,7 +41,11 @@ theorem det_sexticScale (hl : l = 2 ∨ l = 3) (h₂ : (2 : L) ≠ 0) (h₃ : (3
         exact rotate_sum_eq_zero h₂ h₃ one_ne_zero (square_cube L hv) h hΔ P
       have ht := congrArg (endMap l) hr
       have hQuad : R ^ 2 - (-1 : ℤ_[l]) • R + (1 : ℤ_[l]) • (1 : Module.End ℤ_[l] U) = 0 := by
-        rw [show ((-1 : ℤ_[l]) • R) = -R from neg_one_smul ℤ_[l] R, sub_neg_eq_add, one_smul]
+        have hLin : R ^ 2 - (-1 : ℤ_[l]) • R + (1 : ℤ_[l]) • (1 : Module.End ℤ_[l] U) =
+            R ^ 2 + R + 1 := by
+          rw [show ((-1 : ℤ_[l]) • R) = -R from neg_one_smul ℤ_[l] R, one_smul]
+          abel
+        rw [hLin]
         simpa only [R, map_pow, map_add, map_one, map_zero] using ht
       have hNo (u : ℤ_[l]) : u ^ 2 - (-1 : ℤ_[l]) * u + 1 ≠ 0 := by
         intro hEq
@@ -49,15 +54,14 @@ theorem det_sexticScale (hl : l = 2 ∨ l = 3) (h₂ : (2 : L) ≠ 0) (h₃ : (3
         exact PadicNoPrimitiveCube.no_root l hl (u : ℚ_[l])
           (by simpa only [neg_one_mul, sub_neg_eq_add] using he)
       exact (RankTwoCoefficientIdentification.linear_trace_det B R (-1) 1 hNo hQuad).2
-  have hs : endMap l (sexticScale L hv hΔ) = ((twistSign L v : ℤ) : ℤ_[l]) • R := by
-    have hMap : endMap l (twistSign L v • r) = twistSign L v • R :=
-      (endMap l : AddMonoid.End (UnitPoints L) →+* Module.End ℤ_[l] U).toAddMonoidHom.map_zsmul
-        (twistSign L v) r
-    rw [CubicSexticRotation.sextic_eq_signed_rotation, Int.cast_smul_eq_zsmul]
-    exact hMap
-  have hSign : ((twistSign L v : ℤ) : ℤ_[l]) ^ 2 = 1 := by
-    rcases twistSign_cases L v with h | h <;> simp [h]
-  rw [hs, LinearMap.det_smul, hRank, hSign, hR, one_mul]
+  rcases cube_sign L hv with h | h
+  · rw [sextic_eq_rotation L hv hΔ h]
+    exact hR
+  · have he : sexticScale L hv hΔ = -r := sextic_eq_neg_rotation L hv hΔ h
+    have hMapNeg : endMap l (-r) = -R :=
+      map_neg (endMap l : AddMonoid.End (UnitPoints L) →+* Module.End ℤ_[l] U) r
+    rw [he, hMapNeg, ← neg_one_smul ℤ_[l] R, LinearMap.det_smul, hRank, hR]
+    simp
 
 end
 

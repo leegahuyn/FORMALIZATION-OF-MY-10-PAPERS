@@ -52,16 +52,21 @@ variable [NeZero (d : closureField p)]
 def affineInclusion : ZMod d →+ compactHTwo (affineCompactOpen p) d :=
   (affineEquiv p d).symm.toAddMonoidHom.comp (CuspNativeCompactHTwoLower.affineInclusion (closureField p) d)
 
-theorem affineInclusion_injective : Function.Injective (affineInclusion p d) :=
-  (affineEquiv p d).symm.injective.comp (CuspNativeCompactHTwoLower.affineInclusion_injective (closureField p) d)
+set_option maxRecDepth 2048 in
+theorem affineInclusion_injective : Function.Injective (affineInclusion p d) := by
+  intro x y h
+  apply CuspNativeCompactHTwoLower.affineInclusion_injective (closureField p) d
+  exact (affineEquiv p d).symm.injective h
 
 def smoothInclusion : ZMod d →+ compactHTwo (smoothCompactOpen p) d :=
   (smoothEquiv p d).symm.toAddMonoidHom.comp
     (CuspNativeCompactSmoothHTwoLower.smoothInclusion (closureField p) d)
 
-theorem smoothInclusion_injective : Function.Injective (smoothInclusion p d) :=
-  (smoothEquiv p d).symm.injective.comp
-    (CuspNativeCompactSmoothHTwoLower.smoothInclusion_injective (closureField p) d)
+set_option maxRecDepth 2048 in
+theorem smoothInclusion_injective : Function.Injective (smoothInclusion p d) := by
+  intro x y h
+  apply CuspNativeCompactSmoothHTwoLower.smoothInclusion_injective (closureField p) d
+  exact (smoothEquiv p d).symm.injective h
 
 omit [NeZero (d : closureField p)] in
 /-- Each actual geometric fiber and its relative smooth open have

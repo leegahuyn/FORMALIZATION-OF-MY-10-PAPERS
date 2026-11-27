@@ -83,7 +83,8 @@ private def firstIsKernel :
   have hz (n : ℕ) : (k ≫ toProduct S a ≫ Pi.π (X₂ S) n) ≫ (S n).g = 0 := by
     simpa only [Category.assoc, Pi.map_π, zero_comp] using
       congrArg (fun t ↦ t ≫ Pi.π (X₃ S) n) hw
-  let v (n : ℕ) := (hS n).fIsKernel.lift' (k ≫ toProduct S a ≫ Pi.π (X₂ S) n) (hz n)
+  let v (n : ℕ) := KernelFork.IsLimit.lift' (hS n).fIsKernel
+    (k ≫ toProduct S a ≫ Pi.π (X₂ S) n) (hz n)
   let t (n : ℕ) := (v n).val
   have ht (n : ℕ) : t n ≫ (S n).f = k ≫ toProduct S a ≫ Pi.π (X₂ S) n := (v n).property
   refine ⟨Pi.lift t, ?_⟩

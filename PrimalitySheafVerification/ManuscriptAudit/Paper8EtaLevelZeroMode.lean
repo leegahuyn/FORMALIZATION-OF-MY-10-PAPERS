@@ -53,7 +53,7 @@ theorem zeroModeEntry_eq {D : ℕ} (A : NormalizedRow D) :
   push_cast
   ring
 
-private noncomputable def normalizedFintype {D : ℕ} (hD : 0 < D) :
+@[instance_reducible] private noncomputable def normalizedFintype {D : ℕ} (hD : 0 < D) :
     Fintype (NormalizedRow D) :=
   Fintype.ofEquiv (ReducedResidue D) (rowsEquiv hD).symm
 
@@ -87,23 +87,31 @@ theorem levelSum_eq (N : ℕ) {D : ℕ} (hD : 0 < D) :
         rw [rowsEquiv_bottom_cast hD A]
       _ = etaPhase * referenceZeroSum D := by
         rw [referenceZeroSum_subtype, Finset.mul_sum]
-  · simp [row_mem_level_iff, hN]
+  · rw [if_neg hN]
+    refine Finset.sum_eq_zero (fun A _ => ?_)
+    exact if_neg (fun hA => hN ((row_mem_level_iff N A).1 hA))
 
 theorem levelFour_eq_progression_zero {D : ℕ} (hD : 0 < D) :
     levelSum 4 hD = if D % 4 = 0 then etaPhase * referenceZeroSum D else 0 := by
-  rw [levelSum_eq, Nat.dvd_iff_mod_eq_zero]
+  rw [levelSum_eq]
+  by_cases h : D % 4 = 0
+  · rw [if_pos h, if_pos (Nat.dvd_iff_mod_eq_zero.mpr h)]
+  · rw [if_neg h, if_neg (fun hd => h (Nat.dvd_iff_mod_eq_zero.mp hd))]
 
 theorem levelTwo_sub_levelFour_eq_progression_two {D : ℕ} (hD : 0 < D) :
     levelSum 2 hD - levelSum 4 hD =
       if D % 4 = 2 then etaPhase * referenceZeroSum D else 0 := by
-  rw [levelSum_eq, levelFour_eq_progression_zero, Nat.dvd_iff_mod_eq_zero]
+  rw [levelSum_eq, levelFour_eq_progression_zero]
   by_cases h0 : D % 4 = 0
-  · have hEven : D % 2 = 0 := by omega
+  · have hEven : 2 ∣ D := Nat.dvd_iff_mod_eq_zero.mpr (by omega)
     simp [h0, hEven]
   · by_cases h2 : D % 4 = 2
-    · have hEven : D % 2 = 0 := by omega
+    · have hEven : 2 ∣ D := Nat.dvd_iff_mod_eq_zero.mpr (by omega)
       simp [h0, h2, hEven]
-    · have hOdd : D % 2 ≠ 0 := by omega
+    · have hOdd : ¬ 2 ∣ D := by
+        intro hDvd
+        have := Nat.dvd_iff_mod_eq_zero.mp hDvd
+        omega
       simp [h0, h2, hOdd]
 
 end

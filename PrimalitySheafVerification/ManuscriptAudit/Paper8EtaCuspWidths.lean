@@ -44,13 +44,17 @@ theorem cuspWidth_positive_mem {N : ℕ} (hN : 0 < N) (g : SL(2, ℤ)) :
       ∈ CongruenceSubgroup.Gamma0 N := by
   classical
   unfold cuspWidth
-  exact Nat.find_spec _
+  exact Nat.find_spec (p := fun m : ℕ => 0 < m ∧
+    g * ModularGroup.T ^ (m : ℤ) * g⁻¹ ∈ CongruenceSubgroup.Gamma0 N)
+    ⟨N, hN, conjugatedTranslation_level N g⟩
 
 theorem cuspWidth_le_level {N : ℕ} (hN : 0 < N) (g : SL(2, ℤ)) :
     cuspWidth hN g ≤ N := by
   classical
   unfold cuspWidth
-  exact Nat.find_min' _ ⟨hN, conjugatedTranslation_level N g⟩
+  exact Nat.find_min' (p := fun m : ℕ => 0 < m ∧
+    g * ModularGroup.T ^ (m : ℤ) * g⁻¹ ∈ CongruenceSubgroup.Gamma0 N)
+    ⟨N, hN, conjugatedTranslation_level N g⟩ ⟨hN, conjugatedTranslation_level N g⟩
 
 theorem halfWeightEta_cuspOrder_bounds {N : ℕ} (hN : 0 < N) (hN24 : N < 24)
     (g : SL(2, ℤ)) :

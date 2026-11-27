@@ -42,7 +42,9 @@ theorem partition_smooth :
     ContDiff ℝ ∞ (Function.uncurry first) ∧ ContDiff ℝ ∞ (Function.uncurry second) := by
   have hHeight : ContDiff ℝ ∞ (fun p : ℝ×ℝ => heightCutoff p.2) := by
     simpa only [Function.uncurry, witnessForm] using witnessForm_smooth.fst
-  have hSum := hHeight.add potential_smooth
+  have hPot : ContDiff ℝ ∞ (fun p : ℝ×ℝ => potential p.1 p.2) := potential_smooth
+  have hSum : ContDiff ℝ ∞ (fun p : ℝ×ℝ => heightCutoff p.2 + potential p.1 p.2) :=
+    hHeight.add hPot
   have hFirst : ContDiff ℝ ∞ (Function.uncurry first) := by
     change ContDiff ℝ ∞ (fun p : ℝ×ℝ => (heightCutoff p.2 + potential p.1 p.2) / 2)
     simpa only [div_eq_mul_inv] using
@@ -72,7 +74,7 @@ theorem partition_pieces_not_coulomb :
   have hFirst : HasDerivAt (fun t : ℝ => (1+Real.sin (Real.pi*t))/2) (Real.pi/2) 0 := by
     simpa only [zero_add, Pi.add_apply] using ((hasDerivAt_const (0 : ℝ) (1 : ℝ)).add hSin).div_const 2
   have hSecond : HasDerivAt (fun t : ℝ => 1-(1+Real.sin (Real.pi*t))/2) (-(Real.pi/2)) 0 := by
-    simpa only [zero_sub, Pi.sub_apply] using (hasDerivAt_const (0 : ℝ) (1 : ℝ)).sub hFirst
+    exact hFirst.const_sub 1
   have hf : (fun t : ℝ => (scaleOneForm first witnessForm t 3).1) =
       fun t => (1+Real.sin (Real.pi*t))/2 := by
     funext t
