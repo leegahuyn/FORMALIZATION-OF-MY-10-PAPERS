@@ -21,8 +21,11 @@ private theorem derivatives_zero {t : ℝ} (ht : t < 2 ∨ 5 < t) :
       exact cuspBump_zero_of_height_outside (Or.inl hx.le)
     · filter_upwards [Ioi_mem_nhds h] with x hx
       exact cuspBump_zero_of_height_outside (Or.inr hx.le)
+  have hZero : deriv (fun _ : ℝ => (0 : ℝ)) = (fun _ => 0) := by
+    funext x
+    simp
   have hd : deriv cuspBump =ᶠ[𝓝 t] (fun _ => (0 : ℝ)) := by
-    simpa only [deriv_const] using he.deriv
+    simpa only [hZero] using he.deriv
   exact ⟨he.eq_of_nhds, hd.eq_of_nhds, by simpa only [deriv_const] using hd.deriv_eq⟩
 
 theorem zero_outside_log_slab (k R t : ℝ) (hR : 0 < R) (ht : t ≤ R ∨ R * 6 ≤ t) :
@@ -33,7 +36,7 @@ theorem zero_outside_log_slab (k R t : ℝ) (hR : 0 < R) (ht : t ≤ R ∨ R * 6
     · exact Or.inl ((div_lt_iff₀ hR).mpr (by linarith))
     · exact Or.inr ((lt_div_iff₀ hR).mpr (by linarith))
   obtain ⟨h0, h1, h2⟩ := derivatives_zero hPos
-  simp [trial, residual, amplitude, h0, h1, h2]
+  simp [trial, Paper9LogCuspWave.residual, amplitude, h0, h1, h2]
 
 theorem exists_small_residual_of_cuspBump (D : GammaTwoFundamentalDomain) (k : ℝ)
     {ε : ℝ} (hε : 0 < ε) :

@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CubicHermitianCoordinates
+import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionOrdinate
 import PrimalitySheafVerification.ManuscriptAudit.CubicHermitianFiniteInputs
 import PrimalitySheafVerification.ManuscriptAudit.HermitianPrincipalDescent
 
@@ -34,7 +35,7 @@ theorem frobenius_product_relation {A : E} (hA : A ≠ 0)
     change algebraMap E K A ≠ 0
     simpa only [map_zero] using (algebraMap E K).injective.ne hA
   have hXY : y ^ 2 = x ^ 3 + c := by
-    simpa only [zero_mul, sub_zero] using (shortCubic_nonsingular_iff hΔ x y).mp hP
+    exact (CubicThreeTorsionOrdinate.nonsingular_iff hΔ x y).mp hP
   obtain ⟨α, β, hα, hβ, hαQ, hβQ⟩ := normalized_endpoint_scales E K hA hq3 hq2
   have hα₀ : α ≠ 0 := by
     intro hz

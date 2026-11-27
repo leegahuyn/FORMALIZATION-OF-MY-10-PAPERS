@@ -43,7 +43,12 @@ theorem support_subset_quotient_strip (u : ℝ → ℂ) {a b : ℝ}
   intro q hq
   have h : ∃ z : ℍ, gammaTwoQuotientMk z = q ∧ 1 < z.im := by
     by_contra hNone
-    exact hq (by rw [quotientProfile, dif_neg hNone])
+    apply hq
+    unfold quotientProfile
+    split
+    next hExists =>
+      exact (hNone (show ∃ z : ℍ, gammaTwoQuotientMk z = q ∧ 1 < z.im from hExists)).elim
+    next => rfl
   obtain ⟨z, hqz, hz⟩ := h
   have hNonzero : u z.im ≠ 0 := by
     intro e

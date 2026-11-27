@@ -89,16 +89,16 @@ private theorem matrixMap_smooth (γ : GammaTwo) (w : ℂ) (hw : 0 < w.im) :
     hn.div hd (denominator_ne_zero γ w hw)
   exact hq.restrict_scalars ℝ
 
-theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
-    (Y : ℝ) (hY : 1 ≤ Y) (hs : ∀ y, y < Y + 2 ∨ Y + 5 < y → a y = 0) :
+/-- Smoothness for an arbitrary closed support contained in the high cusp. -/
+theorem extendedSection_realSmooth_of_closed_support (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
+    (K : Set GammaTwoQuotient) (hK : IsClosed K)
+    (hHigh : ∀ q ∈ K, ∃ z : ℍ, 1 < z.im ∧ gammaTwoQuotientMk z = q)
+    (hSupport : Function.support (quotientProfile a) ⊆ K) :
     ContDiffOn ℝ ∞ (fun w => extendedSection a (UpperHalfPlane.ofComplex w))
       UpperHalfPlane.upperHalfPlaneSet := by
   intro w hw
   apply ContDiffAt.contDiffWithinAt
   let z := UpperHalfPlane.ofComplex w
-  let K := gammaTwoQuotientMk '' closedStrip Y
-  have hK : IsCompact K := (closedStrip_compact Y hY).image
-    gammaTwoQuotientMk_isOpenQuotientMap.continuous
   have hHw : ∀ᶠ v : ℂ in 𝓝 w, 0 < v.im :=
     UpperHalfPlane.isOpen_upperHalfPlaneSet.mem_nhds hw
   by_cases hq : gammaTwoQuotientMk z ∈ K
@@ -147,20 +147,39 @@ theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
     have hc := gammaTwoQuotientMk_isOpenQuotientMap.continuous.continuousAt.comp
       (x := w) hOf
     have hn : ∀ᶠ v : ℂ in 𝓝 w, gammaTwoQuotientMk (UpperHalfPlane.ofComplex v) ∉ K :=
-      hc (hK.isClosed.isOpen_compl.mem_nhds hq)
+      hc (hK.isOpen_compl.mem_nhds hq)
     apply (contDiffAt_const : ContDiffAt ℝ ∞ (fun _ : ℂ => (0 : ℂ)) w).congr_of_eventuallyEq
     filter_upwards [hn] with v hv
-    exact extendedSection_zero_outside_strip a Y hY hs (UpperHalfPlane.ofComplex v) hv
+    have hZero : quotientProfile a (gammaTwoQuotientMk (UpperHalfPlane.ofComplex v)) = 0 := by
+      by_contra hn
+      exact hv (hSupport hn)
+    rw [extendedSection, hZero, mul_zero]
+
+theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
+    (Y : ℝ) (hY : 1 ≤ Y) (hs : ∀ y, y < Y + 2 ∨ Y + 5 < y → a y = 0) :
+    ContDiffOn ℝ ∞ (fun w => extendedSection a (UpperHalfPlane.ofComplex w))
+      UpperHalfPlane.upperHalfPlaneSet := by
+  have hK : IsCompact (gammaTwoQuotientMk '' closedStrip Y) :=
+    (closedStrip_compact Y hY).image gammaTwoQuotientMk_isOpenQuotientMap.continuous
+  apply extendedSection_realSmooth_of_closed_support a ha _ hK.isClosed _
+    (support_subset_closedStrip_image a Y hY hs)
+  rintro q ⟨u, hu, rfl⟩
+  refine ⟨u, ?_, rfl⟩
+  have h := (show u.im ∈ Icc (Y + 2) (Y + 5) from hu.2).1
+  linarith
 
 end
 end ManuscriptAudit.Paper9HighCuspSection
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.Paper9HighCuspSection.extendedSection_realSmooth
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.Paper9HighCuspSection.extendedSection_realSmooth_of_closed_support,
+      ``ManuscriptAudit.Paper9HighCuspSection.extendedSection_realSmooth] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"
+

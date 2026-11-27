@@ -15,11 +15,10 @@ open SmallEtaleGeometricBaseChange (cuspOrigin cuspPuncturedOpen)
 
 noncomputable section
 
-universe u
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-variable (K : Type u) [Field K]
+variable (K : Type) [Field K]
 
 private abbrev cusp := AffineCuspSmoothLocus.cusp K
 

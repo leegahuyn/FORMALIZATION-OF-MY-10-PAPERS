@@ -30,7 +30,8 @@ private theorem slope_scale (hu : u ≠ 0) (x₁ x₂ y₁ y₂ : K) :
         rw [negY_eq, ← mul_neg]
         exact fun he => hy (mul_left_cancel₀ (pow_ne_zero _ hu) he)
       rw [Affine.slope_of_Y_ne hx hy₁, Affine.slope_of_Y_ne hx' hy₂]
-      simp only [negY_eq, Curve, CubicAffine, shortCubic, zero_mul, mul_zero, add_zero, sub_zero]
+      simp only [Affine.negY, Curve, CubicAffine, shortCubic, zero_mul, mul_zero, add_zero,
+        sub_zero, neg_zero]
       have hn : 3 * (u ^ 2 * x₁) ^ 2 = u ^ 3 * (u * (3 * x₁ ^ 2)) := by ring
       rw [hn, ← mul_neg, ← mul_sub, mul_div_mul_left _ _ (pow_ne_zero 3 hu), mul_div_assoc]
   · have hx' : u ^ 2 * x₁ ≠ u ^ 2 * x₂ :=
@@ -56,7 +57,7 @@ theorem scaled_nonsingular (hAB : u ^ 6 * A = B)
     (Curve B).Nonsingular (u ^ 2 * x) (u ^ 3 * y) := by
   apply (nonsingular_iff hB _ _).mpr
   have hE : y ^ 2 = x ^ 3 + A := by
-    simpa [Curve, CubicAffine, shortCubic] using (Affine.equation_iff _ _ _).mp h.1
+    simpa [Curve, CubicAffine, shortCubic] using (Affine.equation_iff (W := Curve A) x y).mp h.1
   linear_combination u ^ 6 * hE + hAB
 
 private def scalePoint (hAB : u ^ 6 * A = B) (hB : (shortCubic (0 : K) B).Δ ≠ 0) :
@@ -84,7 +85,8 @@ private theorem scalePoint_add (hu : u ≠ 0)
       by_cases hxy : x₁ = x₂ ∧ y₁ = (Curve A).negY x₂ y₂
       · have hx' := congrArg (fun x => u ^ 2 * x) hxy.1
         have hy' : u ^ 3 * y₁ = (Curve B).negY (u ^ 2 * x₂) (u ^ 3 * y₂) := by
-          simpa only [negY_eq, mul_neg] using congrArg (fun y => u ^ 3 * y) hxy.2
+          rw [negY_eq, ← mul_neg]
+          exact congrArg (fun y : K => u ^ 3 * y) (by simpa only [negY_eq] using hxy.2)
         rw [Affine.Point.add_of_Y_eq hxy.1 hxy.2]
         change (0 : (Curve B).Point) =
           Affine.Point.some _ _ h₁' + Affine.Point.some _ _ h₂'

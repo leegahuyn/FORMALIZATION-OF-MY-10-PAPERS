@@ -26,8 +26,10 @@ private theorem double_point {x y : F} (hP : (W F).Nonsingular x y) (hy : y ≠ 
   have hs : s = tangent x y := tangent_slope F x y hy'
   have hX : (W F).addX x x s = doubleX x y := by
     rw [addX_eq, hs]
+    rfl
   have hY : (W F).addY x x y s = doubleY x y := by
     rw [addY_eq, hX, hs]
+    rfl
   have hQ : (W F).Nonsingular ((W F).addX x x s) ((W F).addY x x y s) :=
     Affine.nonsingular_add hP hP (fun h => hyN h.2)
   refine ⟨by simpa only [hX, hY] using hQ, ?_⟩
@@ -106,7 +108,7 @@ theorem two_sub_rotation_coordinates {x y : F} (hP : (W F).Nonsingular x y) :
     refine ⟨by simpa only [hX, zero_pow (by decide : (7 : ℕ) ≠ 0), neg_zero] using
       scaledNonsingular F x 0 hP, ?_⟩
     rw [hTwo, zero_sub, rotation_some, Affine.Point.neg_some, Affine.Point.some.injEq]
-    exact ⟨hX.symm, by simp [negY_eq]⟩
+    exact ⟨hX.symm, by simp [ordinaryCurve]⟩
   exact two_sub_regular F hP hx hy
 
 end
