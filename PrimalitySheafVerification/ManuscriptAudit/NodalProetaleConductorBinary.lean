@@ -103,11 +103,21 @@ theorem separator_difference :
   apply ULift.ext
   apply ContinuousMap.ext
   intro c
+  change ↥(pullback (a K ≫ j K) (projectiveOrigin K) : Scheme.{0}) at c
   let t : C(↥(pullback (a K) (n K) : Scheme.{0}), Binary) := NodalSwapConductorUnit.unitLift K h2
   change t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (plus K h2) (plus_over K h2) c)) -
     t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (minus K h2) (minus_over K h2) c)) = 1
-  rw [transport_on_branch K h2 (branchMap K 1) (plus_over_node K) c,
-    transport_on_branch K h2 (branchMap K (-1)) (minus_over_node K) c]
+  have hPlus :
+      t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (plus K h2) (plus_over K h2) c)) =
+        t (pullbackMap (a K) (branchMap K 1) (plus_over_node K) ((conductorIso K).inv c)) :=
+    congrArg (fun x : ↥(pullback (a K) (n K) : Scheme.{0}) ↦ t x)
+      (transport_on_branch K h2 (branchMap K 1) (plus_over_node K) c)
+  have hMinus :
+      t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (minus K h2) (minus_over K h2) c)) =
+        t (pullbackMap (a K) (branchMap K (-1)) (minus_over_node K) ((conductorIso K).inv c)) :=
+    congrArg (fun x : ↥(pullback (a K) (n K) : Scheme.{0}) ↦ t x)
+      (transport_on_branch K h2 (branchMap K (-1)) (minus_over_node K) c)
+  rw [hPlus, hMinus]
   exact congrArg (fun s : C(↥(pullback (a K) (i K) : Scheme.{0}), Binary) ↦ s ((conductorIso K).inv c))
     (NodalSwapConductorUnit.unitLift_difference K h2)
 

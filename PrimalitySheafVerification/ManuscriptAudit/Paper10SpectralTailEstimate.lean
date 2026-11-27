@@ -8,6 +8,8 @@ namespace ManuscriptAudit.Paper10SpectralTailEstimate
 
 noncomputable section
 
+set_option maxHeartbeats 1200000
+
 private lemma shell_estimate {ι : Type*} (s : Finset ι) (t w : ι → ℝ)
     {R C B : ℝ} (hR : 1 ≤ R) (hC : 0 ≤ C) (hB : 0 ≤ B) (A k : ℕ)
     (ht : ∀ j ∈ s, R + (k : ℝ) ≤ t j)
@@ -52,7 +54,8 @@ theorem grouped_tail_summable_and_bound {ι : Type*} (S : ℕ → Finset ι) (t 
     Summable (fun k => ∑ j ∈ S k, |w j|) ∧
       (∑' k, ∑ j ∈ S k, |w j|) ≤ (C*B / R^A) * (∑' k : ℕ, 1 / ((k : ℝ)+1)^2) := by
   have hbase : Summable (fun k : ℕ => 1 / ((k : ℝ)+1)^2) := by
-    have h := Real.summable_one_div_nat_pow.mpr (by decide : 1 < (2 : ℕ))
+    have h : Summable (fun k : ℕ => 1 / (k : ℝ)^2) :=
+      Real.summable_one_div_nat_pow.mpr (by decide : 1 < (2 : ℕ))
     simpa only [Nat.cast_add, Nat.cast_one] using (summable_nat_add_iff 1).mp h
   have hmajor := hbase.mul_left (C*B / R^A)
   have hterm (k : ℕ) := shell_estimate (S k) t w hR hC hB A k (ht k) (hw k) (hcount k)

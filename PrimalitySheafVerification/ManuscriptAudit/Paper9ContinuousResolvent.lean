@@ -32,7 +32,8 @@ theorem denominator_norm_lower {s : ℂ} (hs : 1 < s.re) (t : ℝ) :
     (s.re - 1 / 2) ^ 2 ≤ ‖denominator s t‖ := by
   have hPos : 0 < s.re - 1 / 2 := by linarith
   have hHalf : (1 / 2 : ℂ).re = 1 / 2 := by
-    rw [show (1 / 2 : ℂ) = ((1 / 2 : ℝ) : ℂ) by push_cast, Complex.ofReal_re]
+    change (((1 : ℝ) : ℂ) / ((2 : ℝ) : ℂ)).re = _
+    rw [← Complex.ofReal_div, Complex.ofReal_re]
   have hImag : ((t : ℂ) * Complex.I).re = 0 := by
     simp only [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re,
       Complex.I_im, mul_zero, zero_mul, sub_zero]

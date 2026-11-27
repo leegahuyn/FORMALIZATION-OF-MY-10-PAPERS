@@ -100,7 +100,7 @@ theorem not_integrableOn_of_positive_weight_near_pole (weight : ℝ → ℝ)
   have hPow : IntegrableOn (fun x : ℝ => x ^ (-2 : ℝ)) (Ioo 0 δ) := by
     apply (integrable_fun_smul_iff hNonzero (fun x : ℝ => x ^ (-2 : ℝ))).1
     simpa only [smul_eq_mul] using hCmp
-  have hImpossible := (integrableOn_Ioo_rpow_iff hδ).1 hPow
+  have hImpossible := (intervalIntegral.integrableOn_Ioo_rpow_iff hδ).1 hPow
   norm_num at hImpossible
 
 def compactNumerator (t : ℝ) : ℂ := (Real.sqrt (tent 2 t) : ℝ)

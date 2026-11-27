@@ -118,6 +118,7 @@ theorem classOfChart_surjective : Function.Surjective classOfChart := by
   refine ⟨i, (boundaryOrbit_eq_iff (chartCusp i) a).2 ⟨γ, ?_⟩⟩
   change mapGL ℝ (γ : SL(2, ℤ)) • (mapGL ℝ (chart i) • infinity) = (a : OnePoint ℝ)
   rw [hg, hFactor, map_mul, map_mul, mul_smul, mul_smul, translation_fixes_infinity]
+  rfl
 
 def chartEquiv : Fin 3 ≃ CuspOrbits boundaryGroup :=
   Equiv.ofBijective classOfChart ⟨classOfChart_injective, classOfChart_surjective⟩

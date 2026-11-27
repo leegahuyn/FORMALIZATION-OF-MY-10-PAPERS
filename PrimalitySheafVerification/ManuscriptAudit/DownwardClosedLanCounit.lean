@@ -25,7 +25,7 @@ private theorem counit_at_obj_isIso (V : C) : IsIso ((counit L F).app (L.obj V))
   let u := (L.lanUnit.app (L ⋙ F)).app V
   letI : IsIso u := inferInstanceAs (IsIso ((L.lanUnit.app (L ⋙ F)).app V))
   have h : u ≫ (counit L F).app (L.obj V) = 𝟙 _ :=
-    L.lanUnit_app_app_lanAdjunction_counit_app F V
+    L.lanUnit_app_app_lanAdjunction_counit_app_app F V
   have e : (counit L F).app (L.obj V) = inv u := by
     apply (cancel_epi u).mp
     rw [h, IsIso.hom_inv_id]
@@ -34,11 +34,12 @@ private theorem counit_at_obj_isIso (V : C) : IsIso ((counit L F).app (L.obj V))
 
 /-- The counit component over any chart in the essential image is an isomorphism. -/
 theorem counit_at_iso_isIso {V : C} {W : D} (e : L.obj V ≅ W) : IsIso ((counit L F).app W) := by
-  let d := counit L F
   let G := L.lan.obj (L ⋙ F)
+  let d : G ⟶ F := counit L F
   letI : IsIso (d.app (L.obj V)) := counit_at_obj_isIso L F V
+  have hNat : G.map e.hom ≫ d.app W = d.app (L.obj V) ≫ F.map e.hom := d.naturality e.hom
   have h : d.app W = G.map e.inv ≫ d.app (L.obj V) ≫ F.map e.hom := by
-    rw [← d.naturality e.hom, ← Category.assoc, ← Functor.map_comp,
+    rw [← hNat, ← Category.assoc, ← Functor.map_comp,
       e.inv_hom_id, Functor.map_id, Category.id_comp]
   change IsIso (d.app W)
   rw [h]
@@ -48,8 +49,9 @@ theorem counit_at_iso_isIso {V : C} {W : D} (e : L.obj V ≅ W) : IsIso ((counit
 def source_isZero (W : D) [IsEmpty (CostructuredArrow L W)] :
     IsZero ((L.lan.obj (L ⋙ F)).obj W) := by
   let H := L.isPointwiseLeftKanExtensionLeftKanExtensionUnit (L ⋙ F) W
-  let h : IsInitial ((L.lan.obj (L ⋙ F)).obj W) := (isColimitEquivIsInitialOfIsEmpty _) H
-  exact (isZero_zero A).of_iso (h.uniqueUpToIso zeroIsInitial)
+  let E := Functor.LeftExtension.mk (L.leftKanExtension (L ⋙ F)) (L.leftKanExtensionUnit (L ⋙ F))
+  let h : IsInitial ((L.lan.obj (L ⋙ F)).obj W) := (isColimitEquivIsInitialOfIsEmpty A (E.coconeAt W)) H
+  exact (isZero_zero A).of_iso (h.uniqueUpToIso (isZero_zero A).isInitial)
 
 /-- The presheaf counit is pointwise mono when any object receiving an arrow
 from the image already lies in that essential image. -/

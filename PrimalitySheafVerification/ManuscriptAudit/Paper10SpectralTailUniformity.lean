@@ -45,7 +45,8 @@ theorem unit_windows_have_at_most_two (u : ℝ) :
   have hm : u ≤ (m : ℝ) := Nat.le_ceil _
   have hcard : s.card = 2 := by
     have hne : m ∉ ({m+1} : Finset ℕ) := by simp
-    rw [s, Finset.card_insert_of_notMem hne, Finset.card_singleton]
+    change ({m, m+1} : Finset ℕ).card = 2
+    rw [Finset.card_insert_of_notMem hne, Finset.card_singleton]
   refine ⟨s.filter P, (Finset.card_filter_le _ _).trans hcard.le, fun j => ?_⟩
   rw [Finset.mem_filter]
   refine ⟨And.right, fun hj => ⟨?_, hj⟩⟩
@@ -64,10 +65,10 @@ theorem tailTerm_eq_single (T : ℝ) (j : ℕ) :
     tailTerm T j = if j = center T then 1 else 0 := by
   by_cases hj : j = center T
   · subst j
-    rw [tailTerm, if_pos (Nat.le_ceil _), if_pos rfl]
+    have hcut : cutoff T ≤ (center T : ℝ) := Nat.le_ceil _
     have hcenter : weight T (center T : ℝ) = 1 :=
       (weight T).one_of_mem_closedBall (Metric.mem_closedBall_self (weight T).rIn_pos.le)
-    rw [hcenter, abs_one]
+    simp [tailTerm, hcut, hcenter]
   · rw [if_neg hj]
     have hd : 1 ≤ dist (j : ℝ) (center T : ℝ) := by
       rw [Real.dist_eq]

@@ -42,8 +42,9 @@ private def isZeroAt (W : D) [IsEmpty (CostructuredArrow L W)] (F : C ⥤ A) :
     IsZero ((L.lan.obj F).obj W) := by
   letI := hPoint F
   let H := L.isPointwiseLeftKanExtensionLeftKanExtensionUnit F W
-  let h : IsInitial ((L.lan.obj F).obj W) := (isColimitEquivIsInitialOfIsEmpty _) H
-  exact (isZero_zero A).of_iso (h.uniqueUpToIso zeroIsInitial)
+  let E := Functor.LeftExtension.mk (L.leftKanExtension F) (L.leftKanExtensionUnit F)
+  let h : IsInitial ((L.lan.obj F).obj W) := (isColimitEquivIsInitialOfIsEmpty A (E.coconeAt W)) H
+  exact (isZero_zero A).of_iso (h.uniqueUpToIso (isZero_zero A).isInitial)
 
 include hPoint in
 /-- If every object receiving an arrow from the image is in the

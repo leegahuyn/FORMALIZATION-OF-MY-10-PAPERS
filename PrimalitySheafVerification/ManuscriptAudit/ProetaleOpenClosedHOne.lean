@@ -5,6 +5,7 @@ import PrimalitySheafVerification.ManuscriptAudit.ProetaleContinuousDirectImageG
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAlgebraicallyClosedCohomology
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleDirectImageHOne
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleConstantRestriction
 
 /-! Native compact-support degree one for an open with single rational
 closed complement, using the actual extension by zero and closed direct image. -/
@@ -89,6 +90,15 @@ def compactHOneEquiv {Y : Scheme.{0}} (j : Y ⟶ X) [IsOpenImmersion j]
   (cohomologyIso (X := X) (extensionFunctionsIsoKernel i j M hComplement) 1).trans
     (kernelHOneEquiv L i M)
 
+/-- The same native comparison with the actual constant sheaves of a discrete group. -/
+def compactConstantHOneEquiv {Y : Scheme.{0}} (j : Y ⟶ X) [IsOpenImmersion j]
+    (hComplement : Set.range j = (Set.range i)ᶜ) :
+    Sheaf.H ((extensionByZero j A).obj (ProetaleConstantRestriction.constant Y M)) 1 ≃+
+      Sheaf.H (ProetaleConstantRestriction.constant X M) 1 :=
+  (cohomologyIso (X := X) ((extensionByZero j A).mapIso (ProetaleDiscreteConstant.constantIso Y M)) 1).trans
+    ((compactHOneEquiv L i M j hComplement).trans
+      (cohomologyIso (X := X) (ProetaleDiscreteConstant.constantIso X M) 1).symm)
+
 end
 end ManuscriptAudit.ProetaleOpenClosedHOne
 
@@ -98,7 +108,8 @@ run_cmd do
   for name in [``ManuscriptAudit.ProetaleOpenClosedHOne.closedSequence_shortExact,
       ``ManuscriptAudit.ProetaleOpenClosedHOne.restriction_HZero_surjective,
       ``ManuscriptAudit.ProetaleOpenClosedHOne.kernelHOneEquiv,
-      ``ManuscriptAudit.ProetaleOpenClosedHOne.compactHOneEquiv] do
+      ``ManuscriptAudit.ProetaleOpenClosedHOne.compactHOneEquiv,
+      ``ManuscriptAudit.ProetaleOpenClosedHOne.compactConstantHOneEquiv] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

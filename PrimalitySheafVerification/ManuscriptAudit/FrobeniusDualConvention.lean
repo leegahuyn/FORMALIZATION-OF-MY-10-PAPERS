@@ -31,6 +31,8 @@ theorem inverse_generator_coefficients (b : Basis (Fin 2) K V) (e : V ≃ₗ[K] 
   exact ⟨LinearMap.trace_transpose' e.toLinearMap, LinearMap.det_dualMap e.toLinearMap⟩
 
 theorem inverse_generator_charpoly (b : Basis (Fin 2) K V) (e : V ≃ₗ[K] V) :
+    letI : Module.Free K V := Module.Free.of_basis b
+    letI : Module.Finite K V := Module.Finite.of_basis b
     (dualAction e.symm).charpoly = e.toLinearMap.charpoly := by
   letI := Module.Free.of_basis b
   letI := Module.Finite.of_basis b

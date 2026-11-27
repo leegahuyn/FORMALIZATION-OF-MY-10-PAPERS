@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import PrimalitySheafVerification.ManuscriptAudit.SmoothGaugeCurvature
 
 /-!
@@ -31,6 +32,8 @@ def covariantY (f : Field2 ℂ) (x y : ℝ) : ℂ :=
 
 theorem curvature_zero (x y : ℝ) : curvature connectionX connectionY x y = 0 := by
   simp [curvature, partialX, partialY, connectionX, connectionY]
+  change deriv (fun _ : ℝ => (1 : ℂ)) y = 0
+  exact deriv_const y _
 
 private theorem exponential_hasDeriv (x : ℝ) :
     HasDerivAt (fun s : ℝ => Real.exp (-s)) (-Real.exp (-x)) x := by
@@ -43,6 +46,8 @@ theorem section_parallel (x y : ℝ) : covariantX parallelField x y = 0 ∧ cova
   · rw [covariantX, partialX, hx, connectionX, one_mul, parallelField, Complex.ofReal_neg]
     exact neg_add_cancel _
   · simp [covariantY, partialY, parallelField, connectionY]
+    change deriv (fun _ : ℝ => ((Real.exp (-x) : ℝ) : ℂ)) y = 0
+    exact deriv_const y _
 
 theorem section_norm (x y : ℝ) : ‖parallelField x y‖ = Real.exp (-x) := by
   rw [parallelField, Complex.norm_real, Real.norm_of_nonneg (Real.exp_pos _).le]

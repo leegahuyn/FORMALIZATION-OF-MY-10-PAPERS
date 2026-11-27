@@ -81,12 +81,14 @@ theorem native_trace_eq_count {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
       LinearMap.trace (ZMod 4) (Level K L A 2) (levelFrobenius K L A 2) =
         (ε : ZMod 4) * LinearMap.trace (ZMod 4) (Level K L (1 : K) 2)
           (mapLinear 4 r * levelFrobenius K L (1 : K) 2) := by
-    apply trace_eq_of_signed_conjugacy 4 e f₁ r fA ε
+    apply trace_eq_of_signed_conjugacy (G := GeometricPoints K L (1 : K))
+      (H := GeometricPoints K L A) 4 e f₁ r fA ε
     intro P
     have h : fA (e P) = e (scale hw hW hΔ₁ (f₁ P)) := he P
     rw [hs] at h
     rcases hε with h1 | h1
-    · simpa only [h1, one_zsmul] using h
+    · simp only [h1, one_zsmul] at h ⊢
+      exact h
     · rw [h1, neg_one_zsmul] at h ⊢
       change fA (e P) = e (-r (f₁ P)) at h
       exact h
@@ -110,7 +112,9 @@ theorem native_trace_eq_count {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
       change scale hw hW hΔ₁ = ε • R.comp R
       exact heq
     have hTr := trTransfer (R ^ 2) hSc
-    rw [mapLinear_sq] at hTr
+    have hSqLin : mapLinear 4 (R ^ (2 : ℕ)) = S ^ 2 :=
+      mapLinear_sq (G := GeometricPoints K L (1 : K)) 4 R
+    rw [hSqLin] at hTr
     change _ = (ε : ZMod 4) * LinearMap.trace (ZMod 4) _
       (S ^ 2 * levelFrobenius K L (1 : K) 2) at hTr
     rw [hRef.2] at hTr
