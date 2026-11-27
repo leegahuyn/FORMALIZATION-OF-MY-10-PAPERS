@@ -28,6 +28,7 @@ variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
 local instance residueTopology (d : ℕ) : TopologicalSpace (ZMod d) := ⊥
 local instance residueDiscrete (d : ℕ) : DiscreteTopology (ZMod d) := ⟨rfl⟩
 
+include hp in
 private theorem exists_descended {M : Type} [TopologicalSpace M] (a : C(Y,M))
     (ha : ∀ x y, p x = p y → a x = a y) :
     ∃ b : C(X,M), ∀ y, b (p y) = a y := by
@@ -62,6 +63,7 @@ private theorem transition_sol (b : C(PairOver p, ℤ_[ℓ])) (n : ℕ)
   exact congrArg (fun f : C(PairOver p, ZMod (ℓ ^ n)) ↦ f ⟨(x,y),e⟩)
     (((continuousSectionsEquiv ℓ (PairOver p)) b).property n)
 
+include hp in
 set_option maxHeartbeats 2000000 in
 private theorem lift_primitive (b : C(PairOver p, ℤ_[ℓ])) (n : ℕ)
     (a : Sol p ℓ b n) (b₀ : Sol p ℓ b (n+1)) :
@@ -96,6 +98,7 @@ private theorem lift_primitive (b : C(PairOver p, ℤ_[ℓ])) (n : ℕ)
 
 variable [CompactSpace X] [T2Space Y] [TotallyDisconnectedSpace X] [TotallyDisconnectedSpace Y]
 
+include hp in
 set_option maxHeartbeats 2200000 in
 /-- A continuous integral adic cocycle on the actual fibre-pair space
 is a coboundary for every surjection of compact Stone spaces. -/
