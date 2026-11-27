@@ -26,7 +26,7 @@ abbrev P := KummerEtale.kummerPolynomial d (T (R := K) 1)
 abbrev B := AdjoinRoot (P K d)
 
 theorem link_T (n : ℤ) : link K d (T n) = T (d • n) := by
-  exact AddMonoidAlgebra.mapDomain_single _ _ _
+  exact AddMonoidAlgebra.mapDomain_single
 
 /-- Finite Laurent power maps preserve the given coefficient ring. -/
 def powerAlg : R K →ₐ[K] R K where

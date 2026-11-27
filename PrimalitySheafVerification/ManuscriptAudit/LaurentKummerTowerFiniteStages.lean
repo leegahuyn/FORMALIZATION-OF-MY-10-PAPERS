@@ -15,7 +15,7 @@ variable (K : Type*) [CommRing K] (ℓ : ℕ)
 /-- The exponent map of the actual stage. -/
 def stageExponent (n : ℕ) : ℤ →+ Exponent ℓ where
   toFun z := z • rootExponent ℓ n
-  map_zero' := zero_smul ℤ _
+  map_zero' := zero_zsmul _
   map_add' a b := add_zsmul _ a b
 
 /-- The finite Laurent stage embeds its coordinate as the chosen power root. -/
@@ -88,6 +88,52 @@ theorem exists_stage (v : Tower K ℓ) : ∃ n : ℕ, ∃ u : LaurentPolynomial 
   have hdir : Directed (· ≤ ·) (stage K ℓ) := (stage_mono K ℓ).directed_le
   exact (Subring.mem_iSup_of_directed hdir).mp hV
 
+private theorem base_pow_mul_rootExponent (n : ℕ) :
+    (ℓ : Exponent ℓ) ^ n * rootExponent ℓ n = 1 := by
+  have h : (ℓ : Exponent ℓ) * (IsLocalization.Away.invSelf (ℓ : ℤ) : Exponent ℓ) = 1 := by
+    simpa only [map_natCast] using
+      (IsLocalization.Away.mul_invSelf (S := Exponent ℓ) (ℓ : ℤ))
+  rw [rootExponent, ← mul_pow, h, one_pow]
+
+/-- A finite stage lies over the original Laurent algebra by its exact `ℓ^n`-power map. -/
+theorem stageMap_comp_base (n : ℕ) :
+    (stageMap K ℓ n).comp (link K (ℓ ^ n)) = LaurentKummerTowerAlgebra.laurentMap K ℓ := by
+  have h : (stageExponent ℓ n).comp (linkExponent (ℓ ^ n)) =
+      (algebraMap ℤ (Exponent ℓ)).toAddMonoidHom := by
+    apply AddMonoidHom.ext
+    intro z
+    change (ℓ ^ n • z) • rootExponent ℓ n = algebraMap ℤ (Exponent ℓ) z
+    rw [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, Nat.cast_pow]
+    rw [mul_comm ((ℓ : Exponent ℓ) ^ n), mul_assoc, base_pow_mul_rootExponent, mul_one]
+    exact (map_intCast (algebraMap ℤ (Exponent ℓ)) z).symm
+  change (AddMonoidAlgebra.mapDomainRingHom K (stageExponent ℓ n)).comp
+      (AddMonoidAlgebra.mapDomainRingHom K (linkExponent (ℓ ^ n))) = _
+  rw [← AddMonoidAlgebra.mapDomainRingHom_comp, h]
+  rfl
+
+private theorem exponent_algebraMap_injective (hℓ : ℓ ≠ 0) :
+    Function.Injective (algebraMap ℤ (Exponent ℓ)) := by
+  apply IsLocalization.injective (S := Exponent ℓ) (Submonoid.powers (ℓ : ℤ))
+  rintro _ ⟨n, rfl⟩
+  have hn : (ℓ : ℤ) ≠ 0 := by exact_mod_cast hℓ
+  exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n hn)
+
+theorem stageMap_injective (hℓ : ℓ ≠ 0) (n : ℕ) : Function.Injective (stageMap K ℓ n) := by
+  apply AddMonoidAlgebra.mapDomain_injective
+  intro z z' h
+  change z • rootExponent ℓ n = z' • rootExponent ℓ n at h
+  simp only [zsmul_eq_mul] at h
+  have he := congrArg (fun x : Exponent ℓ ↦ x * (ℓ : Exponent ℓ) ^ n) h
+  have hi : rootExponent ℓ n * (ℓ : Exponent ℓ) ^ n = 1 :=
+    (mul_comm _ _).trans (base_pow_mul_rootExponent ℓ n)
+  simp only [mul_assoc, hi, mul_one] at he
+  apply exponent_algebraMap_injective ℓ hℓ
+  simpa only [map_intCast] using he
+
+theorem laurentMap_injective (hℓ : ℓ ≠ 0) :
+    Function.Injective (LaurentKummerTowerAlgebra.laurentMap K ℓ) :=
+  AddMonoidAlgebra.mapDomain_injective (exponent_algebraMap_injective ℓ hℓ)
+
 end
 end ManuscriptAudit.LaurentKummerTowerFiniteStages
 
@@ -96,7 +142,10 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.LaurentKummerTowerFiniteStages.stageMap_comp_link,
       ``ManuscriptAudit.LaurentKummerTowerFiniteStages.stage_mono,
-      ``ManuscriptAudit.LaurentKummerTowerFiniteStages.exists_stage] do
+      ``ManuscriptAudit.LaurentKummerTowerFiniteStages.exists_stage,
+      ``ManuscriptAudit.LaurentKummerTowerFiniteStages.stageMap_comp_base,
+      ``ManuscriptAudit.LaurentKummerTowerFiniteStages.stageMap_injective,
+      ``ManuscriptAudit.LaurentKummerTowerFiniteStages.laurentMap_injective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

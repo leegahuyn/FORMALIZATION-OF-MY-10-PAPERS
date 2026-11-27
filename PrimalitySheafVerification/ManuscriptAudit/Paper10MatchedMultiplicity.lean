@@ -116,8 +116,7 @@ theorem exact_ground_normalized_hypotheses :
     simp only [mass, inner_coordinates, hamiltonian_apply]
     have h₀ : (0 : Fin 3) ≠ 2 := by decide
     have h₁ : (1 : Fin 3) ≠ 2 := by decide
-    simp only [coefficient, if_neg h₀, if_neg h₁, if_pos (rfl : (2 : Fin 3) = 2)]
-    ring
+    simp [coefficient, h₀, h₁] <;> ring
   · exact ⟨axis 2, by simp [axis], by simp [axis, PiLp.single_eq_zero_iff]⟩
 
 /-- The real eigenvalues in decreasing order, including multiplicities. -/
@@ -144,10 +143,13 @@ private theorem level_values (i : Fin 3) : levels i = 2 ∨ levels i = 3 := by
 
 theorem lowest_two_levels_equal : levels 2 = 2 ∧ levels 1 = 2 ∧ levels 0 = 3 := by
   classical
+  have he : Module.finrank ℝ (eigenspace hamiltonian 2) = 2 := by
+    rw [← matched_is_ground_eigenspace]
+    exact matched_finrank
   have hcard : Finset.card {i : Fin 3 | levels i = 2} = 2 := by
-    simpa only [levels, RCLike.ofReal_real_eq_id, id_eq, ← matched_is_ground_eigenspace,
-      matched_finrank] using
-      hamiltonian_symmetric.card_filter_eigenvalues_eq ambient_finrank (2 : ℝ)
+    have h := hamiltonian_symmetric.card_filter_eigenvalues_eq ambient_finrank (2 : ℝ)
+    rw [he] at h
+    simpa only [levels, RCLike.ofReal_real_eq_id, id_eq] using h
   have hmono : Antitone levels := hamiltonian_symmetric.eigenvalues_antitone ambient_finrank
   have h₀ : levels 0 = 3 := by
     rcases level_values 0 with he | he

@@ -67,7 +67,6 @@ theorem linear_charpoly (B : Module.Basis (Fin 2) R V) (F : Module.End R V) (a b
   letI : Module.Free R V := Module.Free.of_basis B
   letI : Module.Finite R V := Module.Finite.of_basis B
   obtain ⟨ht, hd⟩ := linear_trace_det B F a b hNo h
-  dsimp only
   rw [← LinearMap.charpoly_toMatrix _ B, Matrix.charpoly_fin_two,
     ← LinearMap.trace_eq_matrix_trace R B, LinearMap.det_toMatrix B, ht, hd]
 

@@ -52,7 +52,9 @@ theorem exists_tensor_stage (hMono : Monotone U) (hCover : ∀ b : B, ∃ n, b �
     let w := max m n
     obtain ⟨u', hu'⟩ := range_mono U hMono (le_max_left m n) (show x ∈ (stageTensor U m).range from ⟨u, hu⟩)
     obtain ⟨v', hv'⟩ := range_mono U hMono (le_max_right m n) (show y ∈ (stageTensor U n).range from ⟨v, hv⟩)
-    exact ⟨w, u' + v', by rw [map_add, hu', hv']⟩
+    have hU : stageTensor U w u' = x := hu'
+    have hV : stageTensor U w v' = y := hv'
+    exact ⟨w, u' + v', (map_add (stageTensor U w) u' v').trans (congrArg₂ (· + ·) hU hV)⟩
 
 /-- Multiplication on the square commutes with the actual stage inclusion. -/
 theorem multiplication_comp (n : ℕ) :

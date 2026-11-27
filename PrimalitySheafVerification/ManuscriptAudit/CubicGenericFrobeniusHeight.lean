@@ -25,7 +25,9 @@ private theorem map_comp (P : Points A) (f g : Model A →ₐ[K] Model A) :
   let mp := pointMapAt K (Model A) (Curve A) (Curve (algebraMap K (Model A) A)) h
   change mp f (mp g P) = mp (f.comp g) P
   cases P with
-  | zero => simp
+  | zero =>
+    change mp f (mp g (0 : Points A)) = mp (f.comp g) 0
+    simp only [map_zero]
   | some x y hp =>
     obtain ⟨hg, eg⟩ := pointMapAt_some K (Model A) (Curve A) _ h g x y hp
     obtain ⟨hf, ef⟩ := pointMapAt_some K (Model A) (Curve A) _ h f (g x) (g y) hg

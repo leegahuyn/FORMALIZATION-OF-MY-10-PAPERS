@@ -56,7 +56,9 @@ theorem two_nsmul_eq_zero_of_height_zero (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) 
   apply Subtype.ext
   obtain ⟨P, hP⟩ := P
   cases P with
-  | zero => simp
+  | zero =>
+    change (2 : ℕ) • (0 : Points A) = 0
+    exact nsmul_zero _
   | some x y hp =>
     have h₂R : (2 : RatFunc K) ≠ 0 := by
       simpa only [map_ofNat] using (map_ne_zero (algebraMap K (RatFunc K))).mpr h₂

@@ -10,7 +10,7 @@ finite pro-étale reductions. -/
 
 namespace ManuscriptAudit.ProetaleAdicHOneDetection
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits
 open CyclicPowerInverseLimit (compatibleTuples)
 open ProetaleAdicNativeExactSequence (sequence)
 open ProetaleCoefficientUniverseLift (lift)
@@ -133,14 +133,23 @@ theorem exists_lift_of_product_class (x : compatibleHOne X ℓ) (z : Sheaf.H (Q 
     refine (Sheaf.H.map_comp_apply (Q X ℓ).g (projection X ℓ n) z).symm.trans ?_
     rw [difference_comp_projection]
     let t := projection X ℓ (n + 1) ≫ transition X ℓ n
-    let P := Sheaf.functorH (Scheme.ProEt.topology X) 1
-    have he := ConcreteCategory.congr_hom (P.map_sub (projection X ℓ n) t) z
-    change Sheaf.H.map (projection X ℓ n - t) 1 z =
-      Sheaf.H.map (projection X ℓ n) 1 z - Sheaf.H.map t 1 z at he
+    let P := (Q X ℓ).X₂
+    let F := finiteCoefficient X ℓ n
+    have hm : (Ext.mk₀ (projection X ℓ n - t) : Ext.{1} P F 0) =
+        Ext.mk₀ (projection X ℓ n) - Ext.mk₀ t :=
+      map_sub (Ext.addEquiv₀ (X := P) (Y := F)).symm (projection X ℓ n) t
+    have he : Sheaf.H.map (projection X ℓ n - t) 1 z =
+        Sheaf.H.map (projection X ℓ n) 1 z - Sheaf.H.map t 1 z := by
+      change z.comp (Ext.mk₀ (projection X ℓ n - t)) (add_zero 1) =
+        z.comp (Ext.mk₀ (projection X ℓ n)) (add_zero 1) - z.comp (Ext.mk₀ t) (add_zero 1)
+      rw [hm]
+      exact map_sub (z.precomp F (add_zero 1)) _ _
     rw [he]
     change Sheaf.H.map (projection X ℓ n) 1 z -
       Sheaf.H.map (projection X ℓ (n + 1) ≫ transition X ℓ n) 1 z = 0
-    rw [Sheaf.H.map_comp_apply (projection X ℓ (n + 1)) (transition X ℓ n) z, hz, hz, x.property n, sub_self]
+    have ht : Sheaf.H.map (transition X ℓ n) 1 (x.val (n + 1)) = x.val n := x.property n
+    rw [Sheaf.H.map_comp_apply (projection X ℓ (n + 1)) (transition X ℓ n) z,
+      hz n, hz (n + 1), ht, sub_self]
   obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₂ (integers X)
     (ProetaleAdicNativeExactSequence.shortExact X ℓ) z hd
   refine ⟨a, Subtype.ext ?_⟩

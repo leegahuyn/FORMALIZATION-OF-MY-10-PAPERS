@@ -69,6 +69,12 @@ theorem kernelBoundary_transition [IsAlgClosed K] [Fact ℓ.Prime] [NeZero (ℓ 
     haveI : NeZero ((ℓ ^ (n + 1) : ℕ) : K) := ⟨by rw [Nat.cast_pow]; exact pow_ne_zero _ (NeZero.ne (ℓ : K))⟩
     Sheaf.H.map (kernelTransition X ℓ n) 1 (kernelBoundary k (ℓ ^ (n + 1)) u) =
       kernelBoundary k (ℓ ^ n) u := by
+  letI : NeZero (ℓ ^ n) := ⟨pow_ne_zero _ (show ℓ.Prime from Fact.out).ne_zero⟩
+  letI : NeZero (ℓ ^ (n + 1)) := ⟨pow_ne_zero _ (show ℓ.Prime from Fact.out).ne_zero⟩
+  letI : NeZero ((ℓ ^ n : ℕ) : K) :=
+    ⟨by rw [Nat.cast_pow]; exact pow_ne_zero _ (NeZero.ne (ℓ : K))⟩
+  letI : NeZero ((ℓ ^ (n + 1) : ℕ) : K) :=
+    ⟨by rw [Nat.cast_pow]; exact pow_ne_zero _ (NeZero.ne (ℓ : K))⟩
   let h := sequence_shortExact k (ℓ ^ (n + 1))
   let h' := sequence_shortExact k (ℓ ^ n)
   let f := sequenceTransition X ℓ n
