@@ -42,7 +42,9 @@ private theorem rotation_pow_some (hz : z ^ 3 = 1)
     rw [pow_succ']
     change pointRotation hz hΔ
       ((pointRotation hz hΔ ^ n) (Affine.Point.some x y h)) = _
-    rw [he, CubicCubeRotation.rotate_some, Affine.Point.some.injEq]
+    rw [he]
+    change CubicCubeRotation.rotate z hz hΔ (Affine.Point.some (z ^ n * x) y h') = _
+    rw [CubicCubeRotation.rotate_some, Affine.Point.some.injEq]
     exact ⟨hx, rfl⟩
 
 theorem scale_eq_rotation_pow (hz : z ^ 3 = 1)
@@ -52,11 +54,24 @@ theorem scale_eq_rotation_pow (hz : z ^ 3 = 1)
   apply AddMonoidHom.ext
   intro P
   cases P with
-  | zero => simp only [map_zero]
+  | zero =>
+    change scale hv hV hΔ (0 : (Curve A).Point) = (pointRotation hz hΔ ^ n) 0
+    have hleft : scale hv hV hΔ (0 : (Curve A).Point) = 0 :=
+      (scale hv hV hΔ).map_zero
+    have hright : (pointRotation hz hΔ ^ n) (0 : (Curve A).Point) = 0 :=
+      ((pointRotation hz hΔ ^ n : AddMonoid.End (Curve A).Point) :
+        (Curve A).Point →+ (Curve A).Point).map_zero
+    exact hleft.trans hright.symm
   | some x y h =>
     obtain ⟨h', he⟩ := rotation_pow_some hz hΔ n h
-    rw [scale_some, he, Affine.Point.some.injEq, hx, hy, one_mul]
-    exact ⟨rfl, rfl⟩
+    calc
+      scale hv hV hΔ (Affine.Point.some x y h) =
+          Affine.Point.some (v ^ 2 * x) (v ^ 3 * y) _ :=
+        CubicPointScaling.scale_some hv hV hΔ h
+      _ = Affine.Point.some (z ^ n * x) y h' := by
+        rw [Affine.Point.some.injEq, hx, hy, one_mul]
+        exact ⟨rfl, rfl⟩
+      _ = (pointRotation hz hΔ ^ n) (Affine.Point.some x y h) := he.symm
 
 variable (E : Type*) (L) [Field E] [Fintype E] [Algebra E L] [IsAlgClosed L]
 

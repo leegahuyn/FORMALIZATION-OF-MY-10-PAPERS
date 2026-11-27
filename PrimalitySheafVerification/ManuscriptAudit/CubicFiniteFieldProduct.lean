@@ -17,7 +17,7 @@ variable (K L : Type*) [Field K] [Fintype K] [DecidableEq K]
 
 /-- The exact product over every base-field linear factor, evaluated in an extension. -/
 theorem product_sub_scalar (hchar : ringChar K ≠ 2) (y : L) :
-    (∏ x : K, algebraMap K L x - y) = y - y ^ Fintype.card K := by
+    (∏ x : K, (algebraMap K L x - y)) = y - y ^ Fintype.card K := by
   have hq : 1 < Fintype.card K := Fintype.one_lt_card
   let P : K[X] := X ^ Fintype.card K - X
   have hSplit : P.Splits := by

@@ -7,7 +7,8 @@ induced map of actual geometric points and functoriality on both branches. -/
 namespace ManuscriptAudit.SchemePullbackChartPoints
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
-open ProetaleContinuousDirectImageMaps (pullbackMap pullbackMap_fst pullbackMap_snd)
+open ProetaleContinuousDirectImageMaps (pullbackMap pullbackMap_fst pullbackMap_snd
+  pullbackMap_fst_assoc pullbackMap_snd_assoc)
 
 noncomputable section
 
@@ -57,6 +58,7 @@ theorem fromChart_isPullback (H : IsPullback e n p j) :
 
 variable (i : O ⟶ Z) (b : O ⟶ L) (hb : b ≫ n = i)
 
+include he hb in
 theorem branch_ambient_comp : (b ≫ e) ≫ p = i ≫ j := by
   rw [Category.assoc, he, ← Category.assoc, hb]
 

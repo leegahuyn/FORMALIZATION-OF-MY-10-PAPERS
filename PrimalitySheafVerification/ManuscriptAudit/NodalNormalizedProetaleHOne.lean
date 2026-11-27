@@ -31,6 +31,8 @@ private abbrev X := normalizedNode K
 private abbrev J := Scheme.ProEt.topology (X K)
 private abbrev G := AddCommGrpCat.{1}
 
+include h2
+
 /-- The actual normalized proper model has vanishing degree-one native
 cohomology for every positive cyclic order invertible in the field. -/
 theorem cyclic_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :

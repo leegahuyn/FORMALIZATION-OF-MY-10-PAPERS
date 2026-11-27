@@ -34,10 +34,9 @@ theorem arithmetic_coefficients :
   letI := Module.Finite.of_basis (integralBasis L)
   obtain ⟨hT, hD⟩ := trace_det L 2 (Or.inl rfl)
   constructor
-  · rw [arithmetic, LinearMap.trace_baseChange, hT]
-    norm_num
-  · rw [arithmetic, Paper5GeometricFrobeniusInverse.determinant_baseChange (integralBasis L), hD]
-    norm_num
+  · rw [arithmetic, LinearMap.trace_baseChange, hT, map_neg, map_ofNat]
+  · rw [arithmetic, Paper5GeometricFrobeniusInverse.determinant_baseChange (integralBasis L),
+      hD, map_ofNat]
 
 def arithmeticEquiv : V L ≃ₗ[ℚ_[2]] V L := by
   letI : Module.Finite ℚ_[2] (V L) := Module.Finite.of_basis (rationalBasis L)

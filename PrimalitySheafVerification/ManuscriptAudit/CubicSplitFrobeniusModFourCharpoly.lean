@@ -23,18 +23,26 @@ private theorem arithmetic_trace {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K
       (signedTrace A : ZMod 4) := by
   rcases h with hq | hRat
   · exact CubicSplitFrobeniusModFourTrace.native_trace_eq_count K L h₂ h₃ hA hz hq
-  · exact CubicSplitModFourFullTwoTorsion.trace_eq_signed_count K L h₂ h₃ hA hz hRat
+  · simpa only [signedTrace, Int.cast_add, Int.cast_sub, Int.cast_natCast, Int.cast_one] using
+      CubicSplitModFourFullTwoTorsion.trace_eq_signed_count K L h₂ h₃ hA hz hRat
+
+private def rotationBasis {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
+    (hA : A ≠ 0) (hz : IsPrimitiveRoot z 3) : Basis (Fin 2) (ZMod 4) (Level K L A 2) :=
+  (exists_native_rotation_form K L h₂ h₃ hA hz).choose
 
 /-- The actual characteristic polynomial over Z/4 has the finite-field coefficients whenever
 the field size is one modulo four or the rational two-torsion is full. -/
 theorem charpoly_eq_signed_count {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     (hA : A ≠ 0) (hz : IsPrimitiveRoot z 3)
     (h : (Fintype.card K : ZMod 4) = 1 ∨ Nat.card (Torsion 2 (Curve A).Point) = 4) :
+    let B := rotationBasis K L h₂ h₃ hA hz
+    letI : Module.Free (ZMod 4) (Level K L A 2) := Module.Free.of_basis B
+    letI : Module.Finite (ZMod 4) (Level K L A 2) := Module.Finite.of_basis B
     (levelFrobenius K L A 2).charpoly =
       X ^ 2 - C (signedTrace A : ZMod 4) * X + C (Fintype.card K : ZMod 4) := by
   letI : Fact (1 < (4 : ℕ)) := ⟨by decide⟩
   let F := levelFrobenius K L A 2
-  obtain ⟨B, _, _, _, _, _⟩ := exists_native_rotation_form K L h₂ h₃ hA hz
+  let B := rotationBasis K L h₂ h₃ hA hz
   letI : Module.Free (ZMod 4) (Level K L A 2) := Module.Free.of_basis B
   letI : Module.Finite (ZMod 4) (Level K L A 2) := Module.Finite.of_basis B
   have ht : LinearMap.trace (ZMod 4) (Level K L A 2) F = (signedTrace A : ZMod 4) :=

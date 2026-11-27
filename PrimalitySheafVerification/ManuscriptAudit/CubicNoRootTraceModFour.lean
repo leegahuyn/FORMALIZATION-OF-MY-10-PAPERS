@@ -46,7 +46,7 @@ point count is the quadratic character of the product of the cubic values, modul
 theorem signed_trace_eq_quadratic_product {A : K}
     (hchar : ringChar K ≠ 2) (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
     (hq : (Fintype.card K : ZMod 4) = 3) (hNo : ∀ x : K, x ^ 3 + A ≠ 0) :
-    (((Fintype.card K : ℤ) + 1 - (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ)) :
+    (((Fintype.card K : ℤ) + 1 - (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ) : ℤ) :
       ZMod 4) = (quadraticChar K (∏ x : K, (x ^ 3 + A)) : ZMod 4) := by
   have hc := shortCubic_projective_count_int hchar hΔ
   simp only [zero_mul, sub_zero] at hc

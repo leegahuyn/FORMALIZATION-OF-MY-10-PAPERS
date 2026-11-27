@@ -141,6 +141,28 @@ theorem local_not_formally_unramified (W : WeierstrassCurve K) (x y : K)
     (dualEvaluation_residue W x y hEq a) (dualEvaluation_residue W x y hEq b)
     (fun he => hNe (dualEvaluation_injective W x y he))
 
+/-- The actual rational point determines a maximal ideal of the Weierstrass coordinate ring. -/
+def rationalMaximalIdeal (W : WeierstrassCurve K) (x y : K) (h : W.toAffine.Equation x y) :
+    Ideal W.toAffine.CoordinateRing :=
+  RingHom.ker (residueAt W x y h).toRingHom
+
+theorem rationalMaximalIdeal_isMaximal (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Equation x y) : (rationalMaximalIdeal W x y h).IsMaximal := by
+  apply RingHom.ker_isMaximal_of_surjective (residueAt W x y h).toRingHom
+  intro a
+  refine ⟨algebraMap K W.toAffine.CoordinateRing a, ?_⟩
+  change residueAt W x y h (algebraMap K W.toAffine.CoordinateRing a) = a
+  simpa only [Algebra.algebraMap_self, RingHom.id_apply] using (residueAt W x y h).commutes a
+
+theorem canonical_local_ring_not_formally_unramified (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y) :
+    let P := rationalMaximalIdeal W x y h.1
+    letI : P.IsPrime := (rationalMaximalIdeal_isMaximal W x y h.1).isPrime
+    ¬ Algebra.FormallyUnramified K (Localization.AtPrime P) := by
+  let P := rationalMaximalIdeal W x y h.1
+  letI : P.IsPrime := (rationalMaximalIdeal_isMaximal W x y h.1).isPrime
+  exact local_not_formally_unramified W x y h.1 h P rfl (Localization.AtPrime P)
+
 end
 end ManuscriptAudit.Paper2WeierstrassNotUnramified
 
@@ -154,7 +176,9 @@ run_cmd do
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_map_not_etale,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_map_not_formallyUnramified,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_diagonal_not_open,
-      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.local_not_formally_unramified] do
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.local_not_formally_unramified,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.rationalMaximalIdeal_isMaximal,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.canonical_local_ring_not_formally_unramified] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

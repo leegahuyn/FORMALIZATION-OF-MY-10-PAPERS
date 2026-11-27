@@ -43,16 +43,17 @@ def relabel {U : X.ProEt} (ε : Binary) (m : M)
 theorem relabel_difference_const {U : X.ProEt} (ε : Binary) (m : M)
     (s : (functionsOver Binary p).obj.obj (op U))
     (hDiff : (binaryDifference b₀ b₁ h₀ h₁).hom.app (op U) s =
-      ⟨ContinuousMap.const (pullback U.hom q) 1⟩)
+      ⟨ContinuousMap.const (↥(pullback U.hom q : Scheme.{0})) 1⟩)
     (hPos : (positiveTrace b₀ h₀).hom.app (op U) s =
-      ⟨ContinuousMap.const (pullback U.hom q) ε⟩) :
+      ⟨ContinuousMap.const (↥(pullback U.hom q : Scheme.{0})) ε⟩) :
     (difference p q b₀ b₁ h₀ h₁ M).hom.app (op U) (relabel M ε m s) =
-      ⟨ContinuousMap.const (pullback U.hom q) m⟩ := by
+      ⟨ContinuousMap.const (↥(pullback U.hom q : Scheme.{0})) m⟩ := by
   apply ULift.ext
   apply ContinuousMap.ext
   intro c
-  let x := s.down (pullbackMap U.hom b₀ h₀ c)
-  let y := s.down (pullbackMap U.hom b₁ h₁ c)
+  let s' : C(pullback U.hom p, Binary) := s.down
+  let x := s' (pullbackMap U.hom b₀ h₀ c)
+  let y := s' (pullbackMap U.hom b₁ h₁ c)
   have hx : x = ε := congrArg (fun f : ULift.{1} (C(pullback U.hom q, Binary)) ↦ f.down c) hPos
   have hxy : x - y = 1 :=
     congrArg (fun f : ULift.{1} (C(pullback U.hom q, Binary)) ↦ f.down c) hDiff

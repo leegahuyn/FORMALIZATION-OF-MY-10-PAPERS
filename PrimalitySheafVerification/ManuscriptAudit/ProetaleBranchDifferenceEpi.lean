@@ -28,7 +28,7 @@ private abbrev J := Scheme.ProEt.topology X
 
 /-- The constant 1 on the displayed native closed conductor. -/
 def oneSection (U : X.ProEt) : (functionsOver Binary q).obj.obj (op U) :=
-  ⟨ContinuousMap.const (pullback U.hom q) 1⟩
+  ⟨ContinuousMap.const (↥(pullback U.hom q : Scheme.{0})) 1⟩
 
 theorem oneSection_restrict {U V : X.ProEt} (f : U ⟶ V) :
     (functionsOver Binary q).obj.map f.op (oneSection (q := q) V) = oneSection (q := q) U := by
@@ -46,7 +46,9 @@ theorem image_mem_with_separator (U : X.ProEt)
   let P₀ := positiveTrace b₀ h₀
   let u := P₀.hom.app (op U) b
   let H := functionsOver (M × Binary) q
-  let t : H.obj.obj (op U) := ⟨s.down.prodMk u.down⟩
+  let s' : C(pullback U.hom q, M) := s.down
+  let u' : C(pullback U.hom q, Binary) := u.down
+  let t : H.obj.obj (op U) := ⟨s'.prodMk u'⟩
   choose W hW c hc using fun x : U.left ↦
     exists_open_restriction_const q (M × Binary) U t x
   let V (x : U.left) := openObject U (W x)
@@ -67,13 +69,13 @@ theorem image_mem_with_separator (U : X.ProEt)
   let v := f x
   let b' := (functionsOver Binary p).obj.map v.op b
   have hVal : (functionsOver M q).obj.map v.op s =
-      ⟨ContinuousMap.const (pullback (V x).hom q) (c x).1⟩ := by
+      ⟨ContinuousMap.const (↥(pullback (V x).hom q : Scheme.{0})) (c x).1⟩ := by
     apply ULift.ext
     apply ContinuousMap.ext
     intro a
     exact congrArg (fun t : ULift.{1} (C(pullback (V x).hom q, M × Binary)) ↦ (t.down a).1) (hc x)
   have hLabel : (functionsOver Binary q).obj.map v.op u =
-      ⟨ContinuousMap.const (pullback (V x).hom q) (c x).2⟩ := by
+      ⟨ContinuousMap.const (↥(pullback (V x).hom q : Scheme.{0})) (c x).2⟩ := by
     apply ULift.ext
     apply ContinuousMap.ext
     intro a
@@ -82,7 +84,7 @@ theorem image_mem_with_separator (U : X.ProEt)
       oneSection (q := q) (V x) := by
     unfold b'
     rw [NatTrans.naturality_apply (binaryDifference b₀ b₁ h₀ h₁).hom v.op b, hb, oneSection_restrict]
-  have hPos : P₀.hom.app (op (V x)) b' = ⟨ContinuousMap.const (pullback (V x).hom q) (c x).2⟩ :=
+  have hPos : P₀.hom.app (op (V x)) b' = ⟨ContinuousMap.const (↥(pullback (V x).hom q : Scheme.{0})) (c x).2⟩ :=
     (NatTrans.naturality_apply P₀.hom v.op b).trans hLabel
   exact ⟨relabel M (c x).2 (c x).1 b',
     (relabel_difference_const b₀ b₁ h₀ h₁ M (c x).2 (c x).1 b' hDiff hPos).trans hVal.symm⟩

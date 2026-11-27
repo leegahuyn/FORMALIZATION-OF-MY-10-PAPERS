@@ -30,7 +30,7 @@ theorem inverseNomeTerm_eq_weighted_difference (S : ∀ k : ℕ, Finset (Fin (2 
     inverseNomeTerm S k Q =
       -(prefactor k * ∑ d ∈ S k, residueWeight k d *
         ((root k ^ (d.val : ℤ))⁻¹ * difference k (root k ^ (d.val : ℤ))⁻¹ Q)) := by
-  have hNeg : -(46 / 3 : ℝ) = -46 / 3 := neg_div _ _
+  have hNeg : -(46 / 3 : ℝ) = -46 / 3 := by norm_num
   simp only [inverseNomeTerm, difference, hNeg, neg_mul, mul_assoc]
 
 private theorem inverse_root_norm (k : ℕ) (d : Fin (2 * k)) :

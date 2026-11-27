@@ -7,7 +7,8 @@ normalization chart to the ambient normalization pullback. -/
 namespace ManuscriptAudit.NormalizationBranchChartTransport
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
-open ProetaleContinuousDirectImageMaps (pullbackMap pullbackMap_fst pullbackMap_snd)
+open ProetaleContinuousDirectImageMaps (pullbackMap pullbackMap_fst pullbackMap_snd
+  pullbackMap_snd_assoc)
 
 noncomputable section
 
