@@ -47,10 +47,11 @@ theorem geometric_smooth_range :
     Set.range (geometricSmoothOpen p).ι = (Set.range (origin p))ᶜ := by
   let e := projectiveIso p
   let g := projectiveNodeToBase (closureField p)
+  have hOver : e.hom ≫ g = geometricToBase p := projectiveIso_over p
   have hs : e.hom ⁻¹ᵁ g.smoothLocus = (geometricToBase p).smoothLocus := by
     refine (e.hom.preimage_smoothLocus_eq g).trans ?_
     ext x
-    simp only [Scheme.Hom.mem_smoothLocus, projectiveIso_over p]
+    simp only [Scheme.Hom.mem_smoothLocus, hOver]
   rw [Scheme.Opens.range_ι]
   ext x
   have hSm : x ∈ geometricSmoothOpen p ↔ e.hom x ∈ g.smoothLocus := by
@@ -76,7 +77,7 @@ theorem geometric_smooth_range :
 theorem geometric_preconnected : PreconnectedSpace (geometricFiber p) := by
   letI := NodalCompactSupportHZero.projectiveNode_irreducible (closureField p)
   let e := projectiveIso p
-  have h : IsPreconnected (Set.univ : Set (projectiveNode (closureField p))) := isPreconnected_univ
+  have h : _root_.IsPreconnected (Set.univ : Set (projectiveNode (closureField p))) := isPreconnected_univ
   refine ⟨?_⟩
   have h' := h.image e.inv e.inv.continuous.continuousOn
   rwa [Set.image_univ, Set.range_eq_univ.mpr

@@ -11,7 +11,8 @@ checked diagonal form. -/
 namespace ManuscriptAudit.CoulombQuotientNumericalRange
 
 open MeasureTheory CoulombNegativeQuotientForm CoulombBoundedQuotientPotential
-open CoulombQuotientTestL2 SpectralQuarterShift (withPotential)
+open CoulombQuotientTestL2
+open SpectralQuarterShift (withPotential)
 open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
 
 noncomputable section

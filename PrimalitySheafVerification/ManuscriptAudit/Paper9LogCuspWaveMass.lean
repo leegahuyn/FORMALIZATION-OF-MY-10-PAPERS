@@ -38,14 +38,22 @@ theorem residual_mass (b' b'' : ℝ → ℝ) (a d k R : ℝ) (hR : R ≠ 0)
     ring
   simp_rw [hEq]
   have hScale : Continuous (fun t : ℝ => t / R) := continuous_id.div_const R
-  rw [intervalIntegral.integral_add
-      ((continuous_const.mul ((hb''.comp hScale).pow 2)).intervalIntegrable _ _)
-      ((continuous_const.mul ((hb'.comp hScale).pow 2)).intervalIntegrable _ _),
-    intervalIntegral.integral_const_mul, intervalIntegral.integral_const_mul,
-    scale_integral (fun t => b'' t ^ (2 : ℕ)) a d R hR,
-    scale_integral (fun t => b' t ^ (2 : ℕ)) a d R hR]
-  unfold mass
-  ring
+  have hA : IntervalIntegrable (fun t : ℝ => (R⁻¹) ^ 4 * b'' (t / R) ^ (2 : ℕ))
+      volume (R * a) (R * d) :=
+    (continuous_const.mul ((hb''.comp hScale).pow 2)).intervalIntegrable _ _
+  have hB : IntervalIntegrable (fun t : ℝ => (4 * k ^ 2 * (R⁻¹) ^ 2) * b' (t / R) ^ (2 : ℕ))
+      volume (R * a) (R * d) :=
+    (continuous_const.mul ((hb'.comp hScale).pow 2)).intervalIntegrable _ _
+  calc
+    _ = (∫ t in (R * a)..(R * d), (R⁻¹) ^ 4 * b'' (t / R) ^ (2 : ℕ)) +
+        (∫ t in (R * a)..(R * d), (4 * k ^ 2 * (R⁻¹) ^ 2) * b' (t / R) ^ (2 : ℕ)) :=
+      intervalIntegral.integral_add hA hB
+    _ = _ := by
+      rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_const_mul,
+        scale_integral (fun t => b'' t ^ (2 : ℕ)) a d R hR,
+        scale_integral (fun t => b' t ^ (2 : ℕ)) a d R hR]
+      unfold mass
+      ring
 
 theorem relative_eq (b b' b'' : ℝ → ℝ) (a d k R : ℝ) (hR : R ≠ 0)
     (hb' : Continuous b') (hb'' : Continuous b'') (hM : mass b a d ≠ 0) :
@@ -61,7 +69,9 @@ theorem relative_tendsto_zero (b b' b'' : ℝ → ℝ) (a d k : ℝ) :
   have hI : Tendsto (fun R : ℝ => R⁻¹) atTop (𝓝 0) := tendsto_inv_atTop_zero
   have hA := (hI.pow 4).mul (tendsto_const_nhds (x := mass b'' a d))
   have hB := (tendsto_const_nhds (x := 4 * k ^ 2 * mass b' a d)).mul (hI.pow 2)
-  simpa [relativeResidual] using (hA.add hB).div_const (mass b a d)
+  unfold relativeResidual
+  simpa only [zero_pow (by decide : (4 : ℕ) ≠ 0), zero_pow (by decide : (2 : ℕ) ≠ 0),
+    zero_mul, mul_zero, zero_add, zero_div] using (hA.add hB).div_const (mass b a d)
 
 theorem exists_small_relative_residual (b b' b'' : ℝ → ℝ) (a d k : ℝ)
     (hb' : Continuous b') (hb'' : Continuous b'') (hM : 0 < mass b a d)

@@ -1,6 +1,7 @@
 import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.NormNum
+import PrimalitySheafVerification.ManuscriptAudit.EtaleConstantHZero
 import PrimalitySheafVerification.ManuscriptAudit.NodalFiniteCohomology
 import PrimalitySheafVerification.ManuscriptAudit.NodalSmoothLocusCohomology
 import PrimalitySheafVerification.ManuscriptAudit.NodalSmoothRationalBoundary
