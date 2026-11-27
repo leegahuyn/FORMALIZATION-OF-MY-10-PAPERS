@@ -42,6 +42,7 @@ theorem trace_det_eq_point_count (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠
   have hΔA := shortCubic_discriminant_ne_zero h₂ h₃ ((map_ne_zero (algebraMap E L)).mpr hA)
   obtain ⟨u, w, hw, e, hu₀, hu, hW, he⟩ := exists_twist_conjugacy_with_parameter L E hA hΔ hΔA
   have hV : w = v := hW.trans (ratio_eq_power L E (sixth_dvd_card_sub_one p E hp hp₃ hm) hu₀ hu)
+  clear hW
   subst w
   obtain ⟨ht, hd⟩ := trace_det_for_twist p L l E hp hp₃ hlp hm h₂ h₃ hΔ hw e he
   have hCard : Fintype.card E = p ^ (2 * m) := by

@@ -80,6 +80,7 @@ def isLimitHomologyCone (F : J ⥤ Ch) (n : ℤ) :
   change (lim.π t).app S₀.homology ≫ (S₀.mapHomologyIso (E.obj t)).inv =
     (S₀.mapHomologyIso L).inv ≫ ShortComplex.homologyMap (S₀.mapNatTrans (lim.π t))
   rw [NatTrans.app_homology (lim.π t) S₀]
+  dsimp only [L, E]
   simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
 /-- Homology preserves the given native exact-shaped limit of abelian-group complexes. -/

@@ -19,7 +19,11 @@ private def starTail (q : ℝ) (n : ℕ) : ℝ :=
 private theorem adjacent_star_tail {q : ℝ} (hq : 0 ≤ q) (n : ℕ) :
     term q 1 n + term q 1 (n + 1) = starTail q n := by
   have hFormula : term q 1 n / (1 + q ^ (n + 1)) = starTail q n := by
-    simp only [term, starTail, product_succ, one_pow, mul_one, one_mul, div_div_eq_div_mul]
+    have hProd : product q 1 n ≠ 0 :=
+      (zero_lt_one.trans_le (product_ge_one hq (by norm_num) n)).ne'
+    have hFactor : 1 + q ^ (n + 1) ≠ 0 := by positivity
+    simp only [term, starTail, product_succ, one_pow, mul_one, one_mul]
+    field_simp [hProd, hFactor] <;> ring
   rw [← hFormula]
   apply (eq_div_iff (by positivity : 1 + q ^ (n + 1) ≠ 0)).mpr
   have h := adjacent_term hq (show (0 : ℝ) ≤ 1 by norm_num) n

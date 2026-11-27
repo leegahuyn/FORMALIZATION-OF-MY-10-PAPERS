@@ -23,7 +23,7 @@ private abbrev A := AddCommGrpCat.{0}
 local notation "S" => Sheaf J A
 private abbrev Ch := CochainComplex A ℤ
 
-variable [HasSheafify J A] [EnoughInjectives S]
+variable [HasSheafify J A]
 
 /-- Actual evaluation of an abelian sheaf at the specified site object. -/
 abbrev sections (T : C) : S ⥤ A := (sheafSections J A).obj (op T)
@@ -31,8 +31,14 @@ abbrev sections (T : C) : S ⥤ A := (sheafSections J A).obj (op T)
 instance sections_additive (T : C) : (sections J T).Additive :=
   ⟨by intros; rfl⟩
 
+variable [inj : EnoughInjectives (Sheaf J A)]
+
+include inj
+
 /-- The chosen injective resolution of the actual coefficient sheaf. -/
-abbrev resolution (F : S) : InjectiveResolution F := InjectiveResolution.of F
+abbrev resolution (F : S) : InjectiveResolution F := by
+  letI : EnoughInjectives S := inj
+  exact InjectiveResolution.of F
 
 /-- The actual integer-indexed sections complex on the chosen injective resolution. -/
 def sectionComplex (T : C) (F : S) : Ch :=

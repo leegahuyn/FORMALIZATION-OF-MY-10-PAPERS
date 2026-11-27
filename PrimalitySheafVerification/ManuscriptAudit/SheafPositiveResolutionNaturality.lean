@@ -85,7 +85,13 @@ private theorem cycle_naturality (n : ℕ)
     rw [← homEquiv_symm_map J hT]
     have hx : (sections J T).map (R.cocomplex.d (n + 1) (n + 2)) x₀.val = 0 := x₀.property
     rw [hx, map_zero]
-  change P.extMk ((homEquiv J hT (P.cocomplex.X (n + 1))).symm y₀.val) (n + 2) rfl _ =
+  let zy := (homEquiv J hT (P.cocomplex.X (n + 1))).symm y₀.val
+  have hy : zy ≫ P.cocomplex.d (n + 1) (n + 2) = 0 := by
+    change (homEquiv J hT _).symm y₀.val ≫ _ = _
+    rw [← homEquiv_symm_map J hT]
+    have h : (sections J T).map (P.cocomplex.d (n + 1) (n + 2)) y₀.val = 0 := y₀.property
+    rw [h, map_zero]
+  change P.extMk zy (n + 2) rfl hy =
     (R.extMk z (n + 2) rfl hz).comp (Ext.mk₀ f) (add_zero _)
   have hcomp : (homEquiv J hT (P.cocomplex.X (n + 1))).symm y₀.val =
       z ≫ φ.hom.f (n + 1) := by rw [hxy, homEquiv_symm_map] <;> rfl
@@ -100,8 +106,13 @@ theorem positiveEquiv_natural (n : ℕ) (x : (sectionsShort J R n (T := T)).homo
   let m := shortMap J φ n (T := T)
   obtain ⟨v, rfl⟩ := (AddCommGrpCat.epi_iff_surjective S.homologyπ).mp inferInstance x
   change positiveEquiv J hT P n (ShortComplex.homologyMap m (S.homologyπ v)) = _
-  have h := CategoryTheory.congr_fun (ShortComplex.homologyπ_naturality m) v
-  simp only [h, positiveEquiv_on_cycle]
+  have h : ShortComplex.homologyMap m (S.homologyπ v) =
+      (sectionsShort J P n (T := T)).homologyπ (ShortComplex.cyclesMap m v) :=
+    CategoryTheory.congr_fun (ShortComplex.homologyπ_naturality m) v
+  rw [h]
+  change positiveEquiv J hT P n ((sectionsShort J P n (T := T)).homologyπ (ShortComplex.cyclesMap m v)) =
+    Sheaf.H.map f (n + 1) (positiveEquiv J hT R n ((sectionsShort J R n (T := T)).homologyπ v))
+  simp only [positiveEquiv_on_cycle]
   exact cycle_naturality J hT φ n v
 
 end

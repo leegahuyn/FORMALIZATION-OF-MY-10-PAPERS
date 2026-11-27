@@ -31,8 +31,10 @@ theorem exists_unique_coefficients (hp : 5 ≤ p) (hsplit : p % 3 = 1) {A z : ZM
   have he := exists_integral_trace_norm hchar hdiv hA (shortCubic_discriminant_ne_zero h₂ h₃ hA)
   apply exists_unique_zero_reduction p hz
   obtain ⟨a, b, ht, hn⟩ := he
-  refine ⟨a, b, ?_, hn.symm⟩
-  simpa only [ZMod.card, paper5TraceCurve, ZMod.natCast_self] using ht
+  have hcurve : shortCubic (0 : ZMod p) A = paper5TraceCurve p A := by
+    ext <;> simp [shortCubic, paper5TraceCurve]
+  rw [ZMod.card, hcurve] at ht
+  exact ⟨a, b, ht, by simpa only [ZMod.card] using hn.symm⟩
 
 end
 end ManuscriptAudit.Paper5SplitPrimeArithmeticCM

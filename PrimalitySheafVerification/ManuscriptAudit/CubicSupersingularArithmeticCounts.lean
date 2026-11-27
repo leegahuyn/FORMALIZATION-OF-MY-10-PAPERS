@@ -52,6 +52,7 @@ theorem count_even (hp : 5 ≤ p) (hp₃ : p % 3 = 2)
   have hΔA := shortCubic_discriminant_ne_zero h₂ h₃ ((map_ne_zero (algebraMap E L)).mpr hA)
   obtain ⟨u, w, hw, e, hu₀, hu, hW, he⟩ := exists_twist_conjugacy_with_parameter L E hA hΔ hΔA
   have hV : w = v := hW.trans (ratio_eq_power L E (sixth_dvd_card_sub_one p E hp hp₃ hm) hu₀ hu)
+  clear hW
   subst w
   have hpc : (p : ℤ) ∣ c := by
     obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hm₀)

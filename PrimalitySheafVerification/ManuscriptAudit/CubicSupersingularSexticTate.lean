@@ -44,9 +44,8 @@ theorem trace_det_formula (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
       exact ⟨by simpa [k, h] using ht, hd⟩
   have hS : endMap l (sexticScale L hv hΔ) = a • R := by
     calc
-      _ = twistSign L v • R :=
-        (congrArg (endMap l) (sextic_eq_signed_rotation L hv hΔ)).trans
-          (map_zsmul (endMap l) r (twistSign L v))
+      _ = twistSign L v • R := by
+        rw [sextic_eq_signed_rotation L hv hΔ, map_zsmul] <;> rfl
       _ = _ := (Int.cast_smul_eq_zsmul ℤ_[l] (twistSign L v) R).symm
   have hA : a ^ 2 = 1 := by
     rcases twistSign_cases L v with h | h <;> simp [a, h]

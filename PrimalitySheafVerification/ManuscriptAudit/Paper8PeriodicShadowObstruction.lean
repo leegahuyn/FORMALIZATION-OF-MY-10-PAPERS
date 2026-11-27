@@ -57,8 +57,7 @@ theorem printed_period_and_shadow_incompatible {F : Field} {κ : ℂ}
     (hShadow : ∀ x y : ℝ, 0 < y → xiHalf F x y = κ * unaryShadow (complexPoint x y)) :
     False := by
   obtain ⟨z, hz, hNonzero⟩ := unaryShadow_nonzero_on_upper_half_plane
-  have hPoint : complexPoint z.re z.im = z := by
-    ext <;> simp [complexPoint, Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im]
+  have hPoint : complexPoint z.re z.im = z := Complex.re_add_im z
   have hPeriodXi := xiHalf_add_one_of_periodic hPeriod (x := z.re) hz
   rw [hShadow (z.re + 1) z.im hz, hShadow z.re z.im hz,
     complexPoint_add_one, hPoint, unaryShadow_add_one hz] at hPeriodXi

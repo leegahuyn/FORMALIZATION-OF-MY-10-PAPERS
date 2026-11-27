@@ -23,13 +23,15 @@ theorem kronecker_at_neg (n : ℤ) : kroneckerNegTwelve (-n) = -kroneckerNegTwel
   have hMinus : (-n) % 2 ≠ 0 := by omega
   by_cases hNeg : n < 0
   · have hPos : ¬ -n < 0 := by omega
-    simp [kroneckerNegTwelve, hEven, hMinus, hNeg, hPos, Int.natAbs_neg]
+    rw [kroneckerNegTwelve, kroneckerNegTwelve, if_neg hMinus, if_neg hEven,
+      if_neg hPos, if_pos hNeg, Int.natAbs_neg, neg_neg]
   · have hn : n ≠ 0 := by
       intro h
       subst n
       simp at hEven
     have hNegMinus : -n < 0 := by omega
-    simp [kroneckerNegTwelve, hEven, hMinus, hNeg, hNegMinus, Int.natAbs_neg]
+    rw [kroneckerNegTwelve, kroneckerNegTwelve, if_neg hMinus, if_neg hEven,
+      if_pos hNegMinus, if_neg hNeg, Int.natAbs_neg]
 
 theorem bilateralTerm_even (τ : ℂ) (n : ℤ) : bilateralTerm τ (-n) = bilateralTerm τ n := by
   simp only [bilateralTerm, kronecker_at_neg, Int.cast_neg, neg_mul_neg, neg_sq]

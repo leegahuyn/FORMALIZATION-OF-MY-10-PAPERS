@@ -114,6 +114,16 @@ private theorem trialIntegral_pos (D : GammaTwoFundamentalDomain) (k R : ℝ) (h
   rw [h]
   exact mul_pos zero_lt_two (mul_pos hR hMass)
 
+theorem waveVector_norm_pos (D : GammaTwoFundamentalDomain) (k R : ℝ) (hR : 0 < R) :
+    0 < ‖waveVector D k R hR‖ := by
+  have h := trialIntegral_pos D k R hR
+  rw [← waveVector_norm_sq D k R hR] at h
+  by_contra hn
+  have hz : ‖waveVector D k R hR‖ = 0 :=
+    le_antisymm (le_of_not_gt hn) (norm_nonneg _)
+  rw [hz, zero_pow (by decide : (2 : ℕ) ≠ 0)] at h
+  exact (lt_irrefl 0) h
+
 /-- A smooth compactly supported genuine quotient test section has
 positive (L^2) mass and arbitrarily small measured shifted residual
 relative to that mass. The derivative identification is
@@ -145,6 +155,7 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.Paper9CuspWaveHilbert.unitThetaCoefficient_memLp,
       ``ManuscriptAudit.Paper9CuspWaveHilbert.waveVector_norm_sq,
+      ``ManuscriptAudit.Paper9CuspWaveHilbert.waveVector_norm_pos,
       ``ManuscriptAudit.Paper9CuspWaveHilbert.exists_smooth_compact_wave_small_residual] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

@@ -25,6 +25,7 @@ def productEquiv : (∀ r, G r) ≃+ (∀ r, F r) where
   right_inv y := funext fun r ↦ (e r).apply_symm_apply (y r)
   map_add' x y := funext fun r ↦ (e r).map_add (x r) (y r)
 
+include h in
 theorem productDifference_natural (x : ∀ r, G r) :
     productEquiv G F e (productDifference G t x) =
       productDifference F s (productEquiv G F e x) := by
@@ -33,6 +34,7 @@ theorem productDifference_natural (x : ∀ r, G r) :
   rw [map_sub, h]
 
 /-- Product-difference surjectivity transfers to any coherently isomorphic tower. -/
+include h in
 theorem surjective_of_surjective
     (onto : Function.Surjective (productDifference F s)) :
     Function.Surjective (productDifference G t) := by
