@@ -52,12 +52,12 @@ private def pointTransport {W V : Affine L} (h : W = V) : W.Point ≃+ V.Point :
   subst V
   exact AddEquiv.refl _
 
-private def torsionTransport (m : ℕ) {W V : Affine L} (h : W = V) :
+def torsionTransport (m : ℕ) {W V : Affine L} (h : W = V) :
     Torsion m W.Point ≃ₗ[ZMod m] Torsion m V.Point := by
   subst V
   exact LinearEquiv.refl _ _
 
-private def pointMapAt (W : Affine E) (V : Affine L) (hW : W.baseChange L = V)
+def pointMapAt (W : Affine E) (V : Affine L) (hW : W.baseChange L = V)
     (g : L →ₐ[E] L) : V.Point →+ V.Point :=
   let e := pointTransport L hW
   e.toAddMonoidHom.comp ((Affine.Point.map (W' := W) g).comp e.symm.toAddMonoidHom)
@@ -71,7 +71,7 @@ private theorem pointMapAt_some (W : Affine E) (V : Affine L) (hW : W.baseChange
   refine ⟨(W.baseChange_nonsingular (f := g) g.injective x y).mpr h, ?_⟩
   rfl
 
-private theorem mapLinear_transport (W : Affine E) (V : Affine L) (hW : W.baseChange L = V)
+theorem mapLinear_transport (W : Affine E) (V : Affine L) (hW : W.baseChange L = V)
     (g : L →ₐ[E] L) (m : ℕ) :
     (torsionTransport L m hW).conj (pointMap m W g) =
       mapLinear m (pointMapAt E L W V hW g) := by
@@ -79,7 +79,7 @@ private theorem mapLinear_transport (W : Affine E) (V : Affine L) (hW : W.baseCh
   ext P
   rfl
 
-private theorem pointMapAt_conjugates_rotation (W : Affine E) {a z : L}
+theorem pointMapAt_conjugates_rotation (W : Affine E) {a z : L}
     (hW : W.baseChange L = Curve a) (g : L →ₐ[E] L) (hgz : g z = z ^ 2)
     (hz : z ^ 3 = 1) (hΔ : (shortCubic (0 : L) a).Δ ≠ 0)
     (P : (Curve a).Point) :
@@ -110,7 +110,7 @@ private theorem pointMapAt_conjugates_rotation (W : Affine E) {a z : L}
     rw [rotate_some, rotate_some, Affine.Point.some.injEq]
     exact ⟨by rw [map_mul, hgz, pow_two, mul_assoc], rfl⟩
 
-private theorem centered_baseChange (A : E) :
+theorem centered_baseChange (A : E) :
     (Curve A).baseChange L = Curve (algebraMap E L A) := by
   simp [Curve, CubicAffine, shortCubic, WeierstrassCurve.baseChange, WeierstrassCurve.map]
 
@@ -175,6 +175,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CubicNonsplitFrobeniusTrace.exists_nontrivial_cubeRoot,
+      ``ManuscriptAudit.CubicNonsplitFrobeniusTrace.mapLinear_transport,
+      ``ManuscriptAudit.CubicNonsplitFrobeniusTrace.pointMapAt_conjugates_rotation,
       ``ManuscriptAudit.CubicNonsplitFrobeniusTrace.actual_trace_zero,
       ``ManuscriptAudit.CubicNonsplitFrobeniusTrace.actual_trace_eq_signed_point_count] do
     let ax ← collectAxioms name

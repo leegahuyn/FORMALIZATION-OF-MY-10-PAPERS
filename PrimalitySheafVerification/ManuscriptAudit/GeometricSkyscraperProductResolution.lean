@@ -49,11 +49,14 @@ def embedding (A : C X) : A ⟶ (∏ᶜ (skyscraper X A)) :=
 private theorem stalkComponent_mono (A : C X) (x : X) :
     Mono ((geometricFiber X x).sheafFiber.map (component X A x)) := by
   let Φ := geometricFiber X x
+  let M := coefficient X A x
   let a := Φ.skyscraperSheafAdjunction (A := AddCommGrpCat.{u})
-  let i := Injective.ι (Φ.sheafFiber.obj A)
-  have h : (Φ.sheafFiber.map (component X A x)) ≫ a.counit.app (coefficient X A x) = i := by
-    rw [← a.homEquiv_counit]
-    exact (a.homEquiv A (coefficient X A x)).symm_apply_apply i
+  let i : Φ.sheafFiber.obj A ⟶ M := Injective.ι (Φ.sheafFiber.obj A)
+  letI : Mono i := inferInstanceAs (Mono (Injective.ι (Φ.sheafFiber.obj A)))
+  let v : A ⟶ Φ.skyscraperSheaf M := (a.homEquiv A M) i
+  have h : Φ.sheafFiber.map v ≫ a.counit.app M = i :=
+    (a.homEquiv A M).symm_apply_apply i
+  change Mono (Φ.sheafFiber.map v)
   exact mono_of_mono_fac h
 
 theorem embedding_mono (A : C X) : Mono (embedding X A) := by

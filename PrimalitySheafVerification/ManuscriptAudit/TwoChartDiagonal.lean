@@ -26,8 +26,9 @@ private theorem diagram_commutes :
     intersectionToProduct f i j ≫ productChart f i j =
       (pullback.fst i j ≫ i) ≫ pullback.diagonal f := by
   apply pullback.hom_ext
-  · simp [intersectionToProduct]
-  · simpa [intersectionToProduct, Category.assoc] using (pullback.condition (f := i) (g := j)).symm
+  · simp [intersectionToProduct, productChart, Category.assoc]
+  · simpa [intersectionToProduct, productChart, Category.assoc] using
+      (pullback.condition (f := i) (g := j)).symm
 
 private theorem cone_fst {f' : X ⟶ S} {i' : A ⟶ X} {j' : B ⟶ X}
     (T : PullbackCone (productChart f' i' j') (pullback.diagonal f')) :
@@ -51,8 +52,8 @@ exactly their intersection over the original space. -/
 theorem square_isPullback :
     IsPullback (intersectionToProduct f i j) (pullback.fst i j ≫ i)
       (productChart f i j) (pullback.diagonal f) := by
-  apply IsPullback.of_isLimit
-  refine PullbackCone.IsLimit.mk (diagram_commutes f i j) (witness f i j) ?_ ?_ ?_
+  refine IsPullback.of_isLimit
+    (PullbackCone.IsLimit.mk (diagram_commutes f i j) (witness f i j) ?_ ?_ ?_)
   · intro T
     apply pullback.hom_ext
     · simp [intersectionToProduct, witness]

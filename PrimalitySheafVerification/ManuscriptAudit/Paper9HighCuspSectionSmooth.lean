@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import PrimalitySheafVerification.ManuscriptAudit.Paper9HighCuspSection
 
@@ -26,7 +27,8 @@ private theorem mode_smooth (w : ℂ) (hw : 0 < w.im) :
     fun z hz => (differentiableAt_jacobiTheta hz).differentiableWithinAt
   have hc : ContDiffOn ℂ ∞ jacobiTheta UpperHalfPlane.upperHalfPlaneSet :=
     hd.contDiffOn UpperHalfPlane.isOpen_upperHalfPlaneSet
-  have hk := (hc.contDiffAt (UpperHalfPlane.isOpen_upperHalfPlaneSet.mem_nhds hw)).restrictScalars ℝ
+  have hk : ContDiffAt ℝ ∞ jacobiTheta w :=
+    (hc.restrict_scalars ℝ).contDiffAt (UpperHalfPlane.isOpen_upperHalfPlaneSet.mem_nhds hw)
   have hr := Complex.imCLM.contDiff.contDiffAt.rpow_const_of_ne
     (p := (1 / 4 : ℝ)) (x := w) hw.ne'
   have hcast := Complex.ofRealCLM.contDiff.contDiffAt.comp w hr
@@ -61,14 +63,21 @@ private theorem matrixMap_formula (γ : GammaTwo) (w : ℂ) (hw : 0 < w.im) :
     matrixMap γ w = ((γ • UpperHalfPlane.ofComplex w : ℍ) : ℂ) := by
   rw [UpperHalfPlane.ofComplex_apply_of_im_pos hw]
   symm
-  simpa only [matrixMap, denominator] using
+  change (((γ : SL(2, ℤ)) • (⟨w, hw⟩ : ℍ) : ℍ) : ℂ) = matrixMap γ w
+  simpa [matrixMap, denominator, algebraMap_int_eq] using
     (UpperHalfPlane.coe_specialLinearGroup_apply (γ : SL(2, ℤ)) (⟨w, hw⟩ : ℍ))
 
 private theorem matrixMap_smooth (γ : GammaTwo) (w : ℂ) (hw : 0 < w.im) :
     ContDiffAt ℝ ∞ (matrixMap γ) w := by
-  unfold matrixMap
-  exact ((contDiffAt_const.mul contDiffAt_id).add contDiffAt_const).div
-    ((contDiffAt_const.mul contDiffAt_id).add contDiffAt_const) (denominator_ne_zero γ w hw)
+  let g := (γ : SL(2, ℤ))
+  let numerator := fun v : ℂ => ((g 0 0 : ℤ) : ℂ) * v + ((g 0 1 : ℤ) : ℂ)
+  have hn : ContDiffAt ℝ ∞ numerator w :=
+    (contDiffAt_const.mul contDiffAt_id).add contDiffAt_const
+  have hd : ContDiffAt ℝ ∞ (denominator γ) w :=
+    (contDiffAt_const.mul contDiffAt_id).add contDiffAt_const
+  have hi := (contDiffAt_inv ℝ (denominator_ne_zero γ w hw) :
+    ContDiffAt ℝ ∞ (Inv.inv : ℂ → ℂ) (denominator γ w)).comp w hd
+  simpa only [matrixMap, numerator, g, div_eq_mul_inv, Function.comp_apply] using hn.mul hi
 
 theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
     (Y : ℝ) (hY : 1 ≤ Y) (hs : ∀ y, y < Y + 2 ∨ Y + 5 < y → a y = 0) :
@@ -100,7 +109,12 @@ theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
       rw [hΓ]
       rw [mode_eq _ (γ • z : ℍ).im_pos, UpperHalfPlane.ofComplex_apply]
       exact thetaWeightedMode_ne_zero (γ • z)
-    have hform := (mode_smooth w hw).mul ((ha.contDiffAt.comp w hH).div hθ hθne)
+    have hi := (contDiffAt_inv ℝ hθne :
+      ContDiffAt ℝ ∞ (Inv.inv : ℂ → ℂ) (mode (matrixMap γ w))).comp w hθ
+    have hform : ContDiffAt ℝ ∞
+        (fun v => mode v * (a (matrixMap γ v).im / mode (matrixMap γ v))) w := by
+      simpa only [div_eq_mul_inv, Function.comp_apply] using
+        (mode_smooth w hw).mul ((ha.contDiffAt.comp w hH).mul hi)
     apply hform.congr_of_eventuallyEq
     have ht : ∀ᶠ v : ℂ in 𝓝 w, 1 < (matrixMap γ v).im :=
       hH.continuousAt (Ioi_mem_nhds hW)
@@ -113,12 +127,8 @@ theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
         mode ((γ • UpperHalfPlane.ofComplex v : ℍ) : ℂ))
     rw [extendedSection_at_translated_high a γ _ ht, mode_eq v hv,
       mode_eq _ (γ • UpperHalfPlane.ofComplex v : ℍ).im_pos, UpperHalfPlane.ofComplex_apply]
-  · have hsrc : w ∈ UpperHalfPlane.ofComplex.source := by
-      change w ∈ range ((↑) : ℍ → ℂ)
-      exact ⟨⟨w, hw⟩, rfl⟩
-    have hOf : ContinuousAt (fun v : ℂ => UpperHalfPlane.ofComplex v) w :=
-      UpperHalfPlane.ofComplex.continuousOn.continuousAt
-        (UpperHalfPlane.ofComplex.open_source.mem_nhds hsrc)
+  · have hOf : ContinuousAt (fun v : ℂ => UpperHalfPlane.ofComplex v) w :=
+      (UpperHalfPlane.contMDiffAt_ofComplex (n := 1) hw).continuousAt
     have hc := gammaTwoQuotientMk_isOpenQuotientMap.continuous.continuousAt.comp
       (x := w) hOf
     have hn : ∀ᶠ v : ℂ in 𝓝 w, gammaTwoQuotientMk (UpperHalfPlane.ofComplex v) ∉ K :=

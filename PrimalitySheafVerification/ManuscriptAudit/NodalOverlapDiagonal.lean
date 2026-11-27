@@ -84,10 +84,14 @@ private theorem toTensor_toY :
 private theorem toProduct_eq :
     toProduct R = toTensor R ≫ (pullbackSpecIso R (A R) (B R)).inv := by
   apply pullback.hom_ext
-  · rw [toProduct, pullback.lift_fst, Category.assoc, pullbackSpecIso_inv_fst']
-    exact (toTensor_toZ R).symm
-  · rw [toProduct, pullback.lift_snd, Category.assoc, pullbackSpecIso_inv_snd]
-    exact (toTensor_toY R).symm
+  · rw [toProduct, pullback.lift_fst, Category.assoc]
+    have h := congrArg (fun f : Spec (CommRingCat.of (A R ⊗[R] B R)) ⟶ zScheme R =>
+      toTensor R ≫ f) (pullbackSpecIso_inv_fst' R (A R) (B R))
+    exact (h.trans (toTensor_toZ R)).symm
+  · rw [toProduct, pullback.lift_snd, Category.assoc]
+    have h := congrArg (fun f : Spec (CommRingCat.of (A R ⊗[R] B R)) ⟶ yScheme R =>
+      toTensor R ≫ f) (pullbackSpecIso_inv_snd R (A R) (B R))
+    exact (h.trans (toTensor_toY R)).symm
 
 /-- The cross-chart part of the diagonal of the glued model is closed. -/
 theorem cross_chart_isClosedImmersion : IsClosedImmersion (toProduct R) := by

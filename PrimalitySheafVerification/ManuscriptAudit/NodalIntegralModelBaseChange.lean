@@ -87,7 +87,7 @@ private theorem overlap_range_in_target (b c : Bool) (h : b ≠ c) :
 
 private theorem chart_point_map (b : Bool) (q : chartObj S b) :
     modelMap R S (chartIn S b q) = chartIn R b (chartMap R S b q) := by
-  rw [← Scheme.Hom.comp_apply, chartIn_modelMap, Scheme.Hom.comp_apply]
+  exact congrArg (fun g : chartObj S b ⟶ model R => g q) (chartIn_modelMap R S b)
 
 private theorem chart_range_preimage (b : Bool) :
     (modelMap R S) ⁻¹ᵁ (chartIn R b).opensRange = (chartIn S b).opensRange := by
@@ -113,8 +113,10 @@ private theorem chart_range_preimage (b : Bool) :
         exact hy
       obtain ⟨r, hr⟩ := hx
       refine ⟨overlapIn S b r, ?_⟩
-      rw [← Scheme.Hom.comp_apply, overlapIn_chartIn,
-        ← overlapIn_chartIn S c, Scheme.Hom.comp_apply, hr, hq]
+      have hbc := (overlapIn_chartIn S b).trans (overlapIn_chartIn S c).symm
+      have hbc' : chartIn S b (overlapIn S b r) = chartIn S c (overlapIn S c r) :=
+        congrArg (fun g : overlapScheme S ⟶ model S => g r) hbc
+      exact hbc'.trans ((congrArg (chartIn S c) hr).trans hq)
   · rintro ⟨p, rfl⟩
     exact ⟨chartMap R S b p, (chart_point_map R S b p).symm⟩
 
