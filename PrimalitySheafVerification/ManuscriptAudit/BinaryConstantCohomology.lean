@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Module.ZMod
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.SetTheory.Cardinal.Finite

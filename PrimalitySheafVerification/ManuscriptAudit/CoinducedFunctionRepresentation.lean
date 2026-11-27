@@ -75,7 +75,7 @@ theorem functions_H_succ_isZero (n : ℕ) :
       (Subgroup.mem_bot.mp y.property).symm)⟩
   let e := ((groupCohomology.functor k G (n + 1)).mapIso (coindBotIsoFunctions k G M)).symm ≪≫
     groupCohomology.coindIso (trivialRep k G M) (n + 1)
-  exact (groupCohomology.isZero_groupCohomology_succ_of_subsingleton
+  exact (isZero_groupCohomology_succ_of_subsingleton
     (trivialRep k G M) n).of_iso e
 
 theorem functions_H_succ_subsingleton (n : ℕ) :

@@ -55,6 +55,76 @@ def zeroLevelEquiv : (ZMod (2 ^ 0) × ZMod (2 ^ 0)) ≃ₗ[ZMod (2 ^ 0)] PowerTo
   exact LinearEquiv.ofBijective 0 ⟨fun P Q _ => Subsingleton.elim P Q,
     fun Q => ⟨0, Subsingleton.elim _ Q⟩⟩
 
+/-- Two lifts of independent order-two images give the native basis in the chosen coordinates. -/
+def levelEquivFromLifts
+    (h : Function.Surjective (fun P : G => (2 : ℕ) • P))
+    (hfour : Nat.card (Torsion 2 G) = 4) (n : ℕ) (P Q : PowerTorsion G (n + 1))
+    (hX₀ : (2 ^ n : ℕ) • (P : G) ≠ 0) (hY₀ : (2 ^ n : ℕ) • (Q : G) ≠ 0)
+    (hXY : (2 ^ n : ℕ) • (P : G) ≠ (2 ^ n : ℕ) • (Q : G)) :
+    (ZMod (2 ^ (n + 1)) × ZMod (2 ^ (n + 1))) ≃ₗ[ZMod (2 ^ (n + 1))]
+      PowerTorsion G (n + 1) := by
+  classical
+  let x : G := P
+  let y : G := Q
+  have hx₀ : (2 ^ (n + 1) : ℕ) • x = 0 :=
+    (mem_iff (2 ^ (n + 1)) G _).mp P.property
+  have hy₀ : (2 ^ (n + 1) : ℕ) • y = 0 :=
+    (mem_iff (2 ^ (n + 1)) G _).mp Q.property
+  let R := ZMod (2 ^ (n + 1))
+  let V := PowerTorsion G (n + 1)
+  let F := pairLinear R V P Q
+  letI : NeZero (2 ^ (n + 1) : ℕ) := ⟨pow_ne_zero _ (by decide : (2 : ℕ) ≠ 0)⟩
+  have hzero (a : R × R) (ha : F a = 0) : a = 0 := by
+    have h₁ : a.1 • P = a.1.val • P := by
+      calc
+        _ = (a.1.val : R) • P :=
+          congrArg (fun c : R => c • P) (ZMod.natCast_zmod_val a.1).symm
+        _ = _ := by rw [Nat.cast_smul_eq_nsmul]
+    have h₂ : a.2 • Q = a.2.val • Q := by
+      calc
+        _ = (a.2.val : R) • Q :=
+          congrArg (fun c : R => c • Q) (ZMod.natCast_zmod_val a.2).symm
+        _ = _ := by rw [Nat.cast_smul_eq_nsmul]
+    change a.1 • P + a.2 • Q = 0 at ha
+    rw [h₁, h₂] at ha
+    have har : a.1.val • x + a.2.val • y = 0 :=
+      congrArg (fun g : V => (g : G)) ha
+    obtain ⟨h₁z, h₂z⟩ :=
+      nsmul_relation_unique n x y hx₀ hy₀ hX₀ hY₀
+        hXY a.1.val a.2.val
+        (ZMod.val_lt a.1) (ZMod.val_lt a.2) har
+    refine Prod.ext ?_ ?_
+    · change a.1 = 0
+      rw [← ZMod.natCast_zmod_val a.1, h₁z, Nat.cast_zero]
+    · change a.2 = 0
+      rw [← ZMod.natCast_zmod_val a.2, h₂z, Nat.cast_zero]
+  have hInjective : Function.Injective F := by
+    intro a b hab
+    have he : F (a - b) = 0 := by rw [map_sub, hab, sub_self]
+    exact sub_eq_zero.mp (hzero _ he)
+  have hV : Nat.card V = 4 ^ (n + 1) := card_powerTorsion G h hfour (n + 1)
+  letI : Finite V := Nat.finite_of_card_ne_zero (by
+    rw [hV]
+    exact pow_ne_zero _ (by decide : (4 : ℕ) ≠ 0))
+  letI : Fintype V := Fintype.ofFinite _
+  have hR : Nat.card R = 2 ^ (n + 1) := by
+    change Nat.card (ZMod (2 ^ (n + 1))) = _
+    rw [Nat.card_eq_fintype_card, ZMod.card]
+  have hSource : Nat.card (R × R) = 4 ^ (n + 1) := by
+    rw [Nat.card_prod, hR, ← mul_pow, show (2 : ℕ) * 2 = 4 by decide]
+  have hCard : Fintype.card (R × R) = Fintype.card V := by
+    rw [← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card, hSource, hV]
+  exact LinearEquiv.ofBijective F ((Fintype.bijective_iff_injective_and_card _).mpr
+    ⟨hInjective, hCard⟩)
+
+theorem levelEquivFromLifts_apply
+    (h : Function.Surjective (fun P : G => (2 : ℕ) • P))
+    (hfour : Nat.card (Torsion 2 G) = 4) (n : ℕ) (P Q : PowerTorsion G (n + 1))
+    (hX₀ : (2 ^ n : ℕ) • (P : G) ≠ 0) (hY₀ : (2 ^ n : ℕ) • (Q : G) ≠ 0)
+    (hXY : (2 ^ n : ℕ) • (P : G) ≠ (2 ^ n : ℕ) • (Q : G))
+    (r : ZMod (2 ^ (n + 1)) × ZMod (2 ^ (n + 1))) :
+    levelEquivFromLifts G h hfour n P Q hX₀ hY₀ hXY r = r.1 • P + r.2 • Q := rfl
+
 private def positiveLevelEquiv
     (h : Function.Surjective (fun P : G => (2 : ℕ) • P))
     (hfour : Nat.card (Torsion 2 G) = 4) (n : ℕ) :
@@ -81,54 +151,11 @@ private def positiveLevelEquiv
   have hy₀ : (2 ^ (n + 1) : ℕ) • y = 0 := by
     rw [pow_succ, mul_nsmul, hy]
     exact (mem_iff 2 G _).mp U.property
-  let R := ZMod (2 ^ (n + 1))
-  let V := PowerTorsion G (n + 1)
-  let P : V := ⟨x, (mem_iff (2 ^ (n + 1)) G _).mpr hx₀⟩
-  let Q : V := ⟨y, (mem_iff (2 ^ (n + 1)) G _).mpr hy₀⟩
-  let F := pairLinear R V P Q
-  letI : NeZero (2 ^ (n + 1) : ℕ) := ⟨pow_ne_zero _ (by decide : (2 : ℕ) ≠ 0)⟩
-  have hzero (a : R × R) (ha : F a = 0) : a = 0 := by
-    have h₁ : a.1 • P = a.1.val • P := by
-      calc
-        _ = (a.1.val : R) • P :=
-          congrArg (fun c : R => c • P) (ZMod.natCast_zmod_val a.1).symm
-        _ = _ := by rw [Nat.cast_smul_eq_nsmul]
-    have h₂ : a.2 • Q = a.2.val • Q := by
-      calc
-        _ = (a.2.val : R) • Q :=
-          congrArg (fun c : R => c • Q) (ZMod.natCast_zmod_val a.2).symm
-        _ = _ := by rw [Nat.cast_smul_eq_nsmul]
-    change a.1 • P + a.2 • Q = 0 at ha
-    rw [h₁, h₂] at ha
-    have har : a.1.val • x + a.2.val • y = 0 :=
-      congrArg (fun g : V => (g : G)) ha
-    obtain ⟨h₁z, h₂z⟩ :=
-      nsmul_relation_unique n x y hx₀ hy₀ (by rw [hx]; exact hT₀) (by rw [hy]; exact hU₀)
-        (by rw [hx, hy]; exact hTU) a.1.val a.2.val
-        (ZMod.val_lt a.1) (ZMod.val_lt a.2) har
-    refine Prod.ext ?_ ?_
-    · change a.1 = 0
-      rw [← ZMod.natCast_zmod_val a.1, h₁z, Nat.cast_zero]
-    · change a.2 = 0
-      rw [← ZMod.natCast_zmod_val a.2, h₂z, Nat.cast_zero]
-  have hInjective : Function.Injective F := by
-    intro a b hab
-    have he : F (a - b) = 0 := by rw [map_sub, hab, sub_self]
-    exact sub_eq_zero.mp (hzero _ he)
-  have hV : Nat.card V = 4 ^ (n + 1) := card_powerTorsion G h hfour (n + 1)
-  letI : Finite V := Nat.finite_of_card_ne_zero (by
-    rw [hV]
-    exact pow_ne_zero _ (by decide : (4 : ℕ) ≠ 0))
-  letI : Fintype V := Fintype.ofFinite _
-  have hR : Nat.card R = 2 ^ (n + 1) := by
-    change Nat.card (ZMod (2 ^ (n + 1))) = _
-    rw [Nat.card_eq_fintype_card, ZMod.card]
-  have hSource : Nat.card (R × R) = 4 ^ (n + 1) := by
-    rw [Nat.card_prod, hR, ← mul_pow]
-  have hCard : Fintype.card (R × R) = Fintype.card V := by
-    rw [← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card, hSource, hV]
-  exact LinearEquiv.ofBijective F ((Fintype.bijective_iff_injective_and_card _).mpr
-    ⟨hInjective, hCard⟩)
+  let P : PowerTorsion G (n + 1) := ⟨x, (mem_iff (2 ^ (n + 1)) G _).mpr hx₀⟩
+  let Q : PowerTorsion G (n + 1) := ⟨y, (mem_iff (2 ^ (n + 1)) G _).mpr hy₀⟩
+  exact levelEquivFromLifts G h hfour n P Q (by change (2 ^ n : ℕ) • x ≠ 0; rwa [hx])
+    (by change (2 ^ n : ℕ) • y ≠ 0; rwa [hy])
+    (by change (2 ^ n : ℕ) • x ≠ (2 ^ n : ℕ) • y; rwa [hx, hy])
 
 /-- Every native level is isomorphic to a pair of copies of the scalar ring. -/
 def levelEquiv (h : Function.Surjective (fun P : G => (2 : ℕ) • P))
@@ -154,6 +181,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.TwoPowerTorsionBasis.zeroLevelEquiv,
+      ``ManuscriptAudit.TwoPowerTorsionBasis.levelEquivFromLifts_apply,
       ``ManuscriptAudit.TwoPowerTorsionBasis.levelEquiv,
       ``ManuscriptAudit.TwoPowerTorsionBasis.levelBasis] do
     let ax ← collectAxioms name

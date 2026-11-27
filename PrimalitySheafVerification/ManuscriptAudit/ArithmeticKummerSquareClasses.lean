@@ -89,8 +89,7 @@ private def cyclicEquivOfCardTwo (G : Type) [AddGroup G] (h : Nat.card G = 2) :
     ZMod 2 ≃+ G := by
   letI : Fact (Nat.Prime 2) := ⟨by decide⟩
   have hCyc := isAddCyclic_of_prime_card h
-  rw [← h]
-  exact zmodAddCyclicAddEquiv hCyc
+  exact (ZMod.ringEquivCongr h.symm).toAddEquiv.trans (zmodAddCyclicAddEquiv hCyc)
 
 def residueBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
     ZMod 2 ≃+ binaryHOne K :=

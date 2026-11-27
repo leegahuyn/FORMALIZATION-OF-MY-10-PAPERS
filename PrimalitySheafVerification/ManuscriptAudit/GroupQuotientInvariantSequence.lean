@@ -53,25 +53,31 @@ theorem shortExact_quotientToInvariants {X : ShortComplex (Rep.{u} k G)}
   have hI : Function.Injective W.f.hom := (Rep.mono_iff_injective W.f).mp hW.mono_f
   have hE : Function.Surjective ((Rep.invariantsFunctor k S).map W.g) :=
     (ModuleCat.epi_iff_surjective _).mp (invariants_map_epi hW h)
-  constructor
-  · apply ShortComplex.exact_iff_of_hasForget.mpr
+  let Q := X.map (Rep.quotientToInvariantsFunctor k S)
+  refine ShortComplex.ShortExact.mk' (S := Q) ?_ ?_ ?_
+  · let C := Q.map (forget₂ (Rep.{u} k (G ⧸ S)) (ModuleCat.{u} k))
+    apply (Q.exact_map_iff_of_faithful (forget₂ (Rep.{u} k (G ⧸ S)) (ModuleCat.{u} k))).mp
+    show C.Exact
+    apply (ShortComplex.moduleCat_exact_iff C).mpr
     intro y hy
+    change W.X₂.ρ.invariants at y
+    change ((Rep.invariantsFunctor k S).map W.g) y = 0 at hy
     have hy' : W.g.hom y.1 = 0 := congrArg Subtype.val hy
-    let C := W.map (forget₂ (Rep.{u} k S) (ModuleCat.{u} k))
-    have hC : C.Exact := hW.exact.map (forget₂ (Rep.{u} k S) (ModuleCat.{u} k))
-    obtain ⟨x, hx⟩ := (ShortComplex.moduleCat_exact_iff C).mp hC y.1 hy'
+    let D := W.map (forget₂ (Rep.{u} k S) (ModuleCat.{u} k))
+    have hD : D.Exact := hW.exact.map (forget₂ (Rep.{u} k S) (ModuleCat.{u} k))
+    obtain ⟨x, hx⟩ := (ShortComplex.moduleCat_exact_iff D).mp hD y.1 hy'
     change W.f.hom x = y.1 at hx
     have hxFixed : x ∈ W.X₁.ρ.invariants := by
       intro s
       apply hI
       rw [Rep.hom_comm_apply, hx, y.property s]
-    exact ⟨⟨x, hxFixed⟩, Subtype.ext hx⟩
-  · apply (Rep.mono_iff_injective _).mpr
+    exact ⟨(⟨x, hxFixed⟩ : W.X₁.ρ.invariants), Subtype.ext hx⟩
+  · apply (Rep.mono_iff_injective Q.f).mpr
     intro x y hxy
     apply Subtype.ext
     apply hI
     exact congrArg Subtype.val hxy
-  · exact (Rep.epi_iff_surjective _).mpr hE
+  · exact (Rep.epi_iff_surjective Q.g).mpr hE
 
 end
 

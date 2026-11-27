@@ -21,7 +21,7 @@ def pairLift {W : (X K).Etale} (a b : W ⟶ fieldObject K L) :
     (by
       change pullback.lift a.left b.left _ ≫ pullback.fst (baseMap K L) (baseMap K L) ≫
         baseMap K L = W.hom
-      rw [pullback.lift_fst_assoc]
+      rw [← Category.assoc, pullback.lift_fst]
       exact MorphismProperty.Over.w a)
 
 @[reassoc, simp] theorem pairLift_first {W : (X K).Etale}
@@ -54,7 +54,7 @@ def tripleLift {W : (X K).Etale} (a b c : W ⟶ fieldObject K L) :
       change pullback.lift _ _ _ ≫
         pullback.fst (pairFirst K L).left (pairFirst K L).left ≫
           (pairFirst K L).left ≫ baseMap K L = W.hom
-      rw [pullback.lift_fst_assoc]
+      rw [← Category.assoc, pullback.lift_fst]
       exact MorphismProperty.Over.w (pairLift K L a b))
 
 @[reassoc, simp] theorem tripleLift_firstPair {W : (X K).Etale}
