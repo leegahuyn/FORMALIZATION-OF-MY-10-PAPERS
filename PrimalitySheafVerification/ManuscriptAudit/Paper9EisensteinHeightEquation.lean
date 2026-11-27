@@ -27,8 +27,10 @@ theorem heightPower_eq_cpow (s : ℂ) {y : ℝ} (hy : 0 < y) :
 
 theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
     HasDerivAt (heightPower s) (heightPower s y * ((y : ℂ)⁻¹ * s)) y := by
-  have h := ((Real.hasDerivAt_log hy).ofReal_comp.mul_const s).cexp
-  simpa only [heightPower, Complex.ofReal_inv] using h
+  have hInner := (Real.hasDerivAt_log hy).ofReal_comp.mul_const s
+  have hOuter := (Complex.hasStrictFDerivAt_exp_real ((Real.log y : ℂ) * s)).hasFDerivAt
+  have h := hOuter.comp_hasDerivAt y hInner
+  simpa [heightPower, Function.comp_def, Complex.ofReal_inv] using h
 
 theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :
     deriv (deriv (heightPower s)) y =
@@ -40,8 +42,10 @@ theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :
   have hC : (y : ℂ) ≠ 0 := by exact_mod_cast hy.ne'
   have hinv := ((hasDerivAt_id y).ofReal_comp).inv hC
   have h := (heightPower_hasDerivAt s hy.ne').mul (hinv.mul_const s)
-  rw [hLocal.deriv_eq, h.deriv]
-  simp only [id_eq, Complex.ofReal_one]
+  have hValue : deriv (fun t : ℝ => heightPower s t * ((t : ℂ)⁻¹ * s)) y =
+      (heightPower s y * ((y : ℂ)⁻¹ * s)) * ((y : ℂ)⁻¹ * s) +
+        heightPower s y * ((-(1 : ℂ) / (y : ℂ) ^ 2) * s) := h.deriv
+  rw [hLocal.deriv_eq, hValue]
   field_simp [hC] <;> ring
 
 /-- The zero horizontal mode in the actual high-cusp chart. -/

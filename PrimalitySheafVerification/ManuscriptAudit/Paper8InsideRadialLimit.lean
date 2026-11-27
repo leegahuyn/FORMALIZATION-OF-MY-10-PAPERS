@@ -77,7 +77,10 @@ private theorem pochhammer_continuous (n : ℕ) : Continuous fun q : ℝ => negP
   | zero => simpa only [negPochhammer, Finset.range_zero, Finset.prod_empty] using
       (continuous_const : Continuous (fun _ : ℝ => (1 : ℝ)))
   | succ n ih =>
-    have h := ih.mul (continuous_const.add (continuous_id.pow (n + 1)))
+    have hFactor : Continuous (fun q : ℝ => 1 + q ^ (n + 1)) :=
+      (continuous_const : Continuous (fun _ : ℝ => (1 : ℝ))).add
+        ((continuous_id : Continuous (id : ℝ → ℝ)).pow (n + 1))
+    have h := ih.mul hFactor
     simpa only [negPochhammer, Finset.prod_range_succ, id_eq] using h
 
 theorem printedInside_continuousOn_radial :

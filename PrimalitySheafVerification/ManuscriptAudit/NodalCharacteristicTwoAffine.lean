@@ -47,11 +47,22 @@ private theorem nodePresentation_x :
   rw [NodalAffinePresentation.parameter_base]
   exact Polynomial.aeval_X _
 
+private theorem cusp_root_witness :
+    (CuspDelta.cuspPlaneEquation K).eval₂ (Polynomial.aeval
+      (CuspPunctured.cuspSquare K)).toRingHom (cuspCube K) = 0 := by
+  simp only [CuspDelta.cuspPlaneEquation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, map_pow]
+  change cuspCube K ^ 2 -
+    (Polynomial.aeval (CuspPunctured.cuspSquare K) (X : Polynomial K)) ^ 3 = 0
+  rw [Polynomial.aeval_X]
+  apply Subtype.ext
+  change ((X : Polynomial K) ^ 3) ^ 2 - ((X : Polynomial K) ^ 2) ^ 3 = 0
+  ring
+
 private theorem cuspPresentation_x :
     CuspDelta.paper2_cusp_coordinate_presentation K
       (AdjoinRoot.of (CuspDelta.cuspPlaneEquation K) X) = CuspPunctured.cuspSquare K := by
   change AdjoinRoot.liftAlgHom (CuspDelta.cuspPlaneEquation K)
-    (Polynomial.aeval (CuspPunctured.cuspSquare K)) (cuspCube K) _
+    (Polynomial.aeval (CuspPunctured.cuspSquare K)) (cuspCube K) (cusp_root_witness K)
     (AdjoinRoot.of (CuspDelta.cuspPlaneEquation K) X) = CuspPunctured.cuspSquare K
   rw [AdjoinRoot.liftAlgHom_of, Polynomial.aeval_X]
 
@@ -59,15 +70,28 @@ private theorem cuspPresentation_y :
     CuspDelta.paper2_cusp_coordinate_presentation K
       (AdjoinRoot.root (CuspDelta.cuspPlaneEquation K)) = cuspCube K := by
   change AdjoinRoot.liftAlgHom (CuspDelta.cuspPlaneEquation K)
-    (Polynomial.aeval (CuspPunctured.cuspSquare K)) (cuspCube K) _
+    (Polynomial.aeval (CuspPunctured.cuspSquare K)) (cuspCube K) (cusp_root_witness K)
     (AdjoinRoot.root (CuspDelta.cuspPlaneEquation K)) = cuspCube K
   exact AdjoinRoot.liftAlgHom_root _ _ _ _
+
+private theorem shiftedPresentation_x :
+    NodalCharacteristicTwo.affineRingEquiv K
+      (AdjoinRoot.of (NodalAffinePresentation.equation K) X) =
+        AdjoinRoot.of (CuspDelta.cuspPlaneEquation K) X :=
+  NodalCharacteristicTwo.affineRingEquiv_x K
+
+private theorem shiftedPresentation_y :
+    NodalCharacteristicTwo.affineRingEquiv K
+      (AdjoinRoot.root (NodalAffinePresentation.equation K)) =
+        AdjoinRoot.root (CuspDelta.cuspPlaneEquation K) +
+          AdjoinRoot.of (CuspDelta.cuspPlaneEquation K) X :=
+  NodalCharacteristicTwo.affineRingEquiv_y K
 
 theorem coordinateEquiv_x : coordinateEquiv K (nodeX K) = CuspPunctured.cuspSquare K := by
   rw [← nodePresentation_x K]
   unfold coordinateEquiv
   rw [AlgEquiv.trans_apply, AlgEquiv.symm_apply_apply, AlgEquiv.trans_apply]
-  rw [NodalCharacteristicTwo.affineRingEquiv_x K]
+  rw [shiftedPresentation_x K]
   exact cuspPresentation_x K
 
 theorem coordinateEquiv_y :
@@ -78,7 +102,7 @@ theorem coordinateEquiv_y :
   rw [← hy]
   unfold coordinateEquiv
   rw [AlgEquiv.trans_apply, AlgEquiv.symm_apply_apply, AlgEquiv.trans_apply]
-  rw [NodalCharacteristicTwo.affineRingEquiv_y K, map_add,
+  rw [shiftedPresentation_y K, map_add,
     cuspPresentation_y K, cuspPresentation_x K]
 
 /-- Actual affine scheme isomorphism from the cusp to the characteristic-two node model. -/

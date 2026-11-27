@@ -17,10 +17,11 @@ private theorem sup_mul_sup_of_coprime (I J K : Ideal R) (h : I ⊔ J = ⊤) :
     rw [← Ideal.sup_mul, h, Ideal.top_mul]
   calc
     _ = I * J ⊔ (I * K ⊔ J * K) ⊔ K * K := by
-      rw [Ideal.sup_mul, Ideal.mul_sup, Ideal.mul_sup, mul_comm K J]
-      ac_rfl
+      rw [Ideal.sup_mul I K (J ⊔ K), Ideal.mul_sup I J K, Ideal.mul_sup K J K, mul_comm K J]
+      <;> simp only [sup_assoc]
     _ = _ := by
-      rw [hPair, sup_assoc, sup_eq_left.mpr Ideal.mul_le_left]
+      have hk : K ⊔ K * K = K := sup_eq_left.mpr Ideal.mul_le_left
+      rw [hPair, sup_assoc, hk]
 
 /-- Adjoining one ideal to each factor distributes over a pairwise comaximal product. -/
 theorem prod_sup_eq (s : Finset ι) (I : ι → Ideal R) (K : Ideal R)

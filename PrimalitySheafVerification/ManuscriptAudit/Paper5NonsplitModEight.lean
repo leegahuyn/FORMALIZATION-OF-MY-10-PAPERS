@@ -123,7 +123,7 @@ private theorem quartic_det (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A
     change F (F (F (F v))) = _
     rw [hSq (F (F v)), hSq v, smul_smul, neg_mul_neg] <;> simp only [pow_two]
   exact residue_of_quartic_fixed p hp₄ _ (LinearMap.det F) hd₄ hReduction
-    (quartic_count p hp hr hA hd) hV hKer j hj (F ^ 4) hFix hScalar
+    (quartic_count p hp hr hA hd) hV hKer j hj (fun v : V => (F ^ 4) v) hFix hScalar
 
 /-- The native Frobenius determinant modulo eight is the prime itself. -/
 theorem determinant_eq_prime (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A ≠ 0) :
@@ -166,11 +166,13 @@ theorem charpoly_mod_eight (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A 
   letI := Module.Free.of_basis B
   letI := Module.Finite.of_basis B
   let F := frobeniusLinear 8 p L (Curve A)
+  have ht : LinearMap.trace (ZMod 8) (GeometricTorsion p L 8 A) F = 0 :=
+    trace_zero_at_level p L hp hr hA 3
+  have hd : LinearMap.det F = (p : ZMod 8) := determinant_eq_prime p L hp hr hA
   change F.charpoly = _
   rw [← LinearMap.charpoly_toMatrix F B, Matrix.charpoly_fin_two,
     ← LinearMap.trace_eq_matrix_trace (ZMod 8) B, LinearMap.det_toMatrix B,
-    trace_zero_at_level p L hp hr hA 3, determinant_eq_prime p L hp hr hA,
-    map_zero, zero_mul, sub_zero]
+    ht, hd, map_zero, zero_mul, sub_zero]
 
 end
 end ManuscriptAudit.Paper5NonsplitModEight

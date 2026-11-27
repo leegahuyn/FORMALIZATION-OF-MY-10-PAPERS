@@ -56,8 +56,10 @@ theorem first_retraction :
     (first K ≫ toCover K) ≫ firstRetraction K = 𝟙 (affineLine K) := by
   rw [NodalNormalizationSwapPullback.first_toCover, firstRetraction, ← Spec.map_comp]
   have h : CommRingCat.ofHom (firstSection K) ≫ CommRingCat.ofHom (firstProjection K) =
-      𝟙 (CommRingCat.of (B K)) :=
-    CommRingCat.hom_ext (firstProjection_firstSection K)
+      𝟙 (CommRingCat.of (B K)) := by
+    apply CommRingCat.hom_ext
+    change (firstProjection K).comp (firstSection K) = RingHom.id (B K)
+    exact firstProjection_firstSection K
   rw [h, Spec.map_id]
 
 /-- The second polynomial component is a split closed branch of the swap cover. -/
@@ -65,8 +67,10 @@ theorem second_retraction :
     (second K ≫ toCover K) ≫ secondRetraction K = 𝟙 (affineLine K) := by
   rw [NodalNormalizationSwapPullback.second_toCover, secondRetraction, ← Spec.map_comp]
   have h : CommRingCat.ofHom (secondSection K) ≫ CommRingCat.ofHom (secondProjection K) =
-      𝟙 (CommRingCat.of (B K)) :=
-    CommRingCat.hom_ext (secondProjection_secondSection K)
+      𝟙 (CommRingCat.of (B K)) := by
+    apply CommRingCat.hom_ext
+    change (secondProjection K).comp (secondSection K) = RingHom.id (B K)
+    exact secondProjection_secondSection K
   rw [h, Spec.map_id]
 
 end

@@ -36,29 +36,29 @@ variable (K : Type) [Field K]
 private abbrev overlapMap := pullback.fst (affineOpen K) (chartOpen K)
 private abbrev overlap := Scheme.Etale.mk (overlapMap K)
 
+private theorem pullback_no_points {S U V : Scheme.{0}} (f : U ⟶ S) (g : V ⟶ S)
+    (h : ∀ (x : U) (y : V), f x ≠ g y) : IsEmpty (pullback f g : Scheme.{0}) := by
+  refine ⟨fun z ↦ h (pullback.fst f g z) (pullback.snd f g z) ?_⟩
+  exact congrArg (fun m : pullback f g ⟶ S ↦ m z) pullback.condition
+
+set_option maxHeartbeats 1000000 in
 /-- The actual overlap of the two standard charts has empty conductor pullback. -/
-theorem overlap_conductor_isEmpty : IsEmpty (Conductor K (overlap K)).left := by
-  constructor
-  intro y
-  let r := overlapMap K
-  let p := pullback.fst r (originMap K) y
-  let q := pullback.snd r (originMap K) y
+theorem overlap_conductor_isEmpty :
+    IsEmpty (pullback (overlapMap K) (originMap K) : Scheme.{0}) := by
+  apply pullback_no_points
+  intro p q hp
   have hq : q = IsLocalRing.closedPoint K := Subsingleton.elim _ _
-  have hp : r p = originPoint K := by
-    change (pullback.fst r (originMap K) ≫ r) y = originMap K (IsLocalRing.closedPoint K)
-    rw [pullback.condition (f := r) (g := originMap K)]
-    change originMap K q = originMap K (IsLocalRing.closedPoint K)
-    rw [hq]
-  have ht : chartOpen K (pullback.snd (affineOpen K) (chartOpen K) p) = nodePoint K := by
-    change (pullback.snd (affineOpen K) (chartOpen K) ≫ chartOpen K) p =
-      affineOpen K (originPoint K)
-    rw [← pullback.condition (f := affineOpen K) (g := chartOpen K)]
-    change affineOpen K (r p) = affineOpen K (originPoint K)
-    rw [hp]
-  have hmem : nodePoint K ∈ ({nodePoint K} : Set (projectiveNode K))ᶜ := by
-    rw [← smooth_pieces_cover_complement K]
-    exact Or.inr ⟨_, ht⟩
-  exact hmem (Set.mem_singleton _)
+  have hOrigin : overlapMap K p = originPoint K :=
+    hp.trans (congrArg (originMap K) hq)
+  have hSquare : chartOpen K (pullback.snd (affineOpen K) (chartOpen K) p) =
+      affineOpen K (overlapMap K p) :=
+    congrArg (fun m : pullback (affineOpen K) (chartOpen K) ⟶ projectiveNode K ↦ m p)
+      (pullback.condition (f := affineOpen K) (g := chartOpen K)).symm
+  have hChart : nodePoint K ∈ Set.range (chartOpen K) :=
+    ⟨_, hSquare.trans (congrArg (affineOpen K) hOrigin)⟩
+  have hOut : nodePoint K ∈ ({nodePoint K} : Set (projectiveNode K))ᶜ :=
+    (smooth_pieces_cover_complement K).le (Or.inr hChart)
+  exact hOut (Set.mem_singleton _)
 
 variable (M : AddCommGrpCat.{0}) [TopologicalSpace M] [DiscreteTopology M] [IsTopologicalAddGroup M]
 
@@ -82,13 +82,13 @@ private theorem conductorLabel_unliftable (m : M) (hm : m ≠ 0) :
 private theorem conductorLabel_lift_on_overlap (m : M) :
     SectionHasLift (sequence K M) (overlap K)
       ((sequence K M).X₃.obj.map (openArrow (overlapMap K)).op (conductorLabel K M m)) := by
-  letI := overlap_conductor_isEmpty K
+  let empty := overlap_conductor_isEmpty K
   refine ⟨0, ?_⟩
   change ((sequence K M).g.hom.app (op (overlap K))).hom 0 = _
   rw [map_zero]
   apply ContinuousMap.ext
   intro q
-  exact isEmptyElim q
+  exact (empty.false (show (pullback (overlapMap K) (originMap K) : Scheme.{0}) from q)).elim
 
 /-- A nonzero label yields an actual nonzero class in ordinary proper
 nodal H¹, using compatible local classes on the two real charts. -/

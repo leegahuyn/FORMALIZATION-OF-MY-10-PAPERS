@@ -52,7 +52,7 @@ theorem tangent_ideal_eq {U V u v : R}
   let J' := pointIdeal U V (u ^ (q * q)) (v ^ (q * q))
   change I = J ^ q * J'
   apply le_antisymm
-  · exact Ideal.span_singleton_le_iff_mem.mpr (tangent_mem_product E h hP hCase)
+  · exact (Ideal.span_singleton_le_iff_mem _).mpr (tangent_mem_product E h hP hCase)
   have hF : f g = 0 :=
     (Ideal.Quotient.eq_zero_iff_mem).mpr (Ideal.mem_span_singleton_self g)
   have hHermitian : (f U) ^ (q + 1) + (f V) ^ (q + 1) = 1 := by

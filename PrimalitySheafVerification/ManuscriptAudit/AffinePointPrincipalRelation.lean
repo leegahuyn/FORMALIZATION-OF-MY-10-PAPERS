@@ -37,7 +37,7 @@ theorem nsmul_add_eq_zero_of_principal {x y a b : K}
   have hU : (U : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) =
       ((A ^ n * B : Ideal W.CoordinateRing) : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) := by
     dsimp only [U, P, Q, A, B]
-    rw [Units.val_mul, Units.val_pow, Affine.CoordinateRing.XYIdeal'_eq,
+    rw [Units.val_mul, Units.val_pow_eq_pow_val, Affine.CoordinateRing.XYIdeal'_eq,
       Affine.CoordinateRing.XYIdeal'_eq, FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_pow]
   have hProd : A ^ n * B = Ideal.span {f} := h
   have hf : f ≠ 0 := by
