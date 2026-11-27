@@ -89,12 +89,17 @@ private theorem second_index (k : ℕ) :
 private theorem canonical_first (q : ℂ) (k : ℕ) :
     canonicalTerm q (k * 6) = q ^ exponent k := by
   have h : (k * 6 + 1) % 6 = 1 := by omega
-  simp [canonicalTerm, kronecker_nat_mod6, h, first_index]
+  have hChi : kroneckerNegTwelve ((k * 6 + 1 : ℕ) : ℤ) = 1 := by
+    rw [kronecker_nat_mod6, if_pos h]
+  rw [canonicalTerm, hChi, Int.cast_one, one_mul, first_index]
 
 private theorem canonical_second (q : ℂ) (k : ℕ) :
     canonicalTerm q (k * 6 + 4) = -(q ^ (exponent k + (2 * k + 1))) := by
   have h : (k * 6 + 4 + 1) % 6 = 5 := by omega
-  simp [canonicalTerm, kronecker_nat_mod6, h, second_index]
+  have hNotOne : (k * 6 + 4 + 1) % 6 ≠ 1 := by omega
+  have hChi : kroneckerNegTwelve ((k * 6 + 4 + 1 : ℕ) : ℤ) = -1 := by
+    rw [kronecker_nat_mod6, if_neg hNotOne, if_pos h]
+  rw [canonicalTerm, hChi, Int.cast_neg, Int.cast_one, neg_one_mul, second_index]
 
 private theorem canonical_other (q : ℂ) (k : ℕ) (j : Fin 6) (h0 : j ≠ 0) (h4 : j ≠ 4) :
     canonicalTerm q (k * 6 + (j : ℕ)) = 0 := by
@@ -103,7 +108,9 @@ private theorem canonical_other (q : ℂ) (k : ℕ) (j : Fin 6) (h0 : j ≠ 0) (
   have hj4 : (j : ℕ) ≠ 4 := fun h => h4 (Fin.ext h)
   have hMod1 : (k * 6 + (j : ℕ) + 1) % 6 ≠ 1 := by omega
   have hMod5 : (k * 6 + (j : ℕ) + 1) % 6 ≠ 5 := by omega
-  simp [canonicalTerm, kronecker_nat_mod6, hMod1, hMod5]
+  have hChi : kroneckerNegTwelve ((k * 6 + (j : ℕ) + 1 : ℕ) : ℤ) = 0 := by
+    rw [kronecker_nat_mod6, if_neg hMod1, if_neg hMod5]
+  rw [canonicalTerm, hChi, Int.cast_zero, zero_mul]
 
 private theorem residue_block (q : ℂ) (k : ℕ) :
     (∑ j : Fin 6, literalTerm q (k * 6 + (j : ℕ))) = complexTerm k q := by
@@ -139,7 +146,7 @@ theorem literalPsi_eq_complexSeries {q : ℂ} (hq : ‖q‖ < 1) : literalPsi q 
       exact residue_block q k
 
 theorem paper8_p335_Eulerian_dictionary_complex {q : ℂ} (hq₀ : q ≠ 0) (hq : ‖q‖ < 1) :
-    star q⁻¹ = 2 * literalPsi q := by
+    Paper8EulerianExterior.star q⁻¹ = 2 * literalPsi q := by
   rw [star_inv_eq_reciprocalStar hq₀ hq, reciprocalStar_eq_two_complexSeries hq,
     literalPsi_eq_complexSeries hq]
 

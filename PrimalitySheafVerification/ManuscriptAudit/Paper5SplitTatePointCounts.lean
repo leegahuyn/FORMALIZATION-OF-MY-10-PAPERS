@@ -21,13 +21,14 @@ theorem trace_power_eq_extension_count {p : ℕ} [Fact p.Prime]
     (hp : 5 ≤ p) (hs : p % 3 = 1) {A : ZMod p} (hA : A ≠ 0)
     (B : Basis (Fin 2) R V) (F : Module.End R V)
     (ht : LinearMap.trace R V F =
-      (((p : ℤ) + 1 - (Nat.card (paper5TraceCurve p A).toProjective.Point : ℤ)) : R))
+      (((p : ℤ) + 1 - (Nat.card (paper5TraceCurve p A).toProjective.Point : ℤ) : ℤ) : R))
     (hd : LinearMap.det F = (p : R)) :
     LinearMap.trace R V (F ^ (Module.finrank (ZMod p) E)) =
       (((Fintype.card E : ℤ) + 1 -
-        (Nat.card ((paper5TraceCurve p A).baseChange E).toProjective.Point : ℤ)) : R) := by
+        (Nat.card ((paper5TraceCurve p A).baseChange E).toProjective.Point : ℤ) : ℤ) : R) := by
+  let ap : ℤ := (p : ℤ) + 1 - (Nat.card (paper5TraceCurve p A).toProjective.Point : ℤ)
   have h := actual_extension_trace_eq_recurrence (E := E) hp hs hA
-  exact (trace_pow_eq_recurrence B F p _ ht hd _).trans
+  exact (trace_pow_eq_recurrence B F p ap ht hd _).trans
     (congrArg (fun z : ℤ => (z : R)) h.symm)
 
 section Seven
@@ -44,7 +45,7 @@ theorem seven_trace_eq_extension_count (hl : l = 2 ∨ l = 3) :
     LinearMap.trace ℤ_[l] (PowerTateModule.Tate l (Geometric L))
       (action L l ^ Module.finrank (ZMod 7) E) =
       (((Fintype.card E : ℤ) + 1 -
-        (Nat.card ((paper5TraceCurve 7 (1 : ZMod 7)).baseChange E).toProjective.Point : ℤ)) : ℤ_[l]) := by
+        (Nat.card ((paper5TraceCurve 7 (1 : ZMod 7)).baseChange E).toProjective.Point : ℤ) : ℤ) : ℤ_[l]) := by
   obtain ⟨ht, hd⟩ := trace_det L l hl
   have h₁ := printedRows_actual_firstTrace sevenRow_mem
   change (7 : ℤ) + 1 - (Nat.card (paper5TraceCurve 7 (1 : ZMod 7)).toProjective.Point : ℤ) = -4 at h₁
@@ -69,7 +70,7 @@ theorem thirteen_trace_eq_extension_count (hl : l = 2 ∨ l = 3) :
     LinearMap.trace ℤ_[l] (PowerTateModule.Tate l (Points L))
       (action L l ^ Module.finrank (ZMod 13) E) =
       (((Fintype.card E : ℤ) + 1 -
-        (Nat.card ((paper5TraceCurve 13 (1 : ZMod 13)).baseChange E).toProjective.Point : ℤ)) : ℤ_[l]) := by
+        (Nat.card ((paper5TraceCurve 13 (1 : ZMod 13)).baseChange E).toProjective.Point : ℤ) : ℤ) : ℤ_[l]) := by
   exact trace_power_eq_extension_count (E := E) (by decide) (by decide) one_ne_zero
     (tateBasis L l hl) (action L l) (trace_eq_signed_count L l hl)
     (by simpa only [Nat.cast_ofNat] using (trace_det L l hl).2)

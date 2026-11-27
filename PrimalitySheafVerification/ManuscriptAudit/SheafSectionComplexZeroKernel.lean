@@ -33,7 +33,7 @@ theorem negativeHomology_subsingleton (F : Sheaf J A) (i : ℤ) (hi : i < 0) :
     ((ExactAt.of_isZero (negativeTerm_isZero J T F i hi)).isZero_homology)
 
 private def termIso (F : Sheaf J A) (i : ℕ) :
-    (sectionComplex J T F).X (i : ℤ) ≅ (sections J T).obj (resolution J F).cocomplex.X i :=
+    (sectionComplex J T F).X (i : ℤ) ≅ (sections J T).obj ((resolution J F).cocomplex.X i) :=
   (sections J T).mapIso ((resolution J F).cochainComplexXIso (i : ℤ) i rfl)
 
 /-- The actual degree-zero section of the resolution augmentation. -/
@@ -64,6 +64,9 @@ def inclusionIsKernel (F : Sheaf J A) :
     IsLimit (KernelFork.ofι (zeroInclusion J T F) (zeroInclusion_comp_d J T F)) := by
   let R := resolution J F
   let E := sections J T
+  letI : PreservesFiniteLimits E := by
+    change PreservesFiniteLimits (sheafToPresheaf J A ⋙ (evaluation Cᵒᵖ A).obj (Opposite.op T))
+    infer_instance
   let hR := R.kernelFork.mapIsLimit R.isLimitKernelFork E
   exact IsKernel.ofIso hR _ (termIso J T F 0).symm (termIso J T F 1).symm (Iso.refl _)
     (differential_square J T F) (by simp [zeroInclusion])

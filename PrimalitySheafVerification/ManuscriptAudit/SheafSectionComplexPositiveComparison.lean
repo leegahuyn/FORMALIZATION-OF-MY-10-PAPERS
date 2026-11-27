@@ -31,7 +31,7 @@ variable {F G : Sheaf J A}
 private abbrev adjacent (n : ℕ) := shortComplexFunctor' A c (n : ℤ) ((n + 1 : ℕ) : ℤ) ((n + 2 : ℕ) : ℤ)
 
 private def termIso (F : Sheaf J A) (m : ℕ) :
-    (sectionComplex J T F).X (m : ℤ) ≅ (sections J T).obj (resolution J F).cocomplex.X m :=
+    (sectionComplex J T F).X (m : ℤ) ≅ (sections J T).obj ((resolution J F).cocomplex.X m) :=
   (sections J T).mapIso ((resolution J F).cochainComplexXIso (m : ℤ) m rfl)
 
 private theorem termIso_d (F : Sheaf J A) (a b : ℕ) :
@@ -83,9 +83,17 @@ private theorem combinedIso_natural (f : F ⟶ G) (n : ℕ) :
     (shortComplexFunctor A c (((n + 1 : ℕ) : ℤ))).map (sectionComplexMap J T f) ≫
       (combinedIso J (T := T) G n).hom =
     (combinedIso J (T := T) F n).hom ≫ shortMap J (resolutionMap J f) n (T := T) := by
-  simp only [combinedIso, Iso.trans_hom]
-  rw [← Category.assoc, (canonicalShortIso n).hom.naturality, Category.assoc,
-    shortIso_natural J f n, ← Category.assoc]
+  let t := sectionComplexMap J T f
+  let e := canonicalShortIso n
+  have h :
+      (shortComplexFunctor A c (((n + 1 : ℕ) : ℤ))).map t ≫ (e.app (sectionComplex J T G)).hom =
+        (e.app (sectionComplex J T F)).hom ≫ (adjacent n).map t :=
+    e.hom.naturality t
+  change (shortComplexFunctor A c (((n + 1 : ℕ) : ℤ))).map t ≫
+      ((e.app (sectionComplex J T G)).hom ≫ (shortIso J G n).hom) =
+    ((e.app (sectionComplex J T F)).hom ≫ (shortIso J F n).hom) ≫
+      shortMap J (resolutionMap J f) n (T := T)
+  rw [← Category.assoc, h, Category.assoc, shortIso_natural J f n, ← Category.assoc]
 
 /-- The chosen actual section complex computes native sheaf cohomology in every positive degree. -/
 def cohomologyEquiv (F : Sheaf J A) (n : ℕ) :
@@ -102,9 +110,14 @@ theorem cohomologyEquiv_natural (f : F ⟶ G) (n : ℕ)
   let b := (combinedIso J (T := T) G n).hom
   have h := congrArg (fun u ↦ ShortComplex.homologyMap u) (combinedIso_natural J f n (T := T))
   simp only [ShortComplex.homologyMap_comp] at h
-  have hx := CategoryTheory.congr_fun h x
+  have hx :
+      ShortComplex.homologyMap b (homologyMap (sectionComplexMap J T f) (↑(n + 1) : ℤ) x) =
+        ShortComplex.homologyMap (shortMap J (resolutionMap J f) n (T := T))
+          (ShortComplex.homologyMap a x) :=
+    CategoryTheory.congr_fun h x
   change positiveEquiv J hT (resolution J G) n
-      (ShortComplex.homologyMap b (homologyMap (sectionComplexMap J T f) (↑(n + 1) : ℤ) x)) = _
+      (ShortComplex.homologyMap b (homologyMap (sectionComplexMap J T f) (↑(n + 1) : ℤ) x)) =
+    Sheaf.H.map f (n + 1) (positiveEquiv J hT (resolution J F) n (ShortComplex.homologyMap a x))
   rw [hx]
   exact positiveEquiv_natural J hT (resolutionMap J f) n (ShortComplex.homologyMap a x)
 

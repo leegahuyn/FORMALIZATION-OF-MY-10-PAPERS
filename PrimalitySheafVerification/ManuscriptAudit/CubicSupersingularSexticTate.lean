@@ -43,10 +43,16 @@ theorem trace_det_formula (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
         p L l hp hp₃ hlp h₂ h₃ hΔ (square_cube L hv) h
       exact ⟨by simpa [k, h] using ht, hd⟩
   have hS : endMap l (sexticScale L hv hΔ) = a • R := by
-    calc
-      _ = twistSign L v • R := by
-        rw [sextic_eq_signed_rotation L hv hΔ, map_zsmul] <;> rfl
-      _ = _ := (Int.cast_smul_eq_zsmul ℤ_[l] (twistSign L v) R).symm
+    by_cases h : v ^ 3 = 1
+    · have ha : a = 1 := by simp [a, twistSign, h]
+      rw [ha, one_smul]
+      exact congrArg (endMap l) (sextic_eq_rotation L hv hΔ h)
+    · have hNeg := (cube_sign L hv).resolve_left h
+      have ha : a = -1 := by simp [a, twistSign, h]
+      rw [ha, neg_one_smul]
+      have he := congrArg (endMap l) (sextic_eq_neg_rotation L hv hΔ hNeg)
+      rw [map_neg] at he
+      exact he
   have hA : a ^ 2 = 1 := by
     rcases twistSign_cases L v with h | h <;> simp [a, h]
   change LinearMap.trace ℤ_[l] U (endMap l (sexticScale L hv hΔ)) =

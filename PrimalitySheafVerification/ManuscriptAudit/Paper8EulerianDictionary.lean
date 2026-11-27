@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Tactic.LinearCombination
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EulerianCharacter
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EulerianPentagonal
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EulerianRecurrenceBridge
@@ -15,7 +16,7 @@ from the page's plus-sign formula for the ordinary squared-denominator series.
 
 namespace ManuscriptAudit.Paper8EulerianDictionary
 
-open Paper8ExteriorNormalization (partialThetaTerm)
+open Paper8ExteriorNormalization (partialThetaTerm kroneckerNegTwelve)
 open Paper8ExteriorProductCorrection (unilateralTheta unilateralTheta_summable_abs)
 open Paper8EulerianCharacter Paper8EulerianPentagonal Paper8EulerianRecurrenceBridge
 open Paper8EulerianExterior
@@ -27,28 +28,28 @@ private def literalTerm (q : ℝ) (n : ℕ) : ℝ := partialThetaTerm q ((n + 1 
 private theorem first_residue_term (q : ℝ) (n : ℕ) :
     literalTerm q (n * 6) = q ^ exponent n := by
   have hMod : (n * 6 + 1) % 6 = 1 := by omega
-  simp only [literalTerm, partialThetaTerm, kronecker_nat_mod6, hMod, if_true, Int.cast_one,
-    one_mul, Int.cast_natCast]
-  rw [← Real.rpow_natCast]
-  congr 1
-  push_cast
-  have hExp := congrArg (fun k : ℕ => (k : ℝ)) (twice_exponent n)
-  push_cast at hExp
-  nlinarith only [hExp]
+  have hChi : kroneckerNegTwelve ((n * 6 + 1 : ℕ) : ℤ) = 1 := by
+    rw [kronecker_nat_mod6, if_pos hMod]
+  have hCast : (((((n * 6 + 1 : ℕ) : ℝ) ^ 2) - 1) / 24) = (exponent n : ℝ) := by
+    have hExp := congrArg (fun k : ℕ => (k : ℝ)) (twice_exponent n)
+    push_cast at hExp ⊢
+    linear_combination (-(1 / 2 : ℝ)) * hExp
+  rw [literalTerm, partialThetaTerm, hChi, Int.cast_one, one_mul, Int.cast_natCast,
+    hCast, Real.rpow_natCast]
 
 private theorem second_residue_term (q : ℝ) (n : ℕ) :
     literalTerm q (n * 6 + 4) = -(q ^ (exponent n + (2 * n + 1))) := by
   have hMod : (n * 6 + 4 + 1) % 6 = 5 := by omega
-  simp only [literalTerm, partialThetaTerm, kronecker_nat_mod6, hMod,
-    if_neg (by decide : (5 : ℕ) ≠ 1), if_true, Int.cast_neg, Int.cast_one, neg_one_mul,
-    Int.cast_natCast]
-  apply congrArg Neg.neg
-  rw [← Real.rpow_natCast]
-  congr 1
-  push_cast
-  have hExp := congrArg (fun k : ℕ => (k : ℝ)) (twice_exponent n)
-  push_cast at hExp
-  nlinarith only [hExp]
+  have hNotOne : (n * 6 + 4 + 1) % 6 ≠ 1 := by omega
+  have hChi : kroneckerNegTwelve ((n * 6 + 4 + 1 : ℕ) : ℤ) = -1 := by
+    rw [kronecker_nat_mod6, if_neg hNotOne, if_pos hMod]
+  have hCast : (((((n * 6 + 4 + 1 : ℕ) : ℝ) ^ 2) - 1) / 24) =
+      ((exponent n + (2 * n + 1) : ℕ) : ℝ) := by
+    have hExp := congrArg (fun k : ℕ => (k : ℝ)) (twice_exponent n)
+    push_cast at hExp ⊢
+    linear_combination (-(1 / 2 : ℝ)) * hExp
+  rw [literalTerm, partialThetaTerm, hChi, Int.cast_neg, Int.cast_one, neg_one_mul,
+    Int.cast_natCast, hCast, Real.rpow_natCast]
 
 private theorem other_residue_term (q : ℝ) (n : ℕ) (j : Fin 6)
     (h0 : j ≠ 0) (h4 : j ≠ 4) : literalTerm q (n * 6 + (j : ℕ)) = 0 := by
@@ -57,7 +58,9 @@ private theorem other_residue_term (q : ℝ) (n : ℕ) (j : Fin 6)
   have hj4 : (j : ℕ) ≠ 4 := fun h => h4 (Fin.ext h)
   have hMod1 : (n * 6 + (j : ℕ) + 1) % 6 ≠ 1 := by omega
   have hMod5 : (n * 6 + (j : ℕ) + 1) % 6 ≠ 5 := by omega
-  simp [literalTerm, partialThetaTerm, kronecker_nat_mod6, hMod1, hMod5]
+  have hChi : kroneckerNegTwelve ((n * 6 + (j : ℕ) + 1 : ℕ) : ℤ) = 0 := by
+    rw [kronecker_nat_mod6, if_neg hMod1, if_neg hMod5]
+  rw [literalTerm, partialThetaTerm, hChi, Int.cast_zero, zero_mul]
 
 private theorem sum_residue_block (q : ℝ) (n : ℕ) :
     (∑ j : Fin 6, literalTerm q (n * 6 + (j : ℕ))) = pentagonalTerm q n := by
@@ -95,7 +98,7 @@ theorem unilateralTheta_eq_pentagonalSeries {q : ℝ} (hq : 0 < q) (h₁ : q < 1
       exact sum_residue_block q n
 
 theorem paper8_p335_Eulerian_dictionary_positive {q : ℝ} (hq : 0 < q) (h₁ : q < 1) :
-    star (q : ℂ)⁻¹ = 2 * (unilateralTheta q : ℂ) := by
+    Paper8EulerianExterior.star (q : ℂ)⁻¹ = 2 * (unilateralTheta q : ℂ) := by
   have hq₀ : (q : ℂ) ≠ 0 := by exact_mod_cast hq.ne'
   have hNorm : ‖(q : ℂ)‖ < 1 := by
     simpa only [Complex.norm_real, Real.norm_eq_abs, abs_of_pos hq] using h₁

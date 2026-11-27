@@ -60,8 +60,10 @@ theorem trace_det (hl : l = 2 ∨ l = 3) :
       congrArg (endMap l) (native_eq_rotation L)
   have hN : ¬∃ c : ℤ_[l], F = c • I := by
     rintro ⟨c, hc⟩
-    have hRel : (5 - c) • I + (2 : ℤ_[l]) • S = 0 := by
-      rw [sub_smul]
+    have hRel : ((5 : ℤ_[l]) - c) • I + (2 : ℤ_[l]) • S = 0 := by
+      have hs : ((5 : ℤ_[l]) - c) • I = (5 : ℤ_[l]) • I - c • I :=
+        sub_smul (5 : ℤ_[l]) c I
+      rw [hs]
       calc
         _ = ((5 : ℤ_[l]) • I + (2 : ℤ_[l]) • S) - c • I := by abel
         _ = 0 := sub_eq_zero.mpr (hF.symm.trans hc)

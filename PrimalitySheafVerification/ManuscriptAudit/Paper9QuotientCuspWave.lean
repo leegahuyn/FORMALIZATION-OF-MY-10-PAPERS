@@ -69,6 +69,31 @@ private theorem residual_continuous (b' b'' : ℝ → ℝ) (k R : ℝ)
   exact (((hA b'' hC).mul continuous_const).add
     ((continuous_const.mul (hA b' hB)).mul continuous_const)).mul hP
 
+/-- The measured quotient residual divided by the measured wave mass is the
+corresponding logarithmic profile quotient at every positive scale. -/
+theorem quotient_relative_eq (D : GammaTwoFundamentalDomain)
+    (b b' b'' : ℝ → ℝ) (k R : ℝ) (hR : 0 < R)
+    (hb : ∀ t, HasDerivAt b (b' t) t) (hB : Continuous b')
+    (hC : Continuous b'') (hM : mass b 1 6 ≠ 0) :
+    (∫ q, squaredDensity (residual b' b'' k R) (Real.exp R) (Real.exp (R * 6)) q
+      ∂D.quotientMeasure) /
+    (∫ q, squaredDensity (trial b k R) (Real.exp R) (Real.exp (R * 6)) q
+      ∂D.quotientMeasure) = relativeResidual b b' b'' 1 6 k R := by
+  have ha : 1 < Real.exp R := by
+    rw [← Real.exp_zero]
+    exact Real.exp_lt_exp.mpr hR
+  have hab : Real.exp R ≤ Real.exp (R * 6) := Real.exp_le_exp.mpr (by linarith)
+  have hTrial : Continuous (trial b k R) :=
+    continuous_iff_continuousAt.mpr (fun t => (trial_hasDerivAt b b' k R t hb).continuousAt)
+  have hResSq : Continuous (fun t => ‖residual b' b'' k R t‖ ^ (2 : ℕ)) :=
+    (residual_continuous b' b'' k R hB hC).norm.fun_pow 2
+  have hTrialSq : Continuous (fun t => ‖trial b k R t‖ ^ (2 : ℕ)) := hTrial.norm.fun_pow 2
+  unfold squaredDensity
+  rw [integral_density D _ hResSq ha hab, integral_density D _ hTrialSq ha hab,
+    Real.log_exp, Real.log_exp]
+  rw [mul_div_mul_left _ _ (by norm_num : (2 : ℝ) ≠ 0)]
+  simpa only [mul_one] using relative_eq b b' b'' 1 6 k R hR.ne' hB hC hM
+
 theorem exists_small_quotient_residual (D : GammaTwoFundamentalDomain)
     (b b' b'' : ℝ → ℝ) (k : ℝ) (hb : ∀ t, HasDerivAt b (b' t) t)
     (hB : Continuous b') (hC : Continuous b'') (hM : 0 < mass b 1 6)
@@ -106,6 +131,7 @@ run_cmd do
       ``ManuscriptAudit.Paper9QuotientCuspWave.squaredDensity_on_slab,
       ``ManuscriptAudit.Paper9QuotientCuspWave.trialDensity_on_slab,
       ``ManuscriptAudit.Paper9QuotientCuspWave.residualDensity_on_slab,
+      ``ManuscriptAudit.Paper9QuotientCuspWave.quotient_relative_eq,
       ``ManuscriptAudit.Paper9QuotientCuspWave.exists_small_quotient_residual] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

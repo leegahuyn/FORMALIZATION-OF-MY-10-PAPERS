@@ -73,6 +73,17 @@ theorem normalizedWave_orthogonal (D : GammaTwoFundamentalDomain) (k : ℝ) {m n
   simp only [normalizedWave, inner_smul_left, inner_smul_right, sequence_orthogonal D k h,
     mul_zero, zero_mul]
 
+theorem normalizedWave_separation (D : GammaTwoFundamentalDomain) (k : ℝ) {m n : ℕ} (h : m < n) :
+    1 ≤ dist (normalizedWave D k m) (normalizedWave D k n) := by
+  have hSq : dist (normalizedWave D k m) (normalizedWave D k n) ^ 2 = 2 := by
+    rw [dist_eq_norm, norm_sub_sq (𝕜 := ℂ), normalizedWave_norm D k m, normalizedWave_norm D k n,
+      normalizedWave_orthogonal D k h] <;> norm_num
+  by_contra hn
+  have hlt : dist (normalizedWave D k m) (normalizedWave D k n) < 1 := lt_of_not_ge hn
+  have h' := pow_lt_pow_left₀ dist_nonneg hlt (by decide : (2 : ℕ) ≠ 0)
+  rw [hSq, one_pow] at h'
+  norm_num at h'
+
 end
 end ManuscriptAudit.Paper9OrthogonalCuspWaves
 
@@ -84,7 +95,8 @@ run_cmd do
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.scale_separated,
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.sequence_orthogonal,
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_norm,
-      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_orthogonal] do
+      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_orthogonal,
+      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_separation] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

@@ -96,12 +96,13 @@ def affineLimitEquiv (hℓp : ℓ ≠ p) :
 
 /-- The canonical smooth compatible classes in positive degrees one and two are ℤℓ. -/
 def smoothLimitEquiv (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2) :
-    compatibleClasses (smoothCompactOpen p) ℓ n ≃+ ℤ_[ℓ] :=
-  padicEquiv _ ℓ n (smooth_onto p ℓ hℓp n) (fun r ↦ by
+    compatibleClasses (smoothCompactOpen p) ℓ n ≃+ ℤ_[ℓ] := by
+  let e (r : ℕ) : smoothHc p (ℓ ^ r) n ≃+ ZMod (ℓ ^ r) := by
     cases r with
     | zero => exact orderOneEquiv (smoothCompactOpen p) n
     | succ r => exact (smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) n).trans
-        (ZMod.ringEquivCongr (if_pos hn)).toAddEquiv)
+        (ZMod.ringEquivCongr (if_pos hn)).toAddEquiv
+  exact padicEquiv (smoothCompactOpen p) ℓ n (smooth_onto p ℓ hℓp n) e
 
 /-- The canonical cusp compatible classes vanish in all other nonnegative compact degrees. -/
 theorem omittedLimits (hℓp : ℓ ≠ p) (n : ℕ) :

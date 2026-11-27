@@ -51,7 +51,7 @@ theorem trace_eq_extension_count
     (hl : l = 2 ∨ l = 3) :
     LinearMap.trace ℤ_[l] (Tate l (Points L)) (action L l ^ Module.finrank (ZMod 19) E) =
       (((Fintype.card E : ℤ) + 1 -
-        (Nat.card ((paper5TraceCurve 19 (1 : ZMod 19)).baseChange E).toProjective.Point : ℤ)) : ℤ_[l]) := by
+        (Nat.card ((paper5TraceCurve 19 (1 : ZMod 19)).baseChange E).toProjective.Point : ℤ) : ℤ) : ℤ_[l]) := by
   exact Paper5SplitTatePointCounts.trace_power_eq_extension_count (E := E)
     (by decide) (by decide) one_ne_zero
     (tateBasis L l hl) (action L l) (trace_eq_signed_count L l hl)

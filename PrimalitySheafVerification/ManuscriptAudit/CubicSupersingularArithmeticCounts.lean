@@ -66,9 +66,11 @@ theorem count_even (hp : 5 ≤ p) (hp₃ : p % 3 = 2)
   apply count_from_rotation p L E hp hp₃ h₂ h₃ hΔ (square_cube L hw) s hs e
   intro P
   rw [he, hF, sextic_eq_signed_rotation L hw hΔ]
-  change e (twistSign L v • rotate (v ^ 2) (square_cube L hw) hΔ (c • P)) =
-    e (s • rotate (v ^ 2) (square_cube L hw) hΔ P)
-  rw [map_zsmul, smul_smul]
+  let r : AddMonoid.End (UnitPoints L) := rotate (v ^ 2) (square_cube L hw) hΔ
+  change e (twistSign L v • r (c • P)) = e (s • r P)
+  have hr : r (c • P) = c • r P := map_zsmul r c P
+  have hEq : twistSign L v • r (c • P) = s • r P := by rw [hr, smul_smul]
+  exact congrArg e hEq
 
 end
 end ManuscriptAudit.CubicSupersingularArithmeticCounts
