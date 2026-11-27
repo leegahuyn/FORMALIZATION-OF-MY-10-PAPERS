@@ -72,6 +72,7 @@ theorem critical_height_not_squareIntegrable (t : ℝ) :
   apply cusp_height_nonintegrable
   apply h.congr
   exact (ae_restrict_iff' strip_measurable).mpr (Filter.Eventually.of_forall (fun z hz => by
+    change ‖extendedSection (heightPower (criticalExponent t)) z‖ ^ (2 : ℕ) = z.im
     rw [extendedSection_at_high _ z (show 1 < z.im from hz.1),
       critical_height_norm_sq t z.im_pos]))
 

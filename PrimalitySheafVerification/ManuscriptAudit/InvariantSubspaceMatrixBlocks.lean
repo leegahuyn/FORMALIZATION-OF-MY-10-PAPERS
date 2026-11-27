@@ -15,7 +15,7 @@ noncomputable section
 variable {K V ι τ : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {U W : Submodule K V} (h : IsCompl U W)
 
-private def sumEquiv : U × (V ⧸ U) ≃ₗ[K] V :=
+private def sumEquiv : (U × (V ⧸ U)) ≃ₗ[K] V :=
   ((LinearEquiv.refl K U).prodCongr (U.quotientEquivOfIsCompl W h)).trans
     (U.prodEquivOfIsCompl W h)
 

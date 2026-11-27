@@ -33,13 +33,13 @@ abbrev F (d : ℕ) := (KummerRelativeFull.sequence (projectiveNode K) d).X₁
 def restriction (d : ℕ) : (F K d).H' 1 (Y K) →+ (F K d).H' 1 (principalObject K) :=
   (((F K d).cohomologyPresheaf 1).map (chartArrow (principalRingHom K) (chartOpen K)).op).hom
 
+variable [IsAlgClosed K]
+
 private theorem overlap_PID : IsPrincipalIdealRing (overlapRing K) := by
   letI : IsPrincipalIdealRing (Localization.Away (overlapDenominator K)) :=
     PrincipalOpenEtaleHTwo.principalIdealRing K (overlapDenominator K)
   exact IsPrincipalIdealRing.of_surjective (overlapCoordinates K).symm
     (overlapCoordinates K).symm.surjective
-
-variable [IsAlgClosed K]
 
 /-- On the actual nodal Y chart, the cokernel is exactly the newly removed point's cyclic order. -/
 def cokernelEquiv (d : ℕ) [NeZero (d : K)] (hd : 0 < d) :
@@ -53,16 +53,19 @@ def cokernelEquiv (d : ℕ) [NeZero (d : K)] (hd : 0 < d) :
   let u := KummerChartBoundaryPresentation.boundary k j d hd
   let v := KummerChartBoundaryPresentation.boundary k j' d hd
   let r := restriction K d
-  let e := AdditiveCokernelPresentation.cokernelEquiv i u v r
-    (KummerChartBoundaryPresentation.boundary_surjective k j d hd)
-    (KummerChartBoundaryPresentation.boundary_surjective k j' d hd)
-    (KummerChartBoundaryPresentation.boundary_natural k j d hd f)
+  let e : (((F K d).H' 1 (principalObject K) : Type) ⧸ r.range) ≃+
+      (Additive (overlapRing K)ˣ ⧸ (i.range ⊔ v.ker)) :=
+    AdditiveCokernelPresentation.cokernelEquiv i u v r
+      (KummerChartBoundaryPresentation.boundary_surjective k j d hd)
+      (KummerChartBoundaryPresentation.boundary_surjective k j' d hd)
+      (KummerChartBoundaryPresentation.boundary_natural k j d hd f)
   have hKer : v.ker = (CyclicOrderQuotient.nsmulMap (B := Additive (overlapRing K)ˣ) d).range :=
     KummerChartBoundaryPresentation.boundary_ker k j' d hd
   have e' : (((F K d).H' 1 (principalObject K) : Type) ⧸ r.range) ≃+
       (Additive (overlapRing K)ˣ ⧸
         (i.range ⊔ (CyclicOrderQuotient.nsmulMap (B := Additive (overlapRing K)ˣ) d).range)) := by
-    simpa only [hKer] using e
+    rw [← hKer]
+    exact e
   exact e'.trans (CyclicOrderQuotient.quotientEquiv i (NodalYChartUnitOrder.order K)
     (NodalYChartUnitOrder.restriction_order_exact K) (NodalYChartUnitOrder.order_surjective K) d)
 

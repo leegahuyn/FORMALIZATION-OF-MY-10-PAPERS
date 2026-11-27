@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Data.Int.NatPrime
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.NormNum
@@ -24,7 +24,7 @@ private abbrev P : Ideal ℤ := Ideal.span ({(3 : ℤ)} : Set ℤ)
 
 private instance : P.IsPrime :=
   (Ideal.span_singleton_prime (by norm_num : (3 : ℤ) ≠ 0)).mpr
-    (Nat.prime_iff_prime_int.mp Nat.prime_three)
+    (Int.prime_iff_natAbs_prime.mpr (by exact Nat.prime_three))
 
 abbrev firstPrime : Ideal R := P.comap (RingHom.fst ℤ ℤ)
 

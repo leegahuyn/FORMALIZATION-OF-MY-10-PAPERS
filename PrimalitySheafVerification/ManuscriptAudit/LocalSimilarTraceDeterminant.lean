@@ -14,7 +14,7 @@ variable {ι : Type} [Fintype ι] [LinearOrder ι]
 private abbrev M := Matrix ι ι ℂ
 
 def conjugate (P : (M (ι := ι))ˣ) (A : M (ι := ι)) : M (ι := ι) :=
-  (P : M) * A * (↑(P⁻¹) : M)
+  P.val * A * (P⁻¹).val
 
 private theorem conjugate_pow (P : (M (ι := ι))ˣ) (A : M (ι := ι)) (n : ℕ) :
     conjugate P (A ^ n) = conjugate P A ^ n := by
@@ -22,24 +22,24 @@ private theorem conjugate_pow (P : (M (ι := ι))ˣ) (A : M (ι := ι)) (n : ℕ
   | zero => simp [conjugate]
   | succ n ih =>
     rw [pow_succ, pow_succ, ← ih]
-    have hP : (↑(P⁻¹) : M) * (P : M) = 1 := by simp
-    change (P : M) * (A ^ n * A) * (↑(P⁻¹) : M) =
-      ((P : M) * A ^ n * (↑(P⁻¹) : M)) * ((P : M) * A * (↑(P⁻¹) : M))
+    have hP : (P⁻¹).val * P.val = 1 := by simp
+    change P.val * (A ^ n * A) * (P⁻¹).val =
+      (P.val * A ^ n * (P⁻¹).val) * (P.val * A * (P⁻¹).val)
     calc
-      _ = ((P : M) * A ^ n * ((↑(P⁻¹) : M) * (P : M))) * A * (↑(P⁻¹) : M) := by
-        rw [hP, mul_one, mul_assoc (P : M) (A ^ n) A]
+      _ = (P.val * A ^ n * ((P⁻¹).val * P.val)) * A * (P⁻¹).val := by
+        rw [hP, mul_one, mul_assoc P.val (A ^ n) A]
       _ = _ := by simp only [mul_assoc]
 
 theorem trace_conjugate_power (P : (M (ι := ι))ˣ) (A : M (ι := ι)) (n : ℕ) :
     (conjugate P A ^ n).trace = (A ^ n).trace := by
-  rw [← conjugate_pow, conjugate, Matrix.trace_mul_comm _ (↑(P⁻¹) : M), ← mul_assoc]
-  simp
+  rw [← conjugate_pow]
+  exact Matrix.trace_units_conj P (A ^ n)
 
 private theorem det_conjugate (P : (M (ι := ι))ˣ) (A : M (ι := ι)) :
     (conjugate P A).det = A.det := by
   rw [conjugate, Matrix.det_mul, Matrix.det_mul]
   calc
-    _ = A.det * ((P : M).det * (↑(P⁻¹) : M).det) := by ring
+    _ = A.det * (P.val.det * (P⁻¹).val.det) := by ring
     _ = _ := by rw [← Matrix.det_mul]; simp
 
 theorem determinant_one_sub_conjugate (P : (M (ι := ι))ˣ) (A : M (ι := ι)) (z : ℂ) :
@@ -47,7 +47,7 @@ theorem determinant_one_sub_conjugate (P : (M (ι := ι))ˣ) (A : M (ι := ι)) 
   have h : (1 : M) - z • conjugate P A = conjugate P ((1 : M) - z • A) := by
     unfold conjugate
     rw [mul_sub, sub_mul, mul_one]
-    have hP : (P : M) * (↑(P⁻¹) : M) = 1 := by simp
+    have hP : P.val * (P⁻¹).val = 1 := by simp
     rw [hP]
     simp only [Matrix.mul_smul, Matrix.smul_mul]
   rw [h, det_conjugate]

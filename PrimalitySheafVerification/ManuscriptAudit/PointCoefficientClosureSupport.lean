@@ -25,7 +25,7 @@ theorem stalk_subsingleton_outside_closure {x : X} (hx : x ∉ closure P) :
     Subsingleton (TopCat.Presheaf.stalk (C := G) (presheaf P A) x) := by
   let F := presheaf P A
   let V : Opens X := ⟨(closure P)ᶜ, isClosed_closure.isOpen_compl⟩
-  apply subsingleton_of_forall_eq 0
+  apply _root_.subsingleton_of_forall_eq 0
   intro s
   obtain ⟨U, hUV, hxU, t, ht⟩ := F.exists_le_germ_eq (x := x) s (V := V) hx
   have h0 : t = 0 := by

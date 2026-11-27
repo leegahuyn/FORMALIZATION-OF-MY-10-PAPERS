@@ -16,6 +16,8 @@ open scoped UpperHalfPlane Topology
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false
+
 def weightedLogProfile (g : ℝ → ℂ) (y : ℝ) : ℂ :=
   heightPower (1 / 2) y * g (Real.log y)
 
@@ -23,7 +25,10 @@ private theorem logComp_hasDerivAt (g : ℝ → ℂ) (hg : Differentiable ℝ g)
     (hy : y ≠ 0) :
     HasDerivAt (fun t => g (Real.log t)) ((y : ℂ)⁻¹ * deriv g (Real.log y)) y := by
   have h := (hg (Real.log y)).hasDerivAt.scomp y (Real.hasDerivAt_log hy)
-  simpa only [Function.comp_def, Algebra.smul_def, Complex.ofReal_inv] using h
+  simp only [Function.comp_def, Algebra.smul_def] at h
+  change HasDerivAt (fun t => g (Real.log t))
+    (((y⁻¹ : ℝ) : ℂ) * deriv g (Real.log y)) y at h
+  simpa only [Complex.ofReal_inv] using h
 
 theorem weightedLogProfile_hasDerivAt (g : ℝ → ℂ) (hg : Differentiable ℝ g)
     {y : ℝ} (hy : 0 < y) :
@@ -31,7 +36,9 @@ theorem weightedLogProfile_hasDerivAt (g : ℝ → ℂ) (hg : Differentiable ℝ
       (weightedLogProfile (fun t => (1 / 2 : ℂ) * g t + deriv g t) y / (y : ℂ)) y := by
   have hC : (y : ℂ) ≠ 0 := by exact_mod_cast hy.ne'
   have h := (heightPower_hasDerivAt (1 / 2 : ℂ) hy.ne').mul (logComp_hasDerivAt g hg hy.ne')
-  convert h using 1 <;> simp only [weightedLogProfile] <;> field_simp [hC] <;> ring
+  convert h using 1
+  · unfold weightedLogProfile
+    field_simp [hC] <;> ring
 
 theorem weightedLogProfile_second (g : ℝ → ℂ)
     (hg : Differentiable ℝ g) (hg' : Differentiable ℝ (deriv g)) {y : ℝ} (hy : 0 < y) :
@@ -48,7 +55,9 @@ theorem weightedLogProfile_second (g : ℝ → ℂ)
   have h := hB.div ((hasDerivAt_id y).ofReal_comp) hC
   have hb' (t : ℝ) : deriv b t = (1 / 2 : ℂ) * deriv g t + deriv (deriv g) t :=
     (((hg t).hasDerivAt.const_mul (1 / 2 : ℂ)).add (hg' t).hasDerivAt).deriv
-  rw [hLocal.deriv_eq, h.deriv]
+  have hDer := h.deriv
+  change deriv (fun t : ℝ => weightedLogProfile b t / (t : ℂ)) y = _ at hDer
+  rw [hLocal.deriv_eq, hDer]
   simp only [id_eq, Complex.ofReal_one, weightedLogProfile]
   rw [hb']
   dsimp [b]
@@ -60,6 +69,7 @@ theorem printedL_weightedLogProfile (g : ℝ → ℂ)
       weightedLogProfile (fun t => deriv (deriv g) t - (1 / 4 : ℂ) * g t) z.im := by
   have hC : (z.im : ℂ) ≠ 0 := by exact_mod_cast z.im_ne_zero
   rw [printedL_high _ z hz, weightedLogProfile_second g hg hg' z.im_pos]
+  generalize weightedLogProfile (fun t => deriv (deriv g) t - (1 / 4 : ℂ) * g t) z.im = a
   field_simp [hC]
 
 end

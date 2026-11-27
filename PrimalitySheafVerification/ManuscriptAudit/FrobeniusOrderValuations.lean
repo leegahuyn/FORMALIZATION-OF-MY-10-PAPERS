@@ -17,8 +17,8 @@ theorem eventually_exists_exact_factor (l x : ℕ) [Fact l.Prime] (hOdd : Odd l)
   have hb : 1 < b := by
     simpa only [b, one_pow] using Nat.pow_lt_pow_left hx hs.ne'
   have hbDvd : l ∣ b - 1 := (Nat.dvd_iff_mod_eq_zero).mpr
-    (Nat.pow_card_sub_one_sub_one_mod_card (p := l) (m := x) hl
-      ((hl.coprime_iff_not_dvd).mpr hCoprime))
+    (Nat.pow_card_sub_one_sub_one_mod_card hl (n := x)
+      (((hl.coprime_iff_not_dvd).mpr hCoprime).symm))
   have hbCoprime : ¬l ∣ b := fun h => hCoprime (hl.dvd_of_dvd_pow h)
   let N := padicValNat l (b - 1)
   refine ⟨N, fun n hn => ?_⟩

@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CubicNonsplitTwoThreeAdicCharpoly
 import PrimalitySheafVerification.ManuscriptAudit.FirstPrimeTorsionBasis
 import PrimalitySheafVerification.ManuscriptAudit.Paper5NonsplitPrimePowerCard
+import PrimalitySheafVerification.ManuscriptAudit.Paper5NonsplitPrimeAdicExtensionTrace
 import PrimalitySheafVerification.ManuscriptAudit.PrimeDivisibilityFromTorsionTower
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassAlgebraicPointFiniteOrder
 
@@ -14,6 +15,7 @@ open CubicNonsplitThreeAdicTrace CubicNonsplitPrimeAdicFrobenius CubicNonsplitTw
 open PowerTateModule PowerTateRankTwo Paper5NonsplitFrobeniusModFour
 open Paper5NonsplitPrimePowerCard PrimeDivisibilityFromTorsionTower
 open WeierstrassAlgebraicPointFiniteOrder
+open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
 
 noncomputable section
 
@@ -62,6 +64,17 @@ theorem charpoly (hp : 5 ≤ p) (hq : p % 3 = 2) (hlp : l ≠ p) {A : ZMod p} (h
   simpa only [ZMod.card] using charpoly_eq (ZMod p) L l h₂ h₃ hA hq3
     (odd_field_card p hp) (actualBasis p L l hp hq hlp hA)
 
+/-- At every coefficient prime distinct from p, actual Frobenius powers recover the extension counts. -/
+theorem trace_pow_eq_point_count (hp : 5 ≤ p) (hq : p % 3 = 2) (hlp : l ≠ p)
+    (D : Type*) [Field D] [Fintype D] [DecidableEq D] [Algebra (ZMod p) D]
+    {A : ZMod p} (hA : A ≠ 0) :
+    LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod p) L A))
+        ((Action (ZMod p) L l A) ^ (Module.finrank (ZMod p) D)) =
+      (((Fintype.card D : ℤ) + 1 -
+        (Nat.card ((paper5TraceCurve p A).baseChange D).toProjective.Point : ℤ)) : ℤ_[l]) :=
+  Paper5NonsplitPrimeAdicExtensionTrace.trace_pow_eq_point_count p D L l hp hq hA
+    (actualBasis p L l hp hq hlp hA)
+
 end
 end ManuscriptAudit.Paper5NonsplitAllPrimeAdic
 
@@ -71,7 +84,8 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.Paper5NonsplitAllPrimeAdic.actualBasis,
       ``ManuscriptAudit.Paper5NonsplitAllPrimeAdic.determinant,
-      ``ManuscriptAudit.Paper5NonsplitAllPrimeAdic.charpoly] do
+      ``ManuscriptAudit.Paper5NonsplitAllPrimeAdic.charpoly,
+      ``ManuscriptAudit.Paper5NonsplitAllPrimeAdic.trace_pow_eq_point_count] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

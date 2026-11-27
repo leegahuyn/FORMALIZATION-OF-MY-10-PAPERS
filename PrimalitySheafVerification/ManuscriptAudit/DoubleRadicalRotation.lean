@@ -19,12 +19,16 @@ local notation "D₀" => DoubleExtension m n a b
 private def onFirstAlgebra (z : K) (hz : z ^ m = 1) : C₀ →ₐ[R] D₀ :=
   (IsScalarTower.toAlgHom R C₀ D₀).comp (rotation m a z hz)
 
+private theorem secondRoot_eval (z : K) (hz : z ^ m = 1) :
+    (relation n (algebraMap R C₀ b)).eval₂ (onFirstAlgebra m n a b z hz)
+      (secondRoot m n a b) = 0 := by
+  simp only [relation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
+  exact sub_eq_zero.mpr ((secondRoot_pow m n a b).trans
+    ((onFirstAlgebra m n a b z hz).commutes b).symm)
+
 def rotateFirst (z : K) (hz : z ^ m = 1) : D₀ →ₐ[R] D₀ :=
   AdjoinRoot.liftAlgHom (relation n (algebraMap R C₀ b)) (onFirstAlgebra m n a b z hz)
-    (secondRoot m n a b) (by
-      simp only [relation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
-      exact sub_eq_zero.mpr ((secondRoot_pow m n a b).trans
-        ((onFirstAlgebra m n a b z hz).commutes b).symm))
+    (secondRoot m n a b) (secondRoot_eval m n a b z hz)
 
 def rotateSecond (z : K) (hz : z ^ n = 1) : D₀ →ₐ[R] D₀ :=
   (rotation n (algebraMap R C₀ b) z hz).restrictScalars R
@@ -32,8 +36,8 @@ def rotateSecond (z : K) (hz : z ^ n = 1) : D₀ →ₐ[R] D₀ :=
 @[simp] theorem rotateFirst_of (z : K) (hz : z ^ m = 1) (x : C₀) :
     rotateFirst m n a b z hz (algebraMap C₀ D₀ x) =
       algebraMap C₀ D₀ (rotation m a z hz x) := by
-  unfold rotateFirst
-  rw [AdjoinRoot.algebraMap_eq, AdjoinRoot.liftAlgHom_of] <;> rfl
+  exact AdjoinRoot.liftAlgHom_of (p := relation n (algebraMap R C₀ b))
+    (onFirstAlgebra m n a b z hz) (secondRoot m n a b) (secondRoot_eval m n a b z hz) x
 
 @[simp] theorem rotateFirst_firstRoot (z : K) (hz : z ^ m = 1) :
     rotateFirst m n a b z hz (firstRoot m n a b) =
@@ -43,8 +47,8 @@ def rotateSecond (z : K) (hz : z ^ n = 1) : D₀ →ₐ[R] D₀ :=
 
 @[simp] theorem rotateFirst_secondRoot (z : K) (hz : z ^ m = 1) :
     rotateFirst m n a b z hz (secondRoot m n a b) = secondRoot m n a b := by
-  unfold rotateFirst secondRoot root
-  rw [AdjoinRoot.liftAlgHom_root]
+  exact AdjoinRoot.liftAlgHom_root (p := relation n (algebraMap R C₀ b))
+    (onFirstAlgebra m n a b z hz) (secondRoot m n a b) (secondRoot_eval m n a b z hz)
 
 @[simp] theorem rotateSecond_firstRoot (z : K) (hz : z ^ n = 1) :
     rotateSecond m n a b z hz (firstRoot m n a b) = firstRoot m n a b := by
