@@ -33,11 +33,14 @@ def sectionTransition (n : ℕ) : C(T, ZMod (ℓ ^ (n + 1))) →+ C(T, ZMod (ℓ
   map_zero' := by
     apply ContinuousMap.ext
     intro x
-    exact map_zero _
+    change reduction ℓ (Nat.le_succ n) 0 = 0
+    exact map_zero (reduction ℓ (Nat.le_succ n))
   map_add' f g := by
     apply ContinuousMap.ext
     intro x
-    exact map_add _ _ _
+    change reduction ℓ (Nat.le_succ n) (f x + g x) =
+      reduction ℓ (Nat.le_succ n) (f x) + reduction ℓ (Nat.le_succ n) (g x)
+    exact map_add (reduction ℓ (Nat.le_succ n)) (f x) (g x)
 
 /-- The actual compatible tuple group of continuous finite-level sections. -/
 abbrev compatibleSections :=
@@ -94,7 +97,7 @@ def sheafSectionsEquiv (X : Scheme.{u}) (W : X.ProEt) :
 /-- The actual evaluation of the comparison at any residue level and geometric scheme point. -/
 theorem sheafSectionsEquiv_apply (X : Scheme.{u}) (W : X.ProEt)
     (f : (X.ellAdicSheaf ℓ).obj.obj (op W)) (n : ℕ) (x : W.left) :
-    (sheafSectionsEquiv ℓ X W f).val n x = PadicInt.toZModPow n (f x) :=
+    (sheafSectionsEquiv ℓ X W f).val n x = PadicInt.toZModPow n ((show C(W.left, ℤ_[ℓ]) from f) x) :=
   rfl
 
 /-- The coherent residues commute with restriction along every actual pro-étale chart arrow. -/

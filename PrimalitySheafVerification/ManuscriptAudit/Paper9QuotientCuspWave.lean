@@ -59,7 +59,7 @@ theorem residualDensity_on_slab (b b' b'' : ℝ → ℝ) (k R : ℝ)
   congr 2
   ring
 
-private theorem residual_continuous (b' b'' : ℝ → ℝ) (k R : ℝ)
+theorem residual_continuous (b' b'' : ℝ → ℝ) (k R : ℝ)
     (hB : Continuous b') (hC : Continuous b'') : Continuous (residual b' b'' k R) := by
   have hScale : Continuous (fun t : ℝ => t / R) := continuous_id.div_const R
   have hA (b : ℝ → ℝ) (hb : Continuous b) : Continuous (amplitude b R) :=

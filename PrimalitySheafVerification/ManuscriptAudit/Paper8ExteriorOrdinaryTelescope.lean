@@ -69,7 +69,8 @@ private theorem V_zero {q a : ℝ} (hq : 0 < q) (h₁ : q < 1) (ha : 0 < a) :
 
 private theorem V_tendsto_one {q a : ℝ} (hq : 0 < q) (h₁ : q < 1) (ha : 0 < a) :
     Tendsto (V q a) atTop (𝓝 1) := by
-  simpa only [V, Y, Z, one_mul] using (U_tail_tendsto_one hq.le h₁ ha.le).mul
+  change Tendsto (fun n : ℕ => U q (a * q ^ n) * U q ((a * q)⁻¹ * q ^ n)) atTop (𝓝 1)
+  simpa only [one_mul] using (U_tail_tendsto_one hq.le h₁ ha.le).mul
     (U_tail_tendsto_one hq.le h₁ (inv_nonneg.mpr (mul_nonneg ha.le hq.le)))
 
 private theorem finite_telescope (f : ℕ → ℝ) (N : ℕ) :
