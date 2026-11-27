@@ -41,7 +41,9 @@ theorem trace_pow_eq_point_count (hp : 5 ≤ p) (hq : p % 3 = 2) {A : ZMod p} (h
     (by simpa only [Int.cast_zero] using ht) hd (Module.finrank (ZMod p) D)
   have hCount := actual_extension_trace_eq_recurrence_of_mod_two (E := D) hp hq hA
   rw [paper5_traceCurve_trace_eq_zero hp hq hA] at hCount
-  exact hTrace.trans (congrArg (fun a : ℤ => (a : ℤ_[l])) hCount).symm
+  apply hTrace.trans
+  simpa only [Int.cast_sub, Int.cast_add, Int.cast_one] using
+    (congrArg (fun a : ℤ => (a : ℤ_[l])) hCount).symm
 
 end
 end ManuscriptAudit.Paper5NonsplitPrimeAdicExtensionTrace

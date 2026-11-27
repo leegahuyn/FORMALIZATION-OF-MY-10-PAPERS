@@ -30,7 +30,7 @@ theorem quartic_iterate (hp : 5 ≤ p) (hq : p % 3 = 2) {A : ZMod p} (hA : A ≠
       frobenius_sq_eq_neg_card (ZMod p) L h₂ h₃ hA hq3 hq2 Q
   have hFour (Q : ((Curve A).baseChange L).Point) : ((⇑f)^[4]) Q = p ^ 2 • Q := by
     change f (f (f (f Q))) = _
-    rw [hTwo (f (f Q)), hTwo Q, nsmul_neg, neg_neg, pow_two, mul_nsmul]
+    rw [hTwo (f (f Q)), hTwo Q, smul_neg, neg_neg, pow_two, mul_nsmul]
   change ((⇑f)^[4 * k]) P = _
   induction k with
   | zero => simp

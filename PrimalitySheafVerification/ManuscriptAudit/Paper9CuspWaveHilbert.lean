@@ -64,7 +64,9 @@ theorem unitThetaCoefficient_memLp (D : GammaTwoFundamentalDomain) (k R : ℝ) (
     obtain ⟨z, rfl⟩ := gammaTwoQuotientMk_isOpenQuotientMap.surjective q
     rw [quotientHeight_mk]
     exact z.im_pos.trans_le (orbitHeight_ge_im z)
-  rw [unitThetaCoefficient_norm k R hR]
+  change quotientHeight q ^ (2 : ℕ) * massHeightProfile k R (quotientHeight q) =
+    ‖unitThetaCoefficient k R q‖ ^ (2 : ℕ)
+  rw [unitThetaCoefficient_norm k R hR q]
   unfold massHeightProfile
   field_simp [hq.ne'] <;> ring
 
@@ -84,12 +86,12 @@ theorem waveVector_norm_sq (D : GammaTwoFundamentalDomain) (k R : ℝ) (hR : 0 <
   have hI : Integrable (fun q => inner ℂ (v q) (v q)) D.quotientMeasure :=
     MeasureTheory.L2.integrable_inner v v
   change ‖v‖ ^ (2 : ℕ) = _
-  rw [← norm_sq_eq_re_inner (𝕜 := ℂ), MeasureTheory.L2.inner_def]
+  rw [norm_sq_eq_re_inner (𝕜 := ℂ), MeasureTheory.L2.inner_def]
   change Complex.reCLM (∫ q, inner ℂ (v q) (v q) ∂D.quotientMeasure) = _
   rw [← Complex.reCLM.integral_comp_comm hI]
   apply integral_congr_ae
   filter_upwards [he] with q hq
-  change (inner ℂ (v q) (v q)).re = _
+  change RCLike.re (inner ℂ (v q) (v q)) = _
   rw [hq, ← norm_sq_eq_re_inner (𝕜 := ℂ)]
   exact unitThetaCoefficient_norm_sq k R hR q
 

@@ -74,7 +74,8 @@ theorem native_quadratic :
   change refOperator L (refOperator L P) + (4 : ℕ) • refOperator L P + (7 : ℕ) • P = 0 at h
   change nativeOperator L (nativeOperator L (e L P)) + (4 : ℕ) • nativeOperator L (e L P) +
     (7 : ℕ) • e L P = 0
-  rw [hE, hE, ← map_nsmul, ← map_nsmul, ← map_add, ← map_add, h, map_zero]
+  rw [hE, hE]
+  simpa only [map_add, map_nsmul, map_zero] using congrArg (e L) h
 
 /-- The actual action satisfies the same identity on every prime-adic Tate module. -/
 theorem tate_quadratic :
@@ -114,7 +115,8 @@ private theorem ref_trace_det (hl : l = 2 ∨ l = 3) :
     change (7 : ℤ_[l]) • (1 : Module.End ℤ_[l] (Tate l (Points L))) = _
     rw [← Algebra.algebraMap_eq_smul_one, map_ofNat]
   have hQuad : T ^ 2 - (-4 : ℤ_[l]) • T + (7 : ℤ_[l]) • I = 0 := by
-    rw [neg_smul, sub_neg_eq_add, hFour, hSeven]
+    have hNegFour : (-4 : ℤ_[l]) • T = -((4 : ℤ_[l]) • T) := neg_smul (4 : ℤ_[l]) T
+    rw [hNegFour, sub_neg_eq_add, hFour, hSeven]
     simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using
       congrArg (endMap l) (point_quad L)
   exact trace_det_of_quadratic B T hN (-4) 7 hQuad
@@ -125,7 +127,15 @@ theorem trace_det (hl : l = 2 ∨ l = 3) :
       LinearMap.det (action L l) = 7 := by
   rw [← tate_conjugacy]
   obtain ⟨ht, hd⟩ := ref_trace_det L l hl
-  exact ⟨(LinearMap.trace_conj' _ _).trans ht, (LinearMap.det_conj _ _).trans hd⟩
+  refine ⟨(LinearMap.trace_conj' _ _).trans ht, ?_⟩
+  let E := eTate L l
+  let R := endMap l (refOperator L)
+  have hConj : E.conj R = E.toLinearMap ∘ₗ R ∘ₗ E.symm.toLinearMap := by
+    apply LinearMap.ext
+    intro x
+    rfl
+  rw [hConj]
+  exact (LinearMap.det_conj R E).trans hd
 
 theorem charpoly (hl : l = 2 ∨ l = 3) :
     letI := Module.Free.of_basis (tateBasis L l hl)

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Tactic.Abel
 import PrimalitySheafVerification.ManuscriptAudit.CubicRotationQuadratic
 import PrimalitySheafVerification.ManuscriptAudit.CubicSplitTwoAdicForm
 import PrimalitySheafVerification.ManuscriptAudit.CubicThreePowerTorsion
@@ -46,9 +47,12 @@ private theorem rotation_basis (n : ℕ) :
   have hΔ := CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂L h₃L hAL
   have hq := CubicRotationQuadratic.rotation_linear_quad (3 ^ (n + 1)) h₂L h₃L hAL
     hzL.pow_eq_one hz₁ hΔ (B 0)
-  change S (S (B 0)) = -B 0 - S (B 0) at hq
+  change S (S (B 0)) + S (B 0) + B 0 = 0 at hq
   rw [h₀] at hq
-  exact ⟨B, h₀, hq⟩
+  refine ⟨B, h₀, ?_⟩
+  calc
+    S (B 1) = (S (B 1) + B 1 + B 0) - B 0 - B 1 := by abel
+    _ = -B 0 - B 1 := by rw [hq]; abel
 
 private theorem level_commutes (n : ℕ) :
     levelFrobenius E L A n * levelRotation E L h₂ h₃ hA hz n =
@@ -62,6 +66,11 @@ private theorem level_commutes (n : ℕ) :
 theorem level_form (n : ℕ) :
     ∃! ab : ZMod (3 ^ (n + 1)) × ZMod (3 ^ (n + 1)),
       levelFrobenius E L A (n + 1) = ab.1 • 1 + ab.2 • levelRotation E L h₂ h₃ hA hz (n + 1) := by
+  letI : NeZero (3 ^ (n + 1) : ℕ) := ⟨pow_ne_zero _ (by decide)⟩
+  letI : Fact (1 < (3 ^ (n + 1) : ℕ)) := ⟨by
+    rw [pow_succ]
+    have : 0 < (3 : ℕ) ^ n := pow_pos (by decide) _
+    omega⟩
   obtain ⟨B, h₀, _⟩ := rotation_basis E L h₂ h₃ hA hz n
   exact exists_unique_coefficients B _ h₀ _ (level_commutes E L h₂ h₃ hA hz (n + 1))
 
