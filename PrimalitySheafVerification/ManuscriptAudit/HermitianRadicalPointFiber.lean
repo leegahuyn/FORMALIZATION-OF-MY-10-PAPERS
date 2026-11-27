@@ -3,14 +3,16 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.FieldTheory.KummerExtension
 import PrimalitySheafVerification.ManuscriptAudit.ComaximalIdealGrid
-import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentOrbit
+import PrimalitySheafVerification.ManuscriptAudit.HermitianRootsOfUnity
+import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentIdealMembership
+import PrimalitySheafVerification.ManuscriptAudit.RadicalCoordinateAlgebra
 
 /-! The extension of an actual point ideal is the product of its full coordinate orbit. -/
 
 namespace ManuscriptAudit.HermitianRadicalPointFiber
 
 open scoped BigOperators
-open Polynomial RadicalCoordinateAlgebra HermitianTangentIdealMembership HermitianTangentOrbit
+open Polynomial RadicalCoordinateAlgebra HermitianTangentIdealMembership HermitianRootsOfUnity
 
 noncomputable section
 
@@ -79,10 +81,7 @@ private theorem roots_line_comaximal {D : Type*} [CommRing D] [Algebra K D]
 
 theorem pointIdeal_eq_sup {D : Type*} [CommRing D] (T S x y : D) :
     pointIdeal T S x y = Ideal.span {T - x} ⊔ Ideal.span {S - y} := by
-  rw [pointIdeal, ← Ideal.span_union]
-  congr 1
-  ext w
-  simp
+  rw [pointIdeal, Ideal.span_insert]
 
 variable {R : Type*} [CommRing R] [Algebra K R]
 variable (m n : ℕ) [NeZero m] [NeZero n] (a b : R)

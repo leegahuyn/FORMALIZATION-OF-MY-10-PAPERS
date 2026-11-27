@@ -47,11 +47,22 @@ private def overlapCokernelEquiv (d : ℕ) :
     apply AddMonoidHom.ext
     intro x
     change P.map φ.hom.op (P.map a.op x) = P.map (sndLeg (affineOpen K) (chartOpen K)).op x
-    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, overlapEtaleIso_snd K]
-  let e' := AdditiveCokernelPresentation.cokernelEquiv i (AddMonoidHom.id _) e.toAddMonoidHom r
-    (fun x ↦ ⟨x, rfl⟩) e.surjective h
-  have hKer : e.toAddMonoidHom.ker = ⊥ := AddMonoidHom.ker_eq_bot.mpr e.injective
-  simpa only [hKer, sup_bot_eq] using e'
+    have hs : φ.hom ≫ a = sndLeg (affineOpen K) (chartOpen K) := by
+      exact overlapEtaleIso_snd K
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+    exact DFunLike.congr_fun (congrArg (fun b ↦ (P.map b.op).hom) hs) x
+  let e' : (_ ⧸ r.range) ≃+ (_ ⧸ (i.range ⊔ e.toAddMonoidHom.ker)) :=
+    AdditiveCokernelPresentation.cokernelEquiv i (AddMonoidHom.id _) e.toAddMonoidHom r
+      (fun x ↦ ⟨x, rfl⟩) e.surjective h
+  have hKer : e.toAddMonoidHom.ker = ⊥ := by
+    ext x
+    change e x = 0 ↔ x ∈ (⊥ : AddSubgroup _)
+    rw [AddSubgroup.mem_bot, ← map_zero e]
+    exact e.injective.eq_iff
+  have hRange : i.range ⊔ e.toAddMonoidHom.ker = i.range := by rw [hKer, sup_bot_eq]
+  change (_ ⧸ r.range) ≃+ (_ ⧸ i.range)
+  rw [← hRange]
+  exact e'
 
 variable (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
 

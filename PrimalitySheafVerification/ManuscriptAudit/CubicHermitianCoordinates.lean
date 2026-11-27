@@ -1,14 +1,14 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.LinearCombination
 import PrimalitySheafVerification.ManuscriptAudit.FiniteFieldPointCount
-import PrimalitySheafVerification.ManuscriptAudit.HermitianRadicalPointFiber
+import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentIdealMembership
 
 /-! Normalized coordinates in the native affine coordinate ring of y² = x³ + A. -/
 
 namespace ManuscriptAudit.CubicHermitianCoordinates
 
 open Polynomial WeierstrassCurve FiniteFieldPointCount
-open HermitianTangentIdealMembership HermitianRadicalPointFiber
+open HermitianTangentIdealMembership
 open scoped Polynomial.Bivariate
 
 noncomputable section
@@ -80,7 +80,7 @@ theorem normalized_pointIdeal (A : K) {α β : K} (hα : α ≠ 0) (hβ : β ≠
       (algebraMap K (Centered A).CoordinateRing (α⁻¹ * x))
       (algebraMap K (Centered A).CoordinateRing (β⁻¹ * y)) =
         Affine.CoordinateRing.XYIdeal (Centered A) x (C y) := by
-  rw [pointIdeal_eq_sup, Affine.CoordinateRing.XYIdeal, Ideal.span_insert,
+  rw [pointIdeal, Affine.CoordinateRing.XYIdeal, Ideal.span_insert, Ideal.span_insert,
     xClass_eq A x, yClass_eq A y]
   unfold normalizedX normalizedY
   simp only [map_mul, ← mul_sub]

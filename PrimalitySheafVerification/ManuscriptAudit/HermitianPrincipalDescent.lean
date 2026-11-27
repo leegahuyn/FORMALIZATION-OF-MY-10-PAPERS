@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffinePointPrincipalRelation
 import PrimalitySheafVerification.ManuscriptAudit.HermitianRadicalPointFiber
+import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentOrbit
 import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentIdeal
 
 /-! A product of tangent divisors descends through the actual finite free radical extension. -/
@@ -9,7 +10,7 @@ namespace ManuscriptAudit.HermitianPrincipalDescent
 
 open scoped BigOperators
 open RadicalCoordinateAlgebra HermitianTangentIdealMembership HermitianTangentIdeal
-open HermitianTangentOrbit HermitianRadicalPointFiber AffinePointPrincipalRelation
+open HermitianTangentOrbit HermitianRadicalPointFiber AffinePointPrincipalRelation HermitianRootsOfUnity
 
 noncomputable section
 

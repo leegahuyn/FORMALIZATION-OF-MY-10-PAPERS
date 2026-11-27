@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import PrimalitySheafVerification.ManuscriptAudit.HermitianRootsOfUnity
 import PrimalitySheafVerification.ManuscriptAudit.DoubleRadicalRotation
 import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentIdealMembership
 
@@ -7,33 +7,10 @@ import PrimalitySheafVerification.ManuscriptAudit.HermitianTangentIdealMembershi
 
 namespace ManuscriptAudit.HermitianTangentOrbit
 
-open RadicalCoordinateAlgebra DoubleRadicalRotation HermitianTangentIdealMembership
+open RadicalCoordinateAlgebra DoubleRadicalRotation HermitianTangentIdealMembership HermitianRootsOfUnity
 open scoped BigOperators
 
 noncomputable section
-
-def rootValue {K : Type*} [Field K] {m : ℕ} (z : rootsOfUnity m K) : K :=
-  ((z : Kˣ) : K)
-
-theorem rootValue_pow {K : Type*} [Field K] {m : ℕ} (z : rootsOfUnity m K) :
-    rootValue z ^ m = 1 :=
-  (mem_rootsOfUnity' m (z : Kˣ)).mp z.property
-
-@[simp] theorem rootValue_mul {K : Type*} [Field K] {m : ℕ}
-    (z w : rootsOfUnity m K) : rootValue (z * w) = rootValue z * rootValue w := rfl
-
-theorem rootValue_ne_zero {K : Type*} [Field K] {m : ℕ} (z : rootsOfUnity m K) :
-    rootValue z ≠ 0 := (z : Kˣ).ne_zero
-
-theorem rootValue_injective {K : Type*} [Field K] (m : ℕ) :
-    Function.Injective (rootValue : rootsOfUnity m K → K) := by
-  intro x y h
-  exact Subtype.ext (Units.ext h)
-
-theorem pow_eq_one_of_order_dvd {K : Type*} [Field K] {m Q : ℕ} {z : K}
-    (hz : z ^ m = 1) (h : m ∣ Q) : z ^ Q = 1 := by
-  obtain ⟨k, rfl⟩ := h
-  rw [pow_mul, hz, one_pow]
 
 variable {K R : Type*} [Field K] [CommRing R] [Algebra K R] [Nontrivial R]
 variable (m n : ℕ) [NeZero m] [NeZero n] (a b : R)
@@ -58,8 +35,8 @@ private theorem familyTangent_eq {q : ℕ} {u v : K}
       pow_eq_one_of_order_dvd (rootValue_pow y) hn, one_mul, one_mul]
     exact h
   have hE := congrArg i he
-  simp only [map_add, map_one, map_pow, pow_succ] at hE
-  simp only [familyTangent, tangent, map_pow]
+  simp only [map_add, map_one, pow_succ, map_mul, map_pow] at hE
+  simp only [familyTangent, tangent, map_mul, map_pow]
   linear_combination -hE
 
 private theorem rotation_commutes_field (f : D₀ →ₐ[R] D₀) (x : K) :
@@ -154,9 +131,6 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
-      ``ManuscriptAudit.HermitianTangentOrbit.rootValue_pow,
-      ``ManuscriptAudit.HermitianTangentOrbit.rootValue_injective,
-      ``ManuscriptAudit.HermitianTangentOrbit.pow_eq_one_of_order_dvd,
       ``ManuscriptAudit.HermitianTangentOrbit.exists_base_tangent_product] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

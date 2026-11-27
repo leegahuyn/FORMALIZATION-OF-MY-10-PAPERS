@@ -23,8 +23,10 @@ theorem surjective_nsmul_of_surjective_transitions
   obtain ⟨d, hd⟩ := hDiv
   have hNot : ¬l ∣ d := by
     rintro ⟨e, he⟩
-    apply pow_succ_padicValNat_not_dvd (p := l) hm.ne'
-    exact ⟨e, by rw [hd, he, pow_succ, mul_assoc]⟩
+    have hBig : l ^ (n + 1) ∣ m := ⟨e, calc
+      m = l ^ n * d := hd
+      _ = l ^ (n + 1) * e := by rw [he, pow_succ, mul_assoc]⟩
+    exact pow_succ_padicValNat_not_dvd (p := l) hm.ne' hBig
   let T : PowerTorsion l G n := ⟨d • P, (mem_iff (l ^ n) G _).mpr (by
     rw [← mul_nsmul', ← hd, hAnn])⟩
   obtain ⟨Q, hQ⟩ := hTrans n T

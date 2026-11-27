@@ -36,9 +36,10 @@ theorem weightedLogProfile_hasDerivAt (g : ℝ → ℂ) (hg : Differentiable ℝ
       (weightedLogProfile (fun t => (1 / 2 : ℂ) * g t + deriv g t) y / (y : ℂ)) y := by
   have hC : (y : ℂ) ≠ 0 := by exact_mod_cast hy.ne'
   have h := (heightPower_hasDerivAt (1 / 2 : ℂ) hy.ne').mul (logComp_hasDerivAt g hg hy.ne')
-  convert h using 1
-  · unfold weightedLogProfile
-    field_simp [hC] <;> ring
+  convert h using 1 <;> first
+  | rfl
+  | funext t; rfl
+  | unfold weightedLogProfile; field_simp [hC] <;> ring
 
 theorem weightedLogProfile_second (g : ℝ → ℂ)
     (hg : Differentiable ℝ g) (hg' : Differentiable ℝ (deriv g)) {y : ℝ} (hy : 0 < y) :

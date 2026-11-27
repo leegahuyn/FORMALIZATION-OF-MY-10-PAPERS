@@ -50,7 +50,8 @@ theorem bounded_potential_form_no_mass_lower_bound (D : GammaTwoFundamentalDomai
   have hP := potentialIntegral_le_mass D V hV hB r hr
   calc
     _ < (b - B) * massOnQuotient D r + potentialIntegral D V r := add_lt_add_right hE _
-    _ ≤ (b - B) * massOnQuotient D r + B * massOnQuotient D r := add_le_add_left hP _
+    _ ≤ (b - B) * massOnQuotient D r + B * massOnQuotient D r := by
+      linarith only [hP]
     _ = b * massOnQuotient D r := by ring
 
 end
@@ -68,3 +69,4 @@ run_cmd do
     unless bad.isEmpty do
       throwError m!"{name} depends on unexpected axioms {bad}"
     logInfo m!"{name} uses {ax}"
+

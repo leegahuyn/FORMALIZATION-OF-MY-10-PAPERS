@@ -23,9 +23,11 @@ private theorem quotient_sumEquiv (x : U × (V ⧸ U)) :
     U.mkQ (sumEquiv h x) = x.2 := by
   change U.mkQ ((x.1 : V) + ((U.quotientEquivOfIsCompl W h x.2 : W) : V)) = _
   rw [map_add]
-  have hzero : U.mkQ x.1 = 0 := Submodule.Quotient.mk_eq_zero.mpr x.1.property
+  have hzero : U.mkQ x.1 = 0 := by
+    rw [← LinearMap.mem_ker, U.ker_mkQ]
+    exact x.1.property
   rw [hzero, zero_add]
-  exact U.mk_quotientEquivOfIsCompl_apply W h x.2
+  exact U.mk_quotientEquivOfIsCompl_apply h x.2
 
 def adaptedBasis (a : Basis ι K U) (b : Basis τ K (V ⧸ U)) : Basis (ι ⊕ τ) K V :=
   (a.prod b).map (sumEquiv h)
@@ -55,6 +57,7 @@ def quotientMap : Module.End K (V ⧸ U) :=
 
 theorem quotientMap_mkQ (x : V) : quotientMap T hT (U.mkQ x) = U.mkQ (T x) := rfl
 
+include hT in
 theorem adapted_lower_left (a : Basis ι K U) (b : Basis τ K (V ⧸ U)) (i : ι) (j : τ) :
     LinearMap.toMatrix (adaptedBasis h a b) (adaptedBasis h a b) T (Sum.inr j) (Sum.inl i) = 0 := by
   rw [LinearMap.toMatrix_apply, adaptedBasis_repr_right,
