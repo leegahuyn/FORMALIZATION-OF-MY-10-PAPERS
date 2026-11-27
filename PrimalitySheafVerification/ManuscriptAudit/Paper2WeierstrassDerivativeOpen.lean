@@ -24,9 +24,10 @@ theorem original_yDerivative (W : WeierstrassCurve R) :
     Paper2WeierstrassEtaleProjection.yDerivative W = yDerivative W := by
   unfold Paper2WeierstrassEtaleProjection.yDerivative yDerivative
   congr 1
-  have hTwo : (2 : (Polynomial R)[X]) = C (C (2 : R)) := by simp
   unfold Affine.polynomial Affine.polynomialY
-  simp [derivative_C_mul, hTwo, mul_comm]
+  simp only [derivative_sub, derivative_add, derivative_X_pow, derivative_C_mul,
+    derivative_X, derivative_C, add_zero, sub_zero, mul_one, pow_one, map_natCast, map_ofNat]
+  ring
 
 theorem reversed_xDerivative (W : WeierstrassCurve R) :
     Paper2WeierstrassReverseProjection.swapPresentation W (xDerivative W) =
@@ -40,7 +41,9 @@ theorem reversed_xDerivative (W : WeierstrassCurve R) :
   simp only [map_add, map_sub, map_mul, map_pow, Bivariate.swap_C, Bivariate.swap_Y,
     Polynomial.map_add, Polynomial.map_pow, Polynomial.map_mul, Polynomial.map_C, Polynomial.map_X,
     Cubic.a, Cubic.b, Cubic.c, Cubic.d, map_one, one_mul, C_sub, derivative_add, derivative_C,
-    derivative_C_mul, derivative_X_pow, derivative_X, mul_one, add_zero, map_ofNat]
+    derivative_C_mul, derivative_X_pow, derivative_X, derivative_sub, derivative_neg, derivative_mul,
+    derivative_pow, mul_one, one_mul, zero_mul, mul_zero, add_zero, zero_add, sub_zero,
+    map_natCast, map_ofNat]
   ring
 
 variable {K : Type*} [Field K]
@@ -55,15 +58,17 @@ theorem mem_x_open (W : WeierstrassCurve K) (x y : K) (h : W.toAffine.Equation x
     rationalPoint W x y h ∈ PrimeSpectrum.basicOpen (xDerivative W) ↔
       W.toAffine.polynomialX.evalEval x y ≠ 0 := by
   rw [PrimeSpectrum.mem_basicOpen]
-  change AdjoinRoot.evalEval h (AdjoinRoot.mk W.toAffine.polynomial W.toAffine.polynomialX) ≠ 0 ↔ _
-  rw [AdjoinRoot.evalEval_mk]
+  have h₀ : W.toAffine.polynomial.evalEval x y = 0 := h
+  change AdjoinRoot.evalEval h₀ (AdjoinRoot.mk W.toAffine.polynomial W.toAffine.polynomialX) ≠ 0 ↔ _
+  rw [AdjoinRoot.evalEval_mk h₀ W.toAffine.polynomialX]
 
 theorem mem_y_open (W : WeierstrassCurve K) (x y : K) (h : W.toAffine.Equation x y) :
     rationalPoint W x y h ∈ PrimeSpectrum.basicOpen (yDerivative W) ↔
       W.toAffine.polynomialY.evalEval x y ≠ 0 := by
   rw [PrimeSpectrum.mem_basicOpen]
-  change AdjoinRoot.evalEval h (AdjoinRoot.mk W.toAffine.polynomial W.toAffine.polynomialY) ≠ 0 ↔ _
-  rw [AdjoinRoot.evalEval_mk]
+  have h₀ : W.toAffine.polynomial.evalEval x y = 0 := h
+  change AdjoinRoot.evalEval h₀ (AdjoinRoot.mk W.toAffine.polynomial W.toAffine.polynomialY) ≠ 0 ↔ _
+  rw [AdjoinRoot.evalEval_mk h₀ W.toAffine.polynomialY]
 
 theorem nonsingular_iff_mem_derivative_opens (W : WeierstrassCurve K) (x y : K)
     (h : W.toAffine.Equation x y) :

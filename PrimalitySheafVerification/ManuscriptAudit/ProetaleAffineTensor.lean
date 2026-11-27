@@ -64,8 +64,9 @@ theorem underlying_isPullback {S : Scheme.{u}} {P U V T : S.ProEt}
     have hc := congrArg (fun k : W ⟶ T ↦ k.left) hij
     let l := h.lift i.left j.left hc
     have hw : l ≫ P.hom = W.hom := by
-      rw [← a.w, ← Category.assoc, show l ≫ a.left = i.left from h.lift_fst _ _ _]
-      exact i.w
+      rw [← MorphismProperty.Over.w a, ← Category.assoc,
+        show l ≫ a.left = i.left from h.lift_fst _ _ _]
+      exact MorphismProperty.Over.w i
     refine ⟨MorphismProperty.Over.homMk l hw, MorphismProperty.Over.Hom.ext (h.lift_fst _ _ _),
       MorphismProperty.Over.Hom.ext (h.lift_snd _ _ _)⟩
 

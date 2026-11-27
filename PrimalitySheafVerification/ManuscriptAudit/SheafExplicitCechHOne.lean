@@ -29,6 +29,8 @@ private theorem restrict_restrict (A : Sheaf J AddCommGrpCat.{w}) {X Y Z : C}
     A.obj.map a.op (A.obj.map b.op x) = A.obj.map (a ≫ b).op x := by
   rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
 
+include hP
+
 /-- The local difference gives a cocycle on the given concrete double
 overlap, with the actual three face maps of a triple overlap. -/
 theorem exists_cocycle (e₀₁ e₀₂ e₁₂ : E ⟶ P)

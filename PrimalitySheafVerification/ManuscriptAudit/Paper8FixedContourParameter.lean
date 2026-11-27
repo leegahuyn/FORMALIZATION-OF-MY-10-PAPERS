@@ -46,7 +46,7 @@ private theorem factor_norm_bound {β : ℝ} (hβ : 0 ≤ β) (hβ' : β ≤ 24)
 theorem denominator_norm_lower {β : ℝ} (hβ : 0 ≤ β) (hβ' : β ≤ 24)
     {ζ q s : ℂ} (hζ : ‖ζ‖ = 1) (hq : ‖q‖ ≤ 1 / 4) (hs : ‖s‖ ≤ fixedRadius) :
     (1 / 2 : ℝ) ≤ ‖denominator β ζ q s‖ := by
-  have hF := factor_norm_bound hβ hβ' hζ hs
+  have hF := factor_norm_bound (q := q) hβ hβ' hζ hs
   have hSub := norm_sub_norm_le (1 : ℂ) (factor β ζ q s)
   simp only [norm_one] at hSub
   change (1 / 2 : ℝ) ≤ ‖1 - factor β ζ q s‖
@@ -102,8 +102,9 @@ theorem regular_differentiableOn (α : ℝ) {β : ℝ} (hβ : 0 ≤ β) (hβ' : 
     DifferentiableOn ℂ (regular α β ζ q) (closedBall (0 : ℂ) fixedRadius) := by
   have hExp (t : ℝ) : Differentiable ℂ (fun s : ℂ => Complex.exp ((t : ℂ) * s)) :=
     Complex.differentiable_exp.comp ((differentiable_const (c := (t : ℂ))).mul differentiable_id)
+  have hOne : Differentiable ℂ (fun _ : ℂ => (1 : ℂ)) := differentiable_const (c := (1 : ℂ))
   have hDen : Differentiable ℂ (denominator β ζ q) :=
-    differentiable_const.sub (differentiable_const.mul (hExp β))
+    hOne.sub ((differentiable_const (c := ζ * q)).mul (hExp β))
   exact (hExp α).differentiableOn.div hDen.differentiableOn (fun s hs =>
     denominator_ne_zero hβ hβ' hζ hq (by simpa only [mem_closedBall, dist_zero_right] using hs))
 

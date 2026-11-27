@@ -37,7 +37,7 @@ private theorem sections_subsingleton_of_empty (I : C.{u, v} (S := S))
     have h : Sieve.ofArrows V f = ⊥ := by
       ext X g
       constructor
-      · rintro ⟨i, _⟩
+      · rintro ⟨_, _, _, ⟨i⟩, _⟩
         exact PEmpty.elim i
       · exact False.elim
     rw [h]
@@ -58,10 +58,10 @@ private theorem component_cover {n : ℕ} (V : Fin n → S.ProEt) :
   apply Scheme.etalePrecoverage_le_proetalePrecoverage _
   apply (Scheme.ofArrows_mem_precoverage_iff @Etale).mpr
   constructor
-  · intro x
-    change ↑(∐ fun i ↦ (V i).left) at x
-    obtain ⟨⟨i, y⟩, rfl⟩ := (sigmaMk (fun i ↦ (V i).left)).surjective x
-    exact ⟨i, y, (sigmaMk_mk _ _ _).symm⟩
+  · let g : Fin n → Scheme.{u} := fun i ↦ (V i).left
+    let D := sigmaOpenCover g
+    intro x
+    exact ⟨D.idx x, D.covers x⟩
   · intro i
     change Etale (Sigma.ι (fun j ↦ (V j).left) i)
     infer_instance
@@ -80,7 +80,9 @@ theorem glue_sections {n : ℕ} (V : Fin n → S.ProEt) (I : C.{u, v} (S := S))
         q.left ≫ Sigma.ι (fun k ↦ (V k).left) j := U.congr_map hpq
     by_cases hij : i = j
     · subst j
-      have h : p = q := U.map_injective ((cancel_mono (Sigma.ι _ i)).mp hw)
+      have h : p = q := by
+        apply MorphismProperty.Over.Hom.ext
+        exact (cancel_mono (Sigma.ι (fun k ↦ (V k).left) i)).mp hw
       rw [h]
     · letI : IsEmpty W.left := isEmpty_of_commSq_sigmaι_of_ne ⟨hw⟩ hij
       exact (sections_subsingleton_of_empty I W).elim _ _

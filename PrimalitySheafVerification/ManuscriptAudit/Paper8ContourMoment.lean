@@ -55,8 +55,8 @@ private theorem weightedTerm_continuousOn (α : ℝ) (k m : ℕ) {r : ℝ} (hr :
     Complex.continuous_exp.comp (continuous_const.mul continuous_id)
   exact hTerm.mul hExp.continuousOn
 
-theorem hasSum_atZero_re {k : ℕ} (hk : 0 < k) (α : ℝ) {r : ℝ} (hr : 0 < r) :
-    HasSum (coefficientMoment α k) (atZero α k r).re := by
+theorem hasSum_atZero {k : ℕ} (hk : 0 < k) (α : ℝ) {r : ℝ} (hr : 0 < r) :
+    HasSum (fun m : ℕ => (coefficientMoment α k m : ℂ)) (atZero α k r) := by
   have hMajorant := (majorant_summable hk hr).mul_right (Real.exp (|α| * r))
   have hUniform0 := HasSumUniformlyOn.of_norm_le_summable (f := weightedTerm α k)
     (s := sphere (0 : ℂ) r) hMajorant (fun m z hz => norm_weightedTerm_le hk α hr m hz)
@@ -72,9 +72,18 @@ theorem hasSum_atZero_re {k : ℕ} (hk : 0 < k) (α : ℝ) {r : ℝ} (hr : 0 < r
       (circleIntegral (fun s : ℂ => a k s * Complex.exp ((α : ℂ) * s)) 0 r) := by
     refine hLimit.congr' (Eventually.of_forall fun S => ?_)
     exact circleIntegral.integral_fun_sum (fun m _ => (weightedTerm_continuousOn α k m hr).circleIntegrable hr.le)
-  have hComplex : HasSum (fun m : ℕ => (coefficientMoment α k m : ℂ)) (atZero α k r) :=
-    (hIntegral.mul_left periodCoefficient⁻¹).congr_fun fun m => (weightedTerm_circle_integral α k m hr).symm
-  simpa only [Complex.reCLM_apply, Complex.ofReal_re] using Complex.reCLM.hasSum hComplex
+  exact (hIntegral.mul_left periodCoefficient⁻¹).congr_fun fun m =>
+    (weightedTerm_circle_integral α k m hr).symm
+
+theorem hasSum_atZero_re {k : ℕ} (hk : 0 < k) (α : ℝ) {r : ℝ} (hr : 0 < r) :
+    HasSum (coefficientMoment α k) (atZero α k r).re := by
+  simpa only [Complex.reCLM_apply, Complex.ofReal_re] using
+    Complex.reCLM.hasSum (hasSum_atZero hk α hr)
+
+theorem atZero_eq_its_real_part {k : ℕ} (hk : 0 < k) (α : ℝ) {r : ℝ} (hr : 0 < r) :
+    atZero α k r = ((atZero α k r).re : ℂ) := by
+  have h := Complex.ofRealCLM.hasSum (hasSum_atZero_re hk α hr)
+  exact (hasSum_atZero hk α hr).unique h
 
 theorem atZero_literal_lt_rhoades {k : ℕ} (hk : 0 < k) {r : ℝ} (hr : 0 < r) :
     (atZero (2 / 3) k r).re < (atZero 23 k r).re := by
@@ -100,7 +109,9 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper8ContourMoment.hasSum_atZero,
       ``ManuscriptAudit.Paper8ContourMoment.hasSum_atZero_re,
+      ``ManuscriptAudit.Paper8ContourMoment.atZero_eq_its_real_part,
       ``ManuscriptAudit.Paper8ContourMoment.atZero_literal_lt_rhoades] do
     let axioms ← collectAxioms name
     let bad := axioms.filter fun x => !allowed.contains x
