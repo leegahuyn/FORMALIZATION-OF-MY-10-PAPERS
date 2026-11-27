@@ -5,6 +5,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CubicAffineFiberBound
 import PrimalitySheafVerification.ManuscriptAudit.CubicGenericAbscissaDichotomy
 import PrimalitySheafVerification.ManuscriptAudit.CubicAlgebraicAbscissaDescent
 import PrimalitySheafVerification.ManuscriptAudit.CubicGenericSecantHeight
+import PrimalitySheafVerification.ManuscriptAudit.CubicRationalPointHeight
 
 /-! Positive generic Kummer height bounds the kernel of an actual natural point operation. -/
 
@@ -104,7 +105,7 @@ theorem card_of_injection_le (D : Family K A)
   have hF : f ≠ 0 := fiberPolynomial_ne_zero r t ht
   have hRep : H.val.xRep = ![algebraMap (RatFunc K) M r, 1] := by
     rw [he, hr] <;> rfl
-  have hHr := height_eq_of_xRep A H r hRep
+  have hHr := CubicRationalPointHeight.height_eq_of_xRep A H r hRep
   have hR : (Curve (algebraMap K M A)).Nonsingular (algebraMap (RatFunc K) M r) v :=
     hr.symm ▸ htv
   have hG : D.atField M Q = .some (algebraMap (RatFunc K) M r) v hR := by

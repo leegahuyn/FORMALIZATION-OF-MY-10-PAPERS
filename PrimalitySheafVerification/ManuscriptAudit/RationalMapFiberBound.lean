@@ -22,9 +22,9 @@ theorem natDegree_fiberPolynomial_le (f : RatFunc K) (t : M) :
     (fiberPolynomial f t).natDegree ≤ rationalDegree f := by
   unfold fiberPolynomial rationalDegree
   have hN : (f.num.map (algebraMap K M)).natDegree = f.num.natDegree :=
-    natDegree_map_eq_of_injective (algebraMap K M).injective
+    natDegree_map_eq_of_injective (algebraMap K M).injective f.num
   have hD : (f.denom.map (algebraMap K M)).natDegree = f.denom.natDegree :=
-    natDegree_map_eq_of_injective (algebraMap K M).injective
+    natDegree_map_eq_of_injective (algebraMap K M).injective f.denom
   have hMul : (C t * f.denom.map (algebraMap K M)).natDegree ≤ f.denom.natDegree := by
     calc
       _ ≤ (C t).natDegree + (f.denom.map (algebraMap K M)).natDegree := natDegree_mul_le

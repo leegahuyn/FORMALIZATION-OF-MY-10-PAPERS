@@ -71,7 +71,7 @@ theorem eval_coordinate_eq {k : ℕ} (A : K) {x : L}
   have hNum : (N.map (algebraMap K L)).eval x =
       (numerator (Fintype.card K) k (algebraMap K L A)).eval x := by
     simp only [N, numerator, Polynomial.map_add, Polynomial.map_mul, Polynomial.map_pow,
-      map_X, map_C, map_mul, map_ofNat]
+      map_X, map_C, map_mul, map_ofNat, Polynomial.map_ofNat]
   apply (div_eq_div_iff hD (pow_ne_zero 2 (sub_ne_zero.mpr hx))).mpr
   simpa only [f, hDenom, hNum] using heval
 

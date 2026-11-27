@@ -63,7 +63,8 @@ private theorem puncture_affine : IsAffine (cuspPuncturedOpen K).toScheme := by
   have h := (AffineCuspSmoothPuncture.smoothLocus_eq_puncture K).symm.trans
     (AffineCuspSmoothLocus.smoothLocus_eq_basicOpen K)
   rw [h]
-  exact IsAffineOpen.Spec_basicOpen (CuspPunctured.cuspSquare K)
+  exact IsAffineOpen.Spec_basicOpen (R := CommRingCat.of (CuspPunctured.CuspSubalgebra K))
+    (CuspPunctured.cuspSquare K)
 
 /-- The actual open immersion of the smooth puncture is quasi-compact. -/
 theorem smoothOpen_quasiCompact : QuasiCompact (smoothOpen K) := by

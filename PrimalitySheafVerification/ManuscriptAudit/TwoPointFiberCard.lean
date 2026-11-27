@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.Prod
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-! A map to a finite type with at most two points in each fiber bounds the source cardinality. -/
 

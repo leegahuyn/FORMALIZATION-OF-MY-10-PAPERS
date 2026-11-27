@@ -23,7 +23,7 @@ private theorem product_norm_tendsto_one :
     ((widthUnit_differentiableOn (w := 1) (by decide)).differentiableAt
       (Metric.ball_mem_nhds _ (by norm_num))).continuousAt
   have hP := hAt.tendsto.comp (qParam_tendsto_atImInfty (h := 1) (by norm_num))
-  simpa only [widthUnit_at_zero (w := 1) (by decide), norm_one] using hP.norm
+  simpa only [widthUnit_at_zero (w := 1) (by decide), norm_one, Function.comp_def] using hP.norm
 
 theorem eta_q_norm_eq_width_power {w : ℕ} (hw : 0 < w) (z : ℍ) :
     ‖qParam 24 z‖ = ‖qParam (w : ℝ) z‖ ^ ((w : ℝ) / 24) := by

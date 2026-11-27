@@ -25,7 +25,7 @@ private theorem three_dvd_card_sub_one (hs : p % 3 = 1) :
     3 ∣ Fintype.card E - 1 := by
   have hpow (n : ℕ) : p ^ n % 3 = 1 := by
     induction n with
-    | zero => decide
+    | zero => rw [pow_zero]; decide
     | succ n hn => rw [pow_succ, Nat.mul_mod, hn, hs] <;> decide
   have hCard := Module.card_eq_pow_finrank (K := ZMod p) (V := E)
   rw [ZMod.card] at hCard

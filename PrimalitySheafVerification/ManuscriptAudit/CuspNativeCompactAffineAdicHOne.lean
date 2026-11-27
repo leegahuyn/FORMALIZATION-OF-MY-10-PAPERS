@@ -45,9 +45,11 @@ theorem compact_HOne_subsingleton :
     change Set.range (affineOpen K) = (Set.range (infinityPoint K))ᶜ
     rw [← CuspInfinitySupport.affine_complement_eq_infinity K, compl_compl]
   let e := ProetaleAdicClosedSupportKernel.extensionKernelIso i j ℓ hComplement
-  letI := CuspNativeProetaleProperHOne.adic_HOne_subsingleton K ℓ
-  letI := (ProetaleClosedAdicHOne.kernel_HOne_injective K i ℓ).subsingleton
-  exact (cohomologyIso (X := projectiveCusp K) e 1).injective.subsingleton
+  have hA : Subsingleton (Sheaf.H (functions ℤ_[ℓ] (projectiveCusp K)) 1) :=
+    CuspNativeProetaleProperHOne.adic_HOne_subsingleton K ℓ
+  let a := cohomologyIso (X := projectiveCusp K) e 1
+  let b := ProetaleClosedAdicHOne.kernel_HOne_injective K i ℓ
+  exact ⟨fun x y ↦ a.injective (b (hA.elim _ _))⟩
 
 end
 

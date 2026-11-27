@@ -56,7 +56,8 @@ private theorem realized_digits (a : ℤ_[ℓ]) (n : ℕ) :
     ((digit ℓ a n : ℤ) : ZMod (ℓ ^ n)) = PadicInt.toZModPow n a := by
   rw [Int.cast_natCast, ZMod.natCast_zmod_val]
 
-set_option maxHeartbeats 2000000 in
+set_option maxRecDepth 2500 in
+set_option maxHeartbeats 2900000 in
 private theorem kernelBoundary_residue (a : ℤ_[ℓ]) (n : ℕ) :
     Sheaf.H.map (kernelResidueIso K ℓ n).hom 1
         (kernelBoundary (k K) (ℓ ^ n) (exponentUnit K (digit ℓ a n : ℤ))) =
@@ -70,8 +71,16 @@ private theorem kernelBoundary_residue (a : ℤ_[ℓ]) (n : ℕ) :
       _ = cyclicToRootsHOne K (ℓ ^ n) ((digit ℓ a n : ℤ) : ZMod (ℓ ^ n)) :=
         (cyclicToRootsHOne_intCast K (ℓ ^ n) (digit ℓ a n : ℤ)).symm
       _ = _ := congrArg (cyclicToRootsHOne K (ℓ ^ n)) (realized_digits ℓ a n)
-  simp only [kernelResidueIso, Iso.trans_hom, Iso.symm_hom, Sheaf.H.map_comp_apply, h]
-  rfl
+  let c := (constantSheaf (J (X K)) G).mapIso (cyclicIso K ℓ n)
+  let e := nativeResidueIso (X K) ℓ n
+  let y := kernelBoundary (k K) (ℓ ^ n) (exponentUnit K (digit ℓ a n : ℤ))
+  calc
+    _ = Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1 (Sheaf.H.map i.inv 1 y)) := by
+      simp only [kernelResidueIso, Iso.trans_hom, Iso.symm_hom, Sheaf.H.map_comp_apply, i, c, e, y]
+    _ = Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1
+          (cyclicToRootsHOne K (ℓ ^ n) (PadicInt.toZModPow n a))) :=
+      congrArg (fun z ↦ Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1 z)) h
+    _ = _ := by rfl
 
 set_option maxHeartbeats 2600000 in
 /-- Every actual compatible Laurent tuple has one simultaneous product-coefficient representative. -/
@@ -86,7 +95,9 @@ theorem exists_product_class (a : ℤ_[ℓ]) :
       T v (covering K ℓ) (fun n ↦ LaurentKummerGeneratorLifts.exists_lift K ℓ (digit ℓ a n) n)
   let hP := ExtOneSimultaneousPullback.sequence_shortExact T v hS
   let z := hP.extClass
-  let b := Pi.map (fun n ↦ (kernelResidueIso K ℓ n).hom)
+  let b : (∏ᶜ fun n ↦ (T n).X₁) ⟶ ∏ᶜ (finiteCoefficient (X K) ℓ) :=
+    CategoryTheory.Limits.Pi.map (f := fun n ↦ (T n).X₁) (g := finiteCoefficient (X K) ℓ)
+      (fun n ↦ (kernelResidueIso K ℓ n).hom)
   refine ⟨Sheaf.H.map b 1 z, ?_⟩
   intro n
   let ρ := Pi.π (fun n ↦ (T n).X₁) n

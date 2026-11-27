@@ -67,7 +67,7 @@ theorem vertical_adjoint {a b : ℝ} (ha : 0 < a) (hab : a ≤ b)
   have hW (t : ℝ) (ht : t ∈ uIcc a b) : HasDerivAt w (w' t) t := by
     have htR : t ≠ 0 := by exact_mod_cast hT t ht
     have h := ((hasDerivAt_id t).inv htR).ofReal_comp
-    simpa [w, w', one_div, Complex.ofReal_inv, Complex.ofReal_pow] using h
+    simpa [w, w', div_eq_mul_inv, neg_mul, Complex.ofReal_inv, Complex.ofReal_pow] using h
   have hWC : ContinuousOn w (uIcc a b) := fun t ht => (hW t ht).continuousAt.continuousWithinAt
   have hW'C : ContinuousOn w' (uIcc a b) :=
     ((Complex.continuous_ofReal.pow 2).continuousOn.inv₀

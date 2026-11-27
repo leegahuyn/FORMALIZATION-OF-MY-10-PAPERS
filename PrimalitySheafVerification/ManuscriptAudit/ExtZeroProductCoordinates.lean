@@ -25,8 +25,8 @@ private def homEquiv : (T ⟶ F ⨯ G) ≃+ (T ⟶ F) × (T ⟶ G) where
   right_inv p := by apply Prod.ext <;> simp
   map_add' f g := by
     apply Prod.ext
-    · exact Preadditive.add_comp f g prod.fst
-    · exact Preadditive.add_comp f g prod.snd
+    · simp only [Preadditive.add_comp, Prod.fst_add]
+    · simp only [Preadditive.add_comp, Prod.snd_add]
 
 /-- Standard degree-zero product coordinates on the genuine Ext groups. -/
 def equiv : Ext.{w} T (F ⨯ G) 0 ≃+ Ext.{w} T F 0 × Ext.{w} T G 0 :=

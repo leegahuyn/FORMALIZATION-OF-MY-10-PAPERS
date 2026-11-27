@@ -40,7 +40,9 @@ def reference (hp : 5 ≤ p) (hs : p % 3 = 1) {A : ZMod p} (hA : A ≠ 0) :
   let b := Classical.choose ca
   have hab := Classical.choose_spec ca
   have hNorm : a ^ 2 - a * b + b ^ 2 = (p : ℤ) := by
-    simpa only [ZMod.card] using hab.2.1
+    calc
+      _ = (Fintype.card (ZMod p) : ℤ) := hab.2.1
+      _ = _ := by rw [ZMod.card]
   exact ⟨hp, hs, A, hA, R, rotation_quadratic h₂ h₃ hA hz.pow_eq_one L hz₁,
     a, b, hab.2.2, hab.1, hNorm⟩
 

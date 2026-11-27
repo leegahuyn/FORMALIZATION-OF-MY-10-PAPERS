@@ -26,12 +26,17 @@ theorem section_ext (T : Cᵒᵖ) (x y : (F ⨯ G).obj.obj T)
     x = y := by
   let A := AddCommGrpCat.{w}
   let E := sheafToPresheaf J A ⋙ (evaluation Cᵒᵖ A).obj T ⋙ forget A
-  let f : ULift.{w} Unit ⟶ E.obj (F ⨯ G) := fun _ ↦ x
-  let g : ULift.{w} Unit ⟶ E.obj (F ⨯ G) := fun _ ↦ y
+  let f : ULift.{w} Unit ⟶ E.obj (F ⨯ G) := TypeCat.ofHom (fun _ ↦ x)
+  let g : ULift.{w} Unit ⟶ E.obj (F ⨯ G) := TypeCat.ofHom (fun _ ↦ y)
   let hE := isLimitOfHasBinaryProductOfPreservesLimit E F G
-  have h : f = g := BinaryFan.IsLimit.hom_ext hE
-    (funext fun _ ↦ h₀) (funext fun _ ↦ h₁)
-  exact congrFun h ⟨()⟩
+  have h : f = g := BinaryFan.IsLimit.hom_ext hE (by
+    apply ConcreteCategory.hom_ext
+    intro z
+    exact h₀) (by
+    apply ConcreteCategory.hom_ext
+    intro z
+    exact h₁)
+  exact ConcreteCategory.congr_hom h (⟨()⟩ : ULift.{w} Unit)
 
 end
 

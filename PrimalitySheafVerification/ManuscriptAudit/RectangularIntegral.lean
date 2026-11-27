@@ -46,7 +46,11 @@ theorem box_rows {a b c d : ℝ} (hab : a ≤ b) (hcd : c ≤ d)
     box a b c d f = ∫ y in c..d, ∫ x in a..b, f (x, y) := by
   rw [box_columns hab hcd hf]
   apply intervalIntegral_intervalIntegral_swap
-  simpa only [Function.uncurry_curry, uIoc_of_le hab, uIoc_of_le hcd] using
+  have huncurry : Function.uncurry (fun x y => f (x, y)) = f := by
+    funext z
+    rcases z with ⟨x, y⟩
+    rfl
+  simpa only [huncurry, uIoc_of_le hab, uIoc_of_le hcd] using
     (continuous_integrable hf).mono_set
       (fun _ hz => ⟨Ioc_subset_Icc_self hz.1, Ioc_subset_Icc_self hz.2⟩ :
         Ioc a b ×ˢ Ioc c d ⊆ rectangle a b c d)

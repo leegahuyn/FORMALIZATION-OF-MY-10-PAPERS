@@ -26,16 +26,18 @@ private theorem holomorphic_finset_product {ι : Type*} (s : Finset ι) (F : ι 
   induction s using Finset.induction_on with
   | empty => simpa only [Finset.prod_empty] using (mdifferentiable_const : MDiff (fun _ : ℍ => (1 : ℂ)))
   | @insert j s hjs ih =>
-      simpa only [Finset.prod_insert hjs] using (hF j).mul ih
+      simpa only [Finset.prod_insert hjs, Pi.mul_def] using (hF j).mul ih
 
 private theorem bounded_finset_product {ι : Type*} (s : Finset ι) (F : ι → ℍ → ℂ)
     (hF : ∀ j : ι, IsBoundedAtImInfty (F j)) :
     IsBoundedAtImInfty (fun z : ℍ => ∏ j ∈ s, F j z) := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa only [Finset.prod_empty] using const_boundedAtFilter atImInfty (1 : ℂ)
+  | empty =>
+      simpa only [Finset.prod_empty, IsBoundedAtImInfty, Function.const] using
+        (const_boundedAtFilter atImInfty (1 : ℂ))
   | @insert j s hjs ih =>
-      simpa only [Finset.prod_insert hjs] using (hF j).mul ih
+      simpa only [Finset.prod_insert hjs, Pi.mul_def, IsBoundedAtImInfty] using (hF j).mul ih
 
 private theorem cosetProduct_holomorphic (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
     (f : ℍ → ℂ) (hf : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ, f (g • z) = f z)
@@ -62,6 +64,15 @@ private theorem cosetProduct_bounded (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
   change IsBoundedAtImInfty (fun z : ℍ => f (g • z) - c)
   exact (hInfinity g).sub (const_boundedAtFilter atImInfty c)
 
+private theorem cosetProduct_slash (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
+    (f : ℍ → ℂ) (hf : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ, f (g • z) = f z)
+    (c : ℂ) (g : SL(2, ℤ)) :
+    cosetProduct H f hf c ∣[(0 : ℤ)] g = cosetProduct H f hf c := by
+  funext z
+  simp only [SL_slash_def, neg_zero, zpow_zero, mul_one]
+  change cosetProduct H f hf c (g • z) = cosetProduct H f hf c z
+  exact cosetProduct_smul H f hf c g z
+
 private def cosetModularForm (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
     (f : ℍ → ℂ) (hf : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ, f (g • z) = f z)
     (hHol : MDiff f)
@@ -71,14 +82,15 @@ private def cosetModularForm (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
   slash_action_eq' A hA := by
     obtain ⟨g, rfl⟩ := hA
     change cosetProduct H f hf c ∣[(0 : ℤ)] g = cosetProduct H f hf c
-    funext z
-    simp [SL_slash_def, cosetProduct_smul]
+    exact cosetProduct_slash H f hf c g
   holo' := cosetProduct_holomorphic H f hf hHol c
   bdd_at_cusps' hc := by
     apply (OnePoint.isBoundedAt_iff_exists_SL2Z hc).2
     obtain ⟨g, hg⟩ := isCusp_SL2Z_iff'.mp hc
-    refine ⟨g, hg, ?_⟩
-    simpa [SL_slash_def, cosetProduct_smul] using cosetProduct_bounded H f hf hInfinity c
+    refine ⟨g, hg.symm, ?_⟩
+    change IsBoundedAtImInfty (cosetProduct H f hf c ∣[(0 : ℤ)] g)
+    rw [cosetProduct_slash]
+    exact cosetProduct_bounded H f hf hInfinity c
 
 theorem weight_zero_eq_const (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] (f : ℍ → ℂ)
     (hf : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ, f (g • z) = f z)

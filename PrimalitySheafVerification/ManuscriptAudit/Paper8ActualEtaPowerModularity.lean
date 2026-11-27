@@ -23,7 +23,7 @@ private theorem denominator_mul (g h : SL(2, ℤ)) (z : ℍ) :
     denominator (g * h) z = denominator g (h • z : ℍ) * denominator h z := by
   have hNe := denominator_ne_zero h z
   rw [← fractionalLinear_eq h z]
-  unfold denominator fractionalLinear at *
+  simp only [fractionalLinear, denominator] at hNe ⊢
   have hM := Matrix.two_mul_expl g.1 h.1
   simp only [Matrix.SpecialLinearGroup.coe_mul, hM.2.2.1, hM.2.2.2, Int.cast_add, Int.cast_mul]
   field_simp [hNe] <;> ring
@@ -56,7 +56,7 @@ theorem squaredMultiplier_S : squaredMultiplier ModularGroup.S = -Complex.I := b
     rw [UpperHalfPlane.modular_S_smul]
     simp [z, basePoint, inv_neg]
   have hD : denominator ModularGroup.S z = Complex.I := by
-    simp [denominator_eq, ModularGroup.denom_S, z, basePoint]
+    rw [denominator_eq ModularGroup.S z, ModularGroup.denom_S] <;> rfl
   have h := eta_squared_transform ModularGroup.S z
   rw [hS, hD] at h
   have hOne : -Complex.I * Complex.I = 1 := by rw [neg_mul, Complex.I_mul_I, neg_neg]

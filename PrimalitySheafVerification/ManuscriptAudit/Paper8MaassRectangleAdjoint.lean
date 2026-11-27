@@ -47,7 +47,7 @@ private theorem fluxY_deriv (F G : Profile) (x y : ℝ) (hy : (y : ℂ) ≠ 0)
     HasDerivAt (fluxY F G x) (rateY F G x y) y := by
   have hyR : y ≠ 0 := by exact_mod_cast hy
   have hinv : HasDerivAt (fun t : ℝ => -(t : ℂ)⁻¹) ((y : ℂ)^2)⁻¹ y := by
-    simpa [one_div, Complex.ofReal_inv, Complex.ofReal_pow] using
+    simpa [div_eq_mul_inv, neg_mul, Complex.ofReal_inv, Complex.ofReal_pow] using
       (((hasDerivAt_id y).inv hyR).neg).ofReal_comp
   exact ((conj_deriv hF.hasDerivAt).mul hG.hasDerivAt).mul hinv
 

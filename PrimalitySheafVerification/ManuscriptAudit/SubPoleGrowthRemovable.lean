@@ -30,21 +30,27 @@ theorem tendsto_mul_zero_of_subPoleGrowth {g : ℂ → ℂ} {C exponent : ℝ}
       rw [Real.rpow_sub (norm_pos_iff.mpr hNonzero), Real.rpow_one]
       ring
 
-theorem removable_of_mul_tendsto_zero {g : ℂ → ℂ} {s : Set ℂ} (hs : s ∈ 𝓝 0)
-    (hg : DifferentiableOn ℂ g (s \ {0}))
+theorem isLittleO_sub_inverse_of_mul_tendsto_zero {g : ℂ → ℂ}
     (h : Tendsto (fun q => q * g q) (𝓝[≠] (0 : ℂ)) (𝓝 0)) :
-    ∃ extension : ℂ → ℂ, (s \ {0}).EqOn extension g ∧ DifferentiableOn ℂ extension s := by
+    (fun q : ℂ => g q - g 0) =o[𝓝[≠] (0 : ℂ)] (fun q => (q - 0)⁻¹) := by
   have hOne : Tendsto (fun q : ℂ => q) (𝓝[≠] 0) (𝓝 0) := nhdsWithin_le_nhds
   have hSecond : Tendsto (fun q : ℂ => q * g 0) (𝓝[≠] 0) (𝓝 0) := by
     simpa only [zero_mul] using hOne.mul_const (g 0)
   have hDiff : Tendsto (fun q : ℂ => q * g q - q * g 0) (𝓝[≠] 0) (𝓝 0) := by
     simpa only [sub_zero] using h.sub hSecond
-  have hLittle : (fun q : ℂ => g q - g 0) =o[𝓝[≠] (0 : ℂ)] (fun q => (q - 0)⁻¹) := by
-    apply isLittleO_of_tendsto'
-    · filter_upwards [self_mem_nhdsWithin] with q hq
-      have hq0 : q ≠ 0 := by simpa using hq
-      simp [hq0]
-    · exact hDiff.congr (fun q => by simp [div_eq_mul_inv, sub_mul, mul_comm])
+  apply isLittleO_of_tendsto'
+  · filter_upwards [self_mem_nhdsWithin] with q hq
+    have hq0 : q ≠ 0 := by simpa using hq
+    simp [hq0]
+  · exact hDiff.congr (fun q => by
+      simp only [sub_zero, div_eq_mul_inv, inv_inv]
+      ring)
+
+theorem removable_of_mul_tendsto_zero {g : ℂ → ℂ} {s : Set ℂ} (hs : s ∈ 𝓝 0)
+    (hg : DifferentiableOn ℂ g (s \ {0}))
+    (h : Tendsto (fun q => q * g q) (𝓝[≠] (0 : ℂ)) (𝓝 0)) :
+    ∃ extension : ℂ → ℂ, (s \ {0}).EqOn extension g ∧ DifferentiableOn ℂ extension s := by
+  have hLittle := isLittleO_sub_inverse_of_mul_tendsto_zero h
   refine ⟨Function.update g 0 (limUnder (𝓝[≠] (0 : ℂ)) g), ?_,
     Complex.differentiableOn_update_limUnder_of_isLittleO hs hg hLittle⟩
   intro q hq
@@ -64,6 +70,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.SubPoleGrowthRemovable.tendsto_mul_zero_of_subPoleGrowth,
+      ``ManuscriptAudit.SubPoleGrowthRemovable.isLittleO_sub_inverse_of_mul_tendsto_zero,
       ``ManuscriptAudit.SubPoleGrowthRemovable.removable_of_mul_tendsto_zero,
       ``ManuscriptAudit.SubPoleGrowthRemovable.removable_of_subPoleGrowth] do
     let ax ← collectAxioms name

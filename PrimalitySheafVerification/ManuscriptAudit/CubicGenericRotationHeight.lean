@@ -3,6 +3,7 @@ import Mathlib.Tactic.Abel
 import PrimalitySheafVerification.ManuscriptAudit.CubicNaturalShiftedRotation
 import PrimalitySheafVerification.ManuscriptAudit.CubicGenericSecantHeight
 import PrimalitySheafVerification.ManuscriptAudit.RotationHeightArithmetic
+import PrimalitySheafVerification.ManuscriptAudit.CubicRationalPointHeight
 
 /-! The exact generic Kummer height of the actual integral shift [c]−ρ is c²+c+1. -/
 
@@ -29,7 +30,7 @@ private theorem height_of_scaled_x (P : antiInvariant A) {d : K} (hd : d ≠ 0)
     simp only [r, map_mul, RatFunc.algebraMap_C, RatFunc.algebraMap_X, genericX]
     rfl
   have hRep : P.val.xRep = ![algebraMap (RatFunc K) (Model A) r, 1] := by rw [hR, hP]
-  rw [height_eq_of_xRep A P r hRep]
+  rw [CubicRationalPointHeight.height_eq_of_xRep A P r hRep]
   change max r.num.natDegree r.denom.natDegree = 1
   rw [show r = algebraMap K[X] (RatFunc K) (C d * X) from rfl,
     RatFunc.num_algebraMap, RatFunc.denom_algebraMap, natDegree_C_mul hd, natDegree_X,
@@ -78,7 +79,7 @@ theorem generic_rotation_heights
   have hNeg := (quadraticHeight A h₂ h₃ hA).map_neg S
   change (height A (-S) : ℤ) = (height A S : ℤ) at hNeg
   have hNeg' : height A (-S) = height A S := by exact_mod_cast hNeg
-  exact ⟨genericPoint_height A h₂ h₃ hA, hHR, by rw [hQRS, hNeg', hHS]⟩
+  exact ⟨CubicRationalPointHeight.generic_point_height A h₂ h₃ hA, hHR, by rw [hQRS, hNeg', hHS]⟩
 
 /-- The actual operator [c]−ρ has the expected exact integral degree at the generic point. -/
 theorem shifted_height (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0)
@@ -89,9 +90,15 @@ theorem shifted_height (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠
   let R := antiInvariantApply (rotation h₂ h₃ hA hz) Q
   let D := quadraticHeight A h₂ h₃ hA
   obtain ⟨hQ₀, hR₀, hS₀⟩ := generic_rotation_heights h₂ h₃ hA hz hz₁
-  have hQ : D Q = 1 := by exact_mod_cast hQ₀
-  have hR : D R = 1 := by exact_mod_cast hR₀
-  have hS : D (Q + R) = 1 := by exact_mod_cast hS₀
+  have hQ : D Q = 1 := by
+    change (height A Q : ℤ) = 1
+    exact_mod_cast hQ₀
+  have hR : D R = 1 := by
+    change (height A R : ℤ) = 1
+    exact_mod_cast hR₀
+  have hS : D (Q + R) = 1 := by
+    change (height A (Q + R) : ℤ) = 1
+    exact_mod_cast hS₀
   have he : antiInvariantApply (shifted h₂ h₃ hA hz c) Q = c • Q - R := Subtype.ext rfl
   change D (antiInvariantApply (shifted h₂ h₃ hA hz c) Q) = _
   rw [he]
