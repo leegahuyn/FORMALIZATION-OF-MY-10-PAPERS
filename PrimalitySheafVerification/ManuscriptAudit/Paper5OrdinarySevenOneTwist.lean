@@ -37,20 +37,20 @@ private theorem transport_some {U V : Affine L} (h : U = V) {x y : L}
 private theorem ordinary_curve_eq : W L = Curve (a L 5) := by
   simpa only [map_ofNat] using ordinary_eq_centered L
 
-private def ordinaryEquiv : Points L ≃+ (Curve (a L 5)).Point :=
+def ordinaryEquiv : Points L ≃+ (Curve (a L 5)).Point :=
   transport L (ordinary_curve_eq L)
 
-private theorem ordinaryEquiv_some {x y : L} (h : (W L).Nonsingular x y) :
+theorem ordinaryEquiv_some {x y : L} (h : (W L).Nonsingular x y) :
     ordinaryEquiv L (Affine.Point.some x y h) =
       Affine.Point.some x y (ordinary_curve_eq L ▸ h) :=
   transport_some L (ordinary_curve_eq L) h
 
-private theorem disc (A : ZMod 7) (hA : A ≠ 0) :
+theorem disc (A : ZMod 7) (hA : A ≠ 0) :
     (shortCubic (0 : L) (a L A)).Δ ≠ 0 :=
   CubicThreeTorsionCard.shortCubic_discriminant_ne_zero Paper5OrdinarySevenSecant.two_ne (three_ne L)
     ((map_ne_zero (algebraMap (ZMod 7) L)).mpr hA)
 
-private theorem equiv_frobenius (P : Points L) :
+theorem equiv_frobenius (P : Points L) :
     nativeMap (ZMod 7) L (g L) 5 (ordinaryEquiv L P) =
       ordinaryEquiv L (nativeFrobenius L P) := by
   cases P with

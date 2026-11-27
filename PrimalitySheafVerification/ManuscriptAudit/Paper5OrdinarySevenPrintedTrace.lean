@@ -34,7 +34,7 @@ theorem six_trace_columns (hl : l = 2 ∨ l = 3) :
       LinearMap.trace ℤ_[l] (Tate l (Geometric L)) (action L l ^ (i + 1))) =
         sevenRow.traceColumns.map (fun a : ℤ => (a : ℤ_[l])) := by
   rw [printedRows_recurrence sevenRow_mem, Row.recurrenceColumns, List.map_map]
-  simpa only [trace_power L l hl, Function.comp_apply]
+  simp only [trace_power L l hl, Function.comp, sevenRow]
 
 end
 end ManuscriptAudit.Paper5OrdinarySevenPrintedTrace

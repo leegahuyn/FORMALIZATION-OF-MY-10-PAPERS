@@ -68,13 +68,21 @@ theorem smoothReduction_one_surjective (hℓp : ℓ ≠ p) (r : ℕ) (hr : 1 ≤
   let j := smoothCompactOpen p
   let i := inclusionH j a ℓ 2
   let g := reductionH j a ℓ 2
-  let eA : smoothHc p ℓ 2 ≃+ ZMod ℓ := by
-    simpa only [pow_one] using
-      (show smoothHc p (ℓ ^ 1) 2 ≃+ ZMod (ℓ ^ 1) from smoothPrimePowerEquiv p ℓ hℓp 1 (by decide) 2)
-  let eB : smoothHc p (a * ℓ) 2 ≃+ ZMod (a * ℓ) := by
-    simpa only [pow_succ] using
-      (show smoothHc p (ℓ ^ (r + 1)) 2 ≃+ ZMod (ℓ ^ (r + 1)) from
-        smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) 2)
+  have hℓ : (ℓ : closureField p) ≠ 0 := by
+    simpa only [pow_one] using primePower_ne_zero p ℓ hℓp 1
+  have ha : (a : closureField p) ≠ 0 := primePower_ne_zero p ℓ hℓp r
+  letI : NeZero (ℓ : closureField p) := ⟨hℓ⟩
+  letI : NeZero ((a * ℓ : ℕ) : closureField p) := ⟨by
+    rw [Nat.cast_mul]
+    exact mul_ne_zero ha hℓ⟩
+  have hPrime : ℓ.Prime := Fact.out
+  have haPos : 1 ≤ a := pow_pos hPrime.pos r
+  have hTwo : 2 ≤ a * ℓ :=
+    hPrime.two_le.trans ((one_mul ℓ).symm.trans_le (Nat.mul_le_mul_right ℓ haPos))
+  let eA := (smoothModelEquiv p ℓ 2).trans
+    (CuspCompactSupportCyclicDegrees.punctureTwoEquiv (closureField p) p ℓ hPrime.two_le)
+  let eB := (smoothModelEquiv p (a * ℓ) 2).trans
+    (CuspCompactSupportCyclicDegrees.punctureTwoEquiv (closureField p) p (a * ℓ) hTwo)
   let eC : smoothHc p a 2 ≃+ ZMod a := smoothPrimePowerEquiv p ℓ hℓp r hr 2
   letI : NeZero a := inferInstanceAs (NeZero (ℓ ^ r))
   letI : NeZero (a * ℓ) := ⟨Nat.mul_ne_zero (NeZero.ne a) (NeZero.ne ℓ)⟩

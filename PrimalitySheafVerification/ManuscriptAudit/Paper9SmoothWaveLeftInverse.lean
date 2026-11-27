@@ -42,9 +42,10 @@ theorem no_bounded_left_inverse (D : GammaTwoFundamentalDomain)
     rw [← mul_pow]
     exact pow_le_pow_left₀ (norm_nonneg _) hNorm 2
   have hDiv : ‖e‖ ^ (2 : ℕ) < ‖(v : quotientL2 D)‖ ^ 2 / C ^ 2 := by
-    simpa only [div_eq_mul_inv, mul_comm] using hMass
+    rw [div_eq_mul_inv]
+    exact hMass.trans_eq (mul_comm _ _)
   have hUpper := (lt_div_iff₀ hC₂).mp hDiv
-  exact (not_lt_of_ge hLower) (by simpa only [mul_comm] using hUpper)
+  exact (not_lt_of_ge hLower) ((mul_comm _ _).trans_lt hUpper)
 
 end
 end ManuscriptAudit.Paper9SmoothWaveLeftInverse

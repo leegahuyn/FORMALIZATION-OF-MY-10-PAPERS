@@ -28,7 +28,7 @@ attribute [local instance] MvPolynomial.gradedAlgebra
 universe u
 variable (K : Type u) [Field K]
 
-private def ringPoints {R : Type u} [CommRing R] [Algebra K R] :
+def ringPoints {R : Type u} [CommRing R] [Algebra K R] :
     PointsOver (Spec.map (CommRingCat.ofHom (algebraMap K R))) ≃ (R →ₐ[K] K) := by
   let t : CommRingCat.of K ⟶ CommRingCat.of R := CommRingCat.ofHom (algebraMap K R)
   let f (p : PointsOver (Spec.map t)) : CommRingCat.of R ⟶ CommRingCat.of K :=

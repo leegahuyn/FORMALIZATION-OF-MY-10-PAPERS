@@ -32,10 +32,12 @@ private theorem re_diagonal_lt_of_small_residual {H : Type*} [NormedAddCommGroup
       _ < ‖x‖ * ‖x‖ := mul_lt_mul_of_pos_left hNorm hx
       _ = _ := (pow_two _).symm
   have he : (inner ℂ x e).re = (inner ℂ x y).re - lambda * ‖x‖ ^ (2 : ℕ) := by
+    have hxInner : (inner ℂ x x).re = ‖x‖ ^ (2 : ℕ) :=
+      (norm_sq_eq_re_inner (𝕜 := ℂ) x).symm
     change (inner ℂ x (y - (lambda : ℂ) • x)).re = _
-    rw [inner_sub_right, inner_smul_right, inner_self_eq_norm_sq_to_K]
-    simp only [Complex.sub_re, pow_two, Complex.mul_re, Complex.ofReal_re,
-      Complex.ofReal_im, zero_mul, sub_zero]
+    rw [inner_sub_right, inner_smul_right]
+    simp only [Complex.sub_re, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
+      zero_mul, sub_zero, hxInner]
   rw [he] at hBound
   linarith only [hBound]
 
