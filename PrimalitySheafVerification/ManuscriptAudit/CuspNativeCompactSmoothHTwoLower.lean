@@ -43,15 +43,19 @@ private abbrev l := overlapOpen F
 private abbrev i := (cuspPuncturedOpen F).ι
 private abbrev o := cuspOrigin F
 
-private theorem cuspSquare_not_mem_laurent (w : Spec (CommRingCat.of (LaurentPolynomial F))) :
-    cuspSquare F ∉ (laurentToAffineCusp F w).asIdeal := by
-  unfold laurentToAffineCusp
+private theorem cuspSquare_not_mem_laurentMap (w : Spec (CommRingCat.of (LaurentPolynomial F))) :
+    cuspSquare F ∉ (CuspYChartImage.laurentToCusp F w).asIdeal := by
   intro h
-  change Polynomial.toLaurent ((Polynomial.X : Polynomial F) ^ 2) ∈ _ at h
-  let u : IsUnit (Polynomial.toLaurent ((Polynomial.X : Polynomial F) ^ 2)) := by
+  change Polynomial.toLaurent ((Polynomial.X : Polynomial F) ^ 2) ∈ w.asIdeal at h
+  have u : IsUnit (Polynomial.toLaurent ((Polynomial.X : Polynomial F) ^ 2)) := by
     rw [Polynomial.toLaurent_X_pow]
     exact LaurentPolynomial.isUnit_T _
-  exact (PrimeSpectrum.isPrime _).ne_top (Ideal.eq_top_of_isUnit_mem _ h u)
+  exact w.isPrime.ne_top (Ideal.eq_top_of_isUnit_mem w.asIdeal h u)
+
+private theorem cuspSquare_not_mem_laurent (w : Spec (CommRingCat.of (LaurentPolynomial F))) :
+    cuspSquare F ∉ (laurentToAffineCusp F w).asIdeal := by
+  rw [laurentToAffineCusp, Scheme.Hom.comp_apply]
+  exact cuspSquare_not_mem_laurentMap F _
 
 theorem overlap_disjoint_origin :
     Disjoint (Set.range (l F)) (Set.range (o F ≫ j F)) := by

@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import Lean.Elab.Tactic.Omega
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusDifferencePolynomial
 import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusDifferenceDerivative
@@ -16,6 +16,7 @@ open Polynomial CubicFrobeniusDifferenceNumerator CubicFrobeniusDifferencePolyno
 open CubicFrobeniusDifferenceDerivative CubicFrobeniusDifferenceCancellation
 
 noncomputable section
+open scoped Classical
 
 variable (K : Type*) [Field K] [Fintype K]
 

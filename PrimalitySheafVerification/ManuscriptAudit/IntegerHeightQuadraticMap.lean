@@ -52,7 +52,7 @@ def ofParallelogram (d : G → ℤ) (h₀ : d 0 = 0)
       map_zero' := hBZero y
       map_add' := fun x z => hBAdd x z y }
   have hBL (a : ℤ) (x y : G) : B (a • x) y = a • B x y :=
-    (bHom y).map_zsmul x a
+    (bHom y).map_zsmul a x
   have hBC (x y : G) : B x y = B y x := QuadraticMap.polar_comm d x y
   have hBR (a : ℤ) (x y : G) : B x (a • y) = a • B x y := by
     rw [hBC x, hBL, hBC y]

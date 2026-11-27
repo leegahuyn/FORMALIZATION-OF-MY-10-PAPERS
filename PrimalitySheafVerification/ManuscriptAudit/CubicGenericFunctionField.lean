@@ -55,8 +55,12 @@ theorem generic_equation (A : K) :
   have h : genericY A ^ 2 = algebraMap (RatFunc K) (Model A) (radicand A) := by
     rw [genericY, pow_two, QuadraticAlgebra.omega_mul_omega_eq_mk]
     rfl
-  rw [h, radicand, map_add, map_pow]
-  rfl
+  calc
+    genericY A ^ 2 = algebraMap (RatFunc K) (Model A) (radicand A) := h
+    _ = algebraMap (RatFunc K) (Model A) (RatFunc.X ^ 3 + RatFunc.C A) := rfl
+    _ = _ := by
+      simp only [map_add, map_pow]
+      rfl
 
 /-- The quadratic involution fixes K(X) and changes the sign of Y. -/
 def conjugation (A : K) : Model A →ₐ[RatFunc K] Model A where

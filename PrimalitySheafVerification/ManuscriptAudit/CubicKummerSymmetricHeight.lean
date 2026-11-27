@@ -107,7 +107,7 @@ theorem height_symmetric {a b : Fin 2 → K[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
   rw [← hEq] at hNe
   by_contra! hLt
   apply hNe
-  funfunext i
+  funext i
   exact coeff_eq_zero_of_natDegree_lt ((natDegree_le_height _ i).trans_lt hLt)
 
 end

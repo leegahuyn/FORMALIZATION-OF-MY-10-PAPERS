@@ -46,10 +46,11 @@ theorem uniform_supercritical_trace {s : ℝ} (hs : 1 / 2 < s)
     rw [mul_pow, ← mul_assoc, hw, one_mul]
     simpa only [mul_one] using mul_le_mul_of_nonneg_left hSquare (sq_nonneg (a j))
   have hsum : (∑ j : Fin n, f j) ≤ traceConstant s := by
-    change (∑ j : Fin n, ((j.val : ℝ)+1)^(-(2*s))) ≤ traceConstant s
-    rw [Fin.sum_univ_eq_sum_range]
-    exact (inverse_weights_summable hs).sum_le_tsum _
-      (fun j _ => Real.rpow_nonneg (by positivity) _)
+    calc
+      _ = ∑ j ∈ Finset.range n, ((j : ℝ)+1)^(-(2*s)) :=
+        Fin.sum_univ_eq_sum_range (fun j : ℕ => ((j : ℝ)+1)^(-(2*s))) n
+      _ ≤ _ := (inverse_weights_summable hs).sum_le_tsum _
+        (fun j _ => Real.rpow_nonneg (by positivity) _)
   calc
     |cosinePolynomial a x|^2 = (∑ j : Fin n, v j)^2 := by rw [sq_abs]; rfl
     _ ≤ (∑ j : Fin n, f j) * (∑ j : Fin n, g j) :=

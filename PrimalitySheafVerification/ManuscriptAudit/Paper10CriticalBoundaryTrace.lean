@@ -37,8 +37,7 @@ def criticalEnergy {n : ℕ} (a : Fin n → ℝ) : ℝ :=
 theorem harmonic_tends_to_infinity : Tendsto harmonic atTop atTop := by
   have he : harmonic = fun n : ℕ => ∑ i ∈ Finset.range n, 1 / ((i : ℝ)+1) := by
     funext n
-    unfold harmonic frequency
-    rw [Fin.sum_univ_eq_sum_range]
+    exact Fin.sum_univ_eq_sum_range (fun i : ℕ => (1 : ℝ) / ((i : ℝ)+1)) n
   rw [he]
   exact Real.tendsto_sum_range_one_div_nat_succ_atTop
 
@@ -57,7 +56,9 @@ theorem normalized_energy_le (n : ℕ) (hn : 0 < harmonic n) :
       apply Finset.sum_le_sum
       intro j _
       let k := frequency j
-      have hk : 1 ≤ k := by dsimp [k, frequency]; positivity
+      have hk : 1 ≤ k := by
+        dsimp [k, frequency]
+        linarith only [Nat.cast_nonneg (α := ℝ) j.val]
       have hk0 : 0 < k := zero_lt_one.trans_le hk
       have hquad : 1 + k^2 ≤ (2*k)^2 := by nlinarith [sq_nonneg (k-1)]
       have hs : Real.sqrt (1+k^2) ≤ 2*k := by

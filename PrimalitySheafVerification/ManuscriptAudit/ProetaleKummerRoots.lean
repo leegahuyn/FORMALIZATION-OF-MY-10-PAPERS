@@ -124,6 +124,15 @@ theorem roots_isSheaf : Presheaf.IsSheaf (J X) (roots X d) :=
 def rootsKernelIso : (⟨roots X d, roots_isSheaf X d⟩ : Sheaf (J X) G) ≅ kernel (power X d) :=
   (sheafToPresheaf (J X) G).preimageIso (rootsPresheafIso X d)
 
+/-- The kernel isomorphism identifies the roots inclusion with the categorical kernel map. -/
+@[reassoc]
+theorem rootsKernelIso_hom_ι :
+    (rootsKernelIso X d).hom.hom ≫ (kernel.ι (power X d)).hom = inclusion X d := by
+  let P := sheafToPresheaf (J X) G
+  let h := (KernelFork.ofι (kernel.ι (power X d)) (kernel.condition (power X d))).mapIsLimit
+    (kernelIsKernel (power X d)) P
+  exact (rootsIsKernel X d).conePointUniqueUpToIso_hom_comp h WalkingParallelPair.zero
+
 end
 end ManuscriptAudit.ProetaleKummerRoots
 
@@ -131,7 +140,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleKummerRoots.roots_isSheaf,
-      ``ManuscriptAudit.ProetaleKummerRoots.rootsKernelIso] do
+      ``ManuscriptAudit.ProetaleKummerRoots.rootsKernelIso,
+      ``ManuscriptAudit.ProetaleKummerRoots.rootsKernelIso_hom_ι] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

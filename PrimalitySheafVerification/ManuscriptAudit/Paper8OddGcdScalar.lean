@@ -25,6 +25,7 @@ private theorem odd_scale_re_odd_index (m : ℕ) :
   rw [oddScale, if_pos hOdd, oddFactorSign, hExp, ← hCast, ← Complex.ofReal_mul,
     Complex.ofReal_re]
 
+set_option maxHeartbeats 800000 in
 theorem odd_scale_tsum_re_pos : 0 < (∑' j : ℕ, oddScale (j + 1)).re := by
   let f (j : ℕ) : ℝ := (oddScale (j + 1)).re
   rw [Complex.re_tsum oddScale_norm_summable.of_norm]
@@ -34,19 +35,19 @@ theorem odd_scale_tsum_re_pos : 0 < (∑' j : ℕ, oddScale (j + 1)).re := by
     apply Summable.of_nonneg_of_le (fun _ => norm_nonneg _) _ oddScale_norm_summable
     intro j
     simpa only [Real.norm_eq_abs] using Complex.abs_re_le_norm (oddScale (j + 1))
-  have he : Summable (fun m : ℕ => f (2 * m)) :=
-    hf.comp_injective (by intro a b h; omega)
-  have ho : Summable (fun m : ℕ => f (2 * m + 1)) :=
-    hf.comp_injective (by intro a b h; omega)
+  have hDouble : Function.Injective (fun m : ℕ => 2 * m) :=
+    mul_right_injective₀ (by decide : (2 : ℕ) ≠ 0)
+  have hDoubleSucc : Function.Injective (fun m : ℕ => 2 * m + 1) :=
+    (add_left_injective 1).comp hDouble
+  have he : Summable (fun m : ℕ => f (2 * m)) := hf.comp_injective hDouble
+  have ho : Summable (fun m : ℕ => f (2 * m + 1)) := hf.comp_injective hDoubleSucc
   have hZero (m : ℕ) : f (2 * m + 1) = 0 := by
     have hEven : Even (2 * m + 1 + 1) := ⟨m + 1, by omega⟩
     change (oddScale (2 * m + 1 + 1)).re = 0
     rw [oddScale, if_neg (Nat.not_odd_iff_even.mpr hEven)]
     rfl
-  have hee : Summable (fun m : ℕ => f (2 * (2 * m))) :=
-    he.comp_injective (by intro a b h; omega)
-  have heo : Summable (fun m : ℕ => f (2 * (2 * m + 1))) :=
-    he.comp_injective (by intro a b h; omega)
+  have hee : Summable (fun m : ℕ => f (2 * (2 * m))) := he.comp_injective hDouble
+  have heo : Summable (fun m : ℕ => f (2 * (2 * m + 1))) := he.comp_injective hDoubleSucc
   let a (m : ℕ) : ℝ := 1 / ((4 * m + 1 : ℕ) : ℝ) ^ (3 / 2 : ℝ)
   let b (m : ℕ) : ℝ := 1 / ((4 * m + 3 : ℕ) : ℝ) ^ (3 / 2 : ℝ)
   have hA (m : ℕ) : f (2 * (2 * m)) = a m := by
