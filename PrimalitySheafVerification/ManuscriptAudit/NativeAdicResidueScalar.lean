@@ -40,7 +40,11 @@ private theorem H_map_nsmul_id (F : Sheaf (J X) A) (d m : ℕ) (x : Sheaf.H F d)
     map_nsmul h m (𝟙 F)
   change x.comp (Ext.mk₀ (m • 𝟙 F)) (add_zero d) = m • x
   rw [hm]
-  simpa only [Ext.comp_mk₀_id] using map_nsmul (x.precomp F (add_zero d)) m (Ext.mk₀ (𝟙 F))
+  have hmul := map_nsmul (x.precomp F (add_zero d)) m (Ext.mk₀ (𝟙 F))
+  change x.comp (m • Ext.mk₀ (𝟙 F)) (add_zero d) =
+    m • x.comp (Ext.mk₀ (𝟙 F)) (add_zero d) at hmul
+  rw [Ext.comp_mk₀_id] at hmul
+  exact hmul
 
 private theorem scalar_reduction (r : ℤ_[ℓ]) (n : ℕ) :
     scalarMap X ℓ r ≫ rho X ℓ n =
@@ -58,12 +62,13 @@ private theorem scalar_reduction (r : ℤ_[ℓ]) (n : ℕ) :
   apply ULift.ext
   apply ContinuousMap.ext
   intro a
-  change PadicInt.toZModPow n (r * x.down a) =
-    (m • ((rho X ℓ n).hom.app U x).down) a
+  let f : C(U.unop.left, ℤ_[ℓ]) := x.down
+  change PadicInt.toZModPow n (r * f a) =
+    (m • (show C(U.unop.left, ZMod (ℓ ^ n)) from ((rho X ℓ n).hom.app U x).down)) a
   rw [ContinuousMap.nsmul_apply]
-  change PadicInt.toZModPow n (r * x.down a) = m • PadicInt.toZModPow n (x.down a)
+  change PadicInt.toZModPow n (r * f a) = m • PadicInt.toZModPow n (f a)
   rw [map_mul, nsmul_eq_mul]
-  exact congrArg (fun b : ZMod (ℓ ^ n) ↦ b * PadicInt.toZModPow n (x.down a))
+  exact congrArg (fun b : ZMod (ℓ ^ n) ↦ b * PadicInt.toZModPow n (f a))
     (ZMod.natCast_zmod_val (PadicInt.toZModPow n r)).symm
 
 /-- The residue of the actual scalar action is the corresponding ordinary additive multiple. -/

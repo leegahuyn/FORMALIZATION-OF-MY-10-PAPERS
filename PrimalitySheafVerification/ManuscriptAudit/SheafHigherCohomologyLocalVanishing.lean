@@ -59,7 +59,10 @@ theorem vanishingSieve_covering (n : ℕ) (F : S J) (U : C) (x : F.H' (n+1) U) :
     vanishingSieve J F (n+1) x ∈ J U := by
   induction n generalizing F U with
   | zero =>
-    let i := Injective.ι F
+    let pF : InjectivePresentation F := (enough.presentation F).some
+    let i : F ⟶ pF.J := pF.f
+    letI : Injective pF.J := pF.injective
+    letI : Mono i := pF.mono
     let Q := cokernel i
     let s := dimensionShift J i
     let hS := dimensionShift_shortExact J i
@@ -76,7 +79,10 @@ theorem vanishingSieve_covering (n : ℕ) (F : S J) (U : C) (x : F.H' (n+1) U) :
     rw [boundaryOfSection_restrict]
     exact boundaryOfSection_zero_of_lift J s hS V _ a ha
   | succ n ih =>
-    let i := Injective.ι F
+    let pF : InjectivePresentation F := (enough.presentation F).some
+    let i : F ⟶ pF.J := pF.f
+    letI : Injective pF.J := pF.injective
+    letI : Mono i := pF.mono
     let Q := cokernel i
     let hS := dimensionShift_shortExact J i
     obtain ⟨z, rfl⟩ := exists_boundary J i U (n+1) x

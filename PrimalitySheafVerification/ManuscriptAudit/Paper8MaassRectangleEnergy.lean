@@ -25,13 +25,14 @@ private theorem continuous_self_density {a b c d : ℝ} (hc : 0 < c) {F : Profil
   have hFc := Complex.conjCLE.continuous.comp_continuousOn hF
   apply (hFc.mul hF).div (hy.pow 2)
   intro z hz
-  exact pow_ne_zero 2 (by exact_mod_cast (hc.trans_le hz.2.1).ne')
+  have hz₀ : (z.2 : ℂ) ≠ 0 := by exact_mod_cast (hc.trans_le hz.2.1).ne'
+  exact pow_ne_zero 2 hz₀
 
 private theorem re_self_density (F : Profile) (z : ℝ × ℝ) :
     (density F F z).re = ‖F z.1 z.2‖ ^ 2 / z.2 ^ 2 := by
   unfold density
   have hStar : star (F z.1 z.2) * F z.1 z.2 = (↑(‖F z.1 z.2‖ ^ 2 : ℝ) : ℂ) :=
-    Complex.conj_mul' (F z.1 z.2)
+    by simpa only [Complex.ofReal_pow] using Complex.conj_mul' (F z.1 z.2)
   rw [hStar, ← Complex.ofReal_pow, ← Complex.ofReal_div, Complex.ofReal_re]
 
 private theorem normSquare_eq_integral {a b c d : ℝ} (hc : 0 < c) (F : Profile)
@@ -79,7 +80,7 @@ theorem normSquare_positive {a b c d : ℝ} (hc : 0 < c) (F : Profile)
     setIntegral_pos_iff_support_of_nonneg_ae hg₀ (continuous_integrable hg)]
   exact (hU.measure_pos volume ⟨(x, y), hPoint⟩).trans_le (measure_mono hSub)
 
-theorem spectral_equation_for_raising (F : Profile) (x y λ : ℝ)
+theorem spectral_equation_for_raising (F : Profile) (x y spectralValue : ℝ)
     (hx : DifferentiableAt ℝ (fun t => F t y) x)
     (hy : DifferentiableAt ℝ (F x) y)
     (hxx : DifferentiableAt ℝ (fun t => partialX F t y) x)
@@ -87,25 +88,25 @@ theorem spectral_equation_for_raising (F : Profile) (x y λ : ℝ)
     (hyx : DifferentiableAt ℝ (fun t => partialY F t y) x)
     (hyy : DifferentiableAt ℝ (partialY F x) y)
     (hMixed : partialX (partialY F) x y = partialY (partialX F) x y)
-    (hEigen : maassDelta (-1/2) F x y = (λ : ℂ) * F x y) :
-    adjointExpression (raising F) x y = ((λ - 3/16 : ℝ) : ℂ) * F x y := by
+    (hEigen : maassDelta (-1/2) F x y = (spectralValue : ℂ) * F x y) :
+    adjointExpression (raising F) x y = ((spectralValue - 3/16 : ℝ) : ℂ) * F x y := by
   rw [factorization F x y hx hy hxx hxy hyx hyy hMixed] at hEigen
   push_cast
   linear_combination hEigen
 
 /-- Under the actual Green identity, an eigenfunction's raising energy is its mass
 times the spectral parameter shifted by 3/16. -/
-theorem eigenvalue_energy {a b c d : ℝ} (F : Profile) (λ : ℝ)
+theorem eigenvalue_energy {a b c d : ℝ} (F : Profile) (spectralValue : ℝ)
     (hGreen : box a b c d (density F (adjointExpression (raising F))) =
       box a b c d (density (raising F) (raising F)))
     (hEquation : ∀ z ∈ rectangle a b c d,
-      adjointExpression (raising F) z.1 z.2 = ((λ - 3/16 : ℝ) : ℂ) * F z.1 z.2) :
-    normSquare a b c d (raising F) = (λ - 3/16) * normSquare a b c d F := by
+      adjointExpression (raising F) z.1 z.2 = ((spectralValue - 3/16 : ℝ) : ℂ) * F z.1 z.2) :
+    normSquare a b c d (raising F) = (spectralValue - 3/16) * normSquare a b c d F := by
   have hEq : box a b c d (density F (adjointExpression (raising F))) =
-      ((λ - 3/16 : ℝ) : ℂ) * box a b c d (density F F) := by
+      ((spectralValue - 3/16 : ℝ) : ℂ) * box a b c d (density F F) := by
     calc
       box a b c d (density F (adjointExpression (raising F))) =
-          box a b c d (fun z => ((λ - 3/16 : ℝ) : ℂ) * density F F z) := by
+          box a b c d (fun z => ((spectralValue - 3/16 : ℝ) : ℂ) * density F F z) := by
         apply box_congr
         intro z hz
         unfold density
@@ -118,16 +119,16 @@ theorem eigenvalue_energy {a b c d : ℝ} (F : Profile) (λ : ℝ)
   exact by simpa only [normSquare, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
     zero_mul, sub_zero] using congrArg Complex.re hEq
 
-theorem spectral_lower_bound {a b c d : ℝ} (hc : 0 < c) (F : Profile) (λ : ℝ)
+theorem spectral_lower_bound {a b c d : ℝ} (hc : 0 < c) (F : Profile) (spectralValue : ℝ)
     (hRaise : ContinuousOn (raising F).uncurry (rectangle a b c d))
     (hMass : 0 < normSquare a b c d F)
     (hGreen : box a b c d (density F (adjointExpression (raising F))) =
       box a b c d (density (raising F) (raising F)))
     (hEquation : ∀ z ∈ rectangle a b c d,
-      adjointExpression (raising F) z.1 z.2 = ((λ - 3/16 : ℝ) : ℂ) * F z.1 z.2) :
-    3/16 ≤ λ := by
+      adjointExpression (raising F) z.1 z.2 = ((spectralValue - 3/16 : ℝ) : ℂ) * F z.1 z.2) :
+    3/16 ≤ spectralValue := by
   have h := normSquare_nonnegative hc (raising F) hRaise
-  rw [eigenvalue_energy F λ hGreen hEquation] at h
+  rw [eigenvalue_energy F spectralValue hGreen hEquation] at h
   by_contra! hlt
   exact (mul_neg_of_neg_of_pos (sub_neg.mpr hlt) hMass).not_ge h
 

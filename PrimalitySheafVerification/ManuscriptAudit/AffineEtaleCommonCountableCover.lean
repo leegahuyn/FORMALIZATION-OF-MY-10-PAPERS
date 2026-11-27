@@ -38,7 +38,8 @@ private theorem U_cover (x : Tower B) : ∃ n, x ∈ U B n := by
 include hF in
 private theorem U_faithfullyFlat (n : ℕ) : Module.FaithfullyFlat R (U B n) := by
   letI := stage_faithfullyFlat B hF n
-  exact Module.FaithfullyFlat.of_linearEquiv ((stageEquiv B hF n).symm.toLinearEquiv)
+  exact Module.FaithfullyFlat.of_linearEquiv R (AffineEtaleTensorDirectLimit.Stage B n)
+    (stageEquiv B hF n).symm.toLinearEquiv
 
 include hF hE in
 private theorem U_etale (n : ℕ) : Algebra.Etale R (U B n) := by

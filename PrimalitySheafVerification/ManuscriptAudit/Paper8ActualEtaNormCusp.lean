@@ -43,6 +43,16 @@ theorem eta_eventual_lower_bound {w : ℕ} (hw : 0 < w) :
   simpa only [mul_comm (1 / 2 : ℝ)] using
     mul_le_mul_of_nonneg_left hz.le (norm_nonneg (qParam 24 z))
 
+theorem eta_eventual_upper_bound :
+    ∀ᶠ z : ℍ in atImInfty, ‖ModularForm.eta z‖ ≤ 2 * ‖qParam 24 z‖ := by
+  filter_upwards [product_norm_tendsto_one.eventually
+    (Iio_mem_nhds (by norm_num : (1 : ℝ) < 2))] with z hz
+  have hProd : (∏' n : ℕ, (1 - ModularForm.eta_q n z)) = widthUnit 1 (qParam 1 z) := by
+    simp [widthUnit, ModularForm.eta_q]
+  rw [ModularForm.eta, norm_mul, hProd]
+  simpa only [mul_comm (2 : ℝ)] using
+    mul_le_mul_of_nonneg_left hz.le (norm_nonneg (qParam 24 z))
+
 end ManuscriptAudit.Paper8ActualEtaNormCusp
 
 open Lean Elab Command in
@@ -51,7 +61,8 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.Paper8ActualEtaNormCusp.eta_norm_square_transform,
       ``ManuscriptAudit.Paper8ActualEtaNormCusp.eta_q_norm_eq_width_power,
-      ``ManuscriptAudit.Paper8ActualEtaNormCusp.eta_eventual_lower_bound] do
+      ``ManuscriptAudit.Paper8ActualEtaNormCusp.eta_eventual_lower_bound,
+      ``ManuscriptAudit.Paper8ActualEtaNormCusp.eta_eventual_upper_bound] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

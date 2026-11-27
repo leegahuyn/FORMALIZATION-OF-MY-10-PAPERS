@@ -34,7 +34,9 @@ private theorem same_coset_of_relative_sign (H : Subgroup SL(2, ℤ))
       exact H.one_mem
     · rw [hA, h, mul_neg, mul_one, neg_mul, mul_inv_cancel]
       exact hNeg
-  exact Quotient.sound (QuotientGroup.rightRel_apply.mpr hMem)
+  have hCoset : rightCosetMk H b = rightCosetMk H a :=
+    Quotient.sound (QuotientGroup.rightRel_apply.mpr hMem)
+  exact hCoset.symm
 
 theorem open_cells_pairwise_disjoint (H : Subgroup SL(2, ℤ))
     (hNeg : (-1 : SL(2, ℤ)) ∈ H) :
@@ -53,13 +55,36 @@ theorem open_cells_pairwise_disjoint (H : Subgroup SL(2, ℤ))
   have h := same_coset_of_relative_sign H hNeg hSign
   exact hij (by simpa only [a, b, cellRepresentative_mk] using h)
 
+theorem open_cells_unique_in_orbit (H : Subgroup SL(2, ℤ))
+    (hNeg : (-1 : SL(2, ℤ)) ∈ H) {x y : ℍ}
+    (hx : x ∈ cosetCells H ModularGroup.fdo) (hy : y ∈ cosetCells H ModularGroup.fdo)
+    (h : H) (he : (h : SL(2, ℤ)) • x = y) : x = y := by
+  obtain ⟨i, u, hu, rfl⟩ := mem_iUnion.mp hx
+  obtain ⟨j, v, hv, rfl⟩ := mem_iUnion.mp hy
+  let a := cellRepresentative H i
+  let b := cellRepresentative H j
+  have hAct : (b⁻¹ * ((h : SL(2, ℤ)) * a)) • u = v := by
+    rw [mul_smul, mul_smul, he, inv_smul_smul]
+  have hImage : (b⁻¹ * ((h : SL(2, ℤ)) * a)) • u ∈ ModularGroup.fdo := hAct.symm ▸ hv
+  have hSign := ModularGroup.eq_one_or_neg_one_of_mem_fdo_mem_fdo hu hImage
+  have hCoset := same_coset_of_relative_sign H hNeg hSign
+  have hTranslate : rightCosetMk H ((h : SL(2, ℤ)) * a) = rightCosetMk H a := by
+    symm
+    apply Quotient.sound
+    apply QuotientGroup.rightRel_apply.mpr
+    simpa only [mul_assoc, mul_inv_cancel, mul_one] using h.property
+  have hIJ : i = j := by
+    simpa only [a, b, cellRepresentative_mk] using hTranslate.symm.trans hCoset
+  have huv : u = v := (ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo hu hImage).trans hAct
+  rw [hIJ, huv]
+
 theorem closed_cells_meet_every_orbit (H : Subgroup SL(2, ℤ)) (z : ℍ) :
     ∃ h : H, ∃ w ∈ cosetCells H ModularGroup.fd, (h : SL(2, ℤ)) • w = z := by
   obtain ⟨g, hg⟩ := ModularGroup.exists_smul_mem_fd z
   let q := rightCosetMk H g⁻¹
   let a := cellRepresentative H q
   have haq : rightCosetMk H g⁻¹ = rightCosetMk H a := (cellRepresentative_mk H q).symm
-  have hh : g⁻¹ * a⁻¹ ∈ H := QuotientGroup.rightRel_apply.mp (Quotient.exact haq)
+  have hh : g⁻¹ * a⁻¹ ∈ H := QuotientGroup.rightRel_apply.mp (Quotient.exact haq.symm)
   refine ⟨⟨g⁻¹ * a⁻¹, hh⟩, a • (g • z), ?_, ?_⟩
   · exact mem_iUnion.mpr ⟨q, g • z, hg, rfl⟩
   · change (g⁻¹ * a⁻¹) • (a • (g • z)) = z
@@ -103,6 +128,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.Paper8EtaCosetMass.open_cells_pairwise_disjoint,
+      ``ManuscriptAudit.Paper8EtaCosetMass.open_cells_unique_in_orbit,
       ``ManuscriptAudit.Paper8EtaCosetMass.closed_cells_meet_every_orbit,
       ``ManuscriptAudit.Paper8EtaCosetMass.mass_open_coset_cells,
       ``ManuscriptAudit.Paper8EtaCosetMass.levelTwo_eta_mass,

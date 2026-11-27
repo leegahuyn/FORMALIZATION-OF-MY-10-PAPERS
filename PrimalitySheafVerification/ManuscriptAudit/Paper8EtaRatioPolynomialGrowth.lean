@@ -17,7 +17,7 @@ theorem height_rpow_mul_q_rpow_tendsto_zero {w d : ℝ} (hw : 0 < w) (hd : 0 < d
   have hIm : Tendsto UpperHalfPlane.im atImInfty atTop := tendsto_comap
   have h := (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero p b hb).comp hIm
   refine h.congr (fun z => ?_)
-  simp only [Function.comp_apply, Periodic.norm_qParam, ← Real.exp_mul]
+  simp only [Function.comp_apply, Periodic.norm_qParam, UpperHalfPlane.coe_im, ← Real.exp_mul]
   congr 2
   unfold b
   ring

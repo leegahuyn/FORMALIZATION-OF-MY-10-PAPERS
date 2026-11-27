@@ -18,8 +18,8 @@ def cuspTranslate (f : ℍ → ℂ) (g : SL(2, ℤ)) (z : ℂ) : ℂ :=
   etaRatio f (g • ofComplex z) * ModularForm.eta (ofComplex z : ℍ)
 
 theorem etaRatio_holomorphic {f : ℍ → ℂ} (hHol : MDiff f) : MDiff (etaRatio f) := by
-  simpa only [etaRatio, Pi.div_def] using hHol.div eta_holomorphic (fun z : ℍ =>
-    ModularForm.eta_ne_zero z.im_pos)
+  change MDiff (fun z : ℍ => f z / ModularForm.eta z)
+  exact hHol.div eta_holomorphic (fun z : ℍ => ModularForm.eta_ne_zero z.im_pos)
 
 theorem etaRatio_invariant {H : Subgroup SL(2, ℤ)} {f : ℍ → ℂ}
     (hAgree : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ,
@@ -33,7 +33,8 @@ theorem cuspTranslate_holomorphic {f : ℍ → ℂ} (hHol : MDiff f) (g : SL(2, 
     DifferentiableOn ℂ (cuspTranslate f g) {z : ℂ | 0 < z.im} := by
   have h := (translate_holomorphic (etaRatio_holomorphic hHol) g).mul eta_holomorphic
   have hC := UpperHalfPlane.mdifferentiable_iff.mp h
-  simpa only [Function.comp_apply, Pi.mul_def, cuspTranslate] using hC
+  change DifferentiableOn ℂ (cuspTranslate f g) {z : ℂ | 0 < z.im} at hC
+  exact hC
 
 theorem norm_cuspTranslate (f : ℍ → ℂ) (g : SL(2, ℤ)) (z : ℍ) :
     ‖cuspTranslate f g z‖ = ‖f (g • z)‖ / Real.sqrt ‖denominator g z‖ := by
@@ -46,7 +47,7 @@ theorem norm_cuspTranslate (f : ℍ → ℂ) (g : SL(2, ℤ)) (z : ℍ) :
 private theorem eta_norm_add_nat (z : ℂ) (m : ℕ) :
     ‖ModularForm.eta (z + ((m : ℝ) : ℂ))‖ = ‖ModularForm.eta z‖ := by
   have h := Paper8ActualEtaTranslation.eta_add_integer z (m : ℤ)
-  have hCast : ((m : ℤ) : ℂ) = ((m : ℝ) : ℂ) := by push_cast
+  have hCast : ((m : ℤ) : ℂ) = ((m : ℝ) : ℂ) := by push_cast <;> rfl
   rw [hCast] at h
   rw [h, norm_mul, Complex.norm_exp]
   have hRe : (2 * (Real.pi : ℂ) * Complex.I * ((m : ℝ) : ℂ) / (24 : ℂ)).re = 0 := by

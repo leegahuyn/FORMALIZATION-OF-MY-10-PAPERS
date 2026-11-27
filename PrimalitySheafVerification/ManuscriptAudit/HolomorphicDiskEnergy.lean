@@ -77,7 +77,9 @@ theorem center_norm_sq_le_disk_energy {f : ℂ → ℂ} {R : ℝ} (hR : 0 < R)
     rw [IntegrableOn, ← Measure.prod_restrict] at hInt
     exact hInt.integral_prod_left
   change _ ≤ ∫ z in ball (0 : ℂ) R, F z
-  rw [polar_disk_integral, setIntegral_prod G hInt]
+  rw [polar_disk_integral]
+  change _ ≤ ∫ p in Ioo 0 R ×ˢ Ioo (-Real.pi) Real.pi, G p ∂((volume : Measure ℝ).prod volume)
+  rw [setIntegral_prod G hInt]
   have hLower (r : ℝ) (hr : r ∈ Ioo 0 R) :
       r * ((2 * Real.pi) * F 0) ≤ ∫ θ : ℝ in Ioo (-Real.pi) Real.pi, G (r, θ) := by
     have hDiff := hf.diffContOnCl_ball (closedBall_subset_closedBall hr.2.le : closedBall (0 : ℂ) r ⊆ _)

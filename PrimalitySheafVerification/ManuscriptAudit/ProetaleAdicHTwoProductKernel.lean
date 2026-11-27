@@ -48,7 +48,7 @@ private def toDifferenceKernel :
     intro a
     change (a.comp (Ext.mk₀ (Q X ℓ).f) (add_zero 2)).comp
       (Ext.mk₀ (Q X ℓ).g) (add_zero 2) = 0
-    rw [← Ext.comp_assoc_of_second_deg_zero, Ext.mk₀_comp_mk₀, (Q X ℓ).zero,
+    rw [Ext.comp_assoc_of_second_deg_zero, Ext.mk₀_comp_mk₀, (Q X ℓ).zero,
       Ext.mk₀_zero, Ext.comp_zero])
 
 private theorem toDifferenceKernel_bijective
