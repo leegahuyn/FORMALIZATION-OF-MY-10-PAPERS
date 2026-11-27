@@ -62,9 +62,13 @@ theorem residueDirectImageIso_naturality (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) 
   let P := sheafToPresheaf X.smallEtaleTopology A
   apply P.map_injective
   have h' := congrArg (fun q ↦ P.map q) h
-  simpa only [Functor.map_comp, residueDirectImageIso, discreteDirectImageIso,
-    Iso.trans_inv, Iso.symm_inv, Functor.preimageIso_inv, Functor.map_preimage,
-    Iso.refl_inv, Category.comp_id] using h'
+  simp only [Functor.map_comp, residueDirectImageIso, discreteDirectImageIso,
+    Iso.trans_inv, Iso.symm_inv, Functor.preimageIso_inv, Iso.refl_inv]
+  change P.map ((constantSheaf X.smallEtaleTopology A).map f) ≫
+      (P.map (constantSheafContinuousMapIso X N).hom ≫ P.map (P.preimage (𝟙 _))) =
+    (P.map (constantSheafContinuousMapIso X M).hom ≫ P.map (P.preimage (𝟙 _))) ≫ P.map g
+  simp only [P.map_preimage, Category.comp_id]
+  simpa only [Functor.map_comp] using h'
 
 end
 end ManuscriptAudit.EtaleProetaleResidueComparison
