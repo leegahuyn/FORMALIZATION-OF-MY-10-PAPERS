@@ -16,7 +16,7 @@ noncomputable section
 private theorem add_nsmul_eq_zero_of_dvd {G : Type*} [AddCommGroup G]
     {q d : ℕ} (h : d ∣ q + 1) (P : G) (hP : d • P = 0) : q • P + P = 0 := by
   obtain ⟨k, hk⟩ := h
-  rw [← succ_nsmul, Nat.succ_eq_add_one, hk, Nat.mul_comm d k, mul_nsmul, hP, nsmul_zero]
+  rw [← succ_nsmul, Nat.succ_eq_add_one, hk, mul_nsmul, hP, nsmul_zero]
 
 variable (E K : Type*) [Field E] [Fintype E] [Field K] [Algebra E K] [IsAlgClosed K] [DecidableEq K]
 

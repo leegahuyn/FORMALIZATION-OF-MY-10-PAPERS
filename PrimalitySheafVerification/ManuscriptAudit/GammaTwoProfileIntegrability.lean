@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import PrimalitySheafVerification.ManuscriptAudit.GammaTwoQuotientHeightIntegral
 
 /-! Compact height profiles give integrable densities for every actual quotient measure. -/
@@ -21,26 +22,27 @@ private theorem euclidean_integrable (f : ℝ → ℝ) (hf : Continuous f) {b : 
   have hA : MeasurableSet A := UpperHalfPlane.measurableEmbedding_coe.measurableSet_image' strip_measurable
   have hB : MeasurableSet B := Metric.isClosed_closedBall.measurableSet
   have hCompact : IntegrableOn F B (volume : Measure ℂ) :=
-    (hf.comp Complex.continuous_im).integrableOn_compact Metric.isCompact_closedBall
+    (hf.comp Complex.continuous_im).continuousOn.integrableOn_compact Metric.isCompact_closedBall
   have hAB : IntegrableOn F (A ∩ B) (volume : Measure ℂ) := hCompact.mono_set inter_subset_right
   have he : A.indicator F = (A ∩ B).indicator F := by
     funext w
     by_cases hw : w ∈ A
     · rw [indicator_of_mem hw]
       by_cases hb : w ∈ B
-      · rw [indicator_of_mem ⟨hw, hb⟩]
+      · rw [indicator_of_mem (show w ∈ A ∩ B from ⟨hw, hb⟩)]
       · rw [indicator_of_notMem (fun h : w ∈ A ∩ B => hb h.2)]
         obtain ⟨z, hzStrip, rfl⟩ := hw
         apply hz
         by_contra! hUpper
         apply hb
         rw [Metric.mem_closedBall, dist_zero_right]
+        change z.im ≤ b at hUpper
         have hR : 0 ≤ z.re := hzStrip.2.1
         have hY : 0 ≤ z.im := z.im_pos.le
         exact (Complex.norm_le_abs_re_add_abs_im (z : ℂ)).trans (by
           change |z.re| + |z.im| ≤ 2 + b
           rw [abs_of_nonneg hR, abs_of_nonneg hY]
-          linarith [hzStrip.2.2])
+          exact add_le_add hzStrip.2.2.le hUpper)
     · rw [indicator_of_notMem hw, indicator_of_notMem (fun h : w ∈ A ∩ B => hw h.1)]
   have hI : IntegrableOn F A (volume : Measure ℂ) := by
     rw [← integrable_indicator_iff hA, he, integrable_indicator_iff (hA.inter hB)]

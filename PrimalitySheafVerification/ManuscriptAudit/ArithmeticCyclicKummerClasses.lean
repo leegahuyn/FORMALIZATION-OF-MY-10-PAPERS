@@ -60,7 +60,9 @@ def powerClassEquiv [Finite K] [NeZero d] {ζ : K} (hζ : IsPrimitiveRoot ζ d) 
   let Q := Additive Kˣ ⧸ powerSubgroup K d
   have hQ : IsAddCyclic Q :=
     isAddCyclic_of_surjective (QuotientAddGroup.mk' (powerSubgroup K d)) QuotientAddGroup.mk_surjective
-  exact powerClass_card K d hζ ▸ zmodAddCyclicAddEquiv hQ
+  change ZMod d ≃+ Q
+  have hCard : Nat.card Q = d := powerClass_card K d hζ
+  exact Eq.mp (congrArg (fun n => ZMod n ≃+ Q) hCard) (zmodAddCyclicAddEquiv hQ)
 
 private abbrev cyclicHOne (R : Type) [CommRing R] :=
   Sheaf.H ((constantSheaf (Spec (CommRingCat.of R)).smallEtaleTopology

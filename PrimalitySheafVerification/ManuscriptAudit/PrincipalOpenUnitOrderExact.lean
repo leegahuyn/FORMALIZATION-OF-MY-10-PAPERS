@@ -5,8 +5,8 @@ import PrimalitySheafVerification.ManuscriptAudit.PrincipalOpenDivisorNaturality
 
 namespace ManuscriptAudit.PrincipalOpenUnitOrderExact
 
-open CategoryTheory Polynomial
-open AffineLineDivisor RatFuncPrincipalOpen PrincipalOpenDivisor PrincipalOpenDivisorNaturality
+open Polynomial
+open AffineLineDivisor RatFuncPrincipalOpen
 
 noncomputable section
 

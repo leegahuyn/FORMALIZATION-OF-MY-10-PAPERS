@@ -24,7 +24,8 @@ local instance polynomialOverlap : Algebra (Polynomial K) (overlapRing K) :=
 
 local instance polynomialOverlapTower :
     IsScalarTower (Polynomial K) (yCoordinateRing K) (overlapRing K) :=
-  IsScalarTower.of_algebraMap_eq' rfl
+  IsScalarTower.of_algebraMap_eq (R := Polynomial K) (S := yCoordinateRing K)
+    (A := overlapRing K) (fun _ ↦ rfl)
 
 private instance coordinateLocalization :
     IsLocalization.Away (denominator K) (yCoordinateRing K) :=
@@ -46,17 +47,17 @@ abbrev open_le :
 /-- The actual restriction map is the ordinary nested-localization map in the Y parameter. -/
 theorem overlapCoordinates_restriction :
     (overlapCoordinates K).toRingHom.comp (algebraMap (yCoordinateRing K) (overlapRing K)) =
-      (PrincipalOpenDivisorNaturality.restrictRing K (denominator K) (overlapDenominator K)
+      (AffineLineDivisor.restrictRing K (denominator K) (overlapDenominator K)
         (open_le K)).comp (coordinateEquiv K).toRingHom := by
   apply IsLocalization.ringHom_ext (Submonoid.powers (denominator K))
   apply RingHom.ext
   intro p
   change overlapCoordinates K (algebraMap (yCoordinateRing K) (overlapRing K)
     (algebraMap (Polynomial K) (yCoordinateRing K) p)) =
-      PrincipalOpenDivisorNaturality.restrictRing K (denominator K) (overlapDenominator K)
+      AffineLineDivisor.restrictRing K (denominator K) (overlapDenominator K)
         (open_le K) (coordinateEquiv K (algebraMap (Polynomial K) (yCoordinateRing K) p))
   rw [← IsScalarTower.algebraMap_apply, AlgEquiv.commutes, AlgEquiv.commutes,
-    PrincipalOpenDivisorNaturality.restrictRing_algebraMap]
+    AffineLineDivisor.restrictRing_algebraMap]
 
 end
 end ManuscriptAudit.NodalYChartNestedLocalization

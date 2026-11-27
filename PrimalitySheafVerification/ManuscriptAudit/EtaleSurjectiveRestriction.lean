@@ -59,11 +59,13 @@ theorem locallySurjective_of_restriction
     rintro _ _ ⟨k⟩
     have hmem : R (g k) := he.symm ▸ Sieve.ofArrows_mk W g k
     obtain ⟨b, hb⟩ := hmem
-    refine ⟨b, ?_⟩
-    change α.hom.app (op (L.obj (W k))) b = G.obj.map (a k).op s
-    change α.hom.app (op (L.obj (W k))) b = G.obj.map (L.map (g k)).op s' at hb
-    rw [a, op_comp, G.obj.map_comp, ConcreteCategory.comp_apply]
-    exact hb
+    let b' : F.obj.obj (op (L.obj (W k))) := b
+    have hLift : α.hom.app (op (L.obj (W k))) b' =
+        G.obj.map (L.map (g k)).op (G.obj.map p.op s) := hb
+    refine ⟨b', ?_⟩
+    change α.hom.app (op (L.obj (W k))) b' = G.obj.map (L.map (g k) ≫ p).op s
+    rw [op_comp, G.obj.map_comp, ConcreteCategory.comp_apply]
+    exact hLift
 
 /-- Epimorphisms are reflected by restriction to a surjective étale cover. -/
 theorem epi_of_restriction_epi {F G : Sheaf X.smallEtaleTopology A.{u}} (α : F ⟶ G)

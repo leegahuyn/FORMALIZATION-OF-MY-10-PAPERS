@@ -44,8 +44,7 @@ private theorem nodeX_ne_zero : NodalAffinePresentation.nodeX K ≠ 0 := by
   have hx : NodalConductor.x K = 0 := congrArg Subtype.val h
   have h₂ := congrArg (fun p : Polynomial K => p.coeff 2) hx
   have hOne : (1 : Polynomial K).coeff 2 = 0 := by
-    change (Polynomial.C (1 : K)).coeff 2 = 0
-    simp [Polynomial.coeff_C]
+    rw [Polynomial.coeff_one, if_neg (by decide : (2 : ℕ) ≠ 0)]
   simp [NodalConductor.x, hOne] at h₂
 
 /-- The native affine nodal coordinate ring has Krull dimension one. -/

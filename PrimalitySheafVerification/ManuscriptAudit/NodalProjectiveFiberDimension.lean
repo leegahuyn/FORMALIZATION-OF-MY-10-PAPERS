@@ -101,8 +101,7 @@ private theorem y_chart_integral : IsIntegral (nodeYChart K) := by
     intro h
     have h₂ := congrArg (fun p : Polynomial K => p.coeff 2) h
     have hOne : (1 : Polynomial K).coeff 2 = 0 := by
-      change (Polynomial.C (1 : K)).coeff 2 = 0
-      simp [Polynomial.coeff_C]
+      rw [Polynomial.coeff_one, if_neg (by decide : (2 : ℕ) ≠ 0)]
     simp [q, hOne, Polynomial.coeff_X_pow] at h₂
   let B := Localization.Away q
   letI : IsDomain B := IsLocalization.Away.isDomain B hq

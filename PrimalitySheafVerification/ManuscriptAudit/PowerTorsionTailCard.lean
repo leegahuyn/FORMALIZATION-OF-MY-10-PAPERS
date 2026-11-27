@@ -18,12 +18,12 @@ private theorem subgroup_le {n k : ℕ} (h : n ≤ k) :
   intro P hP
   obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le h
   apply (mem_iff (l ^ (n + d)) G P).mpr
-  rw [pow_add, mul_nsmul', (mem_iff (l ^ n) G P).mp hP, nsmul_zero]
+  rw [pow_add, mul_nsmul, (mem_iff (l ^ n) G P).mp hP, nsmul_zero]
 
 /-- Multiplication by l^n from level n+1 into the first torsion subgroup. -/
 def scaleToFirst (n : ℕ) : PowerTorsion l G (n + 1) →+ Torsion l G where
   toFun P := ⟨(l ^ n) • (P : G), (mem_iff l G _).mpr (by
-    rw [← mul_nsmul', ← pow_succ]
+    rw [← mul_nsmul, ← pow_succ]
     exact (mem_iff (l ^ (n + 1)) G _).mp P.property)⟩
   map_zero' := Subtype.ext (nsmul_zero _)
   map_add' P Q := Subtype.ext (nsmul_add (P : G) (Q : G) _)
@@ -43,8 +43,9 @@ theorem range_scaleToFirst_decreasing (n : ℕ) :
     (scaleToFirst l G (n + 1)).range ≤ (scaleToFirst l G n).range := by
   rintro _ ⟨P, rfl⟩
   refine ⟨transition l G (n + 1) P, Subtype.ext ?_⟩
-  change (l ^ n) • (l • (P : G)) = (l ^ (n + 1)) • (P : G)
-  rw [pow_succ, mul_nsmul]
+  let x : G := P
+  change (l ^ n) • (l • x) = (l ^ (n + 1)) • x
+  rw [pow_succ, mul_nsmul']
 
 theorem level_card_factor (n : ℕ) :
     Nat.card (PowerTorsion l G (n + 1)) =
@@ -67,7 +68,7 @@ theorem finite_of_eventually_exact {d N : ℕ} (hd : 0 < d)
   exact Finite.of_injective
     (fun P : PowerTorsion l G n => (⟨P.val, subgroup_le l G (le_max_right N n) P.property⟩ :
       PowerTorsion l G k))
-    (fun _ _ h => Subtype.ext (congrArg Subtype.val h))
+    (fun _ _ h => Subtype.ext (congrArg (fun P : PowerTorsion l G k => (P : G)) h))
 
 /-- Exact eventual cardinalities force the full tower cardinalities and onto transitions. -/
 theorem card_and_surjective_of_eventually_exact {d N : ℕ} (hd : 0 < d)
@@ -86,7 +87,8 @@ theorem card_and_surjective_of_eventually_exact {d N : ℕ} (hd : 0 < d)
     intro n
     let f (P : (scaleToFirst l G (n + 1)).range) : (scaleToFirst l G n).range :=
       ⟨P.val, range_scaleToFirst_decreasing l G n P.property⟩
-    exact Nat.card_le_card_of_injective f (fun _ _ h => Subtype.ext (congrArg Subtype.val h))
+    exact Nat.card_le_card_of_injective f (fun _ _ h =>
+      Subtype.ext (congrArg (fun P : (scaleToFirst l G n).range => (P : Torsion l G)) h))
   have hAll := (exact_of_eventually_exact
     (fun n => Nat.card (scaleToFirst l G n).range) (fun n => Nat.card (PowerTorsion l G n))
     hd h0 (level_card_factor l G) hMono hTail).2

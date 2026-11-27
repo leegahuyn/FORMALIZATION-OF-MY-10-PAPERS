@@ -44,8 +44,8 @@ theorem boundary_surjective [IsDomain R] [IsPrincipalIdealRing R] :
   let e := (restriction j C).mapIso (unitsIso (X := X) d).symm ≪≫
     EtaleObjectRestriction.restrictionUnitsIso j
   let h := openCohomologyPresheafEquiv j F 1
-  let g := ((Sheaf.functorH (Spec (CommRingCat.of R)).smallEtaleTopology 1).mapIso e)
-    .addCommGroupIsoToAddEquiv
+  let g₀ := (Sheaf.functorH (Spec (CommRingCat.of R)).smallEtaleTopology 1).mapIso e
+  let g := g₀.addCommGroupIsoToAddEquiv
   let hR := KummerUnitsSheaf.unitHOne_subsingleton_of_pid R
   have hMiddle : Subsingleton (F.H' 1 (Y j)) :=
     ⟨fun x y ↦ h.injective (g.injective (hR.elim _ _))⟩

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.Etale
 import PrimalitySheafVerification.ManuscriptAudit.NodalAffineOrigin
 import PrimalitySheafVerification.ManuscriptAudit.NodalSmoothLocus
 

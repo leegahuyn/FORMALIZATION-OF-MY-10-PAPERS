@@ -18,7 +18,9 @@ def traceLog (z : ℂ) : ℂ := ∑' n : ℕ, term n z
 
 private theorem term_norm_bound {r : ℝ} {z : ℂ} (hz : ‖z‖ ≤ r) (n : ℕ) :
     ‖term n z‖ ≤ r ^ (n + 1) := by
-  have hd : 1 ≤ ‖((n + 1 : ℕ) : ℂ)‖ := by simp
+  have hd : 1 ≤ ‖((n + 1 : ℕ) : ℂ)‖ := by
+    rw [Complex.norm_natCast]
+    exact_mod_cast (Nat.succ_le_succ (Nat.zero_le n))
   calc
     _ ≤ ‖z ^ (n + 1)‖ := by
       rw [term, norm_div]

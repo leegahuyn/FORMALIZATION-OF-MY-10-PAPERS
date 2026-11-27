@@ -60,6 +60,7 @@ theorem exists_scalar_of_fixed (m : ℕ) (a : R) (hm : m ≠ 0) (z : K) (hz : Is
       rw [← map_pow, ← map_one (algebraMap K R), ← map_sub]
       exact (isUnit_iff_ne_zero.mpr (sub_ne_zero.mpr hn)).map (algebraMap K R)
     apply hUnit.mul_left_injective
+    change B.repr t i * (c ^ (i : ℕ) - 1) = (0 : R) * (c ^ (i : ℕ) - 1)
     rw [zero_mul]
     linear_combination -(hCoeff i)
   let i₀ : Fin m := ⟨0, Nat.pos_of_ne_zero hm⟩

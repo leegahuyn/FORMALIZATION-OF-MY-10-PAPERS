@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import PrimalitySheafVerification.ManuscriptAudit.Paper9HighCuspCoordinates
 
 /-!
@@ -28,11 +28,21 @@ theorem heightPower_eq_cpow (s : ℂ) {y : ℝ} (hy : 0 < y) :
 
 theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
     HasDerivAt (heightPower s) (heightPower s y * ((y : ℂ)⁻¹ * s)) y := by
-  have hInner := (Real.hasDerivAt_log hy).ofReal_comp.mul_const s
-  have hOuter := (Complex.hasStrictFDerivAt_exp_real ((Real.log y : ℂ) * s)).hasFDerivAt
-  have h := hOuter.comp_hasDerivAt y hInner
-  rw [hasDerivAt_iff_tendsto_slope] at h ⊢
-  simpa [slope, heightPower, Function.comp_def, Complex.ofReal_inv] using h
+  let a : ℝ → ℝ := fun t => Real.exp (Real.log t * s.re) * Real.cos (Real.log t * s.im)
+  let b : ℝ → ℝ := fun t => Real.exp (Real.log t * s.re) * Real.sin (Real.log t * s.im)
+  have he : heightPower s = fun t => (a t : ℂ) + (b t : ℂ) * Complex.I := by
+    funext t
+    apply Complex.ext <;>
+      simp [heightPower, a, b, Complex.exp_re, Complex.exp_im, Complex.mul_re, Complex.mul_im]
+  have hLogRe := (Real.hasDerivAt_log hy).mul_const s.re
+  have hLogIm := (Real.hasDerivAt_log hy).mul_const s.im
+  have hRe := (hLogRe.exp.mul hLogIm.cos).ofReal_comp
+  have hIm := ((hLogRe.exp.mul hLogIm.sin).ofReal_comp).mul_const Complex.I
+  have h := hRe.add hIm
+  have hCast : (y : ℂ)⁻¹ = ((y⁻¹ : ℝ) : ℂ) := (Complex.ofReal_inv y).symm
+  rw [he, hCast]
+  convert h using 1 <;> apply Complex.ext <;>
+    simp [a, b, Complex.mul_re, Complex.mul_im, Complex.add_re, Complex.add_im] <;> ring
 
 theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :
     deriv (deriv (heightPower s)) y =
