@@ -41,8 +41,9 @@ private theorem locallyInjective :
   equalizerSieve_mem {U} a b h := by
     by_cases hn : Nonempty U.unop.left
     · obtain ⟨x⟩ := hn
-      have hab : a = b := ULift.ext
-        (congrArg (fun s : ULift.{1} (C(U.unop.left, M)) ↦ s.down x) h)
+      have hab : a = b := by
+        apply ULift.ext
+        exact congrArg (fun s : ULift.{1} (C(U.unop.left, M)) ↦ s.down x) h
       subst b
       rw [Presheaf.equalizerSieve_self_eq_top]
       exact (J X).top_mem _
@@ -97,7 +98,7 @@ local instance residueDiscrete (d : ℕ) : DiscreteTopology (ZMod d) := ⟨rfl�
 
 /-- The finite coefficient in the actual adic reduction map is the
 constant sheaf of the displayed cyclic group. -/
-def nativeResidueIso (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) :
+noncomputable def nativeResidueIso (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) :
     (constantSheaf (Scheme.ProEt.topology X) AddCommGrpCat.{1}).obj
       (AddCommGrpCat.of (ULift.{1} (ZMod (ℓ ^ n)))) ≅
         ProetaleAdicHOneDetection.finiteCoefficient X ℓ n :=

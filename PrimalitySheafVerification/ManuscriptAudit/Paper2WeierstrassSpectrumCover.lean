@@ -50,16 +50,16 @@ theorem field_point_nonsingular (W : WeierstrassCurve R) [W.IsElliptic]
   · left
     rw [xDerivative, quotient_eval]
     change W.toAffine.polynomialX.eval₂ Q y ≠ 0
-    simp only [Affine.polynomialX, eval₂_sub, eval₂_add, eval₂_mul, eval₂_X, eval₂_C,
-      map_add, map_mul, map_pow, hX, hC, map_ofNat]
+    simp only [Affine.polynomialX, eval₂_sub, eval₂_add, eval₂_mul, eval₂_pow, eval₂_X, eval₂_C,
+      map_add, map_mul, map_pow, hX, hC]
     simpa only [W', WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
-      WeierstrassCurve.map_a₄] using hx
+      WeierstrassCurve.map_a₄, map_ofNat] using hx
   · right
     rw [yDerivative, quotient_eval]
     change W.toAffine.polynomialY.eval₂ Q y ≠ 0
     simp only [Affine.polynomialY, eval₂_add, eval₂_mul, eval₂_X, eval₂_C,
-      map_add, map_mul, hX, hC, map_ofNat, add_assoc]
-    simpa only [W', WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₃, add_assoc] using hy
+      map_add, map_mul, hX, hC]
+    simpa only [W', WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₃, map_ofNat, add_assoc] using hy
 
 /-- The two genuine principal opens cover the whole prime spectrum. -/
 theorem derivative_opens_cover (W : WeierstrassCurve R) [W.IsElliptic] :
@@ -69,8 +69,10 @@ theorem derivative_opens_cover (W : WeierstrassCurve R) [W.IsElliptic] :
   intro P
   letI : P.asIdeal.IsPrime := P.isPrime
   let f : W.toAffine.CoordinateRing →+* P.asIdeal.ResidueField := algebraMap _ _
-  simpa only [Set.mem_union, PrimeSpectrum.mem_basicOpen, ← Ideal.algebraMap_residueField_eq_zero,
-    f] using field_point_nonsingular W f
+  change P ∈ PrimeSpectrum.basicOpen (xDerivative W) ∨
+    P ∈ PrimeSpectrum.basicOpen (yDerivative W)
+  simp only [PrimeSpectrum.mem_basicOpen, ← Ideal.algebraMap_residueField_eq_zero]
+  exact field_point_nonsingular W f
 
 end
 end ManuscriptAudit.Paper2WeierstrassSpectrumCover

@@ -65,9 +65,13 @@ theorem imageSieve_mem_of_spec (s : (unitSheaf X).obj.obj (op (Scheme.ProEt.mk g
   let t := (specUnits (CommRingCat.of B) (e ≫ g)).symm (Additive.ofMul v)
   refine ⟨t, (specUnits (CommRingCat.of B) (e ≫ g)).injective ?_⟩
   rw [power_eval, map_nsmul, AddEquiv.apply_symm_apply]
-  have hu := specUnits_naturality (CommRingCat.ofHom (algebraMap R B)) g s
-  change d • Additive.ofMul v = specUnits (CommRingCat.of B) (e ≫ g) ((unitSheaf X).obj.map f.op s)
-  rw [hu]
+  let r : R ⟶ CommRingCat.of B := CommRingCat.ofHom (algebraMap R B)
+  letI : WeaklyEtale (Spec.map r ≫ g) :=
+    (show WeaklyEtale (e ≫ g) from inferInstance)
+  have hn : specUnits (CommRingCat.of B) (e ≫ g) ((unitSheaf X).obj.map f.op s) =
+      Additive.ofMul (Units.map r.hom.toMonoidHom (specUnits R g s).toMul) :=
+    specUnits_naturality r g s
+  refine Eq.trans ?_ hn.symm
   apply Additive.ext
   apply Units.ext
   change (v : B) ^ d = algebraMap R B (a : R)

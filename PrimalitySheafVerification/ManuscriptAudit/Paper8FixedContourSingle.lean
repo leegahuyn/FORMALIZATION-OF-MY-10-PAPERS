@@ -28,7 +28,7 @@ private theorem first_circleIntegral (α : ℝ) {β : ℝ} (hβ : 0 ≤ β) (hβ
       periodCoefficient * common k ζ q := by
   have hC := DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul fixedRadius_pos 0
     (regular_differentiableOn α hβ hβ' hζ hq)
-  simp only [Nat.factorial_zero, Nat.cast_one, div_one, iteratedDeriv_zero, smul_eq_mul, regular_s_zero] at hC
+  simp only [Nat.factorial_zero, Nat.cast_one, div_one, iteratedDeriv_zero, regular_s_zero] at hC
   have hFun : (fun s => term k 0 s * regular α β ζ q s) =
       (fun s : ℂ => (coefficient k 0 : ℂ) * ((1 / (s - 0) ^ (0 + 1 : ℕ)) • regular α β ζ q s)) := by
     funext s

@@ -44,27 +44,21 @@ private theorem restrict_restrict (P : Cᵒᵖ ⥤ A.{w}) {X Y Z : C}
 variable [HasSheafify J A.{w}] [J.HasSheafCompose (forget A.{w})]
 variable {F I : Sheaf J A.{w}} (i : F ⟶ I) [Mono i]
 
-/-- Local lifts on two monomorphic covering pieces glue after a kernel correction
-from the first piece, provided its restriction to the pullback is surjective. -/
-theorem exists_global_lift {T U V D : C}
+/-- Local lifts glue if a given overlap difference extends to the first piece. -/
+theorem exists_global_lift_of_difference {T U V D : C}
     (u : U ⟶ T) (v : V ⟶ T) [Mono u] [Mono v]
     (p : D ⟶ U) (q : D ⟶ V) (hD : IsPullback p q u v)
     (hCover : Sieve.ofArrows (coverObjects U V) (coverArrows u v) ∈ J T)
-    (hRestrict : Function.Surjective (F.obj.map p.op))
     (x : (cokernel i).obj.obj (op T))
     (a : I.obj.obj (op U)) (b : I.obj.obj (op V))
     (ha : (cokernel.π i).hom.app (op U) a = (cokernel i).obj.map u.op x)
-    (hb : (cokernel.π i).hom.app (op V) b = (cokernel i).obj.map v.op x) :
+    (hb : (cokernel.π i).hom.app (op V) b = (cokernel i).obj.map v.op x)
+    (d : F.obj.obj (op D))
+    (hd : i.hom.app (op D) d = I.obj.map p.op a - I.obj.map q.op b)
+    (c : F.obj.obj (op U)) (hc : F.obj.map p.op c = d) :
     ∃ z : I.obj.obj (op T), (cokernel.π i).hom.app (op T) z = x := by
   let Q := cokernel i
   let π : I ⟶ Q := cokernel.π i
-  have hπ : π.hom.app (op D) (I.obj.map p.op a) = π.hom.app (op D) (I.obj.map q.op b) := by
-    rw [NatTrans.naturality_apply π.hom p.op a, NatTrans.naturality_apply π.hom q.op b, ha, hb]
-    change Q.obj.map p.op (Q.obj.map u.op x) = Q.obj.map q.op (Q.obj.map v.op x)
-    rw [restrict_restrict Q.obj p u x, restrict_restrict Q.obj q v x, hD.w]
-  obtain ⟨d, hd, _⟩ := SheafSectionDifference.existsUnique_difference i D
-    (I.obj.map p.op a) (I.obj.map q.op b) hπ
-  obtain ⟨c, hc⟩ := hRestrict d
   let a' := a - i.hom.app (op U) c
   have hZero : π.hom.app (op U) (i.hom.app (op U) c) = 0 :=
     ConcreteCategory.congr_hom
@@ -124,16 +118,40 @@ theorem exists_global_lift {T U V D : C}
     rw [← NatTrans.naturality_apply π.hom v.op z, hzV]
     exact hb
 
+/-- Local lifts on two monomorphic covering pieces glue after a kernel correction
+from the first piece, provided its restriction to the pullback is surjective. -/
+theorem exists_global_lift {T U V D : C}
+    (u : U ⟶ T) (v : V ⟶ T) [Mono u] [Mono v]
+    (p : D ⟶ U) (q : D ⟶ V) (hD : IsPullback p q u v)
+    (hCover : Sieve.ofArrows (coverObjects U V) (coverArrows u v) ∈ J T)
+    (hRestrict : Function.Surjective (F.obj.map p.op))
+    (x : (cokernel i).obj.obj (op T))
+    (a : I.obj.obj (op U)) (b : I.obj.obj (op V))
+    (ha : (cokernel.π i).hom.app (op U) a = (cokernel i).obj.map u.op x)
+    (hb : (cokernel.π i).hom.app (op V) b = (cokernel i).obj.map v.op x) :
+    ∃ z : I.obj.obj (op T), (cokernel.π i).hom.app (op T) z = x := by
+  let Q := cokernel i
+  let π : I ⟶ Q := cokernel.π i
+  have hπ : π.hom.app (op D) (I.obj.map p.op a) = π.hom.app (op D) (I.obj.map q.op b) := by
+    rw [NatTrans.naturality_apply π.hom p.op a, NatTrans.naturality_apply π.hom q.op b, ha, hb]
+    change Q.obj.map p.op (Q.obj.map u.op x) = Q.obj.map q.op (Q.obj.map v.op x)
+    rw [restrict_restrict Q.obj p u x, restrict_restrict Q.obj q v x, hD.w]
+  obtain ⟨d, hd, _⟩ := SheafSectionDifference.existsUnique_difference i D
+    (I.obj.map p.op a) (I.obj.map q.op b) hπ
+  obtain ⟨c, hc⟩ := hRestrict d
+  exact exists_global_lift_of_difference i u v p q hD hCover x a b ha hb d hd c hc
+
 end
 
 end ManuscriptAudit.TwoOpenCokernelLift
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.TwoOpenCokernelLift.exists_global_lift
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.TwoOpenCokernelLift.exists_global_lift_of_difference,
+      ``ManuscriptAudit.TwoOpenCokernelLift.exists_global_lift] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName ↦ !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

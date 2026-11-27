@@ -105,6 +105,25 @@ theorem structural_map_not_etale (W : WeierstrassCurve K) (x y : K)
   letI : Algebra.Etale K W.toAffine.CoordinateRing := RingHom.etale_algebraMap.mp hRing
   exact not_formally_unramified W x y h inferInstance
 
+/-- The actual structural morphism also fails the native scheme predicate. -/
+theorem structural_map_not_formallyUnramified (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y) :
+    ¬ AlgebraicGeometry.FormallyUnramified (AlgebraicGeometry.Spec.map
+      (CommRingCat.ofHom (algebraMap K W.toAffine.CoordinateRing))) := by
+  intro hUnramified
+  have hRing := (AlgebraicGeometry.HasRingHomProperty.Spec_iff
+    (P := @AlgebraicGeometry.FormallyUnramified)).mp hUnramified
+  exact not_formally_unramified W x y h (RingHom.formallyUnramified_algebraMap.mp hRing)
+
+/-- Its diagonal is not an open immersion. -/
+theorem structural_diagonal_not_open (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y) :
+    ¬ AlgebraicGeometry.IsOpenImmersion (CategoryTheory.Limits.pullback.diagonal
+      (AlgebraicGeometry.Spec.map (CommRingCat.ofHom (algebraMap K W.toAffine.CoordinateRing)))) := by
+  intro hDiag
+  letI := hDiag
+  exact structural_map_not_formallyUnramified W x y h inferInstance
+
 /-- Formal unramifiedness also fails on the actual local ring at the nonsingular point. -/
 theorem local_not_formally_unramified (W : WeierstrassCurve K) (x y : K)
     (hEq : W.toAffine.Equation x y) (h : W.toAffine.Nonsingular x y)
@@ -133,6 +152,8 @@ run_cmd do
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.dualEvaluation_injective,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.not_formally_unramified,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_map_not_etale,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_map_not_formallyUnramified,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_diagonal_not_open,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.local_not_formally_unramified] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

@@ -61,6 +61,7 @@ theorem term_norm_le (S : ∀ k : ℕ, Finset (Fin (2 * k))) {k : ℕ} (hk : 0 <
       (Paper8ContourSignedDominance.decay_nonneg _)
   have h := norm_weighted_le hk (S k) (fun d => difference k (root k ^ (d.val : ℤ)) q) hPos
     (fun d _ => difference_norm_le hk (root_power_norm k d) hq)
+  change ‖prefactor k * ∑ d ∈ S k, residueWeight k d * difference k (root k ^ (d.val : ℤ)) q‖ ≤ _
   convert h using 1 <;> ring
 
 theorem term_sub_zero_norm_le (S : ∀ k : ℕ, Finset (Fin (2 * k))) {k : ℕ} (hk : 0 < k)

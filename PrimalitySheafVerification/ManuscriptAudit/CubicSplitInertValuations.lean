@@ -29,6 +29,9 @@ theorem projective_count_factorization_even
       left_inv := fun x => rotate_cube hz hΔ x
       right_inv := fun x => rotate_cube hz hΔ x
       map_add' := map_add r }
+  letI : Finite (WithZero {xy : K × K // (Curve A).Nonsingular xy.1 xy.2}) := by
+    change Finite (Option {xy : K × K // (Curve A).Nonsingular xy.1 xy.2})
+    infer_instance
   letI : Finite (Curve A).Point :=
     Finite.of_injective _ (Curve A).nonsingularPointEquiv.injective
   have hf := CyclotomicFiniteGroupValuation.additive_factorization_even l hl R

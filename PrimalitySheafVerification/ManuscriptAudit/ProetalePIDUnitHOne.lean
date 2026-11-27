@@ -58,7 +58,9 @@ theorem lift_from_spec {I : C A} (i : F A ⟶ I) [Mono i]
       ⟨inferInstanceAs (Flat (structureMap A B)), inferInstanceAs (Surjective (structureMap A B))⟩)
   letI : Nontrivial B := by
     let p : PrimeSpectrum A := Classical.choice inferInstance
-    obtain ⟨q, _⟩ := (inferInstanceAs (Surjective (structureMap A B))).surj p
+    let hs : Surjective (structureMap A B) := inferInstance
+    obtain ⟨q, _⟩ := hs.surj p
+    change PrimeSpectrum B at q
     exact PrimeSpectrum.nontrivial q
   obtain ⟨b, hb, hbCocycle⟩ := SheafExplicitCechHOne.exists_cocycle i f (p₀ A B) (p₁ A B) hP
     (e₀₁ A B) (e₀₂ A B) (e₁₂ A B) (face_first_first A B) (face_second_first A B)
