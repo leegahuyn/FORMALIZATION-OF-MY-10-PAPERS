@@ -55,11 +55,13 @@ private theorem signedRotation_some (r : Row) {x y : L} (h : (Curve (1 : L)).Non
   · refine ⟨by simpa [hNeg] using hR, ?_⟩
     simpa [signedRotation, hNeg] using eR
   · have hN := (Affine.nonsingular_neg ..).mpr hR
-    refine ⟨by simpa [hNeg, negY_eq] using hN, ?_⟩
+    have hY : (Curve (1 : L)).negY ((7 : L) ^ r.exponent.val * x) y = -y :=
+      CubicTriplingCoordinates.negY_eq _ _
+    refine ⟨hY ▸ hN, ?_⟩
     rw [show signedRotation L r = -(rotation L ^ r.exponent.val) by simp [signedRotation, hNeg]]
     change -((rotation L ^ r.exponent.val) (Affine.Point.some x y h)) = _
     rw [eR, Affine.Point.neg_some, Affine.Point.some.injEq]
-    exact ⟨rfl, by simp [hNeg, negY_eq]⟩
+    exact ⟨rfl, hY⟩
 
 private theorem disc (A : ZMod 19) (hA : A ≠ 0) :
     (shortCubic (0 : L) (a L A)).Δ ≠ 0 :=

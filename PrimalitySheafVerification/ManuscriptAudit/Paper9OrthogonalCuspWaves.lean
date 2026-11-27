@@ -103,11 +103,13 @@ theorem normalizedWave_inner_tendsto_zero (D : GammaTwoFundamentalDomain) (k : �
     Tendsto (fun n => inner ℂ (normalizedWave D k n) x) atTop (𝓝 0) := by
   have hSum := (normalizedWave_orthonormal D k).inner_products_summable x
   have hSq := hSum.tendsto_atTop_zero
-  have h := (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSq
-  have he (n : ℕ) : Real.sqrt (‖inner ℂ (normalizedWave D k n) x‖ ^ 2) =
-      ‖inner ℂ (normalizedWave D k n) x‖ := Real.sqrt_sq (norm_nonneg _)
-  exact tendsto_zero_iff_norm_tendsto_zero.mpr
-    (by simpa only [Function.comp_apply, he, Real.sqrt_zero] using h)
+  let y (n : ℕ) := ‖inner ℂ (normalizedWave D k n) x‖
+  have h : Tendsto (Real.sqrt ∘ fun n => y n ^ 2) atTop (𝓝 (Real.sqrt 0)) :=
+    (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSq
+  have he : (Real.sqrt ∘ fun n => y n ^ 2) = y :=
+    funext (fun n => Real.sqrt_sq (norm_nonneg (inner ℂ (normalizedWave D k n) x)))
+  rw [he, Real.sqrt_zero] at h
+  exact tendsto_zero_iff_norm_tendsto_zero.mpr h
 
 end
 end ManuscriptAudit.Paper9OrthogonalCuspWaves

@@ -49,10 +49,11 @@ theorem trace_det_formula (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
       exact congrArg (endMap l) (sextic_eq_rotation L hv hΔ h)
     · have hNeg := (cube_sign L hv).resolve_left h
       have ha : a = -1 := by simp [a, twistSign, h]
-      have he := congrArg (endMap l) (sextic_eq_neg_rotation L hv hΔ hNeg)
-      rw [map_neg] at he
+      have he : sexticScale L hv hΔ = -r := sextic_eq_neg_rotation L hv hΔ hNeg
+      have hMapNeg : endMap l (-r) = -R :=
+        map_neg (endMap l : AddMonoid.End (UnitPoints L) →+* Module.End ℤ_[l] U) r
       calc
-        _ = -R := he
+        _ = -R := (congrArg (endMap l) he).trans hMapNeg
         _ = a • R := by
           rw [ha]
           exact (neg_one_smul ℤ_[l] R).symm

@@ -48,7 +48,7 @@ theorem inclusion_coverPreserving :
     exact Scheme.etalePrecoverage_le_proetalePrecoverage _ V.mem₀
   have hm := Precoverage.generate_mem_toGrothendieck hQ
   refine (Scheme.ProEt.topology X).superset_covering ?_ hm
-  apply Sieve.generate_le_iff.mpr
+  apply (Sieve.generate_le_iff _ _).mpr
   rintro _ _ ⟨hf⟩
   exact Presieve.image_mem_functorPushforward _ _ (hSub _ _ hf)
 

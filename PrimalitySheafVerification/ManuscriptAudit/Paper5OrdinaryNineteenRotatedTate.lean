@@ -89,14 +89,18 @@ theorem trace_det (hl : l = 2 ∨ l = 3) (j : Fin 3) :
     change _ = -(((3 : ℕ) : ℤ_[l]) • I) - ((5 : ℕ) : ℤ_[l]) • S
     simpa only [Nat.cast_smul_eq_nsmul, map_mul, map_pow, map_sub, map_neg, map_nsmul, map_one] using
       congrArg (endMap l) (rotate_twice_frobenius L)
+  let tr := LinearMap.trace ℤ_[l] (Tate l (Points L))
+  have hNeg (a : ℤ_[l]) : tr (-(a • I)) = -tr (a • I) := map_neg tr _
   have ht₁ : LinearMap.trace ℤ_[l] (Tate l (Points L)) (S * F) = -7 := by
-    rw [h₁]
-    simp only [map_add, map_neg, map_smul, hIt, hSt, smul_eq_mul]
-    norm_num
+    change tr (S * F) = -7
+    rw [h₁, map_add, hNeg, map_smul, map_smul, hIt, hSt]
+    norm_num [smul_eq_mul]
   have ht₂ : LinearMap.trace ℤ_[l] (Tate l (Points L)) (S ^ 2 * F) = -1 := by
-    rw [h₂]
-    simp only [map_sub, map_neg, map_smul, hIt, hSt, smul_eq_mul]
-    norm_num
+    change tr (S ^ 2 * F) = -1
+    have hSub : tr (-((3 : ℤ_[l]) • I) - (5 : ℤ_[l]) • S) =
+        tr (-((3 : ℤ_[l]) • I)) - tr ((5 : ℤ_[l]) • S) := map_sub tr _ _
+    rw [h₂, hSub, hNeg, map_smul, map_smul, hIt, hSt]
+    norm_num [smul_eq_mul]
   constructor
   · fin_cases j
     · simpa [rotatedAction, rotatedTrace, F, S] using hFt

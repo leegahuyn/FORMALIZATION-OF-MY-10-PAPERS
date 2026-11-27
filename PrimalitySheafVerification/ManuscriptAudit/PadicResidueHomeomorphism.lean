@@ -36,7 +36,7 @@ theorem reduction_kernel_open (n : ℕ) :
 /-- Every actual p-adic reduction to the discrete finite ring is continuous. -/
 theorem reduction_continuous (n : ℕ) : Continuous (PadicInt.toZModPow n : ℤ_[p] → ZMod (p ^ n)) := by
   apply continuous_of_tendsto_nhds_zero (PadicInt.toZModPow n : ℤ_[p] →+* ZMod (p ^ n)).toAddMonoidHom
-  rw [nhds_discrete]
+  rw [nhds_discrete (0 : ZMod (p ^ n))]
   exact tendsto_pure.mpr ((reduction_kernel_open p n).mem_nhds (map_zero _))
 
 /-- The native residue ring equivalence is a homeomorphism for the product-subspace topology. -/
@@ -47,12 +47,14 @@ def homeomorphism : ℤ_[p] ≃ₜ systems p := by
     exact continuous_pi (fun n ↦ reduction_continuous p n)
   let he := (h.isClosedEmbedding e.injective).isEmbedding
   refine ⟨e, h, he.continuous_iff.mpr ?_⟩
-  have hId : e ∘ e.symm = id := funext e.apply_symm_apply
+  have hId : e ∘ e.invFun = id := funext e.apply_symm_apply
   rw [hId]
   exact continuous_id
 
 theorem homeomorphism_apply (x : ℤ_[p]) (n : ℕ) :
-    ((homeomorphism p x).val n) = PadicInt.toZModPow n x := rfl
+    ((homeomorphism p x).val n) = PadicInt.toZModPow n x := by
+  change PadicResidueSystems.evaluate p n (padicRingEquiv p x) = PadicInt.toZModPow n x
+  exact evaluate_padicRingEquiv p n x
 
 end
 end ManuscriptAudit.PadicResidueHomeomorphism

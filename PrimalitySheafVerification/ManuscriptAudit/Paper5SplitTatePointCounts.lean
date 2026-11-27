@@ -48,7 +48,7 @@ theorem seven_trace_eq_extension_count (hl : l = 2 ∨ l = 3) :
         (Nat.card ((paper5TraceCurve 7 (1 : ZMod 7)).baseChange E).toProjective.Point : ℤ) : ℤ) : ℤ_[l]) := by
   obtain ⟨ht, hd⟩ := trace_det L l hl
   have h₁ := printedRows_actual_firstTrace sevenRow_mem
-  change (7 : ℤ) + 1 - (Nat.card (paper5TraceCurve 7 (1 : ZMod 7)).toProjective.Point : ℤ) = -4 at h₁
+  change ((7 : ℕ) : ℤ) + 1 - (Nat.card (paper5TraceCurve 7 (1 : ZMod 7)).toProjective.Point : ℤ) = -4 at h₁
   refine trace_power_eq_extension_count (E := E) (by decide) (by decide) one_ne_zero
     (tateBasis L l hl) (action L l) ?_ (by simpa only [Nat.cast_ofNat] using hd)
   have h' := congrArg (fun z : ℤ => (z : ℤ_[l])) h₁

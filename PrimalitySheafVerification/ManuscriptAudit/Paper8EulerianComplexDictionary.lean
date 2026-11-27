@@ -9,7 +9,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8KroneckerShadowPhase
 
 namespace ManuscriptAudit.Paper8EulerianComplexDictionary
 
-open Filter Paper8ExteriorNormalization (kroneckerNegTwelve)
+open Filter
+open Paper8ExteriorNormalization (kroneckerNegTwelve)
 open Paper8EulerianCharacter Paper8EulerianComplexPentagonal Paper8EulerianExterior
 open Paper8EulerianPentagonal (exponent twice_exponent)
 open Paper8KroneckerShadowPhase (coefficient_square_mod_twentyFour)
@@ -29,7 +30,7 @@ private def canonicalTerm (q : ℂ) (n : ℕ) : ℂ :=
 theorem literalTerm_eq_natural_power (q : ℂ) (n : ℕ) :
     literalTerm q n = canonicalTerm q n := by
   by_cases hChi : kroneckerNegTwelve ((n + 1 : ℕ) : ℤ) = 0
-  · simp [literalTerm, canonicalTerm, hChi]
+  · simp only [literalTerm, canonicalTerm, hChi, Int.cast_zero, zero_mul]
   have hC : Paper8KroneckerShadow.coefficient (n + 1) ≠ 0 := by
     unfold Paper8KroneckerShadow.coefficient
     exact mul_ne_zero (by exact_mod_cast hChi) (by exact_mod_cast Nat.succ_ne_zero n)
@@ -40,7 +41,7 @@ theorem literalTerm_eq_natural_power (q : ℂ) (n : ℕ) :
     omega
   have hExp : ((((n + 1 : ℕ) : ℂ) ^ 2 - 1) / 24) = (powerIndex n : ℂ) := by
     have h := congrArg (fun k : ℕ => (k : ℂ)) hEq
-    push_cast at h
+    push_cast at h ⊢
     linear_combination h / 24
   rw [literalTerm, canonicalTerm, hExp, Complex.cpow_natCast]
 

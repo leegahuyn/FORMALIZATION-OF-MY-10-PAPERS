@@ -66,11 +66,18 @@ theorem no_compact_resolvent_inverse (D : GammaTwoFundamentalDomain)
   have hSqLim : Tendsto (fun n => ‖e n‖ ^ 2) atTop (𝓝 0) := by
     have hLim := (relative_tendsto_zero cuspBump (deriv cuspBump)
       (deriv (deriv cuspBump)) 1 6 k).comp scale_tendsto
-    simpa only [Function.comp_apply, ← hSq] using hLim
+    have hEq :
+        (relativeResidual cuspBump (deriv cuspBump) (deriv (deriv cuspBump)) 1 6 k ∘ scale) =
+          (fun n => ‖e n‖ ^ 2) := funext (fun n => (hSq n).symm)
+    rw [hEq] at hLim
+    exact hLim
   have hNormLim : Tendsto (fun n => ‖e n‖) atTop (𝓝 0) := by
-    have h := (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSqLim
-    have hRoot (n : ℕ) : Real.sqrt (‖e n‖ ^ 2) = ‖e n‖ := Real.sqrt_sq (norm_nonneg _)
-    simpa only [Function.comp_apply, hRoot, Real.sqrt_zero] using h
+    have h : Tendsto (Real.sqrt ∘ fun n => ‖e n‖ ^ 2) atTop (𝓝 (Real.sqrt 0)) :=
+      (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSqLim
+    have hEq : (Real.sqrt ∘ fun n => ‖e n‖ ^ 2) = (fun n => ‖e n‖) :=
+      funext (fun n => Real.sqrt_sq (norm_nonneg (e n)))
+    rw [hEq, Real.sqrt_zero] at h
+    exact h
   exact CompactInverseSeparatedApproximateEigenvectors.no_compact_left_inverse T u eigenvalue μ
     (fun n => by rw [hu, normalizedWave_norm])
     (fun m n h => by rw [hu m, hu n]; exact normalizedWave_separation D k h)

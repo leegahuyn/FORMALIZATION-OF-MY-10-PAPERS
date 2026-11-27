@@ -36,8 +36,11 @@ theorem no_compact_left_inverse (T : H →ₗ.[ℂ] H) (u : ℕ → T.domain) (e
       abel
     rw [hEq, hInv]
   have hz : Tendsto (fun n => B (e (f n))) atTop (𝓝 0) := by
-    have he := hA.comp hf.tendsto_atTop
-    simpa only [map_zero, Function.comp_apply] using (B.continuous.tendsto 0).comp he
+    have he : Tendsto (e ∘ f) atTop (𝓝 0) := hA.comp hf.tendsto_atTop
+    have h : Tendsto ((B : H → H) ∘ (e ∘ f)) atTop (𝓝 (B (0 : H))) :=
+      (B.continuous.tendsto 0).comp he
+    rw [map_zero] at h
+    exact h
   have hv : Tendsto (fun n => (u (f n) : H)) atTop (𝓝 ((eigenvalue - μ) • b)) := by
     have h := hz.add (hB.const_smul (eigenvalue - μ))
     simpa only [Function.comp_apply, hDecomp, zero_add] using h
