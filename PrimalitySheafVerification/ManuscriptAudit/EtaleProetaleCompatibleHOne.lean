@@ -55,14 +55,21 @@ theorem comparison_naturality (n : ℕ) (x : Sheaf.H (etaleCoefficient X ℓ (n 
   rw [h, Sheaf.H.map_comp_apply]
   exact EtaleProetaleHOneUniverseComparison.comparison_naturality X f _
 
+set_option maxHeartbeats 1200000 in
 /-- When the actual comparisons are surjective at every finite order, they are an
 additive equivalence of the compatible degree-one towers. -/
 def comparisonEquiv (onto : ∀ n, Function.Surjective (comparison X ℓ n)) :
-    etaleCompatibleHOne X ℓ ≃+ compatibleHOne X ℓ :=
-  CompatibleTowerCongruence.compatibleEquiv _ _ (etaleTransition X ℓ) (nativeTransition X ℓ)
-    (fun n ↦ AddEquiv.ofBijective _ ⟨comparison_injective X ℓ n, onto n⟩)
-    (comparison_naturality X ℓ)
+    etaleCompatibleHOne X ℓ ≃+ compatibleHOne X ℓ := by
+  let E (n : ℕ) := Sheaf.H (etaleCoefficient X ℓ n) 1
+  let N (n : ℕ) := Sheaf.H (finiteCoefficient X ℓ n) 1
+  let e (n : ℕ) : E n ≃+ N n :=
+    AddEquiv.ofBijective (comparison X ℓ n) ⟨comparison_injective X ℓ n, onto n⟩
+  refine CompatibleTowerCongruence.compatibleEquiv E N (etaleTransition X ℓ)
+    (nativeTransition X ℓ) e ?_
+  intro n x
+  exact comparison_naturality X ℓ n x
 
+set_option maxHeartbeats 1200000 in
 /-- At each finite order the compatible equivalence uses the actual site comparison. -/
 theorem comparisonEquiv_apply (onto : ∀ n, Function.Surjective (comparison X ℓ n))
     (x : etaleCompatibleHOne X ℓ) (n : ℕ) :

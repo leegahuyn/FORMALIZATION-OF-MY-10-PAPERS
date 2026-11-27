@@ -54,8 +54,15 @@ theorem omitted_braid_stationarity_witness :
     have h1 : HasDerivAt (fun t : ℝ => t * a) a 0 := by
       simpa only [id, one_mul] using (hasDerivAt_id (0 : ℝ)).mul_const a
     have hBase : HasDerivAt (fun t : ℝ => 1 + t * a) a 0 := h1.const_add 1
-    have h2 := (HasDerivAt.mul hBase hBase).div_const (2 : ℝ)
-    convert h2 using 1 <;> (try simp [scalarEnergy, pow_two]) <;> ring
+    have h2 : HasDerivAt (fun t : ℝ => (1 + t*a) * (1 + t*a) / 2)
+        ((a * (1 + 0*a) + (1 + 0*a) * a) / 2) 0 :=
+      (HasDerivAt.fun_mul hBase hBase).div_const 2
+    have hValue : (a * (1 + 0*a) + (1 + 0*a) * a) / 2 = a := by ring
+    have hFun : (fun t : ℝ => (1 + t*a) * (1 + t*a) / 2) = scalarEnergy a := by
+      funext t
+      simp only [scalarEnergy, pow_two]
+    rw [hFun, hValue] at h2
+    exact h2
   refine ⟨fun a => zero_mul a, h, ?_⟩
   intro hh
   exact one_ne_zero ((h 1).unique (hh 1))

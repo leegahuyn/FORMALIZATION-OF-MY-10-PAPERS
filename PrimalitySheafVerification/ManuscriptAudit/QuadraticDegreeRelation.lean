@@ -30,11 +30,11 @@ theorem quadratic_relation (D : QuadraticMap ℤ R ℤ) (hOne : D 1 = 1)
     rw [hp]
     ring
   have hScale (a : ℤ) (x : R) : D (a • x) = a ^ 2 * D x := by
-    simpa only [zsmul_eq_mul, pow_two] using D.map_smul a x
+    simpa [zsmul_eq_mul, pow_two] using D.map_smul a x
   have hPL (a : ℤ) (x y : R) : P (a • x) y = a * P x y := by
-    simpa only [zsmul_eq_mul] using QuadraticMap.polar_smul_left D a x y
+    simpa [zsmul_eq_mul, P] using QuadraticMap.polar_smul_left D a x y
   have hPR (a : ℤ) (x y : R) : P x (a • y) = a * P x y := by
-    simpa only [zsmul_eq_mul] using QuadraticMap.polar_smul_right D a x y
+    simpa [zsmul_eq_mul, P] using QuadraticMap.polar_smul_right D a x y
   have hMP (x y : R) : P (f * x) (f * y) = q * P x y := by
     change D (f * x + f * y) - D (f * x) - D (f * y) =
       D f * (D (x + y) - D x - D y)

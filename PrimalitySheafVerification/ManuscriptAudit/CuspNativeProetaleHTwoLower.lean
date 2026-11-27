@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CuspNativeProetaleProperHOne
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleLaurentCyclicHOne
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleMayerVietorisConnecting
+import PrimalitySheafVerification.ManuscriptAudit.SchemeIsoProetaleCohomology
 
 /-! The Laurent overlap provides genuine degree-two native classes on the
 proper cusp, via its actual two-open Mayer–Vietoris connecting map. -/

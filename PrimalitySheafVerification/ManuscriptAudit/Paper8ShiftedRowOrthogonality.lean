@@ -55,7 +55,10 @@ theorem geom_sum_eq {u : ℂ} {m : ℕ} (h : u ^ m = 1) :
 theorem rootFrequency_sum_powers {k : ℕ} (hk : 0 < k) (d : Fin (2 * k)) :
     (∑ n ∈ Finset.range (2 * k), rootFrequency k d ^ n) =
       if d.val = 0 then ((2 * k : ℕ) : ℂ) else 0 := by
-  rw [geom_sum_eq (rootFrequency_pow_modulus hk d), rootFrequency_eq_one_iff_zero hk d]
+  rw [geom_sum_eq (rootFrequency_pow_modulus hk d)]
+  by_cases h : d.val = 0
+  · rw [if_pos h, if_pos ((rootFrequency_eq_one_iff_zero hk d).2 h)]
+  · rw [if_neg h, if_neg (fun hOne => h ((rootFrequency_eq_one_iff_zero hk d).1 hOne))]
 
 def shiftedInput (k : ℕ) (d : Fin (2 * k)) : ℂ :=
   -prefactor k * (residueWeight k d * (rootFrequency k d * (coefficient k 0 : ℂ)))

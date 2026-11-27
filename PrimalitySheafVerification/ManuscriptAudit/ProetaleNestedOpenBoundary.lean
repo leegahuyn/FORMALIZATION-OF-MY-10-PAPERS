@@ -42,21 +42,21 @@ private abbrev Q := ShortComplex.mk (inc k M) (diagonal M k) (kernel.condition (
 
 /-- Apply the actual larger extension to the closed-point exact sequence on that open. -/
 def sequence : ShortComplex (Sheaf (Scheme.ProEt.topology X) A) :=
-  (Q k M).map (E j)
+  (Q L k M).map (E j)
 
-theorem sequence_shortExact : (sequence j k M).ShortExact := by
+theorem sequence_shortExact : (sequence j L k M).ShortExact := by
   letI := extensionByZero_preservesFiniteLimits j
   letI := extensionByZero_preservesFiniteColimits j
   exact (ProetaleOpenClosedHOne.closedSequence_shortExact L k M).map_of_exact (E j)
 
 /-- Its first term is actual extension by zero from the smaller open. -/
 def smallerIso (hs : Set.range i = (Set.range k)ᶜ) :
-    (extensionByZero (i ≫ j) A).obj (functions M V) ≅ (sequence j k M).X₁ :=
+    (extensionByZero (i ≫ j) A).obj (functions M V) ≅ (sequence j L k M).X₁ :=
   ((extensionByZeroCompIso i j).symm.app (functions M V)) ≪≫
     (E j).mapIso (extensionFunctionsIsoKernel k i M hs)
 
 /-- Its last term is the actual closed direct image of the removed point. -/
-def closedIso : (sequence j k M).X₃ ≅ functionsOver M (k ≫ j) :=
+def closedIso : (sequence j L k M).X₃ ≅ functionsOver M (k ≫ j) :=
   extensionDirectImageIso j k M
 
 private abbrev integers :=
@@ -69,7 +69,7 @@ def boundaryEquiv (hs : Set.range i = (Set.range k)ᶜ)
     (h₁ : Subsingleton (Sheaf.H ((E j).obj (functions M U)) 1)) :
     Sheaf.H (functionsOver M (k ≫ j)) 0 ≃+
       Sheaf.H ((extensionByZero (i ≫ j) A).obj (functions M V)) 1 := by
-  let S := sequence j k M
+  let S := sequence j L k M
   let hS := sequence_shortExact j L k M
   let T := integers (X := X)
   let δ : Sheaf.H S.X₃ 0 →+ Sheaf.H S.X₁ 1 := hS.extClass.postcomp T rfl
@@ -86,9 +86,9 @@ def boundaryEquiv (hs : Set.range i = (Set.range k)ᶜ)
   have ho : Function.Surjective δ := by
     intro x
     exact Ext.covariant_sequence_exact₁ T hS x (h₁.elim _ _) rfl
-  exact (cohomologyIso (X := X) (closedIso j k M).symm 0).trans
+  exact (cohomologyIso (X := X) (closedIso j L k M).symm 0).trans
     ((AddEquiv.ofBijective δ ⟨hi, ho⟩).trans
-      (cohomologyIso (X := X) (smallerIso i j k M hs).symm 1))
+      (cohomologyIso (X := X) (smallerIso i j L k M hs).symm 1))
 
 end
 end ManuscriptAudit.ProetaleNestedOpenBoundary

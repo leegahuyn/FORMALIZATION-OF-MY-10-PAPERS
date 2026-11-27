@@ -71,8 +71,19 @@ theorem covariant_eq_mass_add_exterior (r : ℝ) (hr : 1 ≤ r) :
     (contDiff_infty.mp (amplitude_smooth r) 1).differentiable (by decide)
   have hder (y : ℝ) : HasDerivAt (fun z : ℝ => z*a z^2) (b y) y := by
     have hAy : HasDerivAt a (deriv a y) y := (hA y).hasDerivAt
-    have hProd := HasDerivAt.mul (hasDerivAt_id y) (HasDerivAt.mul hAy hAy)
-    convert hProd using 1 <;> first | rfl | (try simp [b, id, pow_two]; ring)
+    have hSq : HasDerivAt (fun z : ℝ => a z^2) (2*a y*deriv a y) y := by
+      have hMul := HasDerivAt.fun_mul hAy hAy
+      have hValue : deriv a y*a y + a y*deriv a y = 2*a y*deriv a y := by ring
+      rw [hValue] at hMul
+      simpa only [pow_two] using hMul
+    have hProd : HasDerivAt (fun z : ℝ => z*a z^2)
+        (1*a y^2 + y*(2*a y*deriv a y)) y :=
+      HasDerivAt.fun_mul (hasDerivAt_id y) hSq
+    have hValue : 1*a y^2 + y*(2*a y*deriv a y) = b y := by
+      dsimp only [b]
+      ring
+    rw [hValue] at hProd
+    exact hProd
   have hz : (∫ y : ℝ in (1 : ℝ)..6, b y) = 0 := by
     rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun y _ => hder y)
       (hb.intervalIntegrable (μ := (volume : Measure ℝ)) 1 6)]

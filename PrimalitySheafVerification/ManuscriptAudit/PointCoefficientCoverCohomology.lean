@@ -30,6 +30,7 @@ def IsCoboundary (c : OneCochain P U A) : Prop :=
     ∀ i j (q : PointsIn P (U i ⊓ U j)),
       c i j q = a j ⟨q.val,q.property.2⟩ - a i ⟨q.val,q.property.1⟩
 
+set_option maxHeartbeats 1600000 in
 theorem cocycle_is_coboundary (hCover : iSup U = ⊤)
     (c : OneCochain P U A) (hc : IsOneCocycle P U A c) :
     IsCoboundary P U A c := by
@@ -45,7 +46,8 @@ theorem cocycle_is_coboundary (hCover : iSup U = ⊤)
   refine ⟨a, ?_⟩
   intro i k q
   apply eq_sub_iff_add_eq.mpr
-  simpa only [a, add_comm] using hc (j q.val) i k q.val (hj q.val) q.property.1 q.property.2
+  rw [add_comm (c i k q)]
+  exact hc (j q.val) i k q.val (hj q.val) q.property.1 q.property.2
 
 local instance (X : TopCat.{0}) : HasExt.{0} (AbelianSheaf X) :=
   IsGrothendieckAbelian.hasExt _

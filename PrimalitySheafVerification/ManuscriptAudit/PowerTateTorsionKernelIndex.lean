@@ -16,6 +16,7 @@ variable (l : ℕ) [Fact l.Prime] (G : Type*) [AddCommGroup G]
 variable (B : Basis (Fin 2) (ZMod (l ^ 1)) (PowerTorsion l G 1))
 variable (h : Function.Surjective (fun P : G => l • P))
 
+include B h in
 /-- At any depth at least the determinant valuation, the native finite kernel
 has exactly the same order as the full Tate cokernel. -/
 theorem card_finite_kernel (f : AddMonoid.End G) (hf : Function.Injective (endMap l f))

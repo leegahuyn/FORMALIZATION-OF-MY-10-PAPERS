@@ -53,7 +53,10 @@ theorem root_pair_sum {k : ℕ} (hk : 0 < k) (d e : Fin (2 * k)) :
     · rintro rfl
       exact rootFrequency_mul_conj k d
   change (∑ n ∈ Finset.range (2 * k), u ^ n) = _
-  rw [geom_sum_eq hPow, hOne]
+  rw [geom_sum_eq hPow]
+  by_cases h : d = e
+  · rw [if_pos h, if_pos (hOne.2 h)]
+  · rw [if_neg h, if_neg (fun hu => h (hOne.1 hu))]
 
 private theorem parseval_complex (S : ∀ k : ℕ, Finset (Fin (2 * k))) {k : ℕ} (hk : 0 < k) :
     (∑ n ∈ Finset.range (2 * k), fourierCoefficient S k n *

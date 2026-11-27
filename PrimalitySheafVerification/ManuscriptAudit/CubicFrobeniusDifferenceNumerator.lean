@@ -12,7 +12,7 @@ open Polynomial
 variable {F : Type*} [Field F]
 
 /-- The chord numerator after clearing the square of the difference of abscissas. -/
-def numerator (q k : ℕ) (A : F) : Polynomial F :=
+noncomputable def numerator (q k : ℕ) (A : F) : Polynomial F :=
   (X : Polynomial F) ^ (2 * q + 1) + X ^ (q + 2) + C (2 * A) +
     C 2 * (X ^ 3 + C A) ^ (k + 1)
 

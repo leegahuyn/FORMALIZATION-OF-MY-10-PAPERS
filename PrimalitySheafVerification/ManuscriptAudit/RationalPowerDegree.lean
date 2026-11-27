@@ -14,7 +14,8 @@ theorem finrank_adjoin_power (K : Type*) [Field K] (n : ℕ) :
         {algebraMap (Polynomial K) (RatFunc K) ((X : Polynomial K) ^ n)})
       (RatFunc K) = n := by
   rw [RatFunc.finrank_eq_max_natDegree]
-  simp [Polynomial.natDegree_X_pow]
+  rw [RatFunc.num_algebraMap, RatFunc.denom_algebraMap, Polynomial.natDegree_X_pow]
+  simp
 
 end ManuscriptAudit.RationalPowerDegree
 
