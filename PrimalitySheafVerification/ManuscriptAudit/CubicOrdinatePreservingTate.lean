@@ -7,7 +7,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CubicTateRotationCoefficients
 
 namespace ManuscriptAudit.CubicOrdinatePreservingTate
 
-open WeierstrassCurve FiniteFieldPointCount CubicThreeTorsionOrdinate CubicDoublingCoordinates
+open WeierstrassCurve FiniteFieldPointCount CubicTwoTorsion CubicThreeTorsionOrdinate
 open CubicFrobeniusSexticTwists CubicOrdinatePreservingTwist CubicRotationCombination
 open PowerTateModule
 

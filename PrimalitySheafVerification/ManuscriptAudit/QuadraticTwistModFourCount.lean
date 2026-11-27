@@ -9,7 +9,7 @@ namespace ManuscriptAudit.QuadraticTwistModFourCount
 
 open TorsionFrobeniusModule FourTorsionDeterminantTools
 
-private theorem torsion_card_dvd {G : Type*} [AddCommGroup G] (m : ℕ) :
+theorem torsion_card_dvd {G : Type*} [AddCommGroup G] (m : ℕ) :
     Nat.card (Torsion m G) ∣ Nat.card G := by
   refine ⟨Nat.card (G ⧸ subgroup m G), ?_⟩
   change Nat.card G = Nat.card ↥(subgroup m G) * Nat.card (G ⧸ subgroup m G)
@@ -50,7 +50,7 @@ theorem card_mod_eight_of_torsion_four {G : Type*} [AddCommGroup G] [Finite G]
     omega
   omega
 
-private theorem card_mod_eight_of_torsion_sixteen {G : Type*} [AddCommGroup G]
+theorem card_mod_eight_of_torsion_sixteen {G : Type*} [AddCommGroup G]
     (h : Nat.card (Torsion 4 G) = 16) : Nat.card G % 8 = 0 := by
   have h16 : 16 ∣ Nat.card G := h ▸ torsion_card_dvd (G := G) 4
   omega

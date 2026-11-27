@@ -95,7 +95,7 @@ def restriction (g : X ⟶ Y) (hg : g ≫ p = q) : functionsOver M p ⟶ functio
        let c' : C(((baseChange p).obj U.unop).left, M) := c.down
        change c' ((pullbackMap V.unop.hom g hg ≫ ((baseChange p).map f.unop).left) x) =
          c' ((((baseChange q).map f.unop).left ≫ pullbackMap U.unop.hom g hg) x)
-       rw [pullbackMap_natural] }⟩
+       rw [pullbackMap_natural] <;> rfl }⟩
 
 /-- A function pulled back from the base gives the same local value along every branch. -/
 theorem diagonal_restriction (g : X ⟶ Y) (hg : g ≫ p = q) :

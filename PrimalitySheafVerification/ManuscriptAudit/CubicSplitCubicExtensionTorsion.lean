@@ -32,6 +32,17 @@ private theorem twist_count_at (m : ℕ) {a d : E} (v : L) (h : algebraMap E L a
   subst v
   exact twist_rational_torsion_card E L m ha hd hchar hq hΔA hΔB
 
+/-- The native positive fixed subgroup at level m counts rational torsion in the cubic extension. -/
+theorem cubic_extension_count (m : ℕ) {A : K}
+    (hCompat : algebraMap E L (algebraMap K E A) = algebraMap K L A)
+    (hCard : Fintype.card E = (Fintype.card K) ^ 3) :
+    let F := (mapLinear m (arithmeticPointFrobenius K L A)) ^ 3
+    Nat.card (Torsion m (Curve (algebraMap K E A)).Point) =
+      Nat.card {P : Torsion m (GeometricPoints K L A) // F P = P} := by
+  dsimp only
+  rw [← eq_pow K E L m 3 A hCompat hCard]
+  exact count_at E L m (algebraMap K E A) (algebraMap K L A) hCompat
+
 /-- The two actual rational torsion counts are precisely the two sign-fixed counts of
 the cubed arithmetic Frobenius of the original finite field. -/
 theorem cubic_extension_count_pair (m : ℕ) {A : K} {d : E}

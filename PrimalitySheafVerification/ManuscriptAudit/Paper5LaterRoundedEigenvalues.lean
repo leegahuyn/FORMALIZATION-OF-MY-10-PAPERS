@@ -62,9 +62,15 @@ theorem imaginary_part_rounds {r : TateRow × (ℤ × ℤ)} (hr : r ∈ annotate
   let a : ℝ := r.2.1
   let s : ℝ := r.2.2
   let D : ℝ := radicand r.1
-  have hs' : 0 < s := by exact_mod_cast hs
-  have hD' : 0 < D := by exact_mod_cast hD
-  have ha' : 1 ≤ a := by exact_mod_cast (show 1 ≤ r.2.1 by omega)
+  have hs' : 0 < s := by
+    dsimp only [s]
+    exact_mod_cast hs
+  have hD' : 0 < D := by
+    dsimp only [D]
+    exact_mod_cast hD
+  have ha' : 1 ≤ a := by
+    dsimp only [a]
+    exact_mod_cast (show 1 ≤ r.2.1 by omega)
   have hlo' : (2 * a - 1)^2 < D * s^2 := by
     dsimp only [a, s, D]
     exact_mod_cast hlo

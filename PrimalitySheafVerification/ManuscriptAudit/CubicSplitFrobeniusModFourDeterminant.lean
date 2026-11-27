@@ -23,7 +23,7 @@ private theorem card_subtype_of_all {X : Type*} {P : X → Prop} (h : ∀ x, P x
       left_inv := fun x => Subtype.ext rfl
       right_inv := fun _ => rfl }
 
-private theorem fix_two_of_four {G : Type*} [AddCommGroup G] (f : AddMonoid.End G)
+theorem fix_two_of_four {G : Type*} [AddCommGroup G] (f : AddMonoid.End G)
     (h : ∀ x : Torsion 4 G, (2 : ℕ) • x = 0 →
       (mapLinear 4 f ^ 3) x = x ∧ -(mapLinear 4 f ^ 3) x = x) (P : Torsion 2 G) :
     (mapLinear 2 f ^ 3) P = P ∧ -(mapLinear 2 f ^ 3) P = P := by
@@ -35,14 +35,14 @@ private theorem fix_two_of_four {G : Type*} [AddCommGroup G] (f : AddMonoid.End 
   exact ⟨Subtype.ext (congrArg (fun R : Torsion 4 G => R.val) (h Q hQ).1),
     Subtype.ext (congrArg (fun R : Torsion 4 G => R.val) (h Q hQ).2)⟩
 
-private theorem finite_points {E : Type*} [Field E] [Fintype E] [DecidableEq E] (B : E) :
+theorem finite_points {E : Type*} [Field E] [Fintype E] [DecidableEq E] (B : E) :
     Finite (Curve B).Point := by
   letI : Finite (WithZero {xy : E × E // (Curve B).Nonsingular xy.1 xy.2}) := by
     change Finite (Option {xy : E × E // (Curve B).Nonsingular xy.1 xy.2})
     infer_instance
   exact Finite.of_injective _ (Curve B).nonsingularPointEquiv.injective
 
-private theorem card_eq_projective {E : Type*} [Field E] [DecidableEq E] (B : E) :
+theorem card_eq_projective {E : Type*} [Field E] [DecidableEq E] (B : E) :
     Nat.card (Curve B).Point = Nat.card (shortCubic (0 : E) B).toProjective.Point :=
   Nat.card_congr
     (Projective.Point.toAffineAddEquiv (W := (shortCubic (0 : E) B).toProjective)).symm.toEquiv

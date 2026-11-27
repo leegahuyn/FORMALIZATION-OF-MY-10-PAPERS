@@ -74,7 +74,7 @@ abbrev overlapObject : (normalizedNode K).ProEt :=
 abbrev firstLeg : overlapObject K ⟶ openObject (yToNormalized K) :=
   MorphismProperty.Over.homMk (principalInclusion K) (by
     change principalInclusion K ≫ 𝟙 (nodeYChart K) ≫ yToNormalized K = _
-    rw [Category.id_comp])
+    rw [Category.id_comp] <;> rfl)
 
 abbrev secondLeg : overlapObject K ⟶ openObject (zToNormalized K h2) :=
   MorphismProperty.Over.homMk (overlapToZ K h2) (by

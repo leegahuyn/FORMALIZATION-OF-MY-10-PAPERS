@@ -9,8 +9,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySeventyThreeFrob
 
 namespace ManuscriptAudit.Paper5LaterMidSplitTate
 
-open WeierstrassCurve FiniteFieldPointCount CubicThreeTorsionOrdinate CubicThreeTorsionCard
-open CubicCubeRotation CubicDoublingCoordinates
+open WeierstrassCurve FiniteFieldPointCount CubicTwoTorsion CubicThreeTorsionOrdinate CubicThreeTorsionCard
+open CubicCubeRotation
 open CubicFrobeniusSexticTwists CubicRotationCombination PowerTateModule
 
 noncomputable section

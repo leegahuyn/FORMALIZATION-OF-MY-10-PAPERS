@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
 import PrimalitySheafVerification.ManuscriptAudit.CuspRootCoefficients
 import PrimalitySheafVerification.ManuscriptAudit.NodalNormalizedProetalePic
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleDiscreteConstant
@@ -54,8 +55,8 @@ theorem cyclic_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :
   let s : ULift.{1} (Additive (rootsOfUnity d K)) ≃+ ULift.{1} (ZMod d) :=
     AddEquiv.ulift.trans (t.trans AddEquiv.ulift.symm)
   let tIso : coefficientGroup K d ≅ AddCommGrpCat.of (ULift.{1} (ZMod d)) := s.toAddCommGrpIso
-  let H : Sheaf (J K) G ⥤ G := Sheaf.functorH (J K) 1
-  let i := (H.mapIso ((constantSheaf (J K) G).mapIso tIso)).addCommGroupIsoToAddEquiv
+  let i := ProetaleCohomologyIso.cohomologyIso (X := X K)
+    ((constantSheaf (J K) G).mapIso tIso) 1
   exact ⟨fun a b ↦ i.symm.injective (h.elim _ _)⟩
 
 variable (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
@@ -63,8 +64,7 @@ variable (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
 theorem residue_HOne_subsingleton (n : ℕ) : Subsingleton (Sheaf.H (finiteCoefficient (X K) ℓ n) 1) := by
   letI : NeZero ((ℓ ^ n : ℕ) : K) :=
     ⟨by rw [Nat.cast_pow]; exact pow_ne_zero n (NeZero.ne (ℓ : K))⟩
-  let H : Sheaf (J K) G ⥤ G := Sheaf.functorH (J K) 1
-  let e := (H.mapIso (nativeResidueIso (X K) ℓ n)).addCommGroupIsoToAddEquiv
+  let e := ProetaleCohomologyIso.cohomologyIso (X := X K) (nativeResidueIso (X K) ℓ n) 1
   have h := cyclic_HOne_subsingleton K h2 (ℓ ^ n)
   exact ⟨fun a b ↦ e.symm.injective (h.elim _ _)⟩
 

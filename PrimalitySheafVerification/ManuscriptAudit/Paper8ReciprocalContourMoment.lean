@@ -103,7 +103,8 @@ theorem momentDifference_hasSum {k : ℕ} (hk : 0 < k) {r : ℝ} (hr : 0 < r) :
   have hTail : HasSum (fun n : ℕ => f (n + 1)) (momentDifference k r) := by
     have h := (hasSum_nat_add_iff' 1).2 hRaw
     simpa only [Finset.sum_range_one, hZero, sub_zero] using h
-  refine hTail.congr fun n => ?_
+  refine hTail.congr_fun fun n => ?_
+  symm
   have hNeg : (-46 / 3 : ℝ) = (-1 : ℝ) * (46 / 3) := by norm_num
   have ht : (-46 / 3 : ℝ) ^ (n + 1) = (-1 : ℝ) ^ (n + 1) * (46 / 3 : ℝ) ^ (n + 1) := by
     rw [← mul_pow, ← hNeg]

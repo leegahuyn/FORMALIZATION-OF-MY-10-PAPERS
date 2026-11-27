@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
 import PrimalitySheafVerification.ManuscriptAudit.NodalNormalizedUnitOrder
 import PrimalitySheafVerification.ManuscriptAudit.ProetalePIDUnitHOne
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleTwoOpenHOne
@@ -43,8 +44,7 @@ private abbrev v := openArrow (zToNormalized K h2)
 private theorem restricted_HOne_subsingleton {W : Scheme.{0}} (j : W ⟶ X K) [IsOpenImmersion j]
     (hW : Subsingleton (Sheaf.H (unitSheaf W) 1)) :
     Subsingleton (Sheaf.H ((restriction j G).obj (F K)) 1) := by
-  let H : Sheaf (Scheme.ProEt.topology W) G ⥤ G := Sheaf.functorH (Scheme.ProEt.topology W) 1
-  let e := (H.mapIso (restrictionUnitsIso j)).addCommGroupIsoToAddEquiv
+  let e := ProetaleCohomologyIso.cohomologyIso (X := W) (restrictionUnitsIso j) 1
   exact ⟨fun a b ↦ e.injective (hW.elim _ _)⟩
 
 /-- The global units of the actual normalization restrict bijectively

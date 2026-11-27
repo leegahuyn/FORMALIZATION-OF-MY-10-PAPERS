@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
 import PrimalitySheafVerification.ManuscriptAudit.CuspPicard
 import PrimalitySheafVerification.ManuscriptAudit.CuspRootCoefficients
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleKummerSequence
@@ -59,8 +60,8 @@ theorem roots_HOne_subsingleton (d : ℕ) [NeZero d] [NeZero (d : K)]
     h.extClass.postcomp Z (show 0 + 1 = 1 by rfl)
   have h₀' : Function.Exact (Sheaf.H.map (power X d) 0) δ := h₀
   have h₁' : Function.Exact δ (Sheaf.H.map (kernel.ι (power X d)) 1) := h₁
-  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) 1
-  let r := (H.mapIso (constantKernelIso (toField (K := K) A) d)).addCommGroupIsoToAddEquiv
+  let r := ProetaleCohomologyIso.cohomologyIso (X := X)
+    (constantKernelIso (toField (K := K) A) d) 1
   have hUn := ProetalePIDUnitHOne.HOne_subsingleton A
   refine subsingleton_of_forall_eq 0 (fun a ↦ ?_)
   have hz : Sheaf.H.map (kernel.ι (power X d)) 1 (r a) = 0 := hUn.elim _ _
@@ -92,8 +93,7 @@ theorem affineLine_HOne_subsingleton (d : ℕ) [NeZero (d : K)] :
   let L := J (spectrum (Polynomial K))
   let i : coefficientGroup K d ≅ AddCommGrpCat.of (ULift.{1} (ZMod d)) := v.toAddCommGrpIso
   let q := (constantSheaf L G).mapIso i
-  let H : Sheaf L G ⥤ G := Sheaf.functorH L 1
-  let e := (H.mapIso q).addCommGroupIsoToAddEquiv
+  let e := ProetaleCohomologyIso.cohomologyIso (X := spectrum (Polynomial K)) q 1
   have h := roots_HOne_subsingleton (K := K) (Polynomial K) d
     (CuspPicard.paper2_polynomial_unit_power_surjective K d (Nat.pos_of_ne_zero (NeZero.ne d)))
   exact ⟨fun a b ↦ e.symm.injective (h.elim _ _)⟩

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleKummerSequence
 
 /-! The native Kummer sequence reduces cyclic degree-one vanishing to
@@ -21,11 +22,13 @@ variable (X : Scheme.{0})
 
 theorem map_power_apply (d n : ℕ) (a : Sheaf.H (unitSheaf X) n) :
     Sheaf.H.map (power X d) n a = d • a := by
-  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) n
-  let A := H.obj (unitSheaf X)
-  change (H.map (d • 𝟙 (unitSheaf X)) : A ⟶ A) a = d • a
-  rw [Functor.map_nsmul, Functor.map_id]
-  rfl
+  change Sheaf.H.map (d • 𝟙 (unitSheaf X)) n a = d • a
+  induction d with
+  | zero => simp [Sheaf.H.map_apply]
+  | succ d ih =>
+    change Sheaf.H.map ((d + 1) • 𝟙 (unitSheaf X)) n a = (d + 1) • a
+    simp only [add_nsmul, one_nsmul, Sheaf.H.map_add_apply, Sheaf.H.map_id_apply]
+    exact congrArg (fun x : Sheaf.H (unitSheaf X) n ↦ x + a) ih
 
 variable {K : Type} [Field K] (k : X ⟶ Spec (CommRingCat.of K))
   (d : ℕ) [NeZero d] [NeZero (d : K)] [HasEnoughRootsOfUnity K d]
@@ -47,15 +50,12 @@ theorem roots_HOne_subsingleton
   rw [ShortComplex.ab_exact_iff_function_exact] at he₀ he₁
   have ex₀ : Function.Exact (Sheaf.H.map (power X d) 0) δ := he₀
   have ex₁ : Function.Exact δ (Sheaf.H.map (kernel.ι (power X d)) 1) := he₁
-  let H : Sheaf (J X) G ⥤ G := Sheaf.functorH (J X) 1
-  let r := (H.mapIso (constantKernelIso k d)).addCommGroupIsoToAddEquiv
+  let r := ProetaleCohomologyIso.cohomologyIso (X := X) (constantKernelIso k d) 1
   refine subsingleton_of_forall_eq 0 (fun a ↦ ?_)
   have hz : Sheaf.H.map (kernel.ι (power X d)) 1 (r a) = 0 := by
     apply hOne
     rw [← map_power_apply X d 1, ← Sheaf.H.map_comp_apply, kernel.condition]
-    change (H.map (0 : kernel (power X d) ⟶ unitSheaf X)) (r a) = 0
-    rw [Functor.map_zero]
-    rfl
+    simp [Sheaf.H.map_apply]
   obtain ⟨b, hb⟩ := (ex₁ (r a)).mp hz
   obtain ⟨c, hc⟩ := hZero b
   have hδ : δ b = 0 := (ex₀ b).mpr ⟨c, (map_power_apply X d 0 c).trans hc⟩

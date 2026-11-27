@@ -1,11 +1,13 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper5ExtensionRecurrence
+import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionCard
 
 /-! The literal point-count recurrence over all split finite base fields. -/
 
 namespace ManuscriptAudit.CubicSplitExtensionTraceRecurrence
 
-open FiniteFieldPointCount CubicThreeTorsionCard CubicJacobiRoots CubicJacobiExtension
+open FiniteFieldPointCount CubicThreeTorsionCard
+open CubicJacobiRoots CubicJacobiExtension CubicCharacterMultiplicity
 open Paper5PrintedRecurrence Paper5ExtensionRecurrence LanglandsFirstMainLemma
 
 noncomputable section

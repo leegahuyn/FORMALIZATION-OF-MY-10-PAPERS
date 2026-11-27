@@ -49,6 +49,9 @@ theorem separate_eq_common_add_remainder (α : ℝ) {β : ℝ} (hβ : 0 ≤ β) 
   rw [← mul_add, ← Finset.sum_add_distrib]
   congr 1
   refine Finset.sum_congr rfl fun d _ => ?_
+  change residueWeight k d * phiAtQ α β k (root k ^ (d.val : ℤ)) q =
+    residueWeight k d * common k (root k ^ (d.val : ℤ)) q +
+      residueWeight k d * singleRemainder α β k (root k ^ (d.val : ℤ)) q
   rw [phi_eq_common_add_remainder α hβ hβ' hk (root_power_norm k d) hq, mul_add]
 
 theorem remainder_absolutely_summable {α β : ℝ} (hα : 0 ≤ α) (hα' : α ≤ 24)
