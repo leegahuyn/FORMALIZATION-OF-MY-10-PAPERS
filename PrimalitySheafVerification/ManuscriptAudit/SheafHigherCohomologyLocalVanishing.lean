@@ -15,10 +15,9 @@ noncomputable section
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-private abbrev A := AddCommGrpCat.{v}
-private abbrev S := Sheaf J A
+private abbrev S := Sheaf J AddCommGrpCat.{v}
 
-variable [HasSheafify J A] [HasExt.{w} (S J)]
+variable [HasSheafify J AddCommGrpCat.{v}] [HasExt.{w} (S J)]
 
 def vanishingSieve (F : S J) (n : ℕ) {U : C} (x : F.H' n U) : Sieve U where
   arrows V f := (F.cohomologyPresheaf n).map f.op x = 0
@@ -48,8 +47,8 @@ private theorem exists_boundary {F I : S J} (i : F ⟶ I) [Mono i] [Injective I]
   exact (h x).1 hx
 
 variable [enough : EnoughInjectives (S J)]
-variable [composeForget : J.HasSheafCompose (forget A)] [wLocal : J.WEqualsLocallyBijective A]
-variable [factorization : HasFunctorialSurjectiveInjectiveFactorization A]
+variable [composeForget : J.HasSheafCompose (forget AddCommGrpCat.{v})] [wLocal : J.WEqualsLocallyBijective AddCommGrpCat.{v}]
+variable [factorization : HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{v}]
 
 include enough composeForget wLocal factorization in
 
@@ -75,8 +74,8 @@ theorem vanishingSieve_covering (n : ℕ) (F : S J) (U : C) (x : F.H' (n+1) U) :
     obtain ⟨a, ha⟩ := hg
     change (F.cohomologyPresheaf 1).map g.op ((Ext.mk₀ f).comp hS.extClass rfl) = 0
     rw [← hf]
-    change (F.cohomologyPresheaf 1).map g.op (boundaryOfSection J s hS U q) = 0
-    rw [boundaryOfSection_restrict]
+    change (s.X₁.cohomologyPresheaf 1).map g.op (boundaryOfSection J s hS U q) = 0
+    rw [boundaryOfSection_restrict J s hS g q]
     exact boundaryOfSection_zero_of_lift J s hS V _ a ha
   | succ n ih =>
     let pF : InjectivePresentation F := (enough.presentation F).some
@@ -91,7 +90,8 @@ theorem vanishingSieve_covering (n : ℕ) (F : S J) (U : C) (x : F.H' (n+1) U) :
     change (Ext.mk₀ ((freeYoneda J).map g)).comp z (zero_add (n+1)) = 0 at hg
     change (Ext.mk₀ ((freeYoneda J).map g)).comp (z.comp hS.extClass rfl)
         (zero_add (n+1+1)) = 0
-    rw [← Ext.comp_assoc_of_second_deg_zero, hg, Ext.zero_comp]
+    rw [← Ext.comp_assoc (Ext.mk₀ ((freeYoneda J).map g)) z hS.extClass
+      (zero_add (n+1)) rfl (show 0+(n+1)+1=n+1+1 by simp), hg, Ext.zero_comp]
 
 end
 end ManuscriptAudit.SheafHigherCohomologyLocalVanishing

@@ -59,6 +59,7 @@ private theorem range_intersection :
     rw [smooth_preimage K] at hm
     exact ⟨⟨z, hm⟩, hz⟩
 
+set_option maxHeartbeats 1600000 in
 /-- The actual affine smooth locus omits exactly the indicated two disjoint rational points. -/
 theorem compactOpen_range :
     Set.range (compactOpen K) = (Set.range (projectiveOrigin K) ∪ Set.range (infinityPoint K))ᶜ := by

@@ -47,7 +47,7 @@ set_option maxHeartbeats 3000000 in
 theorem exists_affine_lift {R : CommRingCat.{0}} (g : Spec R ⟶ X)
     (s : C(↥(pullback g i : Scheme.{0}), ℤ_[ℓ])) :
     ∃ (B : CommRingCat.{0}) (a : Spec B ⟶ Spec R), WeaklyEtale a ∧ Surjective a ∧
-      ∃ f : C(Spec B, ℤ_[ℓ]), ∀ x : pullback (a ≫ g) i,
+      ∃ f : C(Spec B, ℤ_[ℓ]), ∀ x : ↥(pullback (a ≫ g) i : Scheme.{0}),
         f (pullback.fst (a ≫ g) i x) = s (fiberMap i g a x) := by
   let p := pullback.fst g i
   have hp : Topology.IsClosedEmbedding (show ↥(pullback g i : Scheme.{0}) → PrimeSpectrum R from p) :=
@@ -60,7 +60,7 @@ theorem exists_affine_lift {R : CommRingCat.{0}} (g : Spec R ⟶ X)
   let s' := s.comp ⟨fiberMap i g a, (fiberMap i g a).continuous⟩
   have hLift (n : ℕ) :
       ∃ t : C(Spec (CommRingCat.of (AffineEtaleTensorDirectLimit.Tower B)), ZMod (ℓ ^ n)),
-        ∀ x : pullback (a ≫ g) i, t (pullback.fst (a ≫ g) i x) = PadicInt.toZModPow n (s' x) := by
+        ∀ x : ↥(pullback (a ≫ g) i : Scheme.{0}), t (pullback.fst (a ≫ g) i x) = PadicInt.toZModPow n (s' x) := by
     let q := AffineEtaleCommonCountableCover.factorMap B n
     refine ⟨(hFn n).comp ⟨q, q.continuous⟩, fun x ↦ ?_⟩
     change hFn n (q (pullback.fst (a ≫ g) i x)) = finiteValue i ℓ g s n (fiberMap i g a x)

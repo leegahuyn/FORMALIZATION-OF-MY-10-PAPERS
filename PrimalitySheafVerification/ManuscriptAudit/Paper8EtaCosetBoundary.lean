@@ -28,7 +28,7 @@ theorem volume_fd_boundary_zero :
   apply setLIntegral_measure_zero
   let B : Set ℂ := sphere 0 1 ∪ ({z : ℂ | z.re = (1 : ℝ) / 2} ∪ {z : ℂ | z.re = -(1 : ℝ) / 2})
   have hB : (volume : Measure ℂ) B = 0 := by
-    exact measure_union_null (addHaar_sphere volume 0 1)
+    exact measure_union_null (Measure.addHaar_sphere volume 0 1)
       (measure_union_null (volume_vertical_eq_zero ((1 : ℝ) / 2))
         (volume_vertical_eq_zero (-(1 : ℝ) / 2)))
   refine measure_mono_null (s := ((↑) : ℍ → ℂ) '' (ModularGroup.fd \ ModularGroup.fdo)) ?_ hB
@@ -41,7 +41,8 @@ theorem volume_fd_boundary_zero :
     rcases abs_cases z.re with ⟨ha, _⟩ | ⟨ha, _⟩
     · exact Or.inr (Or.inl (by change z.re = 1 / 2; linarith [ha]))
     · exact Or.inr (Or.inr (by change z.re = -1 / 2; linarith [ha]))
-  · exact Or.inl (mem_sphere_iff_norm.mpr (le_antisymm hzStrict hzNorm))
+  · have hNorm : ‖(z : ℂ)‖ = 1 := le_antisymm hzStrict hzNorm
+    exact Or.inl (by simpa only [Metric.mem_sphere, dist_zero_right] using hNorm)
 
 theorem volume_translate_eq (g : SL(2, ℤ)) (S : Set ℍ) :
     (volume : Measure ℍ) (translate g S) = (volume : Measure ℍ) S := by
@@ -78,6 +79,9 @@ theorem closed_cells_ae_eq_open (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] :
 theorem open_cells_meet_ae_orbit (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] :
     ∀ᵐ z : ℍ ∂(volume : Measure ℍ),
       ∃ h : H, ∃ w ∈ cosetCells H ModularGroup.fdo, (h : SL(2, ℤ)) • w = z := by
+  letI : Countable SL(2, ℤ) := Countable.of_injective
+    (fun g : SL(2, ℤ) => (g.1 : Matrix (Fin 2) (Fin 2) ℤ)) Subtype.val_injective
+  letI : Countable H := Countable.of_injective (fun h : H => (h : SL(2, ℤ))) Subtype.val_injective
   let B := ⋃ h : H, translate (h : SL(2, ℤ))
     (cosetCells H ModularGroup.fd \ cosetCells H ModularGroup.fdo)
   have hNull : (volume : Measure ℍ) B = 0 := by

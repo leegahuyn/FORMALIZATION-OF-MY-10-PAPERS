@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.NumberTheory.Modular
 import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
@@ -14,12 +14,12 @@ open scoped ENNReal Topology NNReal
 private theorem reciprocal_square_integrable :
     IntegrableOn (fun y : ℝ => (y ^ 2)⁻¹) (Ici (1 / 2 : ℝ)) := by
   rw [integrableOn_Ici_iff_integrableOn_Ioi]
-  refine integrableOn_Ioi_deriv_of_nonneg' (g := fun y : ℝ => -y⁻¹) (l := 0) ?_ ?_ ?_
-  · intro y hy
-    have hy0 : 0 < y := (by norm_num : (0 : ℝ) < 1 / 2).trans_le hy
-    simpa only [neg_neg] using (hasDerivAt_inv hy0.ne').neg
-  · exact fun y _ => inv_nonneg.mpr (sq_nonneg y)
-  · simpa only [neg_zero] using (tendsto_inv_atTop_zero : Tendsto (fun y : ℝ => y⁻¹) atTop (𝓝 0)).neg
+  have h : IntegrableOn (fun y : ℝ => y ^ (-(2 : ℝ))) (Ioi (1 / 2 : ℝ)) :=
+    integrableOn_Ioi_rpow_of_lt (by norm_num) (by norm_num)
+  refine h.congr_fun (fun y hy => ?_) measurableSet_Ioi
+  have hy₀ : 0 ≤ y := (by norm_num : (0 : ℝ) ≤ 1 / 2).trans hy.le
+  rw [Real.rpow_neg hy₀]
+  norm_num
 
 private theorem reciprocal_square_lintegral_lt_top :
     (∫⁻ y : ℝ in Ici (1 / 2 : ℝ), ENNReal.ofReal ((y ^ 2)⁻¹)) < ⊤ :=
@@ -29,7 +29,7 @@ private theorem reciprocal_square_lintegral_lt_top :
 
 private def strip : Set (ℝ × ℝ) := Icc (-(1 / 2 : ℝ)) (1 / 2) ×ˢ Ici (1 / 2)
 
-private def heightDensity (z : ℂ) : ℝ≥0∞ := ↑((1 / ‖z.im‖₊ : ℝ≥0) ^ 2)
+private noncomputable def heightDensity (z : ℂ) : ℝ≥0∞ := ↑((1 / ‖z.im‖₊ : ℝ≥0) ^ 2)
 
 private theorem height_density_on_strip {p : ℝ × ℝ} (hp : p ∈ strip) :
     heightDensity (Complex.measurableEquivRealProd.symm p) = ENNReal.ofReal ((p.2 ^ 2)⁻¹) := by
@@ -45,7 +45,10 @@ private theorem strip_density_lintegral_lt_top :
     ENNReal.ofReal ((p.2 ^ 2)⁻¹) ∂((volume : Measure ℝ).prod volume)) < ⊤
   rw [← Measure.prod_restrict]
   have hM : Measurable (fun p : ℝ × ℝ => ENNReal.ofReal ((p.2 ^ 2)⁻¹)) := by fun_prop
-  rw [lintegral_prod _ hM.aemeasurable, setLIntegral_const]
+  rw [lintegral_prod _ hM.aemeasurable]
+  change (∫⁻ _ : ℝ in Icc (-(1 / 2 : ℝ)) (1 / 2),
+    ∫⁻ y : ℝ in Ici (1 / 2 : ℝ), ENNReal.ofReal ((y ^ 2)⁻¹)) < ⊤
+  rw [setLIntegral_const]
   exact ENNReal.mul_lt_top reciprocal_square_lintegral_lt_top isCompact_Icc.measure_lt_top
 
 theorem volume_fd_lt_top : (volume : Measure ℍ) ModularGroup.fd < ⊤ := by
@@ -72,9 +75,12 @@ theorem volume_fd_lt_top : (volume : Measure ℍ) ModularGroup.fd < ⊤ := by
     UpperHalfPlane.volume_eq_lintegral _
   rw [hVal, ← hEq]
   refine (lintegral_mono_set hPull).trans_lt ?_
-  rw [setLIntegral_congr_fun (measurableSet_Icc.prod measurableSet_Ici)
-    (fun p hp => height_density_on_strip hp)]
-  exact strip_density_lintegral_lt_top
+  have hStrip : MeasurableSet strip := measurableSet_Icc.prod measurableSet_Ici
+  have hDen :
+      (∫⁻ p in strip, heightDensity (e p)) =
+        ∫⁻ p : ℝ × ℝ in strip, ENNReal.ofReal ((p.2 ^ 2)⁻¹) :=
+    setLIntegral_congr_fun hStrip (fun _ hp => height_density_on_strip hp)
+  exact hDen.trans_lt strip_density_lintegral_lt_top
 
 end ManuscriptAudit.ModularDomainFiniteVolume
 

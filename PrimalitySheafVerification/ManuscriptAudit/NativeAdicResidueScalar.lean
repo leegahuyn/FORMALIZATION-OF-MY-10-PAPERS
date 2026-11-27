@@ -22,6 +22,7 @@ private abbrev J := Scheme.ProEt.topology X
 private abbrev A := AddCommGrpCat.{1}
 
 local instance residueTopology (d : ℕ) : TopologicalSpace (ZMod d) := ⊥
+local instance residueDiscrete (d : ℕ) : DiscreteTopology (ZMod d) := ⟨rfl⟩
 private abbrev rho (n : ℕ) :=
   (ProetaleCoefficientUniverseLift.lift X).map (ProetaleResidueSheaves.residueReduction X ℓ n)
 

@@ -79,8 +79,14 @@ theorem card_first (c : IntegralReference p L) (l : ℕ) [Fact l.Prime] (hlp : p
     have h := congrArg act hGeom
     simp only [map_sub, map_pow, map_mul, map_natCast, map_one, hAct] at h
     have hU : (l : AddMonoid.End G) * act u = S := by
-      rw [action_eq_combination, nsmul_eq_mul]
-    rw [hU] at h
+      rw [action_eq_combination]
+      change (l : AddMonoid.End G) * combination c.rotation u.re u.im =
+        l • combination c.rotation u.re u.im
+      rw [nsmul_eq_mul]
+    have hzAct : act z = F ^ n := by
+      change act (π ^ n) = F ^ n
+      rw [map_pow, hAct]
+    rw [hU, hzAct] at h
     exact h
   let f := F ^ n - 1
   let g := F ^ (n * l) - 1

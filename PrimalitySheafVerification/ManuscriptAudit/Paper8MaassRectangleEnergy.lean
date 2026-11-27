@@ -32,7 +32,10 @@ private theorem re_self_density (F : Profile) (z : ℝ × ℝ) :
     (density F F z).re = ‖F z.1 z.2‖ ^ 2 / z.2 ^ 2 := by
   unfold density
   have hStar : star (F z.1 z.2) * F z.1 z.2 = (↑(‖F z.1 z.2‖ ^ 2 : ℝ) : ℂ) :=
-    by simpa only [Complex.ofReal_pow] using Complex.conj_mul' (F z.1 z.2)
+    by
+      change (starRingEnd ℂ) (F z.1 z.2) * F z.1 z.2 = _
+      rw [Complex.ofReal_pow]
+      exact Complex.conj_mul' _
   rw [hStar, ← Complex.ofReal_pow, ← Complex.ofReal_div, Complex.ofReal_re]
 
 private theorem normSquare_eq_integral {a b c d : ℝ} (hc : 0 < c) (F : Profile)

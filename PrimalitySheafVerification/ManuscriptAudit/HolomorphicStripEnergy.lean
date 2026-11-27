@@ -42,7 +42,9 @@ private theorem horizontal_closedBound (H : ℂ → ℂ)
 
 private theorem coord_eq (p : ℝ × ℝ) :
     Complex.measurableEquivRealProd.symm p = (p.1 : ℂ) + (p.2 : ℂ) * Complex.I := by
-  ext <;> simp [Complex.mul_re, Complex.mul_im]
+  apply Complex.ext
+  · simp [Complex.measurableEquivRealProd_symm_apply, Complex.mul_re]
+  · simp [Complex.measurableEquivRealProd_symm_apply, Complex.mul_im]
 
 theorem disk_energy_le_rectangle (H : ℂ → ℂ)
     (hH : DifferentiableOn ℂ H {z : ℂ | 0 < z.im}) (z : ℂ) {r : ℝ}
@@ -87,6 +89,9 @@ theorem disk_energy_le_rectangle (H : ℂ → ℂ)
     Complex.volume_preserving_equiv_real_prod.symm.setIntegral_preimage_emb
       Complex.measurableEquivRealProd.symm.measurableEmbedding (fun u : ℂ => ‖H u‖ ^ 2) _
   have hRect : (∫ p in X ×ˢ Y, G p) = ∫ y in Y, E y := by
+    unfold IntegrableOn at hInt
+    change (∫ p, G p ∂((volume : Measure ℝ).prod volume).restrict (X ×ˢ Y)) =
+      ∫ y in Y, E y
     rw [← Measure.prod_restrict] at hInt ⊢
     exact integral_prod_symm G hInt
   refine ⟨E, ?_, ?_, fun y => by simp only [E, G, X, coord_eq]⟩
