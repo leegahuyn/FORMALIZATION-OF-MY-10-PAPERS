@@ -72,15 +72,27 @@ theorem comparison_injective (F : C X) : Function.Injective (comparison X F) := 
   apply h.injective
   exact hab
 
+/-- Degree-one étale cohomology comparison commutes with coefficient arrows. -/
+theorem comparison_naturality {F G : C X} (f : F ⟶ G) (x : Sheaf.H F 1) :
+    comparison X G (Sheaf.H.map f 1 x) =
+      Sheaf.H.map ((lift X).map f) 1 (comparison X F x) := by
+  change (Ext.mk₀ (integerIso X).inv).comp
+      ((x.comp (Ext.mk₀ f) (add_zero 1)).mapExactFunctor (lift X)) (zero_add 1) =
+    ((Ext.mk₀ (integerIso X).inv).comp (x.mapExactFunctor (lift X)) (zero_add 1)).comp
+      (Ext.mk₀ ((lift X).map f)) (add_zero 1)
+  simp only [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀,
+    Ext.comp_assoc_of_third_deg_zero]
+
 end
 end ManuscriptAudit.EtaleCoefficientHOne
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.EtaleCoefficientHOne.comparison_injective
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.EtaleCoefficientHOne.comparison_injective,
+      ``ManuscriptAudit.EtaleCoefficientHOne.comparison_naturality] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

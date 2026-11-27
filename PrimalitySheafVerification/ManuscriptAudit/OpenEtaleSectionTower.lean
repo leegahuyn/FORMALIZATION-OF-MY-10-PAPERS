@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.PadicResidueSystems
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleCyclicInverseLimit
 import PrimalitySheafVerification.ManuscriptAudit.SheafSectionResolutionComplex
 
@@ -59,6 +60,40 @@ theorem transition_eq_map (n r : ℕ) :
     Sheaf.H.map (coefficientOrderHom j (pow_succ ℓ r) ≫ (sequence j (ℓ ^ r) ℓ).g) n x
   rw [Sheaf.H.map_comp_apply, coefficientOrderHom_Hmap] <;> rfl
 
+private def orderHom {a b : ℕ} (h : a = b) : M a ⟶ M b := by
+  subst b
+  exact 𝟙 _
+
+private theorem orderHom_natCast {a b : ℕ} (h : a = b) (n : ℕ) :
+    orderHom h (n : ZMod a) = (n : ZMod b) := by
+  subst b
+  rfl
+
+private theorem coefficientOrderHom_eq_map {a b : ℕ} (h : a = b) :
+    coefficientOrderHom j h = (extendedConstants j).map (orderHom h) := by
+  subst b
+  simp only [coefficientOrderHom, orderHom, Functor.map_id]
+
+/-- The existing section-tower transition is the image of the standard residue reduction. -/
+theorem coefficientTransition_eq_map_reduction (r : ℕ) :
+    coefficientTransition j ℓ r = (extendedConstants j).map
+      (AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ r)).toAddMonoidHom) := by
+  let d := PadicResidueSystems.reduction ℓ (Nat.le_succ r)
+  let f := AddCommGrpCat.ofHom (ZModReductionSequence.reduction (ℓ ^ r) ℓ).toAddMonoidHom
+  have h : orderHom (pow_succ ℓ r) ≫ f = AddCommGrpCat.ofHom d.toAddMonoidHom := by
+    apply AddCommGrpCat.hom_ext
+    apply AddMonoidHom.ext
+    intro z
+    rw [← ZMod.natCast_zmod_val z]
+    change ZModReductionSequence.reduction (ℓ ^ r) ℓ
+      (orderHom (pow_succ ℓ r) (z.val : ZMod (ℓ ^ (r + 1)))) = d (z.val : ZMod (ℓ ^ (r + 1)))
+    simp only [orderHom_natCast, map_natCast]
+  unfold coefficientTransition
+  rw [coefficientOrderHom_eq_map]
+  change (extendedConstants j).map (orderHom (pow_succ ℓ r)) ≫
+    (extendedConstants j).map f = (extendedConstants j).map (AddCommGrpCat.ofHom d.toAddMonoidHom)
+  rw [← Functor.map_comp, h]
+
 /-- A cochain model of the compactly supported tower, using the actual compactifying
 open, the actual coefficient reductions and native injective resolutions. -/
 def sectionsFiber : CochainComplex A ℤ := by
@@ -74,6 +109,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.OpenEtaleSectionTower.coefficientTransition,
       ``ManuscriptAudit.OpenEtaleSectionTower.transition_eq_map,
+      ``ManuscriptAudit.OpenEtaleSectionTower.coefficientTransition_eq_map_reduction,
       ``ManuscriptAudit.OpenEtaleSectionTower.sectionsFiber] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

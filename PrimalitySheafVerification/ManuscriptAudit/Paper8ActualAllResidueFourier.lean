@@ -7,7 +7,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8ReciprocalArithmeticRows
 namespace ManuscriptAudit.Paper8ActualAllResidueFourier
 
 open Paper8GcdArithmeticWeight Paper8AllResidueDivisorSum Paper8ReciprocalCommonFourier
-open Paper8ReciprocalArithmeticRows Paper8ContourGammaSeries (coefficient)
+open Paper8ReciprocalArithmeticRows
+open Paper8ContourGammaSeries (coefficient)
 open Paper8ContourResidueWeights (prefactor)
 
 theorem all_arithmetic_row_divisor_sum {k : ℕ} (hk : 0 < k) (u : ℝ) :

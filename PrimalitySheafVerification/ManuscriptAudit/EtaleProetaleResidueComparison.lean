@@ -43,6 +43,29 @@ def residueDirectImageIso (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) :
       (constantSheaf X.smallEtaleTopology A).obj (AddCommGrpCat.of (ZMod (ℓ ^ n))) :=
   discreteDirectImageIso X (AddCommGrpCat.of (ZMod (ℓ ^ n)))
 
+/-- Reduction of a small-étale constant coefficient is restriction of the genuine
+pro-étale residue reduction under the canonical direct-image identification. -/
+theorem residueDirectImageIso_naturality (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) :
+    (constantSheaf X.smallEtaleTopology A).map
+        (AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ n)).toAddMonoidHom) ≫
+        (residueDirectImageIso X ℓ n).inv =
+      (residueDirectImageIso X ℓ (n + 1)).inv ≫
+        (directImage X).map (ProetaleResidueSheaves.residueTransition X ℓ n) := by
+  let M := AddCommGrpCat.of (ZMod (ℓ ^ (n + 1)))
+  let N := AddCommGrpCat.of (ZMod (ℓ ^ n))
+  let f : M ⟶ N :=
+    AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ n)).toAddMonoidHom
+  let g : continuousMapSheaf X M ⟶ continuousMapSheaf X N :=
+    (directImage X).map (ProetaleResidueSheaves.residueTransition X ℓ n)
+  have h := EtaleContinuousMapSheaf.constantSheafContinuousMapIso_naturality
+    X M f g (fun W m ↦ rfl)
+  let P := sheafToPresheaf X.smallEtaleTopology A
+  apply P.map_injective
+  have h' := congrArg (fun q ↦ P.map q) h
+  simpa only [Functor.map_comp, residueDirectImageIso, discreteDirectImageIso,
+    Iso.trans_inv, Iso.symm_inv, Functor.preimageIso_inv, Functor.map_preimage,
+    Iso.refl_inv, Category.comp_id] using h'
+
 end
 end ManuscriptAudit.EtaleProetaleResidueComparison
 
@@ -51,7 +74,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.EtaleProetaleResidueComparison.directImage,
       ``ManuscriptAudit.EtaleProetaleResidueComparison.discreteDirectImageIso,
-      ``ManuscriptAudit.EtaleProetaleResidueComparison.residueDirectImageIso] do
+      ``ManuscriptAudit.EtaleProetaleResidueComparison.residueDirectImageIso,
+      ``ManuscriptAudit.EtaleProetaleResidueComparison.residueDirectImageIso_naturality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

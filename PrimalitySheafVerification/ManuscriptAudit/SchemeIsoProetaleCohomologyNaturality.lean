@@ -33,13 +33,13 @@ variable (f : M →+ N) (hf : Continuous f)
 private theorem functionsIso_natural :
     (F e).map (map f hf X) ≫ (functionsIso e N).hom =
       (functionsIso e M).hom ≫ map f hf Y := by
-  apply Sheaf.hom_ext
+  let G := sheafToPresheaf (Scheme.ProEt.topology Y) A
+  apply G.map_injective
+  simp only [Functor.map_comp, functionsIso, Functor.preimageIso_hom, Functor.map_preimage]
   apply NatTrans.ext
   funext U
-  apply ConcreteCategory.hom_ext
-  intro a
-  apply ULift.ext
-  exact ContinuousMap.ext (fun _ ↦ rfl)
+  simp only [NatTrans.comp_app, NatIso.ofComponents_hom_app, Iso.refl_hom,
+    Category.comp_id, Category.id_comp] <;> rfl
 
 private theorem continuousCohomologyEquiv_apply (n : ℕ) (x : Sheaf.H (functions M X) n) :
     continuousCohomologyEquiv e M n x =

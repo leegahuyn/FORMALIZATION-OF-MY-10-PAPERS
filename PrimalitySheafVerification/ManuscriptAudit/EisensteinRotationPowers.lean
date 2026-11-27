@@ -23,11 +23,11 @@ theorem combination_mul (r : R) (hr : r ^ 2 + r + 1 = 0) (a b c d : ℤ) :
       { toFun := fun z => z * y
         map_zero' := zero_mul y
         map_add' := fun _ _ => add_mul _ _ _ }
-    exact map_zsmul f x n
+    exact map_zsmul f n x
   simp only [combination]
   rw [add_mul, hZ, hZ, one_mul, rotation_mul_linear r hr c d]
-  simp only [zsmul_add, ← mul_zsmul, mul_neg, mul_sub, sub_zsmul, add_zsmul, neg_zsmul]
-  abel
+  simp only [zsmul_add, ← mul_zsmul]
+  simp only [mul_neg, mul_sub, sub_zsmul, add_zsmul, neg_zsmul] <;> abel
 
 /-- The arithmetic pair represents the actual n-th power of the native rotation combination. -/
 theorem combination_pow (r : R) (hr : r ^ 2 + r + 1 = 0) (a b : ℤ) (n : ℕ) :

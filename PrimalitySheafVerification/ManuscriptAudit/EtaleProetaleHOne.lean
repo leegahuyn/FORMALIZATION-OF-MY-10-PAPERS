@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.EtaleProetaleInverseImage
-import PrimalitySheafVerification.ManuscriptAudit.ExtOneAdjunction
+import PrimalitySheafVerification.ManuscriptAudit.ExtOneAdjunctionNaturality
 
 /-! The native degree-one comparison from the cohomology of the actual
 étale direct image to pro-étale cohomology is injective. -/
@@ -68,6 +68,19 @@ theorem comparison_injective (F : D X) : Function.Injective (comparison X F) := 
   apply h.injective
   exact hab
 
+/-- The degree-one site comparison is natural in the coefficient sheaf. -/
+theorem comparison_naturality {F G : D X} (f : F ⟶ G)
+    (x : Sheaf.H ((directImage X).obj F) 1) :
+    comparison X G (Sheaf.H.map ((directImage X).map f) 1 x) =
+      Sheaf.H.map f 1 (comparison X F x) := by
+  change (Ext.mk₀ (constantIso X).inv).comp
+      (ExtOneAdjunction.map (adjunction X) (etaleZ X) G
+        (x.comp (Ext.mk₀ ((directImage X).map f)) (add_zero 1))) (zero_add 1) =
+    ((Ext.mk₀ (constantIso X).inv).comp
+      (ExtOneAdjunction.map (adjunction X) (etaleZ X) F x) (zero_add 1)).comp
+        (Ext.mk₀ f) (add_zero 1)
+  rw [ExtOneAdjunctionNaturality.map_postcomp, Ext.comp_assoc_of_third_deg_zero]
+
 variable (ℓ : ℕ) [Fact ℓ.Prime]
 
 /-- The specialization to the actual coefficient sheaf defining native adic cohomology. -/
@@ -87,7 +100,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.EtaleProetaleHOne.comparison_injective,
-      ``ManuscriptAudit.EtaleProetaleHOne.adicComparison_injective] do
+      ``ManuscriptAudit.EtaleProetaleHOne.adicComparison_injective,
+      ``ManuscriptAudit.EtaleProetaleHOne.comparison_naturality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

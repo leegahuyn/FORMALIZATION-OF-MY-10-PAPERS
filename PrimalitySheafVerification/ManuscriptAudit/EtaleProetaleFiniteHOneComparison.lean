@@ -53,7 +53,7 @@ theorem comparison_surjective_of_finiteType (T : Type) [Finite T]
   have hg : Function.Injective g := f.injective.comp
     ((comparison_injective X ℓ n).comp e.symm.injective)
   intro a
-  obtain ⟨t, ht⟩ := Finite.surjective_of_injective g hg (f a)
+  obtain ⟨t, ht⟩ := Finite.surjective_of_injective hg (f a)
   exact ⟨e.symm t, f.injective ht⟩
 
 end Comparison
@@ -83,7 +83,7 @@ def cuspEquiv (n : ℕ) :
     Sheaf.H (etaleCoefficient (projectiveCusp K) ℓ n) 1 ≃+
       Sheaf.H (finiteCoefficient (projectiveCusp K) ℓ n) 1 :=
   AddEquiv.ofBijective (comparison (projectiveCusp K) ℓ n)
-    ⟨comparison_injective (projectiveCusp K) ℓ n, fun a ↦
+    ⟨comparison_injective (projectiveCusp K) ℓ n, fun _ ↦
       ⟨0, (CuspNativeProetaleProperHOne.residue_HOne_subsingleton K ℓ n).elim _ _⟩⟩
 
 end Models

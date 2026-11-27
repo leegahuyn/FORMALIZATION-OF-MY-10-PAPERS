@@ -124,6 +124,44 @@ def constantSheafContinuousMapIso :
   exact asIso (P.map (constantToContinuous X M)) ≪≫
     (sheafificationIso (continuousMapSheaf X M)).symm
 
+private theorem constantIso_unit :
+    toSheafify X.smallEtaleTopology ((Functor.const (X.Etaleᵒᵖ)).obj M) ≫
+      (constantSheafContinuousMapIso X M).hom.hom = constantToContinuous X M := by
+  let J := X.smallEtaleTopology
+  let Q := continuousMapSheaf X M
+  let a := constantToContinuous X M
+  change toSheafify J ((Functor.const (X.Etaleᵒᵖ)).obj M) ≫
+    (sheafifyMap J a ≫ (isoSheafify J Q.property).inv) = a
+  rw [← toSheafify_naturality_assoc]
+  change a ≫ (isoSheafify J Q.property).hom ≫ (isoSheafify J Q.property).inv = a
+  rw [Iso.hom_inv_id, Category.comp_id]
+
+/-- The constant-sheaf identification is natural for a map that acts on constant sections
+by the given additive coefficient homomorphism. -/
+theorem constantSheafContinuousMapIso_naturality
+    {N : AddCommGrpCat.{u}} [TopologicalSpace N] [DiscreteTopology N]
+    [IsTopologicalAddGroup N] (f : M ⟶ N)
+    (g : continuousMapSheaf X M ⟶ continuousMapSheaf X N)
+    (hg : ∀ (W : X.Etaleᵒᵖ) (m : M),
+      g.hom.app W (ContinuousMap.const W.unop.left m) =
+        ContinuousMap.const W.unop.left (f m)) :
+    (constantSheaf X.smallEtaleTopology AddCommGrpCat.{u}).map f ≫
+        (constantSheafContinuousMapIso X N).hom =
+      (constantSheafContinuousMapIso X M).hom ≫ g := by
+  let J := X.smallEtaleTopology
+  let c := (Functor.const (X.Etaleᵒᵖ)).map f
+  apply Sheaf.hom_ext
+  apply sheafify_hom_ext J _ _ (continuousMapSheaf X N).property
+  change toSheafify J _ ≫ (sheafifyMap J c ≫ (constantSheafContinuousMapIso X N).hom.hom) =
+    toSheafify J _ ≫ ((constantSheafContinuousMapIso X M).hom.hom ≫ g.hom)
+  rw [← toSheafify_naturality_assoc, constantIso_unit, ← Category.assoc, constantIso_unit]
+  apply NatTrans.ext
+  funext W
+  apply AddCommGrpCat.hom_ext
+  apply AddMonoidHom.ext
+  intro m
+  exact (hg W m).symm
+
 end
 
 end ManuscriptAudit.EtaleContinuousMapSheaf
@@ -132,9 +170,11 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.EtaleContinuousMapSheaf.continuousMapSheaf,
-      ``ManuscriptAudit.EtaleContinuousMapSheaf.constantSheafContinuousMapIso] do
+      ``ManuscriptAudit.EtaleContinuousMapSheaf.constantSheafContinuousMapIso,
+      ``ManuscriptAudit.EtaleContinuousMapSheaf.constantSheafContinuousMapIso_naturality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+gh: Not Found (HTTP 404)

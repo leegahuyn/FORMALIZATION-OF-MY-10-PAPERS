@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8DedekindCommonDivisor
 
 namespace ManuscriptAudit.Paper8GcdArithmeticWeight
 
-open Paper8ContourResidueWeights Paper8HolomorphicPartPhase (periodCoefficient)
+open Paper8ContourResidueWeights
+open Paper8HolomorphicPartPhase (periodCoefficient)
 open Paper8GcdResidueFiber Paper8DedekindCommonDivisor
 
 noncomputable section

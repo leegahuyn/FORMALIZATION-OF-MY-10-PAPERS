@@ -31,7 +31,7 @@ private def torsionKernelEquiv (m : ℕ) (U : AddMonoid.End G) :
       change (m • U : AddMonoid.End G) P.val = 0
       calc
         _ = m • U P.val := apply_nsmul m U P.val
-        _ = U (m • P.val) := (map_nsmul U P.val m).symm
+        _ = U (m • P.val) := (map_nsmul U m P.val).symm
         _ = 0 := by rw [hP, map_zero])
     let Q : (m • U).ker := ⟨P.val, hK⟩
     exact ⟨Q, (mem_iff m ↥((m • U).ker) Q).mpr (Subtype.ext hP)⟩

@@ -57,6 +57,27 @@ theorem comparison_injective (F : D X) : Function.Injective (comparison X F) := 
   apply EtaleProetaleHOne.comparison_injective X ((proetaleLift X).obj F)
   exact hxy
 
+theorem directImageLiftIso_naturality {F G : D X} (f : F ⟶ G) :
+    (etaleLift X).map ((direct₀ X).map f) ≫ (directImageLiftIso X G).hom =
+      (directImageLiftIso X F).hom ≫ (direct₁ X).map ((proetaleLift X).map f) := by
+  let H := sheafToPresheaf X.smallEtaleTopology B
+  apply H.map_injective
+  simp only [Functor.map_comp, directImageLiftIso, Functor.preimageIso_hom, Functor.map_preimage]
+  apply NatTrans.ext
+  funext W
+  simp only [NatTrans.comp_app, Functor.associator_hom_app, Category.comp_id, Category.id_comp] <;> rfl
+
+/-- The natural degree-one comparison from the actual small étale direct image. -/
+theorem comparison_naturality {F G : D X} (f : F ⟶ G)
+    (x : Sheaf.H ((direct₀ X).obj F) 1) :
+    comparison X G (Sheaf.H.map ((direct₀ X).map f) 1 x) =
+      Sheaf.H.map ((proetaleLift X).map f) 1 (comparison X F x) := by
+  unfold comparison
+  simp only [AddMonoidHom.comp_apply]
+  rw [EtaleCoefficientHOne.comparison_naturality]
+  rw [← Sheaf.H.map_comp_apply, directImageLiftIso_naturality, Sheaf.H.map_comp_apply]
+  exact EtaleProetaleHOne.comparison_naturality X ((proetaleLift X).map f) _
+
 end
 end ManuscriptAudit.EtaleProetaleHOneUniverseComparison
 
@@ -64,7 +85,9 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.EtaleProetaleHOneUniverseComparison.directImageLiftIso,
-      ``ManuscriptAudit.EtaleProetaleHOneUniverseComparison.comparison_injective] do
+      ``ManuscriptAudit.EtaleProetaleHOneUniverseComparison.comparison_injective,
+      ``ManuscriptAudit.EtaleProetaleHOneUniverseComparison.directImageLiftIso_naturality,
+      ``ManuscriptAudit.EtaleProetaleHOneUniverseComparison.comparison_naturality] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
