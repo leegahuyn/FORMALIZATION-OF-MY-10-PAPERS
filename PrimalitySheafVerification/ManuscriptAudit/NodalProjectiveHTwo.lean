@@ -64,6 +64,13 @@ private def overlapCokernelEquiv (d : ℕ) :
   rw [← hRange]
   exact e'
 
+/-- The native Y-chart restriction has cyclic cokernel on the actual overlap. -/
+def overlapCyclicCokernelEquiv (d : ℕ) (hd : 0 < d) :
+    (((F K d).H' 1 (EtaleOpenIntersection.intersection (affineOpen K) (chartOpen K)) : Type) ⧸
+      (((F K d).cohomologyPresheaf 1).map (sndLeg (affineOpen K) (chartOpen K)).op).hom.range)
+      ≃+ ZMod d :=
+  (overlapCokernelEquiv K d).trans (NodalYChartHOneCokernel.cokernelEquiv K d hd)
+
 variable (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
 
 /-- The actual second-degree proper nodal cohomology is the coefficient group. -/
@@ -105,7 +112,8 @@ end ManuscriptAudit.NodalProjectiveHTwo
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.NodalProjectiveHTwo.projectiveHTwoEquiv,
+  for name in [``ManuscriptAudit.NodalProjectiveHTwo.overlapCyclicCokernelEquiv,
+      ``ManuscriptAudit.NodalProjectiveHTwo.projectiveHTwoEquiv,
       ``ManuscriptAudit.NodalProjectiveHTwo.compactHTwoEquiv] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

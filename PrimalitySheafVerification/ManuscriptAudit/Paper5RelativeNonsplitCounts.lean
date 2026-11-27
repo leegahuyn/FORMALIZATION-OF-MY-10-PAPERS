@@ -29,7 +29,6 @@ private theorem odd_finrank (hP : p % 3 = 2) (hQ : Fintype.card F % 3 = 2) :
     have hSq : p ^ 2 % 3 = 1 := by rw [Nat.pow_mod, hP]; decide
     have e : p ^ d % 3 = 1 := by
       rw [hEven, pow_mul, Nat.pow_mod, hSq, one_pow]
-      decide
     rw [hCard, e] at hQ
     omega
   · exact hd
