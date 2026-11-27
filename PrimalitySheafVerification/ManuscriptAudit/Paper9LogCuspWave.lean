@@ -48,7 +48,10 @@ private theorem amplitude_hasDerivAt (b b' : ℝ → ℝ) (R t : ℝ)
   have hArg : HasDerivAt (fun v : ℝ => v / R) R⁻¹ t := by
     simpa only [id_eq, div_eq_mul_inv, one_mul] using (hasDerivAt_id t).mul_const R⁻¹
   have h := ((hb (t / R)).comp t hArg).ofReal_comp
-  simpa only [Function.comp_def, amplitude, Complex.ofReal_mul, Complex.ofReal_inv] using h
+  convert h using 1 <;> first
+  | rfl
+  | funext v; rfl
+  | simp only [Function.comp_def, amplitude, Complex.ofReal_mul, Complex.ofReal_inv]
 
 theorem trial_hasDerivAt (b b' : ℝ → ℝ) (k R t : ℝ)
     (hb : ∀ v, HasDerivAt b (b' v) v) :
@@ -68,7 +71,7 @@ theorem trialDeriv_hasDerivAt (b b' b'' : ℝ → ℝ) (k R t : ℝ)
   convert h using 1 <;> first
   | rfl
   | funext y; rfl
-  | unfold trialSecond; ring
+  | unfold trialSecond; simp only [Pi.add_apply]; ring
 
 theorem shifted_mode_residual (b b' b'' : ℝ → ℝ) (k R t : ℝ)
     (hb : ∀ v, HasDerivAt b (b' v) v) (hb' : ∀ v, HasDerivAt b' (b'' v) v) :
@@ -87,15 +90,23 @@ theorem shifted_mode_residual (b b' b'' : ℝ → ℝ) (k R t : ℝ)
 
 theorem trial_norm_sq (b : ℝ → ℝ) (k R t : ℝ) :
     ‖trial b k R t‖ ^ (2 : ℕ) = b (t / R) ^ 2 := by
-  rw [trial, norm_mul, phase_norm, mul_one, amplitude, Complex.norm_real, sq_abs]
+  rw [trial, norm_mul, phase_norm, mul_one, amplitude, Complex.norm_real, Real.norm_eq_abs, sq_abs]
 
 theorem residual_norm_sq (b' b'' : ℝ → ℝ) (k R t : ℝ) :
     ‖residual b' b'' k R t‖ ^ (2 : ℕ) =
       b'' (t / R) ^ 2 * (R⁻¹) ^ 4 + 4 * k ^ 2 * b' (t / R) ^ 2 * (R⁻¹) ^ 2 := by
-  rw [residual, norm_mul, phase_norm, mul_one, ← Complex.normSq_eq_norm_sq]
-  simp only [amplitude, ← Complex.ofReal_inv, ← Complex.ofReal_pow]
-  simp [frequency, Complex.normSq_apply, Complex.add_re, Complex.add_im,
-    Complex.mul_re, Complex.mul_im] <;> ring
+  let u : ℝ := b'' (t / R) * (R⁻¹) ^ 2
+  let v : ℝ := 2 * k * b' (t / R) * R⁻¹
+  have he : amplitude b'' R t * (R : ℂ)⁻¹ ^ 2 +
+      2 * frequency k * amplitude b' R t * (R : ℂ)⁻¹ =
+      (u : ℂ) + (v : ℂ) * I := by
+    simp only [u, v, amplitude, frequency, Complex.ofReal_mul, Complex.ofReal_pow,
+      Complex.ofReal_inv, Complex.ofReal_ofNat]
+    ring
+  rw [residual, norm_mul, phase_norm, mul_one, ← Complex.normSq_eq_norm_sq, he]
+  simp [Complex.normSq_apply, Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im]
+  dsimp [u, v]
+  ring
 
 end
 end ManuscriptAudit.Paper9LogCuspWave

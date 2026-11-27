@@ -38,6 +38,7 @@ theorem finite_cusp_mass (g : ℝ → ℂ) (hg : Continuous g) {a b : ℝ}
   rw [uIcc_of_le hab]
   intro y hy
   have hy₀ : 0 < y := ha.trans_le hy.1
+  change ‖weightedLogProfile g y‖ ^ (2 : ℕ) / y ^ 2 = ‖g (Real.log y)‖ ^ (2 : ℕ) * y⁻¹
   rw [weightedLogProfile_norm_sq g hy₀]
   field_simp [hy₀.ne'] <;> ring
 

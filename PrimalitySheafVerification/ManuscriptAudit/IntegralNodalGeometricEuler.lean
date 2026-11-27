@@ -92,13 +92,16 @@ private theorem smoothBetti_eq (n : ℕ) :
     letI := ordinaryModule ℓ (projectiveNode (closureField p)) (n + 1)
     exact LinearEquiv.finrank_eq (linearOfAddEquiv ℓ (smoothPositiveCohomologyEquiv p ℓ n))
 
-private theorem two_ne_zero (hp : 2 < p) : (2 : closureField p) ≠ 0 := by
+/-- A prime coefficient distinct from the residue prime is invertible on the geometric fibre. -/
+theorem coefficient_ne_zero (hℓp : ℓ ≠ p) : (ℓ : closureField p) ≠ 0 := by
   intro h
-  have hF := (algebraMap (ZMod p) (closureField p)).injective
-    (show algebraMap (ZMod p) (closureField p) (2 : ZMod p) =
-      algebraMap (ZMod p) (closureField p) 0 by simpa only [map_ofNat, map_zero] using h)
-  have hd : p ∣ 2 := (CharP.cast_eq_zero_iff (ZMod p) p 2).mp (by simpa using hF)
-  exact (not_le_of_gt hp) (Nat.le_of_dvd (by decide) hd)
+  have hd : p ∣ ℓ := (CharP.cast_eq_zero_iff (closureField p) p ℓ).mp h
+  have he : p = ℓ := (Nat.prime_dvd_prime_iff_eq (Fact.out : p.Prime) (Fact.out : ℓ.Prime)).mp hd
+  exact hℓp he.symm
+
+private theorem two_ne_zero (hp : 2 < p) : (2 : closureField p) ≠ 0 := by
+  letI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+  exact coefficient_ne_zero p 2 (ne_of_lt hp)
 
 variable [NeZero (ℓ : closureField p)]
 
@@ -130,6 +133,7 @@ run_cmd do
   for name in [``ManuscriptAudit.IntegralNodalGeometricEuler.properCohomologyEquiv,
       ``ManuscriptAudit.IntegralNodalGeometricEuler.smoothPositiveCohomologyEquiv,
       ``ManuscriptAudit.IntegralNodalGeometricEuler.smoothHZero_subsingleton,
+      ``ManuscriptAudit.IntegralNodalGeometricEuler.coefficient_ne_zero,
       ``ManuscriptAudit.IntegralNodalGeometricEuler.geometric_euler,
       ``ManuscriptAudit.IntegralNodalGeometricEuler.arithmetic_bump_and_geometric_euler] do
     let dependencies ← collectAxioms name

@@ -30,7 +30,9 @@ private theorem coefficient_compatible
     (reduce (coefficient l G f r h (n + 1)).1,
       reduce (coefficient l G f r h (n + 1)).2) = coefficient l G f r h n := by
   cases n with
-  | zero => exact Subsingleton.elim _ _
+  | zero =>
+    letI : Subsingleton (ZMod (l ^ 0)) := by rw [pow_zero]; infer_instance
+    exact Subsingleton.elim _ _
   | succ n =>
     let reduce := PadicResidueSystems.reduction l (Nat.le_succ (n + 1))
     let c := coefficient l G f r h (n + 2)
@@ -51,7 +53,10 @@ private theorem coefficient_compatible
             reduce c.1 • transition l G (n + 1) y +
               reduce c.2 • mapAdd (l ^ (n + 1)) r (transition l G (n + 1) y)
           rw [map_add, transition_smul l G (Fact.out : l.Prime).ne_zero,
-            transition_smul l G (Fact.out : l.Prime).ne_zero, map_transition]
+            transition_smul l G (Fact.out : l.Prime).ne_zero]
+          exact congrArg (fun v : PowerTorsion l G (n + 1) =>
+            reduce c.1 • transition l G (n + 1) y + reduce c.2 • v)
+              (map_transition l (show G →+ G from r) (n + 1) y)
     exact (Classical.choose_spec (h n)).2 _ hLevel
 
 include h in

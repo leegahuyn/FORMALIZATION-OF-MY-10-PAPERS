@@ -35,10 +35,11 @@ private theorem triangularAt (n : ℕ) : TriangularAt n := by
     intro V _ _ _ hn T
     classical
     by_cases hn₀ : n = 0
-    · subst n
-      refine ⟨Module.finBasisOfFinrankEq ℂ V hn, ?_⟩
+    · have h0 : finrank ℂ V = 0 := hn.trans hn₀
+      rw [hn₀]
+      refine ⟨Module.finBasisOfFinrankEq ℂ V h0, ?_⟩
       exact fun i => Fin.elim0 i
-    have hn₊ : 0 < n := Nat.pos_of_ne_zero hn₀
+    have hnPos : 0 < n := Nat.pos_of_ne_zero hn₀
     have hV : 0 < finrank ℂ V := by rwa [hn]
     letI : Nontrivial V := Module.finrank_pos_iff.mp hV
     obtain ⟨a, ha⟩ := Module.End.exists_eigenvalue T

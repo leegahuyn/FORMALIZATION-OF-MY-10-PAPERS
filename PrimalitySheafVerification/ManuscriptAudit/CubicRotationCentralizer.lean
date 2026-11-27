@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.Tactic.FinCases
@@ -19,9 +20,9 @@ variable (B : Basis (Fin 2) R V) (S : Module.End R V)
 theorem coefficients_unique (hS : S (B 0) = B 1) {a b c d : R}
     (h : a • (1 : Module.End R V) + b • S = c • 1 + d • S) :
     a = c ∧ b = d := by
-  have hB : a • B 0 + b • B 1 = c • B 0 + d • B 1 := by
-    simpa only [LinearMap.add_apply, LinearMap.smul_apply, LinearMap.one_apply, hS] using
-      congrArg (fun T : Module.End R V => T (B 0)) h
+  have hApply := congrArg (fun T : Module.End R V => T (B 0)) h
+  change a • B 0 + b • S (B 0) = c • B 0 + d • S (B 0) at hApply
+  have hB : a • B 0 + b • B 1 = c • B 0 + d • B 1 := by simpa only [hS] using hApply
   constructor
   · simpa [Basis.repr_self] using congrArg (fun v : V => B.repr v (0 : Fin 2)) hB
   · simpa [Basis.repr_self] using congrArg (fun v : V => B.repr v (1 : Fin 2)) hB
@@ -42,7 +43,8 @@ theorem exists_unique_coefficients (hS : S (B 0) = B 1) (F : Module.End R V)
   have hF (v : V) : F (S v) = S (F v) :=
     congrArg (fun U : Module.End R V => U v) hComm
   have hT (v : V) : T (S v) = S (T v) := by
-    simp only [T, LinearMap.add_apply, LinearMap.smul_apply, LinearMap.one_apply, map_add, map_smul]
+    change a • S v + b • S (S v) = S (a • v + b • S v)
+    rw [map_add, map_smul, map_smul]
   have h₁ : F (B 1) = T (B 1) := by rw [← hS, hF, h₀, hT]
   have hEq : F = T := by
     apply B.ext

@@ -63,7 +63,8 @@ private theorem toIntegralFiber_over :
     pullback.fst (geometricResidueMap p) (nodeToResidue p)
   rw [Category.assoc]
   have h := pullbackRightPullbackFstIso_hom_fst (residueToBase p) totalToBase (geometricResidueMap p)
-  simpa only [pullback.congrHom, asIso_hom, pullback.map, pullback.lift_fst, Category.comp_id] using h
+  simpa only [pullback.congrHom, asIso_hom, pullback.map, pullback.lift_fst, Category.comp_id,
+    nodeToResidue] using h
 
 /-- The canonical geometric fibre is the actual proper node over the algebraic closure. -/
 def projectiveIso : geometricFiber p ≅ projectiveNode (closureField p) :=

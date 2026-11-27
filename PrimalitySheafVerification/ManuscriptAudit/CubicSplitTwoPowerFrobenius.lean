@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CubicNonsplitThreeAdicTrace
+import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusRotationMap
 import PrimalitySheafVerification.ManuscriptAudit.CubicRotationCentralizer
 import PrimalitySheafVerification.ManuscriptAudit.CubicRotationCyclicBasis
 
@@ -43,7 +44,7 @@ theorem geometric_commutes [IsAlgClosed L] :
   let g := FiniteField.frobeniusAlgHom E L
   change arithmeticPointFrobenius E L A (geometricRotation E L h₂ h₃ hA hz P) =
     geometricRotation E L h₂ h₃ hA hz (arithmeticPointFrobenius E L A P)
-  exact CubicNonsplitFrobeniusTrace.pointMapAt_intertwines_rotation E L (Curve A)
+  exact CubicFrobeniusRotationMap.pointMapAt_intertwines_rotation E L (Curve A)
     (CubicNonsplitFrobeniusTrace.centered_baseChange E L A) g (g.commutes z)
     (primitive E L hz).pow_eq_one (primitive E L hz).pow_eq_one
     (discriminant_ne E L h₂ h₃ hA) P

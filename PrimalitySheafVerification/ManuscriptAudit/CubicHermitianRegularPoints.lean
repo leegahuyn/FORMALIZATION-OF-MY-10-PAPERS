@@ -82,7 +82,7 @@ theorem frobenius_product_relation {A : E} (hA : A ≠ 0)
   have hvQ : v ^ (q + 1) = (β⁻¹ * y) ^ 2 := by rw [hnQ, pow_mul, hv]
   have hPoint : u ^ (q + 1) + v ^ (q + 1) = 1 := by
     rw [huQ, hvQ]
-    simpa using normalized_equation (D := K) hc hα hβ (X := x) (Y := y) (by simpa using hXY)
+    simpa using normalized_equation (D := K) hc hα hβ (x := x) (y := y) (by simpa using hXY)
   obtain ⟨f, hf⟩ := exists_principal_frobenius_product E m n a b hm hn hz hw hu₀ hv₀ hHermitian hPoint
   have hu' : (u ^ Q) ^ m = α⁻¹ * x ^ Q := by
     rw [← pow_mul, Nat.mul_comm Q m, pow_mul, hu, mul_pow, inv_pow, hαQ]

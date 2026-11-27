@@ -41,13 +41,13 @@ private theorem five_ne_zero : (5 : F) ≠ 0 := by
   apply (one_ne_zero : (1 : F) ≠ 0)
   linear_combination 3 * h - 2 * seven_zero F
 
-private theorem negY_eq (x y : F) : (W F).negY x y = -y := by
+theorem negY_eq (x y : F) : (W F).negY x y = -y := by
   simp [Affine.negY, ordinaryCurve]
 
-private theorem addX_eq (x₁ x₂ l : F) : (W F).addX x₁ x₂ l = l ^ 2 - x₁ - x₂ := by
+theorem addX_eq (x₁ x₂ l : F) : (W F).addX x₁ x₂ l = l ^ 2 - x₁ - x₂ := by
   simp [Affine.addX, ordinaryCurve]
 
-private theorem addY_eq (x₁ x₂ y l : F) :
+theorem addY_eq (x₁ x₂ y l : F) :
     (W F).addY x₁ x₂ y l = -(l * ((W F).addX x₁ x₂ l - x₁) + y) := by
   simp only [Affine.addY, negY_eq, Affine.negAddY]
 
@@ -57,7 +57,7 @@ private theorem y_ne_neg_y {y : F} (hy : y ≠ 0) : y ≠ -y := by
   apply (mul_eq_zero.mp (show (2 : F) * y = 0 by linear_combination h)).resolve_left
   exact two_ne_zero F
 
-private theorem tangent_slope (x y : F) (h : y ≠ -y) :
+theorem tangent_slope (x y : F) (h : y ≠ -y) :
     (W F).slope x x y y = 3 * x ^ 2 / (2 * y) := by
   have hne : y ≠ (W F).negY x y := by simpa only [negY_eq] using h
   rw [Affine.slope_of_Y_ne rfl hne]
@@ -101,7 +101,7 @@ private theorem scaledAddY (x₁ x₂ y l : F) :
   simp only [addY_eq, scaledAddX]
   linear_combination (-l * ((W F).addX x₁ x₂ l - x₁)) * two_cube F
 
-private theorem scaledNonsingular (x y : F) (h : (W F).Nonsingular x y) :
+theorem scaledNonsingular (x y : F) (h : (W F).Nonsingular x y) :
     (W F).Nonsingular (2 * x) y := by
   apply Affine.equation_iff_nonsingular.mp
   apply (equation_iff F _ _).mpr
@@ -253,6 +253,15 @@ private theorem double_eq_phi_squared (P : Points F) (hP : (7 : ℕ) • P = 0) 
     rw [factor_two_sub_phi, hP]
   exact sub_eq_zero.mp (two_sub_phi_trivial F Q (sub_eq_zero.mp hQ))
 
+/-- The native additive rotation (x,y) ↦ (2x,y). -/
+def rotation : AddMonoid.End (Points F) := phi F
+
+theorem rotation_some {x y : F} (h : (W F).Nonsingular x y) :
+    rotation F (.some x y h) = .some (2 * x) y (scaledNonsingular F x y h) := rfl
+
+theorem rotation_sum (P : Points F) : rotation F P + rotation F (rotation F P) = -P :=
+  phi_sum F P
+
 /-- Every nonzero seven-torsion point has one of three possible abscissas. -/
 theorem seven_torsion_x_cube {x y : F} {h : (W F).Nonsingular x y}
     (hP : (7 : ℕ) • (.some x y h : Points F) = 0) : x ^ 3 + 1 = 0 := by
@@ -293,6 +302,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper5OrdinarySevenGeometry.rotation_some,
+      ``ManuscriptAudit.Paper5OrdinarySevenGeometry.rotation_sum,
       ``ManuscriptAudit.Paper5OrdinarySevenGeometry.seven_torsion_x_cube,
       ``ManuscriptAudit.Paper5OrdinarySevenGeometry.seven_torsion_coordinates] do
     let dependencies ← collectAxioms name

@@ -33,17 +33,18 @@ theorem coordinate_equation (A : K) :
   let W := Centered A
   have hp : W.polynomial = Y ^ 2 - C (X ^ 3 + C A) := by
     simp [W, Centered, shortCubic, Affine.polynomial]
-  have h := AdjoinRoot.mk_self W.polynomial
-  change Affine.CoordinateRing.mk W W.polynomial = 0 at h
-  rw [hp, C_add, C_pow, map_sub, map_add, map_pow, map_pow] at h
+  have hzero : Affine.CoordinateRing.mk W W.polynomial = 0 := AdjoinRoot.mk_self
+  have h : Affine.CoordinateRing.mk W (Y ^ 2 - C (X ^ 3 + C A)) = 0 :=
+    (congrArg (Affine.CoordinateRing.mk W) hp).symm.trans hzero
+  rw [C_add, C_pow, map_sub, map_add, map_pow, map_pow] at h
   change yCoord A ^ 2 - (xCoord A ^ 3 + Affine.CoordinateRing.mk W (C (C A))) = 0 at h
   rw [mk_CC] at h
   exact sub_eq_zero.mp h
 
 theorem normalized_equation {D : Type*} [CommRing D] [Algebra K D]
     {A α β : K} (hA : A ≠ 0) (hα : α ^ 3 = -A) (hβ : β ^ 2 = A)
-    {X Y : D} (hXY : Y ^ 2 = X ^ 3 + algebraMap K D A) :
-    (algebraMap K D α⁻¹ * X) ^ 3 + (algebraMap K D β⁻¹ * Y) ^ 2 = 1 := by
+    {x y : D} (hXY : y ^ 2 = x ^ 3 + algebraMap K D A) :
+    (algebraMap K D α⁻¹ * x) ^ 3 + (algebraMap K D β⁻¹ * y) ^ 2 = 1 := by
   have ha : α⁻¹ ^ 3 = -(A⁻¹) := by rw [inv_pow, hα, inv_neg]
   have hb : β⁻¹ ^ 2 = A⁻¹ := by rw [inv_pow, hβ]
   have hUnit : algebraMap K D A⁻¹ * algebraMap K D A = 1 := by

@@ -48,7 +48,9 @@ theorem prod_root_differences {D : Type*} [CommRing D] [Algebra K D] (T : D)
   simp only [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, eval₂_finsetProd] at he
   rw [he, Finset.prod_range]
   symm
-  apply Fintype.prod_equiv (rootPowerEquiv hz)
+  refine Fintype.prod_equiv (rootPowerEquiv hz)
+    (fun i : Fin m => T - algebraMap K D (z ^ (i : ℕ) * u))
+    (fun x : rootsOfUnity m K => T - algebraMap K D (rootValue x * u)) ?_
   intro i
   change T - algebraMap K D (z ^ (i : ℕ) * u) =
     T - algebraMap K D (rootValue (powerRoot hz i) * u)
@@ -76,14 +78,14 @@ private theorem roots_line_comaximal {D : Type*} [CommRing D] [Algebra K D]
   rw [← map_sub]
   apply IsUnit.map (algebraMap K D)
   apply isUnit_iff_ne_zero.mpr
-  rw [sub_ne_zero, mul_left_inj' hu]
-  exact fun h => hxy (rootValue_injective m h)
+  rw [sub_ne_zero]
+  exact fun h => hxy (rootValue_injective m (mul_right_cancel₀ hu h))
 
 theorem pointIdeal_eq_sup {D : Type*} [CommRing D] (T S x y : D) :
     pointIdeal T S x y = Ideal.span {T - x} ⊔ Ideal.span {S - y} := by
   rw [pointIdeal, Ideal.span_insert]
 
-variable {R : Type*} [CommRing R] [Algebra K R]
+variable {R : Type*} [CommRing R] [Algebra K R] [Nontrivial R]
 variable (m n : ℕ) [NeZero m] [NeZero n] (a b : R)
 
 local notation "D₀" => DoubleExtension m n a b
@@ -104,12 +106,18 @@ theorem pointIdeal_map_eq_orbit [Fintype (rootsOfUnity m K)] [Fintype (rootsOfUn
   have hV : j b = V ^ n := (secondRoot_pow m n a b).symm
   simp_rw [pointIdeal_eq_sup, Ideal.map_sup, Ideal.map_span, Set.image_singleton,
     map_sub, hU, hV, ← IsScalarTower.algebraMap_apply K R D₀]
-  rw [Fintype.prod_prod_type']
-  rw [ComaximalIdealGrid.prod_prod_sup_eq (s := Finset.univ) (t := Finset.univ)]
-  · rw [Ideal.prod_span_singleton, Ideal.prod_span_singleton,
-      prod_root_differences U hz, prod_root_differences V hw]
-  · exact fun x _ y _ hxy => roots_line_comaximal U hu hxy
-  · exact fun x _ y _ hxy => roots_line_comaximal V hv hxy
+  let I (r : rootsOfUnity m K) : Ideal D₀ := Ideal.span {U - i (rootValue r * u)}
+  let J (r : rootsOfUnity n K) : Ideal D₀ := Ideal.span {V - i (rootValue r * v)}
+  have hProd : (∏ r : rootsOfUnity m K × rootsOfUnity n K, I r.1 ⊔ J r.2) =
+      ∏ r, ∏ s, I r ⊔ J s := Fintype.prod_prod_type' (fun r s => I r ⊔ J s)
+  have hGrid := ComaximalIdealGrid.prod_prod_sup_eq Finset.univ Finset.univ I J
+    (fun r _ s _ hrs => roots_line_comaximal U hu hrs)
+    (fun r _ s _ hrs => roots_line_comaximal V hv hrs)
+  change _ = ∏ r : rootsOfUnity m K × rootsOfUnity n K, I r.1 ⊔ J r.2
+  rw [hProd, hGrid]
+  dsimp only [I, J]
+  rw [Ideal.prod_span_singleton, Ideal.prod_span_singleton,
+    prod_root_differences U hz, prod_root_differences V hw]
 
 end
 end ManuscriptAudit.HermitianRadicalPointFiber

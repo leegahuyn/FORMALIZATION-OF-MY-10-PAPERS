@@ -43,9 +43,9 @@ theorem mode_form_eq (g g' g'' : ℝ → ℂ) (a b : ℝ)
   have hFlux (t : ℝ) :
       HasDerivAt flux (‖g' t‖ ^ (2 : ℕ) + (star (g t) * g'' t).re) t := by
     have hc : HasDerivAt (fun t => star (g t)) (star (g' t)) t :=
-      (Complex.conjCLE : ℂ →L[ℝ] ℂ).hasFDerivAt.comp_hasDerivAt (hg t)
+      (Complex.conjCLE : ℂ →L[ℝ] ℂ).hasFDerivAt.comp_hasDerivAt t (hg t)
     have hm := hc.mul (hg' t)
-    have h := Complex.reCLM.hasFDerivAt.comp_hasDerivAt hm
+    have h := Complex.reCLM.hasFDerivAt.comp_hasDerivAt t hm
     change HasDerivAt flux ((star (g' t) * g' t + star (g t) * g'' t).re) t at h
     rwa [Complex.add_re, re_star_mul_self] at h
   have hG : Continuous g := continuous_iff_continuousAt.mpr (fun t => (hg t).continuousAt)

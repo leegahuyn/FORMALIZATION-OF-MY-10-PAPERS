@@ -33,6 +33,7 @@ private def toOverlap (d : ℕ) :
     (F K d).H' 1 (Scheme.Etale.mk (chartOpen K)) →+ (F K d).H' 1 (overlap K) :=
   (((F K d).cohomologyPresheaf 1).map (sndLeg (affineOpen K) (chartOpen K)).op).hom
 
+set_option maxHeartbeats 900000 in
 private def overlapCokernelEquiv (d : ℕ) :
     (((F K d).H' 1 (overlap K) : Type) ⧸ (toOverlap K d).range) ≃+
       (((F K d).H' 1 (principalObject K) : Type) ⧸
@@ -49,8 +50,7 @@ private def overlapCokernelEquiv (d : ℕ) :
     change P.map φ.hom.op (P.map a.op x) = P.map (sndLeg (affineOpen K) (chartOpen K)).op x
     have hs : φ.hom ≫ a = sndLeg (affineOpen K) (chartOpen K) := by
       exact overlapEtaleIso_snd K
-    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
-    exact DFunLike.congr_fun (congrArg (fun b ↦ (P.map b.op).hom) hs) x
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, hs]
   let e' : (_ ⧸ r.range) ≃+ (_ ⧸ (i.range ⊔ e.toAddMonoidHom.ker)) :=
     AdditiveCokernelPresentation.cokernelEquiv i (AddMonoidHom.id _) e.toAddMonoidHom r
       (fun x ↦ ⟨x, rfl⟩) e.surjective h

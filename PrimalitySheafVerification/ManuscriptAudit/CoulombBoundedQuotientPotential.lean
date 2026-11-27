@@ -49,7 +49,8 @@ theorem bounded_potential_form_no_mass_lower_bound (D : GammaTwoFundamentalDomai
   refine ⟨r, hr, hM, ?_⟩
   have hP := potentialIntegral_le_mass D V hV hB r hr
   calc
-    _ < (b - B) * massOnQuotient D r + potentialIntegral D V r := add_lt_add_right hE _
+    _ < (b - B) * massOnQuotient D r + potentialIntegral D V r := by
+      linarith only [hE]
     _ ≤ (b - B) * massOnQuotient D r + B * massOnQuotient D r := by
       linarith only [hP]
     _ = b * massOnQuotient D r := by ring
