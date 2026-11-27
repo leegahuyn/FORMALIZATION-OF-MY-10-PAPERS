@@ -12,56 +12,54 @@ noncomputable section
 
 variable (F : Type*) [Field F] [CharP F 7] [DecidableEq F]
 
-local notation "W" => (ordinaryCurve F).toAffine
+private abbrev W := (ordinaryCurve F).toAffine
 
 set_option maxHeartbeats 1200000 in
-private theorem double_point {x y : F} (hP : W.Nonsingular x y) (hy : y ≠ 0) :
-    ∃ hQ : W.Nonsingular (doubleX x y) (doubleY x y),
-      (2 : ℕ) • (Affine.Point.some x y hP : W.Point) = Affine.Point.some (doubleX x y) (doubleY x y) hQ := by
+private theorem double_point {x y : F} (hP : (W F).Nonsingular x y) (hy : y ≠ 0) :
+    ∃ hQ : (W F).Nonsingular (doubleX x y) (doubleY x y),
+      (2 : ℕ) • (Affine.Point.some x y hP : (W F).Point) = Affine.Point.some (doubleX x y) (doubleY x y) hQ := by
   have hy' : y ≠ -y := by
     intro h
     exact (mul_ne_zero two_ne hy) (by linear_combination h)
-  have hyN : y ≠ W.negY x y := by simpa only [negY_eq] using hy'
-  let s := W.slope x x y y
+  have hyN : y ≠ (W F).negY x y := by simpa only [negY_eq] using hy'
+  let s := (W F).slope x x y y
   have hs : s = tangent x y := tangent_slope F x y hy'
-  have hX : W.addX x x s = doubleX x y := by
+  have hX : (W F).addX x x s = doubleX x y := by
     rw [addX_eq, hs]
-    rfl
-  have hY : W.addY x x y s = doubleY x y := by
+  have hY : (W F).addY x x y s = doubleY x y := by
     rw [addY_eq, hX, hs]
-    rfl
-  have hQ : W.Nonsingular (W.addX x x s) (W.addY x x y s) :=
+  have hQ : (W F).Nonsingular ((W F).addX x x s) ((W F).addY x x y s) :=
     Affine.nonsingular_add hP hP (fun h => hyN h.2)
   refine ⟨by simpa only [hX, hY] using hQ, ?_⟩
   rw [two_nsmul, Affine.Point.add_self_of_Y_ne hyN, Affine.Point.some.injEq]
   exact ⟨hX, hY⟩
 
 set_option maxHeartbeats 1200000 in
-private theorem two_sub_regular {x y : F} (hP : W.Nonsingular x y) (hx : x ≠ 0) (hy : y ≠ 0) :
-    ∃ hQ : W.Nonsingular (4 * x ^ 7) (-(y ^ 7)),
-      (2 : ℕ) • (Affine.Point.some x y hP : W.Point) - rotation F (Affine.Point.some x y hP) =
+private theorem two_sub_regular {x y : F} (hP : (W F).Nonsingular x y) (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ hQ : (W F).Nonsingular (4 * x ^ 7) (-(y ^ 7)),
+      (2 : ℕ) • (Affine.Point.some x y hP : (W F).Point) - rotation F (Affine.Point.some x y hP) =
         Affine.Point.some (4 * x ^ 7) (-(y ^ 7)) hQ := by
-  let P : W.Point := .some x y hP
+  let P : (W F).Point := .some x y hP
   have he := (equation_iff F x y).mp hP.1
   obtain ⟨hd, eD⟩ := double_point F hP hy
-  have hNeg : W.Nonsingular (2 * x) (-y) := by
+  have hNeg : (W F).Nonsingular (2 * x) (-y) := by
     simpa only [negY_eq] using
-      (Affine.nonsingular_neg (W' := W) (2 * x) y).mpr (scaledNonsingular F x y hP)
+      (Affine.nonsingular_neg (W' := W F) (2 * x) y).mpr (scaledNonsingular F x y hP)
   have eN : -rotation F P = Affine.Point.some (2 * x) (-y) hNeg := by
     change -rotation F (Affine.Point.some x y hP) = _
     rw [rotation_some, Affine.Point.neg_some, Affine.Point.some.injEq]
     exact ⟨rfl, negY_eq F _ _⟩
   have hxD : 2 * x ≠ doubleX x y := abscissas_ne hx hy he
-  let s := W.slope (2 * x) (doubleX x y) (-y) (doubleY x y)
+  let s := (W F).slope (2 * x) (doubleX x y) (-y) (doubleY x y)
   have hs : s = chord x y := (Affine.slope_of_X_ne hxD).trans (actual_chord hx hy he)
-  have hX : W.addX (2 * x) (doubleX x y) s = 4 * x ^ 7 := by
+  have hX : (W F).addX (2 * x) (doubleX x y) s = 4 * x ^ 7 := by
     rw [addX_eq, hs]
     exact chord_abscissa hy he
-  have hY : W.addY (2 * x) (doubleX x y) (-y) s = -(y ^ 7) := by
+  have hY : (W F).addY (2 * x) (doubleX x y) (-y) s = -(y ^ 7) := by
     rw [addY_eq, hX, hs]
     exact chord_ordinate hy he
-  have hQ : W.Nonsingular (W.addX (2 * x) (doubleX x y) s)
-      (W.addY (2 * x) (doubleX x y) (-y) s) :=
+  have hQ : (W F).Nonsingular ((W F).addX (2 * x) (doubleX x y) s)
+      ((W F).addY (2 * x) (doubleX x y) (-y) s) :=
     Affine.nonsingular_add hNeg hd (fun h => hxD h.1)
   refine ⟨by simpa only [hX, hY] using hQ, ?_⟩
   change (2 : ℕ) • P - rotation F P = _
@@ -71,9 +69,9 @@ private theorem two_sub_regular {x y : F} (hP : W.Nonsingular x y) (hx : x ≠ 0
 
 set_option maxHeartbeats 1200000 in
 /-- At every finite point, the endomorphism 2−ρ has coordinates (4x⁷,−y⁷). -/
-theorem two_sub_rotation_coordinates {x y : F} (hP : W.Nonsingular x y) :
-    ∃ hQ : W.Nonsingular (4 * x ^ 7) (-(y ^ 7)),
-      (2 : ℕ) • (Affine.Point.some x y hP : W.Point) - rotation F (Affine.Point.some x y hP) =
+theorem two_sub_rotation_coordinates {x y : F} (hP : (W F).Nonsingular x y) :
+    ∃ hQ : (W F).Nonsingular (4 * x ^ 7) (-(y ^ 7)),
+      (2 : ℕ) • (Affine.Point.some x y hP : (W F).Point) - rotation F (Affine.Point.some x y hP) =
         Affine.Point.some (4 * x ^ 7) (-(y ^ 7)) hQ := by
   have h7 := seven_zero F
   by_cases hx : x = 0
@@ -83,7 +81,7 @@ theorem two_sub_rotation_coordinates {x y : F} (hP : W.Nonsingular x y) :
       calc
         _ = -(y * (y ^ 2) ^ 3) := by ring
         _ = _ := by rw [he]; linear_combination (-18 * y) * h7
-    let P : W.Point := .some 0 y hP
+    let P : (W F).Point := .some 0 y hP
     have hR : rotation F P = P := by
       change rotation F (Affine.Point.some 0 y hP) = Affine.Point.some 0 y hP
       rw [rotation_some, Affine.Point.some.injEq]
@@ -102,8 +100,8 @@ theorem two_sub_rotation_coordinates {x y : F} (hP : W.Nonsingular x y) :
       calc
         _ = 4 * x * (x ^ 3) ^ 2 := by ring
         _ = _ := by rw [hX3]; linear_combination (2 * x) * h7
-    have hyNeg : (0 : F) = W.negY x 0 := by rw [negY_eq, neg_zero]
-    have hTwo : (2 : ℕ) • (Affine.Point.some x 0 hP : W.Point) = 0 := by
+    have hyNeg : (0 : F) = (W F).negY x 0 := by rw [negY_eq, neg_zero]
+    have hTwo : (2 : ℕ) • (Affine.Point.some x 0 hP : (W F).Point) = 0 := by
       rw [two_nsmul, Affine.Point.add_self_of_Y_eq hyNeg]
     refine ⟨by simpa only [hX, zero_pow (by decide : (7 : ℕ) ≠ 0), neg_zero] using
       scaledNonsingular F x 0 hP, ?_⟩

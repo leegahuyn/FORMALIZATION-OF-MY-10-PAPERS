@@ -52,7 +52,11 @@ theorem exp_supertrace_eq_local_factor (I : Finset ℕ) (F : ∀ i, Module.End �
     Summable (gradedTerm I F z) ∧
       Complex.exp (∑' n : ℕ, gradedTerm I F z n) = localFactor I F z := by
   induction I using Finset.induction_on with
-  | empty => simp [gradedTerm, localFactor]
+  | empty =>
+    have hzero : gradedTerm (∅ : Finset ℕ) F z = (fun _ => (0 : ℂ)) := by
+      funext n
+      simp [gradedTerm]
+    simp [hzero, localFactor]
   | insert i I hI ih =>
     obtain ⟨hOne, heOne⟩ := signed_piece F z i (h i (Finset.mem_insert_self i I))
     obtain ⟨hRest, heRest⟩ := ih (fun j hj => h j (Finset.mem_insert_of_mem hj))

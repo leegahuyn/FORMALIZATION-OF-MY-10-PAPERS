@@ -13,6 +13,8 @@ noncomputable section
 variable {R V : Type*} [CommRing R] [IsDomain R] [AddCommGroup V] [Module R V]
 variable (B : Basis (Fin 2) R V) (S : Module.End R V)
 
+include B
+
 /-- A nonzero scalar multiple can be scalar only if the original endomorphism is scalar. -/
 theorem scalar_of_linear_relation {a b : R} (hb : b ≠ 0)
     (h : a • (1 : Module.End R V) + b • S = 0) :

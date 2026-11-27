@@ -40,12 +40,12 @@ private theorem conjugate_or_comaximal {D : Type*} [CommRing D] [Algebra K D]
       apply pointIdeal_sup_eq_top
       right
       rw [← map_pow, ← map_sub]
-      exact (isUnit_iff_ne_zero.mpr (sub_ne_zero.mpr hy.symm)).map (algebraMap K D)
+      exact (isUnit_iff_ne_zero.mpr (sub_ne_zero.mpr (fun h => hy h.symm))).map (algebraMap K D)
   · right
     apply pointIdeal_sup_eq_top
     left
     rw [← map_pow, ← map_sub]
-    exact (isUnit_iff_ne_zero.mpr (sub_ne_zero.mpr hx.symm)).map (algebraMap K D)
+    exact (isUnit_iff_ne_zero.mpr (sub_ne_zero.mpr (fun h => hx h.symm))).map (algebraMap K D)
 
 variable (E : Type*) [Field E] [Fintype E]
 variable {R : Type*} [CommRing R] [Algebra K R] [Nontrivial R]
@@ -78,7 +78,7 @@ theorem exists_principal_frobenius_product [Algebra E D₀]
   let J' : Ω → Ideal D₀ := fun r => pointIdeal U V
     (i (rootValue r.1 * u ^ (q * q))) (i (rootValue r.2 * v ^ (q * q)))
   obtain ⟨f, hf⟩ := exists_base_tangent_product m n a b hm hn hPoint hz hw
-  refine ⟨f, ideal_product_principal_of_faithfullyFlat _ _ q f ?_⟩
+  refine ⟨f, ideal_product_principal_of_faithfullyFlat (S := D₀) _ _ q f ?_⟩
   have hTang (r : Ω) : Ideal.span {t r} = J r ^ q * J' r := by
     let x := rootValue r.1 * u
     let y := rootValue r.2 * v

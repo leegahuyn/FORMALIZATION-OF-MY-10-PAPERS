@@ -49,7 +49,9 @@ theorem hasRotationForm {z : E} (hz : IsPrimitiveRoot z 3) :
   · apply PadicInt.ext_of_toZModPow.mp
     intro n
     cases n with
-    | zero => exact Subsingleton.elim _ _
+    | zero =>
+      letI : Subsingleton (ZMod (2 ^ 0)) := inferInstanceAs (Subsingleton (ZMod 1))
+      exact Subsingleton.elim _ _
     | succ n =>
       have he := (trace_det_reduce 2 G B hDiv f (n + 1)).1
       have ht := (level_trace_det E L h₂ h₃ hA hz n _ _ (hLevel n)).1
@@ -57,7 +59,9 @@ theorem hasRotationForm {z : E} (hz : IsPrimitiveRoot z 3) :
   · apply PadicInt.ext_of_toZModPow.mp
     intro n
     cases n with
-    | zero => exact Subsingleton.elim _ _
+    | zero =>
+      letI : Subsingleton (ZMod (2 ^ 0)) := inferInstanceAs (Subsingleton (ZMod 1))
+      exact Subsingleton.elim _ _
     | succ n =>
       have he := (trace_det_reduce 2 G B hDiv f (n + 1)).2
       have hd := (level_trace_det E L h₂ h₃ hA hz n _ _ (hLevel n)).2

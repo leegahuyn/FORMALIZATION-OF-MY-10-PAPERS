@@ -49,7 +49,7 @@ def tateBasis (hl : l = 2 ∨ l = 3) : Basis (Fin 2) ℤ_[l] (Tate l (Points L))
 
 abbrev action : Module.End ℤ_[l] (Tate l (Points L)) := endMap l (nativeFrobenius L)
 
-private theorem rotation_not_scalar (hl : l = 2 ∨ l = 3) :
+theorem rotation_not_scalar (hl : l = 2 ∨ l = 3) :
     ¬∃ c : ℤ_[l], endMap l (rotation L) = c • (1 : Module.End ℤ_[l] (Tate l (Points L))) := by
   rintro ⟨c, h⟩
   have h₁ := scalar_reduction l (Points L) (firstBasis L l hl) (nsmul_surjective L l hl)
@@ -58,7 +58,7 @@ private theorem rotation_not_scalar (hl : l = 2 ∨ l = 3) :
   · exact not_scalar_two L ⟨_, h₁⟩
   · exact not_scalar_three L ⟨_, h₁⟩
 
-private theorem point_rotation_quadratic :
+theorem point_rotation_quadratic :
     rotation L ^ 2 + rotation L + (1 : AddMonoid.End (Points L)) = 0 := by
   apply AddMonoidHom.ext
   intro P

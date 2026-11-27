@@ -2,6 +2,8 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySevenGeometry
 import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySevenSecant
 import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionCard
+import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionOrdinate
+import PrimalitySheafVerification.ManuscriptAudit.PowerTorsionTower
 
 /-! The native ordinary seven rotation is nonscalar on both first torsion levels. -/
 
@@ -16,9 +18,9 @@ noncomputable section
 
 variable (L : Type*) [Field L] [CharP L 7] [IsAlgClosed L] [DecidableEq L]
 
-local notation "W" => (ordinaryCurve L).toAffine
+private abbrev W := (ordinaryCurve L).toAffine
 
-theorem ordinary_eq_centered : W = Curve (5 : L) := by
+theorem ordinary_eq_centered : W L = Curve (5 : L) := by
   simp [ordinaryCurve, Curve, CubicAffine, shortCubic]
 
 theorem three_ne : (3 : L) ≠ 0 := by
@@ -31,8 +33,9 @@ theorem five_ne : (5 : L) ≠ 0 := by
   rw [ne_eq, CharP.cast_eq_zero_iff L 7 5]
   decide
 
-private theorem some_nsmul_three {y : L} (hy : y ≠ 0) (h : W.Nonsingular 1 y) :
-    (3 : ℕ) • (Affine.Point.some 1 y h : W.Point) = 0 := by
+set_option maxHeartbeats 1200000 in
+private theorem some_nsmul_three {y : L} (hy : y ≠ 0) (h : (W L).Nonsingular 1 y) :
+    (3 : ℕ) • (Affine.Point.some 1 y h : (W L).Point) = 0 := by
   let Q (C : Affine L) : Prop := ∀ h : C.Nonsingular 1 y,
     (3 : ℕ) • (Affine.Point.some 1 y h : C.Point) = 0
   have hQ : Q (Curve (5 : L)) := fun hp =>
@@ -50,11 +53,11 @@ theorem not_scalar_two :
   have hx₀ : x ≠ 0 := by
     intro h
     exact five_ne L (by simpa [h] using hx.symm)
-  have hP : W.Nonsingular x 0 :=
+  have hP : (W L).Nonsingular x 0 :=
     Affine.equation_iff_nonsingular.mp ((equation_iff L x 0).mpr (by simp [hx]))
-  let P : W.Point := .some x 0 hP
+  let P : (W L).Point := .some x 0 hP
   have hTwo : (2 : ℕ) • P = 0 := by
-    change (2 : ℕ) • (Affine.Point.some x 0 hP : W.Point) = _
+    change (2 : ℕ) • (Affine.Point.some x 0 hP : (W L).Point) = _
     rw [two_nsmul, Affine.Point.add_self_of_Y_eq (by rw [negY_eq, neg_zero])]
   let Q : PowerTorsion 2 (Points L) 1 := ⟨P, (mem_iff _ _ _).mpr (by simpa only [pow_one] using hTwo)⟩
   have he := congrArg (fun f : Module.End (ZMod (2 ^ 1)) (PowerTorsion 2 (Points L) 1) =>
@@ -81,9 +84,9 @@ theorem not_scalar_three :
     apply (one_ne_zero : (1 : L) ≠ 0)
     have hy' : (0 : L) = 6 := by simpa [h] using hy
     linear_combination hy' + seven_zero L
-  have hP : W.Nonsingular 1 y :=
+  have hP : (W L).Nonsingular 1 y :=
     Affine.equation_iff_nonsingular.mp ((equation_iff L 1 y).mpr (by norm_num [hy]))
-  let P : W.Point := .some 1 y hP
+  let P : (W L).Point := .some 1 y hP
   have hThree : (3 : ℕ) • P = 0 := some_nsmul_three L hy₀ hP
   have hTwo : (2 : ℕ) • P = -P := by
     apply eq_neg_iff_add_eq_zero.mpr
