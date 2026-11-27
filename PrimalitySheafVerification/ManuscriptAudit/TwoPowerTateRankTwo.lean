@@ -26,7 +26,8 @@ def fromPadicPair : (ℤ_[2] × ℤ_[2]) →ₗ[ℤ_[2]] Tate G where
     intro n
     change basisAt n (residue n (a.1 + b.1), residue n (a.2 + b.2)) =
       basisAt n (residue n a.1, residue n a.2) + basisAt n (residue n b.1, residue n b.2)
-    rw [map_add, map_add, ← map_add] <;> rfl
+    rw [map_add (residue n) a.1 b.1, map_add (residue n) a.2 b.2]
+    exact (basisAt n).map_add (residue n a.1, residue n a.2) (residue n b.1, residue n b.2)
   map_smul' r a := by
     apply TwoPowerTateModule.ext G
     intro n

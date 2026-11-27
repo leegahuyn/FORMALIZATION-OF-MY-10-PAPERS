@@ -32,13 +32,14 @@ abbrev fiber :=
 set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposition with Galois automorphisms defines a right group action
 on the actual geometric fiber. -/
+@[implicit_reducible]
 def rightAction : MulAction (L ≃ₐ[F] L)ᵐᵒᵖ (fiber x F L j) where
   smul σ t := (Scheme.pointSmallEtale x).fiber.map
     ((postcompose j).map (automorphism F L (MulOpposite.unop σ))) t
   one_smul t := by
     change (Scheme.pointSmallEtale x).fiber.map
       ((postcompose j).map (automorphism F L 1)) t = t
-    rw [automorphism_one, Functor.map_id, Functor.map_id] <;> rfl
+    rw [automorphism_one, (postcompose j).map_id, (Scheme.pointSmallEtale x).fiber.map_id] <;> rfl
   mul_smul σ τ t := by
     change (Scheme.pointSmallEtale x).fiber.map
       ((postcompose j).map (automorphism F L (MulOpposite.unop τ * MulOpposite.unop σ))) t =

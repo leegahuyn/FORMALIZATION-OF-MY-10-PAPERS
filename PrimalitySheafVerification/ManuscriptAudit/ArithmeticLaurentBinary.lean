@@ -56,7 +56,9 @@ private theorem pairReduction_eq_zero_iff (x : Additive Kˣ × ℤ) :
       exact ⟨y.1.toMul, congrArg Additive.toMul (ofMul_square y.1.toMul)⟩
     · change (((2 : ℕ) • y.2 : ℤ) : ZMod 2) = 0
       rw [CharP.intCast_eq_zero_iff (ZMod 2) 2]
-      exact ⟨y.2, by rw [two_nsmul, two_mul] <;> rfl⟩
+      exact ⟨y.2, by
+        change (2 : ℕ) • y.2 = (2 : ℤ) * y.2
+        rw [two_nsmul, two_mul]⟩
 
 private def unitReduction : Additive (LaurentPolynomial K)ˣ →+ scalarClasses K × ZMod 2 :=
   (pairReduction K).comp (unitCoordinates K).symm.toAddMonoidHom
@@ -81,18 +83,17 @@ private theorem unitReduction_ker :
       (ofMul_square v).symm.trans (congrArg Additive.ofMul hv)
     rw [← map_nsmul, he]
 
-set_option maxHeartbeats 1200000 in
+private def quotientEquivOfSurjectiveOfKerEq {G H : Type*} [AddCommGroup G] [AddCommGroup H]
+    (f : G →+ H) (S : AddSubgroup G) (hker : f.ker = S) (h : Function.Surjective f) :
+    (G ⧸ S) ≃+ H :=
+  (QuotientAddGroup.quotientAddEquivOfEq hker.symm).trans
+    (QuotientAddGroup.quotientKerEquivOfSurjective f h)
+
 def unitSquareClassesEquiv :
     (Additive (LaurentPolynomial K)ˣ ⧸ powerSubgroup (LaurentPolynomial K) 2) ≃+
       scalarClasses K × ZMod 2 :=
-  by
-    let f := unitReduction K
-    have hf : Function.Surjective f :=
-      (pairReduction_surjective K).comp (unitCoordinates K).symm.surjective
-    let toKer : (Additive (LaurentPolynomial K)ˣ ⧸ powerSubgroup (LaurentPolynomial K) 2) ≃+
-        (Additive (LaurentPolynomial K)ˣ ⧸ f.ker) :=
-      QuotientAddGroup.quotientAddEquivOfEq (unitReduction_ker K).symm
-    exact toKer.trans (QuotientAddGroup.quotientKerEquivOfSurjective f hf)
+  quotientEquivOfSurjectiveOfKerEq (unitReduction K) (powerSubgroup (LaurentPolynomial K) 2)
+    (unitReduction_ker K) ((pairReduction_surjective K).comp (unitCoordinates K).symm.surjective)
 
 def laurentBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
     (ZMod 2 × ZMod 2) ≃+

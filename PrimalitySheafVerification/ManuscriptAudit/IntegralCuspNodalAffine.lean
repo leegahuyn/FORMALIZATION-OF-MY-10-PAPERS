@@ -30,6 +30,12 @@ def cuspToInt : integralCusp ⟶ Spec (CommRingCat.of ℤ) :=
 def nodalToInt : integralNode ⟶ Spec (CommRingCat.of ℤ) :=
   toBase ℤ (nodalPolynomial ℤ)
 
+instance cusp_locallyOfFinitePresentation : LocallyOfFinitePresentation cuspToInt :=
+  MonicPlaneFamily.locallyOfFinitePresentation ℤ (cuspPolynomial ℤ)
+
+instance node_locallyOfFinitePresentation : LocallyOfFinitePresentation nodalToInt :=
+  MonicPlaneFamily.locallyOfFinitePresentation ℤ (nodalPolynomial ℤ)
+
 theorem cusp_flat_finite_type :
     Flat cuspToInt ∧ LocallyOfFiniteType cuspToInt ∧ QuasiCompact cuspToInt :=
   flat_finite_type ℤ (cuspPolynomial ℤ)

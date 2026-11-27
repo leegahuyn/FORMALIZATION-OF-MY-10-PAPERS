@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import PrimalitySheafVerification.ManuscriptAudit.GaloisCoverAction
 import PrimalitySheafVerification.ManuscriptAudit.GaloisOverlapLift
@@ -64,7 +66,9 @@ theorem injective_sections_HOne_subsingleton [Injective M] :
         M.obj.obj (op W) := M.obj.map (pairLift K L s t).op z
     have hn {W V : (X K).Etale} (r : V ⟶ W) (s t : W ⟶ fieldObject K L) :
         M.obj.map r.op (p s t) = p (r ≫ s) (r ≫ t) := by
-      rw [p, p, restrict_comp, comp_pairLift]
+      change M.obj.map r.op (M.obj.map (pairLift K L s t).op z) =
+        M.obj.map (pairLift K L (r ≫ s) (r ≫ t)).op z
+      rw [restrict_comp, comp_pairLift]
     have ha {W : (X K).Etale} (s t v : W ⟶ fieldObject K L) :
         p t v - p s v + p s t = 0 := by
       have hPull := congrArg (M.obj.map (tripleLift K L s t v).op) hδ
@@ -80,7 +84,9 @@ theorem injective_sections_HOne_subsingleton [Injective M] :
     have hb' := hb (𝟙 (fieldObject K L)) (fieldAutomorphism K L σ)
     change M.obj.map (pairLift K L _ _).op z = _ at hb'
     rw [he, hz] at hb'
-    have hId : M.obj.map (𝟙 (fieldObject K L)).op b = b := by simp
+    have hId : M.obj.map (𝟙 (fieldObject K L)).op b = b := by
+      rw [show (𝟙 (fieldObject K L)).op = 𝟙 _ by rfl, M.obj.map_id]
+      rfl
     rw [hId] at hb'
     exact hb'.symm
 

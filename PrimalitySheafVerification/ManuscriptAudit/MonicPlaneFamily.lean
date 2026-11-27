@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.PolynomialAlgebra
 
@@ -34,6 +35,12 @@ abbrev family (q : Polynomial R) : Scheme.{u} := Spec (CommRingCat.of (coordinat
 def toBase (q : Polynomial R) : family R q ⟶ Spec (CommRingCat.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R (coordinateRing R q)))
 
+instance locallyOfFinitePresentation (q : Polynomial R) :
+    LocallyOfFinitePresentation (toBase R q) :=
+  (LocallyOfFinitePresentation.SpecMap_iff _).mpr
+    (RingHom.finitePresentation_algebraMap.mpr
+      (inferInstanceAs (Algebra.FinitePresentation R (coordinateRing R q))))
+
 theorem flat_finite_type (q : Polynomial R) :
     Flat (toBase R q) ∧ LocallyOfFiniteType (toBase R q) ∧ QuasiCompact (toBase R q) := by
   let A := coordinateRing R q
@@ -54,15 +61,20 @@ private theorem polynomialBaseChange_tmul_one (f : Polynomial R) :
   change (polyEquivTensor R S).symm ((1 : S) ⊗ₜ[R] f) = f.map (algebraMap R S)
   rw [polyEquivTensor_symm_apply_tmul_eq_smul, one_smul]
 
+set_option synthInstance.maxHeartbeats 100000 in
+set_option maxHeartbeats 1600000 in
 /-- The actual tensor fiber is the displayed equation after mapping coefficients. -/
 def coordinateBaseChange (q : Polynomial R) :
     S ⊗[R] coordinateRing R q ≃ₐ[S] coordinateRing S (q.map (algebraMap R S)) := by
-  let i : Polynomial R →ₐ[R] S ⊗[R] Polynomial R := Algebra.TensorProduct.includeRight
-  let e := polynomialBaseChange R S
+  let T := S ⊗[R] Polynomial R
+  letI : CommRing T := inferInstanceAs (CommRing (S ⊗[R] Polynomial R))
+  let i : Polynomial R →ₐ[R] T := Algebra.TensorProduct.includeRight
+  let e : T ≃ₐ[S] Polynomial S := polynomialBaseChange R S
   let p := equation R q
-  let p' := p.map i.toRingHom
+  let p' : Polynomial T := p.map i.toRingHom
   have hi : e.toRingHom.comp i.toRingHom = Polynomial.mapRingHom (algebraMap R S) := by
-    ext a
+    apply RingHom.ext
+    intro a
     exact polynomialBaseChange_tmul_one R S a
   have h : p'.map e.toRingHom = equation S (q.map (algebraMap R S)) := by
     change (p.map i.toRingHom).map e.toRingHom = _
@@ -125,7 +137,8 @@ end ManuscriptAudit.MonicPlaneFamily
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.MonicPlaneFamily.flat_finite_type,
+  for name in [``ManuscriptAudit.MonicPlaneFamily.locallyOfFinitePresentation,
+      ``ManuscriptAudit.MonicPlaneFamily.flat_finite_type,
       ``ManuscriptAudit.MonicPlaneFamily.coordinateBaseChange,
       ``ManuscriptAudit.MonicPlaneFamily.schemeBaseChange,
       ``ManuscriptAudit.MonicPlaneFamily.schemeBaseChange_over] do

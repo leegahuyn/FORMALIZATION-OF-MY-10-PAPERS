@@ -31,6 +31,9 @@ abbrev fiber := pullback (coefficientPoint K) cuspToInt
 def fiberToBase : fiber K ⟶ Spec (CommRingCat.of K) :=
   pullback.fst _ _
 
+instance fiber_locallyOfFinitePresentation : LocallyOfFinitePresentation (fiberToBase K) :=
+  inferInstanceAs (LocallyOfFinitePresentation (pullback.fst (coefficientPoint K) cuspToInt))
+
 /-- The actual relative smooth scheme of the integral family's residue fiber. -/
 def fiberSmoothIso :
     (fiberToBase K).smoothLocus.toScheme ≅ AffineCuspSmoothLocus.punctured K :=

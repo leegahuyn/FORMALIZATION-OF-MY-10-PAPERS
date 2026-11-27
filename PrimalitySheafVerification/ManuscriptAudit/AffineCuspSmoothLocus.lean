@@ -29,6 +29,14 @@ abbrev punctured := Spec (CommRingCat.of (B K))
 def cuspToBase : cusp K ⟶ Spec (CommRingCat.of K) :=
   Spec.map (CommRingCat.ofHom (algebraMap K (A K)))
 
+instance cusp_locallyOfFinitePresentation : LocallyOfFinitePresentation (cuspToBase K) := by
+  apply (LocallyOfFinitePresentation.SpecMap_iff
+    (CommRingCat.ofHom (algebraMap K (A K)))).mpr
+  exact RingHom.finitePresentation_algebraMap.mpr
+    (Algebra.FinitePresentation.equiv (CuspDelta.paper2_cusp_coordinate_presentation K))
+
+private abbrev cuspBasic : (cusp K).Opens := PrimeSpectrum.basicOpen (cuspSquare K)
+
 def puncturedToCusp : punctured K ⟶ cusp K :=
   Spec.map (CommRingCat.ofHom (algebraMap (A K) (B K)))
 
@@ -36,8 +44,10 @@ instance punctured_open : IsOpenImmersion (puncturedToCusp K) :=
   IsOpenImmersion.of_isLocalization (S := B K) (cuspSquare K)
 
 private theorem punctured_range :
-    Set.range (puncturedToCusp K) = (PrimeSpectrum.basicOpen (cuspSquare K) : Set (cusp K)) :=
-  PrimeSpectrum.localization_away_comap_range (B K) (cuspSquare K)
+    Set.range (puncturedToCusp K) = (↑(cuspBasic K) : Set (cusp K)) := by
+  change Set.range (PrimeSpectrum.comap (algebraMap (A K) (B K))) =
+    ↑(PrimeSpectrum.basicOpen (cuspSquare K))
+  exact PrimeSpectrum.localization_away_comap_range (B K) (cuspSquare K)
 
 private theorem polynomial_prime_over_origin (p : PrimeSpectrum (Polynomial K))
     (hp : (Polynomial.X : Polynomial K) ^ 2 ∈ p.asIdeal) :
@@ -45,7 +55,7 @@ private theorem polynomial_prime_over_origin (p : PrimeSpectrum (Polynomial K))
   have hx : (Polynomial.X : Polynomial K) ∈ p.asIdeal := p.isPrime.mem_of_pow_mem 2 hp
   have hMax : (RingHom.ker (Polynomial.constantCoeff : Polynomial K →+* K)).IsMaximal :=
     RingHom.ker_isMaximal_of_surjective Polynomial.constantCoeff
-      (fun a => ⟨Polynomial.C a, Polynomial.constantCoeff_C⟩)
+      (fun a => ⟨Polynomial.C a, by simp⟩)
   apply (hMax.eq_of_le p.isPrime.ne_top ?_).symm
   rw [Polynomial.ker_constantCoeff]
   exact Ideal.span_le.mpr (Set.singleton_subset_iff.mpr hx)
@@ -53,11 +63,13 @@ private theorem polynomial_prime_over_origin (p : PrimeSpectrum (Polynomial K))
 private theorem lift_prime_square (x : cusp K) (hx : cuspSquare K ∈ x.asIdeal) :
     ∃ p : PrimeSpectrum (Polynomial K), cuspMap K p = x ∧
       (Polynomial.X : Polynomial K) ^ 2 ∈ p.asIdeal := by
-  obtain ⟨p, hp⟩ := (surjective_iff.mp (paper2_cusp_map_surjective K)) x
+  have hs := paper2_cusp_map_surjective K
+  rw [surjective_iff] at hs
+  obtain ⟨p, hp⟩ := hs x
   refine ⟨p, hp, ?_⟩
-  rw [← hp] at hx
-  rw [cuspMap, Spec.map_apply] at hx
-  exact hx
+  have h : cuspSquare K ∈ (cuspMap K p).asIdeal := by simpa only [hp] using hx
+  rw [cuspMap, Spec.map_apply] at h
+  exact h
 
 private theorem omitted_prime_unique (x y : cusp K)
     (hx : cuspSquare K ∈ x.asIdeal) (hy : cuspSquare K ∈ y.asIdeal) : x = y := by
@@ -98,14 +110,15 @@ theorem cusp_not_smooth : ¬ Smooth (cuspToBase K) := by
 
 /-- The genuine relative smooth locus of the cusp is precisely D(t²). -/
 theorem smoothLocus_eq_basicOpen :
-    (cuspToBase K).smoothLocus = PrimeSpectrum.basicOpen (cuspSquare K) := by
-  have hAway : (PrimeSpectrum.basicOpen (cuspSquare K) : Set (cusp K)) ⊆
-      (cuspToBase K).smoothLocus := by
+    (cuspToBase K).smoothLocus = cuspBasic K := by
+  have hAway : (↑(cuspBasic K) : Set (cusp K)) ⊆
+      (↑((cuspToBase K).smoothLocus) : Set (cusp K)) := by
     rw [← punctured_range]
     rintro _ ⟨a, rfl⟩
     letI : Smooth (puncturedToCusp K ≫ cuspToBase K) := puncture_smooth K
     apply ((puncturedToCusp K).mem_preimage).mp
-    rw [(puncturedToCusp K).preimage_smoothLocus_eq, Scheme.Hom.smoothLocus_eq_top]
+    rw [(puncturedToCusp K).preimage_smoothLocus_eq (cuspToBase K),
+      Scheme.Hom.smoothLocus_eq_top]
     trivial
   refine le_antisymm ?_ hAway
   intro x hx
@@ -116,7 +129,7 @@ theorem smoothLocus_eq_basicOpen :
   apply Scheme.Hom.smoothLocus_eq_top_iff.mp
   apply top_unique
   intro y _
-  by_cases hy : y ∈ PrimeSpectrum.basicOpen (cuspSquare K)
+  by_cases hy : y ∈ cuspBasic K
   · exact hAway hy
   · have h'y : cuspSquare K ∈ y.asIdeal :=
       Classical.not_not.mp (fun hs => hy ((PrimeSpectrum.mem_basicOpen _ _).mpr hs))

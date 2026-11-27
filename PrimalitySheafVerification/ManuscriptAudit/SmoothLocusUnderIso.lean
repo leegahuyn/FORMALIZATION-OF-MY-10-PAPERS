@@ -14,11 +14,12 @@ set_option backward.isDefEq.respectTransparency false
 
 universe u
 variable {X Y S : Scheme.{u}} (e : X ≅ Y) (f : X ⟶ S) (g : Y ⟶ S)
+  [LocallyOfFinitePresentation f] [LocallyOfFinitePresentation g]
 
 private theorem range_eq (h : e.hom ≫ g = f) :
     Set.range (f.smoothLocus.ι ≫ e.hom) = Set.range g.smoothLocus.ι := by
   have hS : e.hom ⁻¹ᵁ g.smoothLocus = f.smoothLocus := by
-    rw [e.hom.preimage_smoothLocus_eq, h]
+    rw [e.hom.preimage_smoothLocus_eq g, h]
   rw [Scheme.Opens.range_ι]
   ext y
   constructor
