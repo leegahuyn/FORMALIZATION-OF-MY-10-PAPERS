@@ -24,7 +24,7 @@ private theorem pochhammer_succ (q : ℂ) (n : ℕ) :
     pochhammer q (n + 1) = pochhammer q n * (1 + q ^ (n + 1)) := by
   simp only [pochhammer, Finset.prod_range_succ]
 
-private theorem inverse_pochhammer_times_power (q : ℂ) (hq : q ≠ 0) (n : ℕ) :
+theorem inverse_pochhammer_times_power (q : ℂ) (hq : q ≠ 0) (n : ℕ) :
     pochhammer q⁻¹ n * q ^ (∑ j ∈ Finset.range n, (j + 1)) = pochhammer q n := by
   induction n with
   | zero => simp [pochhammer]
@@ -99,7 +99,7 @@ theorem printed_absolute_summability_at_inverse {q : ℂ} (hq₀ : q ≠ 0) (hq 
   simp_rw [printed_term_inv_eq hq₀ hq]
   exact doubledExterior_absolute_summability hq
 
-private theorem pochhammer_differentiable (n : ℕ) :
+theorem pochhammer_differentiable (n : ℕ) :
     Differentiable ℂ (fun q => pochhammer q n) := by
   induction n with
   | zero => simpa [pochhammer] using differentiable_const (c := (1 : ℂ))

@@ -10,7 +10,7 @@ variable {G H K : Type*} [AddCommGroup G] [AddCommGroup H] [AddCommGroup K]
 def restriction (f : H →+ K) (g : G →+ H) : (f.comp g).ker →+ f.ker where
   toFun x := ⟨g x, x.property⟩
   map_zero' := by apply Subtype.ext; exact map_zero g
-  map_add' x y := by apply Subtype.ext; exact map_add g x y
+  map_add' x y := by apply Subtype.ext; exact map_add g x.val y.val
 
 theorem restriction_surjective (f : H →+ K) (g : G →+ H) (hg : Function.Surjective g) :
     Function.Surjective (restriction f g) := by

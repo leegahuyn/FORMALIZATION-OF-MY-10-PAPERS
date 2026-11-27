@@ -36,6 +36,7 @@ private theorem exceptional_finite : (exceptional L).Finite := by
   have hp : p.Monic := ((monic_X.mul (hM 1)).mul (hM 4)).mul (hM 2)
   refine (finite_setOf_isRoot hp.ne_zero).subset ?_
   intro x hx
+  change x * (x ^ 3 + 1) * (x ^ 3 + 4) * (x ^ 3 + 2) = 0 at hx
   change p.eval x = 0
   simpa only [p, eval_mul, eval_add, eval_pow, eval_C, eval_X] using hx
 
@@ -60,17 +61,21 @@ theorem native_factor : nativeFrobenius L = candidate L := by
     rw [ZMod.card]
   obtain ⟨hF, eF⟩ := pointMapAt_some (ZMod 13) L (Curve (1 : ZMod 13)) (Curve (1 : L))
     (ordinary_baseChange L) g x y hP
-  change nativeFrobenius L (Affine.Point.some x y hP) = _ at eF
+  let P : Points L := Affine.Point.some x y hP
+  change nativeFrobenius L P = candidate L P
+  have eF' : nativeFrobenius L P = Affine.Point.some (g x) (g y) hF := eF
   obtain ⟨hH, eH⟩ := three_sub_rotation_some L hP hx hy h4 h2
-  rw [eF]
-  change Affine.Point.some (g x) (g y) hF =
-    -rotation L ((3 : ℕ) • (Affine.Point.some x y hP : Points L) - rotation L (Affine.Point.some x y hP))
-  rw [eH]
-  obtain ⟨hR, eR⟩ := rotation_some L hH
-  rw [eR, Affine.Point.neg_some, Affine.Point.some.injEq, hg, hg]
-  constructor
-  · linear_combination (-2 * x ^ 13) * (thirteen_zero (K := L))
-  · rw [CubicTriplingCoordinates.negY_eq, neg_neg]
+  have eH' : (3 : ℕ) • P - rotation L P = Affine.Point.some (9 * x ^ 13) (-(y ^ 13)) hH := eH
+  refine eF'.trans ?_
+  change Affine.Point.some (g x) (g y) hF = -rotation L ((3 : ℕ) • P - rotation L P)
+  calc
+    _ = -rotation L (Affine.Point.some (9 * x ^ 13) (-(y ^ 13)) hH) := by
+      obtain ⟨hR, eR⟩ := rotation_some L hH
+      rw [eR, Affine.Point.neg_some, Affine.Point.some.injEq, hg x, hg y]
+      constructor
+      · linear_combination (-2 * x ^ 13) * (thirteen_zero (K := L))
+      · rw [CubicTriplingCoordinates.negY_eq, neg_neg]
+    _ = _ := congrArg (fun Q : Points L => -rotation L Q) eH'.symm
 
 /-- Frobenius has exact integral rotation coefficients (−1,−4). -/
 theorem native_eq_rotation :

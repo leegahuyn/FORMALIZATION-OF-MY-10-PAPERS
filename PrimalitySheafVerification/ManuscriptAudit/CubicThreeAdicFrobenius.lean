@@ -17,7 +17,7 @@ local instance : Fact (Nat.Prime 3) := ⟨by decide⟩
 variable (E : Type*) [Field E] [Fintype E]
 variable (L : Type*) [Field L] [Algebra E L] [IsAlgClosed L] [DecidableEq L]
 
-private theorem pointMapAt_injective (W : Affine E) (V : Affine L)
+theorem pointMapAt_injective (W : Affine E) (V : Affine L)
     (he : W.baseChange L = V) (g : L →ₐ[E] L) :
     Function.Injective (pointMapAt E L W V he g) := by
   subst V

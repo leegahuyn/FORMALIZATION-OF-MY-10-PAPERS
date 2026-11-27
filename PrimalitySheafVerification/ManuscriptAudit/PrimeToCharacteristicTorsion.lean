@@ -32,8 +32,8 @@ theorem surjective_and_card
     obtain ⟨l, hl, hlN⟩ := Nat.exists_prime_and_dvd hOne
     obtain ⟨k, hK⟩ := hlN
     have hK₀ : 0 < k := by
-      by_contra! h
-      have hk : k = 0 := Nat.eq_zero_of_le_zero h
+      by_contra h
+      have hk : k = 0 := by omega
       rw [hk, mul_zero] at hK
       exact hN (hK.symm ▸ dvd_zero p)
     have hKlt : k < n := by
@@ -41,8 +41,10 @@ theorem surjective_and_card
         k = 1 * k := (one_mul k).symm
         _ < l * k := Nat.mul_lt_mul_of_pos_right hl.one_lt hK₀
         _ = n := hK.symm
-    have hlp : l ≠ p := fun he => hN (he ▸ ⟨k, hK⟩)
-    have hkp : ¬ p ∣ k := fun hd => hN (hK ▸ dvd_mul_of_dvd_right hd l)
+    have hlp : l ≠ p := by
+      rintro rfl
+      exact hN ⟨k, hK⟩
+    have hkp : ¬ p ∣ k := fun hd => hN (hK.symm ▸ dvd_mul_of_dvd_right hd l)
     obtain ⟨hsL, hcL⟩ := hPrime l hl hlp
     obtain ⟨hsK, hcK⟩ := ih k hKlt hkp
     let f : G →+ G := nsmulAddMonoidHom l

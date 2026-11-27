@@ -25,7 +25,7 @@ theorem trace_det (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
     LinearMap.trace ℤ_[l] (Tate l (UnitPoints L)) S = -1 ∧ LinearMap.det S = 1 := by
   let B := CubicNonsplitFiniteFieldTate.centeredBasis p L l hp hp₃ hlp one_ne_zero hΔ
   let f := arithmeticUnit (ZMod p) L
-  let r := rotate z hz hΔ
+  let r : AddMonoid.End (UnitPoints L) := rotate z hz hΔ
   have hSq : f ^ 2 = Int.cast (-(p : ℤ)) := by
     apply AddMonoidHom.ext
     intro P
@@ -54,7 +54,8 @@ theorem trace_det (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
     have h := congrArg (endMap l) hSq
     rw [map_pow, map_intCast] at h
     have hCast : (algebraMap ℤ_[l] (Module.End ℤ_[l] (Tate l (UnitPoints L))))
-        (Int.cast (-(p : ℤ))) = Int.cast (-(p : ℤ)) := map_intCast _ _
+        (Int.cast (-(p : ℤ))) = Int.cast (-(p : ℤ)) := by
+      rw [map_intCast]
     simpa only [F, c, Int.cast_neg, Int.cast_natCast, Algebra.algebraMap_eq_smul_one] using
       h.trans hCast.symm
   have hS : S ^ 2 + S + 1 = 0 := by

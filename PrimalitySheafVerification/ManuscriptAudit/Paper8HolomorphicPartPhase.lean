@@ -48,14 +48,14 @@ theorem normalizationPhase_ne_one : normalizationPhase ≠ 1 := by
     simpa only [normalizationPhase, Complex.exp_neg, inv_inv, inv_one] using h
   have hDvd : (24 : ℕ) ∣ (1 : ℕ) :=
     (Complex.exp_two_pi_mul_I_mul_div_eq_one_iff (k := 1) (N := 24) (by decide)).mp
-      (by simpa only [periodCoefficient, Nat.cast_one, mul_one] using hExp)
+      (by simpa [periodCoefficient] using hExp)
   exact (by decide : ¬ (24 : ℕ) ∣ (1 : ℕ)) hDvd
 
 theorem qParameter_norm (τ : ℂ) :
     ‖qParameter τ‖ = Real.exp (-(2 * Real.pi * τ.im)) := by
   rw [qParameter, Complex.norm_exp]
   congr 1
-  norm_num [periodCoefficient, Complex.mul_re, Complex.mul_im] <;> ring
+  norm_num [periodCoefficient, Complex.mul_re, Complex.mul_im]
 
 theorem qParameter_norm_lt_one {τ : ℂ} (hτ : 0 < τ.im) : ‖qParameter τ‖ < 1 := by
   rw [qParameter_norm]
@@ -80,7 +80,8 @@ theorem normalizedPart_at_I_ne_zero : normalizedPart Complex.I ≠ 0 := by
     have h : -(2 * Real.pi) < (0 : ℝ) := neg_neg_of_pos (by positivity)
     simpa only [r, Real.exp_zero] using Real.exp_lt_exp.mpr h
   have hParam : qParameter Complex.I = (r : ℂ) := by
-    rw [qParameter, r, Complex.ofReal_exp]
+    change qParameter Complex.I = ((Real.exp (-(2 * Real.pi)) : ℝ) : ℂ)
+    rw [qParameter, Complex.ofReal_exp]
     congr 1
     rw [periodCoefficient, mul_assoc, Complex.I_mul_I]
     push_cast
@@ -89,8 +90,9 @@ theorem normalizedPart_at_I_ne_zero : normalizedPart Complex.I ≠ 0 := by
   have hOne : 1 ≤ ramanujanF r := by
     have hTerm := hS.le_tsum 0 (fun n _ =>
       div_nonneg (pow_nonneg hr.le (n ^ 2)) (sq_nonneg (negPochhammer r n)))
-    simpa only [ramanujanF, ramanujanTerm, negPochhammer, pow_zero, Finset.range_zero,
-      Finset.prod_empty, one_pow, div_one] using hTerm
+    change ramanujanTerm r 0 ≤ ramanujanF r at hTerm
+    have hZ : ramanujanTerm r 0 = 1 := by norm_num [ramanujanTerm, negPochhammer]
+    simpa only [hZ] using hTerm
   have hNZ : standard (qParameter Complex.I) ≠ 0 := by
     intro h
     have hRe := congrArg Complex.re h

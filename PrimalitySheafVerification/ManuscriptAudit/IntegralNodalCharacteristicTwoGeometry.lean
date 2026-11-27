@@ -59,7 +59,9 @@ theorem cuspAffineIso_fac :
     _ = (geometricAffineOpen 2 ≫ e.hom) ≫ f.hom := (Category.assoc _ _ _).symm
     _ = (i ≫ j) ≫ f.hom := by rw [h]
     _ = i ≫ (j ≫ f.hom) := Category.assoc _ _ _
-    _ = i ≫ (g.hom ≫ k) := by rw [NodalCharacteristicTwoOverBase.affine_square_on_closures]
+    _ = i ≫ (g.hom ≫ k) := by
+      have hAff : j ≫ f.hom = g.hom ≫ k := NodalCharacteristicTwoOverBase.affine_square_on_closures K
+      exact congrArg (fun a : NodalProjectiveClosure.affineNode K ⟶ projectiveCusp K ↦ i ≫ a) hAff
     _ = _ := (Category.assoc _ _ _).symm
 
 private instance cuspToBase_finitePresentation :

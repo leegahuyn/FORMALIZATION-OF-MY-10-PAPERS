@@ -65,9 +65,15 @@ theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L)
   | some x y h =>
     obtain ⟨h₁, e₁⟩ := unitMap_some E L g h
     obtain ⟨h₂, e₂⟩ := nativeMap_some E L g A (scaled_nonsingular hUA hΔA h)
-    dsimp only [e, sexticScale]
-    rw [scaleEquiv_some hu₀ hUA hΔ hΔA h, e₁, e₂, scale_some, scaleEquiv_some,
-      Affine.Point.some.injEq]
+    have hv₀ : v ≠ 0 := sixth_root_nonzero L hv
+    have hV : v ^ 6 * (1 : L) = 1 := by rw [hv, one_mul]
+    have h₃ := scaled_nonsingular hV hΔ h₁
+    have e₃ : sexticScale L hv hΔ (Affine.Point.some (g x) (g y) h₁) =
+        Affine.Point.some (v ^ 2 * g x) (v ^ 3 * g y) h₃ :=
+      scale_some hv₀ hV hΔ h₁
+    dsimp only [e]
+    rw [scaleEquiv_some hu₀ hUA hΔ hΔA h, e₁, e₂, e₃,
+      scaleEquiv_some hu₀ hUA hΔ hΔA h₃, Affine.Point.some.injEq]
     constructor
     · rw [map_mul, map_pow, hGu]
       ring
