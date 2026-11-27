@@ -51,7 +51,7 @@ private abbrev raw (F : Sheaf (J (X := X)) A) :=
   DownwardClosedLanCounit.counit (L j) F.obj
 
 private theorem raw_mono (F : Sheaf (J (X := X)) A) : Mono (raw j F) := by
-  apply NatTrans.mono_of_mono_app
+  apply (NatTrans.mono_iff_mono_app (raw j F)).2
   intro W
   exact DownwardClosedLanCounit.counit_component_mono (L j) F.obj (downward_closed j) W
 

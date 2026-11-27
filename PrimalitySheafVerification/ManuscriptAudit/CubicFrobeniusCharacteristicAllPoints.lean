@@ -72,7 +72,9 @@ theorem double_characteristicError {k : ℕ} (hq : Fintype.card K = 2 * k + 1) (
   have hOutsideError (R : GeometricPoints K M A) (hR : R ∉ Set.range b) :
       (2 : ℕ) • characteristicError K M A R = 0 := by
     cases R with
-    | zero => simp
+    | zero =>
+      change (0 : GeometricPoints K M A) ∉ Set.range b at hR
+      exact (hR ⟨0, map_zero b⟩).elim
     | some x y hxy =>
       have hx : Transcendental L x := fun hAlg => hR
         (in_range_of_isAlgebraic A h₂ h₃ hA hxy hAlg)

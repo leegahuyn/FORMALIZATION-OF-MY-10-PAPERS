@@ -121,7 +121,7 @@ theorem covering : Sieve.ofArrows (fun _ : Unit ↦ coverObject K ℓ)
     · intro i
       exact inferInstanceAs (IsAffine (Spec (CommRingCat.of (Tower K ℓ))))
     · intro x
-      obtain ⟨y, hy⟩ := (coverMap K ℓ).surj x
+      obtain ⟨y, hy⟩ := (AlgebraicGeometry.surjective_iff.mp (cover_surjective K ℓ)) x
       exact ⟨0, y, hy⟩
   apply (Scheme.ProEt.topology (base K)).superset_covering _ hFin
   apply (Sieve.generate_le_iff _ _).mpr

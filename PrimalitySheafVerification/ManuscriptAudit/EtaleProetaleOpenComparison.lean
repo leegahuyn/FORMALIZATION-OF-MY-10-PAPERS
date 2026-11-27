@@ -29,8 +29,8 @@ def directImageRestrictionIso :
   refine NatIso.ofComponents (fun F => P.preimageIso (Iso.refl _)) ?_
   intro F G f
   apply P.map_injective
-  ext W
-  rfl
+  simp only [Functor.map_comp, Functor.preimageIso, Functor.map_preimage,
+    Iso.refl_hom, Category.comp_id, Category.id_comp] <;> rfl
 
 /-- The left-adjoint mate gives the actual extension by zero comparison. -/
 def inverseImageExtensionIso :

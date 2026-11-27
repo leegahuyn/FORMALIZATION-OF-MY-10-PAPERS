@@ -20,47 +20,45 @@ private theorem eval_quadratic (j : ℕ) (z : ℂ) :
     (quadratic j).eval z = denominator (goodPrime j) (trace j) z := by
   simp [quadratic, denominator]
 
-private theorem square_trace_ne (j : ℕ) :
-    trace j ^ 2 ≠ 4 * (goodPrime j : ℂ) := by
+/-- An integer trace cannot give zero discriminant at a prime at least five. -/
+theorem prime_trace_discriminant_ne_zero {p : ℕ} (hp : p.Prime) (hp5 : 5 ≤ p)
+    (a : ℤ) : (a : ℂ)^2 ≠ 4 * (p : ℂ) := by
   intro h
-  change ((signedTrace j : ℤ) : ℂ)^2 = 4 * (goodPrime j : ℂ) at h
-  have hZ : signedTrace j ^ 2 = 4 * (goodPrime j : ℤ) := by exact_mod_cast h
+  have hZ : a ^ 2 = 4 * (p : ℤ) := by exact_mod_cast h
   have hFour : Int.natAbs 4 = 4 := by decide
-  have hN : (signedTrace j).natAbs^2 = 4 * goodPrime j := by
+  have hN : a.natAbs^2 = 4 * p := by
     simpa only [Int.natAbs_pow, Int.natAbs_mul, Int.natAbs_natCast, hFour]
       using congrArg Int.natAbs hZ
-  have hp : (goodPrime j).Prime := goodPrime_prime j
-  have hp5 := goodPrime_atLeastFive j
-  have hd : goodPrime j ∣ (signedTrace j).natAbs^2 :=
-    ⟨4, hN.trans (Nat.mul_comm 4 (goodPrime j))⟩
-  have hPos : 0 < (signedTrace j).natAbs := by
+  have hd : p ∣ a.natAbs^2 := ⟨4, hN.trans (Nat.mul_comm 4 p)⟩
+  have hPos : 0 < a.natAbs := by
     by_contra! hz
-    have hz' : (signedTrace j).natAbs = 0 := by omega
+    have hz' : a.natAbs = 0 := by omega
     rw [hz'] at hN
     norm_num at hN
     omega
   have hle := Nat.le_of_dvd hPos (hp.dvd_of_dvd_pow hd)
-  have hsq : goodPrime j ^ 2 ≤ (signedTrace j).natAbs^2 := by
+  have hsq : p ^ 2 ≤ a.natAbs^2 := by
     simpa only [pow_two] using Nat.mul_le_mul hle hle
-  have hlt : 4 * goodPrime j < goodPrime j ^ 2 := by
+  have hlt : 4 * p < p ^ 2 := by
     rw [pow_two]
     exact Nat.mul_lt_mul_of_pos_right (by omega) hp.pos
   exact hlt.not_ge (hN ▸ hsq)
 
+theorem prime_trace_root_derivative_ne_zero {p : ℕ} (hp : p.Prime) (hp5 : 5 ≤ p)
+    (a : ℤ) {z : ℂ} (h : 1-(a : ℂ)*z+(p : ℂ)*z^2 = 0) :
+    ((1 - C (a : ℂ) * X + C (p : ℂ) * X^2 : ℂ[X]).derivative).eval z ≠ 0 := by
+  intro hd
+  have hDer : ((1 - C (a : ℂ) * X + C (p : ℂ) * X^2 : ℂ[X]).derivative).eval z =
+      -(a : ℂ) + 2 * (p : ℂ) * z := by
+    simp <;> ring
+  have hd' : -(a : ℂ) + 2 * (p : ℂ) * z = 0 := hDer.symm.trans hd
+  apply prime_trace_discriminant_ne_zero hp hp5 a
+  linear_combination (-4 * (p : ℂ)) * h + (-(a : ℂ) + 2 * (p : ℂ) * z) * hd'
+
 theorem local_root_derivative_ne_zero (j : ℕ) {z : ℂ}
     (h : denominator (goodPrime j) (trace j) z = 0) :
-    (quadratic j).derivative.eval z ≠ 0 := by
-  intro hd
-  have hd' : -trace j + 2 * (goodPrime j : ℂ) * z = 0 := by
-    have hDer : (quadratic j).derivative.eval z =
-        -trace j + 2 * (goodPrime j : ℂ) * z := by
-      simp [quadratic]
-      <;> ring
-    exact hDer.symm.trans hd
-  apply square_trace_ne j
-  unfold denominator at h
-  linear_combination (-4 * (goodPrime j : ℂ)) * h +
-    (-trace j + 2 * (goodPrime j : ℂ) * z) * hd'
+    (quadratic j).derivative.eval z ≠ 0 :=
+  prime_trace_root_derivative_ne_zero (goodPrime_prime j) (goodPrime_atLeastFive j) (signedTrace j) h
 
 theorem local_root_norm (j : ℕ) {z : ℂ}
     (h : denominator (goodPrime j) (trace j) z = 0) :
@@ -115,6 +113,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper7FiniteEulerSimpleRoots.prime_trace_discriminant_ne_zero,
+      ``ManuscriptAudit.Paper7FiniteEulerSimpleRoots.prime_trace_root_derivative_ne_zero,
       ``ManuscriptAudit.Paper7FiniteEulerSimpleRoots.local_root_derivative_ne_zero,
       ``ManuscriptAudit.Paper7FiniteEulerSimpleRoots.local_root_norm,
       ``ManuscriptAudit.Paper7FiniteEulerSimpleRoots.shared_root_same_prime_index,

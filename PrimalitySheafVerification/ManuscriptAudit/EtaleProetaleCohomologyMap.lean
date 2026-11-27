@@ -88,12 +88,15 @@ theorem constantComparison_naturality {M N : A.{u}} (f : M ⟶ N) (n : ℕ)
   simp only [constantComparison, AddMonoidHom.comp_apply]
   have hpb := pullback_naturality X ((constantSheaf X.smallEtaleTopology A.{u}).map f) n e
   refine (congrArg (fun c => Sheaf.H.map ((constantInverseImageIso X).app N).hom n c) hpb).trans ?_
-  rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply]
-  have h : (inverseImage X).map ((constantSheaf X.smallEtaleTopology A.{u}).map f) ≫
-      ((constantInverseImageIso X).app N).hom =
-    ((constantInverseImageIso X).app M).hom ≫ (constantSheaf (Scheme.ProEt.topology X) A.{u}).map f :=
-    (constantInverseImageIso X).hom.naturality f
-  rw [h]
+  let x := pullback X ((constantSheaf X.smallEtaleTopology A.{u}).obj M) n e
+  let f₁ := (inverseImage X).map ((constantSheaf X.smallEtaleTopology A.{u}).map f)
+  let f₂ := (constantSheaf (Scheme.ProEt.topology X) A.{u}).map f
+  let i₁ := ((constantInverseImageIso X).app M).hom
+  let i₂ := ((constantInverseImageIso X).app N).hom
+  have h : f₁ ≫ i₂ = i₁ ≫ f₂ := (constantInverseImageIso X).hom.naturality f
+  exact (Sheaf.H.map_comp_apply (f := f₁) (n := n) i₂ x).symm.trans
+    ((congrArg (fun g => Sheaf.H.map g n x) h).trans
+      (Sheaf.H.map_comp_apply (f := i₁) (n := n) f₂ x))
 
 variable (Y : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]
 
@@ -131,8 +134,15 @@ theorem nativeResidueComparison_transition (r n : ℕ) (e :
   have h := constantComparison_naturality Y f n e
   refine (congrArg (fun c => Sheaf.H.map (ProetaleDiscreteConstant.nativeResidueIso Y ℓ r).hom n c)
     h).trans ?_
-  rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply,
-    ProetaleDiscreteConstant.nativeResidueIso_naturality]
+  let x := constantComparison Y (residueCoefficient ℓ (r+1)) n e
+  let f₁ := (constantSheaf (Scheme.ProEt.topology Y) AddCommGrpCat.{1}).map f
+  let f₂ := (ProetaleCoefficientUniverseLift.lift Y).map (ProetaleResidueSheaves.residueTransition Y ℓ r)
+  let i₁ := (ProetaleDiscreteConstant.nativeResidueIso Y ℓ (r+1)).hom
+  let i₂ := (ProetaleDiscreteConstant.nativeResidueIso Y ℓ r).hom
+  have hNat : f₁ ≫ i₂ = i₁ ≫ f₂ := ProetaleDiscreteConstant.nativeResidueIso_naturality Y ℓ r
+  exact (Sheaf.H.map_comp_apply (f := f₁) (n := n) i₂ x).symm.trans
+    ((congrArg (fun g => Sheaf.H.map g n x) hNat).trans
+      (Sheaf.H.map_comp_apply (f := i₁) (n := n) f₂ x))
 
 
 end

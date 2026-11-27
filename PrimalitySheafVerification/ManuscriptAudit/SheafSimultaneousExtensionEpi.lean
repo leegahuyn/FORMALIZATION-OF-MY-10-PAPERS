@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Sites.Abelian
 import PrimalitySheafVerification.ManuscriptAudit.ExtOneSimultaneousPullback
 import PrimalitySheafVerification.ManuscriptAudit.SheafIntegerGeneratorEpi
 
@@ -20,25 +21,25 @@ set_option backward.isDefEq.respectTransparency false
 
 universe u v w
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable [HasWeakSheafify J AddCommGrpCat.{w}]
+variable [HasSheafify J AddCommGrpCat.{w}]
 
 private abbrev G := AddCommGrpCat.{w}
 private abbrev Z := AddCommGrpCat.of (ULift.{w} ℤ)
 
-private def fromInteger {A : G} (a : A) : Z ⟶ A :=
+private def fromInteger {A : G.{w}} (a : A) : Z.{w} ⟶ A :=
   AddCommGrpCat.ofHom
     { toFun := fun z ↦ z.down • a
       map_zero' := zero_zsmul _
       map_add' x y := add_zsmul _ _ _ }
 
-private theorem fromInteger_comp {A B : G} (a : A) (q : A ⟶ B) :
+private theorem fromInteger_comp {A B : G.{w}} (a : A) (q : A ⟶ B) :
     fromInteger a ≫ q = fromInteger (q a) := by
   apply AddCommGrpCat.ext
   intro z
   exact map_zsmul q.hom z.down a
 
 variable {T U : C} (hT : IsTerminal T) (f : U ⟶ T)
-variable (S : ℕ → ShortComplex (Sheaf J G))
+variable (S : ℕ → ShortComplex (Sheaf J G.{w}))
 variable (a : ∀ n, integerSheaf J ⟶ (S n).X₃)
 
 set_option maxHeartbeats 2000000 in
@@ -51,7 +52,7 @@ theorem projection_epi
     Epi (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a) := by
   apply epi_of_local_generator J hT f hCover
   choose b hb using hLift
-  let E := sheafToPresheaf J G ⋙ (evaluation Cᵒᵖ G).obj (op U)
+  let E := sheafToPresheaf J G.{w} ⋙ (evaluation Cᵒᵖ G.{w}).obj (op U)
   let X₂ (n : ℕ) := (S n).X₂
   let X₃ (n : ℕ) := (S n).X₃
   let v := fromInteger ((integerSheaf J).obj.map f.op (generator J hT))
@@ -82,7 +83,7 @@ theorem projection_epi
     change pullback.lift v q hc ≫ H.inv ≫ E.map (pullback.fst d p) = v
     rw [PreservesPullback.iso_inv_fst, pullback.lift_fst]
   refine ⟨L ⟨1⟩, ?_⟩
-  have he := ConcreteCategory.congr_hom hL (⟨1⟩ : Z)
+  have he := ConcreteCategory.congr_hom hL (⟨1⟩ : Z.{w})
   change (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a).hom.app (op U) (L ⟨1⟩) =
     (1 : ℤ) • ((integerSheaf J).obj.map f.op (generator J hT)) at he
   simpa only [one_zsmul] using he

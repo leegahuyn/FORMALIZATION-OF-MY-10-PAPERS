@@ -100,10 +100,9 @@ theorem crossRaw_oddProgressionDifference (j : ℕ) :
   unfold crossRaw zeroModeProgressionRaw
   rw [crossSum_eq, character_mod]
   by_cases h1 : (j + 1) % 4 = 1
-  · have h3 : (j + 1) % 4 ≠ 3 := by omega
-    simp [h1, h3, hRaw]
+  · simp [h1, hRaw]
   · by_cases h3 : (j + 1) % 4 = 3
-    · simp [h1, h3, hRaw]
+    · simp [h3, hRaw, neg_div]
     · simp [h1, h3]
 
 theorem crossCutoff_oddProgressionDifference (N : ℕ) :
