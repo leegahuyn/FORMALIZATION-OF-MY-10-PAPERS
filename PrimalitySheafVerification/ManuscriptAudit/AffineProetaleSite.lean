@@ -37,7 +37,7 @@ instance inclusion_coverDense : (inclusion X).IsCoverDense (Scheme.ProEt.topolog
     rintro _ _ ⟨i⟩
     let W : Affine X := ⟨ProetaleOpenCover.coverObject U O i,
       inferInstanceAs (IsAffine (Spec (C.X i)))⟩
-    exact Presieve.in_coverByImage W (ProetaleOpenCover.coverArrow U O i)
+    exact Presieve.in_coverByImage (inclusion X) (Y := W) (ProetaleOpenCover.coverArrow U O i)
 
 abbrev topology : GrothendieckTopology (Affine X) :=
   (inclusion X).inducedTopology (Scheme.ProEt.topology X)

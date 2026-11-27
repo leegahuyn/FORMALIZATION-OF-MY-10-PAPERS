@@ -44,10 +44,14 @@ theorem levelEquiv_naturality (r : ℕ) (x : level X ℓ (r + 1)) :
   let E := extensionByZero (𝟙 X) A
   change Sheaf.H.map (extensionIso X ℓ r).hom 1 (Sheaf.H.map (E.map f) 1 x) =
     Sheaf.H.map f 1 (Sheaf.H.map (extensionIso X ℓ (r + 1)).hom 1 x)
-  simp only [← Sheaf.H.map_comp_apply]
   have h : E.map f ≫ (extensionIso X ℓ r).hom = (extensionIso X ℓ (r + 1)).hom ≫ f :=
     (extensionByZeroIdIso X).hom.naturality f
-  exact congrArg (fun k ↦ Sheaf.H.map k 1 x) h
+  calc
+    _ = Sheaf.H.map (E.map f ≫ (extensionIso X ℓ r).hom) 1 x :=
+      (Sheaf.H.map_comp_apply (E.map f) (extensionIso X ℓ r).hom x).symm
+    _ = Sheaf.H.map ((extensionIso X ℓ (r + 1)).hom ≫ f) 1 x :=
+      congrArg (fun k ↦ Sheaf.H.map k 1 x) h
+    _ = _ := Sheaf.H.map_comp_apply (extensionIso X ℓ (r + 1)).hom f x
 
 set_option maxHeartbeats 1200000 in
 /-- Removing the identity extension yields a coherent equivalence of the ordinary degree-one tower. -/

@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper5PrintedAllTwistTate
 namespace ManuscriptAudit.Paper5PrintedAllTwistExtensionCharpoly
 
 open Polynomial Module PowerTateModule
-open Paper5PrintedRecurrence Paper5PrintedAllTwistTate CubicNonsplitTwoThreeAdicCharpoly
+open Paper5PrintedRecurrence Paper5PrintedAllTwistTate
+open CubicNonsplitThreeAdicTrace (GeometricPoints)
 open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
 
 noncomputable section

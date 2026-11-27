@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Lean.Elab.Tactic.Omega
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Finite.Basic
 import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusDifferencePolynomial
 import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusDifferenceDerivative

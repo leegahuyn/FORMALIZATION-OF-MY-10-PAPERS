@@ -3,6 +3,8 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.LinearCombination
 import PrimalitySheafVerification.ManuscriptAudit.CubicKummerSecant
+import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionOrdinate
+import PrimalitySheafVerification.ManuscriptAudit.CubicKummerQuadratic
 
 /-! Exact homogeneous addition-and-subtraction formulas on the actual centered cubic point group. -/
 
@@ -61,12 +63,11 @@ private theorem sym2x_diagonal (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     ext i
     fin_cases i
     · simp [forms, Curve, CubicAffine, shortCubic, Affine.addX]
-      field_simp [hDen]
+      field_simp [hDen, show y + y ≠ 0 by simpa only [sub_neg_eq_add] using hDen]
       linear_combination 32 * x * y ^ 2 * hyq
     · simp [forms]
       linear_combination -4 * hyq
-    · simp [forms]
-      ring
+    · simp [forms] <;> ring
 
 /-- The basepoint-free forms yield exactly the unordered pair of actual sum/difference abscissas. -/
 theorem sym2x_add_sub (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)

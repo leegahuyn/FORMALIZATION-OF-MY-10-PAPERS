@@ -46,7 +46,7 @@ theorem formallyUnramified [WeaklyEtale (structureMap R S)] :
     refine ⟨2, ?_⟩
     have ht : x ^ 2 ∈ I ^ 2 := by
       simpa only [pow_two] using (Ideal.mul_mem_mul hx hx : x * x ∈ I * I)
-    simpa only [hI] using ht
+    simpa only [hI, Ideal.zero_eq_bot] using ht
   letI : Surjective n := ⟨(PrimeSpectrum.comap_quotientMk_bijective_of_le_nilradical hn).surjective⟩
   have hab : n ≫ u = n ≫ v := by
     rw [← Spec.map_comp, ← Spec.map_comp]

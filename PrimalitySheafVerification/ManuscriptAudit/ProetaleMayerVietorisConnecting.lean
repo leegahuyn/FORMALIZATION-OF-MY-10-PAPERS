@@ -61,13 +61,16 @@ private def middleIso : (S j k l a b hD hCover).X₂ ≅
 
 variable (F : C X) (n : ℕ)
 
-private abbrev firstEquiv :=
+/-- The first free term computes ordinary cohomology of the overlap. -/
+abbrev firstEquiv :=
   (extIso (firstIso j k l a b hD hCover) F n).trans (openExtEquiv l F n)
 
-private abbrev lastEquiv (r : ℕ) :=
+/-- The last free term computes ordinary cohomology of the ambient scheme. -/
+abbrev lastEquiv (r : ℕ) :=
   extIso (lastIso j k l a b hD hCover) F r
 
-private abbrev δ :
+/-- The connecting arrow before identifying the first and last free terms. -/
+abbrev extBoundary :
     Ext (S j k l a b hD hCover).X₁ F n →+ Ext (S j k l a b hD hCover).X₃ F (n + 1) :=
   (exactCover j k l a b hD hCover).extClass.precomp F (Nat.add_comm 1 n)
 
@@ -75,7 +78,7 @@ private abbrev δ :
 def connecting :
     Sheaf.H ((restriction l A).obj F) n →+ Sheaf.H F (n + 1) :=
   (lastEquiv j k l a b hD hCover F (n + 1)).toAddMonoidHom.comp
-    ((δ j k l a b hD hCover F n).comp
+    ((extBoundary j k l a b hD hCover F n).comp
       (firstEquiv j k l a b hD hCover F n).symm.toAddMonoidHom)
 
 private theorem middle_subsingleton
@@ -94,7 +97,7 @@ theorem connecting_injective
     (hU : Subsingleton (Sheaf.H ((restriction j A).obj F) n))
     (hV : Subsingleton (Sheaf.H ((restriction k A).obj F) n)) :
     Function.Injective (connecting j k l a b hD hCover F n) := by
-  let f := δ j k l a b hD hCover F n
+  let f := extBoundary j k l a b hD hCover F n
   have hinj : Function.Injective f := by
     intro x y hxy
     apply sub_eq_zero.mp
@@ -113,7 +116,7 @@ theorem connecting_surjective
     (hV : Subsingleton (Sheaf.H ((restriction k A).obj F) (n + 1))) :
     Function.Surjective (connecting j k l a b hD hCover F n) := by
   let E := middle_subsingleton j k l a b hD hCover F (n + 1) hU hV
-  have hd : Function.Surjective (δ j k l a b hD hCover F n) := by
+  have hd : Function.Surjective (extBoundary j k l a b hD hCover F n) := by
     intro y
     exact Ext.contravariant_sequence_exact₃ (exactCover j k l a b hD hCover) F y
       (E.elim _ _) (Nat.add_comm 1 n)

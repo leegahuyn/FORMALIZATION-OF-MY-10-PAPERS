@@ -102,10 +102,11 @@ theorem reduced_cutoff_frequency_average_bounded (N : ℕ) {M : ℕ} (hPos : 0 <
       (2 * (coefficient 1 0)^2) * ∑' j : ℕ, 1 / ((j + 1 : ℕ) : ℝ)^2 := by
   have hmR : 0 < (M : ℝ) := by exact_mod_cast hPos
   rw [reduced_cutoff_sum_squares N M hM, mul_div_cancel_left₀ _ hmR.ne']
-  have hSum : Summable (fun j : ℕ => (1 : ℝ) / ((j + 1 : ℕ) : ℝ)^2) := by
-    refine (summable_nat_add_iff 1).2 ?_
+  have hBase : Summable (fun j : ℕ => (1 : ℝ) / (j : ℝ)^2) := by
     simpa only [Real.rpow_two] using
       (Real.summable_one_div_nat_rpow.2 (by norm_num : (1 : ℝ) < 2))
+  have hSum : Summable (fun j : ℕ => (1 : ℝ) / ((j + 1 : ℕ) : ℝ)^2) :=
+    (summable_nat_add_iff 1).2 hBase
   calc
     _ ≤ ∑ k ∈ Finset.range N, (2 * (coefficient 1 0)^2) * (1 / ((k + 1 : ℕ) : ℝ)^2) :=
       Finset.sum_le_sum fun k _ => row_energy_le (Nat.succ_pos k)

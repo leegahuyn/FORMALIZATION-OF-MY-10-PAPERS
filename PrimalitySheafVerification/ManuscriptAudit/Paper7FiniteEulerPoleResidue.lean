@@ -22,7 +22,9 @@ theorem actual_finite_euler_simple_pole (n : ℕ) {z₀ : ℂ}
   apply h.congr'
   apply Filter.Eventually.of_forall
   intro z
-  rw [finite_product_eq_inverse_eval, slope_def_field, h₀, sub_zero, inv_div, div_eq_mul_inv]
+  change (slope (fun x : ℂ => (denominatorPolynomial n).eval x) z₀ z)⁻¹ =
+    (z-z₀) * partialProduct goodPrime trace z n
+  rw [finite_product_eq_inverse_eval n z, slope_def_field, h₀, sub_zero, inv_div, div_eq_mul_inv]
 
 end ManuscriptAudit.Paper7FiniteEulerPoleResidue
 

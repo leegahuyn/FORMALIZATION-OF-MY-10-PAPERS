@@ -59,10 +59,10 @@ theorem rationalDegree_substitute (f g : RatFunc K) (hg : ¬ ∃ c : K, g = RatF
     Algebra.finrank_eq_of_equiv_equiv i.toRingEquiv e.toRingEquiv hCompat
   have hTower := Module.finrank_mul_finrank H M (RatFunc K)
   rw [← hIndex] at hTower
-  have hf : Module.finrank E (RatFunc K) = rationalDegree f := RatFunc.finrank_eq_max_natDegree
-  have hg' : Module.finrank M (RatFunc K) = rationalDegree g := RatFunc.finrank_eq_max_natDegree
+  have hf : Module.finrank E (RatFunc K) = rationalDegree f := RatFunc.finrank_eq_max_natDegree f
+  have hg' : Module.finrank M (RatFunc K) = rationalDegree g := RatFunc.finrank_eq_max_natDegree g
   have hh : Module.finrank H (RatFunc K) = rationalDegree (substitute g hg f) :=
-    RatFunc.finrank_eq_max_natDegree
+    RatFunc.finrank_eq_max_natDegree (substitute g hg f)
   rw [hf, hg', hh] at hTower
   exact hTower.symm
 
