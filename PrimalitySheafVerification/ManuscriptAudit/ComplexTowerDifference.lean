@@ -48,8 +48,8 @@ end Category
 
 section Complex
 
-local notation "A" => AddCommGrpCat.{0}
-local notation "Ch" => CochainComplex A ℤ
+private abbrev A := AddCommGrpCat.{0}
+private abbrev Ch := CochainComplex A ℤ
 
 variable (K : ℕ → Ch) (transition : ∀ r, K (r + 1) ⟶ K r)
 

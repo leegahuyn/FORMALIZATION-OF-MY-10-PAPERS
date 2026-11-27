@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.CubicTwoTorsionCard
+import PrimalitySheafVerification.ManuscriptAudit.CubicDoublingSurjective
 import PrimalitySheafVerification.ManuscriptAudit.CubicSupersingularUnitFrobenius
 import PrimalitySheafVerification.ManuscriptAudit.Paper5NonsplitAllPrimeAdic
 import PrimalitySheafVerification.ManuscriptAudit.PrimeToCharacteristicTorsion
@@ -43,7 +45,10 @@ theorem multiplication_and_torsion (hp : 5 ≤ p) (hp₃ : p % 3 = 2)
     have hSurj : Function.Surjective (nsmulAddMonoidHom l : G →+ G) :=
       surjective_nsmul_of_surjective_transitions l G
         (exists_positive_nsmul_eq_zero (ZMod p) L W) hTrans
-    have hCard₁ : Nat.card (Torsion l G) = l ^ 2 := by simpa only [pow_one] using hCard 1
+    have hCardLevel := hCard 1
+    change Nat.card (Torsion (l ^ 1) G) = (l ^ 2) ^ 1 at hCardLevel
+    rw [pow_one, pow_one] at hCardLevel
+    have hCard₁ : Nat.card (Torsion l G) = l ^ 2 := hCardLevel
     let PropOn (V : Affine L) :=
       Function.Surjective (nsmulAddMonoidHom l : V.Point →+ V.Point) ∧
         Nat.card (Torsion l V.Point) = l ^ 2

@@ -41,7 +41,8 @@ private theorem intertwiners (r f : AddMonoid.End G) (s : ℤ) (hCube : r ^ 3 = 
   have hConj₂ : f * r ^ 2 = r * f := by
     calc
       _ = (f * r) * r := by rw [pow_two, mul_assoc]
-      _ = r ^ 2 * (f * r) := by rw [hConj, mul_assoc]
+      _ = (r ^ 2 * f) * r := congrArg (fun t => t * r) hConj
+      _ = r ^ 2 * (f * r) := mul_assoc _ _ _
       _ = r ^ 2 * (r ^ 2 * f) := congrArg (fun t => r ^ 2 * t) hConj
       _ = r * f := by
         rw [← mul_assoc, ← pow_add, show (2 : ℕ) + 2 = 3 + 1 by decide,

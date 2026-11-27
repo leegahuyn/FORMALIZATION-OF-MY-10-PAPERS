@@ -47,7 +47,9 @@ def coordinateEquiv : Torsion L ≃ Option (Coordinates L) where
 theorem affine_card : Nat.card (Torsion L) = 13 := by
   have h := coordinates_card L
   letI : Finite (Coordinates L) := Nat.finite_of_card_ne_zero (by rw [h]; decide)
-  rw [Nat.card_congr (coordinateEquiv L), Nat.card_option, h]
+  letI : Fintype (Coordinates L) := Fintype.ofFinite _
+  rw [Nat.card_congr (coordinateEquiv L), Nat.card_eq_fintype_card, Fintype.card_option,
+    ← Nat.card_eq_fintype_card, h]
 
 theorem projective_card :
     Nat.card {P : (shortCubic (0 : L) 1).toProjective.Point // (13 : ℕ) • P = 0} = 13 := by

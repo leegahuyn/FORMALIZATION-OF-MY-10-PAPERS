@@ -8,7 +8,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CubicSupersingularTwistFrobeni
 namespace ManuscriptAudit.CubicSexticRotation
 
 open WeierstrassCurve FiniteFieldPointCount CubicThreeTorsionOrdinate CubicThreeTorsionCard
-open CubicPointScaling CubicCubeRotation CubicSupersingularUnitFrobenius
+open CubicPointScaling CubicCubeRotation CubicSupersingularUnitFrobenius CubicTwoTorsion
 open CubicSupersingularTwistFrobenius
 
 noncomputable section
@@ -68,6 +68,23 @@ theorem sextic_eq_neg_rotation {v : L} (hv : v ^ 6 = 1)
     rw [e, rotate_some, Affine.Point.neg_some, Affine.Point.some.injEq]
     exact ⟨rfl, by simp [hs, Curve, CubicAffine, shortCubic, Affine.negY]⟩
 
+/-- The ordinate multiplier as an integer sign. -/
+def twistSign (v : L) : ℤ := if v ^ 3 = 1 then 1 else -1
+
+theorem twistSign_cases (v : L) : twistSign L v = 1 ∨ twistSign L v = -1 := by
+  by_cases h : v ^ 3 = 1
+  · exact Or.inl (if_pos h)
+  · exact Or.inr (if_neg h)
+
+theorem sextic_eq_signed_rotation {v : L} (hv : v ^ 6 = 1)
+    (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) :
+    sexticScale L hv hΔ = twistSign L v • (rotate (v ^ 2) (square_cube L hv) hΔ :
+      AddMonoid.End (UnitPoints L)) := by
+  by_cases h : v ^ 3 = 1
+  · rw [twistSign, if_pos h, one_zsmul, sextic_eq_rotation L hv hΔ h]
+  · have hNeg := (cube_sign L hv).resolve_left h
+    rw [twistSign, if_neg h, neg_one_zsmul, sextic_eq_neg_rotation L hv hΔ hNeg]
+
 variable (E : Type*) [Field E] [Fintype E] [Algebra E L]
 
 /-- Over a base with degree-six roots of unity, the twist ratio is the power residue of its coefficient. -/
@@ -94,7 +111,9 @@ run_cmd do
       ``ManuscriptAudit.CubicSexticRotation.rotate_one,
       ``ManuscriptAudit.CubicSexticRotation.sextic_eq_rotation,
       ``ManuscriptAudit.CubicSexticRotation.sextic_eq_neg_rotation,
-      ``ManuscriptAudit.CubicSexticRotation.ratio_eq_power] do
+      ``ManuscriptAudit.CubicSexticRotation.ratio_eq_power,
+      ``ManuscriptAudit.CubicSexticRotation.twistSign_cases,
+      ``ManuscriptAudit.CubicSexticRotation.sextic_eq_signed_rotation] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

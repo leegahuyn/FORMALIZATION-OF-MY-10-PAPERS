@@ -32,7 +32,7 @@ theorem pow_card_eq_self_iff (x : L) :
     rw [← map_pow, FiniteField.pow_card]
 
 private abbrev action (W : Affine E) : AddMonoid.End (W.baseChange L).Point :=
-  Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom E L)
+  pointMapAt E L W (W.baseChange L) rfl (FiniteField.frobeniusAlgHom E L)
 
 private abbrev inclusion (W : Affine E) :
     (W.baseChange E).Point →+ (W.baseChange L).Point :=
@@ -45,9 +45,9 @@ theorem fixed_iff (W : Affine E) (P : (W.baseChange L).Point) :
     cases P with
     | zero => exact ⟨0, rfl⟩
     | some x y hxy =>
-      unfold action at h
-      rw [Affine.Point.map_some] at h
-      have hFixed := Affine.Point.some.inj h
+      obtain ⟨h', he⟩ := pointMapAt_some E L W (W.baseChange L) rfl
+        (FiniteField.frobeniusAlgHom E L) x y hxy
+      have hFixed := Affine.Point.some.inj (he.symm.trans h)
       obtain ⟨a, ha⟩ := (pow_card_eq_self_iff E L x).mp hFixed.1
       obtain ⟨b, hb⟩ := (pow_card_eq_self_iff E L y).mp hFixed.2
       let i := Algebra.ofId E L
@@ -59,6 +59,8 @@ theorem fixed_iff (W : Affine E) (P : (W.baseChange L).Point) :
       rw [Affine.Point.map_some]
       simpa only [Algebra.ofId_apply, Affine.Point.some.injEq] using And.intro ha hb
   · rintro ⟨Q, rfl⟩
+    change Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom E L)
+      (inclusion E L W Q) = inclusion E L W Q
     exact Affine.Point.map_baseChange (W' := W) (FiniteField.frobeniusAlgHom E L) Q
 
 theorem kernel_card (W : Affine E) :
@@ -81,18 +83,17 @@ theorem kernel_card (W : Affine E) :
 variable [IsAlgClosed L]
 
 /-- The fixed subgroup of the native centered Frobenius counts literal projective points. -/
+set_option maxHeartbeats 500000 in
 theorem centered_kernel_card (A : E) :
     Nat.card ↥((1 - arithmeticPointFrobenius E L A).ker) =
       Nat.card (shortCubic (0 : E) A).toProjective.Point := by
   let W := Curve A
   have hAt {V : Affine L} (hV : W.baseChange L = V) :
-      Nat.card ↥((1 - pointMapAt E L W V hV (FiniteField.frobeniusAlgHom E L)).ker) =
-        Nat.card (W.baseChange E).Point := by
+      let F : AddMonoid.End V.Point := pointMapAt E L W V hV (FiniteField.frobeniusAlgHom E L)
+      Nat.card ↥((1 - F).ker) = Nat.card (W.baseChange E).Point := by
     subst V
-    unfold pointMapAt
     exact kernel_card E L W
-  have hSelf : W.baseChange E = W := by
-    ext <;> simp [WeierstrassCurve.baseChange]
+  have hSelf : W.baseChange E = W := by rfl
   calc
     _ = Nat.card (W.baseChange E).Point := hAt (centered_baseChange E L A)
     _ = Nat.card W.Point := congrArg (fun w : Affine E => Nat.card w.Point) hSelf

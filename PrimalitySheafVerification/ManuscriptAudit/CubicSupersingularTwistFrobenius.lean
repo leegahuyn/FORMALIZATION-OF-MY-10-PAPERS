@@ -37,9 +37,10 @@ variable (E : Type*) [Field E] [Fintype E] [Algebra E L] [IsAlgClosed L]
 
 /-- Scaling by a sixth root of the coefficient conjugates Frobenius to a
 sixth-root scaling followed by the reference Frobenius. -/
-theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
+theorem exists_twist_conjugacy_with_parameter {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
     (hΔA : (shortCubic (0 : L) (algebraMap E L A)).Δ ≠ 0) :
-    ∃ (v : L) (hv : v ^ 6 = 1) (e : UnitPoints L ≃+ GeometricPoints E L A),
+    ∃ (u v : L) (hv : v ^ 6 = 1) (e : UnitPoints L ≃+ GeometricPoints E L A),
+      u ≠ 0 ∧ u ^ 6 = algebraMap E L A ∧ v = FiniteField.frobeniusAlgHom E L u / u ∧
       ∀ P, arithmeticPointFrobenius E L A (e P) =
         e (sexticScale L hv hΔ (arithmeticUnit E L P)) := by
   let a := algebraMap E L A
@@ -64,7 +65,7 @@ theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L)
     change (g u / u) ^ 6 = 1
     rw [div_pow, hGp, div_self (pow_ne_zero _ hu₀)]
   let e := scaleEquiv hu₀ hUA hΔ hΔA
-  refine ⟨v, hv, e, ?_⟩
+  refine ⟨u, v, hv, e, hu₀, hu, rfl, ?_⟩
   intro P
   change nativeMap E L g A (e P) = e (sexticScale L hv hΔ (unitMap E L g P))
   cases P with
@@ -84,15 +85,26 @@ theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L)
     · rw [map_mul, map_pow, hGu]
       ring
 
+theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
+    (hΔA : (shortCubic (0 : L) (algebraMap E L A)).Δ ≠ 0) :
+    ∃ (v : L) (hv : v ^ 6 = 1) (e : UnitPoints L ≃+ GeometricPoints E L A),
+      ∀ P, arithmeticPointFrobenius E L A (e P) =
+        e (sexticScale L hv hΔ (arithmeticUnit E L P)) := by
+  obtain ⟨u, v, hv, e, _, _, _, he⟩ := exists_twist_conjugacy_with_parameter L E hA hΔ hΔA
+  exact ⟨v, hv, e, he⟩
+
 end
 end ManuscriptAudit.CubicSupersingularTwistFrobenius
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.CubicSupersingularTwistFrobenius.exists_twist_conjugacy
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.CubicSupersingularTwistFrobenius.sexticScale_some,
+      ``ManuscriptAudit.CubicSupersingularTwistFrobenius.exists_twist_conjugacy_with_parameter,
+      ``ManuscriptAudit.CubicSupersingularTwistFrobenius.exists_twist_conjugacy] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

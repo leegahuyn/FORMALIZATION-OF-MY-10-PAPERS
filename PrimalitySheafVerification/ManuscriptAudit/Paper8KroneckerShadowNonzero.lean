@@ -35,27 +35,43 @@ private theorem tail_term_bound (n : ℕ) (hn : 2 ≤ n) :
       (pow_le_pow_of_le_one (by norm_num) (by norm_num) hExp) (by positivity) (by positivity)
     _ = _ := by rw [pow_mul, ← mul_pow]; norm_num
 
+private theorem shadowTerm_zero (w : ℂ) : shadowTerm 0 w = 0 := by
+  simp [shadowTerm, coefficient]
+
+private theorem shadowTerm_one (w : ℂ) : shadowTerm 1 w = w := by
+  have hChi : kroneckerNegTwelve 1 = 1 := by
+    norm_num [kroneckerNegTwelve, jacobiSym.one_right]
+  norm_num [shadowTerm, coefficient, hChi]
+
+private theorem series_split {w : ℂ} (hw : ‖w‖ < 1) :
+    shadowSeries w = w + ∑' k : ℕ, shadowTerm (k + 2) w := by
+  have hSum := (shadowSeries_absolute_summability hw).of_norm
+  have hTail : Summable (fun n : ℕ => shadowTerm (n + 1) w) := (summable_nat_add_iff 1).mpr hSum
+  rw [shadowSeries, hSum.tsum_eq_zero_add, shadowTerm_zero, zero_add,
+    hTail.tsum_eq_zero_add, shadowTerm_one]
+
+private theorem quarter_real_majorant :
+    HasSum (fun k : ℕ => ((1 : ℝ) / 8) ^ (k + 2)) ((1 : ℝ) / 56) := by
+  convert (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 : ℝ) / 8)
+    (by norm_num : (1 : ℝ) / 8 < 1)).mul_right (((1 : ℝ) / 8) ^ (2 : ℕ)) using 1
+  · funext k
+    exact pow_add _ _ _
+  · norm_num
+
+private theorem quarter_tail_bound :
+    ‖∑' k : ℕ, shadowTerm (k + 2) ((1 / 4 : ℝ) : ℂ)‖ ≤ (1 : ℝ) / 56 :=
+  tsum_of_norm_bounded quarter_real_majorant (fun k => tail_term_bound (k + 2) (by omega))
+
 theorem shadowSeries_at_quarter_ne_zero : shadowSeries ((1 / 4 : ℝ) : ℂ) ≠ 0 := by
   let w : ℂ := ((1 / 4 : ℝ) : ℂ)
   have hw : ‖w‖ < 1 := by change ‖((1 / 4 : ℝ) : ℂ)‖ < 1; rw [norm_quarter]; norm_num
-  have hSum := (shadowSeries_absolute_summability hw).of_norm
-  have hTail : Summable (fun n : ℕ => shadowTerm (n + 1) w) := (summable_nat_add_iff 1).mpr hSum
-  have hDecomp : shadowSeries w = w + ∑' k : ℕ, shadowTerm (k + 2) w := by
-    rw [shadowSeries, hSum.tsum_eq_zero_add, hTail.tsum_eq_zero_add]
-    simp [shadowTerm, coefficient, kroneckerNegTwelve]
-  have hGeom : HasSum (fun k : ℕ => ((1 : ℝ) / 8) ^ (k + 2)) ((1 : ℝ) / 56) := by
-    convert (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 : ℝ) / 8)
-      (by norm_num : (1 : ℝ) / 8 < 1)).mul_right (((1 : ℝ) / 8) ^ (2 : ℕ)) using 1
-    · funext k
-      exact pow_add _ _ _
-    · norm_num
-  have hBound : ‖∑' k : ℕ, shadowTerm (k + 2) w‖ ≤ (1 : ℝ) / 56 :=
-    tsum_of_norm_bounded hGeom (fun k => tail_term_bound (k + 2) (by omega))
+  have hDecomp := series_split hw
   change shadowSeries w ≠ 0
   intro h
-  have hTailValue : (∑' k : ℕ, shadowTerm (k + 2) w) = -w := by
-    rw [hDecomp] at h
-    linear_combination h
+  have hAdd : w + (∑' k : ℕ, shadowTerm (k + 2) w) = w + -w := by
+    rw [← hDecomp, h, add_neg_cancel]
+  have hTailValue := add_left_cancel hAdd
+  have hBound : ‖∑' k : ℕ, shadowTerm (k + 2) w‖ ≤ (1 : ℝ) / 56 := quarter_tail_bound
   rw [hTailValue, norm_neg] at hBound
   change ‖((1 / 4 : ℝ) : ℂ)‖ ≤ (1 : ℝ) / 56 at hBound
   rw [norm_quarter] at hBound

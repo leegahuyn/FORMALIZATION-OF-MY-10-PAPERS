@@ -18,9 +18,9 @@ universe v u
 
 variable {J : Type u} [Category.{v} J]
 
-local notation "A" => AddCommGrpCat.{0}
-local notation "Ch" => CochainComplex A ℤ
-local notation "c" => ComplexShape.up ℤ
+private abbrev A := AddCommGrpCat.{0}
+private abbrev Ch := CochainComplex A ℤ
+private abbrev c := ComplexShape.up ℤ
 
 /-- Assemble a diagram of complexes as a single complex in the diagram category. -/
 def diagramComplex (F : J ⥤ Ch) : CochainComplex (J ⥤ A) ℤ where

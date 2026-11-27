@@ -54,26 +54,25 @@ theorem difference_at_two (hℓ₂ : ℓ ≠ 2) (n : ℕ) :
     Function.Surjective (difference (𝟙 (geometricFiber 2)) ℓ n) ∧
       Function.Surjective (difference (affineCompactifyingOpen 2) ℓ n) ∧
       Function.Surjective (difference (geometricSmoothOpen 2).ι ℓ n) := by
-  letI : NeZero (ℓ : closureField 2) := ⟨IntegralNodalGeometricEuler.coefficient_ne_zero 2 ℓ hℓ₂⟩
   refine ⟨difference_surjective _ ℓ n ?_, difference_surjective _ ℓ n ?_,
     difference_surjective _ ℓ n ?_⟩
   · intro r
     by_cases hn : n = 0 ∨ n = 2
     · exact proper_reduction_onto ℓ hℓ₂ r n hn
     · exact onto_subsingleton
-        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.properEquiv ℓ n) hn)
+        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.properPrimePowerEquiv ℓ hℓ₂ r n) hn)
   · intro r
     by_cases hn : n = 2
     · subst n
       exact affine_reduction_onto ℓ hℓ₂ r
     · exact onto_subsingleton
-        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.affineEquiv ℓ n) hn)
+        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.affinePrimePowerEquiv ℓ hℓ₂ r n) hn)
   · intro r
     by_cases hn : n = 2
     · subst n
       exact smooth_reduction_onto ℓ hℓ₂ r
     · exact onto_subsingleton
-        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.smoothEquiv ℓ n) hn)
+        (level_subsingleton (IntegralNodalCharacteristicTwoCohomology.smoothPrimePowerEquiv ℓ hℓ₂ r n) hn)
 
 /-- The actual characteristic-two compatible-class limits vanish outside their displayed degrees. -/
 theorem limits_at_two_vanish (hℓ₂ : ℓ ≠ 2) (n : ℕ) :
@@ -101,11 +100,13 @@ private theorem odd_reduction_onto (p : ℕ) [Fact p.Prime]
   · cases n with
     | zero => exact (hn (by decide)).elim
     | succ n =>
-      letI : NeZero (ℓ : closureField p) := ⟨IntegralNodalGeometricEuler.coefficient_ne_zero p ℓ hℓp⟩
+      letI : NeZero ((ℓ ^ r : ℕ) : closureField p) := ⟨by
+        rw [Nat.cast_pow]
+        exact pow_ne_zero r (IntegralNodalGeometricEuler.coefficient_ne_zero p ℓ hℓp)⟩
       have h2 : (2 : closureField p) ≠ 0 :=
         IntegralNodalGeometricEuler.coefficient_ne_zero p 2 (ne_of_lt hp)
-      let e := (comparison ℓ n).trans
-        (NodalCompactSupportCyclicDegrees.ordinaryEquiv (closureField p) ℓ h2 (n + 1))
+      let e := (comparison (ℓ ^ r) n).trans
+        (NodalCompactSupportCyclicDegrees.ordinaryEquiv (closureField p) (ℓ ^ r) h2 (n + 1))
       exact onto_subsingleton (level_subsingleton e hn)
 
 /-- At every odd residue prime, the product differences of the three literal
