@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleClosedOpenRestriction
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleContinuousCoefficientNaturality
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleCohomologyIso
 
 /-! Ordinary native restriction to an actual open is natural for maps of
 continuous coefficients, including the genuine finite residue maps. -/

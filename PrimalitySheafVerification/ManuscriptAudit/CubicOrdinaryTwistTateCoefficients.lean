@@ -43,7 +43,7 @@ private theorem unit_det_aux (K : Type*) [Field K] [Fintype K] [Algebra K L]
     (V : WeierstrassCurve.Affine L) (hV : (Curve (1 : K)).baseChange L = V) (h : V = Curve (1 : L)) :
     LinearMap.det (endMap l (pointMapAt K L (Curve (1 : K)) V hV
       (FiniteField.frobeniusAlgHom K L))) = LinearMap.det (endMap l (arithmeticUnit K L)) := by
-  subst V
+  cases h
   rfl
 
 /-- Unit-twist Frobenius on E has determinant the actual field size. -/

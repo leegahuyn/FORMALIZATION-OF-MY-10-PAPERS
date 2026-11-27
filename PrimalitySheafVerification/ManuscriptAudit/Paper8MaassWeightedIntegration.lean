@@ -65,8 +65,9 @@ theorem vertical_adjoint {a b : ℝ} (ha : 0 < a) (hab : a ≤ b)
     rw [uIcc_of_le hab] at ht
     exact_mod_cast (ha.trans_le ht.1).ne'
   have hW (t : ℝ) (ht : t ∈ uIcc a b) : HasDerivAt w (w' t) t := by
-    have h := ((hasDerivAt_id t).ofReal_comp).inv (hT t ht)
-    simpa [w, w', one_div, neg_div] using h
+    have htR : t ≠ 0 := by exact_mod_cast hT t ht
+    have h := ((hasDerivAt_id t).inv htR).ofReal_comp
+    simpa [w, w', one_div, Complex.ofReal_inv, Complex.ofReal_pow] using h
   have hWC : ContinuousOn w (uIcc a b) := fun t ht => (hW t ht).continuousAt.continuousWithinAt
   have hW'C : ContinuousOn w' (uIcc a b) :=
     ((Complex.continuous_ofReal.pow 2).continuousOn.inv₀
@@ -87,7 +88,8 @@ theorem vertical_adjoint {a b : ℝ} (ha : 0 < a) (hab : a ≤ b)
     intro t ht
     change star (-(t : ℂ)*f' t+f t)*g t/(t : ℂ)^2 =
       -(star (f' t)*g t*w t) - star (f t)*g t*w' t
-    simp only [star_add, star_mul, star_neg, Complex.conj_ofReal, w, w']
+    have hStar : star (t : ℂ) = (t : ℂ) := Complex.conj_ofReal t
+    simp only [star_add, star_mul, star_neg, hStar, w, w']
     field_simp [hT t ht] <;> ring
   have hFc : ContinuousOn (fun t => star (f t)) (uIcc a b) :=
     Complex.conjCLE.continuous.comp_continuousOn (fun t ht => (hf t ht).continuousAt.continuousWithinAt)

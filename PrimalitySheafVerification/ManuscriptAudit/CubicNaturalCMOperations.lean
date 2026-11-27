@@ -101,11 +101,11 @@ def difference (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) (hz 
   commute := by
     intro L M _ _ _ _ _ _ g P
     let R := rotation h₂ h₃ hA hz
-    have hR := R.commute g P
-    simp only [combination, AddMonoidHom.sub_apply, AddMonoidHom.add_apply,
-      AddMonoidHom.zsmul_apply, AddMonoid.End.one_apply, map_sub, map_add,
-      map_zsmul, map_arithmeticFrobenius]
-    rw [hR]
+    change pointsMap A g (arithmeticPointFrobenius K L A P -
+      (a • P + b • R.atField L P)) =
+      arithmeticPointFrobenius K M A (pointsMap A g P) -
+        (a • pointsMap A g P + b • R.atField M (pointsMap A g P))
+    rw [map_sub, map_add, map_zsmul, map_zsmul, map_arithmeticFrobenius, R.commute]
 
 end
 

@@ -51,9 +51,11 @@ theorem horizontal_mode_energy_bound (H : ℂ → ℂ) (frequency : ℝ)
       _ ≤ ∫ x : ℝ in (0 : ℝ)..1, ‖L x * Complex.exp ((frequency : ℂ) * Complex.I * (x : ℂ))‖ :=
         intervalIntegral.norm_integral_le_integral_norm (by norm_num : (0 : ℝ) ≤ 1)
       _ = _ := by simp only [norm_mul, hPhase, mul_one, v]
-  have hSqInt := (hV.pow 2).intervalIntegrable (0 : ℝ) 1
+  have hSqInt : IntervalIntegrable (fun x : ℝ => v x ^ 2) volume 0 1 :=
+    (hV.pow 2).intervalIntegrable _ _
   have hLinCont : Continuous (fun x : ℝ => (2 * a) * v x) := continuous_const.mul hV
-  have hLinInt := hLinCont.intervalIntegrable (0 : ℝ) 1
+  have hLinInt : IntervalIntegrable (fun x : ℝ => (2 * a) * v x) volume 0 1 :=
+    hLinCont.intervalIntegrable _ _
   have hConstInt : IntervalIntegrable (fun _ : ℝ => a ^ 2) volume 0 1 :=
     continuous_const.intervalIntegrable _ _
   have hExpand : (∫ x : ℝ in (0 : ℝ)..1, (v x - a) ^ 2) = horizontalEnergy H y - a ^ 2 := by

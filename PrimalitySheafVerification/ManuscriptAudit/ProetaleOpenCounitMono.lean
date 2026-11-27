@@ -86,7 +86,7 @@ theorem extensionRestrictionMap_isIso (F : Sheaf (J (X := X)) A)
   letI := h
   letI : Presheaf.IsLocallyInjective (J (X := X)) (rawCounit j F) := ⟨by
     intro W a b hab
-    have hm := (NatTrans.mono_iff_mono_app (rawCounit j F)).mp (raw_mono j F) (op W)
+    have hm := (NatTrans.mono_iff_mono_app (rawCounit j F)).mp (raw_mono j F) W
     have hEq := (AddCommGrpCat.mono_iff_injective _).mp hm hab
     subst b
     rw [Presheaf.equalizerSieve_self_eq_top]

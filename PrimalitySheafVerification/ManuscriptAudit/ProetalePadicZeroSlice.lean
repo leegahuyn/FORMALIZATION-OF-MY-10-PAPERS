@@ -41,7 +41,8 @@ theorem exists_spec_chart {R : CommRingCat.{0}} (f : C(Spec R, ℤ_[ℓ])) :
     intro n
     have hn := h n
     rw [← hset n] at hn
-    simpa only [Set.mem_setOf_eq, map_zero] using hn
+    change PadicInt.toZModPow n (f x) = 0 at hn
+    simpa only [map_zero] using hn
   · intro h n
     rw [← hset n]
     change PadicInt.toZModPow n (f x) = 0

@@ -36,7 +36,9 @@ theorem norm_pow_sub_one (a b : ℤ) (q : ℕ) (hq : a ^ 2 - a * b + b ^ 2 = (q 
     ((pair a b) ^ n - 1).norm = ((q ^ n : ℕ) : ℤ) + 1 -
       Paper5PrintedRecurrence.recurrence q (2 * a - b) n := by
   rw [pair_pow, norm_eq]
-  exact difference_norm_eq_count a b q hq n
+  simpa only [pair, QuadraticAlgebra.re_sub, QuadraticAlgebra.im_sub,
+    QuadraticAlgebra.re_one, QuadraticAlgebra.im_one, sub_zero] using
+    difference_norm_eq_count a b q hq n
 
 /-- A coefficientwise congruence to the identity is scalar divisibility in the integral algebra. -/
 theorem sq_dvd_pair_sub_one (m : ℕ) (a b : ℤ)
@@ -47,8 +49,14 @@ theorem sq_dvd_pair_sub_one (m : ℕ) (a b : ℤ)
   refine ⟨pair c d, ?_⟩
   rw [← Nat.cast_pow]
   apply QuadraticAlgebra.ext
-  · simpa [pair, QuadraticAlgebra.re_mul, Nat.cast_pow] using hc
-  · simpa [pair, QuadraticAlgebra.im_mul, Nat.cast_pow] using hd
+  · simp only [pair, QuadraticAlgebra.re_sub, QuadraticAlgebra.re_one,
+      QuadraticAlgebra.re_mul, QuadraticAlgebra.re_natCast, QuadraticAlgebra.im_natCast,
+      zero_mul, mul_zero, add_zero]
+    simpa only [Nat.cast_pow] using hc
+  · simp only [pair, QuadraticAlgebra.im_sub, QuadraticAlgebra.im_one,
+      QuadraticAlgebra.im_mul, QuadraticAlgebra.re_natCast, QuadraticAlgebra.im_natCast,
+      zero_mul, mul_zero, add_zero, sub_zero]
+    simpa only [Nat.cast_pow] using hd
 
 /-- Evaluating the literal algebra generator at an actual rotation gives its point operation. -/
 def action {R : Type*} [Ring R] (r : R) (hr : r ^ 2 + r + 1 = 0) :
@@ -70,9 +78,9 @@ theorem action_eq_combination {R : Type*} [Ring R] (r : R) (hr : r ^ 2 + r + 1 =
 theorem norm_one_add_cast_mod (l : ℕ) (z : Coefficients) :
     ((1 + (l : Coefficients) * z).norm : ZMod l) = 1 := by
   have hr : (1 + (l : Coefficients) * z).re = 1 + (l : ℤ) * z.re := by
-    simp [QuadraticAlgebra.re_mul]
+    simp [QuadraticAlgebra.re_mul, QuadraticAlgebra.re_one]
   have hi : (1 + (l : Coefficients) * z).im = (l : ℤ) * z.im := by
-    simp [QuadraticAlgebra.im_mul]
+    simp [QuadraticAlgebra.im_mul, QuadraticAlgebra.im_one]
   simp only [norm_eq, hr, hi, Int.cast_add, Int.cast_sub, Int.cast_mul, Int.cast_pow,
     Int.cast_one, Int.cast_natCast, ZMod.natCast_self, zero_mul, add_zero, zero_pow two_ne_zero,
     one_pow, mul_zero, sub_zero]

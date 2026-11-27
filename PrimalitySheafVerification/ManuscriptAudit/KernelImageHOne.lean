@@ -28,6 +28,7 @@ def sequence : ShortComplex C :=
   ShortComplex.mk (kernel.ι g) (Abelian.factorThruImage g) (zero g)
 
 private def firstIsKernel : IsLimit (KernelFork.ofι (sequence g).f (sequence g).zero) := by
+  letI : Mono (sequence g).f := inferInstanceAs (Mono (kernel.ι g))
   apply KernelFork.IsLimit.ofι'
   intro X k hk
   change k ≫ Abelian.factorThruImage g = 0 at hk

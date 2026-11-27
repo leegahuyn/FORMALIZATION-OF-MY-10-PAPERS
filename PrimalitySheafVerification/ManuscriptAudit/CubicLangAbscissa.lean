@@ -9,7 +9,7 @@ import PrimalitySheafVerification.ManuscriptAudit.RationalMapCofinite
 namespace ManuscriptAudit.CubicLangAbscissa
 
 open Polynomial CubicFrobeniusDifferenceNumerator CubicFrobeniusDifferencePolynomial
-open CubicFrobeniusDifferenceDegree RationalMapCofinite
+open CubicFrobeniusDifferenceDegree CubicFrobeniusDifferenceGCD RationalMapCofinite
 
 noncomputable section
 open scoped Classical

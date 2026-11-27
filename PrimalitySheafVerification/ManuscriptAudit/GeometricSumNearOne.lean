@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Abel
 
 /-! One geometric-sum step near the identity has a unit quotient modulo the chosen integer. -/
 

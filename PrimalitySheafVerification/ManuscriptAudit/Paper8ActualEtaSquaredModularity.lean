@@ -96,7 +96,7 @@ private theorem squaredRatio_eq (g : SL(2, ℤ)) (z : ℍ) :
   have hp : p ≠ 0 := by
     intro h
     have he := congrArg (fun q : Polynomial ℂ => q.coeff 12) h
-    norm_num [p, Polynomial.coeff_X_pow, Polynomial.coeff_C] at he
+    norm_num [p, Polynomial.coeff_X_pow, Polynomial.coeff_C, Polynomial.coeff_one] at he
   have hFin : (Set.range (squaredRatio g)).Finite := by
     refine (Polynomial.finite_setOf_isRoot hp).subset ?_
     rintro _ ⟨u, rfl⟩

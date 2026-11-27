@@ -32,7 +32,7 @@ private abbrev M := ℤ_[ℓ]
 local instance residueTopology (n : ℕ) : TopologicalSpace (ZMod n) := ⊥
 local instance residueDiscrete (n : ℕ) : DiscreteTopology (ZMod n) := ⟨rfl⟩
 
-private theorem continuous_value_eq {V : Type} [TopologicalSpace V] [PreconnectedSpace V]
+theorem continuous_value_eq {V : Type} [TopologicalSpace V] [PreconnectedSpace V]
     (f : C(V, M ℓ)) (x y : V) : f x = f y := by
   apply PadicInt.ext_of_toZModPow.mp
   intro n

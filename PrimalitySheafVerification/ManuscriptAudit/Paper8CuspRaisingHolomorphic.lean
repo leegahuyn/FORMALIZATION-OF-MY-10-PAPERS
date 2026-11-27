@@ -15,7 +15,7 @@ private theorem real_derivative_complex_linear (H : ℂ → ℂ) {z : ℂ}
     (hc : fderiv ℝ H z Complex.I = Complex.I * fderiv ℝ H z 1) :
     DifferentiableAt ℂ H z := by
   let L := fderiv ℝ H z
-  let M := (ContinuousLinearMap.smulRight 1 (L 1) : ℂ →L[ℂ] ℂ)
+  let M : ℂ →L[ℂ] ℂ := (ContinuousLinearMap.id ℂ ℂ).smulRight (L 1)
   refine (differentiableAt_iff_restrictScalars ℝ hH).mpr ⟨M, ?_⟩
   apply ContinuousLinearMap.ext
   intro w

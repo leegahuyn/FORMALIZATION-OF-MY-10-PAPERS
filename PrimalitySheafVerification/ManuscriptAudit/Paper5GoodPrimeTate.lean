@@ -37,7 +37,7 @@ theorem base_coefficients (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
       omega
     constructor
     · simpa only [hbase, Int.cast_zero, native] using
-        CubicNonsplitFrobeniusTrace.actual_prime_adic_trace_zero (ZMod p) L l h₂ h₃ hA hq₃
+        CubicNonsplitThreeAdicTrace.actual_prime_adic_trace_zero (ZMod p) L l h₂ h₃ hA hq₃
     · simpa only [native, CubicNonsplitPrimeAdicFrobenius.Action, ZMod.card] using
         CubicNonsplitPrimeAdicFrobenius.determinant_eq_card (ZMod p) L l h₂ h₃ hA hq₃ hq₂
           (basis p L hp hA l hl)
@@ -68,8 +68,7 @@ theorem extension_power_coefficients (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
   · rw [hrecur]
     exact Paper5LinearTraceRecurrence.trace_pow_eq_recurrence B (native p L A l) p (firstTrace p A)
       ht hd (Module.finrank (ZMod p) D)
-  · dsimp only
-    rw [map_pow, hd, Module.card_eq_pow_finrank (K := ZMod p) (V := D), ZMod.card, Nat.cast_pow]
+  · rw [map_pow, hd, Module.card_eq_pow_finrank (K := ZMod p) (V := D), ZMod.card, Nat.cast_pow]
 
 theorem extension_power_charpoly (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :

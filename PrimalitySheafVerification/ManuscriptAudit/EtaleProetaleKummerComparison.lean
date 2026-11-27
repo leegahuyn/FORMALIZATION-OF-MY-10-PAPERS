@@ -51,7 +51,8 @@ private theorem etale_sequence_power (d : ℕ) :
     infer_instance
   letI : PreservesFiniteLimits F := preservesFiniteLimits_of_reflects_of_preserves F P
   letI : F.Additive := Functor.additive_of_preserves_binary_products F
-  change F.map (KummerRelativeFull.sequence X d).g = _
+  change F.map (KummerRelativeFull.sequence X d).g =
+    d • 𝟙 (F.obj (KummerRelativeFull.sequence X d).X₂)
   rw [KummerRelativeFull.power_nsmul, Functor.map_nsmul, F.map_id]
 
 private def unitSquare (d : ℕ) :

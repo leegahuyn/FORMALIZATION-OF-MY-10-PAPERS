@@ -65,7 +65,8 @@ theorem projection_epi
       apply (cancel_epi e₂.hom).mp
       have hh : e₂.hom = piComparison E X₂ := PreservesProduct.iso_hom E X₂
       rw [← Category.assoc, e₂.hom_inv_id, Category.id_comp, hh, piComparison_comp_π]
-    rw [he₂, Pi.lift_π]
+    rw [he₂]
+    exact Pi.lift_π (f := fun i ↦ E.obj (X₂ i)) (fun i ↦ fromInteger (b i)) n
   have hd (n : ℕ) : E.map d ≫ E.map (Pi.π X₃ n) = E.map (a n) := by
     rw [← E.map_comp, Pi.lift_π]
   have hp (n : ℕ) : E.map p ≫ E.map (Pi.π X₃ n) = E.map (Pi.π X₂ n) ≫ E.map (S n).g := by
