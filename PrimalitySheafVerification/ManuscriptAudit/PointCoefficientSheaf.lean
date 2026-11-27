@@ -14,10 +14,12 @@ noncomputable section
 variable {X : TopCat.{0}} (P : Set X) (A : P → Type)
 variable [∀ p : P, AddCommGroup (A p)]
 
-abbrev Sections (U : Opens X) := ∀ p : P, p.val ∈ U → A p
+abbrev PointsIn (U : Opens X) := {p : P // p.val ∈ U}
+
+abbrev Sections (U : Opens X) := ∀ q : PointsIn P U, A q.val
 
 def restrict {U V : Opens X} (h : V ≤ U) : Sections P A U →+ Sections P A V where
-  toFun s p hp := s p (h hp)
+  toFun s q := s ⟨q.val, h q.property⟩
   map_zero' := rfl
   map_add' _ _ := rfl
 
@@ -38,22 +40,24 @@ theorem presheaf_isSheaf : (presheaf P A).IsSheaf := by
   apply (TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing (presheaf P A)).mpr
   intro I U s hs
   let g : Sections P A (iSup U) :=
-    fun p hp => s (coverIndex P U p hp) p (coverIndex_mem P U p hp)
+    fun q => s (coverIndex P U q.val q.property) ⟨q.val, coverIndex_mem P U q.val q.property⟩
   refine ⟨g, ?_, ?_⟩
   · intro i
-    funext p hp
+    funext q
+    obtain ⟨p, hp⟩ := q
     let hUp := (le_iSup U i) hp
     let j := coverIndex P U p hUp
     have hj : p.val ∈ U j := coverIndex_mem P U p hUp
-    have h := congrFun (congrFun (hs j i) p) (show p.val ∈ U j ⊓ U i from ⟨hj, hp⟩)
-    change s j p hj = s i p hp at h
+    have h := congrFun (hs j i) (⟨p, ⟨hj, hp⟩⟩ : PointsIn P (U j ⊓ U i))
+    change s j ⟨p, hj⟩ = s i ⟨p, hp⟩ at h
     exact h
   · intro v hv
-    funext p hp
+    funext q
+    obtain ⟨p, hp⟩ := q
     let i := coverIndex P U p hp
     have hi : p.val ∈ U i := coverIndex_mem P U p hp
-    have h := congrFun (congrFun (hv i) p) hi
-    change v p hp = s i p hi at h
+    have h := congrFun (hv i) (⟨p, hi⟩ : PointsIn P (U i))
+    change v ⟨p, hp⟩ = s i ⟨p, hi⟩ at h
     exact h
 
 def sheaf : TopCat.Sheaf AddCommGrpCat.{0} X :=
@@ -63,10 +67,10 @@ theorem restriction_surjective {U V : Opens X} (h : V ≤ U) :
     Function.Surjective (restrict P A h) := by
   classical
   intro s
-  refine ⟨fun p _ => if hpV : p.val ∈ V then s p hpV else 0, ?_⟩
-  funext p hp
-  change (if hpV : p.val ∈ V then s p hpV else 0) = s p hp
-  rw [dif_pos hp]
+  refine ⟨fun q => if hV : q.val.val ∈ V then s ⟨q.val, hV⟩ else 0, ?_⟩
+  funext q
+  change (if hV : q.val.val ∈ V then s ⟨q.val, hV⟩ else 0) = s q
+  rw [dif_pos q.property]
 
 end
 end ManuscriptAudit.PointCoefficientSheaf

@@ -61,9 +61,7 @@ theorem effective_fixed_high_eq_one (g : GammaTwoEffective) (z : ℍ)
 
 theorem strip_pairwise_disjoint : Pairwise (Disjoint on fun g : GammaTwoEffective => g • strip) := by
   rw [pairwise_disjoint_smul_iff]
-  intro g hg
-  rw [Set.disjoint_left]
-  intro z hz hw
+  rintro g ⟨z, hz, hw⟩
   rw [← image_smul] at hz
   obtain ⟨w, hw', hgw⟩ := hz
   obtain ⟨γ, hγ⟩ := effective_exists_gamma g
@@ -80,7 +78,7 @@ theorem strip_pairwise_disjoint : Pairwise (Disjoint on fun g : GammaTwoEffectiv
   have hhi' : m < (1 : ℤ) := by exact_mod_cast hhi
   have hm0 : m = 0 := by omega
   have hz' : z = w := UpperHalfPlane.coe_inj.mp (by simpa [hm0] using hm)
-  exact hg (effective_fixed_high_eq_one g w hH' (hgw.trans hz'))
+  exact effective_fixed_high_eq_one g w hH' (hgw.trans hz')
 
 theorem quotient_strip_measure (D : GammaTwoFundamentalDomain) :
     (hyperbolicMeasure.restrict strip).map gammaTwoQuotientMk =

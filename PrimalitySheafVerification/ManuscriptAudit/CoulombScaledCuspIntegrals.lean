@@ -51,9 +51,9 @@ private theorem interval_eq_fixed (f : ℝ → ℝ) (hf : Continuous f) {a b : �
         exact hzero t (Or.inr ht.1)
       _ = _ := by simp
   have hL := intervalIntegral.integral_add_adjacent_intervals
-    (hf.intervalIntegrable a 1) (hf.intervalIntegrable 1 6)
+    (hf.intervalIntegrable (μ := (volume : Measure ℝ)) a 1) (hf.intervalIntegrable (μ := (volume : Measure ℝ)) 1 6)
   have hR := intervalIntegral.integral_add_adjacent_intervals
-    (hf.intervalIntegrable a 6) (hf.intervalIntegrable 6 b)
+    (hf.intervalIntegrable (μ := (volume : Measure ℝ)) a 6) (hf.intervalIntegrable (μ := (volume : Measure ℝ)) 6 b)
   rw [h0, zero_add] at hL
   rw [h1, add_zero, ← hL] at hR
   exact hR.symm

@@ -13,7 +13,7 @@ noncomputable section
 private theorem standard_inversion (τ : ℂ) (hτ : 0 < τ.im) :
     jacobiTheta (-1 / τ) = (-Complex.I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
   have h := jacobiTheta_S_smul (⟨τ, hτ⟩ : ℍ)
-  simpa only [UpperHalfPlane.modular_S_smul, neg_div, one_div] using h
+  simpa only [UpperHalfPlane.modular_S_smul, inv_neg, neg_div, one_div] using h
 
 theorem principalTheta_actual_inversion (τ : ℂ) (hτ : 0 < τ.im) :
     principalTheta (-1 / τ) =
@@ -23,7 +23,7 @@ theorem principalTheta_actual_inversion (τ : ℂ) (hτ : 0 < τ.im) :
   have hS : 0 < (-1 / τ).im := by
     have h := (ModularGroup.S • z : ℍ).im_pos
     change 0 < ((ModularGroup.S • z : ℍ) : ℂ).im at h
-    simpa only [UpperHalfPlane.modular_S_smul, neg_div, one_div, z] using h
+    simpa only [UpperHalfPlane.modular_S_smul, inv_neg, neg_div, one_div, z] using h
   have hFour : 0 < (τ / 4).im := by
     have he : τ / 4 = ((1 / 4 : ℝ) : ℂ) * τ := by push_cast; ring
     rw [he, Complex.mul_im]

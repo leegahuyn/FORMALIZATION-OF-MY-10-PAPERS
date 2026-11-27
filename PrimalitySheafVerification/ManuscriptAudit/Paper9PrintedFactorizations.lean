@@ -93,6 +93,7 @@ private theorem lower_partialY (x : ℝ) :
   have hpow := (hcast.pow 2).deriv
   change deriv (lower (coordinates plateauAmplitude) x) testHeight = _
   rw [(lower_near x).deriv_eq]
+  change deriv ((fun y : ℝ => (y : ℂ)) ^ 2) testHeight = _
   simpa using hpow
 
 def testPoint : ℍ :=

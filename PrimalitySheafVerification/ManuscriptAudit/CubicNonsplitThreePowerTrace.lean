@@ -58,8 +58,9 @@ theorem actual_trace_zero {A : E}
     have hQ := rotation_linear_quad m h₂L h₃L ha hz hz₁ hΔ (B 0)
     change S (S (B 0)) + S (B 0) + B 0 = 0 at hQ
     rw [hStep] at hQ
-    have hQuad : S (S (B 0)) = -B 0 - B 1 :=
-      (eq_sub_iff_add_eq).mpr (eq_neg_of_add_eq_zero_left hQ)
+    have hQuad : S (S (B 0)) = -B 0 - B 1 := by
+      rw [hStep]
+      exact (eq_sub_iff_add_eq).mpr (eq_neg_of_add_eq_zero_left hQ)
     have hConj : F (S (B 0)) = S (S (F (B 0))) := Subtype.ext
       (pointMapAt_conjugates_rotation E L (Curve A) he g hg hz hΔ (B 0 : G))
     have ht := (trace_det_of_cycle B S F hStep hCube hQuad hConj).1

@@ -15,7 +15,7 @@ variable (p : ℕ) [Fact p.Prime] (G : Type*) [AddCommGroup G]
 variable (B : Module.Basis (Fin 2) (ZMod (p ^ 1)) (PowerTorsion p G 1))
 variable (h : Function.Surjective (fun P : G => p • P))
 
-local notation "basisAt" => levelEquiv p G B (Fact.out : Nat.Prime p).pos h
+local notation "basisAt" => levelEquiv p G B (Nat.Prime.pos (Fact.out : Nat.Prime p)) h
 local notation "residue" => PadicInt.toZModPow (p := p)
 
 def fromPadicPair : (ℤ_[p] × ℤ_[p]) →ₗ[ℤ_[p]] Tate p G where

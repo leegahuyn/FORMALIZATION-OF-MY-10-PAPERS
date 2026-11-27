@@ -27,7 +27,8 @@ def tateBasis {A : ZMod 5} (hA : A ≠ 0) :
 private theorem coordinate_eq_conj {A : ZMod 5} (hA : A ≠ 0) :
     (padicCoordinates 5 L (by decide) hA).symm.conj (action L hA) =
       (coordinateFrobeniusPadic 5 L (by decide) hA).toLinearMap := by
-  ext a
+  apply LinearMap.ext
+  intro a
   rfl
 
 theorem native_trace_zero {A : ZMod 5} (hA : A ≠ 0) :
@@ -52,8 +53,9 @@ theorem native_determinant_eq_five {A : ZMod 5} (hA : A ≠ 0) :
 theorem coordinate_determinant_eq_five {A : ZMod 5} (hA : A ≠ 0) :
     Paper5TwoAdicCoefficients.determinant 5 L (by decide) hA = ((5 : ℕ) : ℤ_[2]) := by
   change LinearMap.det (coordinateFrobeniusPadic 5 L (by decide) hA).toLinearMap = _
-  rw [← coordinate_eq_conj L hA, LinearMap.det_conj]
-  exact native_determinant_eq_five L hA
+  rw [← coordinate_eq_conj L hA]
+  exact (LinearMap.det_conj (action L hA) (padicCoordinates 5 L (by decide) hA).symm).trans
+    (native_determinant_eq_five L hA)
 
 /-- Frobenius on the actual compatible Tate module has characteristic polynomial T²+5. -/
 theorem native_charpoly_eq {A : ZMod 5} (hA : A ≠ 0) :

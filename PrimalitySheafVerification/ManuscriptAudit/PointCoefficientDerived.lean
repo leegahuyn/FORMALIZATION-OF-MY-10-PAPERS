@@ -17,9 +17,9 @@ variable [∀ p : P, AddCommGroup (A p)]
 local instance : HasExt.{0} (AbelianSheaf X) := IsGrothendieckAbelian.hasExt _
 
 private def topSectionsEquiv : Sections P A (⊤ : Opens X) ≃+ (∀ p : P, A p) where
-  toFun s p := s p (Opens.mem_top _)
-  invFun f p _ := f p
-  left_inv s := by funext p hp; rfl
+  toFun s p := s ⟨p, Opens.mem_top _⟩
+  invFun f q := f q.val
+  left_inv s := by funext q; cases q; rfl
   right_inv f := rfl
   map_add' _ _ := rfl
 
@@ -39,9 +39,9 @@ theorem stalk_subsingleton_outside (hP : IsClosed P) {x : X} (hx : x ∉ P) :
   obtain ⟨U, hUV, hxU, s, hs⟩ := F.exists_le_germ_eq (x := x) t hxV
   have hs0 : s = 0 := by
     change s = (0 : Sections P A U)
-    funext p hp
-    have hpV : p.val ∈ V := hUV hp
-    exact (hpV p.property).elim
+    funext q
+    have hpV : q.val.val ∈ V := hUV q.property
+    exact (hpV q.val.property).elim
   rw [← hs, hs0, map_zero]
 
 theorem stalkSupport_subset (hP : IsClosed P) : stalkSupport (sheaf P A) ⊆ P := by

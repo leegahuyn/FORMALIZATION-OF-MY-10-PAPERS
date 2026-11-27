@@ -88,10 +88,19 @@ theorem exists_boundary (h : (Cech f P).ExactAt 1)
   symm
   rw [map_sub]
   change P.map p.op (P.map (second f).op a) - P.map p.op (P.map (first f).op a) = z
-  rw [restrict_restrict, restrict_restrict]
-  change P.map (pair f 1 0 1 ≫ second f).op a - P.map (pair f 1 0 1 ≫ first f).op a = z
-  rw [← face_zero_zero, ← face_zero_one, ← restrict_restrict, ← restrict_restrict, ha]
-  exact hy'
+  have hFace (s : Double f ⟶ U) (d : N f 1 ⟶ N f 0)
+      (hd : d ≫ (zeroIso f).hom = p ≫ s) :
+      P.map p.op (P.map s.op a) = P.map d.op y := by
+    calc
+      _ = P.map (p ≫ s).op a := restrict_restrict P p s a
+      _ = P.map (d ≫ (zeroIso f).hom).op a :=
+        congrArg (fun g : N f 1 ⟶ U ↦ P.map g.op a) hd.symm
+      _ = P.map d.op (P.map (zeroIso f).hom.op a) :=
+        (restrict_restrict P d (zeroIso f).hom a).symm
+      _ = _ := congrArg (fun t ↦ P.map d.op t) ha
+  exact (congrArg₂ (fun x₁ x₂ : P.obj (op (N f 1)) ↦ x₁ - x₂)
+    (hFace (second f) (face f 0 0) (face_zero_zero f))
+    (hFace (first f) (face f 0 1) (face_zero_one f))).trans hy'
 
 end
 

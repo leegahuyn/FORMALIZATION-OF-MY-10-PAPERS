@@ -16,7 +16,7 @@ variable (B : Module.Basis (Fin 2) (ZMod (l ^ 1)) (PowerTorsion l G 1))
 variable (h : Function.Surjective (fun P : G => l • P))
 
 local notation "padicBasis" => padicPairEquiv l G B h
-local notation "finiteBasis" => levelEquiv l G B (Fact.out : Nat.Prime l).pos h
+local notation "finiteBasis" => levelEquiv l G B (Nat.Prime.pos (Fact.out : Nat.Prime l)) h
 
 def coordinateAction (f : AddMonoid.End G) : Module.End ℤ_[l] (ℤ_[l] × ℤ_[l]) :=
   padicBasis.symm.conj (endMap l f)

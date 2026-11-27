@@ -22,7 +22,7 @@ theorem cyclic_H_add_two_subsingleton (K : Type) [Field K] [IsAlgClosed K]
   let α : Localization.Away a ≃ₐ[Polynomial K] LaurentPolynomial K :=
     IsLocalization.algEquiv (Submonoid.powers a) (Localization.Away a) (LaurentPolynomial K)
   let e : Spec (CommRingCat.of (LaurentPolynomial K)) ≅ Spec (CommRingCat.of (Localization.Away a)) :=
-    Scheme.Spec.mapIso (CategoryTheory.Iso.op (CommRingCat.isoMk α.toRingEquiv))
+    Scheme.Spec.mapIso α.toRingEquiv.toCommRingCatIso.op
   let h := PrincipalOpenEtaleAcyclic.cyclic_H_add_two_subsingleton K a Polynomial.X_ne_zero d n
   let eH := SmallEtaleEquivalenceCohomology.schemeIsoCohomologyEquiv
     e (AddCommGrpCat.of (ZMod d)) (n + 2)

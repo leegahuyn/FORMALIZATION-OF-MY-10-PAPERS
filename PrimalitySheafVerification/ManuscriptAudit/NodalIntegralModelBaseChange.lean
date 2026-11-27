@@ -39,7 +39,11 @@ private def changedCocone : Cocone (diagram S) :=
   WidePushoutShape.mkCocone
     (overlapMap R S ≫ colimit.ι (diagram R) none)
     (fun b => chartMap R S b ≫ chartIn R b)
-    (fun b => by rw [← Category.assoc, ← overlapIn_natural, Category.assoc, overlapIn_chartIn])
+    (fun b => by
+      change overlapIn S b ≫ chartMap R S b ≫ chartIn R b =
+        overlapMap R S ≫ colimit.ι (diagram R) none
+      rw [← Category.assoc, ← overlapIn_natural R S b, Category.assoc,
+        overlapIn_chartIn R b])
 
 /-- The morphism induced by extension of coefficients on the two charts. -/
 def modelMap : model S ⟶ model R := colimit.desc (diagram S) (changedCocone R S)
@@ -68,14 +72,17 @@ private theorem range_of_square {A B X Y : Scheme.{u}} {i : A ⟶ X} {g : A ⟶ 
     Set.range i = f ⁻¹' Set.range j := by
   rw [← h.isoPullback_hom_fst]
   change Set.range ((pullback.fst f j) ∘ h.isoPullback.hom) = _
-  rw [Set.range_comp, Set.range_eq_univ.mpr h.isoPullback.hom.homeomorph.surjective,
-    Set.image_univ, IsOpenImmersion.range_pullbackFst] <;> rfl
+  have hs : Function.Surjective h.isoPullback.hom := h.isoPullback.hom.homeomorph.surjective
+  rw [Set.range_comp, Set.range_eq_univ.mpr hs, Set.image_univ,
+    IsOpenImmersion.range_pullbackFst] <;> rfl
 
 private theorem overlap_range_in_source (b : Bool) :
     Set.range (overlapIn S b) = (chartMap R S b) ⁻¹' Set.range (overlapIn R b) := by
   cases b
-  · exact range_of_square (overlap_square_isPullback R S)
-  · exact range_of_square (overlap_y_square R S)
+  · change Set.range (overlapToZ S) = (zMap R S) ⁻¹' Set.range (overlapToZ R)
+    exact range_of_square (overlap_square_isPullback R S)
+  · change Set.range (overlapToY S) = (yMap R S) ⁻¹' Set.range (overlapToY R)
+    exact range_of_square (overlap_y_square R S)
 
 private theorem overlap_range_in_target (b c : Bool) (h : b ≠ c) :
     Set.range (overlapIn R b) = (chartIn R b) ⁻¹' Set.range (chartIn R c) := by
@@ -109,7 +116,7 @@ private theorem chart_range_preimage (b : Bool) :
         rw [← chart_point_map, hq]
         exact h
       have hx : q ∈ Set.range (overlapIn S c) := by
-        rw [overlap_range_in_source]
+        rw [overlap_range_in_source R S c]
         exact hy
       obtain ⟨r, hr⟩ := hx
       refine ⟨overlapIn S b r, ?_⟩

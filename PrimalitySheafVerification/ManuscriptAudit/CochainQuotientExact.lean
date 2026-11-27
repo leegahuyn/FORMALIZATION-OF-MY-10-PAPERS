@@ -41,11 +41,13 @@ theorem quotient_exactAt_succ (n : ℕ)
   apply (cochainExactAt_succ_iff _ n).mpr
   intro z hz
   obtain ⟨y, hy⟩ := (h (n + 1)).ab_surjective_g z
+  change ↑(S.X₂.X (n + 1)) at y
   change S.g.f (n + 1) y = z at hy
   have hx : S.g.f (n + 2) (S.X₂.d (n + 1) (n + 2) y) = 0 := by
     rw [← commuting, hy, hz]
   obtain ⟨u, hu⟩ := ((ShortComplex.ab_exact_iff (atDegree S (n + 2))).mp
     (h (n + 2)).exact) _ hx
+  change ↑(S.X₁.X (n + 2)) at u
   change S.f.f (n + 2) u = S.X₂.d (n + 1) (n + 2) y at hu
   have hud : S.X₁.d (n + 2) (n + 3) u = 0 := by
     apply (h (n + 3)).ab_injective_f

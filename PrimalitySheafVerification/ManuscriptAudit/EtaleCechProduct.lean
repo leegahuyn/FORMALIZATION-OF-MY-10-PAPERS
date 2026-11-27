@@ -46,8 +46,10 @@ private theorem tuples_apply (n : ℕ) (z : (Cech f (∏ᶜ P).obj).X n) (a : I)
   let Q := fun a ↦ (Cech f (P a).obj).X n
   let E := evalAt f (J := J) n
   have h : (evalProductIso f P n).hom ≫ Pi.π Q a = (projection f P a).f n := by
-    change (PreservesProduct.iso E P).hom ≫ Pi.π Q a = E.map (Pi.π P a)
-    rw [PreservesProduct.iso_hom, piComparison_comp_π]
+    change (PreservesProduct.iso E P).hom ≫ Pi.π (fun i ↦ E.obj (P i)) a =
+      E.map (Pi.π P a)
+    rw [PreservesProduct.iso_hom]
+    exact piComparison_comp_π E P a
   change Concrete.productEquiv Q ((evalProductIso f P n).hom z) a = _
   rw [Concrete.productEquiv_apply_apply]
   exact ConcreteCategory.congr_hom h z
@@ -61,8 +63,9 @@ theorem product_exactAt_succ (n : ℕ) (h : ∀ a, (Cech f (P a).obj).ExactAt (n
   intro z hz
   let q := projection f P
   have hZ (a : I) : (Cech f (P a).obj).d (n + 1) (n + 2) ((q a).f (n + 1) z) = 0 := by
-    have hm := ConcreteCategory.congr_hom ((q a).comm (n + 1) (n + 2)) z
-    change _ = ((q a).f (n + 2)) ((Cech f (∏ᶜ P).obj).d (n + 1) (n + 2) z) at hm
+    have hm : (Cech f (P a).obj).d (n + 1) (n + 2) ((q a).f (n + 1) z) =
+        (q a).f (n + 2) ((Cech f (∏ᶜ P).obj).d (n + 1) (n + 2) z) :=
+      ConcreteCategory.congr_hom ((q a).comm (n + 1) (n + 2)) z
     rw [hm, hz]
     exact ((q a).f (n + 2)).hom.map_zero
   choose y hy using fun a ↦
