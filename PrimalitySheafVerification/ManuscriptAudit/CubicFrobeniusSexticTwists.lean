@@ -27,6 +27,7 @@ theorem rotation_sign {A B z : E} (hA : A ≠ 0) (hB : B ≠ 0) (hz : IsPrimitiv
     {k : ℕ} (hq : Fintype.card E = 6 * k + 1) :
     ∃ j : Fin 3, z ^ j.val = parameter A B k ^ 2 ∧
       (parameter A B k ^ 3 = 1 ∨ parameter A B k ^ 3 = -1) := by
+  classical
   have h₆ := parameter_pow_six hA hB hq
   have h₂ : (parameter A B k ^ 2) ^ 3 = 1 := by rw [← pow_mul]; exact h₆
   have h₃ : (parameter A B k ^ 3) ^ 2 = (1 : E) ^ 2 := by rw [← pow_mul, one_pow]; exact h₆

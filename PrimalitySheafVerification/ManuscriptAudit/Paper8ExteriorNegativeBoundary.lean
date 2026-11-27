@@ -33,9 +33,11 @@ theorem no_continuous_extension_at_negative_one {F : ℂ → ℂ}
   have hDiff : q - (-1 : ℂ) = (e : ℂ) := by
     change -(r : ℂ) - (-1 : ℂ) = (e : ℂ)
     calc
+      _ = (1 : ℂ) - (r : ℂ) := by
+        rw [sub_neg_eq_add, sub_eq_add_neg]
+        exact add_comm _ _
       _ = (((1 : ℝ) - r : ℝ) : ℂ) := by
-        rw [Complex.ofReal_sub, Complex.ofReal_one]
-        ring
+        simpa only [Complex.ofReal_one] using (Complex.ofReal_sub (1 : ℝ) r).symm
       _ = (e : ℂ) := congrArg Complex.ofReal hOneSub
   have hDist : dist q (-1 : ℂ) = e := by
     rw [dist_eq_norm, hDiff, Complex.norm_real, Real.norm_eq_abs, abs_of_pos he]

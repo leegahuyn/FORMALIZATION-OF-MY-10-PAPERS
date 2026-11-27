@@ -51,8 +51,9 @@ theorem three_sub_rotation_some {x y : K} (hP : (Curve (1 : K)).Nonsingular x y)
   have h₃ : (3 : K) ≠ 0 := numeral_ne_zero 3 (by decide)
   have he := (nonsingular_iff (discriminant_ne_zero K) x y).mp hP
   obtain ⟨hT, eT⟩ := triple_some_coordinates h₂ h₃ (discriminant_ne_zero K)
-    hy hx hg (tripleX_correct hx hg) hP
-  have hTriple : (3 : ℕ) • P = Affine.Point.some (tripleX x) (tripleY x y) hT := eT
+    hy hx (by simpa only [mul_one] using hg) (tripleX_correct hx hg) hP
+  have hT' : W.Nonsingular (tripleX x) (tripleY x y) := hT
+  have hTriple : (3 : ℕ) • P = Affine.Point.some (tripleX x) (tripleY x y) hT' := eT
   obtain ⟨hR, eR⟩ := rotation_some K hP
   have hN : W.Nonsingular (3 * x) (-y) := by
     exact (nonsingular_iff (discriminant_ne_zero K) _ _).mpr
@@ -72,11 +73,15 @@ theorem three_sub_rotation_some {x y : K} (hP : (Curve (1 : K)).Nonsingular x y)
     linear_combination last_ordinate hx hg he
   have hQ : W.Nonsingular (W.addX (3 * x) (tripleX x) m)
       (W.addY (3 * x) (tripleX x) (-y) m) :=
-    Affine.nonsingular_add hN hT (fun h => hxU h.1)
+    Affine.nonsingular_add hN hT' (fun h => hxU h.1)
+  have hAdd : Affine.Point.some (3 * x) (-y) hN +
+      Affine.Point.some (tripleX x) (tripleY x y) hT' =
+      Affine.Point.some (W.addX (3 * x) (tripleX x) m)
+        (W.addY (3 * x) (tripleX x) (-y) m) hQ :=
+    Affine.Point.add_of_X_ne (h₁ := hN) (h₂ := hT') hxU
   refine ⟨by simpa only [hX, hY] using hQ, ?_⟩
   change (3 : ℕ) • P - rotation K P = _
-  rw [sub_eq_add_neg, add_comm ((3 : ℕ) • P), eN, hTriple, Affine.Point.add_of_X_ne hxU,
-    Affine.Point.some.injEq]
+  rw [sub_eq_add_neg, add_comm ((3 : ℕ) • P), eN, hTriple, hAdd, Affine.Point.some.injEq]
   exact ⟨hX, hY⟩
 
 end

@@ -106,8 +106,12 @@ theorem prime_square (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (P : UnitPoints L) :
         (FiniteField.frobeniusAlgHom (ZMod p) L)
       F (F P) = -(p • P) := by
     subst V
-    simpa only [hCard] using frobenius_sq_eq_neg_card (ZMod p) L h₂ h₃ one_ne_zero
+    have h := frobenius_sq_eq_neg_card (ZMod p) L h₂ h₃ one_ne_zero
       (by simpa only [hCard] using hp₃) (by simpa only [hCard] using hp₂) P
+    dsimp only at h
+    rw [hCard] at h
+    unfold pointMapAt
+    exact h
   exact aux (unit_baseChange (ZMod p) L) P
 
 /-- At degree 2m the genuine q-Frobenius on the reference curve is multiplication by (-p)^m. -/
