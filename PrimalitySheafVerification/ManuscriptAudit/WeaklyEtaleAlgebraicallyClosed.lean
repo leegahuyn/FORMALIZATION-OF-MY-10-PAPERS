@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 import Mathlib.AlgebraicGeometry.ResidueField
+import Mathlib.AlgebraicGeometry.Pullbacks
 import PrimalitySheafVerification.ManuscriptAudit.FlatDiagonalResidueField
 
 /-! Each point of a weakly étale scheme over an algebraically closed
@@ -43,11 +44,7 @@ private theorem flatTensorMultiplication (K B : Type u) [Field K] [CommRing B] [
   let e := Spec.pullbackSpecIso K B B
   have h : Flat (pullback.diagonal g ≫ e.hom) := inferInstance
   apply Flat.SpecMap_iff.mp
-  change Flat (pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap K B))) ≫ e.hom) at h
-  rw [Spec.diagonal_SpecMap, Category.assoc] at h
-  change Flat (Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.lmul' (S := B) K).toRingHom) ≫
-    e.inv ≫ e.hom) at h
-  rwa [Iso.inv_hom_id, Category.comp_id] at h
+  simpa only [g, e, Spec.diagonal_SpecMap, Category.assoc, Iso.inv_hom_id, Category.comp_id] using h
 
 /-- Every point of a weakly étale scheme over an algebraically closed
 field gives an actual rational section through that point. -/

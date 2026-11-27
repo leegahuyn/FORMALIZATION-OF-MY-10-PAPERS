@@ -27,7 +27,8 @@ private abbrev J := Scheme.ProEt.topology X
 private abbrev evaluationOn (W : X.ProEt) :=
   sheafToPresheaf (J X) A ⋙ (evaluation (X.ProEt)ᵒᵖ A).obj (op W)
 
-private theorem evaluation_difference_epi (W : X.ProEt) :
+/-- The actual residue difference is epic on each individual pro-étale chart. -/
+theorem evaluation_difference_epi (W : X.ProEt) :
     Epi ((evaluationOn X W).map (difference X ℓ)) := by
   let E := evaluationOn X W
   let G := fun n ↦ E.obj (residueSheaf X ℓ n)
@@ -67,7 +68,8 @@ end ManuscriptAudit.ProetaleAdicProductEpi
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.ProetaleAdicProductEpi.difference_epi,
+  for name in [``ManuscriptAudit.ProetaleAdicProductEpi.evaluation_difference_epi,
+      ``ManuscriptAudit.ProetaleAdicProductEpi.difference_epi,
       ``ManuscriptAudit.ProetaleAdicProductEpi.product_sequence] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

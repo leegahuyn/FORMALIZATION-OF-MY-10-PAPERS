@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import PrimalitySheafVerification.ManuscriptAudit.CubicExecutableFractions
 
 /-! Exact polynomial certificates for the native characteristic-thirty-one addition chain. -/
@@ -71,51 +72,51 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 3000000
 
 theorem slope_two : (tangentFraction 1 unit unit).CrossEq m2 := by
-  simpa only [toFraction_tangent, unitData, toFraction_scalar] using
+  simpa only [toFraction_tangent, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (tangent 1 unitData unitData) m2Data from by decide)
 
 theorem x_two : (xFraction 1 unit unit m2).CrossEq u2 := by
-  simpa only [toFraction_nextX, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextX, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextX 1 unitData unitData m2Data) u2Data from by decide)
 
 theorem y_two : (yFraction unit unit u2 m2).CrossEq v2 := by
-  simpa only [toFraction_nextY, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextY, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextY unitData unitData u2Data m2Data) v2Data from by decide)
 
 theorem slope_three : (secantFraction unit unit u2 v2).CrossEq m3 := by
-  simpa only [toFraction_secant, unitData, toFraction_scalar] using
+  simpa only [toFraction_secant, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (secant unitData unitData u2Data v2Data) m3Data from by decide)
 
 theorem x_three : (xFraction 1 unit u2 m3).CrossEq u3 := by
-  simpa only [toFraction_nextX, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextX, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextX 1 unitData u2Data m3Data) u3Data from by decide)
 
 theorem y_three : (yFraction unit unit u3 m3).CrossEq v3 := by
-  simpa only [toFraction_nextY, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextY, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextY unitData unitData u3Data m3Data) v3Data from by decide)
 
 theorem slope_six : (tangentFraction 1 u3 v3).CrossEq m6 := by
-  simpa only [toFraction_tangent, unitData, toFraction_scalar] using
+  simpa only [toFraction_tangent, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (tangent 1 u3Data v3Data) m6Data from by decide)
 
 theorem x_six : (xFraction 1 u3 u3 m6).CrossEq u6 := by
-  simpa only [toFraction_nextX, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextX, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextX 1 u3Data u3Data m6Data) u6Data from by decide)
 
 theorem y_six : (yFraction u3 v3 u6 m6).CrossEq v6 := by
-  simpa only [toFraction_nextY, unitData, toFraction_scalar] using
+  simpa only [toFraction_nextY, unitData, toFraction_scalar, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextY u3Data v3Data u6Data m6Data) v6Data from by decide)
 
 theorem slope_frobenius : (secantFraction unit unit rotatedSixX v6).CrossEq mF := by
-  simpa only [toFraction_secant, unitData, toFraction_scalar, rotatedSixData, toFraction_mul] using
+  simpa only [toFraction_secant, unitData, toFraction_scalar, rotatedSixData, toFraction_mul, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (secant unitData unitData rotatedSixData v6Data) mFData from by decide)
 
 theorem x_frobenius : (xFraction 1 unit rotatedSixX mF).CrossEq frobeniusX := by
-  simpa only [toFraction_nextX, unitData, toFraction_scalar, rotatedSixData, toFraction_mul, fromFrobeniusX] using
+  simpa only [toFraction_nextX, unitData, toFraction_scalar, rotatedSixData, toFraction_mul, fromFrobeniusX, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextX 1 unitData rotatedSixData mFData) frobeniusXData from by decide)
 
 theorem y_frobenius : (yFraction unit unit frobeniusX mF).CrossEq frobeniusY := by
-  simpa only [toFraction_nextY, unitData, toFraction_scalar, fromFrobeniusX, fromFrobeniusY] using
+  simpa only [toFraction_nextY, unitData, toFraction_scalar, fromFrobeniusX, fromFrobeniusY, unit, m2, u2, v2, m3, u3, v3, m6, u6, v6, mF, rotatedSixX] using
     check_sound (show Check (nextY unitData unitData frobeniusXData mFData) frobeniusYData from by decide)
 
 def excluded : List ((ZMod 31)[X]) :=
@@ -127,9 +128,8 @@ theorem excluded_nonzero : ∀ f ∈ excluded, f ≠ 0 := by
   simp only [excluded, List.mem_cons, List.not_mem_nil, or_false] at h
   rcases h with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact X_ne_zero
-  · intro hz
-    have h₁ := congrArg (fun f : (ZMod 31)[X] => f.coeff 1) hz
-    simp [coeff_add] at h₁
+  · have hMonic : ((X : (ZMod 31)[X]) ^ 1 + C 1).Monic := monic_X_pow_add_C 1 (by decide)
+    simpa only [pow_one, map_one] using hMonic.ne_zero
   · exact expand_ne_zero (a := m2Data.den) (by decide)
   · exact expand_ne_zero (a := u2Data.den) (by decide)
   · exact expand_ne_zero (a := v2Data.den) (by decide)

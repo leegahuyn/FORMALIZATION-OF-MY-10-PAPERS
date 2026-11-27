@@ -13,9 +13,10 @@ open CubicCoefficientArithmetic (AllZero expand_ne_zero)
 
 noncomputable section
 
-variable {k : Type*} [Field k]
+variable {k : Type*} [CommRing k]
 
 /-- The arithmetic tests needed to certify a finite centered-cubic point computation. -/
+set_option maxHeartbeats 1600000 in
 inductive Program (A z : k) : Term → CoefficientFraction k → CoefficientFraction k → Type _
   | identity : Program A z .identity (scalar 1) (scalar 1)
   | double {f : Term} {u v m U V : CoefficientFraction k}
@@ -38,6 +39,8 @@ inductive Program (A z : k) : Term → CoefficientFraction k → CoefficientFrac
       Program A z (.rotate f) (scalar z * u) v
   | neg {f : Term} {u v : CoefficientFraction k} (step : Program A z f u v) :
       Program A z (.neg f) u (-v)
+
+variable [IsDomain k]
 
 set_option maxHeartbeats 1000000 in
 /-- Kernel-computed coefficient tests soundly give every rational equality and nonzero guard. -/
@@ -63,10 +66,10 @@ theorem compiles {A z : k} {t : Term} {u v : CoefficientFraction k} (program : P
     · exact hStep q hq
     · simp only [List.mem_cons, List.not_mem_nil, or_false] at hq
       rcases hq with rfl | rfl | rfl | rfl
-      · exact expand_ne_zero hn
-      · exact expand_ne_zero hmd
-      · exact expand_ne_zero hUd
-      · exact expand_ne_zero hVd
+      · exact CubicCoefficientArithmetic.expand_ne_zero hn
+      · exact CubicCoefficientArithmetic.expand_ne_zero hmd
+      · exact CubicCoefficientArithmetic.expand_ne_zero hUd
+      · exact CubicCoefficientArithmetic.expand_ne_zero hVd
   | @add f g u₁ v₁ u₂ v₂ m U V left right hm hU hV hn hmd hUd hVd ih₁ ih₂ =>
     obtain ⟨left', hLeft⟩ := ih₁
     obtain ⟨right', hRight⟩ := ih₂
@@ -78,17 +81,19 @@ theorem compiles {A z : k} {t : Term} {u v : CoefficientFraction k} (program : P
       simpa only [toFraction_nextY] using check_sound hV
     refine ⟨Chain.add left' right' hm' hU' hV', ?_⟩
     intro q hq
-    change q ∈ left'.guards ++ right'.guards ++ [(u₁.toFraction - u₂.toFraction).num,
+    change q ∈ (left'.guards ++ right'.guards) ++ [(u₁.toFraction - u₂.toFraction).num,
       m.toFraction.den, U.toFraction.den, V.toFraction.den] at hq
-    simp only [List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hq
-    rcases hq with hq | hq | rfl | rfl | rfl | rfl
-    · exact hLeft q hq
-    · exact hRight q hq
-    · have h : (u₁ - u₂).toFraction.num ≠ 0 := expand_ne_zero hn
-      simpa only [toFraction_sub] using h
-    · exact expand_ne_zero hmd
-    · exact expand_ne_zero hUd
-    · exact expand_ne_zero hVd
+    rcases List.mem_append.mp hq with hq | hq
+    · rcases List.mem_append.mp hq with hq | hq
+      · exact hLeft q hq
+      · exact hRight q hq
+    · simp only [List.mem_cons, List.not_mem_nil, or_false] at hq
+      rcases hq with rfl | rfl | rfl | rfl
+      · have h : (u₁ - u₂).toFraction.num ≠ 0 := CubicCoefficientArithmetic.expand_ne_zero hn
+        simpa only [toFraction_sub] using h
+      · exact CubicCoefficientArithmetic.expand_ne_zero hmd
+      · exact CubicCoefficientArithmetic.expand_ne_zero hUd
+      · exact CubicCoefficientArithmetic.expand_ne_zero hVd
   | @rotate f u v step ih =>
     obtain ⟨step', hStep⟩ := ih
     rw [toFraction_mul, toFraction_scalar]

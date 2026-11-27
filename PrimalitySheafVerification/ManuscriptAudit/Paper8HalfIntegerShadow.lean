@@ -41,9 +41,9 @@ private theorem term_eq_theta (τ : ℂ) (n : ℤ) :
     ((2 * (Real.pi : ℂ) * Complex.I)⁻¹) (2 * (Real.pi : ℂ) * Complex.I * (n : ℂ)),
     ← mul_assoc ((2 * (Real.pi : ℂ) * Complex.I)⁻¹) (2 * (Real.pi : ℂ) * Complex.I),
     inv_mul_cancel₀ hCoef, one_mul, ← add_mul]
-  rw [term, ← mul_left_comm (halfIndex n), jacobiTheta₂_term, ← Complex.exp_add]
-  apply congrArg (fun w : ℂ => halfIndex n * Complex.exp w)
-  unfold halfIndex
+  rw [term, halfIndex, ← mul_left_comm ((n : ℂ) + 1 / 2),
+    jacobiTheta₂_term, ← Complex.exp_add]
+  apply congrArg (fun w : ℂ => ((n : ℂ) + 1 / 2) * Complex.exp w)
   ring
 
 theorem absolute_summable {τ : ℂ} (hτ : 0 < τ.im) :
@@ -51,9 +51,9 @@ theorem absolute_summable {τ : ℂ} (hτ : 0 < τ.im) :
   apply (summable_norm_iff (E := ℂ)).2
   have hTheta := (summable_jacobiTheta₂_term_iff (τ / 2) τ).2 hτ
   have hDeriv := (summable_jacobiTheta₂'_term_iff (τ / 2) τ).2 hτ
-  simp only [term_eq_theta]
-  exact ((hDeriv.mul_left ((2 * (Real.pi : ℂ) * Complex.I)⁻¹)).add
-    (hTheta.mul_left (1 / 2 : ℂ))).mul_left _
+  have hSum := ((hDeriv.mul_left ((2 * (Real.pi : ℂ) * Complex.I)⁻¹)).add
+    (hTheta.mul_left (1 / 2 : ℂ))).mul_left (Complex.exp ((Real.pi : ℂ) * Complex.I * τ / 4))
+  exact hSum.congr (fun n => (term_eq_theta τ n).symm)
 
 theorem hasSum_zero {τ : ℂ} (hτ : 0 < τ.im) : HasSum (term τ) 0 := by
   have hSum := (absolute_summable hτ).of_norm
@@ -63,7 +63,7 @@ theorem hasSum_zero {τ : ℂ} (hτ : 0 < τ.im) : HasSum (term τ) 0 := by
     funext n
     simp only [term_reflection, add_neg_cancel, Pi.zero_apply]
   rw [hPair] at hPaired
-  exact (hPaired.unique hasSum_zero) ▸ hSum.hasSum
+  exact (hPaired.unique _root_.hasSum_zero) ▸ hSum.hasSum
 
 theorem printedShadow_eq_zero {τ : ℂ} (hτ : 0 < τ.im) : printedShadow τ = 0 :=
   (hasSum_zero hτ).tsum_eq

@@ -26,8 +26,7 @@ theorem native_eq_of_chain {dx dy : ℕ} (hpx : p = 3 * dx + 1) (hpy : p = 2 * d
     (hChain : ∀ f ∈ chain.guards, f ≠ 0) :
     nativeMap (ZMod p) L (FiniteField.frobeniusAlgHom (ZMod p) L) A =
       term.hom (CubicCubeRotation.rotate (algebraMap (ZMod p) L z) hz hΔ) := by
-  let K := ZMod p
-  let P : List K[X] := X :: (X + C A) :: chain.guards
+  let P : List ((ZMod p)[X]) := X :: (X + C A) :: chain.guards
   have hNonzero : ∀ f ∈ P, f ≠ 0 := by
     intro f hf
     change f ∈ X :: (X + C A) :: chain.guards at hf
@@ -39,11 +38,13 @@ theorem native_eq_of_chain {dx dy : ℕ} (hpx : p = 3 * dx + 1) (hpy : p = 2 * d
     · exact hChain f hf
   apply cubicHom_ext hΔ _ _ (exceptional_finite P hNonzero)
   intro x y hP hxBad
-  have hGuard (f : K[X]) (hf : f ∈ P) : f.eval₂ (algebraMap K L) (x ^ 3) ≠ 0 :=
+  have hGuard (f : (ZMod p)[X]) (hf : f ∈ P) : f.eval₂ (algebraMap (ZMod p) L) (x ^ 3) ≠ 0 :=
     evaluate_ne_zero hxBad hf
   have hx₀ : x ^ 3 ≠ 0 := by simpa only [eval₂_X] using hGuard X (by simp [P])
-  have hs : x ^ 3 + algebraMap K L A ≠ 0 := by
-    simpa only [eval₂_add, eval₂_X, eval₂_C] using hGuard (X + C A) (by simp [P])
+  have hs : x ^ 3 + algebraMap (ZMod p) L A ≠ 0 := by
+    have h := hGuard (X + C A) (by simp [P])
+    rw [eval₂_add, eval₂_X, eval₂_C] at h
+    exact h
   have hx : x ≠ 0 := fun h => hx₀ (by simp [h])
   have he := (nonsingular_iff hΔ x y).mp hP
   have hy : y ≠ 0 := fun h => hs (by simpa only [h, zero_pow (by decide : (2 : ℕ) ≠ 0)] using he.symm)
@@ -54,17 +55,22 @@ theorem native_eq_of_chain {dx dy : ℕ} (hpx : p = 3 * dx + 1) (hpy : p = 2 * d
     change w ^ Fintype.card (ZMod p) = _
     rw [ZMod.card]
   obtain ⟨hF, eF⟩ := nativeMap_some (ZMod p) L g A hP
-  have hX : x * (Fraction.polynomial ((X : K[X]) ^ dx)).evaluate (x ^ 3) = x ^ p := by
+  have hX : x * (Fraction.polynomial ((X : (ZMod p)[X]) ^ dx)).evaluate (x ^ 3) = x ^ p := by
     simp only [Fraction.evaluate_polynomial, eval₂_pow, eval₂_X]
     rw [hpx, pow_add, pow_mul, pow_one]
     ring
-  have hY : y * (Fraction.polynomial (((X : K[X]) + C A) ^ dy)).evaluate (x ^ 3) = y ^ p := by
+  have hY : y * (Fraction.polynomial (((X : (ZMod p)[X]) + C A) ^ dy)).evaluate (x ^ 3) = y ^ p := by
     simp only [Fraction.evaluate_polynomial, eval₂_pow, eval₂_add, eval₂_X, eval₂_C]
-    rw [hpy, pow_add, pow_mul, pow_one, ← he]
+    have hpow : y ^ p = y ^ (2 * dy + 1) := congrArg (fun n : ℕ => y ^ n) hpy
+    rw [hpow, pow_add, pow_mul, pow_one, ← he]
     ring
   change nativeMap (ZMod p) L g A (Affine.Point.some x y hP) = _
-  rw [eF, eQ, Affine.Point.some.injEq]
-  exact ⟨(hg x).trans hX.symm, (hg y).trans hY.symm⟩
+  have hxy : Affine.Point.some (g x) (g y) hF =
+      Affine.Point.some (x * (Fraction.polynomial ((X : (ZMod p)[X]) ^ dx)).evaluate (x ^ 3))
+        (y * (Fraction.polynomial (((X : (ZMod p)[X]) + C A) ^ dy)).evaluate (x ^ 3)) hQ := by
+    rw [Affine.Point.some.injEq]
+    exact ⟨(hg x).trans hX.symm, (hg y).trans hY.symm⟩
+  exact eF.trans (hxy.trans eQ.symm)
 
 end
 end ManuscriptAudit.CubicCoordinateChainFrobenius

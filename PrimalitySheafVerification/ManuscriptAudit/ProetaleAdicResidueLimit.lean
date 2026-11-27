@@ -64,7 +64,8 @@ def lift : F ⟶ X.ellAdicSheaf ℓ where
         change (sheafSectionsEquiv ℓ X V.unop ((X.ellAdicSheaf ℓ).obj.map g z)).val n y =
           (sheafSectionsEquiv ℓ X U.unop z).val n (g.unop.left y) at hr
         rw [hr]
-        change (ρ n).hom.app V (F.obj.map g x) y = (a (a.symm _)).val n (g.unop.left y)
+        change (show C(V.unop.left, ZMod (ℓ ^ n)) from (ρ n).hom.app V (F.obj.map g x)) y =
+          (a (a.symm _)).val n (g.unop.left y)
         rw [AddEquiv.apply_symm_apply]
         exact congrArg (fun f : C(V.unop.left, ZMod (ℓ ^ n)) ↦ f y)
           (CategoryTheory.congr_fun ((ρ n).hom.naturality g) x) }
