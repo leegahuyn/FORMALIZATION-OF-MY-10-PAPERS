@@ -45,7 +45,7 @@ theorem doubled_term_re_le_squared {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1) (n 
         intro j _
         calc
           _ = q ^ n + q ^ (n + j + 1) := by rw [mul_add, mul_one, ← pow_add, Nat.add_assoc]
-          _ ≤ _ := add_le_add_right hPowOne _
+          _ ≤ _ := add_le_add hPowOne le_rfl
   have hPN : 0 < negPochhammer q n := zero_lt_one.trans_le (one_le_negPochhammer hq n)
   have hP2 : 0 < negPochhammer q (2 * n) :=
     zero_lt_one.trans_le (one_le_negPochhammer hq (2 * n))
@@ -63,7 +63,7 @@ theorem doubled_term_re_le_squared {q : ℝ} (hq : 0 ≤ q) (h₁ : q ≤ 1) (n 
 theorem doubled_first_term_re_lt_squared {q : ℝ} (hq : 0 < q) (h₁ : q < 1) :
     (doubledExteriorTerm 1 (q : ℂ)).re < (exteriorTerm 1 (q : ℂ)).re := by
   rw [doubledTerm_re, squaredTerm_re]
-  change q ^ 2 / negPochhammer q 2 < q / negPochhammer q 1 ^ 2
+  simp only [Nat.one_mul, Nat.mul_one, pow_one]
   have hP₁ : negPochhammer q 1 = 1 + q := by
     simp [negPochhammer, Finset.prod_range_succ]
   have hP₂ : negPochhammer q 2 = (1 + q) * (1 + q ^ 2) := by

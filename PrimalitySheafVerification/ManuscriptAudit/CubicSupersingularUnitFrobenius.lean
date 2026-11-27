@@ -44,7 +44,9 @@ theorem unitMap_pow (g : L →ₐ[E] L) (n : ℕ) :
     intro P
     change unitMap E L (f * g) P = unitMap E L f (unitMap E L g P)
     cases P with
-    | zero => simp only [map_zero]
+    | zero =>
+      change unitMap E L (f * g) (0 : UnitPoints L) = unitMap E L f (unitMap E L g 0)
+      simp only [map_zero]
     | some x y h =>
       obtain ⟨h₁, e₁⟩ := unitMap_some E L (f * g) h
       obtain ⟨h₂, e₂⟩ := unitMap_some E L g h
@@ -62,23 +64,34 @@ variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) L] [Algebra (ZMod p) E]
 /-- The arithmetic unit twists over the two bases act by the same coordinate powers. -/
 theorem arithmeticUnit_eq_prime_pow :
     arithmeticUnit E L = arithmeticUnit (ZMod p) L ^ Module.finrank (ZMod p) E := by
-  change unitMap E L (FiniteField.frobeniusAlgHom E L) =
-    unitMap (ZMod p) L (FiniteField.frobeniusAlgHom (ZMod p) L) ^ Module.finrank (ZMod p) E
-  rw [← unitMap_pow]
-  apply AddMonoidHom.ext
-  intro P
-  have hCard : Fintype.card E = p ^ Module.finrank (ZMod p) E := by
-    rw [Module.card_eq_pow_finrank (K := ZMod p) (V := E), ZMod.card]
-  cases P with
-  | zero => simp only [map_zero]
-  | some x y h =>
-    obtain ⟨h₁, e₁⟩ := unitMap_some E L (FiniteField.frobeniusAlgHom E L) h
-    obtain ⟨h₂, e₂⟩ := unitMap_some (ZMod p) L
-      ((FiniteField.frobeniusAlgHom (ZMod p) L) ^ Module.finrank (ZMod p) E) h
-    rw [e₁, e₂, Affine.Point.some.injEq, pow_frobenius_apply, pow_frobenius_apply]
-    change x ^ Fintype.card E = x ^ (p ^ Module.finrank (ZMod p) E) ∧
-      y ^ Fintype.card E = y ^ (p ^ Module.finrank (ZMod p) E)
-    simp only [hCard, and_self]
+  let g := FiniteField.frobeniusAlgHom (ZMod p) L
+  let d := Module.finrank (ZMod p) E
+  calc
+    arithmeticUnit E L = unitMap (ZMod p) L (g ^ d) := by
+      apply AddMonoidHom.ext
+      intro P
+      have hCard : Fintype.card E = p ^ d := by
+        rw [Module.card_eq_pow_finrank (K := ZMod p) (V := E), ZMod.card]
+      cases P with
+      | zero =>
+        change unitMap E L (FiniteField.frobeniusAlgHom E L) (0 : UnitPoints L) =
+          unitMap (ZMod p) L (g ^ d) 0
+        simp only [map_zero]
+      | some x y h =>
+        change unitMap E L (FiniteField.frobeniusAlgHom E L) (.some x y h) =
+          unitMap (ZMod p) L (g ^ d) (.some x y h)
+        obtain ⟨h₁, e₁⟩ := unitMap_some E L (FiniteField.frobeniusAlgHom E L) h
+        obtain ⟨h₂, e₂⟩ := unitMap_some (ZMod p) L (g ^ d) h
+        refine e₁.trans (Eq.trans ?_ e₂.symm)
+        rw [Affine.Point.some.injEq]
+        constructor
+        · exact (congrArg (fun n : ℕ => x ^ n) hCard).trans
+            (pow_frobenius_apply p L d x).symm
+        · exact (congrArg (fun n : ℕ => y ^ n) hCard).trans
+            (pow_frobenius_apply p L d y).symm
+    _ = _ := unitMap_pow (ZMod p) L g d
+
+variable [IsAlgClosed L]
 
 theorem prime_square (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (P : UnitPoints L) :
     arithmeticUnit (ZMod p) L (arithmeticUnit (ZMod p) L P) = -(p • P) := by

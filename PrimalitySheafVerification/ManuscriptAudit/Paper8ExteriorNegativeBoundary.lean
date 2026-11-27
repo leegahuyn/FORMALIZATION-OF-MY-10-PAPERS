@@ -32,8 +32,11 @@ theorem no_continuous_extension_at_negative_one {F : ℂ → ℂ}
   let q : ℂ := -(r : ℂ)
   have hDiff : q - (-1 : ℂ) = (e : ℂ) := by
     change -(r : ℂ) - (-1 : ℂ) = (e : ℂ)
-    rw [← hOneSub, Complex.ofReal_sub, Complex.ofReal_one]
-    ring
+    calc
+      _ = (((1 : ℝ) - r : ℝ) : ℂ) := by
+        rw [Complex.ofReal_sub, Complex.ofReal_one]
+        ring
+      _ = (e : ℂ) := congrArg Complex.ofReal hOneSub
   have hDist : dist q (-1 : ℂ) = e := by
     rw [dist_eq_norm, hDiff, Complex.norm_real, Real.norm_eq_abs, abs_of_pos he]
   have hClose : ‖F q - F (-1)‖ < 1 := by
@@ -61,8 +64,10 @@ theorem no_continuous_extension_at_negative_one {F : ℂ → ℂ}
   have hLower : -((F q).re - (F (-1)).re) ≤ ‖F q - F (-1)‖ := by
     rw [← Complex.sub_re]
     exact (neg_le_abs _).trans (Complex.abs_re_le_norm _)
+  have hCenter : -(|(F (-1)).re|) ≤ (F (-1)).re := by
+    simpa only [neg_neg] using (neg_le_neg (neg_le_abs (F (-1)).re))
   dsimp [A] at hRatio
-  linarith only [hUpper, hRatio, hClose, hLower, neg_abs_le_self (F (-1)).re]
+  linarith only [hUpper, hRatio, hClose, hLower, hCenter]
 
 /-- A continuous, nonzero choice of the fractional factor does not remove the obstruction. -/
 theorem no_continuous_weighted_extension_at_negative_one {G root : ℂ → ℂ}
@@ -72,7 +77,7 @@ theorem no_continuous_weighted_extension_at_negative_one {G root : ℂ → ℂ}
     False := by
   refine no_continuous_extension_at_negative_one (hCont.div hRoot hNonzero) ?_
   have hMem : root (-1) ∈ {z : ℂ | z ≠ 0} := hNonzero
-  have hNear : {q : ℂ | root q ≠ 0} ∈ 𝓝 (-1 : ℂ) :=
+  have hNear : ∀ᶠ q in 𝓝 (-1 : ℂ), root q ≠ 0 :=
     hRoot (isOpen_ne.mem_nhds hMem)
   have hWithin : ∀ᶠ q in 𝓝[Metric.ball (0 : ℂ) 1] (-1 : ℂ), root q ≠ 0 :=
     hNear.filter_mono nhdsWithin_le_nhds

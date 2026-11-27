@@ -15,6 +15,8 @@ theorem trace_det (B : Basis (Fin 2) R V) (F S : Module.End R V) {c : R}
     (hc : c ≠ 0) (hF : F ^ 2 = c • (1 : Module.End R V))
     (hS : S ^ 2 + S + 1 = 0) (hConj : F * S = S ^ 2 * F) :
     LinearMap.trace R V S = -1 ∧ LinearMap.det S = 1 := by
+  letI : Module.Free R V := Module.Free.of_basis B
+  letI : Module.Finite R V := Module.Finite.of_basis B
   let tr := LinearMap.trace R V
   have hMul : F * S * F = S ^ 2 * (F ^ 2) := by
     rw [hConj, mul_assoc, pow_two F]
@@ -38,8 +40,6 @@ theorem trace_det (B : Basis (Fin 2) R V) (F S : Module.End R V) {c : R}
     eq_neg_of_add_eq_zero_left ((mul_eq_zero.mp hProd).resolve_left two_ne_zero)
   constructor
   · exact hTrace
-  letI : Module.Free R V := Module.Free.of_basis B
-  letI : Module.Finite R V := Module.Finite.of_basis B
   have hChar : S.charpoly = X ^ 2 + X + C (LinearMap.det S) := by
     rw [← LinearMap.charpoly_toMatrix S B, Matrix.charpoly_fin_two,
       ← LinearMap.trace_eq_matrix_trace R B, LinearMap.det_toMatrix B]

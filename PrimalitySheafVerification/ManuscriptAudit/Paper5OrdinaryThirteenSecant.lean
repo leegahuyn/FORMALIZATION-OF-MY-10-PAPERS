@@ -77,10 +77,22 @@ private theorem cancel_slope_factors (t : K) (hs : t + 1 ≠ 0) (hg : t + 4 ≠ 
     (tripleSlopeNum t / (6 * (t + 1) * (t + 4))) *
       ((tripleNum t - tripleDen t) / (3 * tripleDen t - tripleNum t)) = secantNum t / (t + 4) := by
   have h₆ : (6 : K) ≠ 0 := numeral_ne_zero 6 (by decide)
-  field_simp [h₆, hs, hg, hQ] <;>
-    first
-    | linear_combination secant_slope_identity t
-    | linear_combination (t + 4) * secant_slope_identity t
+  let Q := 3 * tripleDen t - tripleNum t
+  have hd : (6 * (t + 1) * (t + 4)) * Q ≠ 0 :=
+    mul_ne_zero (mul_ne_zero (mul_ne_zero h₆ hs) hg) hQ
+  calc
+    _ = (tripleSlopeNum t * (tripleNum t - tripleDen t)) /
+        ((6 * (t + 1) * (t + 4)) * Q) := by
+      simp only [Q, div_eq_mul_inv, mul_inv_rev]
+      ring
+    _ = secantNum t / (t + 4) := by
+      rw [secant_slope_identity t]
+      apply (eq_div_iff hg).mpr
+      rw [div_mul_eq_mul_div₀]
+      apply (div_eq_iff hd).mpr
+      change (6 * (t + 1) * Q * secantNum t) * (t + 4) =
+        secantNum t * ((6 * (t + 1) * (t + 4)) * Q)
+      ring
 
 set_option maxHeartbeats 1000000 in
 theorem lastSlope_correct {x y : K} (hx : x ≠ 0) (hy : y ≠ 0)
@@ -99,7 +111,20 @@ theorem lastSlope_correct {x y : K} (hx : x ≠ 0) (hy : y ≠ 0)
       change ((y / x) * (tripleSlopeNum t / (6 * (t + 1) * (t + 4))) *
         (x * ((tripleNum t - tripleDen t) / tripleDen t))) /
         (x * ((3 * tripleDen t - tripleNum t) / tripleDen t)) = _
-      field_simp [h₆, hx, hs, hg, hD, hQ] <;> ring
+      let b := (y / x) * (tripleSlopeNum t / (6 * (t + 1) * (t + 4)))
+      let r := (tripleNum t - tripleDen t) / tripleDen t
+      let w := (3 * tripleDen t - tripleNum t) / tripleDen t
+      calc
+        _ = (x * (b * r)) / (x * w) := by congr 1; ring
+        _ = _ := by
+          rw [mul_div_mul_left _ _ hx]
+          change (b * r) / w = _
+          rw [mul_div_assoc]
+          change b * (((tripleNum t - tripleDen t) / tripleDen t) /
+            ((3 * tripleDen t - tripleNum t) / tripleDen t)) = _
+          rw [div_div_div_cancel_right₀ hD]
+          dsimp only [b]
+          ring
     _ = _ := by
       change _ = (y / x) * (secantNum t / (t + 4))
       rw [cancel_slope_factors t hs hg hQ]
@@ -115,7 +140,9 @@ theorem last_abscissa {x y : K} (hx : x ≠ 0) (hg : x ^ 3 + 4 ≠ 0)
     calc
       _ = y ^ 2 * secantNum t ^ 2 / (x ^ 2 * (t + 4) ^ 2) := by
         unfold lastSlope
-        field_simp [hx, hg] <;> ring
+        rw [mul_pow, div_pow, div_pow]
+        simp only [t, div_eq_mul_inv, mul_inv_rev]
+        ring
       _ = _ := by
         rw [he]
         dsimp only [tripleDen, t]
@@ -143,7 +170,9 @@ theorem last_ordinate {x y : K} (hx : x ≠ 0) (hg : x ^ 3 + 4 ≠ 0)
   have hN : 1 - (secantNum t / (t + 4)) * (9 * t ^ 4 - 3) = -(t + 1) ^ 6 := by
     apply mul_right_cancel₀ (show t + 4 ≠ 0 from hg)
     calc
-      _ = t + 4 - secantNum t * (9 * t ^ 4 - 3) := by field_simp [hg]; ring
+      _ = t + 4 - ((secantNum t / (t + 4)) * (t + 4)) * (9 * t ^ 4 - 3) := by ring
+      _ = t + 4 - secantNum t * (9 * t ^ 4 - 3) := by
+        rw [div_mul_cancel₀ _ (show t + 4 ≠ 0 from hg)]
       _ = _ := by linear_combination secant_ordinate_identity t
   calc
     _ = y * (1 - (secantNum t / (t + 4)) * (9 * t ^ 4 - 3)) := by
