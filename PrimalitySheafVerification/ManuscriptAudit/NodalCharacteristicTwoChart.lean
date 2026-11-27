@@ -58,13 +58,16 @@ private theorem eval_coordinateChange (p : P K) :
       (MvPolynomial.aeval (cuspValues K)) (coordinateChange K (MvPolynomial.X i))
     rw [MvPolynomial.aeval_X]
     fin_cases i
-    · change ((coordinateEquiv K (NodalAffinePresentation.nodeX K) : cusp K) : Polynomial K) = _
+    · change ((coordinateEquiv K (NodalAffinePresentation.nodeX K) : cusp K) : Polynomial K) =
+        (MvPolynomial.aeval (cuspValues K)) (coordinateChange K (MvPolynomial.X (0 : Fin 3)))
       rw [coordinateEquiv_x K, NodalCharacteristicTwoPlane.coordinateChange_X0,
         MvPolynomial.aeval_X] <;> rfl
-    · change ((coordinateEquiv K (NodalAffinePresentation.nodeY K) : cusp K) : Polynomial K) = _
+    · change ((coordinateEquiv K (NodalAffinePresentation.nodeY K) : cusp K) : Polynomial K) =
+        (MvPolynomial.aeval (cuspValues K)) (coordinateChange K (MvPolynomial.X (1 : Fin 3)))
       rw [coordinateEquiv_y K, NodalCharacteristicTwoPlane.coordinateChange_X1,
         map_add, MvPolynomial.aeval_X, MvPolynomial.aeval_X] <;> rfl
-    · change ((coordinateEquiv K 1 : cusp K) : Polynomial K) = _
+    · change ((coordinateEquiv K 1 : cusp K) : Polynomial K) =
+        (MvPolynomial.aeval (cuspValues K)) (coordinateChange K (MvPolynomial.X (2 : Fin 3)))
       rw [map_one, NodalCharacteristicTwoPlane.coordinateChange_X2, MvPolynomial.aeval_X] <;> rfl
   exact DFunLike.congr_fun h p
 

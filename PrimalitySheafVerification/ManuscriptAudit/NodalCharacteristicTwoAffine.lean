@@ -91,8 +91,9 @@ theorem coordinateEquiv_x : coordinateEquiv K (nodeX K) = CuspPunctured.cuspSqua
   rw [← nodePresentation_x K]
   unfold coordinateEquiv
   rw [AlgEquiv.trans_apply, AlgEquiv.symm_apply_apply, AlgEquiv.trans_apply]
-  rw [shiftedPresentation_x K]
-  exact cuspPresentation_x K
+  exact (congrArg (fun z : AdjoinRoot (CuspDelta.cuspPlaneEquation K) =>
+    CuspDelta.paper2_cusp_coordinate_presentation K z) (shiftedPresentation_x K)).trans
+      (cuspPresentation_x K)
 
 theorem coordinateEquiv_y :
     coordinateEquiv K (nodeY K) = cuspCube K + CuspPunctured.cuspSquare K := by
@@ -102,8 +103,12 @@ theorem coordinateEquiv_y :
   rw [← hy]
   unfold coordinateEquiv
   rw [AlgEquiv.trans_apply, AlgEquiv.symm_apply_apply, AlgEquiv.trans_apply]
-  rw [shiftedPresentation_y K, map_add,
-    cuspPresentation_y K, cuspPresentation_x K]
+  let e := CuspDelta.paper2_cusp_coordinate_presentation K
+  have h := congrArg (fun z : AdjoinRoot (CuspDelta.cuspPlaneEquation K) => e z)
+    (shiftedPresentation_y K)
+  have hAdd := map_add e (AdjoinRoot.root (CuspDelta.cuspPlaneEquation K))
+    (AdjoinRoot.of (CuspDelta.cuspPlaneEquation K) X)
+  exact h.trans (hAdd.trans (congrArg₂ (· + ·) (cuspPresentation_y K) (cuspPresentation_x K)))
 
 /-- Actual affine scheme isomorphism from the cusp to the characteristic-two node model. -/
 def affineIso : CuspProperCompactification.affineCusp K ≅ NodalProjectiveClosure.affineNode K :=

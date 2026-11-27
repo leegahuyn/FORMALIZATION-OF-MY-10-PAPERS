@@ -3,6 +3,7 @@ import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 import Mathlib.CategoryTheory.Sites.Point.Conservative
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleDisjointSections
 
 /-! Epimorphisms lift locally on the actual small étale site. -/
 
@@ -34,17 +35,8 @@ theorem of_epi {X : Scheme.{u}} {F G : Sheaf X.smallEtaleTopology AddCommGrpCat.
 /-- The empty étale object has a unique section for every additive sheaf. -/
 theorem subsingleton_sections_of_empty {X : Scheme.{u}}
     (F : Sheaf X.smallEtaleTopology AddCommGrpCat.{u}) (U : X.Etale) [IsEmpty U.left] :
-    Subsingleton (F.obj.obj (Opposite.op U)) := by
-  let R : Sieve U := ⊥
-  have hR : R ∈ X.smallEtaleTopology U := by
-    rw [← Sieve.ofArrows_category R, Scheme.ofArrows_mem_smallEtaleTopology_iff]
-    exact Set.eq_univ_of_forall fun x ↦ isEmptyElim x
-  let forgetA := forget AddCommGrpCat.{u}
-  have hF : Presieve.IsSheaf X.smallEtaleTopology (F.obj ⋙ forgetA) :=
-    (isSheaf_iff_isSheaf_of_type _ _).mp ((sheafCompose _ forgetA).obj F).property
-  refine ⟨fun a b ↦ (hF R hR).isSeparatedFor.ext ?_⟩
-  intro W f hf
-  exact (show False from hf).elim
+    Subsingleton (F.obj.obj (Opposite.op U)) :=
+  SmallEtaleDisjointSections.sections_subsingleton_of_isEmpty F U
 
 end
 end ManuscriptAudit.EtaleEpiLocalSurjectivity

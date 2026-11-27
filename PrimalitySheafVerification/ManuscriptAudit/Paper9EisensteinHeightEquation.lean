@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import PrimalitySheafVerification.ManuscriptAudit.Paper9HighCuspCoordinates
@@ -30,6 +31,7 @@ theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
   have hInner := (Real.hasDerivAt_log hy).ofReal_comp.mul_const s
   have hOuter := (Complex.hasStrictFDerivAt_exp_real ((Real.log y : ℂ) * s)).hasFDerivAt
   have h := hOuter.comp_hasDerivAt y hInner
+  rw [hasDerivAt_iff_tendsto_slope] at h ⊢
   simpa [heightPower, Function.comp_def, Complex.ofReal_inv] using h
 
 theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :

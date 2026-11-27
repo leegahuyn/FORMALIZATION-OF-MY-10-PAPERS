@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.EpiMono
+import PrimalitySheafVerification.ManuscriptAudit.ClosedSupportDetection
 import PrimalitySheafVerification.ManuscriptAudit.PointCoefficientSheaf
 import PrimalitySheafVerification.ManuscriptAudit.SheafPointwiseKernel
 
@@ -20,7 +21,7 @@ abbrev coefficientSheaf (A : P → G) : AbelianSheaf X := sheaf P (fun p => A p)
 
 def coefficientMap {A B : P → G} (f : ∀ p, A p ⟶ B p) :
     coefficientSheaf P A ⟶ coefficientSheaf P B :=
-  ⟨{ app := fun U => G.ofHom
+  ⟨{ app := fun U => AddCommGrpCat.ofHom
       { toFun := fun s q => f q.val (s q)
         map_zero' := by funext q; simp
         map_add' := by intro s t; funext q; simp }

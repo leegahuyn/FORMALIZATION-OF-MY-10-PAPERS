@@ -61,7 +61,7 @@ theorem exists_base_of_fixed (hm : m ≠ 0) (hn : n ≠ 0)
     (hU : rotateFirst m n a b z hz.pow_eq_one t = t)
     (hV : rotateSecond m n a b w hw.pow_eq_one t = t) :
     ∃ f : R, algebraMap R D₀ f = t := by
-  letI : Nontrivial C₀ := Nontrivial.of_injective _ (algebraMap_injective m a hm)
+  letI : Nontrivial C₀ := (algebraMap_injective m a hm).nontrivial
   have hV' : rotation n (algebraMap R C₀ b) w hw.pow_eq_one t = t := hV
   obtain ⟨c, hc⟩ := exists_scalar_of_fixed n (algebraMap R C₀ b) hn w hw t hV'
   have hRot := congrArg (rotateFirst m n a b z hz.pow_eq_one) hc

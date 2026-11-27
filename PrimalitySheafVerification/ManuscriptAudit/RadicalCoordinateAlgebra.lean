@@ -21,21 +21,24 @@ abbrev Extension (m : ℕ) (a : R) := AdjoinRoot (relation m a)
 def root (m : ℕ) (a : R) : Extension m a := AdjoinRoot.root (relation m a)
 
 theorem root_pow (m : ℕ) (a : R) : root m a ^ m = algebraMap R (Extension m a) a := by
-  have h := AdjoinRoot.eval₂_root (relation m a)
   apply sub_eq_zero.mp
-  simpa only [relation, root, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, AdjoinRoot.algebraMap_eq]
-    using h
+  change AdjoinRoot.root (relation m a) ^ m - AdjoinRoot.of (relation m a) a = 0
+  have h := AdjoinRoot.eval₂_root (relation m a)
+  change eval₂ (AdjoinRoot.of (relation m a)) (AdjoinRoot.root (relation m a)) (X ^ m - C a) = 0 at h
+  rw [eval₂_sub, eval₂_pow, eval₂_X, eval₂_C] at h
+  exact h
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 
 def lift (m : ℕ) (a : R) (s : S) (h : s ^ m = algebraMap R S a) : Extension m a →ₐ[R] S :=
   AdjoinRoot.liftAlgHom (relation m a) (Algebra.ofId R S) s (by
-    simp only [relation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C, Algebra.ofId_apply, h, sub_self])
+    rw [relation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C]
+    change s ^ m - algebraMap R S a = 0
+    exact sub_eq_zero.mpr h)
 
 @[simp] theorem lift_root (m : ℕ) (a : R) (s : S) (h : s ^ m = algebraMap R S a) :
     lift m a s h (root m a) = s := by
-  unfold lift root
-  exact AdjoinRoot.lift_root _
+  simp only [lift, root, AdjoinRoot.liftAlgHom_root]
 
 variable [Nontrivial R]
 
@@ -43,10 +46,11 @@ def basis (m : ℕ) (a : R) (hm : m ≠ 0) : Module.Basis (Fin m) R (Extension m
   ((AdjoinRoot.powerBasis' (monic_X_pow_sub_C a hm)).basis).reindex
     (finCongr (natDegree_X_pow_sub_C (n := m) (r := a)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem basis_apply (m : ℕ) (a : R) (hm : m ≠ 0) (i : Fin m) :
     basis m a hm i = root m a ^ (i : ℕ) := by
-  unfold basis
-  rw [Module.Basis.reindex_apply, PowerBasis.basis_eq_pow] <;> rfl
+  rw [basis, Module.Basis.reindex_apply, PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
+  rfl
 
 theorem algebraMap_injective (m : ℕ) (a : R) (hm : m ≠ 0) :
     Function.Injective (algebraMap R (Extension m a)) := by
@@ -84,9 +88,8 @@ theorem double_faithfullyFlat (m n : ℕ) (a b : R) (hm : m ≠ 0) (hn : n ≠ 0
     Module.FaithfullyFlat R (DoubleExtension m n a b) := by
   let C := Extension m a
   let D := DoubleExtension m n a b
-  letI : Nontrivial C := Nontrivial.of_injective _ (algebraMap_injective m a hm)
-  letI : Nontrivial D := Nontrivial.of_injective _
-    (algebraMap_injective n (algebraMap R C b) hn)
+  letI : Nontrivial C := (algebraMap_injective m a hm).nontrivial
+  letI : Nontrivial D := (algebraMap_injective n (algebraMap R C b) hn).nontrivial
   letI : Module.Free R D := Module.Free.of_basis
     ((basis m a hm).smulTower (basis n (algebraMap R C b) hn))
   infer_instance

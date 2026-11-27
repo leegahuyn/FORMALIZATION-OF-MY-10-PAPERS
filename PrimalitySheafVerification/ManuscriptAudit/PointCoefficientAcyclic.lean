@@ -31,7 +31,7 @@ private theorem dimensionShift (Q : ShortComplex (AbelianSheaf X)) (hQ : Q.Short
   apply subsingleton_of_forall_eq 0
   intro x
   let Z := (constantSheaf (Opens.grothendieckTopology X) G).obj
-    (G.of (ULift ℤ))
+    (AddCommGrpCat.of (ULift ℤ))
   change Ext Z Q.X₁ (n + 1) at x
   have hx : x.comp (Ext.mk₀ Q.f) (add_zero (n + 1)) = 0 := Ext.eq_zero_of_injective _
   obtain ⟨y, hy⟩ := Ext.covariant_sequence_exact₁ Z hQ x hx (show n + 1 = n + 1 by rfl)
@@ -61,7 +61,7 @@ private theorem successor_of_surjective (A : P → G) (n : ℕ)
       (inferInstanceAs (Mono (Injective.ι (A p))))
       (inferInstanceAs (Epi (cokernel.π (Injective.ι (A p)))))
   let Q := coefficientSequence P S
-  letI : ∀ p : P, Injective (G.of ((S p).X₂ : Type)) :=
+  letI : ∀ p : P, Injective (AddCommGrpCat.of ((S p).X₂ : Type)) :=
     fun p => inferInstanceAs (Injective (Injective.under (A p)))
   letI : Injective Q.X₂ := injective_of_coefficients P (fun p => ((S p).X₂ : Type))
   exact dimensionShift Q (coefficientSequence_shortExact P S hS) n (h S hS)
