@@ -9,6 +9,8 @@ namespace ManuscriptAudit.Paper5OrdinaryThirtyOneCertificates
 open Polynomial CubicFractionCertificates CubicFractionCoordinateRules
 open Fraction
 
+noncomputable section
+
 def ofCoeffs (a : List (ZMod 31)) : (ZMod 31)[X] :=
   a.foldr (fun c f => C c + X * f) 0
 
@@ -69,6 +71,7 @@ theorem excluded_nonzero : ∀ f ∈ excluded, f ≠ 0 := by
   rcases h with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
+end
 end ManuscriptAudit.Paper5OrdinaryThirtyOneCertificates
 
 open Lean Elab Command in

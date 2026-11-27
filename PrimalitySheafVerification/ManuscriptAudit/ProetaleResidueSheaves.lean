@@ -76,7 +76,8 @@ theorem residueReduction_comp (n : ℕ) :
   intro f
   apply ContinuousMap.ext
   intro x
-  exact RingHom.congr_fun (PadicInt.zmod_cast_comp_toZModPow n (n + 1) (Nat.le_succ n)) (f x)
+  exact RingHom.congr_fun (PadicInt.zmod_cast_comp_toZModPow n (n + 1) (Nat.le_succ n))
+    ((show C(W.unop.left, ℤ_[ℓ]) from f) x)
 
 end
 end ManuscriptAudit.ProetaleResidueSheaves

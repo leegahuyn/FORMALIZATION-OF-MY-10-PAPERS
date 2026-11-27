@@ -69,7 +69,7 @@ theorem constantIso_natural (f : M ⟶ N) :
       (constantSheafContinuousMapIso X N).hom =
     (constantSheafContinuousMapIso X M).hom ≫ map X f := by
   let P := presheafToSheaf X.smallEtaleTopology AddCommGrpCat.{u}
-  let c := Functor.const (X.Etaleᵒᵖ)
+  let c : AddCommGrpCat.{u} ⥤ X.Etaleᵒᵖ ⥤ AddCommGrpCat.{u} := Functor.const (X.Etaleᵒᵖ)
   have h₁ : P.map (c.map f) ≫ P.map (constArrow X N) =
       P.map (constArrow X M) ≫ P.map (map X f).hom := by
     rw [← Functor.map_comp, ← Functor.map_comp]

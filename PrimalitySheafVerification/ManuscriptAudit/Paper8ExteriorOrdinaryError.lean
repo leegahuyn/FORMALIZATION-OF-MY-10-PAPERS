@@ -51,7 +51,7 @@ theorem normalizedError_recurrence {q a : ℝ}
   rw [rawError_eq_W_mul_normalized hq.le h₁ ha.le,
     rawError_eq_W_mul_normalized hq.le h₁ (mul_nonneg ha.le hq.le)] at hRaw
   have hMult : a ^ 4 * q ^ 2 * W q (a * q) = W q a * multiplier q a := by
-    rw [multiplier, mul_div_assoc]
+    rw [multiplier, ← mul_div_assoc]
     apply (eq_div_iff (by positivity : 1 + a * q ≠ 0)).mpr
     linear_combination (a ^ 3 * q ^ 2) * (W_scaled_shift hq h₁ ha)
   apply mul_left_cancel₀ hW

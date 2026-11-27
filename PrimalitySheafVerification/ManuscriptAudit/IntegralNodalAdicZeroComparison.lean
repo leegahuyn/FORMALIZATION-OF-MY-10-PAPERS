@@ -23,7 +23,7 @@ def properComparison (p ℓ : ℕ) [Fact p.Prime] [Fact ℓ.Prime] (hℓp : ℓ 
   by_cases hp : p = 2
   · subst p
     exact (properAtTwo ℓ hℓp 0 (Or.inl rfl)).trans e.symm
-  · have h : 2 < p := lt_of_le_of_ne (Fact.out : p.Prime).two_le hp.symm
+  · have h : 2 < p := lt_of_le_of_ne (Fact.out : p.Prime).two_le (fun h ↦ hp h.symm)
     exact (properAtOdd ℓ p h hℓp 0 (by decide)).trans e.symm
 
 end

@@ -9,6 +9,8 @@ namespace ManuscriptAudit.CubicFractionCoordinateRules
 open CubicFractionCertificates CubicNormalizedCoordinates
 open Fraction
 
+noncomputable section
+
 variable {k : Type*} [CommRing k]
 
 def secantFraction (u₁ v₁ u₂ v₂ : Fraction k) : Fraction k :=
@@ -85,6 +87,7 @@ theorem y_check {t : L} {u₁ v₁ u₃ m : Fraction k}
   refine ⟨valid_sub hM hv₁, ?_⟩
   rw [evaluate_sub hM hv₁, evaluate_mul, evaluate_sub hu₁ hu₃]
 
+end
 end ManuscriptAudit.CubicFractionCoordinateRules
 
 open Lean Elab Command in

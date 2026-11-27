@@ -30,6 +30,7 @@ private theorem one_guard_finite (f : k[X]) (hf : f ≠ 0) :
     exact (mul_ne_zero (leadingCoeff_ne_zero.mpr hq) hlt) hlc.symm
   refine (finite_setOf_isRoot hne).subset ?_
   intro x hx
+  change f.eval₂ (algebraMap k L) (x ^ 3) = 0 at hx
   change (q.comp (X ^ 3)).eval x = 0
   rw [eval_comp, eval_pow, eval_X]
   simpa only [q, eval_map] using hx

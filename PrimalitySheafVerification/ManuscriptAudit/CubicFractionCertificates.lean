@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -8,6 +10,8 @@ import Mathlib.Tactic.Ring
 namespace ManuscriptAudit.CubicFractionCertificates
 
 open Polynomial
+
+noncomputable section
 
 structure Fraction (k : Type*) [CommRing k] where
   num : k[X]
@@ -148,6 +152,7 @@ theorem evaluate_pow (f : Fraction k) (x : L) (n : ℕ) : (f ^ n).evaluate x = f
   rw [eval₂_pow, eval₂_pow, div_pow]
 
 end Fraction
+end
 end ManuscriptAudit.CubicFractionCertificates
 
 open Lean Elab Command in
