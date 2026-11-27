@@ -57,7 +57,7 @@ theorem affine_cokernel_cechAcyclic {A B : C (S := S)}
     let W := CechNerveLowDegrees.N f k
     let C₀ := S₁.map (HomologicalComplex.eval Ab (.up ℕ) k)
     change C₀.ShortExact
-    have hExact : C₀.Exact := ShortComplex.ab_exact_iff_function_exact.mpr
+    have hExact : C₀.Exact := (ShortComplex.ab_exact_iff_function_exact C₀).mpr
       (SheafShortExactSections.sections_exact S₀ hS₀ W)
     have hMono : Mono C₀.f := (AddCommGrpCat.mono_iff_injective _).mpr
       (SheafSectionDifference.section_injective i W)

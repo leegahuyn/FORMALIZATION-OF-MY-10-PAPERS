@@ -44,7 +44,7 @@ def levelBasis (A : ZMod 5) (hA : A ≠ 0) (n : ℕ) :
 
 private theorem trace_zero (A : ZMod 5) (hA : A ≠ 0) (n : ℕ) :
     LinearMap.trace (ZMod (2 ^ (n + 1))) (Level L A n) (action L A n) = 0 := by
-  have hcard : Fintype.card (ZMod 5) % 3 = 2 := by rw [ZMod.card]; decide
+  have hcard : Fintype.card (ZMod 5) % 3 = 2 := by rw [ZMod.card]
   exact actual_trace_zero (ZMod 5) L (by decide) (by decide) hA hcard (n + 1)
 
 private theorem level_nontrivial (n : ℕ) : Nontrivial (ZMod (2 ^ (n + 1))) := by

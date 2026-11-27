@@ -34,7 +34,8 @@ theorem heightAmplitude_deriv (Y y : ℝ) :
     deriv (heightAmplitude Y) y = ((deriv cuspBump (y - Y) : ℝ) : ℂ) := by
   have h := ((bump_differentiable (y - Y)).hasDerivAt.comp y
     ((hasDerivAt_id y).sub_const Y)).ofReal_comp
-  simpa [Function.comp_def, heightAmplitude, heightTest] using h.deriv
+  change deriv (fun t : ℝ => (cuspBump (t - Y) : ℂ)) y = _
+  simpa [Function.comp_def] using h.deriv
 
 theorem heightAmplitude_second (Y y : ℝ) :
     deriv (deriv (heightAmplitude Y)) y = ((deriv (deriv cuspBump) (y - Y) : ℝ) : ℂ) := by

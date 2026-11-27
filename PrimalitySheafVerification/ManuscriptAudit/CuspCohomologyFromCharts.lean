@@ -25,10 +25,12 @@ private def restrictedConstantEquiv {U X : Scheme.{0}} (j : U ⟶ X) [IsOpenImme
   ((Sheaf.functorH U.smallEtaleTopology d).mapIso
     ((restrictionConstantIso j).app M)).addCommGroupIsoToAddEquiv
 
-variable (K : Type) [Field K] [IsAlgClosed K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (K : Type) [Field K] [kClosed : IsAlgClosed K] (p : ℕ) [pPrime : Fact p.Prime] [pChar : CharP K p]
 
 abbrev line := Spec (CommRingCat.of (Polynomial K))
 abbrev torus := Spec (CommRingCat.of (LaurentPolynomial K))
+
+include kClosed p pPrime pChar
 
 theorem projectiveCusp_H_succ_subsingleton (M : AddCommGrpCat.{0}) (n : ℕ)
     (hLine : Subsingleton (Sheaf.H (constantOn (line K) M) n))

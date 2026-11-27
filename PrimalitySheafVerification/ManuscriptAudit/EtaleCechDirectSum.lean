@@ -38,7 +38,7 @@ theorem cochainExactAt_succ_iff (K : CochainComplex Ab ℕ) (n : ℕ) :
     K.ExactAt (n + 1) ↔ ∀ z : K.X (n + 1), K.d (n + 1) (n + 2) z = 0 →
       ∃ y : K.X n, K.d n (n + 1) y = z := by
   exact (K.exactAt_iff' (i := n) (j := n + 1) (k := n + 2)
-    (CochainComplex.prev_nat_succ n) (CochainComplex.next ℕ (n + 1))).trans ShortComplex.ab_exact_iff
+    (CochainComplex.prev_nat_succ n) (CochainComplex.next ℕ (n + 1))).trans (ShortComplex.ab_exact_iff (K.sc' n (n + 1) (n + 2)))
 
 variable {I : Type} (P : I → Cᵒᵖ ⥤ Ab)
 
@@ -69,15 +69,16 @@ theorem directSum_exactAt_succ (n : ℕ) (h : ∀ a, (Cech f (P a)).ExactAt (n +
   intro a
   rw [d_component f P n (n + 1) a w]
   by_cases ha : a ∈ z.support
-  · change (Cech f (P a)).d n (n + 1)
-      ((DFinsupp.mk z.support (fun i ↦ y i.val)) a) = z a
-    rw [DFinsupp.mk_of_mem ha, hy]
-  · change ((Cech f (P a)).d n (n + 1)).hom
-      ((DFinsupp.mk z.support (fun i ↦ y i.val)) a) = z a
-    rw [DFinsupp.mk_of_notMem ha, map_zero]
-    symm
-    by_contra hza
-    exact ha ((DFinsupp.mem_support_toFun z a).mpr hza)
+  · have hw : w a = y a := DFinsupp.mk_of_mem
+      (β := fun i ↦ (P i).obj (degree f n)) (x := fun i ↦ y i.val) ha
+    rw [hw, hy]
+  · have hw : w a = 0 := DFinsupp.mk_of_notMem
+      (β := fun i ↦ (P i).obj (degree f n)) (x := fun i ↦ y i.val) ha
+    have hz₀ : z a = 0 := by
+      by_contra hza
+      exact ha ((DFinsupp.mem_support_toFun z a).mpr hza)
+    rw [hw]
+    exact ((Cech f (P a)).d n (n + 1)).hom.map_zero.trans hz₀.symm
 
 /-- Positive Čech cohomology of the actual finite-support affine étale
 sheaf vanishes whenever that of its individual summands vanishes. -/

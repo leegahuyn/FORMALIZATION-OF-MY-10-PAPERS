@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-! Actual abelian sheaves of independently restricted point coefficients. -/

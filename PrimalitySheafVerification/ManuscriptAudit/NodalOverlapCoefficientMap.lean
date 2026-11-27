@@ -18,15 +18,19 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 
+private theorem overlap_away_mapped :
+    IsLocalization.Away (zRingMap R S (yZ R)) (zOverlap S) := by
+  rw [zRingMap_y]
+  infer_instance
+
 def overlapRingMap : zOverlap R →+* zOverlap S := by
-  letI : IsLocalization.Away (zRingMap R S (yZ R)) (zOverlap S) := by
-    rw [zRingMap_y]
-    infer_instance
+  letI := overlap_away_mapped R S
   exact IsLocalization.Away.map _ _ (zRingMap R S) (yZ R)
 
 theorem overlapRingMap_algebraMap (a : zChart R) :
     overlapRingMap R S (algebraMap (zChart R) (zOverlap R) a) =
       algebraMap (zChart S) (zOverlap S) (zRingMap R S a) := by
+  letI := overlap_away_mapped R S
   unfold overlapRingMap IsLocalization.Away.map
   rw [IsLocalization.map_eq]
 

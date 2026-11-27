@@ -25,6 +25,7 @@ private theorem differential (n : ℕ) :
     (Cech f P).d n (n + 1) =
       ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • P.map (face f n i).op := by
   let A := (Arrow.mk f).cechNerve.rightOp ⋙ P
+  change (AlternatingCofaceMapComplex.obj A).d n (n + 1) = _
   exact CochainComplex.of_d (fun i : ℕ ↦ A.obj ⦋i⦌)
     (AlternatingCofaceMapComplex.objD A) n
 

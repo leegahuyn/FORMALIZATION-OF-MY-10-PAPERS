@@ -15,6 +15,7 @@ variable (m : ℕ) (G : Type*) [AddCommGroup G]
 variable (B : Module.Basis (Fin 2) (ZMod (m ^ 1)) (PowerTorsion m G 1))
 variable (hm : 0 < m) (h : Function.Surjective (fun P : G => m • P))
 
+include B in
 private theorem first_card :
     Nat.card (Torsion m G) = m * m := by
   calc

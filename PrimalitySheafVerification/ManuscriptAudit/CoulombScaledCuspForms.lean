@@ -37,10 +37,13 @@ theorem amplitude_deriv (r y : ℝ) :
     deriv (amplitude r) y = deriv cuspBump (scaleHeight r y) * r := by
   have hb : Differentiable ℝ cuspBump :=
     (contDiff_infty.mp cuspBump_smooth 1).differentiable (by decide)
+  have hMul : HasDerivAt (fun t : ℝ => r * t) r y := by
+    simpa only [id_eq, mul_one] using (hasDerivAt_id y).const_mul r
   have ht : HasDerivAt (scaleHeight r) r y := by
-    simpa [scaleHeight, id_eq] using (((hasDerivAt_id y).const_mul r).add_const (shift r))
-  simpa [amplitude, Function.comp_def] using
-    (((hb (scaleHeight r y)).hasDerivAt).comp y ht).deriv
+    change HasDerivAt (fun t : ℝ => r * t + shift r) r y
+    exact hMul.add_const (shift r)
+  change deriv (fun t => cuspBump (scaleHeight r t)) y = _
+  exact (((hb (scaleHeight r y)).hasDerivAt).comp y ht).deriv
 
 theorem oneForm_coclosed (r x y : ℝ) : codifferential (oneForm r) x y = 0 := by
   rw [codifferential_eq_coordinateDivergence]

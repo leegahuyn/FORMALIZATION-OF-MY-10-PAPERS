@@ -22,9 +22,6 @@ universe u
 
 variable {X : Scheme.{u}} {U : X.AffineEtale}
 
-private abbrev underlying (X : Scheme.{u}) : X.AffineEtale ⥤ Scheme.{u} :=
-  Scheme.AffineEtale.Spec X ⋙ Scheme.Etale.forget X ⋙ Over.forget X
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 3400000 in
@@ -104,9 +101,10 @@ theorem exists_singleton_cover_lift
         rw [CategoryTheory.Functor.map_id, Category.id_comp]
         exact hComponent.symm)
     have hArrow : e.hom ≫ f k.down = vc ≫ v := by
-      apply (underlying X).map_injective
-      change Spec.map (𝟙 (B k)) ≫ Spec.map (a k) = Spec.map ev ≫ Spec.map aPi
-      rw [Spec.map_id, Category.id_comp, ← Spec.map_comp, hm]
+      apply MorphismProperty.CostructuredArrow.Hom.ext
+      apply Quiver.Hom.unop_inj
+      change a k ≫ 𝟙 (B k) = aPi ≫ ev
+      exact (Category.comp_id (a k)).trans hm.symm
     obtain ⟨z, hz⟩ := hf k.down
     refine ⟨P.obj.map e.hom.op z, ?_⟩
     change q.hom.app (op Vc) (P.obj.map e.hom.op z) = Q.obj.map vc.op (Q.obj.map v.op x)

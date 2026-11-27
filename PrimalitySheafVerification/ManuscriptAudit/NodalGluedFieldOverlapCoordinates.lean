@@ -23,11 +23,17 @@ set_option synthInstance.maxHeartbeats 16000
 universe u
 variable (K : Type u) [Field K]
 
+private theorem overlap_powers :
+    Submonoid.map (zChartEquiv K) (Submonoid.powers (yZ K)) =
+      Submonoid.powers (NodalAwayNormalization.nodeY K) := by
+  rw [Submonoid.map_powers]
+  exact congrArg Submonoid.powers (zChartEquiv_y K)
+
 private def zOverlapToCoordinates :
     zOverlap K ≃ₐ[K] Localization.Away (NodalAwayNormalization.nodeY K) :=
-  IsLocalization.algEquivOfAlgEquiv _ _ (zChartEquiv K) (by
-    rw [Submonoid.map_powers]
-    exact congrArg Submonoid.powers (zChartEquiv_y K))
+  IsLocalization.algEquivOfAlgEquiv (M := Submonoid.powers (yZ K))
+    (T := Submonoid.powers (NodalAwayNormalization.nodeY K)) _ _
+    (zChartEquiv K) (overlap_powers K)
 
 /-- The overlap of the two glued charts is the actual normalized parameter chart. -/
 def zOverlapEquiv : zOverlap K ≃ₐ[K] parameterRing K :=
@@ -38,15 +44,11 @@ theorem zOverlapEquiv_algebraMap (a : zChart K) :
       zParameter K (zChartEquiv K a) := by
   unfold zOverlapEquiv
   rw [AlgEquiv.trans_apply]
-  have h := IsLocalization.algEquivOfAlgEquiv_eq
-    (h := zChartEquiv K) (S := zOverlap K)
-    (Q := Localization.Away (NodalAwayNormalization.nodeY K))
-    (show Submonoid.map (zChartEquiv K) (Submonoid.powers (yZ K)) =
-      Submonoid.powers (NodalAwayNormalization.nodeY K) from by
-        rw [Submonoid.map_powers]
-        exact congrArg Submonoid.powers (zChartEquiv_y K)) a
-  change zOverlapToCoordinates K
-    (algebraMap (zChart K) (zOverlap K) a) = _ at h
+  have h : zOverlapToCoordinates K (algebraMap (zChart K) (zOverlap K) a) =
+      algebraMap (NodalConductor.coordinates K)
+        (Localization.Away (NodalAwayNormalization.nodeY K)) (zChartEquiv K a) :=
+    IsLocalization.algEquivOfAlgEquiv_eq (h := zChartEquiv K)
+      (overlap_powers K) a
   rw [h]
   change Localization.awayMap (NodalConductor.coordinates K).val.toRingHom
     (NodalAwayNormalization.nodeY K)

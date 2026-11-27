@@ -44,7 +44,8 @@ theorem quotient_exactAt_succ (n : ℕ)
   change S.g.f (n + 1) y = z at hy
   have hx : S.g.f (n + 2) (S.X₂.d (n + 1) (n + 2) y) = 0 := by
     rw [← commuting, hy, hz]
-  obtain ⟨u, hu⟩ := (ShortComplex.ab_exact_iff.mp (h (n + 2)).exact) _ hx
+  obtain ⟨u, hu⟩ := ((ShortComplex.ab_exact_iff (atDegree S (n + 2))).mp
+    (h (n + 2)).exact) _ hx
   change S.f.f (n + 2) u = S.X₂.d (n + 1) (n + 2) y at hu
   have hud : S.X₁.d (n + 2) (n + 3) u = 0 := by
     apply (h (n + 3)).ab_injective_f

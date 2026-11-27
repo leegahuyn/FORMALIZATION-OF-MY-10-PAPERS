@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 import PrimalitySheafVerification.ManuscriptAudit.Paper9PrincipalThetaStrip
 
 /-! The actual principal level-four theta is a difference of thetas at two scales. -/
@@ -6,7 +7,6 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper9PrincipalThetaStrip
 namespace ManuscriptAudit.Paper9PrincipalThetaScales
 
 open Complex Set Paper9PrincipalThetaStrip
-open scoped UpperHalfPlane
 
 noncomputable section
 

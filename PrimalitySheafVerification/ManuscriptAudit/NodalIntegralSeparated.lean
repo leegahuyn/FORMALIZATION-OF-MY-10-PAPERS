@@ -75,11 +75,11 @@ private theorem cross_forward_closed :
   have hD : e.hom ≫ intersectionToProduct (toBase R) (chartIn R false) (chartIn R true) ≫
       p.hom = NodalOverlapDiagonal.toProduct R := by
     apply pullback.hom_ext
-    · simp only [Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_fst,
+    · simp only [p, Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_fst,
         pullback.lift_fst_assoc, Category.comp_id, intersectionToProduct,
         NodalOverlapDiagonal.toProduct]
       exact hz
-    · simp only [Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_snd,
+    · simp only [p, Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_snd,
         pullback.lift_snd_assoc, Category.comp_id, intersectionToProduct,
         NodalOverlapDiagonal.toProduct]
       exact hy

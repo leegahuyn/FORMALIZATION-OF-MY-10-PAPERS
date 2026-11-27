@@ -17,8 +17,9 @@ private theorem preimage_quotient_image (A : Set ℍ) :
   constructor
   · rintro ⟨w, hw, hq⟩
     obtain ⟨g, hg⟩ : MulAction.orbitRel GammaTwoEffective ℍ w z := Quotient.exact hq
+    have hgz : g • z = w := hg
     refine mem_iUnion.2 ⟨g⁻¹, ?_⟩
-    rw [mem_smul_set_iff_inv_smul_mem, inv_inv, hg]
+    rw [mem_smul_set_iff_inv_smul_mem, inv_inv, hgz]
     exact hw
   · rintro hz
     obtain ⟨g, hg⟩ := mem_iUnion.1 hz

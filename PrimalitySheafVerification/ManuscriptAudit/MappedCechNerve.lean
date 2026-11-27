@@ -34,7 +34,7 @@ def componentIso (n : ℕ) :
 
 private theorem component_hom_projection (n : ℕ) (j : WidePullbackShape (Fin (n + 1))) :
     (componentIso F f n).hom ≫ limit.π (diagram (F.map f) n) j =
-      F.map (limit.π (diagram f n) j) := by
+      F.map (limit.π (diagram f n) j) ≫ (diagramIso F f n).hom.app j := by
   let L := isLimitOfPreserves F (limit.isLimit (diagram f n))
   let M := limit.isLimit (diagram f n ⋙ F)
   let e := diagramIso F f n
@@ -46,20 +46,19 @@ private theorem component_hom_projection (n : ℕ) (j : WidePullbackShape (Fin (
         e.hom.app j := by
       change ((L.conePointUniqueUpToIso M) ≪≫ HasLimit.isoOfNatIso e).hom ≫ _ = _
       rw [Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π, ← Category.assoc]
-    _ = F.map (limit.π (diagram f n) j) ≫ e.hom.app j :=
-      congrArg (fun a ↦ a ≫ e.hom.app j) h
-    _ = _ := by
-      cases j <;> simp [e, diagramIso, WidePullbackShape.diagramIsoWideCospan]
+    _ = _ := congrArg (fun a ↦ a ≫ e.hom.app j) h
 
 private theorem component_hom_π (n : ℕ) (i : Fin (n + 1)) :
     (componentIso F f n).hom ≫ WidePullback.π (fun _ ↦ F.map f) i =
-      F.map (WidePullback.π (fun _ ↦ f) i) :=
-  component_hom_projection F f n (some i)
+      F.map (WidePullback.π (fun _ ↦ f) i) := by
+  simpa [diagramIso, WidePullbackShape.diagramIsoWideCospan] using
+    component_hom_projection F f n (some i)
 
 private theorem component_hom_base (n : ℕ) :
     (componentIso F f n).hom ≫ WidePullback.base (fun _ : Fin (n + 1) ↦ F.map f) =
-      F.map (WidePullback.base (fun _ : Fin (n + 1) ↦ f)) :=
-  component_hom_projection F f n none
+      F.map (WidePullback.base (fun _ : Fin (n + 1) ↦ f)) := by
+  simpa [diagramIso, WidePullbackShape.diagramIsoWideCospan] using
+    component_hom_projection F f n none
 
 private theorem cechMap_π {m n : SimplexCategoryᵒᵖ} (g : m ⟶ n)
     (i : Fin (n.unop.len + 1)) :

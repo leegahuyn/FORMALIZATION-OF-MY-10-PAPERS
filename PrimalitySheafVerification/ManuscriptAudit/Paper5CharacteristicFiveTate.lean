@@ -19,16 +19,19 @@ variable (L : Type*) [Field L] [Algebra (ZMod 5) L] [DecidableEq L] [IsAlgClosed
 
 private theorem printedAffine_eq (A : ZMod 5) :
     Paper5FrobeniusModTwo.printedAffine 5 A = Curve A := by
-  simp [Paper5FrobeniusModTwo.printedAffine, paper5TraceCurve, Curve, CubicAffine, shortCubic,
-    ZMod.natCast_self]
+  have h5 : (5 : ZMod 5) = 0 := by decide
+  simp [Paper5FrobeniusModTwo.printedAffine, paper5TraceCurve, Curve, CubicAffine, shortCubic, h5]
 
 private theorem point_square {A : ZMod 5} (hA : A ≠ 0) (P : GeometricPoints 5 L A) :
     pointFrobenius 5 L A (pointFrobenius 5 L A P) = -((5 : ℕ) • P) := by
-  change WeierstrassFrobeniusFixed.frobeniusOnPoints 5 L _
-      (WeierstrassFrobeniusFixed.frobeniusOnPoints 5 L _ P) = _
-  revert P
-  rw [printedAffine_eq]
-  exact Paper5CharacteristicFiveFrobenius.frobenius_sq_eq_neg_five L hA
+  let square_property (W : Affine (ZMod 5)) : Prop :=
+    ∀ Q : (W.baseChange L).Point,
+      WeierstrassFrobeniusFixed.frobeniusOnPoints 5 L W
+        (WeierstrassFrobeniusFixed.frobeniusOnPoints 5 L W Q) = -((5 : ℕ) • Q)
+  have hSquare : square_property (Curve A) :=
+    Paper5CharacteristicFiveFrobenius.frobenius_sq_eq_neg_five L hA
+  have hEq := congrArg square_property (printedAffine_eq A)
+  exact (Eq.mpr hEq hSquare) P
 
 /-- The square of native Frobenius equals [-5] on the actual two-adic Tate module. -/
 theorem square_on_tate {A : ZMod 5} (hA : A ≠ 0) (x : Tate (GeometricPoints 5 L A)) :

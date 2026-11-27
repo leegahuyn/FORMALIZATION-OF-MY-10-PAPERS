@@ -49,9 +49,9 @@ private theorem openPiece_H_succ_subsingleton (p : P K) (n : ℕ) :
     j (x K p) (AddCommGrpCat.of ℤ) n
   exact ⟨fun a b ↦ e.injective (h.elim _ _)⟩
 
+set_option maxHeartbeats 2200000 in
 /-- The native restricted divisor sheaf has zero H¹ on every affine
 open of the affine line. -/
-set_option maxHeartbeats 2200000 in
 theorem restrictedDivisor_HOne_subsingleton :
     Subsingleton (Sheaf.H ((restriction j).obj (divisorSheaf K)) 1) := by
   let D := (affineOpenRestriction K R j).obj (affineDivisorSheaf K)

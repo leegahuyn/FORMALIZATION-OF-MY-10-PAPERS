@@ -43,10 +43,11 @@ def zeroIso : N f 0 ≅ U where
   hom_inv_id := by
     apply WidePullback.hom_ext
     · intro i
+      change Fin 1 at i
       have hi : i = 0 := Subsingleton.elim _ _
       subst i
-      rw [Category.assoc, WidePullback.lift_π, Category.comp_id, Category.id_comp]
-    · rw [Category.assoc, WidePullback.lift_base, WidePullback.π_arrow, Category.id_comp]
+      rw [Category.assoc, WidePullback.lift_π, Category.comp_id, Category.id_comp] <;> rfl
+    · rw [Category.assoc, WidePullback.lift_base, WidePullback.π_arrow, Category.id_comp] <;> rfl
   inv_hom_id := WidePullback.lift_π _ _ _ _ _
 
 /-- The ordered pair of vertices of a higher nerve object. -/
@@ -83,8 +84,10 @@ def doubleSection : Double f ⟶ N f 1 :=
 theorem doubleSection_pair :
     doubleSection f ≫ pair f 1 0 1 = 𝟙 (Double f) := by
   apply pullback.hom_ext
-  · rw [Category.assoc, pair_first, doubleSection, WidePullback.lift_π, Category.id_comp] <;> rfl
-  · rw [Category.assoc, pair_second, doubleSection, WidePullback.lift_π, Category.id_comp] <;> rfl
+  · rw [Category.assoc, pair_first, Category.id_comp]
+    exact WidePullback.lift_π (fun _ : Fin 2 ↦ f) _ _ _ 0
+  · rw [Category.assoc, pair_second, Category.id_comp]
+    exact WidePullback.lift_π (fun _ : Fin 2 ↦ f) _ _ _ 1
 
 /-- The degree-two nerve object maps to the iterated triple pullback. -/
 def triple : N f 2 ⟶ Triple f :=

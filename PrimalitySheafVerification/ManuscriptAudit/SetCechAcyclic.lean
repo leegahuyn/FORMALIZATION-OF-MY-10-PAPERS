@@ -48,10 +48,12 @@ private def cochainsIsoUnop : cochains f P ≅ (chains f P).unop :=
     obtain rfl : i + 1 = j := hij
     let X := (Arrow.mk f).cechNerve.rightOp ⋙ P
     let Y := SimplicialObject.Augmented.drop.obj (mappedAugmented f P)
-    have h₁ : (cochains f P).d i (i + 1) = AlternatingCofaceMapComplex.objD X i :=
-      CochainComplex.of_d _ _ i
-    have h₂ : (chains f P).d (i + 1) i = AlternatingFaceMapComplex.objD Y i :=
-      ChainComplex.of_d _ _ i
+    have h₁ : (cochains f P).d i (i + 1) = AlternatingCofaceMapComplex.objD X i := by
+      change (AlternatingCofaceMapComplex.obj X).d i (i + 1) = _
+      exact CochainComplex.of_d (fun k : ℕ ↦ X.obj ⦋k⦌) (AlternatingCofaceMapComplex.objD X) i
+    have h₂ : (chains f P).d (i + 1) i = AlternatingFaceMapComplex.objD Y i := by
+      change (AlternatingFaceMapComplex.obj Y).d (i + 1) i = _
+      exact ChainComplex.of_d (fun k : ℕ ↦ Y.obj (op ⦋k⦌)) (AlternatingFaceMapComplex.objD Y) i
     simp only [Iso.refl_hom, Category.id_comp, Category.comp_id, HomologicalComplex.unop_d, h₁, h₂]
     exact (AlternatingCofaceMapComplex.d_eq_unop_d X i).symm)
 

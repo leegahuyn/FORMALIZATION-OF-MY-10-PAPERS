@@ -24,6 +24,8 @@ abbrev rotation (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0)
     (hz : z ^ 3 = 1) (m : ℕ) : Module.End (ZMod m) (Torsion m (Curve A).Point) :=
   mapLinear m (rotate z hz (CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂ h₃ hA))
 
+include hz₁
+
 private theorem cycleIndependent :
     LinearIndependent (ZMod 3) ![horizontal h₂ h₃ hA D, rotation h₂ h₃ hA hz 3 (horizontal h₂ h₃ hA D)] := by
   let U := horizontal h₂ h₃ hA D
@@ -33,7 +35,8 @@ private theorem cycleIndependent :
   have hxO : x 0 = 0 := by simp [x, abscissa]
   have hxNeg (P : T₃ A) : x (-P) = x P := by simp only [x, map_neg, abscissa_neg]
   have hxS : x (S U) = z * D.x := by
-    change abscissa (rotate z hz _ (U : (Curve A).Point)) = _
+    change abscissa (rotate z hz
+      (CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂ h₃ hA) (U : (Curve A).Point)) = _
     rw [rotate_abscissa]
     exact congrArg (fun a : K => z * a) hxU
   have hz₀ : z ≠ 0 := by
@@ -41,7 +44,8 @@ private theorem cycleIndependent :
     simp [h] at hz
   have hnez : z * D.x ≠ D.x := by
     intro h
-    exact mul_ne_zero (sub_ne_zero.mpr hz₁) D.x_ne (by rw [sub_mul, one_mul, h, sub_self])
+    have hprod : (z - 1) * D.x = 0 := by rw [sub_mul, one_mul, h, sub_self]
+    exact mul_ne_zero (sub_ne_zero.mpr hz₁) D.x_ne hprod
   have hU : U ≠ 0 := by
     intro h
     exact D.x_ne (hxU.symm.trans ((congrArg x h).trans hxO))
