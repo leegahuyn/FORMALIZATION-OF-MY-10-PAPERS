@@ -102,7 +102,7 @@ theorem translated_theta_norm_strictly_smaller {y : ℝ} (hy : 0 < y) :
       have hTwo : ‖(2 : ℂ)‖ = 2 := by norm_num
       rw [hTwo]
     _ ≤ |1 - 2 * A| + 2 * R :=
-      add_le_add_left (mul_le_mul_of_nonneg_left hTail (by norm_num : (0 : ℝ) ≤ 2)) _
+      add_le_add le_rfl (mul_le_mul_of_nonneg_left hTail (by norm_num : (0 : ℝ) ≤ 2))
     _ < _ := by
       have h₀ : |1 - 2 * A| < 1 + 2 * A := abs_lt.mpr ⟨by linarith, by linarith⟩
       linarith

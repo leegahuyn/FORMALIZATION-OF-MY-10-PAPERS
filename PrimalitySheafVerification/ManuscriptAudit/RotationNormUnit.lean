@@ -19,7 +19,7 @@ def combination (r : R) (a b : ℤ) : R :=
 
 private theorem eval_linear (r : R) (a b : ℤ) :
     (aeval r : ℤ[X] →ₐ[ℤ] R) (C a + C b * X) = combination r a b := by
-  simp [combination, algebraMap_int_eq, zsmul_eq_mul]
+  simp [combination, zsmul_eq_mul]
 
 /-- Multiplying by the conjugate rotation combination gives scalar multiplication by its norm. -/
 theorem combination_mul_conjugate (r : R) (hr : r ^ 2 + r + 1 = 0) (a b : ℤ) :
@@ -37,8 +37,12 @@ theorem combination_mul_conjugate (r : R) (hr : r ^ 2 + r + 1 = 0) (a b : ℤ) :
           eval_linear r (a - b) (-b)]
     _ = f (C (a ^ 2 - a * b + b ^ 2) + C (-(b ^ 2)) * (X ^ 2 + X + 1)) := congrArg f h
     _ = _ := by
-      simpa only [f, map_add, map_mul, map_pow, map_one, aeval_C, aeval_X, hr, mul_zero,
-        add_zero, algebraMap_int_eq, Int.castRingHom_apply, zsmul_eq_mul, mul_one]
+      have hnorm : f (C (a ^ 2 - a * b + b ^ 2)) = (a ^ 2 - a * b + b ^ 2) • (1 : R) := by
+        simp [f, zsmul_eq_mul]
+      have hzero : f (X ^ 2 + X + 1) = 0 := by
+        simpa only [f, map_add, map_pow, map_one, aeval_X] using hr
+      rw [map_add f, map_mul f, hzero, mul_zero, add_zero]
+      exact hnorm
 
 theorem combination_commute (r : R) (a b c d : ℤ) :
     Commute (combination r a b) (combination r c d) := by

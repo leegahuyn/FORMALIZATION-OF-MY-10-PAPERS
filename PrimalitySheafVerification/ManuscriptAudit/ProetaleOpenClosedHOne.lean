@@ -35,10 +35,10 @@ private abbrev integers := (constantSheaf (J (X := X)) A).obj (AddCommGrpCat.of 
 
 private abbrev S := ShortComplex.mk (inc i M) (diagonal M i) (kernel.condition (diagonal M i))
 
-theorem closedSequence_shortExact : (S i M).ShortExact := by
+theorem closedSequence_shortExact : (S L i M).ShortExact := by
   letI := ProetaleClosedRestrictionEpi.restriction_epi i M
   exact ShortComplex.ShortExact.mk'
-    (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel (diagonal M i)))
+    (ShortComplex.exact_of_f_is_kernel (S L i M) (kernelIsKernel (diagonal M i)))
     inferInstance inferInstance
 
 theorem restriction_HZero_surjective : Function.Surjective (Sheaf.H.map (diagonal M i) 0) := by

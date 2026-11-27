@@ -35,14 +35,12 @@ variable {p : ℕ} [Fact p.Prime]
 /-- Reducing the centered printed cubic at its indexing prime kills its linear term. -/
 theorem paper_curve_eq (A : ZMod p) :
     paper5TraceCurve p A = shortCubic (0 : ZMod p) A := by
-  simp [paper5TraceCurve, shortCubic, ZMod.natCast_self]
+  simp [paper5TraceCurve, shortCubic]
 
 theorem small_cast_ne_zero (n : ℕ) (hn : 0 < n) (h : n < p) :
     (n : ZMod p) ≠ 0 := by
   intro he
-  have hm := (ZMod.natCast_eq_natCast_iff' n 0 p).mp he
-  rw [Nat.mod_eq_of_lt h, Nat.zero_mod] at hm
-  omega
+  exact (not_le_of_gt h) (Nat.le_of_dvd hn ((ZMod.natCast_eq_zero_iff n p).mp he))
 
 def prediction (c : Certificate p) (A : ZMod p) : ℤ :=
   predictedTrace c.z (A ^ c.k) c.a c.b
@@ -53,7 +51,7 @@ theorem prediction_eq_count (c : Certificate p) {A : ZMod p} (hA : A ≠ 0) :
   have h₂ : (2 : ZMod p) ≠ 0 := small_cast_ne_zero 2 (by decide) (by have := c.lower; omega)
   have h₃ : (3 : ZMod p) ≠ 0 := small_cast_ne_zero 3 (by decide) (by have := c.lower; omega)
   obtain ⟨j, hR, hPow⟩ := c.cover A hA
-  have hCard : Fintype.card (ZMod p) = 6 * c.k + 1 := by rw [ZMod.card, c.card]
+  have hCard : Fintype.card (ZMod p) = 6 * c.k + 1 := (ZMod.card p).trans c.card
   have hEq := CubicSexticResidueClass.signedTrace_eq_of_residue hk hCard h₂ h₃ hA hR hPow
   have hc := projective_count_eq_enumeratedFor (p := p) (A := c.representative j) c.lower hR
   rw [paper_curve_eq] at hc

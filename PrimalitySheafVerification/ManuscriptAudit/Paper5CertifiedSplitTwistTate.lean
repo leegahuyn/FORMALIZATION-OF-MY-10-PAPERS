@@ -58,7 +58,7 @@ def basis (hl : l = 2 ∨ l = 3) {A : ZMod p} (hA : A ≠ 0) :
 theorem trace_det (hF : IsNativeReference c L) (hl : l = 2 ∨ l = 3) {A : ZMod p} (hA : A ≠ 0) :
     LinearMap.trace ℤ_[l] (Tate l (Geometric (ZMod p) L A)) (action L l A) =
       (signedTrace A : ℤ_[l]) ∧ LinearMap.det (action L l A) = (p : ℤ_[l]) := by
-  have hCard : Fintype.card (ZMod p) = 6 * c.k + 1 := by rw [ZMod.card, c.card]
+  have hCard : Fintype.card (ZMod p) = 6 * c.k + 1 := (ZMod.card p).trans c.card
   obtain ⟨ht, hd⟩ := CubicSexticTwistCoefficientFormula.trace_det (A := (1 : ZMod p)) (B := A)
     (two_ne_zero c L) (three_ne_zero c L) one_ne_zero hA hCard c.primitive c.a c.b hF l hl
   rw [c.norm, Int.cast_natCast] at hd

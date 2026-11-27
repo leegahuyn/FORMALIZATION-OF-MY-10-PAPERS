@@ -78,9 +78,25 @@ theorem trace_det (hl : l = 2 ∨ l = 3) {A : ZMod 31} (hA : A ≠ 0) :
   have h₂ := numeral_ne_zero L 2 (by decide)
   have h₃ := numeral_ne_zero L 3 (by decide)
   have hF := Paper5OrdinaryThirtyOneFrobenius.native_eq_rotation L
+  let i := algebraMap (ZMod 31) L
+  have hRoot := primitive_five.map_of_injective i.injective
+  have rotation_congr (u v : L) (he : u = v) (hu : u ^ 3 = 1) (hv : v ^ 3 = 1) :
+      CubicCubeRotation.rotate u hu (discriminant_ne_zero L) =
+        CubicCubeRotation.rotate v hv (discriminant_ne_zero L) := by
+    subst v
+    rfl
+  have hRot : CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one
+      (discriminant_ne_zero L) = rotation L :=
+    rotation_congr _ _ (map_ofNat i 5) _ _
   have h := CubicSexticTwistCoefficientFormula.trace_det (A := (1 : ZMod 31)) (B := A)
     (k := 5) h₂ h₃ one_ne_zero hA (by rw [ZMod.card]) primitive_five 1 6
-    (by simpa only [map_ofNat, one_zsmul, ofNat_zsmul] using hF) l hl
+    (by
+      change Paper5OrdinaryThirtyOneFrobenius.nativeFrobenius L =
+        (1 : ℤ) • (1 : AddMonoid.End (Points L)) +
+          (6 : ℤ) • CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one
+            (discriminant_ne_zero L)
+      rw [one_zsmul, ofNat_zsmul, hRot]
+      exact hF) l hl
   obtain ⟨ht, hd⟩ := h
   change LinearMap.trace ℤ_[l] (Tate l (Geometric (ZMod 31) L A)) (action L l A) =
     (predictedTrace (5 : ZMod 31) ((A / 1) ^ 5) 1 6 : ℤ_[l]) at ht

@@ -51,14 +51,28 @@ private theorem scalar_square (r : ℤ_[ℓ]) :
 /-- The actual native integral conductor boundary is ℓ-adically linear. -/
 theorem boundary_smul (r a : ℤ_[ℓ]) :
     integralBoundary K h2 ℓ (r • a) = r • integralBoundary K h2 ℓ a := by
+  let c : D ℓ := (d ℓ).symm a
+  let z := boundary K h2 (D ℓ) c
+  let rD := map (discreteScalar ℓ r) continuous_of_discreteTopology (X K)
   change Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ) ((d ℓ).symm (r * a))) =
-    Sheaf.H.map (scalarMap (X K) ℓ r) 1
-      (Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ) ((d ℓ).symm a)))
-  rw [← Sheaf.H.map_comp_apply, scalar_square, Sheaf.H.map_comp_apply,
-    boundary_natural K h2 (discreteScalar ℓ r)]
-  change Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ) ((d ℓ).symm (r * a))) =
-    Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ) ((d ℓ).symm (r * d ℓ ((d ℓ).symm a))))
-  rw [AddEquiv.apply_symm_apply]
+    Sheaf.H.map (scalarMap (X K) ℓ r) 1 (Sheaf.H.map (toAdic K ℓ) 1 z)
+  symm
+  calc
+    _ = Sheaf.H.map (toAdic K ℓ ≫ scalarMap (X K) ℓ r) 1 z :=
+      (Sheaf.H.map_comp_apply (toAdic K ℓ) (scalarMap (X K) ℓ r) z).symm
+    _ = Sheaf.H.map (rD ≫ toAdic K ℓ) 1 z :=
+      congrArg (fun f : ProetaleContinuousDirectImageMaps.functions (D ℓ) (X K) ⟶
+        ProetaleContinuousDirectImageMaps.functions ℤ_[ℓ] (X K) ↦ Sheaf.H.map f 1 z)
+        (scalar_square K ℓ r)
+    _ = Sheaf.H.map (toAdic K ℓ) 1 (Sheaf.H.map rD 1 z) :=
+      Sheaf.H.map_comp_apply rD (toAdic K ℓ) z
+    _ = Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ) (discreteScalar ℓ r c)) :=
+      congrArg (fun v ↦ Sheaf.H.map (toAdic K ℓ) 1 v)
+        (boundary_natural K h2 (discreteScalar ℓ r) continuous_of_discreteTopology c)
+    _ = _ := by
+      change Sheaf.H.map (toAdic K ℓ) 1 (boundary K h2 (D ℓ)
+        ((d ℓ).symm (r * d ℓ ((d ℓ).symm a)))) = _
+      rw [AddEquiv.apply_symm_apply]
 
 variable [IsAlgClosed K] [NeZero (ℓ : K)]
 

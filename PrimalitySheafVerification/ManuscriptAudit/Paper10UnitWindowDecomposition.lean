@@ -55,7 +55,7 @@ theorem actual_tail_summable_and_bound (w : ι → ℝ)
   obtain ⟨hShell, hBound⟩ := grouped_tail_summable_and_bound S t w hR hC hB A hl hD hCount
   have hFinite (k : ℕ) : Summable (fun j : window t R S k => f j.val) := by
     letI := Fintype.ofEquiv {j : ι // j ∈ S k} (windowIndices t R S hS k).symm
-    exact summable_fintype _
+    exact (hasSum_fintype (fun j : window t R S k => f j.val)).summable
   have hEq (k : ℕ) : (∑' j : window t R S k, f j.val) = ∑ j ∈ S k, |w j| := by
     calc
       _ = ∑' j : {j : ι // j ∈ S k}, |w j.val| := by
@@ -64,8 +64,9 @@ theorem actual_tail_summable_and_bound (w : ι → ℝ)
   have hG : Summable g := by
     apply (summable_sigma_of_nonneg (fun _ => abs_nonneg _)).mpr
     refine ⟨hFinite, ?_⟩
-    simp_rw [show ∀ k : ℕ, (∑' j : window t R S k, g ⟨k,j⟩) =
-        ∑ j ∈ S k, |w j| from hEq]
+    change Summable (fun k : ℕ => ∑' j : window t R S k, f j.val)
+    rw [show (fun k : ℕ => ∑' j : window t R S k, f j.val) =
+        (fun k : ℕ => ∑ j ∈ S k, |w j|) from funext hEq]
     exact hShell
   have hF : Summable f := (e.summable_iff).mp hG
   refine ⟨hF, ?_⟩

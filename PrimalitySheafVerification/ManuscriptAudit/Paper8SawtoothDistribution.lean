@@ -16,8 +16,10 @@ theorem sawtooth_int_translate (x : ℚ) (z : ℤ) :
   rw [Int.floor_add_intCast, Int.cast_add]
   have h : x + (z : ℚ) = (⌊x⌋ : ℚ) + (z : ℚ) ↔ x = (⌊x⌋ : ℚ) :=
     ⟨add_right_cancel, fun he => congrArg (fun y : ℚ => y+z) he⟩
-  rw [h]
-  split <;> ring
+  by_cases he : x = (⌊x⌋ : ℚ)
+  · rw [if_pos (h.mpr he), if_pos he]
+  · rw [if_neg (fun e => he (h.mp e)), if_neg he]
+    ring
 
 theorem sawtooth_on_unit {x : ℚ} (hx : 0 ≤ x) (hx' : x < 1) :
     sawtooth x = x - 1/2 + if x = 0 then 1/2 else 0 := by
@@ -35,9 +37,11 @@ private theorem twice_sum_fin_vals (g : ℕ) :
     nlinarith only [ih]
 
 private theorem sum_linear_terms (g : ℕ) (hg : 0 < g) (x : ℚ) :
-    (∑ j : Fin g, (x+(j.val : ℚ))/(g : ℚ) - 1/2) = x - 1/2 := by
+    (∑ j : Fin g, ((x+(j.val : ℚ))/(g : ℚ) - 1/2)) = x - 1/2 := by
   have hgq : (0 : ℚ) < (g : ℚ) := by exact_mod_cast hg
-  rw [Finset.sum_sub_distrib, ← Finset.sum_div, Finset.sum_add_distrib]
+  rw [Finset.sum_sub_distrib]
+  simp only [div_eq_mul_inv]
+  rw [← Finset.sum_mul, Finset.sum_add_distrib]
   simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
   field_simp [hgq.ne']
   nlinarith only [twice_sum_fin_vals g]
@@ -78,7 +82,9 @@ theorem distribution (g : ℕ) (hg : 0 < g) {x : ℚ} (hx : 0 ≤ x) (hx' : x < 
         exact ⟨hx0, by exact_mod_cast hjz⟩
       · rintro ⟨he, hjz⟩
         simp [he, hjz]
-    rw [hz]
+    by_cases hZero : x = 0 ∧ j.val = 0
+    · rw [if_pos (hz.mpr hZero), if_pos hZero]
+    · rw [if_neg (fun he => hZero (hz.mp he)), if_neg hZero]
   simp_rw [hw]
   rw [Finset.sum_add_distrib, sum_linear_terms g hg x, sum_zero_correction g hg x,
     sawtooth_on_unit hx hx']

@@ -66,12 +66,21 @@ private theorem toAdic_reduction (n : ℕ) :
 theorem integralBoundary_reduction (n : ℕ) (a : ℤ_[ℓ]) :
     Sheaf.H.map (reduction K ℓ n) 1 (integralBoundary K h2 ℓ a) =
       finiteLabel K h2 ℓ n (PadicInt.toZModPow n a) := by
-  change Sheaf.H.map (reduction K ℓ n) 1 (Sheaf.H.map (toAdic K ℓ) 1
-    (boundary K h2 (D ℓ) ((discreteEquiv ℤ_[ℓ]).symm a))) = _
-  rw [← Sheaf.H.map_comp_apply, toAdic_reduction, boundary_natural]
-  change finiteLabel K h2 ℓ n (PadicInt.toZModPow n ((discreteEquiv ℤ_[ℓ])
-    ((discreteEquiv ℤ_[ℓ]).symm a))) = _
-  rw [AddEquiv.apply_symm_apply]
+  let c : D ℓ := (discreteEquiv ℤ_[ℓ]).symm a
+  let z := boundary K h2 (D ℓ) c
+  change Sheaf.H.map (reduction K ℓ n) 1 (Sheaf.H.map (toAdic K ℓ) 1 z) = _
+  calc
+    _ = Sheaf.H.map (toAdic K ℓ ≫ reduction K ℓ n) 1 z :=
+      (Sheaf.H.map_comp_apply (toAdic K ℓ) (reduction K ℓ n) z).symm
+    _ = Sheaf.H.map (map (discretely ℓ n) continuous_of_discreteTopology (X K)) 1 z :=
+      congrArg (fun f : ProetaleContinuousDirectImageMaps.functions (D ℓ) (X K) ⟶
+        finiteCoefficient (X K) ℓ n ↦ Sheaf.H.map f 1 z) (toAdic_reduction K ℓ n)
+    _ = finiteLabel K h2 ℓ n (discretely ℓ n c) :=
+      boundary_natural K h2 (discretely ℓ n) continuous_of_discreteTopology c
+    _ = _ := by
+      change finiteLabel K h2 ℓ n (PadicInt.toZModPow n
+        ((discreteEquiv ℤ_[ℓ]) ((discreteEquiv ℤ_[ℓ]).symm a))) = _
+      rw [AddEquiv.apply_symm_apply]
 
 theorem finiteLabel_transition (n : ℕ) (a : ZMod (ℓ ^ (n + 1))) :
     Sheaf.H.map (transition K ℓ n) 1 (finiteLabel K h2 ℓ (n + 1) a) =
