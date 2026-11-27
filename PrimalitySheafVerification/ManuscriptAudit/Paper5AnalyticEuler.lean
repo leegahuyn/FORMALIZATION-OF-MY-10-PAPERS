@@ -9,7 +9,7 @@ namespace ManuscriptAudit.Paper5AnalyticEuler
 
 open Nat DirichletEuler Paper5ActualHasseWeil EllipticQuadraticRadius
 open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
-open scoped BigOperators
+open scoped BigOperators Topology
 
 noncomputable section
 
@@ -127,6 +127,91 @@ theorem actual_euler_hasProd (A : ℤ) {s : ℂ} (hs : 3 / 2 < s.re) :
     (show (1 / 2 : ℝ) + 1 < s.re by linarith) (root_bound A)
   exact ⟨_, h.1.congr_fun fun p => (localFactor_eq_exp A p hs).symm, h.2⟩
 
+/-- The logarithmic derivative of the actual local reciprocal polynomial. -/
+def logarithmicDerivative (A : ℤ) (p : Primes) (s : ℂ) : ℂ := by
+  classical
+  let T := (p : ℂ) ^ (-s)
+  exact if Good A p then
+    Complex.log (p : ℂ) * (-(aAt A p : ℂ) * T + 2 * (p : ℂ) * T^2) /
+      (1 - (aAt A p : ℂ) * T + (p : ℂ) * T^2)
+  else 0
+
+private theorem sum_root_logarithmic_derivatives (A : ℤ) (p : Primes)
+    {s : ℂ} (hs : 3 / 2 < s.re) :
+    (∑ i : Fin 2, localLogDerivative p (root A i p) s) = logarithmicDerivative A p s := by
+  rw [Fin.sum_univ_two]
+  by_cases hg : Good A p
+  · let U := scaledRoot p (root A 0 p) s
+    let V := scaledRoot p (root A 1 p) s
+    let T := (p : ℂ) ^ (-s)
+    have h0 : 1 - U ≠ 0 := one_sub_scaledRoot_ne_zero A 0 p hs
+    have h1 : 1 - V ≠ 0 := one_sub_scaledRoot_ne_zero A 1 p hs
+    have hp := rootPair_spec A p hg
+    have hSum : U + V = (aAt A p : ℂ) * T := by
+      change (rootPair A p).1 * T + (rootPair A p).2 * T = _
+      rw [← add_mul, hp.1]
+    have hMul : U * V = (p : ℂ) * T^2 := by
+      change ((rootPair A p).1 * T) * ((rootPair A p).2 * T) = _
+      rw [← hp.2.1]
+      ring
+    have hDen : ((1 : ℂ) - U) * (1 - V) =
+        1 - (aAt A p : ℂ) * T + (p : ℂ) * T^2 := by
+      rw [← hSum, ← hMul]
+      ring
+    simp only [logarithmicDerivative, hg, if_true]
+    calc
+      _ = Complex.log (p : ℂ) * (-(U+V) + 2 * (U*V)) / ((1-U)*(1-V)) := by
+        change -(Complex.log (p : ℂ) * U / (1-U)) +
+          -(Complex.log (p : ℂ) * V / (1-V)) = _
+        field_simp [h0,h1] <;> ring
+      _ = _ := by rw [hSum, hMul, hDen] <;> ring
+  · simp [logarithmicDerivative, hg, localLogDerivative, root, rootPair, scaledRoot]
+
+theorem actual_euler_log_derivatives_abs_summable (A : ℤ) {s : ℂ}
+    (hs : 3 / 2 < s.re) :
+    Summable (fun p : Primes => ‖logarithmicDerivative A p s‖) := by
+  have hσ : (1 / 2 : ℝ) + 1 < s.re := by linarith
+  have h0 := paper7_dirichlet_log_derivatives_abs_summable (root A 0) hσ (root_bound A 0)
+  have h1 := paper7_dirichlet_log_derivatives_abs_summable (root A 1) hσ (root_bound A 1)
+  apply Summable.of_nonneg_of_le (fun _ => norm_nonneg _) _ (h0.add h1)
+  intro p
+  rw [← sum_root_logarithmic_derivatives A p hs, Fin.sum_univ_two]
+  exact norm_add_le _ _
+
+private def logSum (A : ℤ) (s : ℂ) : ℂ :=
+  ∑' p : Primes, ∑ i : Fin 2, (1 : ℂ) * (-Complex.log (1 - scaledRoot p (root A i p) s))
+
+private theorem actual_tprod_eq_exp_logSum (A : ℤ) {s : ℂ} (hs : 3 / 2 < s.re) :
+    (∏' p : Primes, localFactor A p s) = Complex.exp (logSum A s) := by
+  have hσ : (1 / 2 : ℝ) + 1 < s.re := by linarith
+  have h := paper7_dirichlet_scaled_euler_hasProd (root A) (fun _ : Fin 2 => 1)
+    hσ (root_bound A)
+  exact (h.1.congr_fun fun p => (localFactor_eq_exp A p hs).symm).tprod_eq
+
+/-- The actual Euler product differentiates in the open absolute-convergence half-plane. -/
+theorem actual_euler_hasDerivAt (A : ℤ) {s : ℂ} (hs : 3 / 2 < s.re) :
+    HasDerivAt (fun z : ℂ => ∏' p : Primes, localFactor A p z)
+      ((∏' p : Primes, localFactor A p s) * (∑' p : Primes, logarithmicDerivative A p s)) s := by
+  have hσ : (1 / 2 : ℝ) + 1 < s.re := by linarith
+  have h := paper7_dirichlet_log_series_hasDeriv (root A) (fun _ : Fin 2 => 1)
+    (fun _ => by simp) hσ (root_bound A)
+  have hD : HasDerivAt (logSum A) (∑' p : Primes, logarithmicDerivative A p s) s := by
+    simpa only [logSum, one_mul, sum_root_logarithmic_derivatives A _ hs] using h
+  have hopen : IsOpen {z : ℂ | (3 / 2 : ℝ) < z.re} :=
+    isOpen_lt continuous_const Complex.continuous_re
+  have hEq : (fun z : ℂ => ∏' p : Primes, localFactor A p z) =ᶠ[𝓝 s]
+      (fun z : ℂ => Complex.exp (logSum A z)) := by
+    filter_upwards [hopen.mem_nhds hs] with z hz
+    exact actual_tprod_eq_exp_logSum A hz
+  rw [actual_tprod_eq_exp_logSum A hs]
+  exact hD.cexp.congr_of_eventuallyEq hEq
+
+theorem actual_euler_differentiableOn (A : ℤ) :
+    DifferentiableOn ℂ (fun z : ℂ => ∏' p : Primes, localFactor A p z)
+      {z : ℂ | (3 / 2 : ℝ) < z.re} := by
+  intro s hs
+  exact (actual_euler_hasDerivAt A hs).differentiableAt.differentiableWithinAt
+
 end
 end ManuscriptAudit.Paper5AnalyticEuler
 
@@ -134,7 +219,10 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
-      ``ManuscriptAudit.Paper5AnalyticEuler.actual_euler_hasProd] do
+      ``ManuscriptAudit.Paper5AnalyticEuler.actual_euler_hasProd,
+      ``ManuscriptAudit.Paper5AnalyticEuler.actual_euler_log_derivatives_abs_summable,
+      ``ManuscriptAudit.Paper5AnalyticEuler.actual_euler_hasDerivAt,
+      ``ManuscriptAudit.Paper5AnalyticEuler.actual_euler_differentiableOn] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

@@ -41,7 +41,7 @@ theorem twisted_trace_first_variation_witness :
   rw [weighted_slot_values.1] at hn
   norm_num at hn
 
-def scalarEnergy (a t : ℝ) : ℝ := (1 + t * a)^2 / 2
+noncomputable def scalarEnergy (a t : ℝ) : ℝ := (1 + t * a)^2 / 2
 
 /-- Positive scalar energy with curvature variation (0+a). Dropping the
 second part gives a zero variation for all directions and misses the actual value. -/
@@ -51,9 +51,12 @@ theorem omitted_braid_stationarity_witness :
       ¬ (∀ a : ℝ, HasDerivAt (scalarEnergy a) 0 0) := by
   have h (a : ℝ) : HasDerivAt (scalarEnergy a) a 0 := by
     have h0 : HasDerivAt (fun _ : ℝ => (1 : ℝ)) 0 0 := hasDerivAt_const _ _
-    have h1 := ((hasDerivAt_id (0 : ℝ)).mul_const a)
-    have h2 := ((h0.add h1).pow 2).div_const (2 : ℝ)
-    convert h2 using 1 <;> simp [scalarEnergy, id] <;> ring
+    have h1 : HasDerivAt (fun t : ℝ => t * a) a 0 := by
+      simpa only [id, one_mul] using (hasDerivAt_id (0 : ℝ)).mul_const a
+    have hBase : HasDerivAt (fun t : ℝ => 1 + t * a) a 0 := by
+      simpa only [zero_add] using HasDerivAt.add h0 h1
+    have h2 := (HasDerivAt.mul hBase hBase).div_const (2 : ℝ)
+    convert h2 using 1 <;> simp [scalarEnergy, pow_two] <;> ring
   refine ⟨fun a => zero_mul a, h, ?_⟩
   intro hh
   exact one_ne_zero ((h 1).unique (hh 1))

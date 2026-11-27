@@ -67,6 +67,22 @@ theorem common_norm_ge {k : ℕ} (hk : 0 < k) {ζ Q : ℂ}
       mul_le_mul_of_nonneg_left hBound (mul_nonneg (by norm_num) hc)
     _ = _ := by ring
 
+theorem reflected_kernel_norm_lower {α β : ℝ} (hα : 0 ≤ α) (hα' : α ≤ 24)
+    (hβ : 0 ≤ β) (hβ' : β ≤ 24) {k : ℕ} (hk : 0 < k) {ζ Q : ℂ}
+    (hζ : ‖ζ‖ = 1) (hQ : ‖Q‖ ≤ 1 / 4) :
+    (4 / 5 : ℝ) * coefficient k 0 ≤ ‖phiAtQ (-α) (-β) k ζ Q‖ +
+      (4 * fixedRadius * bound fixedRadius) * decay k := by
+  have hEq : phiAtQ (-α) (-β) k ζ Q = common k ζ Q + singleRemainder (-α) (-β) k ζ Q :=
+    phi_eq_common_add_remainder α hβ hβ' hk hζ hQ
+  have hRem : ‖singleRemainder (-α) (-β) k ζ Q‖ ≤ (4 * fixedRadius * bound fixedRadius) * decay k :=
+    singleRemainder_norm_le hα hα' hβ hβ' hk hζ hQ
+  calc
+    _ ≤ ‖common k ζ Q‖ := common_norm_ge hk hζ hQ
+    _ = ‖phiAtQ (-α) (-β) k ζ Q - singleRemainder (-α) (-β) k ζ Q‖ := by
+      rw [hEq, add_sub_cancel_right]
+    _ ≤ ‖phiAtQ (-α) (-β) k ζ Q‖ + ‖singleRemainder (-α) (-β) k ζ Q‖ := norm_sub_le _ _
+    _ ≤ _ := add_le_add_left hRem ‖phiAtQ (-α) (-β) k ζ Q‖
+
 private theorem coefficient_not_summable : ¬ Summable (fun j : ℕ => coefficient (j + 1) 0) := by
   intro h
   have hC := (coefficient_pos (Nat.succ_pos 0) 0).ne'
@@ -79,6 +95,7 @@ private theorem coefficient_not_summable : ¬ Summable (fun j : ℕ => coefficie
   have hp := Real.summable_one_div_nat_rpow.1 ((summable_nat_add_iff 1).1 hP)
   norm_num at hp
 
+set_option maxHeartbeats 800000 in
 theorem inverse_nome_row_norm_not_summable {α β : ℝ} (hα : 0 ≤ α) (hα' : α ≤ 24)
     (hβ : 0 ≤ β) (hβ' : β ≤ 24) {Q : ℂ} (hQ : ‖Q‖ ≤ 1 / 4) :
     ¬ Summable (fun j : ℕ => rowNorm (j + 1)
@@ -97,16 +114,8 @@ theorem inverse_nome_row_norm_not_summable {α β : ℝ} (hα : 0 ≤ α) (hα' 
   have hk : 0 < k := Nat.succ_pos j
   have hPoint (d : Fin (2 * k)) :
       (4 / 5 : ℝ) * coefficient k 0 ≤
-        ‖phiAtQ (-α) (-β) k (inverseRoot k d) Q‖ + C * decay k := by
-    let ζ := inverseRoot k d
-    have hEq := phi_eq_common_add_remainder α hβ hβ' hk (inverseRoot_norm k d) hQ
-    calc
-      _ ≤ ‖common k ζ Q‖ := common_norm_ge hk (inverseRoot_norm k d) hQ
-      _ = ‖phiAtQ (-α) (-β) k ζ Q - singleRemainder (-α) (-β) k ζ Q‖ := by
-        rw [hEq, add_sub_cancel_right]
-      _ ≤ ‖phiAtQ (-α) (-β) k ζ Q‖ + ‖singleRemainder (-α) (-β) k ζ Q‖ := norm_sub_le _ _
-      _ ≤ _ := add_le_add_left
-        (singleRemainder_norm_le hα hα' hβ hβ' hk (inverseRoot_norm k d) hQ) _
+        ‖phiAtQ (-α) (-β) k (inverseRoot k d) Q‖ + C * decay k :=
+    reflected_kernel_norm_lower hα hα' hβ hβ' hk (inverseRoot_norm k d) hQ
   have hRow := div_le_div_of_nonneg_right
     (Finset.sum_le_sum (fun d (_ : d ∈ Finset.univ) => hPoint d)) (Nat.cast_nonneg k : (0 : ℝ) ≤ k)
   rw [rowNorm_constant hk, Finset.sum_add_distrib, add_div, rowNorm_constant hk] at hRow
@@ -134,7 +143,7 @@ theorem literal_lower_residue_norms_not_summable {z : ℂ} (hz : z.im < 0)
     rw [prefactor, norm_div, norm_pow, norm_neg, norm_one, one_pow, hCast]
   have hAlpha : (2 / 3 : ℝ) - 16 = -(16 - 2 / 3 : ℝ) := by ring
   unfold rowNorm
-  rw [div_eq_inv_mul, Finset.mul_sum]
+  conv_rhs => rw [div_eq_inv_mul, Finset.mul_sum]
   refine Finset.sum_congr rfl fun d _ => ?_
   change ‖prefactor k * residueWeight k d * (qParameter z * phi (2 / 3) 16 k (d.val : ℤ) z)‖ =
     (k : ℝ)⁻¹ * ‖phiAtQ (-(16 - 2 / 3 : ℝ)) (-16) k (inverseRoot k d) (qParameter (-z))‖

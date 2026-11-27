@@ -72,7 +72,7 @@ private theorem orderHom_natCast {a b : ℕ} (h : a = b) (n : ℕ) :
 private theorem coefficientOrderHom_eq_map {a b : ℕ} (h : a = b) :
     coefficientOrderHom j h = (extendedConstants j).map (orderHom h) := by
   subst b
-  simp only [coefficientOrderHom, orderHom, Functor.map_id]
+  exact ((extendedConstants j).map_id (M a)).symm
 
 /-- The existing section-tower transition is the image of the standard residue reduction. -/
 theorem coefficientTransition_eq_map_reduction (r : ℕ) :
@@ -87,7 +87,12 @@ theorem coefficientTransition_eq_map_reduction (r : ℕ) :
     rw [← ZMod.natCast_zmod_val z]
     change ZModReductionSequence.reduction (ℓ ^ r) ℓ
       (orderHom (pow_succ ℓ r) (z.val : ZMod (ℓ ^ (r + 1)))) = d (z.val : ZMod (ℓ ^ (r + 1)))
-    simp only [orderHom_natCast, map_natCast]
+    calc
+      _ = ZModReductionSequence.reduction (ℓ ^ r) ℓ (z.val : ZMod (ℓ ^ r * ℓ)) :=
+        congrArg (ZModReductionSequence.reduction (ℓ ^ r) ℓ)
+          (orderHom_natCast (pow_succ ℓ r) z.val)
+      _ = (z.val : ZMod (ℓ ^ r)) := map_natCast _ _
+      _ = _ := (map_natCast d z.val).symm
   unfold coefficientTransition
   rw [coefficientOrderHom_eq_map]
   change (extendedConstants j).map (orderHom (pow_succ ℓ r)) ≫

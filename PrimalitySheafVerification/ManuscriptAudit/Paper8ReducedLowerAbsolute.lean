@@ -17,15 +17,13 @@ open Paper8ContourGammaSeries (coefficient coefficient_pos)
 open Paper8ContourResidueWeights (prefactor residueWeight residueWeight_norm reducedResidues)
 open Paper8LocalContour (phi)
 open Paper8HolomorphicPartPhase (qParameter)
-open Paper8FixedContourSingle (common singleRemainder)
 open Paper8FixedContourDifference (phiAtQ)
 open Paper8FixedContourParameter (fixedRadius fixedRadius_pos)
 open Paper8ContourGammaRemainder (bound bound_nonneg)
 open Paper8ContourSignedDominance (decay decay_nonneg decay_tail_summable)
-open Paper8ReflectedContourSingle (phi_eq_common_add_remainder singleRemainder_norm_le)
 open Paper8LowerContourParameterLink (nome_mul_phi_eq_inverse_nome)
 open Paper8OddGcdOrderedLimit (coefficient_zero_rescale)
-open Paper8LiteralLowerAbsolute (inverseRoot inverseRoot_norm common_norm_ge)
+open Paper8LiteralLowerAbsolute (inverseRoot inverseRoot_norm reflected_kernel_norm_lower)
 
 noncomputable section
 
@@ -68,6 +66,7 @@ private theorem prime_coefficients_not_summable :
 def inverseNomeMass (α β : ℝ) (Q : ℂ) (k : ℕ) : ℝ :=
   (∑ d ∈ reducedResidues k, ‖phiAtQ (-α) (-β) k (inverseRoot k d) Q‖) / (k : ℝ)
 
+set_option maxHeartbeats 800000 in
 theorem inverse_nome_reduced_mass_not_summable {α β : ℝ} (hα : 0 ≤ α) (hα' : α ≤ 24)
     (hβ : 0 ≤ β) (hβ' : β ≤ 24) {Q : ℂ} (hQ : ‖Q‖ ≤ 1 / 4) :
     ¬ Summable (fun j : ℕ => inverseNomeMass α β Q (j + 1)) := by
@@ -93,16 +92,8 @@ theorem inverse_nome_reduced_mass_not_summable {α β : ℝ} (hα : 0 ≤ α) (h
   let b := (4 / 5 : ℝ) * coefficient k 0
   have hb : 0 ≤ b := mul_nonneg (by norm_num) (coefficient_pos hk 0).le
   have hPoint (d : Fin (2 * k)) :
-      b ≤ ‖phiAtQ (-α) (-β) k (inverseRoot k d) Q‖ + C * decay k := by
-    let ζ := inverseRoot k d
-    have hEq := phi_eq_common_add_remainder α hβ hβ' hk (inverseRoot_norm k d) hQ
-    calc
-      _ ≤ ‖common k ζ Q‖ := common_norm_ge hk (inverseRoot_norm k d) hQ
-      _ = ‖phiAtQ (-α) (-β) k ζ Q - singleRemainder (-α) (-β) k ζ Q‖ := by
-        rw [hEq, add_sub_cancel_right]
-      _ ≤ ‖phiAtQ (-α) (-β) k ζ Q‖ + ‖singleRemainder (-α) (-β) k ζ Q‖ := norm_sub_le _ _
-      _ ≤ _ := add_le_add_left
-        (singleRemainder_norm_le hα hα' hβ hβ' hk (inverseRoot_norm k d) hQ) _
+      b ≤ ‖phiAtQ (-α) (-β) k (inverseRoot k d) Q‖ + C * decay k :=
+    reflected_kernel_norm_lower hα hα' hβ hβ' hk (inverseRoot_norm k d) hQ
   have hRow := div_le_div_of_nonneg_right
     (Finset.sum_le_sum (fun d (_ : d ∈ s) => hPoint d)) hkR.le
   rw [Finset.sum_add_distrib, add_div] at hRow
@@ -151,7 +142,7 @@ theorem reduced_lower_residue_norms_not_summable {z : ℂ} (hz : z.im < 0)
     rw [prefactor, norm_div, norm_pow, norm_neg, norm_one, one_pow, hCast]
   have hAlpha : (2 / 3 : ℝ) - 16 = -(16 - 2 / 3 : ℝ) := by ring
   unfold inverseNomeMass
-  rw [div_eq_inv_mul, Finset.mul_sum]
+  conv_rhs => rw [div_eq_inv_mul, Finset.mul_sum]
   refine Finset.sum_congr rfl fun d _ => ?_
   change ‖prefactor k * residueWeight k d * (qParameter z * phi (2 / 3) 16 k (d.val : ℤ) z)‖ =
     (k : ℝ)⁻¹ * ‖phiAtQ (-(16 - 2 / 3 : ℝ)) (-16) k (inverseRoot k d) (qParameter (-z))‖

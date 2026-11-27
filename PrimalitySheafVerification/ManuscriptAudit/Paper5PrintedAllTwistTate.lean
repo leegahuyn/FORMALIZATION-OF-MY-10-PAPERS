@@ -36,8 +36,9 @@ private theorem split_prime_list :
       [7, 13, 19, 31, 37, 43, 61, 67, 73, 79, 97, 103, 109] := by decide
 
 abbrev action (p : ℕ) [Fact p.Prime] (L : Type*) [Field L] [Algebra (ZMod p) L]
-    [IsAlgClosed L] [DecidableEq L] (l : ℕ) [Fact l.Prime] (A : ZMod p) :=
-  endMap l (arithmeticPointFrobenius (ZMod p) L A)
+    [IsAlgClosed L] [DecidableEq L] (l : ℕ) [Fact l.Prime] (A : ZMod p) :
+    Module.End ℤ_[l] (Tate l (GeometricPoints (ZMod p) L A)) :=
+  endMap l (G := GeometricPoints (ZMod p) L A) (arithmeticPointFrobenius (ZMod p) L A)
 
 private def correct (p : ℕ) [Fact p.Prime] (L : Type*) [Field L] [Algebra (ZMod p) L]
     [IsAlgClosed L] [DecidableEq L] (l : ℕ) [Fact l.Prime] (A : ZMod p) : Prop :=
@@ -75,24 +76,30 @@ private theorem correct_split {p : ℕ} [primeRow : Fact p.Prime]
   · letI : Algebra (ZMod 7) L := algebraRow
     letI : CharP L 7 := charRow
     letI : Fact (Nat.Prime 7) := primeRow
-    refine ⟨Paper5OrdinarySevenTwistTate.tateBasis L l hl A hA, ?_,
+    have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 7) L A)) (action 7 L l A) =
+        (signedTrace A : ℤ_[l]) := by
+      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
+        Paper5OrdinarySevenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+    exact ⟨Paper5OrdinarySevenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinarySevenTwistTate.trace_det L l hl A hA).2⟩
-    simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-      Paper5OrdinarySevenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
   · letI : Algebra (ZMod 13) L := algebraRow
     letI : CharP L 13 := charRow
     letI : Fact (Nat.Prime 13) := primeRow
-    refine ⟨Paper5OrdinaryThirteenTwistTate.tateBasis L l hl A hA, ?_,
+    have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 13) L A)) (action 13 L l A) =
+        (signedTrace A : ℤ_[l]) := by
+      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
+        Paper5OrdinaryThirteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+    exact ⟨Paper5OrdinaryThirteenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinaryThirteenTwistTate.trace_det L l hl A hA).2⟩
-    simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-      Paper5OrdinaryThirteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
   · letI : Algebra (ZMod 19) L := algebraRow
     letI : CharP L 19 := charRow
     letI : Fact (Nat.Prime 19) := primeRow
-    refine ⟨Paper5OrdinaryNineteenTwistTate.tateBasis L l hl A hA, ?_,
+    have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 19) L A)) (action 19 L l A) =
+        (signedTrace A : ℤ_[l]) := by
+      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
+        Paper5OrdinaryNineteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+    exact ⟨Paper5OrdinaryNineteenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinaryNineteenTwistTate.trace_det L l hl A hA).2⟩
-    simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-      Paper5OrdinaryNineteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
   · letI : Algebra (ZMod 31) L := algebraRow
     letI : CharP L 31 := charRow
     letI : Fact (Nat.Prime 31) := primeRow

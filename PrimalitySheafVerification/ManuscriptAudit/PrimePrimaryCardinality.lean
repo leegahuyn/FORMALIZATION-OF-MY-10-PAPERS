@@ -14,9 +14,9 @@ variable (G : Type*) [AddCommGroup G] [Finite G]
 variable (l : ℕ) [Fact l.Prime]
 
 /-- The primary count depends only on the prime factors of the group order and annihilator. -/
-theorem card_torsion_of_annihilator (n d e : ℕ) (hd : ¬l ∣ d) (he : ¬l ∣ e)
-    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = (l ^ n) ^ 2 * e) :
-    Nat.card (Torsion (l ^ n) G) = (l ^ 2) ^ n := by
+theorem card_torsion_of_annihilator_pow (n m d e : ℕ) (hd : ¬l ∣ d) (he : ¬l ∣ e)
+    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = l ^ m * e) :
+    Nat.card (Torsion (l ^ n) G) = l ^ m := by
   let f : G →+ G := nsmulAddMonoidHom (l ^ n)
   have hprod : Nat.card G = Nat.card f.range * Nat.card f.ker := by
     rw [AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup f.ker,
@@ -45,21 +45,27 @@ theorem card_torsion_of_annihilator (n d e : ℕ) (hd : ¬l ∣ d) (he : ¬l ∣
   obtain ⟨k, hk'⟩ := IsPGroup.iff_card.mp hKernel
   have hk : Nat.card f.ker = l ^ k :=
     (Nat.card_congr Multiplicative.ofAdd).trans hk'
-  have hG : Nat.card G = l ^ (n * 2) * e := by
-    rw [hCard, pow_mul]
   have hl : l.Prime := Fact.out
-  have hDvdK : l ^ k ∣ l ^ (n * 2) := by
+  have hDvdK : l ^ k ∣ l ^ m := by
     have hc := ((hl.coprime_iff_not_dvd).mpr he).pow_left k
     apply hc.dvd_of_dvd_mul_right
-    rw [← hG, hprod, hk]
+    rw [← hCard, hprod, hk]
     exact dvd_mul_left _ _
-  have hDvdG : l ^ (n * 2) ∣ l ^ k := by
-    have hc := ((hl.coprime_iff_not_dvd).mpr hRange).pow_left (n * 2)
+  have hDvdG : l ^ m ∣ l ^ k := by
+    have hc := ((hl.coprime_iff_not_dvd).mpr hRange).pow_left m
     apply hc.dvd_of_dvd_mul_left
-    rw [← hk, ← hprod, hG]
+    rw [← hk, ← hprod, hCard]
     exact dvd_mul_right _ _
-  change Nat.card f.ker = (l ^ 2) ^ n
-  rw [hk, Nat.dvd_antisymm hDvdK hDvdG, ← pow_mul, Nat.mul_comm n 2]
+  change Nat.card f.ker = l ^ m
+  rw [hk, Nat.dvd_antisymm hDvdK hDvdG]
+
+/-- Square prime-power index specialization. -/
+theorem card_torsion_of_annihilator (n d e : ℕ) (hd : ¬l ∣ d) (he : ¬l ∣ e)
+    (hAnn : ∀ P : G, (l ^ n * d) • P = 0) (hCard : Nat.card G = (l ^ n) ^ 2 * e) :
+    Nat.card (Torsion (l ^ n) G) = (l ^ 2) ^ n := by
+  have h : Nat.card G = l ^ (n * 2) * e := by rw [hCard, pow_mul]
+  have hT := card_torsion_of_annihilator_pow G l n (n * 2) d e hd he hAnn h
+  simpa only [Nat.mul_comm n 2, pow_mul] using hT
 
 /-- The original square-order situation is a special case of the primary count. -/
 theorem card_torsion_of_square_annihilator (n d : ℕ) (hd : ¬l ∣ d)

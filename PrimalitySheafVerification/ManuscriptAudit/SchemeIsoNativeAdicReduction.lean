@@ -51,6 +51,7 @@ theorem reduction_natural (a : X.EllAdicCohomology ℓ 1) :
   exact continuousCohomologyEquiv_map e (PadicInt.toZModPow n).toAddMonoidHom
     (PadicResidueHomeomorphism.reduction_continuous ℓ n) 1 a
 
+include e in
 theorem reduction_surjective_of_iso (hY : Function.Surjective (reductionMap Y ℓ)) :
     Function.Surjective (reductionMap X ℓ) := by
   intro x

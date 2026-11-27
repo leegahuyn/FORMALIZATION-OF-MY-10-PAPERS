@@ -58,8 +58,8 @@ theorem normalized_partial_sums_tendsto_zero (a : ℕ → ℝ) (g : ℕ → ℂ)
       rw [smul_eq_mul, inv_mul_cancel₀ (haPos n).ne']
   have hDivLim := (isLittleO_one_iff ℝ).1 hDiv
   have hHead : Tendsto (fun n => (a n)⁻¹ • (a 0 • L)) atTop (𝓝 0) := by
-    have hi : Tendsto (fun n => (a n)⁻¹) atTop (𝓝 (0 : ℝ)) := by
-      simpa only [Pi.inv_apply] using ha.inv_tendsto_atTop
+    have hi : Tendsto (fun n => (a n)⁻¹) atTop (𝓝 (0 : ℝ)) :=
+      (tendsto_inv_atTop_zero (𝕜 := ℝ)).comp ha
     simpa only [zero_smul] using hi.smul
       (tendsto_const_nhds : Tendsto (fun _ : ℕ => a 0 • L) atTop (𝓝 (a 0 • L)))
   have hLim : Tendsto (fun n => (G (n + 1) - L) -
