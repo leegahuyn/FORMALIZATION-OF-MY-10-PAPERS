@@ -34,7 +34,8 @@ private theorem height_of_scaled_x (P : antiInvariant A) {d : K} (hd : d ≠ 0)
   change max r.num.natDegree r.denom.natDegree = 1
   rw [show r = algebraMap K[X] (RatFunc K) (C d * X) from rfl,
     RatFunc.num_algebraMap, RatFunc.denom_algebraMap, natDegree_C_mul hd, natDegree_X,
-    natDegree_one, max_zero_right]
+    natDegree_one]
+  exact max_eq_left (Nat.zero_le 1)
 
 /-- The generic point, its actual rotation, and their sum have height one. -/
 theorem generic_rotation_heights

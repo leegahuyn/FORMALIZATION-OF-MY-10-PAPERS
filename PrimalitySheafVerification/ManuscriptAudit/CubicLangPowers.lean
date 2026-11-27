@@ -18,8 +18,9 @@ private theorem lang_at (E L : Type*) [Field E] [Fintype E] [Field L] [Decidable
     [IsAlgClosed L] [Algebra E L] (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
     (hchar : ringChar E ≠ 2) {a : E} (ha : a ≠ 0)
     (V : Affine L) (hV : Curve (algebraMap E L a) = V) :
-    Function.Surjective (pointMapAt E L (Curve a) V
-      ((centered_baseChange E L a).trans hV) (FiniteField.frobeniusAlgHom E L) - 1) := by
+    Function.Surjective (⇑(pointMapAt E L (Curve a) V
+      ((centered_baseChange E L a).trans hV) (FiniteField.frobeniusAlgHom E L) - 1 :
+      AddMonoid.End V.Point)) := by
   subst V
   exact CubicLangSurjective.surjective E L h₂ h₃ hchar ha
 
@@ -30,7 +31,8 @@ variable (p : ℕ) [Fact p.Prime] (L : Type*) [Field L] [Algebra (ZMod p) L]
 over an actual finite extension embedded into the given algebraically closed field. -/
 theorem pow_sub_one_surjective (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
     {n : ℕ} (hn : 0 < n) :
-    Function.Surjective (arithmeticPointFrobenius (ZMod p) L A ^ n - 1) := by
+    Function.Surjective (⇑(arithmeticPointFrobenius (ZMod p) L A ^ n - 1 :
+      AddMonoid.End (GeometricPoints (ZMod p) L A))) := by
   let E := GaloisField p n
   letI : Fintype E := Fintype.ofFinite E
   have hDegree : Module.finrank (ZMod p) E = n := GaloisField.finrank p hn.ne'

@@ -67,45 +67,45 @@ private theorem section_eq_off_chart {V : X.ProEt} (i : Spec (CommRingCat.of L) 
 
 private abbrev G := boundary i₀ i₁ ℓ
 private abbrev d := pairRestriction i₀ i₁ ℓ
-private abbrev π₀ : G i₀ i₁ ℓ ⟶ functionsOver (M ℓ) i₀ := prod.fst
-private abbrev π₁ : G i₀ i₁ ℓ ⟶ functionsOver (M ℓ) i₁ := prod.snd
+private abbrev π₀ : G L i₀ i₁ ℓ ⟶ functionsOver (M ℓ) i₀ := prod.fst
+private abbrev π₁ : G L i₀ i₁ ℓ ⟶ functionsOver (M ℓ) i₁ := prod.snd
 
 private theorem local_lift_first {V : X.ProEt} (a : V ⟶ T (X := X))
     (h : Disjoint (Set.range V.hom) (Set.range i₁))
-    (s : (G i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
-    ∃ b : (functions (M ℓ) X).obj.obj (op V), (d i₀ i₁ ℓ).hom.app (op V) b =
-      (G i₀ i₁ ℓ).obj.map a.op s := by
-  let p := π₀ i₀ i₁ ℓ
+    (s : (G L i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
+    ∃ b : (functions (M ℓ) X).obj.obj (op V), (d L i₀ i₁ ℓ).hom.app (op V) b =
+      (G L i₀ i₁ ℓ).obj.map a.op s := by
+  let p := π₀ L i₀ i₁ ℓ
   let t := p.hom.app (op (T (X := X))) s
   refine ⟨⟨ContinuousMap.const V.left (pointValue L ℓ i₀ t)⟩, ?_⟩
   apply SheafProductSectionExt.section_ext
-  · change ((d i₀ i₁ ℓ ≫ p).hom.app (op V)) _ = p.hom.app (op V) ((G i₀ i₁ ℓ).obj.map a.op s)
-    rw [show d i₀ i₁ ℓ ≫ p = diagonal (M ℓ) i₀ from prod.lift_fst _ _,
+  · change ((d L i₀ i₁ ℓ ≫ p).hom.app (op V)) _ = p.hom.app (op V) ((G L i₀ i₁ ℓ).obj.map a.op s)
+    rw [show d L i₀ i₁ ℓ ≫ p = diagonal (M ℓ) i₀ from prod.lift_fst _ _,
       NatTrans.naturality_apply p.hom a.op s]
     exact constant_lift_on_chart L ℓ a i₀ t
   · exact section_eq_off_chart L ℓ i₁ h _ _
 
 private theorem local_lift_second {V : X.ProEt} (a : V ⟶ T (X := X))
     (h : Disjoint (Set.range V.hom) (Set.range i₀))
-    (s : (G i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
-    ∃ b : (functions (M ℓ) X).obj.obj (op V), (d i₀ i₁ ℓ).hom.app (op V) b =
-      (G i₀ i₁ ℓ).obj.map a.op s := by
-  let p := π₁ i₀ i₁ ℓ
+    (s : (G L i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
+    ∃ b : (functions (M ℓ) X).obj.obj (op V), (d L i₀ i₁ ℓ).hom.app (op V) b =
+      (G L i₀ i₁ ℓ).obj.map a.op s := by
+  let p := π₁ L i₀ i₁ ℓ
   let t := p.hom.app (op (T (X := X))) s
   refine ⟨⟨ContinuousMap.const V.left (pointValue L ℓ i₁ t)⟩, ?_⟩
   apply SheafProductSectionExt.section_ext
   · exact section_eq_off_chart L ℓ i₀ h _ _
-  · change ((d i₀ i₁ ℓ ≫ p).hom.app (op V)) _ = p.hom.app (op V) ((G i₀ i₁ ℓ).obj.map a.op s)
-    rw [show d i₀ i₁ ℓ ≫ p = diagonal (M ℓ) i₁ from prod.lift_snd _ _,
+  · change ((d L i₀ i₁ ℓ ≫ p).hom.app (op V)) _ = p.hom.app (op V) ((G L i₀ i₁ ℓ).obj.map a.op s)
+    rw [show d L i₀ i₁ ℓ ≫ p = diagonal (M ℓ) i₁ from prod.lift_snd _ _,
       NatTrans.naturality_apply p.hom a.op s]
     exact constant_lift_on_chart L ℓ a i₁ t
 
 set_option maxHeartbeats 2200000 in
 private theorem exists_image_terminal_section
     (hDisjoint : Disjoint (Set.range i₀) (Set.range i₁))
-    (s : (G i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
-    ∃ b : (Abelian.image (d i₀ i₁ ℓ)).obj.obj (op (T (X := X))),
-      (Abelian.image.ι (d i₀ i₁ ℓ)).hom.app (op (T (X := X))) b = s := by
+    (s : (G L i₀ i₁ ℓ).obj.obj (op (T (X := X)))) :
+    ∃ b : (Abelian.image (d L i₀ i₁ ℓ)).obj.obj (op (T (X := X))),
+      (Abelian.image.ι (d L i₀ i₁ ℓ)).hom.app (op (T (X := X))) b = s := by
   let t := T (X := X)
   let O₀ : X.Opens := ⟨(Set.range i₁)ᶜ, i₁.isClosedEmbedding.isClosed_range.isOpen_compl⟩
   let O₁ : X.Opens := ⟨(Set.range i₀)ᶜ, i₀.isClosedEmbedding.isClosed_range.isOpen_compl⟩
@@ -129,7 +129,7 @@ private theorem exists_image_terminal_section
       cases b
       · exact inferInstanceAs (Etale O₀.ι)
       · exact inferInstanceAs (Etale O₁.ι)
-  apply SheafImageGlobalLift.exists_image_section V a hCover (d i₀ i₁ ℓ) s
+  apply SheafImageGlobalLift.exists_image_section V a hCover (d L i₀ i₁ ℓ) s
   intro b
   cases b
   · apply local_lift_first L i₀ i₁ ℓ
@@ -139,16 +139,16 @@ private theorem exists_image_terminal_section
 
 /-- Native global sections of the categorical image are all pairs of closed point values. -/
 def imageHZeroEquiv (hDisjoint : Disjoint (Set.range i₀) (Set.range i₁)) :
-    Sheaf.H (Abelian.image (d i₀ i₁ ℓ)) 0 ≃+ Sheaf.H (G i₀ i₁ ℓ) 0 := by
-  let m := Abelian.image.ι (d i₀ i₁ ℓ)
+    Sheaf.H (Abelian.image (d L i₀ i₁ ℓ)) 0 ≃+ Sheaf.H (G L i₀ i₁ ℓ) 0 := by
+  let m := Abelian.image.ι (d L i₀ i₁ ℓ)
   let hT := MorphismProperty.Over.mkIdTerminal @WeaklyEtale X
   refine AddEquiv.ofBijective (Sheaf.H.map m 0)
     ⟨Ext.postcomp_mk₀_injective_of_mono integers m, ?_⟩
   intro a
   obtain ⟨b, hb⟩ := exists_image_terminal_section L i₀ i₁ ℓ hDisjoint
-    (Sheaf.H.equiv₀ (G i₀ i₁ ℓ) hT a)
-  refine ⟨(Sheaf.H.equiv₀ (Abelian.image (d i₀ i₁ ℓ)) hT).symm b,
-    (Sheaf.H.equiv₀ (G i₀ i₁ ℓ) hT).injective ?_⟩
+    (Sheaf.H.equiv₀ (G L i₀ i₁ ℓ) hT a)
+  refine ⟨(Sheaf.H.equiv₀ (Abelian.image (d L i₀ i₁ ℓ)) hT).symm b,
+    (Sheaf.H.equiv₀ (G L i₀ i₁ ℓ) hT).injective ?_⟩
   rw [← Sheaf.H.equiv₀_naturality, AddEquiv.apply_symm_apply]
   exact hb
 

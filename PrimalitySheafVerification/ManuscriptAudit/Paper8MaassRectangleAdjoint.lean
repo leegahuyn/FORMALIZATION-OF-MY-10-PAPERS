@@ -55,8 +55,8 @@ private theorem density_difference (F G : Profile) (x y : ℝ) (hy : (y : ℂ) �
     density F (adjointExpression G) (x, y) - density (raising F) G (x, y) =
       rateX F G x y + rateY F G x y := by
   have hq : star (1/4 : ℂ) = (1/4 : ℂ) := by
-    change (starRingEnd ℂ) (1/4 : ℂ) = _
-    simp [map_div₀]
+    rw [← show ((1/4 : ℝ) : ℂ) = (1/4 : ℂ) by norm_num [Complex.ofReal_div]]
+    exact Complex.conj_ofReal _
   have hStarY : star (y : ℂ) = (y : ℂ) := Complex.conj_ofReal y
   have hStarI : star Complex.I = -Complex.I := Complex.conj_I
   unfold density adjointExpression raising rateX rateY
@@ -65,6 +65,7 @@ private theorem density_difference (F G : Profile) (x y : ℝ) (hy : (y : ℂ) �
 
 /-- The actual raising and formal adjoint expressions are adjoint on a rectangle whenever
 their horizontal and vertical fluxes match on the pairs of opposite edges. -/
+set_option maxHeartbeats 1600000 in
 theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤ d)
     (F G : Profile)
     (hF : ContinuousOn F.uncurry (rectangle a b c d))

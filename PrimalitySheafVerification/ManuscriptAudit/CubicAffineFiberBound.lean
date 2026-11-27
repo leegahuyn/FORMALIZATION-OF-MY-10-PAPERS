@@ -51,7 +51,7 @@ theorem card_le_of_root_abscissas (hΔ : (shortCubic (0 : L) A).Δ ≠ 0)
   have hCard := TwoPointFiberCard.card_le_two_mul a hFib
   have hT : Nat.card T ≤ f.natDegree := by
     rw [Nat.card_eq_fintype_card, Fintype.card_coe]
-    exact (Multiset.toFinset_card_le).trans (card_roots' f)
+    exact (Multiset.toFinset_card_le f.roots).trans (card_roots' f)
   exact hCard.trans (Nat.mul_le_mul_left _ hT)
 
 end

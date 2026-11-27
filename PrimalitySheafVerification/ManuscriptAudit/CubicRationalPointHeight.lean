@@ -35,7 +35,8 @@ theorem height_eq_of_xRep (P : antiInvariant A) (r : RatFunc K)
 theorem generic_point_height (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) :
     height A ⟨genericPoint A h₂ h₃ hA, genericPoint_mem_antiInvariant A h₂ h₃ hA⟩ = 1 := by
   change rationalDegree (RatFunc.X : RatFunc K) = 1
-  simp only [rationalDegree, RatFunc.num_X, RatFunc.denom_X, natDegree_X, natDegree_one, max_zero_right]
+  simp only [rationalDegree, RatFunc.num_X, RatFunc.denom_X, natDegree_X, natDegree_one]
+  exact max_eq_left (Nat.zero_le 1)
 
 end
 

@@ -28,7 +28,7 @@ theorem exists_limit_of_subPole_cuspGrowth {f : ℂ → ℂ} {width C exponent :
     (tendsto_mul_zero_of_subPoleGrowth hExp hQBound)
   have hQLimit := Complex.tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO
     hQHol hQSmall
-  refine ⟨_, ?_⟩
+  refine ⟨limUnder (𝓝[≠] (0 : ℂ)) qFunction, ?_⟩
   simpa only [Function.comp_def, qFunction, eq_cuspFunction hWidth.ne' hPer] using
     hQLimit.comp (qParam_tendsto hWidth)
 

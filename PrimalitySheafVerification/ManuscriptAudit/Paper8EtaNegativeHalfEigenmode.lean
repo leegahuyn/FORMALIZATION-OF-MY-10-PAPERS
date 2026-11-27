@@ -23,6 +23,7 @@ private theorem derivative_conjugate (f : ℝ → ℂ) (x : ℝ) :
       apply hf
       have h' := ((Complex.conjCLE : ℂ →L[ℝ] ℂ).hasFDerivAt.comp_hasDerivAt
         x h.hasDerivAt).differentiableAt
+      change DifferentiableAt ℝ (fun t => star (star (f t))) x at h'
       simpa only [star_star] using h'
     rw [deriv_zero_of_not_differentiableAt hcf, deriv_zero_of_not_differentiableAt hf, star_zero]
 
@@ -59,8 +60,8 @@ theorem eta_negative_half_eigenvalue (x y : ℝ) (hy : 0 < y) :
     norm_num [Complex.ofReal_div] at h ⊢
     exact h
   have hc : star (3/16 : ℂ) = (3/16 : ℂ) := by
-    change (starRingEnd ℂ) (3/16 : ℂ) = _
-    simp [map_div₀]
+    rw [← show ((3/16 : ℝ) : ℂ) = (3/16 : ℂ) by norm_num [Complex.ofReal_div]]
+    exact Complex.conj_ofReal _
   change maassDelta (-1/2) (conjugate (weighted (1/4) ModularForm.eta)) x y = _
   rw [show (-1/2 : ℝ) = -(1/2) by ring, maass_conjugate, h', star_mul, hc]
   unfold etaNegativeHalf conjugate
@@ -68,7 +69,9 @@ theorem eta_negative_half_eigenvalue (x y : ℝ) (hy : 0 < y) :
 
 theorem eta_negative_half_ne_zero (x y : ℝ) (hy : 0 < y) :
     etaNegativeHalf x y ≠ 0 := by
-  unfold etaNegativeHalf conjugate weighted
+  have hEq : etaNegativeHalf x y =
+      star ((↑(y ^ (1/4 : ℝ)) : ℂ) * ModularForm.eta (complexPoint x y)) := rfl
+  rw [hEq]
   have hW : (↑(y ^ (1/4 : ℝ)) : ℂ) ≠ 0 := by
     exact_mod_cast (Real.rpow_pos_of_pos hy (1/4 : ℝ)).ne'
   have hEta : ModularForm.eta (complexPoint x y) ≠ 0 := by
@@ -77,7 +80,9 @@ theorem eta_negative_half_ne_zero (x y : ℝ) (hy : 0 < y) :
     rwa [complexPoint_im]
   intro h
   apply mul_ne_zero hW hEta
-  simpa only [star_star, star_zero] using congrArg star h
+  have hz := congrArg star h
+  rw [star_star, star_zero] at hz
+  exact hz
 
 end
 end ManuscriptAudit.Paper8EtaNegativeHalfEigenmode

@@ -76,7 +76,8 @@ private theorem kernelBoundary_residue (a : ℤ_[ℓ]) (n : ℕ) :
   let y := kernelBoundary (k K) (ℓ ^ n) (exponentUnit K (digit ℓ a n : ℤ))
   calc
     _ = Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1 (Sheaf.H.map i.inv 1 y)) := by
-      simp only [kernelResidueIso, Iso.trans_hom, Iso.symm_hom, Sheaf.H.map_comp_apply, i, c, e, y]
+      change Sheaf.H.map (i.symm ≪≫ c.symm ≪≫ e).hom 1 y = _
+      simp only [Iso.trans_hom, Iso.symm_hom, Sheaf.H.map_comp_apply] <;> rfl
     _ = Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1
           (cyclicToRootsHOne K (ℓ ^ n) (PadicInt.toZModPow n a))) :=
       congrArg (fun z ↦ Sheaf.H.map e.hom 1 (Sheaf.H.map c.inv 1 z)) h

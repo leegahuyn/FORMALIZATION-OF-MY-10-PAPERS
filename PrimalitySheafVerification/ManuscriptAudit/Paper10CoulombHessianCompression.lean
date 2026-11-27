@@ -7,8 +7,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper10CoulombPartition
 
 namespace ManuscriptAudit.Paper10CoulombHessianCompression
 
-open Paper10CoulombProductRule Paper10CoulombPartition
-open scoped RealInnerProductSpace
+open Paper10CoulombMultiplier Paper10CoulombProductRule Paper10CoulombPartition
+open scoped ContDiff RealInnerProductSpace
 
 noncomputable section
 
@@ -37,7 +37,7 @@ def compress (V : H →L[ℝ] H) : S →L[ℝ] S :=
   S.orthogonalProjectionOnto ∘L (V ∘L S.subtypeL)
 
 theorem compress_inner (V : H →L[ℝ] H) (x y : S) :
-    ⟪compress S V x, y⟫_ℝ = ⟪V (x : H), (y : H)⟫_ℝ :=
+    ⟪compress S V x, y⟫ = ⟪V (x : H), (y : H)⟫ :=
   S.inner_orthogonalProjectionOnto_eq_of_mem_right y (V (x : H))
 
 theorem compress_norm_le (V : H →L[ℝ] H) :
@@ -51,7 +51,7 @@ theorem compress_selfAdjoint [CompleteSpace H] [CompleteSpace S]
     IsSelfAdjoint (compress S V) := by
   rw [ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric] at hV ⊢
   intro x y
-  change ⟪compress S V x, y⟫_ℝ = ⟪x, compress S V y⟫_ℝ
+  change ⟪compress S V x, y⟫ = ⟪x, compress S V y⟫
   rw [compress_inner]
   exact (hV (x : H) (y : H)).trans
     (S.inner_orthogonalProjectionOnto_eq_of_mem_left x (V (y : H))).symm

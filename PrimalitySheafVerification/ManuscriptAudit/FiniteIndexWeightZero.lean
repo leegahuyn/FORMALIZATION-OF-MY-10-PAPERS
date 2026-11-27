@@ -34,8 +34,9 @@ private theorem bounded_finset_product {ι : Type*} (s : Finset ι) (F : ι → 
   classical
   induction s using Finset.induction_on with
   | empty =>
-      simpa only [Finset.prod_empty, IsBoundedAtImInfty, Function.const] using
-        (const_boundedAtFilter atImInfty (1 : ℂ))
+      simp only [Finset.prod_empty]
+      change BoundedAtFilter atImInfty (Function.const ℍ (1 : ℂ))
+      exact const_boundedAtFilter atImInfty 1
   | @insert j s hjs ih =>
       simpa only [Finset.prod_insert hjs, Pi.mul_def, IsBoundedAtImInfty] using (hF j).mul ih
 

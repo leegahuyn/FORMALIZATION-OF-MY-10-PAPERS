@@ -28,24 +28,24 @@ private abbrev A := AddCommGrpCat.{1}
 private abbrev M := ℤ_[ℓ]
 private abbrev F := functions (M ℓ) X
 private abbrev d := pairRestriction i₀ i₁ ℓ
-private abbrev S := KernelImageHOne.sequence (d i₀ i₁ ℓ)
-private abbrev hS := KernelImageHOne.sequence_shortExact (d i₀ i₁ ℓ)
+private abbrev S := KernelImageHOne.sequence (d L i₀ i₁ ℓ)
+private abbrev hS := KernelImageHOne.sequence_shortExact (d L i₀ i₁ ℓ)
 private abbrev integers :=
   (constantSheaf (Scheme.ProEt.topology X) A).obj (AddCommGrpCat.of (ULift.{1} ℤ))
 
-private def coords : Sheaf.H (Abelian.image (d i₀ i₁ ℓ)) 0 ≃+ M ℓ × M ℓ :=
+private def coords : Sheaf.H (Abelian.image (d L i₀ i₁ ℓ)) 0 ≃+ M ℓ × M ℓ :=
   (imageHZeroEquiv L i₀ i₁ ℓ hDisjoint).trans (boundaryEquiv L i₀ i₁ ℓ)
 
 private def connecting : M ℓ × M ℓ →+ Sheaf.H (support i₀ i₁ ℓ) 1 :=
-  ((hS i₀ i₁ ℓ).extClass.postcomp integers (show 0 + 1 = 1 by rfl)).comp
+  ((hS L i₀ i₁ ℓ).extClass.postcomp integers (show 0 + 1 = 1 by rfl)).comp
     (coords L i₀ i₁ ℓ hDisjoint).symm.toAddMonoidHom
 
 set_option maxHeartbeats 2000000 in
 private theorem coords_map (x : Sheaf.H (F (X := X) ℓ) 0) :
-    coords L i₀ i₁ ℓ hDisjoint (Sheaf.H.map (S i₀ i₁ ℓ).g 0 x) =
-      boundaryEquiv L i₀ i₁ ℓ (Sheaf.H.map (d i₀ i₁ ℓ) 0 x) := by
-  change boundaryEquiv L i₀ i₁ ℓ (Sheaf.H.map (Abelian.image.ι (d i₀ i₁ ℓ)) 0
-    (Sheaf.H.map (Abelian.factorThruImage (d i₀ i₁ ℓ)) 0 x)) = _
+    coords L i₀ i₁ ℓ hDisjoint (Sheaf.H.map (S L i₀ i₁ ℓ).g 0 x) =
+      boundaryEquiv L i₀ i₁ ℓ (Sheaf.H.map (d L i₀ i₁ ℓ) 0 x) := by
+  change boundaryEquiv L i₀ i₁ ℓ (Sheaf.H.map (Abelian.image.ι (d L i₀ i₁ ℓ)) 0
+    (Sheaf.H.map (Abelian.factorThruImage (d L i₀ i₁ ℓ)) 0 x)) = _
   rw [← Sheaf.H.map_comp_apply, Abelian.image.fac]
 
 set_option maxHeartbeats 2100000 in
@@ -53,34 +53,34 @@ private theorem connecting_zero_iff (a : M ℓ × M ℓ) :
     connecting L i₀ i₁ ℓ hDisjoint a = 0 ↔ a.1 = a.2 := by
   let e := coords L i₀ i₁ ℓ hDisjoint
   let v := e.symm a
-  have h := Ext.covariant_sequence_exact₃' integers (hS i₀ i₁ ℓ) 0 1 rfl
+  have h := Ext.covariant_sequence_exact₃' integers (hS L i₀ i₁ ℓ) 0 1 rfl
   rw [ShortComplex.ab_exact_iff_function_exact] at h
-  change v.comp (hS i₀ i₁ ℓ).extClass (show 0 + 1 = 1 by rfl) = 0 ↔ _
+  change v.comp (hS L i₀ i₁ ℓ).extClass (show 0 + 1 = 1 by rfl) = 0 ↔ _
   constructor
   · intro hv
     obtain ⟨x, hx⟩ := (h v).mp hv
     apply (range_iff_diag L i₀ i₁ ℓ a).mp
     refine ⟨x, ?_⟩
     calc
-      _ = e (Sheaf.H.map (S i₀ i₁ ℓ).g 0 x) := (coords_map L i₀ i₁ ℓ hDisjoint x).symm
+      _ = e (Sheaf.H.map (S L i₀ i₁ ℓ).g 0 x) := (coords_map L i₀ i₁ ℓ hDisjoint x).symm
       _ = e v := congrArg e hx
       _ = a := e.apply_symm_apply a
   · intro ha
     obtain ⟨x, hx⟩ := (range_iff_diag L i₀ i₁ ℓ a).mpr ha
     apply (h v).mpr
     refine ⟨x, e.injective ?_⟩
-    change e (Sheaf.H.map (S i₀ i₁ ℓ).g 0 x) = e (e.symm a)
+    change e (Sheaf.H.map (S L i₀ i₁ ℓ).g 0 x) = e (e.symm a)
     exact (coords_map L i₀ i₁ ℓ hDisjoint x).trans (hx.trans (e.apply_symm_apply a).symm)
 
 private theorem connecting_surjective (hAmbient : Subsingleton (Sheaf.H (F (X := X) ℓ) 1)) :
     Function.Surjective (connecting L i₀ i₁ ℓ hDisjoint) := by
   intro x
   let e := coords L i₀ i₁ ℓ hDisjoint
-  have hx : Sheaf.H.map (S i₀ i₁ ℓ).f 1 x = 0 := hAmbient.elim _ _
-  obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₁ integers (hS i₀ i₁ ℓ) x hx
+  have hx : Sheaf.H.map (S L i₀ i₁ ℓ).f 1 x = 0 := hAmbient.elim _ _
+  obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₁ integers (hS L i₀ i₁ ℓ) x hx
     (show 0 + 1 = 1 by rfl)
   refine ⟨e a, ?_⟩
-  change (e.symm (e a)).comp (hS i₀ i₁ ℓ).extClass (show 0 + 1 = 1 by rfl) = x
+  change (e.symm (e a)).comp (hS L i₀ i₁ ℓ).extClass (show 0 + 1 = 1 by rfl) = x
   rw [e.symm_apply_apply]
   exact ha
 

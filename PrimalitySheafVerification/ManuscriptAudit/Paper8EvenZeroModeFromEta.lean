@@ -34,11 +34,12 @@ theorem even_zero_mode_negative_log_limit (C : ℝ) (hC : 0 < C)
       ∑ j ∈ Finset.range (N + 1), zeroModeProgressionRaw r j) atTop (𝓝 (A r)) := by
     intro r hr
     have hr4 := Finset.mem_range.mp hr
+    change Tendsto (normalizedProgression r) atTop (𝓝 (A r))
     interval_cases r
-    · simpa [A, normalizedProgression] using h0
-    · simpa [A, normalizedProgression] using h1
-    · simpa [A, normalizedProgression] using h2
-    · simpa [A, normalizedProgression] using h3
+    · simpa [A] using h0
+    · simpa [A] using h1
+    · simpa [A] using h2
+    · simpa [A] using h3
   let M : ℂ := ∑ r ∈ Finset.range 4, evenWeightLimit r * A r
   let L : ℂ := (-(coefficient 1 0 / 2) : ℝ) • M
   have hM : 0 < M.re := candidate_profile_combination_pos C hC A

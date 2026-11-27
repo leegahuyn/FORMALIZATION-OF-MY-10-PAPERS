@@ -24,7 +24,9 @@ def localNumerator (a : ℤ) (q : ℕ) : ℤ[X] :=
 theorem localNumerator_eval {R : Type*} [CommRing R] (a : ℤ) (q : ℕ) (z : R) :
     (localNumerator a q).eval₂ (Int.castRingHom R) z = 1-(a : R)*z+(q : R)*z^2 := by
   simp only [localNumerator, eval₂_add, eval₂_sub, eval₂_mul, eval₂_C, eval₂_X, eval₂_pow,
-    eval₂_one, Int.castRingHom_apply, Int.cast_natCast]
+    eval₂_one]
+  change 1 - (a : R) * z + ((q : ℤ) : R) * z ^ 2 = _
+  rw [Int.cast_natCast]
 
 variable (p : ℕ) [Fact p.Prime]
 
