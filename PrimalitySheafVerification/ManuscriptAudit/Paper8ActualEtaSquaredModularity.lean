@@ -112,9 +112,9 @@ private theorem squaredRatio_local (g : SL(2, ℤ)) (z : ℍ) :
   refine ⟨(hS.mul hS).div (hD.mul (hE.mul hE)) hDen, ?_⟩
   have hLog : logDeriv (squaredRatio g) z = 0 := by
     unfold squaredRatio
-    rw [logDeriv_div z (mul_ne_zero hS0 hS0) hDen (hS.mul hS) (hD.mul (hE.mul hE)),
-      logDeriv_mul z hS0 hS0 hS hS, logDeriv_mul z hD0 (mul_ne_zero hE0 hE0) hD (hE.mul hE),
-      logDeriv_mul z hE0 hE0 hE hE, etaComposed_logDeriv]
+    rw [logDeriv_div (z : ℂ) (mul_ne_zero hS0 hS0) hDen (hS.mul hS) (hD.mul (hE.mul hE)),
+      logDeriv_mul (z : ℂ) hS0 hS0 hS hS, logDeriv_mul (z : ℂ) hD0 (mul_ne_zero hE0 hE0) hD (hE.mul hE),
+      logDeriv_mul (z : ℂ) hE0 hE0 hE hE, etaComposed_logDeriv]
     have hDLog : logDeriv (denominator g) z = (g 1 0 : ℂ) / denominator g z := by
       rw [logDeriv_apply, (denominator_hasDerivAt g z).deriv]
     rw [hDLog]
@@ -134,9 +134,9 @@ theorem eta_squared_transform (g : SL(2, ℤ)) (z : ℍ) :
       squaredMultiplier g * (denominator g z * ModularForm.eta z ^ 2) := by
   have h : upperHalfPlaneSet.EqOn (squaredRatio g) (fun _ : ℂ => squaredMultiplier g) := by
     refine isOpen_upperHalfPlaneSet.eqOn_of_deriv_eq
-      (Complex.convex_halfSpace_im_gt 0).isPreconnected
+      (convex_halfSpace_im_gt 0).isPreconnected
       (fun w hw => (squaredRatio_local g ⟨w, hw⟩).1.differentiableWithinAt)
-      differentiableOn_const ?_ (show Complex.I ∈ upperHalfPlaneSet by simp [upperHalfPlaneSet]) rfl
+      (differentiableOn_const (squaredMultiplier g)) ?_ (show Complex.I ∈ upperHalfPlaneSet by simp [upperHalfPlaneSet]) rfl
     intro w hw
     rw [(squaredRatio_local g ⟨w, hw⟩).2, deriv_const]
   have hz := h z.im_pos

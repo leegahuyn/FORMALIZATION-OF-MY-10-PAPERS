@@ -15,7 +15,6 @@ open ProetaleUnitSheaf (unitSheaf specUnits specUnits_naturality)
 open ProetaleKummerPower (J G power power_eval)
 open ProetaleLaurentCyclicHOne (exponentUnit)
 open ProetaleAffineLineCyclicHOne (unitsHZeroEquiv)
-open SheafIntegerGeneratorEpi (integerSheaf generator)
 
 noncomputable section
 
@@ -27,32 +26,38 @@ variable (K : Type) [Field K] [IsAlgClosed K] (ℓ : ℕ) [Fact ℓ.Prime] [NeZe
 abbrev terminalIsTerminal : IsTerminal (terminalObject K) :=
   MorphismProperty.Over.mkIdTerminal @WeaklyEtale (base K)
 
+private abbrev Z := AddCommGrpCat.of (ULift.{1} ℤ)
+private abbrev integers := (constantSheaf (J (base K)) G).obj Z
+
+private def generatorAt : (integers K).obj.obj (op (terminalObject K)) :=
+  ((constantSheafAdj (J (base K)) G (terminalIsTerminal K)).homEquiv Z (integers K) (𝟙 _)) ⟨1⟩
+
 /-- Ext⁰ of the Laurent unit exponent, viewed as the native sheaf morphism. -/
 def unitMap (m : ℕ) :
-    integerSheaf (J (base K)) ⟶ unitSheaf (base K) :=
+    integers K ⟶ unitSheaf (base K) :=
   Ext.addEquiv₀ (exponentUnit K (m : ℤ))
 
 private theorem unitMap_generator (m : ℕ) :
-    (unitMap K m).hom.app (op (terminalObject K)) (generator (J (base K)) (terminalIsTerminal K)) =
+    (unitMap K m).hom.app (op (terminalObject K)) (generatorAt K) =
       Sheaf.H.equiv₀ (unitSheaf (base K)) (terminalIsTerminal K) (exponentUnit K (m : ℤ)) := by
   let F := unitSheaf (base K)
   let Z := AddCommGrpCat.of (ULift.{1} ℤ)
   let E := constantSheafAdj (J (base K)) G (terminalIsTerminal K)
   let a := unitMap K m
   have h : E.homEquiv Z F a =
-      E.homEquiv Z (integerSheaf (J (base K))) (𝟙 _) ≫ a.hom.app (op (terminalObject K)) := by
+      E.homEquiv Z (integers K) (𝟙 _) ≫ a.hom.app (op (terminalObject K)) := by
     change E.homEquiv Z F a = _ ≫ ((sheafSections (J (base K)) G).obj (op (terminalObject K))).map a
-    simpa only [Category.id_comp] using E.homEquiv_naturality_right (𝟙 (integerSheaf (J (base K)))) a
+    simpa only [Category.id_comp] using E.homEquiv_naturality_right (𝟙 (integers K)) a
   exact (ConcreteCategory.congr_hom h (⟨1⟩ : Z)).symm
 
 private theorem unitMap_cover (m : ℕ) :
     (unitMap K m).hom.app (op (coverObject K ℓ))
-      ((integerSheaf (J (base K))).obj.map (coverArrow K ℓ).op
-        (generator (J (base K)) (terminalIsTerminal K))) =
+      ((integers K).obj.map (coverArrow K ℓ).op
+        (generatorAt K)) =
       (unitSheaf (base K)).obj.map (coverArrow K ℓ).op
         (Sheaf.H.equiv₀ (unitSheaf (base K)) (terminalIsTerminal K) (exponentUnit K (m : ℤ))) := by
   exact (NatTrans.naturality_apply (unitMap K m).hom (coverArrow K ℓ).op
-    (generator (J (base K)) (terminalIsTerminal K))).trans
+    (generatorAt K)).trans
     (congrArg ((unitSheaf (base K)).obj.map (coverArrow K ℓ).op) (unitMap_generator K m))
 
 private theorem coordinate_unit (m : ℕ) :
@@ -67,8 +72,8 @@ theorem exists_lift (m n : ℕ) :
     ∃ s : (unitSheaf (base K)).obj.obj (op (coverObject K ℓ)),
       (power (base K) (ℓ ^ n)).hom.app (op (coverObject K ℓ)) s =
         (unitMap K m).hom.app (op (coverObject K ℓ))
-          ((integerSheaf (J (base K))).obj.map (coverArrow K ℓ).op
-            (generator (J (base K)) (terminalIsTerminal K))) := by
+          ((integers K).obj.map (coverArrow K ℓ).op
+            (generatorAt K)) := by
   let X := base K
   let A := CommRingCat.of (LaurentPolynomial K)
   let B := CommRingCat.of (Tower K ℓ)

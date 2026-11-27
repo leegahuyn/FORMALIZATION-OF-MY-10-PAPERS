@@ -30,11 +30,14 @@ theorem small_char_of_algebra (K : Type*) [Field K] [Algebra (ZMod p) K] (hp : 5
 /-- Genuine rank-two basis on any good centered cubic over the algebraic closure. -/
 def centeredBasis {a : L} (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (ha : a ≠ 0)
     (hl : l = 2 ∨ l = 3) : Basis (Fin 2) ℤ_[l] (Tate l (Curve a).Point) := by
-  rcases hl with rfl | rfl
-  · let B := CubicTwoPowerTorsionBasis.affineBasis h₂ h₃ ha 1
+  by_cases h : l = 2
+  · subst l
+    let B := CubicTwoPowerTorsionBasis.affineBasis h₂ h₃ ha 1
     let hs := CubicDoublingSurjective.affine_doubling_surjective h₂ h₃ ha
     exact (Basis.finTwoProd ℤ_[2]).map (padicPairEquiv 2 (Curve a).Point B hs)
-  · exact (Basis.finTwoProd ℤ_[3]).map (CubicThreeAdicTate.affinePadicCoordinates h₂ h₃ ha)
+  · have he : l = 3 := hl.resolve_left h
+    subst l
+    exact (Basis.finTwoProd ℤ_[3]).map (CubicThreeAdicTate.affinePadicCoordinates h₂ h₃ ha)
 
 private theorem unit_det_aux (K : Type*) [Field K] [Fintype K] [Algebra K L]
     (V : WeierstrassCurve.Affine L) (hV : (Curve (1 : K)).baseChange L = V) (h : V = Curve (1 : L)) :
@@ -87,15 +90,12 @@ theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
     let t := arithmeticTrace E A
     let q := Fintype.card E
     change F ^ 2 - t • F + (q : ℤ) • (1 : S) = 0 at he
-    have ht : (t : S) = (t : ℤ_[l]) • (1 : S) := by
-      rw [← Algebra.algebraMap_eq_smul_one, map_intCast]
-    have hq : (q : S) = (q : ℤ_[l]) • (1 : S) := by
-      rw [← Algebra.algebraMap_eq_smul_one, map_natCast]
     change F ^ 2 - (t : ℤ_[l]) • F + (q : ℤ_[l]) • (1 : S) = 0
-    calc
-      _ = F ^ 2 - (t : S) * F + (q : S) := by
-        rw [ht, hq, smul_mul_assoc, one_mul]
-      _ = 0 := by simpa only [zsmul_eq_mul, mul_one, Int.cast_natCast] using he
+    have ht := Int.cast_smul_eq_zsmul ℤ_[l] t F
+    have hq : (q : ℤ_[l]) • (1 : S) = (q : ℤ) • (1 : S) := by
+      simpa only [Int.cast_natCast] using (Int.cast_smul_eq_zsmul ℤ_[l] (q : ℤ) (1 : S))
+    rw [ht, hq]
+    exact he
   have hD : LinearMap.det F = (Fintype.card E : ℤ_[l]) := det_arithmetic p E L l hp hs hl hA
   have hNZ : (Fintype.card E : ℤ_[l]) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_pos.ne'
   let B := centeredBasis L l h₂L h₃L ((map_ne_zero (algebraMap E L)).mpr hA) hl

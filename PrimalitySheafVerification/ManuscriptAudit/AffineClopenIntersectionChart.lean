@@ -44,7 +44,8 @@ theorem chart_range :
 
 private theorem elem_idempotent (he : ∀ i, IsIdempotentElem (e i)) (a : denominators e) :
     IsIdempotentElem (a : R) := by
-  induction a.property using Submonoid.closure_induction with
+  obtain ⟨a, ha⟩ := a
+  induction ha using Submonoid.closure_induction with
   | mem x hx =>
     obtain ⟨i, rfl⟩ := hx
     exact he i

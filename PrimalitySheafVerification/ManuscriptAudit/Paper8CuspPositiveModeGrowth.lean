@@ -41,6 +41,12 @@ private theorem twist_periodic (H : ℂ → ℂ) (frequency : ℝ) (hT : HasTwis
         (Complex.exp (-((frequency : ℂ) * Complex.I)) * Complex.exp ((frequency : ℂ) * Complex.I)) := by ring
     _ = _ := by rw [hExp, mul_one]
 
+private theorem positive_of_uIcc {a b y : ℝ} (ha : 0 < a) (hb : 0 < b)
+    (hy : y ∈ uIcc a b) : 0 < y := by
+  rcases mem_uIcc.mp hy with h | h
+  · exact ha.trans_le h.1
+  · exact hb.trans_le h.1
+
 private theorem twist_integral_factor (H : ℂ → ℂ) (frequency y : ℝ) :
     (∫ x : ℝ in (0 : ℝ)..1, twist H frequency ((x : ℂ) + (y : ℂ) * Complex.I)) =
       (Real.exp (-frequency * y) : ℂ) * conjugatePositiveMode H frequency y := by
@@ -70,11 +76,11 @@ theorem positive_mode_balanced (H : ℂ → ℂ) (frequency : ℝ)
       intro z hz
       change 0 < z.im
       change z.re ∈ uIcc (0 : ℝ) 1 ∧ z.im ∈ uIcc y₀ y₁ at hz
-      exact (lt_min h₀ h₁).trans_le (mem_uIcc.mp hz.2).1))
+      exact positive_of_uIcc h₀ h₁ hz.2))
   have hVert : (∫ v : ℝ in y₀..y₁, G ((1 : ℂ) + (v : ℂ) * Complex.I)) =
       ∫ v : ℝ in y₀..y₁, G ((v : ℂ) * Complex.I) := by
     refine intervalIntegral.integral_congr (fun v hv => ?_)
-    have hV : 0 < v := (lt_min h₀ h₁).trans_le (mem_uIcc.mp hv).1
+    have hV : 0 < v := positive_of_uIcc h₀ h₁ hv
     have hZ : 0 < (((v : ℂ) * Complex.I).im) := by
       simpa [Complex.mul_im] using hV
     rw [add_comm]
@@ -83,7 +89,7 @@ theorem positive_mode_balanced (H : ℂ → ℂ) (frequency : ℝ)
       (∫ x : ℝ in (0 : ℝ)..1, G ((x : ℂ) + (y₁ : ℂ) * Complex.I)) +
       Complex.I • (∫ v : ℝ in y₀..y₁, G ((1 : ℂ) + (v : ℂ) * Complex.I)) -
       Complex.I • (∫ v : ℝ in y₀..y₁, G ((0 : ℂ) + (v : ℂ) * Complex.I)) = 0 at hRect
-  rw [zero_add, hVert, add_sub_cancel_right, sub_eq_zero] at hRect
+  simp only [zero_add, hVert, add_sub_cancel_right, sub_eq_zero] at hRect
   simpa only [G, twist_integral_factor] using hRect
 
 theorem positive_mode_exponential_growth (H : ℂ → ℂ) (frequency : ℝ)

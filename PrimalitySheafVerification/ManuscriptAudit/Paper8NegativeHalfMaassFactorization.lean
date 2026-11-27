@@ -45,6 +45,7 @@ private theorem raising_y (F : Profile) (x y : ℝ)
   have h := ((h₁.add h₂).sub h₃).deriv
   change partialY (raising F) x y = _ at h
   rw [h]
+  simp only [partialY]
   ring
 
 theorem factorization (F : Profile) (x y : ℝ)

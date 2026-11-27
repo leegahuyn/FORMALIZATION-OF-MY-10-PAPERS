@@ -47,7 +47,8 @@ private theorem comp_zero : multiply X ℓ r ≫ residue X ℓ r = 0 := by
   apply ULift.ext
   apply ContinuousMap.ext
   intro x
-  change PadicInt.toZModPow r (((ℓ : ℤ_[ℓ]) ^ r) * f.down x) = 0
+  change PadicInt.toZModPow r (((ℓ : ℤ_[ℓ]) ^ r) *
+    (show C(W.unop.left, ℤ_[ℓ]) from f.down) x) = 0
   rw [map_mul, cast_reduces_zero ℓ r, zero_mul]
 
 /-- Actual multiplication by the adic prime power followed by the actual finite residue. -/
@@ -74,13 +75,15 @@ private theorem evaluated_shortExact (W : X.ProEtᵒᵖ) :
     apply (AddCommGrpCat.epi_iff_surjective _).mpr
     intro s
     obtain ⟨f, hf⟩ := PadicPowerContinuousExact.exists_residue_lift ℓ r s.down
-    exact ⟨⟨f⟩, ULift.ext (ContinuousMap.ext hf)⟩
+    refine ⟨⟨f⟩, ?_⟩
+    apply ULift.ext
+    exact ContinuousMap.ext hf
   refine ShortComplex.ShortExact.mk' ?_ hm he
   rw [ShortComplex.ab_exact_iff_function_exact]
   intro s
   constructor
   · intro hs
-    have hs' (x : V) : PadicInt.toZModPow r (s.down x) = 0 :=
+    have hs' (x : V) : PadicInt.toZModPow r ((show C(↥V, ℤ_[ℓ]) from s.down) x) = 0 :=
       congrArg (fun y : ULift.{1} (C(↥V, ZMod (ℓ ^ r))) ↦ y.down x) hs
     obtain ⟨f, hf⟩ := PadicPowerContinuousExact.exists_division ℓ r s.down hs'
     exact ⟨⟨f⟩, ULift.ext (ContinuousMap.ext hf)⟩
@@ -94,9 +97,14 @@ theorem sequence_shortExact : (sequence X ℓ r).ShortExact :=
 
 variable {U Y : Scheme.{0}} (j : U ⟶ Y) [IsOpenImmersion j]
 
+local instance extensionAdditive : (extensionByZero j A).Additive := by
+  letI := ProetaleOpenExtensionExact.extensionByZero_preservesFiniteLimits j
+  exact (extensionByZero j A).additive_of_preserves_binary_products
+
+abbrev compactSequence := (sequence U ℓ r).map (extensionByZero j A)
+
 /-- The very same short exact sequence after genuine pro-étale extension by zero. -/
-theorem compactSequence_shortExact :
-    ((sequence U ℓ r).map (extensionByZero j A)).ShortExact := by
+theorem compactSequence_shortExact : (compactSequence ℓ r j).ShortExact := by
   let E := extensionByZero j A
   letI : PreservesFiniteLimits E := ProetaleOpenExtensionExact.extensionByZero_preservesFiniteLimits j
   letI : PreservesFiniteColimits E := ProetaleOpenExtensionExact.extensionByZero_preservesFiniteColimits j

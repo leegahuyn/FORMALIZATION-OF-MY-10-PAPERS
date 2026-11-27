@@ -51,9 +51,12 @@ def antiInvariantApply (D : Family K A) (P : antiInvariant A) : antiInvariant A 
 
 /-- Doubling the output retains the same field naturality. -/
 def double (D : Family K A) : Family K A where
-  atField L := 2 • D.atField L
-  commute g P := by
-    simp only [AddMonoidHom.nsmul_apply, map_nsmul, D.commute]
+  atField L := (2 : ℕ) • D.atField L
+  commute := by
+    intro L M _ _ _ _ _ _ g P
+    change pointsMap A g ((2 : ℕ) • D.atField L P) =
+      (2 : ℕ) • D.atField M (pointsMap A g P)
+    rw [map_nsmul, D.commute]
 
 /-- Every field-natural additive operation is detected on the generic affine solution
 when tested at a point of transcendental abscissa. -/
@@ -79,7 +82,7 @@ theorem eval_transcendental {L : Type u} [Field L] [DecidableEq L] [Algebra K L]
     exact ⟨hX, hY⟩
   have hQMap : pointsMap A g Q = .some x y hP := by rw [he, hMap, hCoord]
   have hD := D.commute g Q
-  rw [hQMap, ← hD, ← map_zero (pointsMap A g)]
+  rw [← hQMap, ← hD, ← map_zero (pointsMap A g)]
   exact (pointsMap_injective A g).eq_iff
 
 end

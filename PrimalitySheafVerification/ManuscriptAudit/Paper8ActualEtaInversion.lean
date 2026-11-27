@@ -31,7 +31,9 @@ theorem inversionArgument_eq (z : ℍ) :
 
 private theorem inversionArgument_hasDerivAt {z : ℂ} (hz : z ≠ 0) :
     HasDerivAt inversionArgument (z ^ 2)⁻¹ z := by
-  simpa only [inversionArgument, neg_neg] using (hasDerivAt_inv hz).neg
+  have hFun : (-(fun w : ℂ => w⁻¹)) = inversionArgument := rfl
+  rw [← hFun]
+  simpa only [neg_neg] using (hasDerivAt_inv hz).neg
 
 theorem principalFactor_ne_zero (z : ℂ) : principalFactor z ≠ 0 :=
   Complex.exp_ne_zero _
@@ -88,8 +90,8 @@ private theorem inversionRatio_local (z : ℍ) :
   refine ⟨hEtaS.div hD hDen, ?_⟩
   have hZero : logDeriv inversionRatio z = 0 := by
     unfold inversionRatio
-    rw [logDeriv_div z hEtaSNe hDen hEtaS hD,
-      logDeriv_mul z (principalFactor_ne_zero z) (ModularForm.eta_ne_zero hz) hF hEta,
+    rw [logDeriv_div (z : ℂ) hEtaSNe hDen hEtaS hD,
+      logDeriv_mul (z : ℂ) (principalFactor_ne_zero z) (ModularForm.eta_ne_zero hz) hF hEta,
       eta_composed_logDeriv z, principalFactor_logDeriv z]
     ring
   have hRatio : inversionRatio z ≠ 0 := div_ne_zero hEtaSNe hDen
@@ -107,9 +109,9 @@ theorem eta_inversion (z : ℍ) :
       principalFactor z * ModularForm.eta z := by
   have hConst : upperHalfPlaneSet.EqOn inversionRatio (fun _ : ℂ => (1 : ℂ)) := by
     refine isOpen_upperHalfPlaneSet.eqOn_of_deriv_eq
-      (Complex.convex_halfSpace_im_gt 0).isPreconnected
+      (convex_halfSpace_im_gt 0).isPreconnected
       (fun w hw => (inversionRatio_local ⟨w, hw⟩).1.differentiableWithinAt)
-      differentiableOn_const ?_ (show Complex.I ∈ upperHalfPlaneSet by simp [upperHalfPlaneSet])
+      (differentiableOn_const (1 : ℂ)) ?_ (show Complex.I ∈ upperHalfPlaneSet by simp [upperHalfPlaneSet])
       inversionRatio_at_I
     intro w hw
     rw [(inversionRatio_local ⟨w, hw⟩).2, deriv_const]

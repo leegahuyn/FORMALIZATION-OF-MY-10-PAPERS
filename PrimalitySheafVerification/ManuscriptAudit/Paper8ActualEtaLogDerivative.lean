@@ -23,8 +23,11 @@ theorem eta_logDeriv_SL2 (g : SL(2, ℤ)) (z : ℍ) :
       E2 z - Q * (2 * (Real.pi : ℂ) * Complex.I * (g 1 0 : ℂ) / d) := by
     have h := congrFun (E2_slash_action g) z
     rw [SL_slash_def] at h
+    have hD2 : D2 g z = 2 * (Real.pi : ℂ) * Complex.I * (g 1 0 : ℂ) / d := by
+      unfold D2 d
+      push_cast <;> ring
     simpa only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, zpow_neg, zpow_natCast,
-      D2, d, Q] using h
+      hD2, d, Q] using h
   have hExtra : -(P * (Q * (2 * (Real.pi : ℂ) * Complex.I * (g 1 0 : ℂ) / d))) =
       (g 1 0 : ℂ) / (2 * d) := by
     unfold P Q

@@ -31,11 +31,14 @@ def basis (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
   have h₃ : (3 : L) ≠ 0 := by
     simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₃K
   have hAL : algebraMap (ZMod p) L A ≠ 0 := (map_ne_zero (algebraMap (ZMod p) L)).mpr hA
-  rcases hl with rfl | rfl
-  · let B := CubicTwoPowerTorsionBasis.affineBasis h₂ h₃ hAL 1
+  by_cases h : l = 2
+  · subst l
+    let B := CubicTwoPowerTorsionBasis.affineBasis h₂ h₃ hAL 1
     let hs := CubicDoublingSurjective.affine_doubling_surjective h₂ h₃ hAL
     exact (Basis.finTwoProd ℤ_[2]).map (padicPairEquiv 2 G B hs)
-  · have hLevel : Nat.card (PowerTorsion 3 G 1) = 9 :=
+  · have he : l = 3 := hl.resolve_left h
+    subst l
+    have hLevel : Nat.card (PowerTorsion 3 G 1) = 9 :=
       CubicThreeAdicTate.affine_threePower_card h₂ h₃ hAL 1
     let B := FirstPrimeTorsionBasis.basis 3 G (by
       change Nat.card (PowerTorsion 3 G 1) = 9

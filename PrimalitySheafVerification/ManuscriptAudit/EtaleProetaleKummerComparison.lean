@@ -54,7 +54,7 @@ private theorem unit_square_commutes (d : ℕ) :
     (inverseImage X).map (etaleSequence X d).g ≫ unitSquare X d =
       unitSquare X d ≫ ProetaleKummerPower.power X d := by
   rw [etale_sequence_power, Functor.map_nsmul, (inverseImage X).map_id,
-    ProetaleKummerPower.power, nsmul_comp, id_comp, comp_nsmul, comp_id]
+    ProetaleKummerPower.power, nsmul_comp, Category.id_comp, comp_nsmul, Category.comp_id]
 
 /-- The native morphism to the actual pro-étale Kummer sequence. -/
 def sequenceComparison (d : ℕ) :

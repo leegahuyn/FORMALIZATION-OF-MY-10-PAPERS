@@ -11,7 +11,7 @@ on the genuine integral native extension-by-zero groups of the affine cusp. -/
 namespace ManuscriptAudit.CuspNativeCompactAdicPower
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian
-open ProetaleAdicPowerSequence (sequence multiply compactSequence_shortExact)
+open ProetaleAdicPowerSequence (compactSequence multiply compactSequence_shortExact)
 open ProetaleCohomologyIso (cohomologyIso)
 open OpenProetaleExtension (extensionByZero)
 open CuspProperCompactification (projectiveCusp affineCusp affineOpen)
@@ -29,7 +29,7 @@ private abbrev U := affineCusp K
 private abbrev X := projectiveCusp K
 private abbrev j := affineOpen K
 private abbrev E := extensionByZero (j K) A
-private abbrev S := (sequence (U K) ℓ r).map (E K)
+private abbrev S := compactSequence ℓ r (j K)
 private abbrev integers :=
   (constantSheaf (Scheme.ProEt.topology (X K)) A).obj (AddCommGrpCat.of (ULift.{1} ℤ))
 

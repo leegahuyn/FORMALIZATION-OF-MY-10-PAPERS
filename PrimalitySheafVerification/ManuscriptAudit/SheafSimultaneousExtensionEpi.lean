@@ -19,17 +19,17 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-universe u v
+universe u v w
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 variable [HasSheafify J AddCommGrpCat.{max u v}]
 
-private def fromInteger {A : AddCommGrpCat.{max u v}} (a : A) : AddCommGrpCat.of (ULift.{max u v} ℤ) ⟶ A :=
+private def fromInteger {A : AddCommGrpCat.{w}} (a : A) : AddCommGrpCat.of (ULift.{w} ℤ) ⟶ A :=
   AddCommGrpCat.ofHom
     { toFun := fun z ↦ z.down • a
       map_zero' := zero_zsmul _
       map_add' x y := add_zsmul _ _ _ }
 
-private theorem fromInteger_comp {A B : AddCommGrpCat.{max u v}} (a : A) (q : A ⟶ B) :
+private theorem fromInteger_comp {A B : AddCommGrpCat.{w}} (a : A) (q : A ⟶ B) :
     fromInteger a ≫ q = fromInteger (q a) := by
   apply AddCommGrpCat.ext
   intro z
