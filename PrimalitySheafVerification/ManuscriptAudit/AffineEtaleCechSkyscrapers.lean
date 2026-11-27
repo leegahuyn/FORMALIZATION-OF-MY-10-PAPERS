@@ -43,7 +43,7 @@ theorem skyscraper_restriction_cechAcyclic (Φ : (X R).smallEtaleTopology.Point.
   let H := sheafToPresheaf (Γ R) Ab ⋙ cochains f
   have h := SkyscraperCechAcyclic.H_succ_isZero f Ψ M hf n
   have hG : (Cech f G.obj).ExactAt (n + 1) :=
-    ((Cech f G.obj).exactAt_iff_isZero_homology).mpr h
+    ((Cech f G.obj).exactAt_iff_isZero_homology (n + 1)).mpr h
   exact hG.of_iso ((H.mapIso e).symm)
 
 /-- Every sheaf on the affine étale site admits an injective

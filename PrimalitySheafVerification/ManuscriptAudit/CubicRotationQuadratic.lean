@@ -30,7 +30,9 @@ theorem rotate_sum_eq_zero (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A
     (P : (Curve A).Point) :
     rotate z hz hΔ (rotate z hz hΔ P) + rotate z hz hΔ P + P = 0 := by
   cases P with
-  | zero => simp
+  | zero =>
+    change rotate z hz hΔ (rotate z hz hΔ (0 : (Curve A).Point)) + rotate z hz hΔ 0 + 0 = 0
+    simp only [map_zero, zero_add]
   | some x y hP =>
     let W := Curve A
     let r := rotate z hz hΔ

@@ -33,11 +33,12 @@ theorem triplingPolynomial_degree (A u : K) : (triplingPolynomial A u).natDegree
       (C (48 * A ^ 2) * X ^ 3 + C (64 * A ^ 3))).natDegree ≤ 8 :=
     natDegree_add_le_of_degree_le (h₁.trans (by decide)) (h₂.trans (by decide))
   have hden : (C (u * 9) * ((X : K[X]) ^ 2 * (X ^ 3 + C (4 * A)) ^ 2)).natDegree ≤ 8 := by
-    apply (natDegree_C_mul_le _ _).trans
-    apply natDegree_mul_le.trans
-    apply Nat.add_le_add (natDegree_X_pow_le 2)
-    apply natDegree_pow_le.trans
-    rw [natDegree_X_pow_add_C]
+    have hpow : (((X : K[X]) ^ 3 + C (4 * A)) ^ 2).natDegree ≤ 6 := by
+      calc
+        _ ≤ 2 * ((X : K[X]) ^ 3 + C (4 * A)).natDegree := natDegree_pow_le
+        _ = 6 := by rw [natDegree_X_pow_add_C]
+    exact (natDegree_C_mul_le _ _).trans
+      (natDegree_mul_le.trans (Nat.add_le_add (natDegree_X_pow_le 2) hpow))
   have htail : (-(C (96 * A) * (X : K[X]) ^ 6) +
       (C (48 * A ^ 2) * X ^ 3 + C (64 * A ^ 3)) -
       C (u * 9) * (X ^ 2 * (X ^ 3 + C (4 * A)) ^ 2)).natDegree ≤ 8 := by

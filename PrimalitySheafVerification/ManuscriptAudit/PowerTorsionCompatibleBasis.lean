@@ -63,6 +63,7 @@ private def positiveLevelEquiv (n : ℕ) :
     have he : f (a - b) = 0 := by rw [map_sub, hab, sub_self]
     exact sub_eq_zero.mp (hz _ he)
   have hV : Nat.card V = (m * m) ^ (n + 1) := by
+    change Nat.card (PowerTorsion m G (n + 1)) = _
     rw [card_powerTorsion m G h (n + 1), first_card m G B]
   letI : Finite V := Nat.finite_of_card_ne_zero (by
     rw [hV]

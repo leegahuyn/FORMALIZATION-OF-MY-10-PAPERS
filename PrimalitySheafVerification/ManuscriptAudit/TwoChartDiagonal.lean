@@ -26,8 +26,10 @@ private theorem diagram_commutes :
     intersectionToProduct f i j ≫ productChart f i j =
       (pullback.fst i j ≫ i) ≫ pullback.diagonal f := by
   apply pullback.hom_ext
-  · simp [intersectionToProduct, productChart, Category.assoc]
-  · simpa [intersectionToProduct, productChart, Category.assoc] using
+  · simp only [intersectionToProduct, productChart, pullback.map, Category.assoc,
+      pullback.lift_fst, pullback.lift_fst_assoc, pullback.diagonal_fst, Category.comp_id]
+  · simpa only [intersectionToProduct, productChart, pullback.map, Category.assoc,
+      pullback.lift_snd, pullback.lift_snd_assoc, pullback.diagonal_snd, Category.comp_id] using
       (pullback.condition (f := i) (g := j)).symm
 
 private theorem cone_fst {f' : X ⟶ S} {i' : A ⟶ X} {j' : B ⟶ X}
@@ -56,16 +58,18 @@ theorem square_isPullback :
     (PullbackCone.IsLimit.mk (diagram_commutes f i j) (witness f i j) ?_ ?_ ?_)
   · intro T
     apply pullback.hom_ext
-    · simp [intersectionToProduct, witness]
-    · simp [intersectionToProduct, witness]
+    · simp only [intersectionToProduct, witness, Category.assoc, pullback.lift_fst]
+    · simp only [intersectionToProduct, witness, Category.assoc, pullback.lift_snd]
   · intro T
     rw [← Category.assoc, witness, pullback.lift_fst, Category.assoc, cone_fst]
   · intro T m h _
     apply pullback.hom_ext
     · have h' := congrArg (fun g => g ≫ pullback.fst (i ≫ f) (j ≫ f)) h
-      simpa [Category.assoc, intersectionToProduct, witness] using h'
+      simpa only [Category.assoc, intersectionToProduct, witness, pullback.lift_fst]
+        using h'
     · have h' := congrArg (fun g => g ≫ pullback.snd (i ≫ f) (j ≫ f)) h
-      simpa [Category.assoc, intersectionToProduct, witness] using h'
+      simpa only [Category.assoc, intersectionToProduct, witness, pullback.lift_snd]
+        using h'
 
 end
 end ManuscriptAudit.TwoChartDiagonal

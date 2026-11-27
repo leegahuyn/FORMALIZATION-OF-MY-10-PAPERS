@@ -46,10 +46,14 @@ private def cochainsIsoUnop : cochains f P ≅ (chains f P).unop :=
   HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (by
     intro i j hij
     obtain rfl : i + 1 = j := hij
-    simpa only [Iso.refl_hom, Category.id_comp, Category.comp_id, cochains,
-      AlternatingCofaceMapComplex.obj, AlternatingFaceMapComplex.obj,
-      CochainComplex.of.d, ChainComplex.of.d, HomologicalComplex.unop_d] using
-        (AlternatingCofaceMapComplex.d_eq_unop_d ((Arrow.mk f).cechNerve.rightOp ⋙ P) i))
+    let X := (Arrow.mk f).cechNerve.rightOp ⋙ P
+    let Y := SimplicialObject.Augmented.drop.obj (mappedAugmented f P)
+    have h₁ : (cochains f P).d i (i + 1) = AlternatingCofaceMapComplex.objD X i :=
+      CochainComplex.of_d _ _ i
+    have h₂ : (chains f P).d (i + 1) i = AlternatingFaceMapComplex.objD Y i :=
+      ChainComplex.of_d _ _ i
+    simp only [Iso.refl_hom, Category.id_comp, Category.comp_id, HomologicalComplex.unop_d, h₁, h₂]
+    exact (AlternatingCofaceMapComplex.d_eq_unop_d X i).symm)
 
 /-- A surjective set map is split, so its augmented Čech nerve has an
 extra degeneracy. Thus all positive Čech cohomology vanishes. -/
@@ -58,7 +62,7 @@ theorem H_succ_isZero (hf : Function.Surjective f) (n : ℕ) :
   let ed : SimplicialObject.Augmented.ExtraDegeneracy (mappedAugmented f P) :=
     (Arrow.AugmentedCechNerve.extraDegeneracy (Arrow.mk f) (split f hf)).map P.rightOp
   let e := ed.homotopyEquiv
-  let eH := HomologicalComplex.isoOfQuasiIsoAt e.hom (n + 1)
+  let eH := e.toHomologyIso (n + 1)
   let T₀ := SimplicialObject.Augmented.point.obj (mappedAugmented f P)
   have hz : IsZero (((ChainComplex.single₀ Aᵒᵖ).obj T₀).homology (n + 1)) :=
     HomologicalComplex.isZero_single_obj_homology (.down ℕ) 0 T₀ (n + 1) (Nat.succ_ne_zero n)

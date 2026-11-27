@@ -1,6 +1,7 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicTopology.CechNerve
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import PrimalitySheafVerification.ManuscriptAudit.InjectiveCechPullback
 
 /-! The first three degrees of the actual Čech nerve and their
@@ -8,7 +9,7 @@ comparison with iterated pullbacks. -/
 
 namespace ManuscriptAudit.CechNerveLowDegrees
 
-open AlgebraicTopology CategoryTheory CategoryTheory.Limits Opposite
+open CategoryTheory CategoryTheory.Limits Opposite
 open InjectiveCechPullback
 open scoped Simplicial
 

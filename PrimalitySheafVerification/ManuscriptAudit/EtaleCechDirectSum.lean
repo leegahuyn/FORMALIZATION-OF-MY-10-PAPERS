@@ -12,6 +12,7 @@ namespace ManuscriptAudit.EtaleCechDirectSum
 
 open AlgebraicGeometry AlgebraicTopology CategoryTheory CategoryTheory.Limits Opposite
 open FiniteSupportPresheaf
+open scoped Simplicial
 
 noncomputable section
 
@@ -36,13 +37,16 @@ abbrev Cech (P : Cᵒᵖ ⥤ Ab) := (cochains f).obj P
 theorem cochainExactAt_succ_iff (K : CochainComplex Ab ℕ) (n : ℕ) :
     K.ExactAt (n + 1) ↔ ∀ z : K.X (n + 1), K.d (n + 1) (n + 2) z = 0 →
       ∃ y : K.X n, K.d n (n + 1) y = z := by
-  exact (K.exactAt_iff' (CochainComplex.prev_nat_succ n)
-    (CochainComplex.next ℕ (n + 1))).trans ShortComplex.ab_exact_iff
+  exact (K.exactAt_iff' (i := n) (j := n + 1) (k := n + 2)
+    (CochainComplex.prev_nat_succ n) (CochainComplex.next ℕ (n + 1))).trans ShortComplex.ab_exact_iff
 
 variable {I : Type} (P : I → Cᵒᵖ ⥤ Ab)
 
-private theorem d_component (i j : ℕ) (a : I) (z : (Cech f (directSum P)).X i) :
-    ((Cech f (directSum P)).d i j z) a = (Cech f (P a)).d i j (z a) := by
+private abbrev degree (n : ℕ) : Cᵒᵖ := (Arrow.mk f).cechNerve.rightOp.obj ⦋n⦌
+
+private theorem d_component (i j : ℕ) (a : I) (z : sections P (degree f i)) :
+    (show sections P (degree f j) from (Cech f (directSum P)).d i j z) a =
+      (Cech f (P a)).d i j (z a) := by
   let e := (cochains f).map (component P a)
   exact (ConcreteCategory.congr_hom (e.comm i j) z).symm
 
@@ -53,12 +57,16 @@ theorem directSum_exactAt_succ (n : ℕ) (h : ∀ a, (Cech f (P a)).ExactAt (n +
   classical
   apply (cochainExactAt_succ_iff _ (n := n)).mpr
   intro z hz
+  change sections P (degree f (n + 1)) at z
   have hz' (a : I) : (Cech f (P a)).d (n + 1) (n + 2) (z a) = 0 :=
     (d_component f P (n + 1) (n + 2) a z).symm.trans
-      (congrArg (fun t : (Cech f (directSum P)).X (n + 2) ↦ t a) hz)
+      (congrArg (fun t : sections P (degree f (n + 2)) ↦ t a) hz)
   choose y hy using fun a ↦ (cochainExactAt_succ_iff (Cech f (P a)) n).mp (h a) (z a) (hz' a)
-  let w : (Cech f (directSum P)).X n := DFinsupp.mk z.support (fun a ↦ y a.val)
-  refine ⟨w, DFinsupp.ext (fun a ↦ ?_)⟩
+  let w : sections P (degree f n) := DFinsupp.mk z.support (fun a ↦ y a.val)
+  refine ⟨w, ?_⟩
+  change (show sections P (degree f (n + 1)) from (Cech f (directSum P)).d n (n + 1) w) = z
+  apply DFinsupp.ext
+  intro a
   rw [d_component f P n (n + 1) a w]
   by_cases ha : a ∈ z.support
   · change (Cech f (P a)).d n (n + 1)
@@ -74,13 +82,13 @@ theorem directSum_exactAt_succ (n : ℕ) (h : ∀ a, (Cech f (P a)).ExactAt (n +
 /-- Positive Čech cohomology of the actual finite-support affine étale
 sheaf vanishes whenever that of its individual summands vanishes. -/
 theorem affineEtaleDirectSum_H_succ_isZero
-    {S : Scheme.{0}} {V W : S.AffineEtale} (g : V ⟶ W)
+    {S : Scheme.{0}} [HasFiniteLimits S.AffineEtale] {V W : S.AffineEtale} (g : V ⟶ W)
     (A : I → Sheaf (Scheme.AffineEtale.topology S) Ab) (n : ℕ)
     (h : ∀ a, IsZero ((Cech g (A a).obj).homology (n + 1))) :
     IsZero ((Cech g (affineEtaleDirectSum S A).obj).homology (n + 1)) := by
   apply HomologicalComplex.ExactAt.isZero_homology
   exact directSum_exactAt_succ g (fun a ↦ (A a).obj) n
-    (fun a ↦ ((Cech g (A a).obj).exactAt_iff_isZero_homology).mpr (h a))
+    (fun a ↦ ((Cech g (A a).obj).exactAt_iff_isZero_homology (n + 1)).mpr (h a))
 
 end
 

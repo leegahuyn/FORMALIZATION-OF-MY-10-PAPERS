@@ -45,7 +45,8 @@ theorem nsmul_relation_unique (B : Module.Basis (Fin 2) (ZMod 3) (Torsion 3 G))
     rw [hP, hQ] at h
     obtain ⟨h₀, h₁⟩ := three_dvd_coefficients B a b h
     rw [Nat.dvd_iff_mod_eq_zero] at h₀ h₁
-    simp only [pow_one] at ha hb
+    change a < 3 at ha
+    change b < 3 at hb
     omega
   | succ n ih =>
     have ht := congrArg (fun x : G => (3 ^ (n + 1) : ℕ) • x) h

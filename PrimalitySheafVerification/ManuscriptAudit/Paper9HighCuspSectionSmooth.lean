@@ -14,6 +14,14 @@ open scoped ContDiff UpperHalfPlane MatrixGroups Pointwise Topology
 
 noncomputable section
 
+private theorem mul_real_smooth {f g : ℂ → ℂ} {w : ℂ}
+    (hf : ContDiffAt ℝ ∞ f w) (hg : ContDiffAt ℝ ∞ g w) :
+    ContDiffAt ℝ ∞ (fun z => f z * g z) w := by
+  have hm : ContDiff ℂ ∞ (fun p : ℂ × ℂ => p.1 * p.2) := contDiff_mul
+  have hr : ContDiff ℝ ∞ (fun p : ℂ × ℂ => p.1 * p.2) := hm.restrict_scalars ℝ
+  have hp : ContDiffAt ℝ ∞ (fun z => (f z, g z)) w := hf.prodMk hg
+  exact hr.contDiffAt.comp w hp
+
 private def mode (w : ℂ) : ℂ := ((w.im ^ (1 / 4 : ℝ) : ℝ) : ℂ) * jacobiTheta w
 
 private theorem mode_eq (w : ℂ) (hw : 0 < w.im) :
@@ -29,10 +37,12 @@ private theorem mode_smooth (w : ℂ) (hw : 0 < w.im) :
     hd.contDiffOn UpperHalfPlane.isOpen_upperHalfPlaneSet
   have hk : ContDiffAt ℝ ∞ jacobiTheta w :=
     (hc.restrict_scalars ℝ).contDiffAt (UpperHalfPlane.isOpen_upperHalfPlaneSet.mem_nhds hw)
-  have hr := Complex.imCLM.contDiff.contDiffAt.rpow_const_of_ne
-    (p := (1 / 4 : ℝ)) (x := w) hw.ne'
-  have hcast := Complex.ofRealCLM.contDiff.contDiffAt.comp w hr
-  exact hcast.mul hk
+  have him : ContDiffAt ℝ ∞ (fun v : ℂ => v.im) w := Complex.imCLM.contDiff.contDiffAt
+  have hr : ContDiffAt ℝ ∞ (fun v : ℂ => v.im ^ (1 / 4 : ℝ)) w :=
+    him.rpow_const_of_ne hw.ne'
+  have hcast : ContDiffAt ℝ ∞ (fun v : ℂ => ((v.im ^ (1 / 4 : ℝ) : ℝ) : ℂ)) w :=
+    Complex.ofRealCLM.contDiff.contDiffAt.comp w hr
+  exact mul_real_smooth hcast hk
 
 private def denominator (γ : GammaTwo) (w : ℂ) : ℂ :=
   ((((γ : SL(2, ℤ)) 1 0 : ℤ) : ℂ) * w +
@@ -71,13 +81,13 @@ private theorem matrixMap_smooth (γ : GammaTwo) (w : ℂ) (hw : 0 < w.im) :
     ContDiffAt ℝ ∞ (matrixMap γ) w := by
   let g := (γ : SL(2, ℤ))
   let numerator := fun v : ℂ => ((g 0 0 : ℤ) : ℂ) * v + ((g 0 1 : ℤ) : ℂ)
-  have hn : ContDiffAt ℝ ∞ numerator w :=
+  have hn : ContDiffAt ℂ ∞ numerator w :=
     (contDiffAt_const.mul contDiffAt_id).add contDiffAt_const
-  have hd : ContDiffAt ℝ ∞ (denominator γ) w :=
+  have hd : ContDiffAt ℂ ∞ (denominator γ) w :=
     (contDiffAt_const.mul contDiffAt_id).add contDiffAt_const
-  have hi := (contDiffAt_inv ℝ (denominator_ne_zero γ w hw) :
-    ContDiffAt ℝ ∞ (Inv.inv : ℂ → ℂ) (denominator γ w)).comp w hd
-  simpa only [matrixMap, numerator, g, div_eq_mul_inv, Function.comp_apply] using hn.mul hi
+  have hq : ContDiffAt ℂ ∞ (matrixMap γ) w :=
+    hn.div hd (denominator_ne_zero γ w hw)
+  exact hq.restrict_scalars ℝ
 
 theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
     (Y : ℝ) (hY : 1 ≤ Y) (hs : ∀ y, y < Y + 2 ∨ Y + 5 < y → a y = 0) :
@@ -103,18 +113,23 @@ theorem extendedSection_realSmooth (a : ℝ → ℂ) (ha : ContDiff ℝ ∞ a)
       change 1 < (γ • z : ℍ).im
       rwa [hγ]
     have hm := matrixMap_smooth γ w hw
-    have hH := Complex.imCLM.contDiff.contDiffAt.comp w hm
+    have hH : ContDiffAt ℝ ∞ (fun v => (matrixMap γ v).im) w :=
+      Complex.imCLM.contDiff.contDiffAt.comp w hm
     have hθ := (mode_smooth (matrixMap γ w) (zero_lt_one.trans hW)).comp w hm
     have hθne : mode (matrixMap γ w) ≠ 0 := by
       rw [hΓ]
       rw [mode_eq _ (γ • z : ℍ).im_pos, UpperHalfPlane.ofComplex_apply]
       exact thetaWeightedMode_ne_zero (γ • z)
-    have hi := (contDiffAt_inv ℝ hθne :
-      ContDiffAt ℝ ∞ (Inv.inv : ℂ → ℂ) (mode (matrixMap γ w))).comp w hθ
+    have hInv : ContDiffAt ℂ ∞ (Inv.inv : ℂ → ℂ) (mode (matrixMap γ w)) :=
+      contDiffAt_inv ℂ hθne
+    have hi : ContDiffAt ℝ ∞ (fun v => (mode (matrixMap γ v))⁻¹) w :=
+      (hInv.restrict_scalars ℝ).comp w hθ
+    have ha' : ContDiffAt ℝ ∞ (fun v => a (matrixMap γ v).im) w :=
+      ha.contDiffAt.comp w hH
     have hform : ContDiffAt ℝ ∞
         (fun v => mode v * (a (matrixMap γ v).im / mode (matrixMap γ v))) w := by
-      simpa only [div_eq_mul_inv, Function.comp_apply] using
-        (mode_smooth w hw).mul ((ha.contDiffAt.comp w hH).mul hi)
+      simpa only [div_eq_mul_inv] using
+        mul_real_smooth (mode_smooth w hw) (mul_real_smooth ha' hi)
     apply hform.congr_of_eventuallyEq
     have ht : ∀ᶠ v : ℂ in 𝓝 w, 1 < (matrixMap γ v).im :=
       hH.continuousAt (Ioi_mem_nhds hW)

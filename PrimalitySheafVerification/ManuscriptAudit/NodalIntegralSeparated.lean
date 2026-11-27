@@ -42,8 +42,10 @@ private theorem same_chart_closed (b : Bool) :
   have hD : intersectionToProduct (toBase R) f f =
       pullback.fst f f ≫ pullback.diagonal (f ≫ toBase R) := by
     apply pullback.hom_ext
-    · simp [intersectionToProduct]
-    · simpa [intersectionToProduct] using h.symm
+    · simp only [intersectionToProduct, Category.assoc, pullback.lift_fst,
+        pullback.diagonal_fst, Category.comp_id]
+    · simpa only [intersectionToProduct, Category.assoc, pullback.lift_snd,
+        pullback.diagonal_snd, Category.comp_id] using h.symm
   letI : IsIso (pullback.fst f f) :=
     (IsPullback.of_hasPullback f f).isIso_fst_of_mono
   letI : IsSeparated (f ≫ toBase R) := by
@@ -73,11 +75,13 @@ private theorem cross_forward_closed :
   have hD : e.hom ≫ intersectionToProduct (toBase R) (chartIn R false) (chartIn R true) ≫
       p.hom = NodalOverlapDiagonal.toProduct R := by
     apply pullback.hom_ext
-    · simp only [Category.assoc, pullback.congrHom_hom, pullback.lift_fst,
-        Category.comp_id, intersectionToProduct, NodalOverlapDiagonal.toProduct]
+    · simp only [Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_fst,
+        pullback.lift_fst_assoc, Category.comp_id, intersectionToProduct,
+        NodalOverlapDiagonal.toProduct]
       exact hz
-    · simp only [Category.assoc, pullback.congrHom_hom, pullback.lift_snd,
-        Category.comp_id, intersectionToProduct, NodalOverlapDiagonal.toProduct]
+    · simp only [Category.assoc, pullback.congrHom_hom, pullback.map, pullback.lift_snd,
+        pullback.lift_snd_assoc, Category.comp_id, intersectionToProduct,
+        NodalOverlapDiagonal.toProduct]
       exact hy
   have hD' : intersectionToProduct (toBase R) (chartIn R false) (chartIn R true) =
       e.inv ≫ NodalOverlapDiagonal.toProduct R ≫ p.inv := by
@@ -95,7 +99,9 @@ private theorem cross_reverse_closed :
   have hD : intersectionToProduct (toBase R) g f = (pullbackSymmetry g f).hom ≫
       intersectionToProduct (toBase R) f g ≫
         (pullbackSymmetry (f ≫ toBase R) (g ≫ toBase R)).hom := by
-    apply pullback.hom_ext <;> simp [intersectionToProduct]
+    apply pullback.hom_ext <;>
+      simp [intersectionToProduct, Category.assoc, pullback.lift_fst, pullback.lift_snd,
+        pullback.lift_fst_assoc, pullback.lift_snd_assoc]
   change IsClosedImmersion (intersectionToProduct (toBase R) g f)
   rw [hD]
   letI : IsClosedImmersion (intersectionToProduct (toBase R) f g) := cross_forward_closed R

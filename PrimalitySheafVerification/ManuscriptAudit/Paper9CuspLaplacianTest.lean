@@ -55,7 +55,7 @@ theorem printedL_test_density (z : ℍ) :
   simp only [Complex.conj_ofReal, ← Complex.ofReal_pow, ← Complex.ofReal_mul, Complex.ofReal_re]
   field_simp [z.im_ne_zero]
 
-private theorem derivative_square_integral_pos :
+theorem derivative_square_integral_pos :
     0 < ∫ y : ℝ in (1 : ℝ)..6, deriv cuspBump y ^ 2 := by
   apply intervalIntegral.integral_pos (by norm_num : (1 : ℝ) < 6)
     (contDiff_deriv.continuous.pow 2).continuousOn
@@ -113,6 +113,7 @@ run_cmd do
   for name in [
       ``ManuscriptAudit.Paper9CuspLaplacianTest.printedL_test,
       ``ManuscriptAudit.Paper9CuspLaplacianTest.printedL_test_density,
+      ``ManuscriptAudit.Paper9CuspLaplacianTest.derivative_square_integral_pos,
       ``ManuscriptAudit.Paper9CuspLaplacianTest.compact_cusp_test_negative] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

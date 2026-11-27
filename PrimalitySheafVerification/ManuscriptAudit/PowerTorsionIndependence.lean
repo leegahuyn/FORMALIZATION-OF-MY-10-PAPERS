@@ -56,6 +56,7 @@ private theorem dvd_of_relation (n a b : ℕ)
   rw [nsmul_add, nsmul_zero, nsmul_comm (m ^ n) a, nsmul_comm (m ^ n) b, h0, h1] at hScaled
   exact dvd_of_base_relation m B a b hScaled
 
+include hm in
 theorem relation_unique (n a b : ℕ) (ha : a < m ^ (n + 1)) (hb : b < m ^ (n + 1))
     (he : a • (generator m B h 0 n : G) + b • (generator m B h 1 n : G) = 0) :
     a = 0 ∧ b = 0 := by
