@@ -13,6 +13,8 @@ open CubicNonsplitFrobeniusTrace FourTorsionDeterminantTools
 
 noncomputable section
 
+local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+
 variable (L : Type*) [Field L] [Algebra (ZMod 5) L] [DecidableEq L]
 
 abbrev Level (A : ZMod 5) (n : ℕ) := geometricTorsion (2 ^ (n + 1)) 5 L (Curve A)

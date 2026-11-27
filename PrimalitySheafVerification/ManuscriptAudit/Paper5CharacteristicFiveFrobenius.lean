@@ -12,6 +12,8 @@ open WeierstrassFrobeniusFixed
 
 noncomputable section
 
+local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+
 variable (L : Type*) [Field L] [Algebra (ZMod 5) L] [DecidableEq L]
 
 theorem centered_baseChange (A : ZMod 5) :

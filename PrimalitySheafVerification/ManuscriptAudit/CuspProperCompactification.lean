@@ -467,28 +467,6 @@ theorem standardZChartPoint_toBase {R : Type u} [CommRing R] [Algebra K R]
       (by simpa only [zero_nsmul] using C_mem_zero K a)) = _
   exact standardZChartEvaluation_C K coordinates hz a
 
-/-- Every standard affine chart of the projective plane has the stated map
-to the coefficient field when its constant coordinates are preserved. -/
-theorem standardPlaneChartPoint_toBase {R : Type u} [CommRing R] [Algebra K R]
-    (i : Fin 3)
-    (e : Away (grading K) (MvPolynomial.X i) →+* R)
-    (h : ∀ a : K, e (Away.mk (grading K) (X_mem_one K i) 0 (MvPolynomial.C a)
-      (by simpa only [zero_nsmul] using C_mem_zero K a)) = algebraMap K R a) :
-    Spec.map (CommRingCat.ofHom e) ≫
-      Proj.awayι (grading K) (MvPolynomial.X i) (X_mem_one K i) (by decide) ≫
-      projectivePlaneToBase K =
-      Spec.map (CommRingCat.ofHom (algebraMap K R)) := by
-  unfold projectivePlaneToBase planeToBase
-  simp only [Category.assoc, Proj.awayι_toSpecZero_assoc, ← Spec.map_comp]
-  apply congrArg Spec.map
-  apply CommRingCat.hom_ext
-  apply RingHom.ext
-  intro a
-  change e (fromZeroRingHom (grading K) _ (constants K a)) = _
-  change e (Away.mk (grading K) (X_mem_one K i) 0 (MvPolynomial.C a)
-    (by simpa only [zero_nsmul] using C_mem_zero K a)) = _
-  exact h a
-
 end
 
 end ManuscriptAudit.CuspProperCompactification
@@ -508,10 +486,10 @@ run_cmd do
       ``ManuscriptAudit.CuspProperCompactification.standardPlane_basicOpens_cover,
       ``ManuscriptAudit.CuspProperCompactification.projectivePlaneToBase_isProper,
       ``ManuscriptAudit.CuspProperCompactification.standardZChartEvaluation_mk,
-      ``ManuscriptAudit.CuspProperCompactification.standardZChartPoint_toBase,
-      ``ManuscriptAudit.CuspProperCompactification.standardPlaneChartPoint_toBase] do
+      ``ManuscriptAudit.CuspProperCompactification.standardZChartPoint_toBase] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

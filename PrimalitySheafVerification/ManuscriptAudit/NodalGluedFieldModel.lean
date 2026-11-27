@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.NodalGluedFieldCharts
+import PrimalitySheafVerification.ManuscriptAudit.NodalPlaneChartBase
 
 /-! The scheme obtained by the literal integral gluing recipe, over a field,
 is the already-constructed proper projective node. -/
@@ -193,7 +194,7 @@ private theorem yChart_over :
   rw [← Category.assoc, NodalProperYChart.chartOpen_inPlane]
   unfold NodalYChartImmersion.nodeYInPlane NodalYChartImmersion.nodeToYChart
   rw [Category.assoc]
-  apply CuspProperCompactification.standardPlaneChartPoint_toBase K 1
+  apply NodalPlaneChartBase.standardPlaneChartPoint_toBase K 1
   intro a
   rw [NodalYChartImmersion.evalYChart_mk]
   simp [NodalYChartImmersion.evalYPolynomial]

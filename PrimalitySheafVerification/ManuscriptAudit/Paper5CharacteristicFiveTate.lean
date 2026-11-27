@@ -13,6 +13,8 @@ open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
 
 noncomputable section
 
+local instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+
 variable (L : Type*) [Field L] [Algebra (ZMod 5) L] [DecidableEq L] [IsAlgClosed L]
 
 private theorem printedAffine_eq (A : ZMod 5) :
