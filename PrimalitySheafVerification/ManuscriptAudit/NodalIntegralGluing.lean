@@ -61,7 +61,8 @@ instance {i j : WidePushoutShape Bool} (f : i ⟶ j) :
     IsOpenImmersion ((diagram R).map f) := by
   cases f with
   | id i =>
-    rw [WidePushoutShape.hom_id, Functor.map_id]
+    change IsOpenImmersion ((diagram R).map (𝟙 i))
+    rw [(diagram R).map_id]
     infer_instance
   | init b =>
     cases b
@@ -131,10 +132,18 @@ private theorem zChart_flat : Flat (chartToBase R false) := by
   have hm := Module.Flat.trans R (Polynomial R) (zChart R)
   exact Flat.SpecMap_iff.mpr (RingHom.flat_algebraMap_iff.mpr hm)
 
+private def rootCongr {p q : Polynomial (Polynomial R)} (h : p = q) :
+    AdjoinRoot p ≃ₐ[R] AdjoinRoot q := by
+  subst q
+  exact .refl
+
 private def localizedYEquiv :
     yChart R ≃ₐ[R] Localization.Away ((1 : Polynomial R) - X ^ 2) := by
-  simpa only [NodalYChartAlgebra.nodalYEquation R, yEquation] using
+  let p : Polynomial (Polynomial R) := C ((1 : Polynomial R) - X ^ 2) * X - C (X ^ 3)
+  have h : p = yEquation R := NodalYChartAlgebra.nodalYEquation R
+  let e : AdjoinRoot p ≃ₐ[R] Localization.Away ((1 : Polynomial R) - X ^ 2) :=
     (NodalYChartAlgebra.nodalYChartEquiv R).restrictScalars R
+  exact (rootCongr R h).symm.trans e
 
 private theorem yChart_flat : Flat (chartToBase R true) := by
   let L := Localization.Away ((1 : Polynomial R) - X ^ 2)

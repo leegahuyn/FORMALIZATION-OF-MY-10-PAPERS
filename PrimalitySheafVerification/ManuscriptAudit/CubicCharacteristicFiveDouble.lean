@@ -15,12 +15,14 @@ noncomputable section
 variable {K : Type*} [Field K] [CharP K 5] [DecidableEq K] {A : K}
 
 theorem two_ne : (2 : K) ≠ 0 := by
-  simpa only [Nat.cast_ofNat, CharP.cast_eq_zero_iff K 5] using
-    (show ¬ 5 ∣ (2 : ℕ) by decide)
+  change ((2 : ℕ) : K) ≠ 0
+  rw [CharP.cast_eq_zero_iff K 5 2]
+  decide
 
 theorem three_ne : (3 : K) ≠ 0 := by
-  simpa only [Nat.cast_ofNat, CharP.cast_eq_zero_iff K 5] using
-    (show ¬ 5 ∣ (3 : ℕ) by decide)
+  change ((3 : ℕ) : K) ≠ 0
+  rw [CharP.cast_eq_zero_iff K 5 3]
+  decide
 
 theorem negY (x y : K) : (Curve A).negY x y = -y := by
   simp [Curve, CubicAffine, shortCubic, Affine.negY]
@@ -58,7 +60,7 @@ theorem double_some {x y : K} (hA : A ≠ 0) (hy : y ≠ 0)
   have hl : l = -x ^ 2 / y := by
     change (Curve A).slope x x y y = _
     rw [Affine.slope_of_Y_ne rfl hyNeg, negY, sub_neg_eq_add, ← two_mul]
-    simp only [Curve, CubicAffine, shortCubic, mul_zero, zero_mul, add_zero, sub_zero]
+    change (3 * x ^ 2) / (2 * y) = _
     rw [h3neg]
     field_simp [two_ne (K := K), hy]
     <;> ring
@@ -110,8 +112,8 @@ theorem normalized_second_coordinates (hA : A ≠ 0) (hy : y ≠ 0)
 theorem normalized_fourth_coordinates (hA : A ≠ 0) (hy : y ≠ 0)
     (hD : t + 1 ≠ 0) (hV : ordinateFactor t ≠ 0)
     (hx : x ^ 3 = A * t) (hySq : y ^ 2 = A * (t + 1)) :
-    let u := -x * (t + 2) / (t + 1)
-    let v := y * ordinateFactor t / (t + 1) ^ 2
+    let u := -x * (t + 2) / (t + 1);
+    let v := y * ordinateFactor t / (t + 1) ^ 2;
     -u * (u ^ 3 + 2 * A) / v ^ 2 =
         x * fourthAbscissaNumerator t / ((t + 1) * ordinateFactor t ^ 2) ∧
       (2 * u ^ 6 - A ^ 2) / v ^ 3 =

@@ -93,10 +93,16 @@ theorem exists_cocycle_lift_after_finiteComplement
   let N := pushout i ρ
   let m : M ⟶ N := pushout.inl i ρ
   let p : N ⟶ Q := (CokernelPushout.sequence i ρ).g
+  have hOutside (Z : S.AffineEtaleᵒᵖ) (d : (D S P).obj.obj Z) (ht : d.support ⊆ t)
+      (a : I) (ha : a ∉ t) : DFinsupp.toFun d a = 0 := by
+    by_contra hn
+    exact ha (ht ((DFinsupp.mem_support_toFun d a).mpr hn))
   have hk₀ : m.hom.app (op W) (i.hom.app (op W) d₀) = 0 :=
-    pushout_inl_app_eq_zero_of_support S P t i (op W) d₀ Finset.subset_union_left
+    pushout_inl_app_eq_zero_of_support S P t i (op W) d₀
+      (hOutside (op W) d₀ Finset.subset_union_left)
   have hk₁ : m.hom.app (op E) (i.hom.app (op E) d₁) = 0 :=
-    pushout_inl_app_eq_zero_of_support S P t i (op E) d₁ Finset.subset_union_right
+    pushout_inl_app_eq_zero_of_support S P t i (op E) d₁
+      (hOutside (op E) d₁ Finset.subset_union_right)
   let y' := m.hom.app (op V) y
   have hyPair : N.obj.map l.op y' = N.obj.map r.op y' := by
     apply sub_eq_zero.mp

@@ -19,7 +19,7 @@ private theorem differentiable_bump : Differentiable ℝ cuspBump :=
   (contDiff_infty.mp cuspBump_smooth 1).differentiable (by decide)
 
 private theorem contDiff_deriv : ContDiff ℝ 1 (deriv cuspBump) := by
-  have h : ContDiff ℝ (1 + 1) cuspBump := cuspBump_smooth.of_le (by simp)
+  have h : ContDiff ℝ (1 + 1) cuspBump := contDiff_infty.mp cuspBump_smooth 2
   exact h.deriv'
 
 private theorem differentiable_deriv : Differentiable ℝ (deriv cuspBump) :=
@@ -34,8 +34,10 @@ private theorem differentiable_deriv : Differentiable ℝ (deriv cuspBump) :=
 
 @[simp] theorem test_partialYY (x y : ℝ) :
     partialY (partialY testCoordinates) x y = ((deriv (deriv cuspBump) y : ℝ) : ℂ) := by
-  unfold partialY
-  simp only [test_partialY]
+  change deriv (fun t => partialY testCoordinates x t) y = _
+  have hfun : (fun t => partialY testCoordinates x t) =
+      fun t => ((deriv cuspBump t : ℝ) : ℂ) := funext (test_partialY x)
+  rw [hfun]
   exact ((differentiable_deriv y).hasDerivAt.ofReal_comp).deriv
 
 theorem printedL_test (z : ℍ) :

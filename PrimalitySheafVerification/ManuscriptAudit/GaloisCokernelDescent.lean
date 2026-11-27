@@ -36,6 +36,14 @@ private theorem automorphism_over (σ : L ≃ₐ[K] L) :
     automorphism K L σ ≫ f K L = f K L :=
   MorphismProperty.Over.Hom.ext (MorphismProperty.Over.w (automorphism K L σ))
 
+def terminalObject_isTerminal : IsTerminal (T K) :=
+  IsTerminal.ofUniqueHom
+    (fun U => MorphismProperty.Over.homMk U.hom (Category.comp_id _))
+    (fun U a => MorphismProperty.Over.Hom.ext (by
+      have h := MorphismProperty.Over.w a
+      change a.left ≫ 𝟙 (X K) = U.hom at h
+      rwa [Category.comp_id] at h))
+
 theorem exists_global_cokernel_lift_of_HOne
     {F I : Sheaf (J K) AddCommGrpCat.{0}} (i : F ⟶ I) [Mono i]
     (hOne : Subsingleton (groupCohomology (sectionsRep K L F) 1))

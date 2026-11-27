@@ -46,6 +46,8 @@ variable (C : ShortComplex (M F)) (hC : C.ShortExact)
 variable (hVanishing : ∀ (L : Type) [Field L] (g : Spec (CommRingCat.of L) ⟶ Y F)
   [Etale g], Subsingleton (Sheaf.H ((restriction g).obj C.X₁) 1))
 
+include hC hVanishing
+
 set_option maxHeartbeats 3000000 in
 private theorem projection_surjective_integral
     (U : (AffineEtaleDomainSite.integralCharts A).FullSubcategory) :

@@ -63,7 +63,7 @@ private theorem midway_map (p : Polynomial (Polynomial R)) :
 
 private def afterMidway (p : Polynomial (Polynomial R)) :
     AdjoinRoot (midway R S p) ≃ₐ[S] AdjoinRoot (equation R S p) :=
-  AdjoinRoot.mapAlgEquiv (polyIso R S) _ _ (by rw [midway_map]; exact Associated.refl _)
+  AdjoinRoot.mapAlgEquiv (polyIso R S) _ _ (by rw [midway_map])
 
 /-- The literal scalar-extension tensor of the plane equation is its mapped equation. -/
 def coordinateEquiv (p : Polynomial (Polynomial R)) :
@@ -75,6 +75,7 @@ private theorem afterMidway_of (p : Polynomial (Polynomial R)) (a : TP R S) :
       AdjoinRoot.of (equation R S p) (polyIso R S a) := by
   unfold afterMidway
   rw [AdjoinRoot.coe_mapAlgEquiv, AdjoinRoot.map_of]
+  rfl
 
 private theorem afterMidway_root (p : Polynomial (Polynomial R)) :
     afterMidway R S p (AdjoinRoot.root (midway R S p)) =
@@ -104,7 +105,7 @@ theorem coordinateEquiv_right (p : Polynomial (Polynomial R)) (a : AdjoinRoot p)
 
 abbrev plane (p : Polynomial (Polynomial R)) := Spec (CommRingCat.of (AdjoinRoot p))
 
-def structureMap (p : Polynomial (Polynomial R)) : plane R p ⟶ Spec (CommRingCat.of R) :=
+abbrev structureMap (p : Polynomial (Polynomial R)) : plane R p ⟶ Spec (CommRingCat.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R (AdjoinRoot p)))
 
 abbrev changeBase : Spec (CommRingCat.of S) ⟶ Spec (CommRingCat.of R) :=
@@ -124,7 +125,7 @@ private theorem planePullbackIso_fst (p : Polynomial (Polynomial R)) :
   change (Spec.map (CommRingCat.ofHom (coordinateEquiv R S p).toRingHom) ≫
     (pullbackSpecIso R S (AdjoinRoot p)).inv) ≫
       pullback.fst (changeBase R S) (structureMap R p) = _
-  rw [Category.assoc, pullbackSpecIso_inv_fst, ← Spec.map_comp]
+  rw [Category.assoc, pullbackSpecIso_inv_fst', ← Spec.map_comp]
   apply congrArg Spec.map
   apply CommRingCat.hom_ext
   apply RingHom.ext

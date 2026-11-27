@@ -48,7 +48,7 @@ private theorem unitCokernel_HOne_subsingleton
   let P := Injective.under Q
   let j : Q ⟶ P := Injective.ι Q
   letI : Mono j := inferInstanceAs (Mono (Injective.ι Q))
-  let hT : IsTerminal (terminalObject K) := MorphismProperty.Over.mkIdTerminal @Etale (X K)
+  let hT : IsTerminal (terminalObject K) := terminalObject_isTerminal K
   apply SheafH1Descent.H1_subsingleton_of_global_lifts j hT
   intro x
   obtain ⟨L, hF, hA, hM, hG, y, hy⟩ := exists_cokernel_lift_on_finiteGalois_cover K j x
@@ -70,7 +70,8 @@ theorem unitSheaf_HTwo_subsingleton_of_finiteGalois
   letI : Mono i := inferInstanceAs (Mono (Injective.ι F))
   letI : Injective S.X₂ := inferInstanceAs (Injective I)
   have hS : S.ShortExact := ShortComplex.ShortExact.mk'
-    (ShortComplex.cokernelSequence_exact i) inferInstance inferInstance
+    (ShortComplex.cokernelSequence_exact i) (inferInstanceAs (Mono i))
+    (inferInstanceAs (Epi (cokernel.π i)))
   let e := SheafCohomologyDimensionShift.hOneQuotientEquivHTwo S hS
   have hOne : Subsingleton (Sheaf.H S.X₃ 1) := unitCokernel_HOne_subsingleton K i h
   exact ⟨fun a b => e.symm.injective (hOne.elim (e.symm a) (e.symm b))⟩

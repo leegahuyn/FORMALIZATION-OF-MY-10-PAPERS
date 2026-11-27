@@ -20,6 +20,8 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
+attribute [local instance] MvPolynomial.gradedAlgebra
+
 universe u
 variable (K : Type u) [Field K]
 
@@ -159,15 +161,81 @@ def modelIso : model K ≅ projectiveNode K where
     change (chartIso K b).inv ≫ ((chartIso K b).hom ≫ (cover K).f b) = _
     simp
 
+
+private theorem zSchemeIso_base :
+    (zSchemeIso K).hom ≫
+      Spec.map (CommRingCat.ofHom (algebraMap K (NodalConductor.coordinates K))) =
+      chartToBase K false := by
+  change Spec.map (CommRingCat.ofHom (zChartEquiv K).symm.toRingHom) ≫
+    Spec.map (CommRingCat.ofHom (algebraMap K (NodalConductor.coordinates K))) = _
+  rw [← Spec.map_comp]
+  apply congrArg Spec.map
+  apply CommRingCat.hom_ext
+  apply RingHom.ext
+  exact (zChartEquiv K).symm.commutes
+
+private theorem ySchemeIso_base :
+    (ySchemeIso K).hom ≫
+      Spec.map (CommRingCat.ofHom (algebraMap K (NodalYChartImmersion.yCoordinateRing K))) =
+      chartToBase K true := by
+  change Spec.map (CommRingCat.ofHom (yChartEquiv K).symm.toRingHom) ≫
+    Spec.map (CommRingCat.ofHom (algebraMap K (NodalYChartImmersion.yCoordinateRing K))) = _
+  rw [← Spec.map_comp]
+  apply congrArg Spec.map
+  apply CommRingCat.hom_ext
+  apply RingHom.ext
+  exact (yChartEquiv K).symm.commutes
+
+private theorem yChart_over :
+    chartOpen K ≫ projectiveNodeToBase K =
+      Spec.map (CommRingCat.ofHom (algebraMap K (NodalYChartImmersion.yCoordinateRing K))) := by
+  unfold projectiveNodeToBase
+  rw [← Category.assoc, NodalProperYChart.chartOpen_inPlane]
+  unfold NodalYChartImmersion.nodeYInPlane NodalYChartImmersion.nodeToYChart
+  rw [Category.assoc]
+  apply CuspProperCompactification.standardPlaneChartPoint_toBase K 1
+  intro a
+  rw [NodalYChartImmersion.evalYChart_mk]
+  simp [NodalYChartImmersion.evalYPolynomial]
+
+private theorem chartMap_over (b : Bool) :
+    chartMap K b ≫ projectiveNodeToBase K = chartToBase K b := by
+  cases b
+  · change ((zSchemeIso K).hom ≫ affineOpen K) ≫ projectiveNodeToBase K = _
+    rw [Category.assoc, NodalProjectiveClosure.affineOpen_toBase, zSchemeIso_base]
+  · change ((ySchemeIso K).hom ≫ chartOpen K) ≫ projectiveNodeToBase K = _
+    rw [Category.assoc, yChart_over, ySchemeIso_base]
+
+/-- The model identification preserves the morphisms to the coefficient field. -/
+theorem modelIso_over :
+    (modelIso K).hom ≫ projectiveNodeToBase K = toBase K := by
+  change toProper K ≫ projectiveNodeToBase K = _
+  apply colimit.hom_ext
+  intro i
+  cases i with
+  | some b =>
+    change chartIn K b ≫ toProper K ≫ projectiveNodeToBase K =
+      chartIn K b ≫ toBase K
+    rw [← Category.assoc, chartIn_toProper, chartMap_over, chartIn_over]
+  | none =>
+    have hZ : overlapToZ K ≫ chartIn K false = colimit.ι (diagram K) none :=
+      colimit.w (diagram K) (WidePushoutShape.Hom.init false)
+    rw [← hZ]
+    simp only [Category.assoc]
+    suffices h : chartIn K false ≫ toProper K ≫ projectiveNodeToBase K =
+        chartIn K false ≫ toBase K by rw [h]
+    rw [← Category.assoc, chartIn_toProper, chartMap_over, chartIn_over]
+
 end
 end ManuscriptAudit.NodalGluedFieldModel
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.NodalGluedFieldModel.modelIso
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.NodalGluedFieldModel.modelIso,
+      ``ManuscriptAudit.NodalGluedFieldModel.modelIso_over] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

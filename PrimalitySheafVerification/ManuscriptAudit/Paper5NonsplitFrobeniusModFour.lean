@@ -126,6 +126,7 @@ theorem charpoly_mod_four (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A �
     letI := Module.Free.of_basis (fourBasis p L hp hA)
     letI := Module.Finite.of_basis (fourBasis p L hp hA)
     (frobeniusLinear 4 p L (Curve A)).charpoly = X ^ 2 + C (p : ZMod 4) := by
+  letI : Fact (1 < (4 : ℕ)) := ⟨by decide⟩
   let B := fourBasis p L hp hA
   letI := Module.Free.of_basis B
   letI := Module.Finite.of_basis B

@@ -44,10 +44,11 @@ theorem principalTheta_re_axis_lower (y : ℝ) (hy : 0 < y) :
     Real.exp (-Real.pi * y) ≤ (principalTheta ((y : ℂ) * Complex.I)).re := by
   have hsum := principalTheta_summable ((y : ℂ) * Complex.I) (by simpa using hy)
   have hreal : HasSum (realTerm y) (principalTheta ((y : ℂ) * Complex.I)).re := by
+    unfold principalTheta
     have h := Complex.reCLM.hasSum hsum.hasSum
     simpa only [Function.comp_def, Complex.reCLM_apply, realTerm_axis] using h
-  have hle := Summable.le_tsum (i := (1 : ℤ)) (f := realTerm y)
-    (fun n _ => by unfold realTerm; split <;> positivity) hreal.summable
+  have hle := Summable.le_tsum (i := (1 : ℤ)) (f := realTerm y) hreal.summable
+    (fun n _ => by unfold realTerm; split <;> positivity)
   rw [hreal.tsum_eq] at hle
   simpa [realTerm] using hle
 

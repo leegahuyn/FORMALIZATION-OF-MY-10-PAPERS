@@ -79,6 +79,28 @@ private theorem specAlgIso_over {A B : Type} [CommRing A] [CommRing B]
   apply RingHom.ext
   exact e.symm.commutes
 
+set_option maxHeartbeats 800000 in
+private theorem identifiedFiber_over {B : Type} [CommRing B] [Algebra K B]
+    (q : Polynomial ℤ) {p : Polynomial K} (h : q.map (algebraMap ℤ K) = p)
+    (e : coordinateRing K p ≃ₐ[K] B) :
+    (schemeBaseChange ℤ K q ≪≫ familyCongr K h ≪≫
+      Scheme.Spec.mapIso e.symm.toCommRingCatIso.op).hom ≫
+        Spec.map (CommRingCat.ofHom (algebraMap K B)) =
+      pullback.fst (coefficientPoint K) (toBase ℤ q) := by
+  let e₀ := schemeBaseChange ℤ K q
+  let e₁ := familyCongr K h
+  let e₂ := Scheme.Spec.mapIso e.symm.toCommRingCatIso.op
+  have h₂ : e₂.hom ≫ Spec.map (CommRingCat.ofHom (algebraMap K B)) = toBase K p :=
+    specAlgIso_over K e
+  have h₁ : e₁.hom ≫ toBase K p = toBase K (q.map (algebraMap ℤ K)) :=
+    familyCongr_over K h
+  have h₀ : e₀.hom ≫ toBase K (q.map (algebraMap ℤ K)) =
+      pullback.fst (coefficientPoint K) (toBase ℤ q) :=
+    schemeBaseChange_over ℤ K q
+  change e₀.hom ≫ e₁.hom ≫ e₂.hom ≫
+    Spec.map (CommRingCat.ofHom (algebraMap K B)) = _
+  rw [h₂, h₁, h₀]
+
 /-- The native pullback of the integral cusp is the actual affine cusp scheme. -/
 def cuspFiberIso :
     pullback (coefficientPoint K) cuspToInt ≅
@@ -90,9 +112,9 @@ theorem cuspFiberIso_over :
     (cuspFiberIso K).hom ≫
       Spec.map (CommRingCat.ofHom (algebraMap K (CuspPunctured.CuspSubalgebra K))) =
         pullback.fst (coefficientPoint K) cuspToInt := by
-  simp only [cuspFiberIso, Iso.trans_hom, Category.assoc,
-    specAlgIso_over, familyCongr_over]
-  exact schemeBaseChange_over ℤ K (cuspPolynomial ℤ)
+  unfold cuspFiberIso cuspToInt
+  exact identifiedFiber_over K (cuspPolynomial ℤ) (cuspPolynomial_map K)
+    (CuspDelta.paper2_cusp_coordinate_presentation K)
 
 /-- The native pullback of the integral node is the same affine nodal
 scheme as the singular chart of the proper construction. -/
@@ -105,9 +127,9 @@ theorem nodeFiberIso_over :
     (nodeFiberIso K).hom ≫
       Spec.map (CommRingCat.ofHom (algebraMap K (NodalConductor.coordinates K))) =
         pullback.fst (coefficientPoint K) nodalToInt := by
-  simp only [nodeFiberIso, Iso.trans_hom, Category.assoc,
-    specAlgIso_over, familyCongr_over]
-  exact schemeBaseChange_over ℤ K (nodalPolynomial ℤ)
+  unfold nodeFiberIso nodalToInt
+  exact identifiedFiber_over K (nodalPolynomial ℤ) (nodalPolynomial_map K)
+    (NodalAffinePresentation.coordinateEquiv K)
 
 end
 end ManuscriptAudit.IntegralCuspNodalAffine

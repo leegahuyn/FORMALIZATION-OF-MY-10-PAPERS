@@ -34,8 +34,7 @@ theorem HOne_subsingleton_of_finiteGalois
     Subsingleton (Sheaf.H A 1) := by
   let I := Injective.under A
   let i : A ⟶ I := Injective.ι A
-  let hT : IsTerminal (terminalObject K) :=
-    MorphismProperty.Over.mkIdTerminal @Etale (Spec (CommRingCat.of K))
+  let hT : IsTerminal (terminalObject K) := terminalObject_isTerminal K
   apply SheafH1Descent.H1_subsingleton_of_global_lifts i hT
   intro x
   obtain ⟨L, hF, hAlg, hFin, hGal, y, hy⟩ :=

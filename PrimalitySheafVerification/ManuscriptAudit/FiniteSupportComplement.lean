@@ -24,22 +24,18 @@ def finiteComplement : D S P ⟶ D S P :=
   𝟙 _ - (finiteProjection S P t ≫ finiteInclusion S P t)
 
 theorem finiteComplement_app_eq_zero_of_support (W : S.AffineEtaleᵒᵖ)
-    (x : (D S P).obj.obj W) (hx : x.support ⊆ t) :
+    (x : (D S P).obj.obj W) (hx : ∀ a, a ∉ t → DFinsupp.toFun x a = 0) :
     (finiteComplement S P t).hom.app W x = 0 := by
-  classical
-  have h (a : I) (ha : a ∉ t) : DFinsupp.toFun x a = 0 := by
-    by_contra hn
-    exact ha (hx ((DFinsupp.mem_support_toFun x a).mpr hn))
   change x - (finiteInclusion S P t).hom.app W
     ((finiteProjection S P t).hom.app W x) = 0
-  rw [projection_inclusion_of_support S P t W x h, sub_self]
+  rw [projection_inclusion_of_support S P t W x hx, sub_self]
 
 variable {M : Sheaf (Scheme.AffineEtale.topology S) AddCommGrpCat.{0}} (i : D S P ⟶ M)
 
 /-- Pushing out along the complementary projection kills the images
 of sections supported on the discarded coordinates. -/
 theorem pushout_inl_app_eq_zero_of_support (W : S.AffineEtaleᵒᵖ)
-    (x : (D S P).obj.obj W) (hx : x.support ⊆ t) :
+    (x : (D S P).obj.obj W) (hx : ∀ a, a ∉ t → DFinsupp.toFun x a = 0) :
     (pushout.inl i (finiteComplement S P t)).hom.app W (i.hom.app W x) = 0 := by
   let ρ := finiteComplement S P t
   let T := pushout i ρ

@@ -86,7 +86,9 @@ theorem exists_coboundary (hT : IsTerminal T) (I : Sheaf J AddCommGrpCat.{v}) [I
       I.obj.map (pullback.lift (r ≫ a) (r ≫ b) (hT.hom_ext _ _)).op z
     have he : r ≫ (pullback.lift a b (hT.hom_ext _ _) : W ⟶ Double f) =
         pullback.lift (r ≫ a) (r ≫ b) (hT.hom_ext _ _) := by
-      apply pullback.hom_ext <;> simp [Category.assoc]
+      apply pullback.hom_ext
+      · rw [Category.assoc, pullback.lift_fst, pullback.lift_fst]
+      · rw [Category.assoc, pullback.lift_snd, pullback.lift_snd]
     rw [restrict_restrict, he]
   have hCocycle {W : C} (a b d : W ⟶ U) : c b d - c a d + c a b = 0 := by
     let q := tripleLift f a b d (hT.hom_ext _ _) (hT.hom_ext _ _)

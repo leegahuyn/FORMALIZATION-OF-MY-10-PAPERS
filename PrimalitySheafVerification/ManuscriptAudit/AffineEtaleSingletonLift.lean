@@ -56,7 +56,7 @@ theorem exists_singleton_cover_lift
   letI : Algebra.Etale A C := hEt
   letI : Module.FaithfullyFlat A C := hFaithful
   let aPi : A ⟶ CommRingCat.of C := CommRingCat.ofHom (algebraMap A C)
-  let g : Spec (AffineEtaleProductGluing.productRing B) ⟶ X := Spec.map aPi ≫ U.hom
+  let g : Spec (CommRingCat.of C) ⟶ X := Spec.map aPi ≫ U.hom
   letI : Etale (Spec.map aPi) := (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
     (RingHom.etale_algebraMap.mpr (inferInstance : Algebra.Etale A C))
   letI : Etale U.hom := U.prop

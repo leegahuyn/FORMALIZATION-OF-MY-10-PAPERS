@@ -39,6 +39,7 @@ theorem determinant_eq_of_fixed_card (q : ℕ) (hq : Odd q)
     (j : Torsion 4 H →+ V) (hj : Function.Injective j)
     (hFixed : ∀ v : V, F (F v) = v ↔ ∃ P : Torsion 4 H, j P = v) :
     LinearMap.det F.toLinearMap = (q : ZMod 4) := by
+  letI : Fact (1 < (4 : ℕ)) := ⟨by decide⟩
   obtain ⟨k, hk⟩ := hq
   have hqCases : q % 4 = 1 ∨ q % 4 = 3 := by omega
   have hSquare (v : V) : F (F v) = -(LinearMap.det F.toLinearMap) • v :=
