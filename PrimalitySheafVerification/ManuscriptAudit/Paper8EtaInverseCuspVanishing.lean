@@ -80,9 +80,10 @@ theorem etaRatio_sq_cusp_zero_of_polynomial {H : Subgroup SL(2, ℤ)} {f : ℍ �
   have hd : 0 < 1 - α := by dsimp [α]; linarith
   obtain ⟨C, hC⟩ := periodic_cusp_decay hwR (weightTwoTranslate_holomorphic hHol g)
     (weightTwoTranslate_periodic hF g hMem) (weightTwoTranslate_tendsto_zero g hBound)
-  have hQ := (Periodic.qParam_tendsto_atImInfty hwR).norm
+  have hQ : Tendsto (fun z : ℍ => Periodic.qParam (w : ℝ) z) atImInfty (𝓝 0) :=
+    ((Periodic.qParam_tendsto hwR).mono_right nhdsWithin_le_nhds).comp tendsto_coe_atImInfty
   have hQ' : Tendsto (fun z : ℍ => ‖Periodic.qParam (w : ℝ) z‖) atImInfty (𝓝 0) := by
-    simpa only [norm_zero] using hQ
+    simpa only [norm_zero] using hQ.norm
   have hT : Tendsto (fun z : ℍ => (16 * C) * ‖Periodic.qParam (w : ℝ) z‖ ^ (1 - α))
       atImInfty (𝓝 0) := by
     simpa only [mul_zero] using (hQ'.rpow_const_nhds_zero hd).const_mul (16 * C)

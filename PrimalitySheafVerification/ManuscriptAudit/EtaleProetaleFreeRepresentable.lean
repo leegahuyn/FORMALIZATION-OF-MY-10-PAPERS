@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Whiskering
 import PrimalitySheafVerification.ManuscriptAudit.EtaleProetaleInverseImage
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleMayerVietorisRepresentable
 
@@ -131,8 +132,8 @@ def inverseImageFreeIso (W : X.Etale) :
 /-- The actual sheafified Yoneda arrow in the raised étale universe. -/
 def etaleFreeMap {U V : X.Etale} (f : U ⟶ V) : etaleFree X U ⟶ etaleFree X V :=
   (etaleSheafEquiv X).inverse.map
-    ((presheafToSheaf (etaleTopology X) A).map
-      (whiskerRight (yoneda.map ((raisedEtale X).functor.map f)) AddCommGrpCat.free))
+    ((((Functor.whiskeringRight (AsSmall.{1} X.Etale)ᵒᵖ _ _).obj AddCommGrpCat.free) ⋙
+      presheafToSheaf (etaleTopology X) A).map (yoneda.map ((raisedEtale X).functor.map f)))
 
 theorem etaleSections_freeMap {U V : X.Etale} (f : U ⟶ V) {F : E X}
     (g : etaleFree X V ⟶ F) :
@@ -153,9 +154,9 @@ theorem etaleSections_freeMap {U V : X.Etale} (f : U ⟶ V) {F : E X}
 /-- The actual sheafified Yoneda arrow in the raised pro-étale universe. -/
 def proFreeMap {U V : X.ProEt} (f : U ⟶ V) : nativeFree U ⟶ nativeFree V :=
   (proEquiv X).inverse.map
-    ((presheafToSheaf (proTopology X) A).map
-      (whiskerRight (yoneda.map ((ProetaleMayerVietorisSite.siteEquivalence X).functor.map f))
-        AddCommGrpCat.free))
+    ((((Functor.whiskeringRight (AsSmall.{1} X.ProEt)ᵒᵖ _ _).obj AddCommGrpCat.free) ⋙
+      presheafToSheaf (proTopology X) A).map
+      (yoneda.map ((ProetaleMayerVietorisSite.siteEquivalence X).functor.map f)))
 
 theorem proSections_freeMap {U V : X.ProEt} (f : U ⟶ V) {F : P X}
     (g : nativeFree V ⟶ F) :

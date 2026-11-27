@@ -72,7 +72,7 @@ theorem partner_norm_cuspTranslate_sq (F : ℂ → ℂ) (g : SL(2, ℤ)) (z : �
     Real.rpow_nonneg (g • z : ℍ).im_pos.le _
   rw [norm_cuspTranslate, div_pow, Real.sq_sqrt hN.le]
   simp only [partnerOnUpper, holomorphicPartner, norm_mul, Complex.norm_real,
-    abs_of_nonneg hPos, Complex.norm_conj, mul_pow, inverse_quarterHeight_sq]
+    Real.norm_eq_abs, abs_of_nonneg hPos, Complex.norm_conj, mul_pow, inverse_quarterHeight_sq]
   field_simp [hN.ne'] <;> ring
 
 theorem partner_weightedEnergy_eq_maassStripEnergy (F : ℂ → ℂ) (g : SL(2, ℤ))
@@ -119,7 +119,7 @@ theorem odd_maass_raising_kernel_eq_zero {F : ℂ → ℂ} (hLaw : OddMaassLaw F
   by_contra hz
   have hHeight : ((z.im ^ (-(1 / 4 : ℝ)) : ℝ) : ℂ) ≠ 0 :=
     Complex.ofReal_ne_zero.mpr (Real.rpow_pos_of_pos z.im_pos _).ne'
-  exact (mul_ne_zero hHeight (map_ne_zero (starRingEnd ℂ) hz)) (hVanishing z)
+  exact (mul_ne_zero hHeight ((map_ne_zero (starRingEnd ℂ)).2 hz)) (hVanishing z)
 
 end
 end ManuscriptAudit.Paper8EtaCriticalOddVanishing

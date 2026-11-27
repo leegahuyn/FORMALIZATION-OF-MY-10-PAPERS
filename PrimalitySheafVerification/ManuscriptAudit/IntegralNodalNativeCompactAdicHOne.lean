@@ -27,6 +27,8 @@ private theorem smooth_quasiCompact : QuasiCompact (geometricSmoothOpen p).ι :=
   let K := closureField p
   letI : IsProper (NodalProjectiveClosure.projectiveNodeToBase K) :=
     NodalProjectiveClosure.projectiveNode_isProper K
+  letI : CompactSpace (NodalProjectiveClosure.projectiveNode K) :=
+    QuasiCompact.compactSpace_of_compactSpace (NodalProjectiveClosure.projectiveNodeToBase K)
   letI : QuasiCompact (smoothInclusion K) := smoothInclusion_quasiCompact K
   letI : CompactSpace (smoothScheme K) := QuasiCompact.compactSpace_of_compactSpace (smoothInclusion K)
   letI : CompactSpace (geometricSmoothOpen p).toScheme :=

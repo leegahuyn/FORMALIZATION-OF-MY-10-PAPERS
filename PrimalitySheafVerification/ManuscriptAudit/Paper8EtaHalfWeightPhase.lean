@@ -30,7 +30,7 @@ theorem positivePhase_norm (g : SL(2, ℤ)) (z : ℍ) :
   have hD : 0 < Real.sqrt ‖denominator g z‖ :=
     Real.sqrt_pos.2 (norm_pos_iff.mpr (denominator_ne_zero g z))
   have hEta : 0 < ‖ModularForm.eta z‖ := norm_pos_iff.mpr (ModularForm.eta_ne_zero z.im_pos)
-  rw [positivePhase, norm_div, norm_mul, eta_norm_transform, Complex.norm_real, abs_of_pos hD,
+  rw [positivePhase, norm_div, norm_mul, eta_norm_transform, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hD,
     mul_comm (Real.sqrt ‖denominator g z‖)]
   exact div_self (mul_ne_zero hEta.ne' hD.ne')
 
@@ -48,7 +48,7 @@ theorem positivePhase_sq (g : SL(2, ℤ)) (z : ℍ) :
 theorem negativePhase_norm (g : SL(2, ℤ)) (z : ℍ) :
     ‖negativePhase g z‖ = 1 := by
   have hD : 0 < ‖denominator g z‖ := norm_pos_iff.mpr (denominator_ne_zero g z)
-  rw [negativePhase, norm_mul, positivePhase_norm, norm_div, Complex.norm_real, abs_of_pos hD,
+  rw [negativePhase, norm_mul, positivePhase_norm, norm_div, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hD,
     div_self hD.ne', one_mul]
 
 theorem negativePhase_sq (g : SL(2, ℤ)) (z : ℍ) :
@@ -68,7 +68,7 @@ theorem conjugate_negativePhase_sq (g : SL(2, ℤ)) (z : ℍ) :
   have hD : d ≠ 0 := denominator_ne_zero g z
   have hN : (‖d‖ : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr hD)
   have hConj : (starRingEnd ℂ) d ≠ 0 := by
-    exact map_ne_zero (starRingEnd ℂ) hD
+    exact (map_ne_zero (starRingEnd ℂ)).2 hD
   have hRatio : (‖d‖ : ℂ) / (starRingEnd ℂ) d = d / (‖d‖ : ℂ) := by
     apply (div_eq_div_iff hConj hN).2
     rw [← pow_two]

@@ -30,7 +30,7 @@ private theorem stalkMap_isIso_of_eq_id {T : Scheme.{u}} (g : T ⟶ T)
     (h : g = 𝟙 T) (y : T) : IsIso (g.stalkMap y) := by
   subst g
   rw [Scheme.Hom.stalkMap_id]
-  infer_instance
+  exact (Iso.refl (T.presheaf.stalk y)).isIso_hom
 
 variable (K : Type u) [Field K] [IsAlgClosed K]
 variable {X : Scheme.{u}} (f : X ⟶ Spec (CommRingCat.of K)) [WeaklyEtale f]

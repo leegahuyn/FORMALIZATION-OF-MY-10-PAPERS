@@ -84,17 +84,15 @@ theorem weaklyEtale (hStage : ∀ n, WeaklyEtale (specMap (R := R) (U n))) :
     rw [AlgebraicGeometry.diagonal_SpecMap] at h
     let d := Spec.map (CommRingCat.ofHom (multiplication (R := R) (U n)).toRingHom)
     let e := pullbackSpecIso R (U n) (U n)
-    letI : Flat (d ≫ e.inv) := h
-    have hd : Flat d := by
-      simpa only [Category.assoc, Iso.inv_hom_id, Category.comp_id] using
-        (inferInstanceAs (Flat ((d ≫ e.inv) ≫ e.hom)))
+    have hd : Flat d := (MorphismProperty.cancel_right_of_respectsIso @Flat d e.inv).mp h
     exact Flat.SpecMap_iff.mp hd
   refine ⟨Flat.SpecMap_iff.mpr (RingHom.flat_algebraMap_iff.mpr hFlat), ?_⟩
   change Flat (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R B))))
   rw [AlgebraicGeometry.diagonal_SpecMap]
-  let d := CommRingCat.ofHom (multiplication (R := R) B).toRingHom
-  letI : Flat (Spec.map d) := Flat.SpecMap_iff.mpr (diagonal_flat_of_stage_flat U hMono hCover hDiag)
-  infer_instance
+  let d := Spec.map (CommRingCat.ofHom (multiplication (R := R) B).toRingHom)
+  let e := pullbackSpecIso R B B
+  have hd : Flat d := Flat.SpecMap_iff.mpr (diagonal_flat_of_stage_flat U hMono hCover hDiag)
+  exact (MorphismProperty.cancel_right_of_respectsIso @Flat d e.inv).mpr hd
 
 end
 end ManuscriptAudit.WeaklyEtaleFlatIncreasingUnion

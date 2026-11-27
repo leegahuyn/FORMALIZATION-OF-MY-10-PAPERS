@@ -58,7 +58,7 @@ theorem etaMaass_transform (g : SL(2, ℤ)) (z : ℍ) :
 theorem etaMaass_norm_sq (z : ℍ) :
     ‖etaMaass z‖ ^ 2 = ‖ModularForm.eta z‖ ^ 2 * Real.sqrt z.im := by
   have hExp : (1 / 4 : ℝ) * (2 : ℕ) = 1 / 2 := by norm_num
-  simp only [etaMaass, norm_mul, Complex.norm_real, abs_of_nonneg (Real.rpow_nonneg z.im_pos.le _),
+  simp only [etaMaass, norm_mul, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (Real.rpow_nonneg z.im_pos.le _),
     mul_pow, ← Real.rpow_mul_natCast z.im_pos.le _ 2, hExp, Real.sqrt_eq_rpow]
   exact mul_comm _ _
 

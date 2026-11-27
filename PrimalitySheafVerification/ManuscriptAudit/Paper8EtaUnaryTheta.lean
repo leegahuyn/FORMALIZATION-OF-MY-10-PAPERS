@@ -54,7 +54,9 @@ theorem hasSum_eta_admissibleNaturals (z : UpperHalfPlane) :
     HasSum (fun n : SquareIndices => (characterTwelve n.val : ℂ) * qParam 24 z ^ (n.val ^ 2))
       (ModularForm.eta z) := by
   rw [← squareIndexEquiv.hasSum_iff]
-  simpa only [Function.comp_apply, squareIndexEquiv_apply] using hasSum_eta_integerSquares z
+  change HasSum (fun k : ℤ => (characterTwelve (squareIndex k) : ℂ) *
+    qParam 24 z ^ (squareIndex k ^ 2)) (ModularForm.eta z)
+  exact hasSum_eta_integerSquares z
 
 /-- Classical unary theta expansion in the actual q^(1/24) coordinate. -/
 theorem hasSum_eta_unaryTheta (z : UpperHalfPlane) :

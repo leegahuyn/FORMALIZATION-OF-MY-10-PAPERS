@@ -131,10 +131,9 @@ def sequence : ShortComplex (Sheaf (J (X := X)) A) :=
 
 theorem sequence_shortExact (hDisjoint : Disjoint (Set.range i₀) (Set.range i₁)) :
     (sequence i₀ i₁ ℓ).ShortExact := by
-  letI := pairRestriction_epi i₀ i₁ ℓ hDisjoint
   exact ShortComplex.ShortExact.mk'
     (ShortComplex.exact_of_f_is_kernel (sequence i₀ i₁ ℓ) (kernelIsKernel (d i₀ i₁ ℓ)))
-    inferInstance inferInstance
+    (inferInstanceAs (Mono (inclusion i₀ i₁ ℓ))) (pairRestriction_epi i₀ i₁ ℓ hDisjoint)
 
 end
 end ManuscriptAudit.ProetaleAdicClosedPairEpi

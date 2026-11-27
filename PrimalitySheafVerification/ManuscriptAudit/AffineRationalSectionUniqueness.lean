@@ -34,11 +34,11 @@ theorem section_eq_of_point_eq
   apply CommRingCat.hom_ext
   ext r
   have hαr : α (φ (α r)) = α r := by
-    simpa only [CommRingCat.comp_apply, CommRingCat.id_apply] using
-      congrArg (fun q : CommRingCat.of K ⟶ CommRingCat.of K ↦ q (α r)) hα
+    exact RingHom.congr_fun
+      (congrArg (fun q : CommRingCat.of K ⟶ CommRingCat.of K ↦ q.hom) hα) (α r)
   have hβr : β (φ (α r)) = α r := by
-    simpa only [CommRingCat.comp_apply, CommRingCat.id_apply] using
-      congrArg (fun q : CommRingCat.of K ⟶ CommRingCat.of K ↦ q (α r)) hβ
+    exact RingHom.congr_fun
+      (congrArg (fun q : CommRingCat.of K ⟶ CommRingCat.of K ↦ q.hom) hβ) (α r)
   have hm : r - φ (α r) ∈ Ideal.comap α.hom (⊥ : Ideal K) := by
     change α (r - φ (α r)) ∈ (⊥ : Ideal K)
     rw [Ideal.mem_bot, map_sub, hαr, sub_self]

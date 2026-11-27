@@ -32,7 +32,7 @@ private def toPairs (i j : I) (t : BlockPairs p V i j) : PairOver p :=
   ⟨t.val, t.property.2⟩
 
 private def toImageOverlap (i j : I) (t : BlockPairs p V i j) :
-    blockImages p V i ∩ blockImages p V j :=
+    ↥(blockImages p V i ∩ blockImages p V j) :=
   ⟨p t.val.1, ⟨⟨t.val.1, t.property.1.1, rfl⟩,
     ⟨t.val.2, t.property.1.2, t.property.2.symm⟩⟩⟩
 
@@ -50,7 +50,8 @@ include cocycle hZero in
 private theorem constant_on_fibres (i j : I) (u v : BlockPairs p V i j)
     (h : toImageOverlap p V i j u = toImageOverlap p V i j v) :
     c (toPairs p V i j u) = c (toPairs p V i j v) := by
-  have hFirst : p u.val.1 = p v.val.1 := congrArg Subtype.val h
+  have hFirst : p u.val.1 = p v.val.1 :=
+    congrArg (fun t : ↥(blockImages p V i ∩ blockImages p V j) ↦ t.val) h
   have hSecond : p u.val.2 = p v.val.2 := u.property.2.symm.trans (hFirst.trans v.property.2)
   have h₁ := cocycle u.val.1 v.val.1 v.val.2 hFirst v.property.2
   have h₂ := cocycle u.val.1 u.val.2 v.val.2 u.property.2 hSecond
@@ -70,8 +71,10 @@ theorem exists_descent (i j : I) :
       (isClosed_eq (p.continuous.comp continuous_fst) (p.continuous.comp continuous_snd))
   letI : CompactSpace (BlockPairs p V i j) := isCompact_iff_compactSpace.mp hClosed.isCompact
   let r := toImageOverlap p V i j
+  have hval : Continuous (Subtype.val : BlockPairs p V i j → Y × Y) :=
+    continuous_subtype_val
   have hrC : Continuous r :=
-    (p.continuous.comp continuous_subtype_val.fst).subtype_mk _
+    (p.continuous.comp hval.fst).subtype_mk _
   have hq : IsQuotientMap r :=
     IsQuotientMap.of_surjective_continuous (toImageOverlap_surjective p V i j) hrC
   choose u hu using toImageOverlap_surjective p V i j
@@ -83,7 +86,7 @@ theorem exists_descent (i j : I) :
   have hbC : Continuous b := by
     apply hq.continuous_iff.mpr
     rw [hb]
-    exact c.continuous.comp (continuous_subtype_val.subtype_mk _)
+    exact c.continuous.comp (hval.subtype_mk _)
   obtain ⟨a, ha⟩ := StoneFiniteSectionExtension.exists_extension D₀
     ((blockImages_closed p V hV i).inter (blockImages_closed p V hV j)) ⟨b, hbC⟩
   refine ⟨a, fun x y h hx hy ↦ ?_⟩

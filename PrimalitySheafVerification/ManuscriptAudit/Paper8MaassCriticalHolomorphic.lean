@@ -117,7 +117,8 @@ theorem partner_differentiableAt {F : ℂ → ℂ} {x y : ℝ} (hy : 0 < y)
   have hv := (quarter_derivative hy).mul (conjugate_hasDerivAt (profile_vertical hF))
   have hdy : partialY (realProfile (holomorphicPartner F)) x y =
       (-(1 / 4 : ℂ)) * B * c (realProfile F x y) + A * c (partialY (realProfile F) x y) := by
-    simpa only [partialY, realProfile, holomorphicPartner, complexPoint_im, A, B, c] using hv.deriv
+    simpa only [Pi.mul_apply, partialY, realProfile, holomorphicPartner, complexPoint_im, A, B, c]
+      using hv.deriv
   have hC : (-Complex.I) * (y : ℂ) * c (partialX (realProfile F) x y) +
       (y : ℂ) * c (partialY (realProfile F) x y) -
       (1 / 4 : ℂ) * c (realProfile F x y) = 0 := by

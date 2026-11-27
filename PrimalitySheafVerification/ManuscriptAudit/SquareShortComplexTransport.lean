@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Homology.Square
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-! Transport of the signed short complex of a commutative square. -/
