@@ -114,7 +114,7 @@ theorem exists_conjugacy (A : ZMod 7) (hA : A ≠ 0) :
   change nativeMap (ZMod 7) L (g L) A (e₁ (e₀ P)) =
     e₁ (scale (ratio_ne_zero L A hA) (ratio_scale L A hA) (disc L 5 (by decide))
       (nativeMap (ZMod 7) L (g L) 5 (ordinaryEquiv L P))) at he
-  rw [equiv_frobenius, scale_is_signed_rotation] at he
+  rw [equiv_frobenius, scale_is_signed_rotation L A hA] at he
   exact he
 
 end

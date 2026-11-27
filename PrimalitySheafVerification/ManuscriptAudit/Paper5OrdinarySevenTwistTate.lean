@@ -71,8 +71,9 @@ private theorem ref_trace_det (hl : l = 2 ∨ l = 3) (A : ZMod 7) (hA : A ≠ 0)
     have htrace : (row A).trace = -rotatedTrace (row A).exponent := by simpa [h] using hRow
     rw [he, htrace, Int.cast_neg]
     constructor
-    · rw [map_neg, ht]
-    · rw [show -T = (-1 : ℤ_[l]) • T by simp, LinearMap.det_smul, hDim, hd]
+    · have hNeg := map_neg (LinearMap.trace ℤ_[l] (Tate l (Points L))) T
+      rw [hNeg, ht]
+    · rw [← neg_one_smul (ℤ_[l]) T, LinearMap.det_smul, hDim, hd]
       norm_num
 
 /-- The six twists have traces −4, −1, −5, 5, 1, 4 and determinant seven. -/

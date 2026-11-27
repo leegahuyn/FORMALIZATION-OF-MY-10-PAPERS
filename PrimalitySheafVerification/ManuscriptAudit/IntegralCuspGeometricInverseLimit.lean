@@ -35,7 +35,9 @@ private theorem orderOne_subsingleton {U X : Scheme.{0}} (j : U ⟶ X) [IsOpenIm
 private def orderOneEquiv {U X : Scheme.{0}} (j : U ⟶ X) [IsOpenImmersion j] (n : ℕ) :
     extensionH j (AddCommGrpCat.of (ZMod 1)) n ≃+ ZMod 1 := by
   letI := orderOne_subsingleton j n
-  exact AddEquiv.ofBijective 0 ⟨fun _ _ _ ↦ Subsingleton.elim _ _, fun _ ↦ ⟨0, Subsingleton.elim _ _⟩⟩
+  exact AddEquiv.ofBijective
+    (0 : extensionH j (AddCommGrpCat.of (ZMod 1)) n →+ ZMod 1)
+    ⟨fun _ _ _ ↦ Subsingleton.elim _ _, fun _ ↦ ⟨0, Subsingleton.elim _ _⟩⟩
 
 variable (p : ℕ) [Fact p.Prime] (ℓ : ℕ) [Fact ℓ.Prime]
 
@@ -69,15 +71,18 @@ private def smoothLevelEquiv (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2
     smoothLevel p ℓ n r ≃+ ZMod (ℓ ^ r) := by
   cases r with
   | zero => exact orderOneEquiv (smoothCompactOpen p) n
-  | succ r => simpa only [if_pos hn] using smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) n
+  | succ r =>
+    rcases hn with rfl | rfl
+    · exact smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) 1
+    · exact smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) 2
 
 private theorem smoothTransition_surjective (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2)
     (r : ℕ) : Function.Surjective (smoothTransition p ℓ n r) := by
   rcases hn with rfl | rfl
   · cases r with
     | zero =>
-      letI := orderOne_subsingleton (smoothCompactOpen p) 1
-      exact fun x ↦ ⟨0, Subsingleton.elim _ x⟩
+      let h : Subsingleton (smoothLevel p ℓ 1 0) := orderOne_subsingleton (smoothCompactOpen p) 1
+      exact fun x ↦ ⟨0, h.elim _ x⟩
     | succ r =>
       exact (smoothReduction_one_surjective p ℓ hℓp (r + 1) (by omega)).comp
         (coefficientCongr (fun d ↦ smoothHc p d 1) (pow_succ ℓ (r + 1))).surjective

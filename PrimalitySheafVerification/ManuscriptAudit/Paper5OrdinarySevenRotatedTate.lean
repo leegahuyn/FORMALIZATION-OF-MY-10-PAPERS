@@ -54,7 +54,7 @@ theorem rotation_trace_det (hl : l = 2 ∨ l = 3) :
   have hn : ¬∃ c : ℤ_[l], S = c • (1 : Module.End ℤ_[l] (Tate l (Points L))) :=
     Paper5OrdinarySevenTate.rotation_not_scalar L l hl
   have hq : S ^ 2 - (-1 : ℤ_[l]) • S + (1 : ℤ_[l]) • (1 : Module.End ℤ_[l] (Tate l (Points L))) = 0 := by
-    have hnS : (-1 : ℤ_[l]) • S = -S := by simp
+    have hnS : (-1 : ℤ_[l]) • S = -S := neg_one_smul (ℤ_[l]) S
     rw [hnS, one_smul]
     calc
       _ = S ^ 2 + S + 1 := by abel
@@ -89,7 +89,9 @@ theorem trace_det (hl : l = 2 ∨ l = 3) (j : Fin 3) :
     rw [h₁, map_add, map_smul, map_smul, hIt, hSt]
     norm_num [smul_eq_mul]
   have ht₂ : LinearMap.trace ℤ_[l] (Tate l (Points L)) (S ^ 2 * F) = -5 := by
-    rw [h₂, map_add, map_neg, map_smul, hIt, hSt]
+    let tr := LinearMap.trace ℤ_[l] (Tate l (Points L))
+    have hn : tr (-((2 : ℤ_[l]) • I)) = -tr ((2 : ℤ_[l]) • I) := map_neg tr _
+    rw [h₂, map_add, hn, map_smul, hIt, hSt]
     norm_num [smul_eq_mul]
   constructor
   · fin_cases j
