@@ -70,7 +70,7 @@ def restrictionIdentityIso {X : Scheme.{0}}
     MorphismProperty.Over.mapId (P := @Etale) ⊤ X (𝟙 X) rfl
   apply (fullyFaithfulSheafToPresheaf X.smallEtaleTopology AddCommGrpCat.{0}).preimageIso
   change (postcompose (𝟙 X)).op ⋙ A.obj ≅ A.obj
-  exact CategoryTheory.Functor.isoWhiskerRight (e.op.symm ≪≫ Functor.opId X.Etale) A.obj ≪≫
+  exact CategoryTheory.Functor.isoWhiskerRight ((CategoryTheory.NatIso.op e).symm ≪≫ Functor.opId X.Etale) A.obj ≪≫
     Functor.leftUnitor A.obj
 
 end

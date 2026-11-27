@@ -82,7 +82,7 @@ private theorem yInZ_vanishes :
       (yZOinv R) = 0 := by
   unfold yEquation
   simp only [eval₂_sub, eval₂_mul, eval₂_add, eval₂_X, eval₂_C]
-  let a := Polynomial.aeval (xZO R * yZOinv R)
+  let a : Polynomial R →ₐ[R] zOverlap R := Polynomial.aeval (xZO R * yZOinv R)
   change yZOinv R - a (X ^ 2) * (a X + yZOinv R) = 0
   simp only [a, map_pow, Polynomial.aeval_X]
   linear_combination yZOinv R ^ 3 * zOverlap_relation R -

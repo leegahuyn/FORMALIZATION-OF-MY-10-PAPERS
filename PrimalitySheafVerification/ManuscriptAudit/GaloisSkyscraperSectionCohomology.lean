@@ -40,7 +40,10 @@ private def sectionsEquiv :
       map_add' := by
         intro a b
         funext t
-        simp only [Concrete.productEquiv_apply_apply, Pi.add_apply, map_add] }
+        change Concrete.productEquiv A (a + b) t =
+          Concrete.productEquiv A a t + Concrete.productEquiv A b t
+        simp only [Concrete.productEquiv_apply_apply]
+        exact (Pi.π A t).hom.map_add a b }
   exact e.toIntLinearEquiv
 
 set_option backward.isDefEq.respectTransparency false in
@@ -63,7 +66,7 @@ def sectionsRepIso :
   rw [Concrete.productEquiv_apply_apply, Concrete.productEquiv_apply_apply,
     ← ConcreteCategory.comp_apply]
   change (Pi.map' p (fun _ ↦ 𝟙 M) ≫ Pi.π A t) a = Pi.π A (p t) a
-  rw [Pi.map'_comp_π, Category.comp_id]
+  rw [Pi.map'_comp_π, Category.comp_id] <;> rfl
 
 /-- All positive group cohomology of geometric skyscraper sections vanishes
 on any finite Galois field cover of an étale field chart. -/

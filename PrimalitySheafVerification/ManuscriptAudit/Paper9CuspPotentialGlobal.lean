@@ -32,14 +32,22 @@ private theorem height_le (g : GammaTwo) (z : ℍ) :
     exact (height_le_of_bottom_left_ne_zero (g : SL(2, ℤ)) z hc).trans
       ((one_div_le_one_div_of_le z.im_pos hden).trans (le_max_right _ _))
 
-theorem orbitHeight_ge_im (z : ℍ) : z.im ≤ orbitHeight z := by
-  have hB : BddAbove (range (fun g : GammaTwo => (g • z).im)) :=
-    ⟨max z.im (1 / z.im), fun _ ⟨g, rfl⟩ => height_le g z⟩
-  apply le_csSup hB
-  exact ⟨1, by rw [one_smul]⟩
+private theorem range_height_le (z : ℍ) {y : ℝ}
+    (hy : y ∈ range (fun g : GammaTwo => (g • z).im)) : y ≤ max z.im (1 / z.im) := by
+  obtain ⟨g, hg⟩ := hy
+  change (g • z).im = y at hg
+  rw [← hg]
+  exact height_le g z
+
+private theorem own_height_mem (z : ℍ) :
+    z.im ∈ range (fun g : GammaTwo => (g • z).im) :=
+  ⟨1, congrArg UpperHalfPlane.im (one_smul GammaTwo z)⟩
+
+theorem orbitHeight_ge_im (z : ℍ) : z.im ≤ orbitHeight z :=
+  le_csSup ⟨max z.im (1 / z.im), fun _ hy => range_height_le z hy⟩ (own_height_mem z)
 
 theorem orbitHeight_le_bound (z : ℍ) : orbitHeight z ≤ max z.im (1 / z.im) :=
-  csSup_le ⟨z.im, 1, by rw [one_smul]⟩ (fun _ ⟨g, rfl⟩ => height_le g z)
+  csSup_le ⟨z.im, own_height_mem z⟩ (fun _ hy => range_height_le z hy)
 
 theorem orbitHeight_eq_of_high (z : ℍ) (hz : 1 ≤ z.im) :
     orbitHeight z = z.im := by
@@ -57,16 +65,19 @@ theorem orbitHeight_invariant (δ : GammaTwo) (z : ℍ) :
   ext h
   constructor
   · rintro ⟨g, rfl⟩
-    exact ⟨g * δ, by rw [mul_smul]⟩
+    exact ⟨g * δ, congrArg UpperHalfPlane.im (mul_smul g δ z)⟩
   · rintro ⟨g, rfl⟩
-    exact ⟨g * δ⁻¹, by rw [← mul_smul, mul_assoc, inv_mul_cancel, mul_one]⟩
+    refine ⟨g * δ⁻¹, ?_⟩
+    change ((g * δ⁻¹) • (δ • z)).im = (g • z).im
+    rw [← mul_smul, mul_assoc, inv_mul_cancel, mul_one]
 
 theorem orbitHeight_measurable : Measurable orbitHeight := by
   unfold orbitHeight
   apply Measurable.iSup
   intro g
-  exact (UpperHalfPlane.continuous_im.comp
-    (continuous_const_smul (g : SL(2, ℤ)))).measurable
+  have h := (UpperHalfPlane.continuous_im.comp
+    (continuous_const_smul (gammaTwoEffectiveElement g))).measurable
+  simpa only [Function.comp_def, gammaTwoEffectiveElement_smul] using h
 
 private theorem heightPower_invariant (g : GammaTwoEffective) (z : ℍ) :
     orbitHeight (g • z) ^ 6 = orbitHeight z ^ 6 := by

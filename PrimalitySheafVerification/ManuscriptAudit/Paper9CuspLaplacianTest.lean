@@ -18,8 +18,9 @@ def testCoordinates (_ y : ℝ) : ℂ := (cuspBump y : ℂ)
 private theorem differentiable_bump : Differentiable ℝ cuspBump :=
   (contDiff_infty.mp cuspBump_smooth 1).differentiable (by decide)
 
-private theorem contDiff_deriv : ContDiff ℝ 1 (deriv cuspBump) :=
-  (contDiff_infty.mp cuspBump_smooth 2).deriv (by decide)
+private theorem contDiff_deriv : ContDiff ℝ 1 (deriv cuspBump) := by
+  have h : ContDiff ℝ (1 + 1) cuspBump := cuspBump_smooth.of_le (by simp)
+  exact h.deriv'
 
 private theorem differentiable_deriv : Differentiable ℝ (deriv cuspBump) :=
   contDiff_deriv.differentiable (by decide)
@@ -28,17 +29,17 @@ private theorem differentiable_deriv : Differentiable ℝ (deriv cuspBump) :=
   simp [partialX, testCoordinates]
 
 @[simp] theorem test_partialY (x y : ℝ) :
-    partialY testCoordinates x y = (deriv cuspBump y : ℂ) :=
+    partialY testCoordinates x y = ((deriv cuspBump y : ℝ) : ℂ) :=
   ((differentiable_bump y).hasDerivAt.ofReal_comp).deriv
 
 @[simp] theorem test_partialYY (x y : ℝ) :
-    partialY (partialY testCoordinates) x y = (deriv (deriv cuspBump) y : ℂ) := by
+    partialY (partialY testCoordinates) x y = ((deriv (deriv cuspBump) y : ℝ) : ℂ) := by
   unfold partialY
   simp only [test_partialY]
   exact ((differentiable_deriv y).hasDerivAt.ofReal_comp).deriv
 
 theorem printedL_test (z : ℍ) :
-    printedL testCoordinates z = ((z.im : ℂ) ^ 2) * (deriv (deriv cuspBump) z.im : ℂ) := by
+    printedL testCoordinates z = ((z.im : ℂ) ^ 2) * ((deriv (deriv cuspBump) z.im : ℝ) : ℂ) := by
   have hx : partialX testCoordinates = 0 := by
     funext x y
     exact test_partialX x y
@@ -66,8 +67,10 @@ private theorem derivative_square_integral_pos :
           rw [uIcc_of_le (by norm_num : (2 : ℝ) ≤ 3)]
           intro y hy
           have hn := h y ⟨by linarith [hy.1], by linarith [hy.2]⟩
-          have hsq := sq_nonneg (deriv cuspBump y)
-          nlinarith
+          change deriv cuspBump y ^ 2 ≤ 0 at hn
+          change deriv cuspBump y = 0
+          by_contra hne
+          exact (not_lt_of_ge hn) (sq_pos_of_ne_zero hne)
         _ = _ := by simp
     have hc := intervalIntegral.integral_eq_sub_of_hasDerivAt
       (fun y _ => (differentiable_bump y).hasDerivAt)
@@ -85,8 +88,13 @@ theorem compact_cusp_test_negative :
     (fun y _ => (differentiable_deriv y).hasDerivAt)
     (fun y _ => (differentiable_bump y).hasDerivAt)
     (hD₂.intervalIntegrable 1 6) (hD.intervalIntegrable 1 6)
-  rw [intervalIntegral.integral_add ((hD₂.mul hB).intervalIntegrable 1 6)
-    ((hD.mul hD).intervalIntegrable 1 6),
+  have hAdd : (∫ t : ℝ in (1 : ℝ)..6,
+      deriv (deriv cuspBump) t * cuspBump t + deriv cuspBump t * deriv cuspBump t) =
+      (∫ t : ℝ in (1 : ℝ)..6, deriv (deriv cuspBump) t * cuspBump t) +
+        (∫ t : ℝ in (1 : ℝ)..6, deriv cuspBump t * deriv cuspBump t) :=
+    intervalIntegral.integral_add ((hD₂.mul hB).intervalIntegrable 1 6)
+      ((hD.mul hD).intervalIntegrable 1 6)
+  rw [hAdd,
     cuspBump_zero_of_height_outside (y := 6) (Or.inr (by norm_num)),
     cuspBump_zero_of_height_outside (y := 1) (Or.inl (by norm_num))] at h
   simp only [mul_zero, sub_zero] at h

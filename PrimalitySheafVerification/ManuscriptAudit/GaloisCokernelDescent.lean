@@ -107,13 +107,20 @@ theorem exists_global_cokernel_lift_of_HOne
   apply SheafH1Descent.exists_global_lift_of_compatible_cover (f K L)
     (galoisArrow_is_cover K L) q x z hzq
   intro D a b' _
-  have hd : I.obj.map (pairLift K L a b').op (I.obj.map (pairFirst K L).op z) =
-      I.obj.map (pairLift K L a b').op (I.obj.map (pairSecond K L).op z) :=
-    congrArg (I.obj.map (pairLift K L a b').op) hD
-  rw [restrict_comp K I (pairLift K L a b') (pairFirst K L) z,
-    restrict_comp K I (pairLift K L a b') (pairSecond K L) z,
-    pairLift_first, pairLift_second] at hd
-  exact hd
+  let a' : D ⟶ fieldObject K L := a
+  let b'' : D ⟶ fieldObject K L := b'
+  let e := pairLift K L a' b''
+  let res (u : D ⟶ fieldObject K L) : I.obj.obj (op D) := I.obj.map u.op z
+  change res a' = res b''
+  calc
+    res a' = res (e ≫ pairFirst K L) :=
+      (congrArg res (pairLift_first K L a' b'')).symm
+    _ = I.obj.map e.op (I.obj.map (pairFirst K L).op z) :=
+      (restrict_comp K I e (pairFirst K L) z).symm
+    _ = I.obj.map e.op (I.obj.map (pairSecond K L).op z) :=
+      congrArg (I.obj.map e.op) hD
+    _ = res (e ≫ pairSecond K L) := restrict_comp K I e (pairSecond K L) z
+    _ = res b'' := congrArg res (pairLift_second K L a' b'')
 
 end
 end ManuscriptAudit.GaloisCoverAction

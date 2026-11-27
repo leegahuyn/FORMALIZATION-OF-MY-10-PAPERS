@@ -72,7 +72,7 @@ private def quadraticAdjoinRootEquiv {A B : Type u} [CommRing A] [CommRing B]
       AdjoinRoot ((X : Polynomial B) ^ 2 - C b) := by
   subst b
   apply AdjoinRoot.mapAlgEquiv e
-  rw [polynomial_map_quadratic e.toRingHom a]
+  rw [polynomial_map_quadratic (e : A →+* B) a]
   exact Associated.refl _
 
 private def semiringOfCommRing (A : Type u) (h : CommRing A) : NonAssocSemiring A :=

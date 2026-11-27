@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassFrobeniusModTwo
 
@@ -40,7 +41,7 @@ theorem exists_orderFour {G : Type*} [AddCommGroup G] [Finite G]
     exact fun h => hQ₀ (Subtype.ext h)
 
 /-- Cayley–Hamilton forces the square of a trace-zero two-dimensional operator to be scalar. -/
-theorem square_of_trace_zero {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+theorem square_of_trace_zero {R V : Type*} [CommRing R] [Nontrivial R] [AddCommGroup V] [Module R V]
     (B : Module.Basis (Fin 2) R V) (F : Module.End R V)
     (hTrace : LinearMap.trace R V F = 0) :
     F ^ 2 = -(LinearMap.det F) • (1 : Module.End R V) := by
@@ -56,7 +57,7 @@ theorem square_of_trace_zero {R V : Type*} [CommRing R] [AddCommGroup V] [Module
   rw [neg_smul]
   exact eq_neg_of_add_eq_zero_left h
 
-theorem square_apply_of_trace_zero {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+theorem square_apply_of_trace_zero {R V : Type*} [CommRing R] [Nontrivial R] [AddCommGroup V] [Module R V]
     (B : Module.Basis (Fin 2) R V) (F : Module.End R V)
     (hTrace : LinearMap.trace R V F = 0) (P : V) :
     F (F P) = -(LinearMap.det F) • P := by

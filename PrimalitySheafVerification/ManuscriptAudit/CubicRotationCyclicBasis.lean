@@ -131,7 +131,9 @@ theorem exists_rotation_basis (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA 
   let B := (Module.Basis.finTwoProd (ZMod (2 ^ (n + 1)))).map e
   have he₀ : B 0 = P := by simp [B, e, levelEquivFromLifts_apply]
   have he₁ : B 1 = Q := by simp [B, e, levelEquivFromLifts_apply]
-  exact ⟨B, by simpa only [he₀, he₁] using (rfl : S P = Q)⟩
+  refine ⟨B, ?_⟩
+  change S (B 0) = B 1
+  rw [he₀, he₁]
 
 end
 end ManuscriptAudit.CubicRotationCyclicBasis

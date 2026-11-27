@@ -38,8 +38,12 @@ def edge23 : Triple f ⟶ Double f :=
       pullback.condition (f := first f) (g := first f)])
 
 private def tripleLift {W : C} (a b d : W ⟶ U) (hab : a ≫ f = b ≫ f)
-    (had : a ≫ f = d ≫ f) : W ⟶ Triple f :=
-  pullback.lift (pullback.lift a b hab) (pullback.lift a d had) (by simp)
+    (had : a ≫ f = d ≫ f) : W ⟶ Triple f := by
+  have h₁ : (pullback.lift a b hab : W ⟶ Double f) ≫ first f = a :=
+    pullback.lift_fst a b hab
+  have h₂ : (pullback.lift a d had : W ⟶ Double f) ≫ first f = a :=
+    pullback.lift_fst a d had
+  exact pullback.lift (pullback.lift a b hab) (pullback.lift a d had) (h₁.trans h₂.symm)
 
 @[simp] private theorem tripleLift_edge12 {W : C} (a b d : W ⟶ U)
     (hab : a ≫ f = b ≫ f) (had : a ≫ f = d ≫ f) :
@@ -80,9 +84,10 @@ theorem exists_coboundary (hT : IsTerminal T) (I : Sheaf J AddCommGrpCat.{v}) [I
       I.obj.map r.op (c a b) = c (r ≫ a) (r ≫ b) := by
     change I.obj.map r.op (I.obj.map (pullback.lift a b (hT.hom_ext _ _)).op z) =
       I.obj.map (pullback.lift (r ≫ a) (r ≫ b) (hT.hom_ext _ _)).op z
-    rw [restrict_restrict]
-    congr 2
-    apply pullback.hom_ext <;> simp
+    have he : r ≫ (pullback.lift a b (hT.hom_ext _ _) : W ⟶ Double f) =
+        pullback.lift (r ≫ a) (r ≫ b) (hT.hom_ext _ _) := by
+      apply pullback.hom_ext <;> simp [Category.assoc]
+    rw [restrict_restrict, he]
   have hCocycle {W : C} (a b d : W ⟶ U) : c b d - c a d + c a b = 0 := by
     let q := tripleLift f a b d (hT.hom_ext _ _) (hT.hom_ext _ _)
     have h := congrArg (fun x ↦ (I.obj.map q.op).hom x) hz
