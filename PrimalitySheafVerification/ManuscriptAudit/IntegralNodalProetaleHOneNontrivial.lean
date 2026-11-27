@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.IntegralNodalGeometricEuler
+import PrimalitySheafVerification.ManuscriptAudit.IntegralNodalGeometricFiber
 import PrimalitySheafVerification.ManuscriptAudit.NodalProetaleHOneNontrivial
 
 /-! Nontrivial native pro-étale adic H¹ on the literal proper odd
@@ -26,8 +26,9 @@ theorem properHOne_nontrivial (p ℓ : ℕ) [Fact p.Prime] [Fact ℓ.Prime] (hp 
   let M := AddCommGrpCat.of (DiscreteGroup ℤ_[ℓ])
   letI : IsLocallyNoetherian X := LocallyOfFiniteType.isLocallyNoetherian (geometricToBase p)
   have h2 : (2 : closureField p) ≠ 0 := by
-    letI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
-    exact IntegralNodalGeometricEuler.coefficient_ne_zero p 2 (ne_of_lt hp)
+    intro h
+    have hd : p ∣ 2 := (CharP.cast_eq_zero_iff (closureField p) p 2).mp h
+    exact (Nat.not_le_of_gt hp) (Nat.le_of_dvd (by decide : 0 < 2) hd)
   let e := discreteEquiv ℤ_[ℓ]
   let m : M := e.symm 1
   have hm : m ≠ 0 := by

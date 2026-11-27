@@ -39,8 +39,9 @@ theorem modelEmbedding_injective (K : Type) [Field K] (ℓ : ℕ) [Fact ℓ.Prim
 
 private theorem residueTwoNonzero (p : ℕ) [Fact p.Prime] (hp : 2 < p) :
     (2 : closureField p) ≠ 0 := by
-  letI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
-  exact IntegralNodalGeometricEuler.coefficient_ne_zero p 2 (ne_of_lt hp)
+  intro h
+  have hd : p ∣ 2 := (CharP.cast_eq_zero_iff (closureField p) p 2).mp h
+  exact (Nat.not_le_of_gt hp) (Nat.le_of_dvd (by decide : 0 < 2) hd)
 
 /-- The additive conductor class on a literal geometric fibre of the fixed
 integral nodal family, in Mathlib's actual native pro-étale adic group. -/

@@ -78,7 +78,9 @@ theorem coverPreserving : CoverPreserving (Scheme.ProEt.topology Y) (Scheme.ProE
 
 instance continuous :
     (baseChange f).IsContinuous (Scheme.ProEt.topology Y) (Scheme.ProEt.topology X) :=
-  (Functor.isContinuous_iff_coverPreserving).mpr (coverPreserving f)
+  by
+    letI := flat_of_preservesFiniteLimits (baseChange f)
+    exact (Functor.isContinuous_iff_coverPreserving).mpr (coverPreserving f)
 
 /-- The actual small pro-étale direct image along a scheme morphism. -/
 def directImage (A : Type v) [Category.{w} A] :

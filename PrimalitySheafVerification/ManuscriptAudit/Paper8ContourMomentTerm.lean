@@ -39,8 +39,12 @@ theorem weightedTerm_circle_integral (α : ℝ) (k m : ℕ) {r : ℝ} (hr : 0 < 
   rw [hTerm, circleIntegral.integral_const_mul, hC]
   change periodCoefficient⁻¹ * ((coefficient k m : ℂ) *
     ((periodCoefficient / (m.factorial : ℂ)) * iteratedDeriv m f 0)) = _
-  simp only [f, Complex.iteratedDeriv_cexp_const_mul, mul_zero, Complex.exp_zero, mul_one,
-    coefficientMoment, Complex.ofReal_div, Complex.ofReal_mul, Complex.ofReal_pow,
+  have hDerivative : iteratedDeriv m f 0 = (α : ℂ) ^ m := by
+    have h := congrFun (Complex.iteratedDeriv_cexp_const_mul m (α : ℂ)) (0 : ℂ)
+    change iteratedDeriv m f 0 = (α : ℂ) ^ m * Complex.exp ((α : ℂ) * 0) at h
+    simpa only [mul_zero, Complex.exp_zero, mul_one] using h
+  rw [hDerivative]
+  simp only [coefficientMoment, Complex.ofReal_div, Complex.ofReal_mul, Complex.ofReal_pow,
     Complex.ofReal_natCast]
   have hFact : (m.factorial : ℂ) ≠ 0 := by exact_mod_cast m.factorial_ne_zero
   field_simp [periodCoefficient_ne_zero, hFact] <;> ring

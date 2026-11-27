@@ -22,10 +22,13 @@ private def evaluation {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCu
   let b : Polynomial K →ₐ[K] R := Polynomial.aeval x
   have hr : W.toAffine.polynomial.eval₂ b.toRingHom y = 0 := by
     have hEq := (Affine.equation_iff' (W := (W.map (algebraMap K R)).toAffine) x y).mp h
-    simpa only [Affine.polynomial, b, eval₂_sub, eval₂_add, eval₂_mul, eval₂_pow, eval₂_X,
-      eval₂_C, AlgHom.coe_toRingHom, map_add, map_mul, map_pow, aeval_X, aeval_C,
-      WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₃,
-      WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆] using hEq
+    have hX : b.toRingHom (X : Polynomial K) = x := aeval_X x
+    have hC (k : K) : b.toRingHom (C k) = algebraMap K R k := aeval_C x k
+    simp only [Affine.polynomial, eval₂_sub, eval₂_add, eval₂_mul, eval₂_pow, eval₂_X,
+      eval₂_C, map_add, map_mul, map_pow, hX, hC]
+    simp only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₃,
+      WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆] at hEq
+    linear_combination hEq
   exact AdjoinRoot.liftAlgHom W.toAffine.polynomial b y hr
 
 private theorem evaluation_x {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCurve K)

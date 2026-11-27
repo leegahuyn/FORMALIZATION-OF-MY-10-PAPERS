@@ -96,7 +96,10 @@ theorem localBoundaryMap_overlap_zero
   change (F.cohomologyPresheaf 1).map (fstLeg j k).op
     ((F.cohomologyPresheaf 1).map q.inv.op
       (boundaryOfSection X.smallEtaleTopology T hT A t)) = 0
-  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, hOp, boundaryOfSection_restrict]
+  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, hOp]
+  change (T.X₁.cohomologyPresheaf 1).map r.op
+    (boundaryOfSection X.smallEtaleTopology T hT A t) = 0
+  rw [boundaryOfSection_restrict]
   exact (boundaryOfSection_eq_zero_iff X.smallEtaleTopology T hT D _).mpr hr
 
 end
