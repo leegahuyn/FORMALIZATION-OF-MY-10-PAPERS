@@ -49,9 +49,6 @@ private def integerCoordinate : ℤ →+ (Additive Kˣ × ℤ) where
 
 variable [IsAlgClosed K]
 
-local instance degreeNeZero (d : ℕ) [NeZero (d : K)] : NeZero d :=
-  NeZero.of_neZero_natCast K
-
 /-- Actual global unit with the given Laurent exponent and scalar coefficient one. -/
 def exponentUnit : ℤ →+ Sheaf.H (ProetaleUnitSheaf.unitSheaf (Y K)) 0 :=
   ((unitsHZeroEquiv (R K)).trans (LaurentUnitProductCoordinates.unitCoordinates K).symm).symm.toAddMonoidHom.comp
@@ -70,6 +67,7 @@ set_option maxHeartbeats 1500000 in
 /-- The Laurent exponent quotient is the native degree-one cohomology with actual root coefficients. -/
 def cyclicToRootsHOne (d : ℕ) [NeZero (d : K)] :
     ZMod d ≃+ Sheaf.H ((constantSheaf (J (Y K)) G).obj (coefficientGroup K d)) 1 := by
+  letI : NeZero d := NeZero.of_neZero_natCast K
   have hd : 0 < d := Nat.pos_of_ne_zero (NeZero.ne d)
   let e := (unitsHZeroEquiv (R K)).trans (LaurentUnitProductCoordinates.unitCoordinates K).symm
   let v := exponentUnit K
@@ -130,7 +128,9 @@ def cyclicToRootsHOne (d : ℕ) [NeZero (d : K)] :
 set_option maxHeartbeats 1200000 in
 /-- The root-coefficient isomorphism sends an actual integer exponent to its Kummer class. -/
 theorem cyclicToRootsHOne_intCast (d : ℕ) [NeZero (d : K)] (i : ℤ) :
+    haveI : NeZero d := NeZero.of_neZero_natCast K
     cyclicToRootsHOne K d (i : ZMod d) = unitBoundary (k K) d (exponentUnit K i) := by
+  letI : NeZero d := NeZero.of_neZero_natCast K
   unfold cyclicToRootsHOne
   simp only [AddEquiv.ofBijective_apply, ZMod.lift_coe] <;> rfl
 

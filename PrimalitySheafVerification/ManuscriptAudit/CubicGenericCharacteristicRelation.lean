@@ -56,17 +56,27 @@ theorem generic_relation_height_zero {k : ℕ} (hq : Fintype.card K = 2 * k + 1)
   let P := genericAntiPoint A h₂ h₃ hA
   let F := frobenius A
   let D := quadraticHeight A h₂ h₃ hA
-  have hP : D P = 1 := by exact_mod_cast genericPoint_height A h₂ h₃ hA
+  have hP : D P = 1 := by
+    change (height A P : ℤ) = 1
+    exact_mod_cast (show height A P = 1 from genericPoint_height A h₂ h₃ hA)
   have hF (X : antiInvariant A) : D (F X) = (Fintype.card K : ℤ) * D X := by
-    exact_mod_cast height_frobenius A h₂ X
+    change (height A (F X) : ℤ) = (Fintype.card K : ℤ) * (height A X : ℤ)
+    exact_mod_cast (show height A (F X) = Fintype.card K * height A X from height_frobenius A h₂ X)
   have hSquare : D (F (F P + P) + (F P + P)) = D (F P + P) ^ 2 := by
-    exact_mod_cast generic_sum_square_height A hq hk h₂ h₃ hchar hA
+    change (height A (F (F P + P) + (F P + P)) : ℤ) = (height A (F P + P) : ℤ) ^ 2
+    have hs : height A (F (F P + P) + (F P + P)) = height A (F P + P) ^ 2 :=
+      generic_sum_square_height A hq hk h₂ h₃ hchar hA
+    exact_mod_cast hs
   have hEq := QuadraticHeightRelation.height_characteristic_relation D F P
     (Fintype.card K : ℤ) hP hF hSquare
   have hDiff : D (F P - P) = (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ) := by
-    exact_mod_cast generic_difference_height A hq hk h₂ h₃ hchar hA
+    change (height A (F P - P) : ℤ) = (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ)
+    have hi : height A (F P - P) = Nat.card (shortCubic (0 : K) A).toProjective.Point :=
+      generic_difference_height A hq hk h₂ h₃ hchar hA
+    exact_mod_cast hi
   dsimp only at hEq
   rw [hDiff] at hEq
+  change (height A _ : ℤ) = 0 at hEq
   exact_mod_cast hEq
 
 /-- The actual polynomial in relative Frobenius is killed by two at the generic point. -/

@@ -149,7 +149,11 @@ theorem lowest_two_levels_equal : levels 2 = 2 ∧ levels 1 = 2 ∧ levels 0 = 3
   have hcard : Finset.card {i : Fin 3 | levels i = 2} = 2 := by
     have h := hamiltonian_symmetric.card_filter_eigenvalues_eq ambient_finrank (2 : ℝ)
     rw [he] at h
-    simpa only [levels, RCLike.ofReal_real_eq_id, id_eq] using h
+    refine Eq.trans ?_ h
+    congr 1
+    ext i
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, levels,
+      RCLike.ofReal_real_eq_id, id_eq]
   have hmono : Antitone levels := hamiltonian_symmetric.eigenvalues_antitone ambient_finrank
   have h₀ : levels 0 = 3 := by
     rcases level_values 0 with he | he

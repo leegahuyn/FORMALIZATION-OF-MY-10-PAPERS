@@ -11,6 +11,8 @@ open scoped ContDiff BigOperators
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false
+
 def first : ScalarField := fun x y => (heightCutoff y + potential x y) / 2
 
 def second : ScalarField := fun x y => 1 - first x y
@@ -28,12 +30,13 @@ theorem partition_properties (x y : ℝ) :
   have hs₁ : 1 + Real.sin (Real.pi*x) ≤ 2 := by linarith [Real.sin_le_one (Real.pi*x)]
   have hm₀ := mul_nonneg h₀ hs₀
   have hm₁ := mul_le_mul_of_nonneg_left hs₁ h₀
-  unfold first second potential
-  constructor
-  · nlinarith only [hm₀]
-  constructor
-  · nlinarith only [hm₁, h₁]
-  · ring
+  refine ⟨?_, ?_, ?_⟩
+  · unfold first potential
+    nlinarith only [hm₀]
+  · unfold second first potential
+    nlinarith only [hm₁, h₁]
+  · unfold second
+    ring
 
 theorem partition_smooth :
     ContDiff ℝ ∞ (Function.uncurry first) ∧ ContDiff ℝ ∞ (Function.uncurry second) := by
@@ -41,11 +44,12 @@ theorem partition_smooth :
     simpa only [Function.uncurry, witnessForm] using witnessForm_smooth.fst
   have hSum := hHeight.add potential_smooth
   have hFirst : ContDiff ℝ ∞ (Function.uncurry first) := by
-    simpa only [first, Function.uncurry, div_eq_mul_inv] using
+    change ContDiff ℝ ∞ (fun p : ℝ×ℝ => (heightCutoff p.2 + potential p.1 p.2) / 2)
+    simpa only [div_eq_mul_inv] using
       hSum.mul (contDiff_const : ContDiff ℝ ∞ (fun _ : ℝ×ℝ => (2 : ℝ)⁻¹))
   refine ⟨hFirst, ?_⟩
-  simpa only [second, Function.uncurry] using
-    (contDiff_const : ContDiff ℝ ∞ (fun _ : ℝ×ℝ => (1 : ℝ))).sub hFirst
+  change ContDiff ℝ ∞ (fun p : ℝ×ℝ => 1 - first p.1 p.2)
+  exact (contDiff_const : ContDiff ℝ ∞ (fun _ : ℝ×ℝ => (1 : ℝ))).sub hFirst
 
 theorem partition_periodic (x y : ℝ) (m : ℤ) :
     first (x+2*(m : ℝ)) y = first x y ∧ second (x+2*(m : ℝ)) y = second x y := by
@@ -66,9 +70,9 @@ theorem partition_pieces_not_coulomb :
   have hSin : HasDerivAt (fun x : ℝ => Real.sin (Real.pi*x)) Real.pi 0 := by
     simpa only [mul_zero, Real.cos_zero, one_mul] using hPi.sin
   have hFirst : HasDerivAt (fun t : ℝ => (1+Real.sin (Real.pi*t))/2) (Real.pi/2) 0 := by
-    simpa only [zero_add] using ((hasDerivAt_const (0 : ℝ) (1 : ℝ)).add hSin).div_const 2
+    simpa only [zero_add, Pi.add_apply] using ((hasDerivAt_const (0 : ℝ) (1 : ℝ)).add hSin).div_const 2
   have hSecond : HasDerivAt (fun t : ℝ => 1-(1+Real.sin (Real.pi*t))/2) (-(Real.pi/2)) 0 := by
-    simpa only [zero_sub] using (hasDerivAt_const (0 : ℝ) (1 : ℝ)).sub hFirst
+    simpa only [zero_sub, Pi.sub_apply] using (hasDerivAt_const (0 : ℝ) (1 : ℝ)).sub hFirst
   have hf : (fun t : ℝ => (scaleOneForm first witnessForm t 3).1) =
       fun t => (1+Real.sin (Real.pi*t))/2 := by
     funext t

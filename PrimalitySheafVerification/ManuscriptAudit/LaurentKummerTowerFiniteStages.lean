@@ -113,7 +113,7 @@ theorem stageMap_comp_base (n : ℕ) :
 
 private theorem exponent_algebraMap_injective (hℓ : ℓ ≠ 0) :
     Function.Injective (algebraMap ℤ (Exponent ℓ)) := by
-  apply IsLocalization.injective (S := Exponent ℓ) (Submonoid.powers (ℓ : ℤ))
+  apply IsLocalization.injective (M := Submonoid.powers (ℓ : ℤ)) (Exponent ℓ)
   rintro _ ⟨n, rfl⟩
   have hn : (ℓ : ℤ) ≠ 0 := by exact_mod_cast hℓ
   exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n hn)
@@ -128,7 +128,10 @@ theorem stageMap_injective (hℓ : ℓ ≠ 0) (n : ℕ) : Function.Injective (st
     (mul_comm _ _).trans (base_pow_mul_rootExponent ℓ n)
   simp only [mul_assoc, hi, mul_one] at he
   apply exponent_algebraMap_injective ℓ hℓ
-  simpa only [map_intCast] using he
+  calc
+    _ = (z : Exponent ℓ) := map_intCast (algebraMap ℤ (Exponent ℓ)) z
+    _ = (z' : Exponent ℓ) := he
+    _ = _ := (map_intCast (algebraMap ℤ (Exponent ℓ)) z').symm
 
 theorem laurentMap_injective (hℓ : ℓ ≠ 0) :
     Function.Injective (LaurentKummerTowerAlgebra.laurentMap K ℓ) :=

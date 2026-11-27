@@ -24,8 +24,10 @@ variable {A : C} (a : ∀ n, A ⟶ (S n).X₃)
 private abbrev X₁ (n : ℕ) := (S n).X₁
 private abbrev X₂ (n : ℕ) := (S n).X₂
 private abbrev X₃ (n : ℕ) := (S n).X₃
-private abbrev f := Pi.map (fun n ↦ (S n).f)
-private abbrev g := Pi.map (fun n ↦ (S n).g)
+private abbrev f : (∏ᶜ (X₁ S)) ⟶ ∏ᶜ (X₂ S) :=
+  CategoryTheory.Limits.Pi.map (f := X₁ S) (g := X₂ S) (fun n ↦ (S n).f)
+private abbrev g : (∏ᶜ (X₂ S)) ⟶ ∏ᶜ (X₃ S) :=
+  CategoryTheory.Limits.Pi.map (f := X₂ S) (g := X₃ S) (fun n ↦ (S n).g)
 private abbrev b := Pi.lift a
 
 /-- The genuine pullback of the product of right arrows along the given tuple. -/
@@ -35,13 +37,13 @@ abbrev projection : object S a ⟶ A := pullback.fst (b S a) (g S)
 
 abbrev toProduct : object S a ⟶ ∏ᶜ (X₂ S) := pullback.snd (b S a) (g S)
 
-private theorem comp_zero : f S ≫ g S = 0 := by
+private theorem product_comp_zero : f S ≫ g S = 0 := by
   apply Pi.hom_ext
   intro n
-  simp only [Category.assoc, Pi.map_π, Pi.map_π_assoc, ShortComplex.zero, Limits.comp_zero, zero_comp]
+  simp only [Category.assoc, Pi.map_π, Pi.map_π_assoc, ShortComplex.zero, comp_zero, zero_comp]
 
 private def inclusion : (∏ᶜ (X₁ S)) ⟶ object S a :=
-  pullback.lift 0 (f S) (by rw [zero_comp, comp_zero])
+  pullback.lift 0 (f S) (by rw [zero_comp, product_comp_zero])
 
 private theorem inclusion_fst : inclusion S a ≫ projection S a = 0 :=
   pullback.lift_fst _ _ _
@@ -71,7 +73,7 @@ private theorem first_mono : Mono (inclusion S a) := by
   exact mono_of_mono _ (toProduct S a)
 
 include hS in
-private theorem firstIsKernel :
+private def firstIsKernel :
     IsLimit (KernelFork.ofι (inclusion S a) (inclusion_fst S a)) := by
   letI : Mono (inclusion S a) := first_mono S a hS
   apply KernelFork.IsLimit.ofι'
@@ -96,7 +98,7 @@ include hS in
 /-- Local surjectivity of the one actual projection suffices for a simultaneous extension. -/
 theorem sequence_shortExact [Epi (projection S a)] : (sequence S a).ShortExact :=
   ShortComplex.ShortExact.mk' (ShortComplex.exact_of_f_is_kernel (sequence S a) (firstIsKernel S a hS))
-    (first_mono S a hS) inferInstance
+    (first_mono S a hS) (inferInstanceAs (Epi (projection S a)))
 
 /-- Projection onto each original short complex. -/
 def compare (n : ℕ) : sequence S a ⟶ S n where
@@ -108,7 +110,13 @@ def compare (n : ℕ) : sequence S a ⟶ S n where
     rw [← Category.assoc, inclusion_snd, Pi.map_π]
   comm₂₃ := by
     change (toProduct S a ≫ Pi.π (X₂ S) n) ≫ (S n).g = projection S a ≫ a n
-    rw [Category.assoc, ← Pi.map_π, ← Category.assoc, ← pullback.condition, Category.assoc, Pi.lift_π]
+    have hg : g S ≫ Pi.π (X₃ S) n = Pi.π (X₂ S) n ≫ (S n).g :=
+      Pi.map_π (fun i ↦ (S i).g) n
+    calc
+      _ = (toProduct S a ≫ g S) ≫ Pi.π (X₃ S) n := by simp only [Category.assoc, hg]
+      _ = (projection S a ≫ b S a) ≫ Pi.π (X₃ S) n :=
+        congrArg (fun q ↦ q ≫ Pi.π (X₃ S) n) (pullback.condition (f := b S a) (g := g S)).symm
+      _ = _ := by rw [Category.assoc, Pi.lift_π]
 
 /-- A single native product Ext class projects to the pullback of every input extension. -/
 theorem extension_project [Epi (projection S a)] (n : ℕ) :

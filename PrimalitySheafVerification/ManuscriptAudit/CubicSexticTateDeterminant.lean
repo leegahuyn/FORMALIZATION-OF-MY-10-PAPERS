@@ -40,8 +40,8 @@ theorem det_sexticScale (hl : l = 2 ∨ l = 3) (h₂ : (2 : L) ≠ 0) (h₃ : (3
         exact rotate_sum_eq_zero h₂ h₃ one_ne_zero (square_cube L hv) h hΔ P
       have ht := congrArg (endMap l) hr
       have hQuad : R ^ 2 - (-1 : ℤ_[l]) • R + (1 : ℤ_[l]) • (1 : Module.End ℤ_[l] U) = 0 := by
-        simpa only [R, sub_neg_eq_add, neg_one_smul, one_smul, map_pow, map_add, map_one,
-          map_zero] using ht
+        rw [show ((-1 : ℤ_[l]) • R) = -R from neg_one_smul ℤ_[l] R, sub_neg_eq_add, one_smul]
+        simpa only [R, map_pow, map_add, map_one, map_zero] using ht
       have hNo (u : ℤ_[l]) : u ^ 2 - (-1 : ℤ_[l]) * u + 1 ≠ 0 := by
         intro hEq
         have he := congrArg (fun x : ℤ_[l] => (x : ℚ_[l])) hEq
@@ -50,7 +50,11 @@ theorem det_sexticScale (hl : l = 2 ∨ l = 3) (h₂ : (2 : L) ≠ 0) (h₃ : (3
           (by simpa only [neg_one_mul, sub_neg_eq_add] using he)
       exact (RankTwoCoefficientIdentification.linear_trace_det B R (-1) 1 hNo hQuad).2
   have hs : endMap l (sexticScale L hv hΔ) = ((twistSign L v : ℤ) : ℤ_[l]) • R := by
-    rw [sextic_eq_signed_rotation, map_zsmul, Int.cast_smul_eq_zsmul]
+    have hMap : endMap l (twistSign L v • r) = twistSign L v • R :=
+      (endMap l : AddMonoid.End (UnitPoints L) →+* Module.End ℤ_[l] U).toAddMonoidHom.map_zsmul
+        (twistSign L v) r
+    rw [CubicSexticRotation.sextic_eq_signed_rotation, Int.cast_smul_eq_zsmul]
+    exact hMap
   have hSign : ((twistSign L v : ℤ) : ℤ_[l]) ^ 2 = 1 := by
     rcases twistSign_cases L v with h | h <;> simp [h]
   rw [hs, LinearMap.det_smul, hRank, hSign, hR, one_mul]

@@ -15,26 +15,26 @@ variable {D N : Submodule ℝ E}
 
 theorem other_eigenvector_orthogonal (H : D →ₗ[ℝ] E)
     (hSym : ∀ u v : D, inner ℝ (H u) (v : E) = inner ℝ (u : E) (H v))
-    {λ₀ μ : ℝ}
-    (hGround : ∀ y ∈ N, ∃ u : D, (u : E) = y ∧ H u = λ₀ • y)
-    {x : D} (hx : H x = μ • (x : E)) (hDistinct : μ ≠ λ₀) :
+    {groundEnergy μ : ℝ}
+    (hGround : ∀ y ∈ N, ∃ u : D, (u : E) = y ∧ H u = groundEnergy • y)
+    {x : D} (hx : H x = μ • (x : E)) (hDistinct : μ ≠ groundEnergy) :
     (x : E) ∈ Nᗮ := by
   rw [Submodule.mem_orthogonal]
   intro y hy
   obtain ⟨u, hu, he⟩ := hGround y hy
-  have hh : λ₀ * inner ℝ y (x : E) = μ * inner ℝ y (x : E) := by
+  have hh : groundEnergy * inner ℝ y (x : E) = μ * inner ℝ y (x : E) := by
     simpa only [he, hx, hu, real_inner_smul_left, real_inner_smul_right] using hSym u x
-  have hz : (λ₀-μ) * inner ℝ y (x : E) = 0 := by rw [sub_mul, hh, sub_self]
+  have hz : (groundEnergy-μ) * inner ℝ y (x : E) = 0 := by rw [sub_mul, hh, sub_self]
   exact (mul_eq_zero.mp hz).resolve_left (sub_ne_zero.mpr (Ne.symm hDistinct))
 
 theorem other_eigenvalue_lower_bound (H : D →ₗ[ℝ] E) (mass : D → ℝ)
     (hSym : ∀ u v : D, inner ℝ (H u) (v : E) = inner ℝ (u : E) (H v))
-    {α c β λ₀ μ : ℝ} (hα : 0 ≤ α)
-    (hGround : ∀ y ∈ N, ∃ u : D, (u : E) = y ∧ H u = λ₀ • y)
+    {α c β groundEnergy μ : ℝ} (hα : 0 ≤ α)
+    (hGround : ∀ y ∈ N, ∃ u : D, (u : E) = y ∧ H u = groundEnergy • y)
     (hRS : ∀ u : D, (u : E) ∈ Nᗮ → c * ‖(u : E)‖^2 ≤ mass u)
     (hForm : ∀ u : D, α * mass u + β * ‖(u : E)‖^2 ≤ inner ℝ (u : E) (H u))
-    {x : D} (hx : H x = μ • (x : E)) (hx₀ : (x : E) ≠ 0) (hDistinct : μ ≠ λ₀) :
-    α*c+β ≤ μ ∧ α*c+β-λ₀ ≤ μ-λ₀ := by
+    {x : D} (hx : H x = μ • (x : E)) (hx₀ : (x : E) ≠ 0) (hDistinct : μ ≠ groundEnergy) :
+    α*c+β ≤ μ ∧ α*c+β-groundEnergy ≤ μ-groundEnergy := by
   have hOrth := other_eigenvector_orthogonal H hSym hGround hx hDistinct
   have h : (α*c+β) * ‖(x : E)‖^2 ≤ μ * ‖(x : E)‖^2 := by
     calc

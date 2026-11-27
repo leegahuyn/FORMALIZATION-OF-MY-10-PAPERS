@@ -15,13 +15,16 @@ open scoped TensorProduct
 
 noncomputable section
 
-variable {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
+universe u
+
+variable {R B : Type u} [CommRing R] [CommRing B] [Algebra R B]
 variable (U : ℕ → Subalgebra R B)
 variable (hMono : Monotone U) (hCover : ∀ b : B, ∃ n, b ∈ U n)
 
 private abbrev f : Spec (CommRingCat.of B) ⟶ Spec (CommRingCat.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R B))
 
+include hMono hCover in
 /-- The native affine scheme of an exhaustive increasing union of étale
 subalgebras is weakly étale over the affine base. -/
 theorem weaklyEtale (hEtale : ∀ n, Algebra.Etale R (U n)) : WeaklyEtale (f (R := R) (B := B)) := by
@@ -39,6 +42,7 @@ theorem weaklyEtale (hEtale : ∀ n, Algebra.Etale R (U n)) : WeaklyEtale (f (R 
   rw [AlgebraicGeometry.diagonal_SpecMap]
   infer_instance
 
+include hCover in
 /-- If all the stages are integral and the base inclusion is injective,
 the actual weakly étale map of affine schemes is surjective. -/
 theorem surjective (hIntegral : ∀ n, Algebra.IsIntegral R (U n))
