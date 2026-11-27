@@ -8,6 +8,7 @@ namespace ManuscriptAudit.CubicNonsplitCanonicalTate
 
 open CubicNonsplitThreeAdicTrace CubicNonsplitFiniteFieldTate
 open PowerTateModule Polynomial
+open scoped Classical
 
 noncomputable section
 
@@ -38,13 +39,11 @@ theorem exists_basis_charpoly_det (hp : 5 ≤ p) (hlp : l ≠ p) {A : E} (hA : A
     ∃ B : Module.Basis (Fin 2) ℤ_[l] (Tate l (GeometricPoints E (AlgebraicClosure E) A)),
       letI := Module.Free.of_basis B
       letI := Module.Finite.of_basis B
-      (Action E (AlgebraicClosure E) l A).charpoly = X ^ 2 + C (Fintype.card E : ℤ_[l]) ∧
-      LinearMap.det (Action E (AlgebraicClosure E) l A) = (Fintype.card E : ℤ_[l]) := by
+      (endMap l (arithmeticPointFrobenius E (AlgebraicClosure E) A)).charpoly = X ^ 2 + C (Fintype.card E : ℤ_[l]) ∧
+      LinearMap.det (endMap l (arithmeticPointFrobenius E (AlgebraicClosure E) A)) = (Fintype.card E : ℤ_[l]) := by
   classical
   let L := AlgebraicClosure E
   letI : Algebra (ZMod p) E := (ZMod.castHom dvd_rfl E).toAlgebra
-  letI : Algebra (ZMod p) L := ((algebraMap E L).comp (algebraMap (ZMod p) E)).toAlgebra
-  letI : IsScalarTower (ZMod p) E L := IsScalarTower.of_algebraMap_eq (fun _ => rfl)
   letI : Module.Finite (ZMod p) E := inferInstance
   letI : Algebra.IsAlgebraic (ZMod p) L := Algebra.IsAlgebraic.trans (ZMod p) E L
   have hq := char_mod_three p E hE

@@ -14,8 +14,8 @@ open SchemeRationalPointsOpen NodalSmoothEulerComparison
 
 noncomputable section
 
-def nativeCuspCounts (p : ℕ) [Fact p.Prime] : Series :=
-  X * PowerSeries.mk fun n =>
+def nativeCuspCounts (p : ℕ) [Fact p.Prime] : PowerSeries ℚ :=
+  (PowerSeries.X : PowerSeries ℚ) * PowerSeries.mk fun n =>
     (Nat.card (PointsOver
       (CuspProperCompactification.affineOpen (GaloisField p (n + 1)) ≫
         CuspProperCompactification.projectiveCuspToBase (GaloisField p (n + 1)))) : ℚ)
@@ -51,8 +51,9 @@ theorem same_zeta_distinct_compact_degree_one (p : ℕ) [Fact p.Prime] [CharP K 
     · exact (Fact.out : p.Prime).ne_one h
     · exact hp₂ h
   have he := CuspCompactSupportCyclicDegrees.cuspEquiv K p ℓ (Fact.out : ℓ.Prime).two_le 1
-  have e : cuspHc K (AddCommGrpCat.of (ZMod ℓ)) 1 ≃+ ZMod 1 := by
-    simpa only [show (1 : ℕ) ≠ 2 by decide, if_false] using he
+  have hOrder : (if (1 : ℕ) = 2 then ℓ else 1) = 1 := if_neg (by decide)
+  have e : cuspHc K (AddCommGrpCat.of (ZMod ℓ)) 1 ≃+ ZMod 1 :=
+    he.trans (ZMod.ringEquivCongr hOrder).toAddEquiv
   exact ⟨equal_zeta p hp₂, (proper_compact_betti_eq K ℓ 1).trans
     ((proper_betti_succ K ℓ 0).trans (NodalFiniteCohomology.betti_one K ℓ h₂)),
     e.injective.subsingleton⟩

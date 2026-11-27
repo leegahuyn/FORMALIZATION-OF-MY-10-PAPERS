@@ -72,9 +72,9 @@ private def smoothLevelEquiv (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2
   cases r with
   | zero => exact orderOneEquiv (smoothCompactOpen p) n
   | succ r =>
-    rcases hn with rfl | rfl
-    · exact smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) 1
-    · exact smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) 2
+    have hOrder : (if n = 1 ∨ n = 2 then ℓ ^ (r + 1) else 1) = ℓ ^ (r + 1) := if_pos hn
+    exact (smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) n).trans
+      (coefficientCongr ZMod hOrder)
 
 private theorem smoothTransition_surjective (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2)
     (r : ℕ) : Function.Surjective (smoothTransition p ℓ n r) := by
