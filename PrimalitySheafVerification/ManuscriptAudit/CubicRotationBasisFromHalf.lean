@@ -44,9 +44,18 @@ theorem exists_basis_from_half (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA
     (Nat.card_congr (carrierEquiv 2 G)).trans (affine_twoPower_card h₂ h₃ hA 1)
   let e := levelEquivFromLifts G hd hc 1 P₄ Q₄
     (hp.symm ▸ hT) (hq.symm ▸ hr) (by rw [hp, hq]; exact hDist)
-  let B := (Basis.finTwoProd (ZMod 4)).map e
-  have h₀ : B 0 = P₄ := by simp [B, e, levelEquivFromLifts_apply]
-  have h₁ : B 1 = Q₄ := by simp [B, e, levelEquivFromLifts_apply]
+  let B := (Basis.finTwoProd (ZMod (2 ^ (1 + 1)))).map e
+  have hEval (v : ZMod (2 ^ (1 + 1)) × ZMod (2 ^ (1 + 1))) :
+      e v = v.1 • P₄ + v.2 • Q₄ :=
+    levelEquivFromLifts_apply G hd hc 1 P₄ Q₄ _ _ _ v
+  have h₀ : B 0 = P₄ := by
+    change e (1, 0) = P₄
+    rw [hEval]
+    simp
+  have h₁ : B 1 = Q₄ := by
+    change e (0, 1) = Q₄
+    rw [hEval]
+    simp
   refine ⟨B, ?_, ?_⟩
   · exact congrArg (fun R : PowerTorsion G 2 => R.val) h₀
   · change S (B 0) = B 1

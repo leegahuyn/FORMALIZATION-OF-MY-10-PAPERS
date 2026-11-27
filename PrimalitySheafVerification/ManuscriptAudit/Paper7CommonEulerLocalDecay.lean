@@ -28,7 +28,7 @@ theorem factor_norm_le_half_of_large_card {q : ℕ} {a z : ℂ}
       _ = ‖denominator q a z - (1 - a * z)‖ := congrArg norm hEq
       _ ≤ ‖denominator q a z‖ + ‖1 - a * z‖ := norm_sub_le _ _
       _ ≤ ‖denominator q a z‖ + (1 + ‖a‖ * ‖z‖) := by
-        apply add_le_add_left
+        apply add_le_add_right
         simpa only [norm_one, norm_mul] using norm_sub_le (1 : ℂ) (a * z)
   have hSq : X^2 = (q : ℝ) * ‖z‖^2 := by
     unfold X

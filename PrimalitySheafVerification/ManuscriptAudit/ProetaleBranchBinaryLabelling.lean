@@ -51,12 +51,12 @@ theorem relabel_difference_const {U : X.ProEt} (ε : Binary) (m : M)
   apply ULift.ext
   apply ContinuousMap.ext
   intro c
-  let s' : C(pullback U.hom p, Binary) := s.down
+  let s' : C(↥(pullback U.hom p : Scheme.{0}), Binary) := s.down
   let x := s' (pullbackMap U.hom b₀ h₀ c)
   let y := s' (pullbackMap U.hom b₁ h₁ c)
-  have hx : x = ε := congrArg (fun f : ULift.{1} (C(pullback U.hom q, Binary)) ↦ f.down c) hPos
+  have hx : x = ε := congrArg (fun f : ULift.{1} (C(↥(pullback U.hom q : Scheme.{0}), Binary)) ↦ f.down c) hPos
   have hxy : x - y = 1 :=
-    congrArg (fun f : ULift.{1} (C(pullback U.hom q, Binary)) ↦ f.down c) hDiff
+    congrArg (fun f : ULift.{1} (C(↥(pullback U.hom q : Scheme.{0}), Binary)) ↦ f.down c) hDiff
   have hy : y ≠ ε := by
     intro h
     rw [hx, h, sub_self] at hxy

@@ -34,8 +34,8 @@ theorem traces_of_two_rotations (B : Basis (Fin 2) (ZMod 4) W)
     (S : Module.End (ZMod 4) W) (h₀ : S (B 0) = B 1)
     (h₁ : S (B 1) = -B 0 - B 1) (hSq : S ^ 2 = -S - 1)
     (x : ZMod 4) (hx : x = 1 ∨ x = -1) :
-    LinearMap.trace (ZMod 4) W (S * (x • 1 + 2 • S)) = x ∧
-      LinearMap.trace (ZMod 4) W (S ^ 2 * (x • 1 + 2 • S)) = -x := by
+    LinearMap.trace (ZMod 4) W (S * (x • 1 + (2 : ZMod 4) • S)) = x ∧
+      LinearMap.trace (ZMod 4) W (S ^ 2 * (x • 1 + (2 : ZMod 4) • S)) = -x := by
   letI : Fact (1 < (4 : ℕ)) := ⟨by decide⟩
   constructor
   · rw [rotate_coefficients S hSq]

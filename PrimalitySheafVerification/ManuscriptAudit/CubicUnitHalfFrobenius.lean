@@ -85,7 +85,7 @@ theorem exists_half_frobenius {z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠
     intro h
     have he : r ^ 2 = s ^ 2 := by rw [eq_neg_of_add_eq_zero_left h, neg_sq]
     rw [hr', hs'] at he
-    have hpow : u ^ 1 = u ^ 2 := by simpa only [pow_one] using sub_right_cancel he
+    have hpow : u ^ 1 = u ^ 2 := by linear_combination he
     exact (by decide : (1 : ℕ) ≠ 2) (hu.pow_inj (by decide) (by decide) hpow)
   let T := rootPoint hΔ ha
   let P := halfPoint hΔ ha hSum hProd

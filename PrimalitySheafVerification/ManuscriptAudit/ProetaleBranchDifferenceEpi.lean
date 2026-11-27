@@ -46,8 +46,8 @@ theorem image_mem_with_separator (U : X.ProEt)
   let P₀ := positiveTrace b₀ h₀
   let u := P₀.hom.app (op U) b
   let H := functionsOver (M × Binary) q
-  let s' : C(pullback U.hom q, M) := s.down
-  let u' : C(pullback U.hom q, Binary) := u.down
+  let s' : C(↥(pullback U.hom q : Scheme.{0}), M) := s.down
+  let u' : C(↥(pullback U.hom q : Scheme.{0}), Binary) := u.down
   let t : H.obj.obj (op U) := ⟨s'.prodMk u'⟩
   choose W hW c hc using fun x : U.left ↦
     exists_open_restriction_const q (M × Binary) U t x
@@ -73,13 +73,13 @@ theorem image_mem_with_separator (U : X.ProEt)
     apply ULift.ext
     apply ContinuousMap.ext
     intro a
-    exact congrArg (fun t : ULift.{1} (C(pullback (V x).hom q, M × Binary)) ↦ (t.down a).1) (hc x)
+    exact congrArg (fun t : ULift.{1} (C(↥(pullback (V x).hom q : Scheme.{0}), M × Binary)) ↦ (t.down a).1) (hc x)
   have hLabel : (functionsOver Binary q).obj.map v.op u =
       ⟨ContinuousMap.const (↥(pullback (V x).hom q : Scheme.{0})) (c x).2⟩ := by
     apply ULift.ext
     apply ContinuousMap.ext
     intro a
-    exact congrArg (fun t : ULift.{1} (C(pullback (V x).hom q, M × Binary)) ↦ (t.down a).2) (hc x)
+    exact congrArg (fun t : ULift.{1} (C(↥(pullback (V x).hom q : Scheme.{0}), M × Binary)) ↦ (t.down a).2) (hc x)
   have hDiff : (binaryDifference b₀ b₁ h₀ h₁).hom.app (op (V x)) b' =
       oneSection (q := q) (V x) := by
     unfold b'

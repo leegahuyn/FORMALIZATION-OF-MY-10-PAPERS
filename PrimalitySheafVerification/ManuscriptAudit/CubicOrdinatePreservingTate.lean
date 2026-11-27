@@ -13,6 +13,8 @@ open PowerTateModule
 
 noncomputable section
 
+set_option maxHeartbeats 800000
+
 variable {E L : Type*} [Field E] [Fintype E] [Field L] [Algebra E L]
     [IsAlgClosed L] [DecidableEq L]
 
@@ -25,7 +27,8 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (A B : E)
     (hY : (algebraMap E L (parameter A B k)) ^ 3 = 1)
     (a b : ℤ)
     (hF : arithmeticFrobenius E L A =
-      a • (1 : AddMonoid.End (Geometric E L A)) + b • CubicCubeRotation.rotate z hz hΔA)
+      a • (1 : AddMonoid.End (Geometric E L A)) +
+        b • (pointRotation hz hΔA : AddMonoid.End (Geometric E L A)))
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     let c := (rotatedCoefficients n a b).1
     let d := (rotatedCoefficients n a b).2
@@ -43,12 +46,14 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (A B : E)
   let c := (rotatedCoefficients n a b).1
   let d := (rotatedCoefficients n a b).2
   have hRot : F = c • (1 : AddMonoid.End (Geometric E L A)) + d • r := by
-    dsimp only [F]
-    rw [hF]
-    exact rotation_pow_linear r hr n a b
+    calc
+      F = r ^ n.val * (a • (1 : AddMonoid.End (Geometric E L A)) + b • r) :=
+        congrArg (fun t : AddMonoid.End (Geometric E L A) => r ^ n.val * t) hF
+      _ = c • (1 : AddMonoid.End (Geometric E L A)) + d • r := rotation_pow_linear r hr n a b
   obtain ⟨ht, hd⟩ := CubicTateRotationCoefficients.trace_det h₂ h₃ h₀ hz hz₁ hΔA
     l hl F c d hRot
-  obtain ⟨e, he⟩ := frobenius_conjugate_rotation E L A B hA hB hq hΔA hΔB z hz n.val hX hY
+  obtain ⟨e, he⟩ := frobenius_conjugate_rotation (E := E) (L := L) (A := A) (B := B)
+    (z := z) (n := n.val) hA hB hq hΔA hΔB hz hX hY
   let T := mapAddEquiv l e
   let G := endMap l (arithmeticFrobenius E L B)
   have h (v : Tate l (Geometric E L A)) : G (T v) = T (endMap l F v) := by

@@ -68,7 +68,7 @@ with the continuous additive coefficient arrow. -/
 theorem HZeroEquiv_mapOver {Y Z : Scheme.{0}} (p : Y ⟶ Z)
     (x : Sheaf.H (functionsOver M p) 0) (y : Y) :
     HZeroEquiv N p (Sheaf.H.map (mapOver f hf p) 0 x) y = f (HZeroEquiv M p x y) := by
-  change terminalEquiv N p ((Sheaf.H.equiv₀ _
+  change terminalEquiv N p ((Sheaf.H.equiv₀ (functionsOver N p)
     (MorphismProperty.Over.mkIdTerminal @WeaklyEtale Z))
       (Sheaf.H.map (mapOver f hf p) 0 x)) y = _
   rw [← Sheaf.H.equiv₀_naturality]

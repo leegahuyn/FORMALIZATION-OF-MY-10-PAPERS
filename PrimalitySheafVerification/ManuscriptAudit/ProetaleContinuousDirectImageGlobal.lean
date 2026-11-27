@@ -66,12 +66,12 @@ theorem terminalEquiv_restriction (a : (functionsOver M p).obj.obj (op (finalObj
 
 /-- The same identification in actual native degree-zero cohomology. -/
 def HZeroEquiv : Sheaf.H (functionsOver M p) 0 ≃+ C(Y, M) :=
-  (Sheaf.H.equiv₀ _ (MorphismProperty.Over.mkIdTerminal @WeaklyEtale Z)).trans (terminalEquiv M p)
+  (Sheaf.H.equiv₀ (functionsOver M p) (MorphismProperty.Over.mkIdTerminal @WeaklyEtale Z)).trans (terminalEquiv M p)
 
 theorem HZeroEquiv_restriction (a : Sheaf.H (functionsOver M p) 0) :
     HZeroEquiv M q (Sheaf.H.map (restriction M g hg) 0 a) =
       (HZeroEquiv M p a).comp ⟨g, g.continuous⟩ := by
-  change terminalEquiv M q ((Sheaf.H.equiv₀ _
+  change terminalEquiv M q ((Sheaf.H.equiv₀ (functionsOver M q)
     (MorphismProperty.Over.mkIdTerminal @WeaklyEtale Z))
       (Sheaf.H.map (restriction M g hg) 0 a)) = _
   rw [← Sheaf.H.equiv₀_naturality]

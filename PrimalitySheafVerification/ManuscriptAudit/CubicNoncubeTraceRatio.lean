@@ -29,6 +29,7 @@ theorem noncube_ratio_trace (L : Type*) [Field L] [Algebra K L] [IsAlgClosed L]
       (((Fintype.card K : ℤ) + 1 -
         (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ) : ℤ) : ZMod 4) =
         ((quadraticChar K A : ℤ) : ZMod 4) * (quadraticChar K (v ^ 2 - 1) : ZMod 4) := by
+  classical
   let v := A ^ k
   let i := algebraMap K L
   have hNo (x : K) : x ^ 3 + A ≠ 0 := by
@@ -59,7 +60,7 @@ theorem noncube_ratio_trace (L : Type*) [Field L] [Algebra K L] [IsAlgClosed L]
     let g := FiniteField.frobeniusAlgHom K L
     change g t = i (v ^ 2) * t
     dsimp only [t]
-    rw [map_neg, map_pow, show g u = u * i v from hUq, map_pow]
+    rw [map_neg, map_pow, show g u = u * i v from hUq, map_pow i v 2]
     ring
   have hc₀ : v ^ 2 ≠ 1 := by
     intro he

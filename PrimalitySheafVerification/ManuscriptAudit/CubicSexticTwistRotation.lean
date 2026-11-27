@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Group.End
 import PrimalitySheafVerification.ManuscriptAudit.CubicPointScaling
 import PrimalitySheafVerification.ManuscriptAudit.CubicCubeRotation
 
@@ -52,7 +53,7 @@ theorem scale_eq_signed_rotate (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
 theorem rotate_square_eq (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
     (hu₃ : u ^ 3 = 1) (hu₂₃ : (u ^ 2) ^ 3 = 1) :
     rotate (u ^ 2) hu₂₃ hΔ = (rotate u hu₃ hΔ : AddMonoid.End (Curve A).Point) ^ 2 := by
-  rw [pow_two]
+  rw [pow_two (rotate u hu₃ hΔ : AddMonoid.End (Curve A).Point)]
   apply AddMonoidHom.ext
   intro P
   change rotate (u ^ 2) hu₂₃ hΔ P = rotate u hu₃ hΔ (rotate u hu₃ hΔ P)
