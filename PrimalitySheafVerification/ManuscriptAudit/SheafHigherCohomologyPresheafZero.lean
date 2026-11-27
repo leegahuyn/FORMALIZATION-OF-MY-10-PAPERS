@@ -17,9 +17,11 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 private abbrev A := AddCommGrpCat.{v}
 private abbrev S := Sheaf J A
 
-variable [HasSheafify J A] [HasExt.{w} (S J)] [EnoughInjectives (S J)]
-variable [J.HasSheafCompose (forget A)] [J.WEqualsLocallyBijective A]
-variable [HasFunctorialSurjectiveInjectiveFactorization A]
+variable [HasSheafify J A] [HasExt.{w} (S J)] [enough : EnoughInjectives (S J)]
+variable [composeForget : J.HasSheafCompose (forget A)] [wLocal : J.WEqualsLocallyBijective A]
+variable [factorization : HasFunctorialSurjectiveInjectiveFactorization A]
+
+include enough composeForget wLocal factorization in
 
 theorem sheafified_isZero (n : ℕ) (F : S J) :
     IsZero ((presheafToSheaf J A).obj (F.cohomologyPresheaf (n+1))) := by

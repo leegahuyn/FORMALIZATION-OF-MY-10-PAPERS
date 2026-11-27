@@ -68,7 +68,7 @@ private theorem comparison_bijective (F : D X) (E : C X) (j : (directImage X).ob
     change Ext.mk₀ (homComparison X F E j f) =
       Ext.mk₀ (homComparison X F E j (Ext.homEquiv₀ (Ext.mk₀ f)))
     have hf : Ext.homEquiv₀ (Ext.mk₀ f) = f :=
-      Ext.homEquiv₀.symm_apply_apply f
+      Ext.homEquiv₀.apply_symm_apply f
     rw [hf]
   rw [he]
   exact h.bijective

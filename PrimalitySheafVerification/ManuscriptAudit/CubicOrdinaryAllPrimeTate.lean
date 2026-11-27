@@ -30,7 +30,7 @@ abbrev actual (A : E) : Module.End ℤ_[l] (Tate l (GeometricPoints E L A)) :=
 private theorem card_mod_three (hs : p % 3 = 1) : Fintype.card E % 3 = 1 := by
   have hpow (n : ℕ) : p ^ n % 3 = 1 := by
     induction n with
-    | zero => decide
+    | zero => rw [pow_zero]; decide
     | succ n hn => rw [pow_succ, Nat.mul_mod, hn, hs] <;> decide
   have hc := Module.card_eq_pow_finrank (K := ZMod p) (V := E)
   rw [ZMod.card] at hc

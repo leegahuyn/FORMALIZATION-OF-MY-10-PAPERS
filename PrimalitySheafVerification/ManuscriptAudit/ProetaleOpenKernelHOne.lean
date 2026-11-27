@@ -52,7 +52,8 @@ private theorem HZero_surjective
   refine ⟨a.symm x, b.injective ?_⟩
   change Sheaf.H.equiv₀ ((R j).obj G) hT (Sheaf.H.map ((R j).map g) 0 (a.symm x)) = _
   rw [← Sheaf.H.equiv₀_naturality]
-  change ((((R j).map g).hom.app (op (Scheme.ProEt.mk (𝟙 U)))) (a (a.symm x)) = _
+  let gm := ((R j).map g).hom.app (op (Scheme.ProEt.mk (𝟙 U)))
+  change gm (a (a.symm x)) = b y
   rw [a.apply_symm_apply]
   exact hx
 

@@ -123,6 +123,7 @@ theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤
             fun _ ht => ⟨ht, hy'⟩
           change ContinuousOn ((rateX F G).uncurry ∘ line) (Icc a b)
           exact hRx.comp hC.continuousOn hM
+        change (∫ t in a..b, rateX F G t y) = 0
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt
           (f := fun x => fluxX F G x y) (f' := fun x => rateX F G x y) ?_ hline.intervalIntegrable]
         · simp only [fluxX, hx y hy', sub_self]
@@ -146,6 +147,7 @@ theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤
             fun _ ht => ⟨hx', ht⟩
           change ContinuousOn ((rateY F G).uncurry ∘ line) (Icc c d)
           exact hRy.comp hC.continuousOn hM
+        change (∫ t in c..d, rateY F G x t) = 0
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt
           (f := fluxY F G x) (f' := rateY F G x) ?_ hline.intervalIntegrable]
         · apply sub_eq_zero.mpr
@@ -164,7 +166,9 @@ theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤
           exact (integral_sub (continuous_integrable hL) (continuous_integrable hR)).symm
     _ = box a b c d (fun z => rateX F G z.1 z.2 + rateY F G z.1 z.2) :=
       box_congr (fun z hz => density_difference F G z.1 z.2 (y_ne z hz))
-    _ = 0 := by rw [box_add hRx hRy, intX, intY, add_zero]
+    _ = 0 := by
+      change box a b c d (fun z => (rateX F G).uncurry z + (rateY F G).uncurry z) = 0
+      rw [box_add hRx hRy, intX, intY, add_zero]
 
 end
 end ManuscriptAudit.Paper8MaassRectangleAdjoint

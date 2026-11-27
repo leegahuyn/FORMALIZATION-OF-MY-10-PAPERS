@@ -36,7 +36,9 @@ theorem coefficient_complex_differentiable (F : Profile) (x y : ℝ) (hy : 0 < y
     simpa only [z, point_re, complexPoint_im] using hF
   have hPair : DifferentiableAt ℝ (fun t : ℂ => (t.re, t.im)) z :=
     (Complex.reCLM.differentiableAt (x := z)).prodMk (Complex.imCLM.differentiableAt (x := z))
-  have hA : DifferentiableAt ℝ (fun t : ℂ => F t.re t.im) z := hF'.comp z hPair
+  have hA' : DifferentiableAt ℝ (F.uncurry ∘ (fun t : ℂ => (t.re, t.im))) z :=
+    hF'.comp z hPair
+  have hA : DifferentiableAt ℝ (fun t : ℂ => F t.re t.im) z := hA'
   have hW := ((Real.hasDerivAt_rpow_const (p := (1/4 : ℝ)) (Or.inl hz.ne')).inv
     (Real.rpow_pos_of_pos hz (1/4 : ℝ)).ne').ofReal_comp
   have hB : DifferentiableAt ℝ (fun t : ℂ => (↑((t.im ^ (1/4 : ℝ))⁻¹ : ℝ) : ℂ)) z :=

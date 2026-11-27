@@ -20,6 +20,8 @@ variable (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]
 
 private abbrev J := Scheme.ProEt.topology X
 private abbrev A := AddCommGrpCat.{1}
+
+local instance residueTopology (d : ℕ) : TopologicalSpace (ZMod d) := ⊥
 private abbrev rho (n : ℕ) :=
   (ProetaleCoefficientUniverseLift.lift X).map (ProetaleResidueSheaves.residueReduction X ℓ n)
 
@@ -35,10 +37,10 @@ private theorem H_map_nsmul_id (F : Sheaf (J X) A) (d m : ℕ) (x : Sheaf.H F d)
     Sheaf.H.map (m • 𝟙 F) d x = m • x := by
   let h : (F ⟶ F) ≃+ Ext.{1} F F 0 := Ext.addEquiv₀.symm
   have hm : (Ext.mk₀ (m • 𝟙 F) : Ext.{1} F F 0) = m • Ext.mk₀ (𝟙 F) :=
-    map_nsmul h (𝟙 F) m
+    map_nsmul h m (𝟙 F)
   change x.comp (Ext.mk₀ (m • 𝟙 F)) (add_zero d) = m • x
   rw [hm]
-  simpa only [Ext.comp_mk₀_id] using map_nsmul (x.precomp F (add_zero d)) (Ext.mk₀ (𝟙 F)) m
+  simpa only [Ext.comp_mk₀_id] using map_nsmul (x.precomp F (add_zero d)) m (Ext.mk₀ (𝟙 F))
 
 private theorem scalar_reduction (r : ℤ_[ℓ]) (n : ℕ) :
     scalarMap X ℓ r ≫ rho X ℓ n =

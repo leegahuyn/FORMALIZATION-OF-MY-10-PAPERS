@@ -46,8 +46,13 @@ theorem scalar_surjective_of_reference (c : IntegralReference p L) {m : ℕ}
   intro P
   obtain ⟨Q, hQ⟩ := CubicLangPowers.pow_sub_one_surjective p L c.goodPrime c.nonzeroA hn P
   change (F ^ n - 1) Q = P at hQ
-  rw [hPow, AddMonoidHom.nsmul_apply] at hQ
-  exact ⟨combination c.rotation x y Q, hQ⟩
+  rw [hPow] at hQ
+  let evaluate : AddMonoid.End (Points c) →+ Points c where
+    toFun U := U Q
+    map_zero' := rfl
+    map_add' _ _ := rfl
+  exact ⟨combination c.rotation x y Q,
+    (map_nsmul evaluate m (combination c.rotation x y)).symm.trans hQ⟩
 
 /-- Every good split prime-field cubic is divisible by every positive integer coprime to p. -/
 theorem scalar_surjective {L : Type} [Field L] [Algebra (ZMod p) L]

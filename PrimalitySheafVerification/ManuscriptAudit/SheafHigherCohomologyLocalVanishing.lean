@@ -47,9 +47,11 @@ private theorem exists_boundary {F I : S J} (i : F ⟶ I) [Mono i] [Injective I]
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   exact (h x).1 hx
 
-variable [EnoughInjectives (S J)]
-variable [J.HasSheafCompose (forget A)] [J.WEqualsLocallyBijective A]
-variable [HasFunctorialSurjectiveInjectiveFactorization A]
+variable [enough : EnoughInjectives (S J)]
+variable [composeForget : J.HasSheafCompose (forget A)] [wLocal : J.WEqualsLocallyBijective A]
+variable [factorization : HasFunctorialSurjectiveInjectiveFactorization A]
+
+include enough composeForget wLocal factorization in
 
 /-- For every positive degree, the arrows killing a class constitute a covering sieve.
 This formulation applies to the actual cohomology presheaf of an arbitrary sheaf. -/

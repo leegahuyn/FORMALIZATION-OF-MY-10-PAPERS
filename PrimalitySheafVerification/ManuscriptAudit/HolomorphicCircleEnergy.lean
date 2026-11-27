@@ -31,8 +31,8 @@ theorem norm_sq_le_circleAverage {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
   let F (θ : ℝ) := f (circleMap c r θ)
   have hF : Continuous F := h.continuousOn_ball.comp_continuous (continuous_circleMap c r)
     (fun θ => sphere_subset_closedBall (circleMap_mem_sphere' c r θ))
-  have hInt := intervalIntegrable_iff.mp (hF.intervalIntegrable 0 (2 * Real.pi))
-  have hIntSq := intervalIntegrable_iff.mp ((hF.norm.pow 2).intervalIntegrable 0 (2 * Real.pi))
+  have hInt := intervalIntegrable_iff.mp (hF.intervalIntegrable (μ := volume) 0 (2 * Real.pi))
+  have hIntSq := intervalIntegrable_iff.mp ((hF.norm.pow 2).intervalIntegrable (μ := volume) 0 (2 * Real.pi))
   have hVol : volume (Ι (0 : ℝ) (2 * Real.pi)) ≠ 0 := by
     rw [uIoc_of_le Real.two_pi_pos.le, Real.volume_Ioc, sub_zero]
     exact (ENNReal.ofReal_pos.mpr Real.two_pi_pos).ne'

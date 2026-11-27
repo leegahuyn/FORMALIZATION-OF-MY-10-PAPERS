@@ -35,10 +35,12 @@ private theorem U_cover (x : Tower B) : ∃ n, x ∈ U B n := by
   obtain ⟨n, z, hz⟩ := exists_stage B x
   exact ⟨n, z, hz⟩
 
+include hF in
 private theorem U_faithfullyFlat (n : ℕ) : Module.FaithfullyFlat R (U B n) := by
   letI := stage_faithfullyFlat B hF n
   exact Module.FaithfullyFlat.of_linearEquiv ((stageEquiv B hF n).symm.toLinearEquiv)
 
+include hF hE in
 private theorem U_etale (n : ℕ) : Algebra.Etale R (U B n) := by
   letI := stage_etale B hE n
   exact Algebra.Etale.of_equiv (stageEquiv B hF n)
