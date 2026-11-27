@@ -81,7 +81,10 @@ def fieldAutomorphism (σ : L ≃ₐ[F] L) : fieldObject F L ⟶ fieldObject F L
     have he : CommRingCat.ofHom (algebraMap F L) ≫ CommRingCat.ofHom σ.toRingHom =
         CommRingCat.ofHom (algebraMap F L) :=
       CommRingCat.hom_ext (RingHom.ext σ.commutes)
-    rw [baseMap, ← Spec.map_comp, he])
+    change Spec.map (CommRingCat.ofHom σ.toRingHom) ≫
+      Spec.map (CommRingCat.ofHom (algebraMap F L)) =
+        Spec.map (CommRingCat.ofHom (algebraMap F L))
+    rw [← Spec.map_comp, he])
 
 @[simp] theorem fieldAutomorphism_one :
     fieldAutomorphism F L (1 : L ≃ₐ[F] L) = 𝟙 _ := by
@@ -112,8 +115,7 @@ def pairComponentArrow (σ : L ≃ₐ[F] L) : fieldObject F L ⟶ pairObject F L
 def tripleComponentArrow (σ τ : L ≃ₐ[F] L) : fieldObject F L ⟶ tripleObject F L :=
   MorphismProperty.Over.homMk (tripleComponent F L σ τ) (by
     change tripleComponent F L σ τ ≫ q₁ F L ≫ p₁ F L ≫ f F L = f F L
-    rw [tripleComponent_fst_assoc, component_fst_assoc]
-    exact Category.id_comp _)
+    rw [tripleComponent_fst_assoc, component_fst_assoc])
 
 @[reassoc] theorem pairComponentArrow_first (σ : L ≃ₐ[F] L) :
     pairComponentArrow F L σ ≫ pairFirst F L = 𝟙 _ :=

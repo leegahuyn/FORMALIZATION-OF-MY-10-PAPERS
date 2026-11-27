@@ -1,6 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
-import Mathlib.Data.Fintype.Pi
+import Mathlib.Algebra.Module.ZMod
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.RingTheory.Finiteness.Basic
@@ -35,9 +37,11 @@ private theorem double_id_zero : (2 : ℕ) • 𝟙 (constantBinary J) = 0 := by
     funext U
     apply AddCommGrpCat.ext
     intro a
-    change (2 : ℕ) • a = (0 : ZMod 2)
-    have hcast : ((2 : ℕ) : ZMod 2) = 0 := by decide
-    rw [← Nat.cast_smul_eq_nsmul (R := ZMod 2), hcast, zero_smul]
+    let x : ZMod 2 := a
+    have hx : (2 : ℕ) • x = 0 := by
+      have hcast : ((2 : ℕ) : ZMod 2) = 0 := by decide
+      rw [← Nat.cast_smul_eq_nsmul (R := ZMod 2), hcast, zero_smul]
+    exact hx
   have he := congrArg L.map h
   rw [Functor.map_nsmul, L.map_id, Functor.map_zero] at he
   exact he
@@ -57,23 +61,24 @@ theorem double_eq_zero (n : ℕ) (x : Sheaf.H (constantBinary J) n) :
 def coefficientModule (n : ℕ) : Module (ZMod 2) (Sheaf.H (constantBinary J) n) :=
   AddCommGroup.zmodModule (double_eq_zero J n)
 
-/-- A four-element actual mod-two cohomology group has coefficient-field dimension two. -/
-theorem finrank_eq_two_of_card_four (n : ℕ) [Finite (Sheaf.H (constantBinary J) n)]
-    (h : Nat.card (Sheaf.H (constantBinary J) n) = 4) :
-    letI := coefficientModule J n
-    Module.finrank (ZMod 2) (Sheaf.H (constantBinary J) n) = 2 := by
-  classical
-  letI := coefficientModule J n
+private theorem finrank_binary_four (V : Type*) [AddCommGroup V] [Module (ZMod 2) V]
+    [Finite V] (h : Nat.card V = 4) : Module.finrank (ZMod 2) V = 2 := by
   letI : Fact (Nat.Prime 2) := ⟨by decide⟩
-  let V := Sheaf.H (constantBinary J) n
   let b := Module.finBasis (ZMod 2) V
   have hC : Nat.card V = 2 ^ Module.finrank (ZMod 2) V := by
     calc
       Nat.card V = Nat.card (Fin (Module.finrank (ZMod 2) V) → ZMod 2) :=
         Nat.card_congr b.equivFun.toEquiv
-      _ = _ := by
-        rw [Nat.card_eq_fintype_card, Fintype.card_fun, ZMod.card, Fintype.card_fin]
+      _ = _ := by rw [Nat.card_fun, Nat.card_zmod, Nat.card_fin]
   exact (Nat.pow_right_injective (by decide : 2 ≤ (2 : ℕ))) (hC.symm.trans h)
+
+/-- A four-element actual mod-two cohomology group has coefficient-field dimension two. -/
+theorem finrank_eq_two_of_card_four (n : ℕ) [Finite (Sheaf.H (constantBinary J) n)]
+    (h : Nat.card (Sheaf.H (constantBinary J) n) = 4) :
+    letI := coefficientModule J n
+    Module.finrank (ZMod 2) (Sheaf.H (constantBinary J) n) = 2 := by
+  letI := coefficientModule J n
+  exact finrank_binary_four (Sheaf.H (constantBinary J) n) h
 
 end
 end ManuscriptAudit.BinaryConstantCohomology

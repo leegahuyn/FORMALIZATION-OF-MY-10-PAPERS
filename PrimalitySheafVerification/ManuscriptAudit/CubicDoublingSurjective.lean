@@ -89,7 +89,9 @@ theorem affine_doubling_surjective (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     · have hNeg : (2 : ℕ) • P = -(Affine.Point.some u v hQ : (Curve A).Point) := by
         rw [hDouble, Affine.Point.neg_some]
         simpa only [Affine.Point.some.injEq, true_and, negY_formula] using hminus
-      exact ⟨-P, by rw [smul_neg, hNeg, neg_neg]⟩
+      refine ⟨-P, ?_⟩
+      change (2 : ℕ) • (-P) = Affine.Point.some u v hQ
+      rw [smul_neg, hNeg, neg_neg]
 
 /-- Every actual projective point has a preimage under doubling. -/
 theorem projective_doubling_surjective (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)

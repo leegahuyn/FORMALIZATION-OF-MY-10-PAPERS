@@ -127,6 +127,14 @@ def isoOfIntersections
       exact (congrArg (fun r => r ≫ f) (glueTwo_right a b j k hY h₂)).trans
         (glueTwo_right j k a b hX h₁)
 
+/-- The glued isomorphism respects the actual second chart. -/
+theorem isoOfIntersections_hom_right
+    (e : pullback j k ≅ pullback a b)
+    (hf : e.hom ≫ pullback.fst a b = pullback.fst j k)
+    (hs : e.hom ≫ pullback.snd a b = pullback.snd j k) :
+    k ≫ (isoOfIntersections j k a b hX hY e hf hs).hom = b :=
+  glueTwo_right j k a b hX (compatible_of_overlapIso j k a b e hf hs)
+
 end
 end ManuscriptAudit.TwoOpenSchemeGlue
 
@@ -139,3 +147,4 @@ run_cmd do
   unless unexpected.isEmpty do
     throwError m!"{name} depends on unexpected axioms {unexpected}"
   logInfo m!"{name} uses {dependencies}"
+

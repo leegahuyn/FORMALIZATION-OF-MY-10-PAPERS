@@ -208,6 +208,25 @@ def smoothLocusIsoGm (h2 : (2 : K) ≠ 0) : smoothScheme K ≅ Gm K := by
     rw [Category.assoc, gmParameterIso_snd]
     exact h.isoPullback_inv_snd
 
+/-- Under the actual smooth-locus isomorphism, the Y-chart is its displayed
+open subspace of the multiplicative group. -/
+theorem ySmooth_comp_iso (h2 : (2 : K) ≠ 0) :
+    ySmooth K ≫ (smoothLocusIsoGm K h2).hom = yGm K h2 := by
+  unfold smoothLocusIsoGm
+  apply TwoOpenSchemeGlue.isoOfIntersections_hom_right
+
+/-- The coordinate isomorphism from the literal Y-chart to the principal localization. -/
+def yChartIsoPrincipal (h2 : (2 : K) ≠ 0) :
+    nodeYChart K ≅ Spec (CommRingCat.of (plusRing K)) :=
+  (Scheme.Spec.mapIso (yMobiusEquiv K h2).toRingEquiv.toCommRingCatIso.op).symm ≪≫
+    (Scheme.Spec.mapIso (NodalSmoothMobiusY.localizationEquiv K).toRingEquiv.toCommRingCatIso.op).symm
+
+/-- The principal localization inclusion is the actual morphism on the Y-chart. -/
+theorem yChartIsoPrincipal_comp (h2 : (2 : K) ≠ 0) :
+    (yChartIsoPrincipal K h2).hom ≫ plusInGm K = yGm K h2 := by
+  rw [yGm_as_open, ← plusOpen_fac]
+  simp only [yChartIsoPrincipal, nodalYIsoPlusOpen, Iso.trans_hom, Category.assoc]
+
 end
 end ManuscriptAudit.NodalSmoothLocusGm
 
@@ -216,9 +235,12 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.NodalSmoothLocusGm.yGm_preimage_z,
       ``ManuscriptAudit.NodalSmoothLocusGm.gm_charts_cover,
-      ``ManuscriptAudit.NodalSmoothLocusGm.smoothLocusIsoGm] do
+      ``ManuscriptAudit.NodalSmoothLocusGm.smoothLocusIsoGm,
+      ``ManuscriptAudit.NodalSmoothLocusGm.ySmooth_comp_iso,
+      ``ManuscriptAudit.NodalSmoothLocusGm.yChartIsoPrincipal_comp] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

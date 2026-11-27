@@ -32,7 +32,9 @@ private theorem power_smul_surjective
   induction n with
   | zero =>
     intro Q
-    exact ⟨Q, by rw [pow_zero, one_nsmul]⟩
+    refine ⟨Q, ?_⟩
+    change (2 ^ 0 : ℕ) • Q = Q
+    rw [pow_zero, one_nsmul]
   | succ n ih =>
     intro Q
     obtain ⟨T, hT⟩ := h Q
@@ -67,10 +69,12 @@ private def positiveLevelEquiv
   have hU₀ : (U : G) ≠ 0 := fun he => B.ne_zero 1 (Subtype.ext he)
   have hTU : (T : G) ≠ (U : G) := fun he =>
     (by decide : (0 : Fin 2) ≠ 1) (B.injective (Subtype.ext he))
-  obtain ⟨x, hx⟩ := power_smul_surjective G h n (T : G)
-  obtain ⟨y, hy⟩ := power_smul_surjective G h n (U : G)
-  change (2 ^ n : ℕ) • x = (T : G) at hx
-  change (2 ^ n : ℕ) • y = (U : G) at hy
+  let hxChoice := power_smul_surjective G h n (T : G)
+  let hyChoice := power_smul_surjective G h n (U : G)
+  let x := hxChoice.choose
+  let y := hyChoice.choose
+  have hx : (2 ^ n : ℕ) • x = (T : G) := hxChoice.choose_spec
+  have hy : (2 ^ n : ℕ) • y = (U : G) := hyChoice.choose_spec
   have hx₀ : (2 ^ (n + 1) : ℕ) • x = 0 := by
     rw [pow_succ, mul_nsmul, hx]
     exact (mem_iff 2 G _).mp T.property
