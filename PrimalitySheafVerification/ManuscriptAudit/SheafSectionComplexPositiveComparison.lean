@@ -60,6 +60,7 @@ private theorem termIso_natural (f : F ⟶ G) (m : ℕ) :
   change (sections J T).map (φ.hom'.f (m : ℤ)) ≫ (sections J T).map (P.cochainComplexXIso _ m rfl).hom =
     (sections J T).map (R.cochainComplexXIso _ m rfl).hom ≫ (sections J T).map (φ.hom.f m)
   rw [← Functor.map_comp, ← Functor.map_comp, φ.hom'_f (m : ℤ) m rfl]
+  dsimp only [R, P]
   simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 private theorem shortIso_natural (f : F ⟶ G) (n : ℕ) :

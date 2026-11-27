@@ -35,12 +35,12 @@ theorem no_compact_resolvent_inverse (D : GammaTwoFundamentalDomain)
     ¬ ∃ B : quotientL2 D →L[ℂ] quotientL2 D,
       IsCompactOperator (B : quotientL2 D →ₗ[ℂ] quotientL2 D) ∧
       ∀ v : T.domain, B (T v - μ • (v : quotientL2 D)) = v := by
-  let λ : ℂ := -((1 / 4 + k ^ 2 : ℝ) : ℂ)
+  let eigenvalue : ℂ := -((1 / 4 + k ^ 2 : ℝ) : ℂ)
   let v (n : ℕ) : T.domain :=
     ⟨waveVector D k (scale n) (scale_positive n), hDomain (scale n) (scale_one_le n)⟩
   let c (n : ℕ) : ℂ := ((‖(v n : quotientL2 D)‖ : ℂ)⁻¹)
   let u (n : ℕ) : T.domain := c n • v n
-  let e (n : ℕ) := T (u n) - λ • (u n : quotientL2 D)
+  let e (n : ℕ) := T (u n) - eigenvalue • (u n : quotientL2 D)
   have hu (n : ℕ) : (u n : quotientL2 D) = normalizedWave D k n := rfl
   have h1 : ContDiff ℝ 1 cuspBump := contDiff_infty.mp cuspBump_smooth 1
   have h2 : ContDiff ℝ (1 + 1) cuspBump := contDiff_infty.mp cuspBump_smooth 2
@@ -50,12 +50,12 @@ theorem no_compact_resolvent_inverse (D : GammaTwoFundamentalDomain)
     linarith only [h]
   have hSq (n : ℕ) : ‖e n‖ ^ 2 =
       relativeResidual cuspBump (deriv cuspBump) (deriv (deriv cuspBump)) 1 6 k (scale n) := by
-    have hResidualForm : e n = c n • (T (v n) - λ • (v n : quotientL2 D)) := by
-      change T (c n • v n) - λ • (c n • (v n : quotientL2 D)) = _
-      rw [map_smul, smul_sub, smul_comm λ]
+    have hResidualForm : e n = c n • (T (v n) - eigenvalue • (v n : quotientL2 D)) := by
+      change T (c n • v n) - eigenvalue • (c n • (v n : quotientL2 D)) = _
+      rw [map_smul, smul_sub, smul_comm eigenvalue]
     rw [hResidualForm, norm_smul, c, norm_inv, Complex.norm_real, Real.norm_eq_abs,
       abs_of_nonneg (norm_nonneg _), mul_pow, inv_pow, mul_comm, ← div_eq_mul_inv]
-    have hA : ‖T (v n) - λ • (v n : quotientL2 D)‖ ^ (2 : ℕ) = _ :=
+    have hA : ‖T (v n) - eigenvalue • (v n : quotientL2 D)‖ ^ (2 : ℕ) = _ :=
       hResidual (scale n) (scale_one_le n)
     have hB : ‖(v n : quotientL2 D)‖ ^ (2 : ℕ) = _ :=
       waveVector_norm_sq D k (scale n) (scale_positive n)
@@ -71,7 +71,7 @@ theorem no_compact_resolvent_inverse (D : GammaTwoFundamentalDomain)
     have h := (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSqLim
     have hRoot (n : ℕ) : Real.sqrt (‖e n‖ ^ 2) = ‖e n‖ := Real.sqrt_sq (norm_nonneg _)
     simpa only [Function.comp_apply, hRoot, Real.sqrt_zero] using h
-  exact CompactInverseSeparatedApproximateEigenvectors.no_compact_left_inverse T u λ μ
+  exact CompactInverseSeparatedApproximateEigenvectors.no_compact_left_inverse T u eigenvalue μ
     (fun n => by rw [hu, normalizedWave_norm])
     (fun m n h => by rw [hu m, hu n]; exact normalizedWave_separation D k h)
     (tendsto_zero_iff_norm_tendsto_zero.mpr hNormLim)

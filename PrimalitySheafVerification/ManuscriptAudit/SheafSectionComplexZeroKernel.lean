@@ -68,8 +68,11 @@ def inclusionIsKernel (F : Sheaf J A) :
     change PreservesFiniteLimits (sheafToPresheaf J A ⋙ (evaluation Cᵒᵖ A).obj (Opposite.op T))
     infer_instance
   let hR := R.kernelFork.mapIsLimit R.isLimitKernelFork E
-  exact IsKernel.ofIso hR _ (termIso J T F 0).symm (termIso J T F 1).symm (Iso.refl _)
-    (differential_square J T F) (by simp [zeroInclusion])
+  refine IsKernel.ofIso (E.map (R.cocomplex.d 0 1)) hR _
+    (termIso J T F 0).symm (termIso J T F 1).symm (Iso.refl _)
+    (differential_square J T F) ?_
+  change 𝟙 _ ≫ zeroInclusion J T F = E.map (R.ι.f 0) ≫ (termIso J T F 0).inv
+  exact Category.id_comp _
 
 /-- The actual resolved augmentation is natural in the sheaf morphism. -/
 theorem zeroInclusion_natural {F G : Sheaf J A} (f : F ⟶ G) :
@@ -84,8 +87,13 @@ theorem zeroInclusion_natural {F G : Sheaf J A} (f : F ⟶ G) :
       E.map f ≫ (E.map (P.ι.f 0) ≫ E.map (P.cochainComplexXIso 0 0 rfl).inv)
   simp only [← Functor.map_comp]
   rw [φ.hom'_f 0 0 rfl]
+  dsimp only [R, P]
   simp only [Category.assoc, Iso.inv_hom_id_assoc]
-  rw [← Category.assoc, InjectiveResolution.desc_commutes_zero, Category.assoc]
+  have hφ : (resolution J F).ι.f 0 ≫ φ.hom.f 0 =
+      f ≫ (resolution J G).ι.f 0 :=
+    InjectiveResolution.desc_commutes_zero f (resolution J G) (resolution J F)
+  have hc := congrArg (fun z ↦ z ≫ ((resolution J G).cochainComplexXIso 0 0 rfl).inv) hφ
+  exact congrArg E.map (by simpa only [Category.assoc] using hc)
 
 end
 end ManuscriptAudit.SheafSectionComplexZeroKernel

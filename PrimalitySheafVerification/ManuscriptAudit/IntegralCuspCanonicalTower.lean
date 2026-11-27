@@ -100,8 +100,10 @@ def smoothLimitEquiv (hℓp : ℓ ≠ p) (n : ℕ) (hn : n = 1 ∨ n = 2) :
   let e (r : ℕ) : smoothHc p (ℓ ^ r) n ≃+ ZMod (ℓ ^ r) := by
     cases r with
     | zero => exact orderOneEquiv (smoothCompactOpen p) n
-    | succ r => exact (smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) n).trans
-        (ZMod.ringEquivCongr (if_pos hn)).toAddEquiv
+    | succ r =>
+      have hOrder : (if n = 1 ∨ n = 2 then ℓ ^ (r + 1) else 1) = ℓ ^ (r + 1) := if_pos hn
+      exact (smoothPrimePowerEquiv p ℓ hℓp (r + 1) (by omega) n).trans
+        (ZMod.ringEquivCongr hOrder).toAddEquiv
   exact padicEquiv (smoothCompactOpen p) ℓ n (smooth_onto p ℓ hℓp n) e
 
 /-- The canonical cusp compatible classes vanish in all other nonnegative compact degrees. -/

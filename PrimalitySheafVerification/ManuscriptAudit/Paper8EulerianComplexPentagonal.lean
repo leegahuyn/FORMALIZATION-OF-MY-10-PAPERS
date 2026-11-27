@@ -78,7 +78,7 @@ theorem reciprocalStar_eq_two_complexSeries {q : ℂ} (hq : ‖q‖ < 1) :
   let disk := Metric.ball (0 : ℂ) 1
   have hF : AnalyticOnNhd ℂ reciprocalStar disk :=
     reciprocalStar_differentiableOn_unit_disk.analyticOnNhd Metric.isOpen_ball
-  have hConst : DifferentiableOn ℂ (fun _ : ℂ => (2 : ℂ)) disk := differentiableOn_const
+  have hConst : DifferentiableOn ℂ (fun _ : ℂ => (2 : ℂ)) disk := differentiableOn_const (2 : ℂ)
   have hG : AnalyticOnNhd ℂ (fun z => (2 : ℂ) * complexSeries z) disk :=
     (hConst.mul complexSeries_differentiableOn).analyticOnNhd Metric.isOpen_ball
   have hC : IsPreconnected disk := (convex_ball (0 : ℂ) 1).isPreconnected

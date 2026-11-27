@@ -36,7 +36,7 @@ theorem inclusion_coverPreserving :
   constructor
   intro U R hR
   obtain ⟨V, hV, hProp, hSub⟩ :=
-    (Scheme.mem_smallGrothendieckTopology (P := @Etale) X U R).mp hR
+    (Scheme.mem_smallGrothendieckTopology (P := @Etale) U R).mp hR
   letI := hV
   let Q := V.toPresieveOverProp hProp
   have hQ : (Q.map (inclusion X)) ∈ Scheme.ProEt.precoverage X ((inclusion X).obj U) := by

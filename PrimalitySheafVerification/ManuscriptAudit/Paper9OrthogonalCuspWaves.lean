@@ -1,4 +1,6 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.InnerProductSpace.Orthonormal
+import Mathlib.Tactic.Linarith
 import PrimalitySheafVerification.ManuscriptAudit.Paper9CuspWaveHilbert
 
 /-! Waves in disjoint cusp slabs are orthogonal in the native quotient Hilbert space. -/
@@ -6,6 +8,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper9CuspWaveHilbert
 namespace ManuscriptAudit.Paper9OrthogonalCuspWaves
 
 open Filter MeasureTheory
+open scoped Topology
 open ThetaChosenQuotientAnalysis GammaTwoQuotientHeightIntegral
 open Paper9CuspWaveHilbert Paper9CuspWaveQuotientCoefficient Paper9SmoothCuspWave
 open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
@@ -80,9 +83,31 @@ theorem normalizedWave_separation (D : GammaTwoFundamentalDomain) (k : ℝ) {m n
       normalizedWave_orthogonal D k h] <;> norm_num
   by_contra hn
   have hlt : dist (normalizedWave D k m) (normalizedWave D k n) < 1 := lt_of_not_ge hn
-  have h' := pow_lt_pow_left₀ dist_nonneg hlt (by decide : (2 : ℕ) ≠ 0)
-  rw [hSq, one_pow] at h'
-  norm_num at h'
+  let d := dist (normalizedWave D k m) (normalizedWave D k n)
+  have hd : 0 ≤ d := dist_nonneg
+  have hProd : 0 < (1 - d) * (1 + d) :=
+    mul_pos (sub_pos.mpr hlt) (by linarith)
+  change d ^ 2 = 2 at hSq
+  nlinarith
+
+theorem normalizedWave_orthonormal (D : GammaTwoFundamentalDomain) (k : ℝ) :
+    Orthonormal ℂ (normalizedWave D k) := by
+  refine ⟨normalizedWave_norm D k, ?_⟩
+  intro i j hij
+  rcases lt_or_gt_of_ne hij with h | h
+  · exact normalizedWave_orthogonal D k h
+  · rw [← inner_conj_symm, normalizedWave_orthogonal D k h, map_zero]
+
+theorem normalizedWave_inner_tendsto_zero (D : GammaTwoFundamentalDomain) (k : ℝ)
+    (x : quotientL2 D) :
+    Tendsto (fun n => inner ℂ (normalizedWave D k n) x) atTop (𝓝 0) := by
+  have hSum := (normalizedWave_orthonormal D k).inner_products_summable x
+  have hSq := hSum.tendsto_atTop_zero
+  have h := (Real.continuous_sqrt.continuousAt : ContinuousAt Real.sqrt 0).tendsto.comp hSq
+  have he (n : ℕ) : Real.sqrt (‖inner ℂ (normalizedWave D k n) x‖ ^ 2) =
+      ‖inner ℂ (normalizedWave D k n) x‖ := Real.sqrt_sq (norm_nonneg _)
+  exact tendsto_zero_iff_norm_tendsto_zero.mpr
+    (by simpa only [Function.comp_apply, he, Real.sqrt_zero] using h)
 
 end
 end ManuscriptAudit.Paper9OrthogonalCuspWaves
@@ -96,7 +121,9 @@ run_cmd do
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.sequence_orthogonal,
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_norm,
       ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_orthogonal,
-      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_separation] do
+      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_separation,
+      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_orthonormal,
+      ``ManuscriptAudit.Paper9OrthogonalCuspWaves.normalizedWave_inner_tendsto_zero] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do
