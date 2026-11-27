@@ -110,6 +110,8 @@ theorem sqrtAbelKernel_log_mean :
     simpa only [mul_one] using hHalf.mul harmonic_ratio
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le hLo hHi ?_ ?_
   · intro N
+    change (1 / 2 : ℝ) * (((harmonic (N + 1) : ℝ) - 1) / cutoffLog N) ≤
+      (∑ n ∈ Finset.range N, sqrtAbelKernel n) / cutoffLog N
     have hTail : (harmonic (N + 1) : ℝ) - 1 =
         ∑ n ∈ Finset.range N, ((n + 2 : ℕ) : ℝ)⁻¹ := by
       rw [harmonic_cast_sum, Finset.sum_range_succ']
@@ -117,12 +119,22 @@ theorem sqrtAbelKernel_log_mean :
     rw [hTail, ← mul_div_assoc, Finset.mul_sum]
     apply div_le_div_of_nonneg_right _ (cutoffLog_pos N).le
     refine Finset.sum_le_sum fun n _ => ?_
-    convert (sqrtAbelKernel_bounds n).1 using 1 <;> simp [div_eq_mul_inv, mul_inv_rev₀, mul_comm]
+    calc
+      _ = 1 / (2 * ((n + 2 : ℕ) : ℝ)) := by
+        have hn : ((n + 2 : ℕ) : ℝ) ≠ 0 := by positivity
+        field_simp [hn] <;> ring
+      _ ≤ _ := (sqrtAbelKernel_bounds n).1
   · intro N
+    change (∑ n ∈ Finset.range N, sqrtAbelKernel n) / cutoffLog N ≤
+      (1 / 2 : ℝ) * ((harmonic N : ℝ) / cutoffLog N)
     rw [harmonic_cast_sum, ← mul_div_assoc, Finset.mul_sum]
     apply div_le_div_of_nonneg_right _ (cutoffLog_pos N).le
     refine Finset.sum_le_sum fun n _ => ?_
-    convert (sqrtAbelKernel_bounds n).2 using 1 <;> simp [div_eq_mul_inv, mul_inv_rev₀, mul_comm]
+    calc
+      _ ≤ 1 / (2 * ((n + 1 : ℕ) : ℝ)) := (sqrtAbelKernel_bounds n).2
+      _ = _ := by
+        have hn : ((n + 1 : ℕ) : ℝ) ≠ 0 := by positivity
+        field_simp [hn] <;> ring
 
 end
 end ManuscriptAudit.Paper8SqrtAbelKernel

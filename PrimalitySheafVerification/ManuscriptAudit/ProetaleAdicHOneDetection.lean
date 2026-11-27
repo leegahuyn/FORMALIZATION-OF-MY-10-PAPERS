@@ -107,6 +107,60 @@ theorem reductionMap_injective : Function.Injective (reductionMap X ℓ) := by
   simp only [← Sheaf.H.map_comp_apply, inclusion_comp_projection]
   exact congrArg (fun z : compatibleHOne X ℓ ↦ z.val n) h
 
+private theorem difference_comp_projection (n : ℕ) :
+    (Q X ℓ).g ≫ projection X ℓ n =
+      projection X ℓ n - projection X ℓ (n + 1) ≫ transition X ℓ n := by
+  change (lift X).map (ProetaleAdicProductKernel.difference X ℓ) ≫
+      (lift X).map (Pi.π (residueSheaf X ℓ) n) =
+    (lift X).map (Pi.π (residueSheaf X ℓ) n) -
+      (lift X).map (Pi.π (residueSheaf X ℓ) (n + 1)) ≫ (lift X).map (residueTransition X ℓ n)
+  rw [← (lift X).map_comp, ProetaleAdicProductKernel.difference_π,
+    (lift X).map_sub, (lift X).map_comp]
+
+set_option maxHeartbeats 1600000 in
+/-- A coherent family represented by one native product-coefficient class
+already comes from actual integral degree one. -/
+theorem exists_lift_of_product_class (x : compatibleHOne X ℓ) (z : Sheaf.H (Q X ℓ).X₂ 1)
+    (hz : ∀ n, Sheaf.H.map (projection X ℓ n) 1 z = x.val n) :
+    ∃ a, reductionMap X ℓ a = x := by
+  have hd : Sheaf.H.map (Q X ℓ).g 1 z = 0 := by
+    apply productCohomology_injective X ℓ
+    funext n
+    change Sheaf.H.map (projection X ℓ n) 1 (Sheaf.H.map (Q X ℓ).g 1 z) =
+      Sheaf.H.map (projection X ℓ n) 1 0
+    rw [map_zero, ← Sheaf.H.map_comp_apply, difference_comp_projection]
+    let t := projection X ℓ (n + 1) ≫ transition X ℓ n
+    let P := Sheaf.functorH (Scheme.ProEt.topology X) 1
+    have he := ConcreteCategory.congr_hom (P.map_sub (projection X ℓ n) t) z
+    change Sheaf.H.map (projection X ℓ n - t) 1 z =
+      Sheaf.H.map (projection X ℓ n) 1 z - Sheaf.H.map t 1 z at he
+    rw [he]
+    change Sheaf.H.map (projection X ℓ n) 1 z -
+      Sheaf.H.map (projection X ℓ (n + 1) ≫ transition X ℓ n) 1 z = 0
+    rw [Sheaf.H.map_comp_apply, hz, hz, x.property n, sub_self]
+  obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₂ (integers X)
+    (ProetaleAdicNativeExactSequence.shortExact X ℓ) z hd
+  refine ⟨a, Subtype.ext ?_⟩
+  funext n
+  change Sheaf.H.map (reduction X ℓ n) 1 a = x.val n
+  change Sheaf.H.map (Q X ℓ).f 1 a = z at ha
+  rw [← inclusion_comp_projection, Sheaf.H.map_comp_apply, ha, hz]
+
+/-- The same criterion uses the actual product of the finite residue sheaves. -/
+theorem exists_lift_of_actual_product_class (x : compatibleHOne X ℓ)
+    (z : Sheaf.H (∏ᶜ (finiteCoefficient X ℓ)) 1)
+    (hz : ∀ n, Sheaf.H.map (Pi.π (finiteCoefficient X ℓ) n) 1 z = x.val n) :
+    ∃ a, reductionMap X ℓ a = x := by
+  let e := productIso X ℓ
+  apply exists_lift_of_product_class X ℓ x (Sheaf.H.map e.inv 1 z)
+  intro n
+  rw [← Sheaf.H.map_comp_apply]
+  have h : e.inv ≫ projection X ℓ n = Pi.π (finiteCoefficient X ℓ) n := by
+    rw [← productIso_hom_π, ← Category.assoc, e.inv_hom_id, Category.id_comp]
+  change Sheaf.H.map (e.inv ≫ projection X ℓ n) 1 z = x.val n
+  rw [h]
+  exact hz n
+
 end
 end ManuscriptAudit.ProetaleAdicHOneDetection
 
@@ -114,7 +168,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleAdicHOneDetection.reductionMap,
-      ``ManuscriptAudit.ProetaleAdicHOneDetection.reductionMap_injective] do
+      ``ManuscriptAudit.ProetaleAdicHOneDetection.reductionMap_injective,
+      ``ManuscriptAudit.ProetaleAdicHOneDetection.exists_lift_of_actual_product_class] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

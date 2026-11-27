@@ -66,7 +66,7 @@ private theorem extAdjunction_hom (a : F ⊣ G) (A : C) (B : D) (n : ℕ)
   let adj := (derivedAdjunction a).homEquiv ((single C).obj A) (((single D).obj B)⟦(n : ℤ)⟧)
   let e := (leftComparison (F := F) A).hom
   let i := (rightComparison (G := G) B n).hom
-  change Ext.homEquiv (Ext.homEquiv.symm ((𝟙 _ ≫ adj (e ≫ x.hom ≫ 𝟙 _)) ≫ i)) =
+  change Ext.homEquiv (Ext.homEquiv.symm (𝟙 _ ≫ (adj (e ≫ x.hom ≫ 𝟙 _) ≫ i))) =
     adj (e ≫ x.hom) ≫ i
   rw [Equiv.apply_symm_apply, Category.comp_id, Category.id_comp]
 

@@ -34,7 +34,7 @@ private theorem sample_ofLp_apply (M : ℕ) (f : ℕ → ℂ) (j : Fin M) :
 private theorem sample_norm_sq (M : ℕ) (f : ℕ → ℂ) :
     ‖sample M f‖ ^ 2 = ∑ n ∈ Finset.range M, ‖f n‖ ^ 2 := by
   simp only [EuclideanSpace.norm_sq_eq, sample_ofLp_apply]
-  exact Fin.sum_univ_eq_sum_range _ _
+  exact Fin.sum_univ_eq_sum_range (fun n : ℕ => ‖f n‖ ^ 2) M
 
 private theorem sample_odd_sum (N M : ℕ) :
     sample M (fun n => oddSectorCutoff N n) =

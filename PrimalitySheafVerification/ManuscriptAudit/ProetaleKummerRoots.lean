@@ -133,10 +133,12 @@ theorem rootsKernelIso_hom_ι :
     (kernelIsKernel (power X d)) P
   change P.map (rootsKernelIso X d).hom ≫ P.map (kernel.ι (power X d)) = inclusion X d
   rw [rootsKernelIso, Functor.preimageIso_hom]
-  change P.map (P.preimage (rootsPresheafIso X d).hom) ≫ P.map (kernel.ι (power X d)) = _
+  let F : Sheaf (J X) G := ⟨roots X d, roots_isSheaf X d⟩
+  let E : P.obj F ≅ P.obj (kernel (power X d)) := rootsPresheafIso X d
+  change P.map (P.preimage E.hom) ≫ P.map (kernel.ι (power X d)) = _
   rw [P.map_preimage]
   have e := (rootsIsKernel X d).conePointUniqueUpToIso_hom_comp h WalkingParallelPair.zero
-  change (rootsPresheafIso X d).hom ≫ P.map (kernel.ι (power X d)) = inclusion X d at e
+  change E.hom ≫ P.map (kernel.ι (power X d)) = inclusion X d at e
   exact e
 
 end

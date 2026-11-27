@@ -29,7 +29,8 @@ theorem diffCoordinate_eq (k : ℕ) (A : K) :
 /-- A nonconstant input cannot be fixed by the power map of a finite base field. -/
 theorem power_ne_of_nonconstant (r : RatFunc K) (hr : ¬ ∃ c : K, r = RatFunc.C c) :
     r ^ Fintype.card K ≠ r := by
-  have hD := FiniteField.X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+  have hD : ((X : K[X]) ^ Fintype.card K - X) ≠ 0 :=
+    FiniteField.X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
   have hMap := RatFunc.algebraMap_ne_zero hD
   have h := (map_ne_zero (substitute r hr)).mpr hMap
   apply sub_ne_zero.mp

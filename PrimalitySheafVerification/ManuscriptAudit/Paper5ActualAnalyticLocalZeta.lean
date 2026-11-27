@@ -53,7 +53,8 @@ theorem actual_local_zeta (p : ℕ) [Fact p.Prime] (hp : 5 ≤ p)
         term n (α*z) - term n (β*z)) = pointTerm p A z :=
       funext (fun n => (hTerm n).symm)
     rw [he] at h
-    exact h
+    simpa only [traceLog, (traceLog_hasSum hpCz).tsum_eq, (traceLog_hasSum hz₁).tsum_eq,
+      (traceLog_hasSum hαz).tsum_eq, (traceLog_hasSum hβz).tsum_eq] using h
   constructor
   · apply Summable.of_nonneg_of_le (fun _ => norm_nonneg _) _ hAbs
     intro n

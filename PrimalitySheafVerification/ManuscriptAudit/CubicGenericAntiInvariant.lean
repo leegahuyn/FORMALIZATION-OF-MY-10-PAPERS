@@ -57,8 +57,8 @@ theorem abscissa_fixed {x y : Model A} {hP : (Curve (algebraMap K (Model A) A)).
   obtain ⟨h', he⟩ := pointMapAt_some K (Model A) (Curve A) (Curve (algebraMap K (Model A) A))
     (centered_baseChange K (Model A) A) ((conjugation A).restrictScalars K) x y hP
   change sigma A (.some x y hP) = .some (conjugation A x) (conjugation A y) h' at he
-  rw [he, Affine.Point.neg_some, some_eq_iff A] at h
-  exact h.1
+  rw [he, Affine.Point.neg_some] at h
+  exact congrArg (fun P : Points A => P.xRep 0) h
 
 /-- The actual generic point of the centered cubic. -/
 def genericPoint (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) : Points A := by
@@ -82,10 +82,12 @@ theorem genericPoint_mem_antiInvariant (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
     (genericX A) (genericY A) h
   change sigma A (.some (genericX A) (genericY A) h) =
     .some (conjugation A (genericX A)) (conjugation A (genericY A)) h' at he'
-  rw [he, he', Affine.Point.neg_some, some_eq_iff A, conjugation_genericY]
+  rw [he, he', Affine.Point.neg_some]
+  apply (some_eq_iff A).mpr
   constructor
   · exact (conjugation A).commutes _
-  · simp [Curve, CubicAffine, shortCubic, Affine.negY]
+  · rw [conjugation_genericY]
+    simp [Curve, CubicAffine, shortCubic, Affine.negY]
 
 end
 

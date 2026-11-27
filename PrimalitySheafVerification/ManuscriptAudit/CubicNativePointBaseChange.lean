@@ -13,6 +13,11 @@ noncomputable section
 variable {K L M : Type*} [Field K] [Field L] [Field M]
   [DecidableEq L] [DecidableEq M] [Algebra K L] [Algebra K M]
 
+private def pointTransport (F : Type*) [Field F] [DecidableEq F]
+    {C D : WeierstrassCurve.Affine F} (h : C = D) : C.Point ≃+ D.Point := by
+  subst D
+  exact AddEquiv.refl _
+
 /-- The actual point-group map along an extension of fields. -/
 def pointsMap (A : K) (f : L →ₐ[K] M) :
     GeometricPoints K L A →+ GeometricPoints K M A :=

@@ -26,8 +26,10 @@ private theorem ordinate_antifixed {x y : Model A}
   obtain ⟨h', he⟩ := pointMapAt_some K (Model A) (Curve A) (Curve (algebraMap K (Model A) A))
     (centered_baseChange K (Model A) A) ((conjugation A).restrictScalars K) x y hP
   change sigma A (.some x y hP) = .some (conjugation A x) (conjugation A y) h' at he
-  rw [he, Affine.Point.neg_some, some_eq_iff A] at h
-  simpa [Curve, CubicAffine, shortCubic, Affine.negY] using h.2
+  rw [he, Affine.Point.neg_some] at h
+  have hv := congrArg (fun P : Points A => ordinate P) h
+  change conjugation A y = (Curve (algebraMap K (Model A) A)).negY x y at hv
+  simpa [Curve, CubicAffine, shortCubic, Affine.negY] using hv
 
 private theorem pure_square_constant {y : Model A} {d : K} (hr : y.re = 0)
     (hY : y ^ 2 = algebraMap K (Model A) d) : y = 0 := by
