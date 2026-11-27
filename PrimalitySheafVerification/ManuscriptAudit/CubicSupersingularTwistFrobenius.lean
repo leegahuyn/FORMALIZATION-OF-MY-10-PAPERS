@@ -24,6 +24,15 @@ def sexticScale {v : L} (hv : v ^ 6 = 1) (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
     AddMonoid.End (UnitPoints L) :=
   scale (sixth_root_nonzero L hv) (show v ^ 6 * (1 : L) = 1 by rw [hv, one_mul]) hΔ
 
+theorem sexticScale_some {v : L} (hv : v ^ 6 = 1)
+    (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) {x y : L}
+    (h : (Curve (1 : L)).Nonsingular x y) :
+    ∃ h', sexticScale L hv hΔ (Affine.Point.some x y h) =
+      Affine.Point.some (v ^ 2 * x) (v ^ 3 * y) h' := by
+  have hV : v ^ 6 * (1 : L) = 1 := by rw [hv, one_mul]
+  refine ⟨scaled_nonsingular hV hΔ h, ?_⟩
+  exact scale_some (sixth_root_nonzero L hv) hV hΔ h
+
 variable (E : Type*) [Field E] [Fintype E] [Algebra E L] [IsAlgClosed L]
 
 /-- Scaling by a sixth root of the coefficient conjugates Frobenius to a
@@ -65,12 +74,7 @@ theorem exists_twist_conjugacy {A : E} (hA : A ≠ 0) (hΔ : (shortCubic (0 : L)
   | some x y h =>
     obtain ⟨h₁, e₁⟩ := unitMap_some E L g h
     obtain ⟨h₂, e₂⟩ := nativeMap_some E L g A (scaled_nonsingular hUA hΔA h)
-    have hv₀ : v ≠ 0 := sixth_root_nonzero L hv
-    have hV : v ^ 6 * (1 : L) = 1 := by rw [hv, one_mul]
-    have h₃ := scaled_nonsingular hV hΔ h₁
-    have e₃ : sexticScale L hv hΔ (Affine.Point.some (g x) (g y) h₁) =
-        Affine.Point.some (v ^ 2 * g x) (v ^ 3 * g y) h₃ :=
-      scale_some hv₀ hV hΔ h₁
+    obtain ⟨h₃, e₃⟩ := sexticScale_some L hv hΔ h₁
     dsimp only [e]
     rw [scaleEquiv_some hu₀ hUA hΔ hΔA h, e₁, e₂, e₃,
       scaleEquiv_some hu₀ hUA hΔ hΔA h₃, Affine.Point.some.injEq]

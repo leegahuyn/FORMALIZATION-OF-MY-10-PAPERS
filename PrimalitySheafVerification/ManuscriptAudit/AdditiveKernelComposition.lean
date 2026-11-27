@@ -43,14 +43,46 @@ theorem card_ker_comp (f : H →+ K) (g : G →+ H) (hg : Function.Surjective g)
     Nat.card_congr (QuotientAddGroup.quotientKerEquivRange r).toEquiv,
     Nat.card_congr e, Nat.card_congr (restrictionKernelEquiv f g)]
 
+section Fixed
+
+theorem card_fixed_of_conjugacy (e : G ≃+ H) (f : AddMonoid.End G) (g : AddMonoid.End H)
+    (he : ∀ x, g (e x) = e (f x)) :
+    Nat.card ↥((1 - g).ker) = Nat.card ↥((1 - f).ker) := by
+  let K₁ := (1 - f).ker
+  let K₂ := (1 - g).ker
+  have h₁ (x : G) : x ∈ K₁ ↔ f x = x := by
+    change x - f x = 0 ↔ f x = x
+    rw [sub_eq_zero, eq_comm]
+  have h₂ (x : H) : x ∈ K₂ ↔ g x = x := by
+    change x - g x = 0 ↔ g x = x
+    rw [sub_eq_zero, eq_comm]
+  let i (x : K₁) : K₂ :=
+    ⟨e x.val, (h₂ _).mpr (by rw [he, (h₁ _).mp x.property])⟩
+  have hi : Function.Injective i := by
+    intro x y h
+    exact Subtype.ext (e.injective (congrArg Subtype.val h))
+  have hs : Function.Surjective i := by
+    intro y
+    let x := e.symm y.val
+    have hxy : e x = y.val := e.apply_symm_apply _
+    have hx : f x = x := by
+      apply e.injective
+      rw [← he, hxy, (h₂ _).mp y.property]
+    exact ⟨⟨x, (h₁ _).mpr hx⟩, Subtype.ext hxy⟩
+  exact Nat.card_congr (Equiv.ofBijective i ⟨hi, hs⟩).symm
+
+end Fixed
+
 end ManuscriptAudit.AdditiveKernelComposition
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.AdditiveKernelComposition.card_ker_comp
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.AdditiveKernelComposition.card_ker_comp,
+      ``ManuscriptAudit.AdditiveKernelComposition.card_fixed_of_conjugacy] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

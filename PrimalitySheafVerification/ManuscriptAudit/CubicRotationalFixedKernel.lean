@@ -13,12 +13,17 @@ variable {G : Type*} [AddCommGroup G]
 private theorem norm_pair (u v : AddMonoid.End G) (s : ℤ)
     (hSum : u + v = -1) (hProd : u * v = 1) :
     (1 - s • u) * (1 - s • v) = (1 + s + s * s) • (1 : AddMonoid.End G) := by
+  apply AddMonoidHom.ext
+  intro x
+  change (x - s • v x) - s • u (x - s • v x) = (1 + s + s * s) • x
+  have hS : u x + v x = -x := congrArg (fun t : AddMonoid.End G => t x) hSum
+  have hP : u (v x) = x := congrArg (fun t : AddMonoid.End G => t x) hProd
   calc
-    _ = 1 - (s • u + s • v) + (s * s) • (u * v) := by
-      simp only [sub_mul, mul_sub, one_mul, mul_one, smul_mul_assoc, mul_smul_comm, smul_smul]
+    _ = x - (s • u x + s • v x) + (s * s) • x := by
+      rw [map_sub, map_zsmul, zsmul_sub, smul_smul, hP]
       abel
     _ = _ := by
-      rw [← smul_add, hSum, hProd, smul_neg, sub_neg_eq_add, add_smul, add_smul, one_smul]
+      rw [← zsmul_add, hS, zsmul_neg, sub_neg_eq_add, add_zsmul, add_zsmul, one_zsmul]
 
 theorem norm_factor (r : AddMonoid.End G) (s : ℤ) (hCube : r ^ 3 = 1)
     (hQuad : r ^ 2 + r + 1 = 0) :
@@ -37,7 +42,7 @@ private theorem intertwiners (r f : AddMonoid.End G) (s : ℤ) (hCube : r ^ 3 = 
     calc
       _ = (f * r) * r := by rw [pow_two, mul_assoc]
       _ = r ^ 2 * (f * r) := by rw [hConj, mul_assoc]
-      _ = r ^ 2 * (r ^ 2 * f) := by rw [hConj]
+      _ = r ^ 2 * (r ^ 2 * f) := congrArg (fun t => r ^ 2 * t) hConj
       _ = r * f := by
         rw [← mul_assoc, ← pow_add, show (2 : ℕ) + 2 = 3 + 1 by decide,
           pow_succ, hCube, one_mul]
@@ -94,12 +99,11 @@ theorem card_fixed (r f : AddMonoid.End G) (s : ℤ) (hCube : r ^ 3 = 1)
     le_antisymm (Nat.card_le_card_of_injective _ (inj a b ha))
       (Nat.card_le_card_of_injective _ (inj b a hb))
   rw [← hEq, ← pow_two] at hc
+  change Nat.card ↥a.ker = n
   by_contra hn
   rcases lt_or_gt_of_ne hn with h | h
-  · have hp := Nat.pow_lt_pow_left h (by decide : (2 : ℕ) ≠ 0)
-    omega
-  · have hp := Nat.pow_lt_pow_left h (by decide : (2 : ℕ) ≠ 0)
-    omega
+  · exact (ne_of_lt (Nat.pow_lt_pow_left h (by decide : (2 : ℕ) ≠ 0))) hc.symm
+  · exact (ne_of_lt (Nat.pow_lt_pow_left h (by decide : (2 : ℕ) ≠ 0))) hc
 
 end ManuscriptAudit.CubicRotationalFixedKernel
 

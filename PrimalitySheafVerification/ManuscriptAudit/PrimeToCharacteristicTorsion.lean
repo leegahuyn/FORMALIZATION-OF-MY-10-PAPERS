@@ -22,9 +22,10 @@ theorem surjective_and_card
     · subst n
       have h₁ : (nsmulAddMonoidHom 1 : G →+ G) = AddMonoidHom.id G := by
         ext x
-        exact one_nsmul G x
+        exact one_nsmul x
       haveI : Unique (Torsion 1 G) := by
         refine ⟨⟨0⟩, fun x => Subtype.ext ?_⟩
+        change (x : G) = 0
         have h := (mem_iff 1 G x).mp x.property
         simpa only [one_nsmul] using h
       rw [h₁]

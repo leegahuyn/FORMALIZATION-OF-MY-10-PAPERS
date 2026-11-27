@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.InverseTowerDifference
+import PrimalitySheafVerification.ManuscriptAudit.SequentialInverseLimitDifference
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleCyclicInverseLimit
 
 /-! The countable product difference for the actual prime-power compact cohomology reductions. -/
@@ -28,18 +28,22 @@ abbrev level (n r : ℕ) := extensionH j (AddCommGrpCat.of (ZMod (ℓ ^ r))) n
 
 /-- The product difference using the native cohomology reductions. -/
 def difference (n : ℕ) : (∀ r, level j ℓ n r) →+ (∀ r, level j ℓ n r) :=
-  InverseTowerDifference.difference (level j ℓ n) (transition j ℓ n)
+  SequentialInverseLimitDifference.productDifference (level j ℓ n) (transition j ℓ n)
 
 /-- The product difference has the actual compatible-class group as kernel. -/
 theorem ker_difference (n : ℕ) :
-    (difference j ℓ n).ker = compatibleClasses j ℓ n :=
-  InverseTowerDifference.ker_difference (level j ℓ n) (transition j ℓ n)
+    (difference j ℓ n).ker = compatibleClasses j ℓ n := by
+    ext x
+    change SequentialInverseLimitDifference.productDifference (level j ℓ n) (transition j ℓ n) x = 0 ↔
+      ∀ r, transition j ℓ n r (x (r + 1)) = x r
+    exact SequentialInverseLimitDifference.productDifference_eq_zero_iff
+      (level j ℓ n) (transition j ℓ n) x
 
 /-- Surjectivity of the actual coefficient reductions implies surjectivity of the product difference. -/
 theorem difference_surjective (n : ℕ)
     (onto : ∀ r, Function.Surjective (reductionH j (ℓ ^ r) ℓ n)) :
     Function.Surjective (difference j ℓ n) :=
-  InverseTowerDifference.difference_surjective (level j ℓ n) (transition j ℓ n)
+  SequentialInverseLimitDifference.productDifference_surjective (level j ℓ n) (transition j ℓ n)
     (fun r ↦ transition_surjective j ℓ n r (onto r))
 
 /-- Compatible classes vanish when the actual groups at all finite levels vanish. -/

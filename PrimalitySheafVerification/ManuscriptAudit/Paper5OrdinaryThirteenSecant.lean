@@ -19,7 +19,7 @@ def tripleY (x y : K) : K := thirdSlope 1 x y * (x - tripleX x) - y
 
 def lastSlope (x y : K) : K := (y / x) * (secantNum (x ^ 3) / (x ^ 3 + 4))
 
-private theorem tripleDen_ne_zero {x : K} (hx : x ≠ 0) (hg : x ^ 3 + 4 ≠ 0) :
+theorem tripleDen_ne_zero {x : K} (hx : x ≠ 0) (hg : x ^ 3 + 4 ≠ 0) :
     tripleDen (x ^ 3) ≠ 0 := by
   unfold tripleDen
   exact mul_ne_zero (mul_ne_zero (numeral_ne_zero 9 (by decide)) (pow_ne_zero _ hx))
@@ -55,7 +55,7 @@ theorem abscissas_distinct {x : K} (hx : x ≠ 0) (hg : x ^ 3 + 4 ≠ 0) (hq : x
   rw [gap_to_rotated (tripleDen_ne_zero hx hg)]
   exact mul_ne_zero hx (div_ne_zero (gap_ne_zero hq) (tripleDen_ne_zero hx hg))
 
-private theorem thirdSlope_normalized {x y : K} (hx : x ≠ 0) (hy : y ≠ 0)
+theorem thirdSlope_normalized {x y : K} (hx : x ≠ 0) (hy : y ≠ 0)
     (hg : x ^ 3 + 4 ≠ 0) (he : y ^ 2 = x ^ 3 + 1) :
     thirdSlope 1 x y = (y / x) * (tripleSlopeNum (x ^ 3) / (6 * (x ^ 3 + 1) * (x ^ 3 + 4))) := by
   have h₂ : (2 : K) ≠ 0 := numeral_ne_zero 2 (by decide)

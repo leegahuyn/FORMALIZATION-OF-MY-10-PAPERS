@@ -57,8 +57,10 @@ theorem star_term_inv_eq {q : ℂ} (hq₀ : q ≠ 0) (hq : ‖q‖ < 1) (n : ℕ
     exact pochhammer_ne_zero hq (n + 1) hProd.symm
   have hNum : (q⁻¹) ^ (n + 1) * q ^ (n * (n + 1) / 2 + (n + 1)) =
       q ^ (n * (n + 1) / 2) := by
-    rw [add_comm (n * (n + 1) / 2), inv_pow, pow_add, ← mul_assoc,
-      inv_mul_cancel₀ (pow_ne_zero _ hq₀), one_mul]
+    have hPow : q ^ (n * (n + 1) / 2 + (n + 1)) =
+        q ^ (n + 1) * q ^ (n * (n + 1) / 2) := by
+      rw [add_comm (n * (n + 1) / 2), pow_add q (n + 1) (n * (n + 1) / 2)]
+    rw [inv_pow, hPow, ← mul_assoc, inv_mul_cancel₀ (pow_ne_zero (n + 1) hq₀), one_mul]
   unfold starTerm reciprocalStarTerm
   apply (div_eq_div_iff hDenom (pochhammer_ne_zero hq _)).mpr
   rw [← hProd]

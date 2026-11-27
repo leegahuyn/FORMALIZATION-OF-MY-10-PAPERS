@@ -44,10 +44,14 @@ theorem sextic_eq_rotation {v : L} (hv : v ^ 6 = 1)
     sexticScale L hv hΔ = rotate (v ^ 2) (square_cube L hv) hΔ := by
   apply AddMonoidHom.ext
   intro P
+  change sexticScale L hv hΔ P = rotate (v ^ 2) (square_cube L hv) hΔ P
   cases P with
-  | zero => simp only [map_zero]
+  | zero =>
+    change sexticScale L hv hΔ (0 : UnitPoints L) = rotate (v ^ 2) (square_cube L hv) hΔ 0
+    simp only [map_zero]
   | some x y h =>
-    rw [sexticScale, scale_some, rotate_some, Affine.Point.some.injEq, hs, one_mul] <;> simp
+    obtain ⟨h', e⟩ := sexticScale_some L hv hΔ h
+    rw [e, rotate_some, Affine.Point.some.injEq, hs, one_mul] <;> simp
 
 theorem sextic_eq_neg_rotation {v : L} (hv : v ^ 6 = 1)
     (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) (hs : v ^ 3 = -1) :
@@ -56,9 +60,12 @@ theorem sextic_eq_neg_rotation {v : L} (hv : v ^ 6 = 1)
   intro P
   change sexticScale L hv hΔ P = -(rotate (v ^ 2) (square_cube L hv) hΔ P)
   cases P with
-  | zero => simp only [map_zero, neg_zero]
+  | zero =>
+    change sexticScale L hv hΔ (0 : UnitPoints L) = -(rotate (v ^ 2) (square_cube L hv) hΔ 0)
+    simp only [map_zero, neg_zero]
   | some x y h =>
-    rw [sexticScale, scale_some, rotate_some, Affine.Point.neg_some, Affine.Point.some.injEq]
+    obtain ⟨h', e⟩ := sexticScale_some L hv hΔ h
+    rw [e, rotate_some, Affine.Point.neg_some, Affine.Point.some.injEq]
     exact ⟨rfl, by simp [hs, Curve, CubicAffine, shortCubic, Affine.negY]⟩
 
 variable (E : Type*) [Field E] [Fintype E] [Algebra E L]

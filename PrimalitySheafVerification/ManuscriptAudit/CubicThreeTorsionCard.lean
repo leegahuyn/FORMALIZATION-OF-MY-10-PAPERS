@@ -29,7 +29,7 @@ theorem shortCubic_discriminant_ne_zero {A : K} (h₂ : (2 : K) ≠ 0) (h₃ : (
 
 variable [IsAlgClosed K] [DecidableEq K]
 
-private abbrev PowerRoots (n : ℕ) (b : K) := {x : K // x ^ n = b}
+abbrev PowerRoots (n : ℕ) (b : K) := {x : K // x ^ n = b}
 
 private def powerPolynomial (n : ℕ) (b : K) : K[X] := X ^ n - C b
 
@@ -49,7 +49,7 @@ private def powerRootsEquiv (n : ℕ) (b : K) (hn : 0 < n) :
   left_inv _ := rfl
   right_inv _ := rfl
 
-private theorem powerRoots_card (n : ℕ) (b : K) (hn : 0 < n)
+theorem powerRoots_card (n : ℕ) (b : K) (hn : 0 < n)
     (hnK : (n : K) ≠ 0) (hb : b ≠ 0) : Nat.card (PowerRoots n b) = n := by
   have hs : (powerPolynomial n b).Separable := separable_X_pow_sub_C b hnK hb
   have hc := Polynomial.card_rootSet_eq_natDegree (K := K) hs (IsAlgClosed.splits _)

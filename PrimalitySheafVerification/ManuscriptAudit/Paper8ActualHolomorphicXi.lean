@@ -47,8 +47,12 @@ theorem xiHalf_normalizedPart_add_correction {R : Field} {x y : ℝ} (hy : 0 < y
     (hRY : DifferentiableAt ℝ (fun t => R x t) y) :
     xiHalf (fun u v => normalizedPart (complexPoint u v) + R u v) x y = xiHalf R x y := by
   have h := (normalizedPart_differentiable_at (x := x) hy).hasDerivAt
-  have hX := ((horizontal_derivative h).add hRX.hasDerivAt).deriv
-  have hY := ((vertical_derivative h).add hRY.hasDerivAt).deriv
+  have hX : deriv (fun t => normalizedPart (complexPoint t y) + R t y) x =
+      deriv normalizedPart (complexPoint x y) + deriv (fun t => R t y) x :=
+    ((horizontal_derivative h).add hRX.hasDerivAt).deriv
+  have hY : deriv (fun t => normalizedPart (complexPoint x t) + R x t) y =
+      Complex.I * deriv normalizedPart (complexPoint x y) + deriv (fun t => R x t) y :=
+    ((vertical_derivative h).add hRY.hasDerivAt).deriv
   have hCR (w : ℂ) : w + Complex.I * (Complex.I * w) = 0 := by
     rw [← mul_assoc, Complex.I_mul_I]
     simp
