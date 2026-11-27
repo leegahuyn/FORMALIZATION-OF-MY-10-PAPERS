@@ -29,7 +29,7 @@ def centeredBasis (hp : 5 ≤ p) (hq : p % 3 = 2) (hlp : l ≠ p) {A : L}
   have h₃L : (3 : L) ≠ 0 := by
     simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₃
   let e := Classical.choice (exists_scaleEquiv ha hA₀
-    (shortCubic_discriminant_ne_zero h₂L h₃L ha) hΔ)
+    (CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂L h₃L ha) hΔ)
   let B : Basis (Fin 2) ℤ_[l] (Tate l (Curve a).Point) :=
     Paper5NonsplitAllPrimeAdic.actualBasis p L l hp hq hlp (A := 1) one_ne_zero
   exact B.map (mapAddEquiv l e)
@@ -45,7 +45,7 @@ def actualBasis (hp : 5 ≤ p) (hq : p % 3 = 2) (hlp : l ≠ p) {A : E}
   have h₃L : (3 : L) ≠ 0 := by
     simpa only [map_ofNat] using (map_ne_zero (algebraMap E L)).mpr h₃
   exact centeredBasis p L l hp hq hlp ((map_ne_zero (algebraMap E L)).mpr hA)
-    (shortCubic_discriminant_ne_zero h₂L h₃L ((map_ne_zero (algebraMap E L)).mpr hA))
+    (CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂L h₃L ((map_ne_zero (algebraMap E L)).mpr hA))
 
 private theorem odd_card (hp : 5 ≤ p) : Fintype.card E % 2 = 1 := by
   apply FiniteField.odd_card_of_char_ne_two

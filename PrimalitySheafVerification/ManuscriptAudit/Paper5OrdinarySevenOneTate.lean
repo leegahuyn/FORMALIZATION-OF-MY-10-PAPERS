@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.Abel
 import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySevenOneTwist
 import PrimalitySheafVerification.ManuscriptAudit.Paper5OrdinarySevenTate
 
@@ -50,11 +50,37 @@ private theorem tate_conjugacy :
 
 private theorem point_quad :
     refOperator L ^ 2 + (4 : AddMonoid.End (Points L)) * refOperator L + 7 = 0 := by
-  calc
-    _ = (4 : AddMonoid.End (Points L)) * (rotation L ^ 2 + rotation L + 1) := by
-      rw [refOperator, nsmul_eq_mul]
-      noncomm_ring
-    _ = 0 := by rw [Paper5OrdinarySevenTate.point_rotation_quadratic, mul_zero]
+  have hR (P : Points L) : rotation L (rotation L P) = -P - rotation L P := by
+    calc
+      _ = (rotation L P + rotation L (rotation L P)) - rotation L P := by abel
+      _ = _ := by rw [rotation_sum]
+  apply AddMonoidHom.ext
+  intro P
+  change refOperator L (refOperator L P) + (4 : ℕ) • refOperator L P + (7 : ℕ) • P = 0
+  rw [refOperator_apply, refOperator_apply]
+  simp only [map_sub, map_neg, map_nsmul, hR]
+  abel
+
+/-- The actual native (7)-power map satisfies its fixed quadratic identity on all points. -/
+theorem native_quadratic :
+    nativeOperator L ^ 2 + (4 : AddMonoid.End (Geometric L)) * nativeOperator L + 7 = 0 := by
+  apply AddMonoidHom.ext
+  intro Q
+  obtain ⟨P, rfl⟩ := (e L).surjective Q
+  have hE (V : Points L) : nativeOperator L (e L V) = e L (refOperator L V) := by
+    rw [refOperator_apply]
+    exact (exists_frobenius_conjugacy L).choose_spec V
+  have h := congrArg (fun m : AddMonoid.End (Points L) => m P) (point_quad L)
+  change refOperator L (refOperator L P) + (4 : ℕ) • refOperator L P + (7 : ℕ) • P = 0 at h
+  change nativeOperator L (nativeOperator L (e L P)) + (4 : ℕ) • nativeOperator L (e L P) +
+    (7 : ℕ) • e L P = 0
+  rw [hE, hE, ← map_nsmul, ← map_nsmul, ← map_add, ← map_add, h, map_zero]
+
+/-- The actual action satisfies the same identity on every prime-adic Tate module. -/
+theorem tate_quadratic :
+    action L l ^ 2 + (4 : Module.End ℤ_[l] (Tate l (Geometric L))) * action L l + 7 = 0 := by
+  simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using
+    congrArg (endMap l) (native_quadratic L)
 
 def tateBasis (hl : l = 2 ∨ l = 3) : Basis (Fin 2) ℤ_[l] (Tate l (Geometric L)) :=
   (Paper5OrdinarySevenTate.tateBasis L l hl).map (eTate L l)
@@ -121,6 +147,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper5OrdinarySevenOneTate.native_quadratic,
+      ``ManuscriptAudit.Paper5OrdinarySevenOneTate.tate_quadratic,
       ``ManuscriptAudit.Paper5OrdinarySevenOneTate.tateBasis,
       ``ManuscriptAudit.Paper5OrdinarySevenOneTate.trace_det,
       ``ManuscriptAudit.Paper5OrdinarySevenOneTate.charpoly] do

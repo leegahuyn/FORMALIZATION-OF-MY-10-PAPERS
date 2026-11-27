@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.Abel
 import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionBasis
 import PrimalitySheafVerification.ManuscriptAudit.CubicTriplingSurjective
 import PrimalitySheafVerification.ManuscriptAudit.CubicTwoPowerTorsionBasis
@@ -26,14 +26,15 @@ variable (l : ℕ) [Fact l.Prime]
 
 private def firstBasis (hl : l = 2 ∨ l = 3) :
     Basis (Fin 2) (ZMod (l ^ 1)) (PowerTorsion l (Points L) 1) := by
+  apply Classical.choice
   rcases hl with rfl | rfl
   · let P (W : Affine L) := Basis (Fin 2) (ZMod (2 ^ 1)) (PowerTorsion 2 W.Point 1)
-    exact Eq.mpr (congrArg P (ordinary_eq_centered L))
-      (CubicTwoPowerTorsionBasis.affineBasis two_ne (three_ne L) (five_ne L) 1)
+    exact ⟨Eq.mpr (congrArg P (ordinary_eq_centered L))
+      (CubicTwoPowerTorsionBasis.affineBasis two_ne (three_ne L) (five_ne L) 1)⟩
   · let P (W : Affine L) := Basis (Fin 2) (ZMod (3 ^ 1)) (PowerTorsion 3 W.Point 1)
     let D := Classical.choice (CubicThreeTorsionBasis.flexPair_nonempty two_ne (five_ne L))
-    exact Eq.mpr (congrArg P (ordinary_eq_centered L))
-      (CubicThreeTorsionBasis.basis two_ne (three_ne L) (five_ne L) D)
+    exact ⟨Eq.mpr (congrArg P (ordinary_eq_centered L))
+      (CubicThreeTorsionBasis.basis two_ne (three_ne L) (five_ne L) D)⟩
 
 private theorem nsmul_surjective (hl : l = 2 ∨ l = 3) :
     Function.Surjective (fun P : Points L => l • P) := by
@@ -67,11 +68,18 @@ theorem point_rotation_quadratic :
 
 private theorem point_frobenius_quadratic :
     nativeFrobenius L ^ 2 - nativeFrobenius L + (7 : AddMonoid.End (Points L)) = 0 := by
-  calc
-    _ = (9 : AddMonoid.End (Points L)) * (rotation L ^ 2 + rotation L + 1) := by
-      rw [native_eq_rotation, nsmul_eq_mul]
-      noncomm_ring
-    _ = 0 := by rw [point_rotation_quadratic, mul_zero]
+  have hF (P : Points L) : nativeFrobenius L P = -P - (3 : ℕ) • rotation L P :=
+    congrArg (fun m : AddMonoid.End (Points L) => m P) (native_eq_rotation L)
+  have hR (P : Points L) : rotation L (rotation L P) = -P - rotation L P := by
+    calc
+      _ = (rotation L P + rotation L (rotation L P)) - rotation L P := by abel
+      _ = _ := by rw [rotation_sum]
+  apply AddMonoidHom.ext
+  intro P
+  change nativeFrobenius L (nativeFrobenius L P) - nativeFrobenius L P + (7 : ℕ) • P = 0
+  rw [hF, hF]
+  simp only [map_sub, map_neg, map_nsmul, hR]
+  abel
 
 theorem trace_det (hl : l = 2 ∨ l = 3) :
     LinearMap.trace ℤ_[l] (Tate l (Points L)) (action L l) = 1 ∧

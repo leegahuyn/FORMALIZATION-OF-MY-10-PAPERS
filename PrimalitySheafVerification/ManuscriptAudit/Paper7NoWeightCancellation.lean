@@ -38,7 +38,7 @@ theorem parity_products_coprime (I : Finset ℕ) (F : ∀ i, Matrix (ι i) (ι i
     (hPure : ∀ i ∈ I, ∀ α : ℂ, (F i).charpoly.IsRoot α → ‖α‖ = q ^ (w i / 2)) :
     IsCoprime (evenProduct I F) (oddProduct I F) := by
   classical
-  apply (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed ℂ
+  apply (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed ℂ ℂ
     (evenProduct I F) (oddProduct I F)).mpr
   intro z
   by_contra! h

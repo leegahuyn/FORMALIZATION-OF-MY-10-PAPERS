@@ -47,7 +47,7 @@ private theorem ordinaryEquiv_some {x y : L} (h : (W L).Nonsingular x y) :
 
 private theorem disc (A : ZMod 7) (hA : A ≠ 0) :
     (shortCubic (0 : L) (a L A)).Δ ≠ 0 :=
-  shortCubic_discriminant_ne_zero Paper5OrdinarySevenSecant.two_ne (three_ne L)
+  CubicThreeTorsionCard.shortCubic_discriminant_ne_zero Paper5OrdinarySevenSecant.two_ne (three_ne L)
     ((map_ne_zero (algebraMap (ZMod 7) L)).mpr hA)
 
 private theorem equiv_frobenius (P : Points L) :
@@ -62,7 +62,9 @@ private theorem equiv_frobenius (P : Points L) :
     obtain ⟨hF, eF⟩ := pointMapAt_some (ZMod 7) L (ordinaryCurve (ZMod 7)).toAffine
       (W L) (ordinary_baseChange L) (g L) x y h
     change nativeFrobenius L (Affine.Point.some x y h) = _ at eF
-    obtain ⟨hG, eG⟩ := nativeMap_some (ZMod 7) L (g L) 5 (ordinary_curve_eq L ▸ h)
+    have h' : (Curve (a L 5)).Nonsingular x y :=
+      Eq.mp (congrArg (fun V : Affine L => V.Nonsingular x y) (ordinary_curve_eq L)) h
+    obtain ⟨hG, eG⟩ := nativeMap_some (ZMod 7) L (g L) 5 h'
     rw [ordinaryEquiv_some L h, eG, eF, ordinaryEquiv_some]
 
 private theorem v_ne_zero : (3 : L) ≠ 0 := three_ne L

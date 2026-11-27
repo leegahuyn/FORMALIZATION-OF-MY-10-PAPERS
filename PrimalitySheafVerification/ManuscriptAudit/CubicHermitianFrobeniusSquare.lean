@@ -18,7 +18,7 @@ private theorem add_nsmul_eq_zero_of_dvd {G : Type*} [AddCommGroup G]
   obtain ⟨k, hk⟩ := h
   calc
     _ = (q + 1) • P := by rw [add_nsmul, one_nsmul]
-    _ = 0 := by rw [hk, mul_nsmul', hP, nsmul_zero]
+    _ = 0 := by rw [hk, Nat.mul_comm d k, mul_nsmul', hP, nsmul_zero]
 
 variable (E K : Type*) [Field E] [Fintype E] [Field K] [Algebra E K] [IsAlgClosed K] [DecidableEq K]
 

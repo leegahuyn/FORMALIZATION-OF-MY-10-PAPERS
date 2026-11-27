@@ -36,14 +36,16 @@ theorem trial_smooth (b : ℝ → ℝ) (hb : ContDiff ℝ ∞ b) (k R : ℝ) :
 private theorem weighted_profile_smoothAt (g : ℝ → ℂ) (hg : ContDiff ℝ ∞ g)
     {y : ℝ} (hy : 0 < y) :
     ContDiffAt ℝ ∞ (weightedLogProfile g) y := by
-  have hPow : ContDiffAt ℝ ∞ (fun y : ℝ => y ^ (1 / 2 : ℝ)) y :=
-    Real.contDiffAt_rpow_const_of_ne hy.ne'
-  have hCast : ContDiffAt ℝ ∞ (fun y : ℝ => ((y ^ (1 / 2 : ℝ) : ℝ) : ℂ)) y :=
-    Complex.ofRealCLM.contDiff.contDiffAt.comp y hPow
   have hLog : ContDiffAt ℝ ∞ Real.log y := Real.contDiffAt_log.mpr hy.ne'
-  have hG : ContDiffAt ℝ ∞ (fun t => g (Real.log t)) y :=
+  have hLogCast : ContDiffAt ℝ ∞ (fun t => (Real.log t : ℂ)) y :=
+    Complex.ofRealCLM.contDiff.contDiffAt.comp y hLog
+  let G : ℂ → ℂ := fun w => Complex.exp (w * (1 / 2 : ℂ))
+  have hG : ContDiff ℂ ∞ G := (contDiff_id.mul contDiff_const).cexp
+  have hPower : ContDiffAt ℝ ∞ (Paper9EisensteinHeightEquation.heightPower (1 / 2)) y :=
+    (hG.restrict_scalars ℝ).contDiffAt.comp y hLogCast
+  have hComp : ContDiffAt ℝ ∞ (fun t => g (Real.log t)) y :=
     hg.contDiffAt.comp y hLog
-  exact complexMul_real_smooth.contDiffAt.comp y (hCast.prodMk hG)
+  exact complexMul_real_smooth.contDiffAt.comp y (hPower.prodMk hComp)
 
 /-- The real-height amplitude of the compactly supported wave. -/
 def chartAmplitude (k R y : ℝ) : ℂ :=
@@ -108,7 +110,7 @@ theorem smooth_and_compact_section (k R : ℝ) (hR : 0 < R) :
   have hExp : 1 < Real.exp R := by
     rw [← Real.exp_zero]
     exact Real.exp_lt_exp.mpr hR
-  refine ⟨extendedSection_realSmooth_of_closed_support _ (chartAmplitude_smooth k R)
+  refine ⟨extendedSection_realSmooth_of_closed_support _ (chartAmplitude_smooth k R hR)
     K hK.isClosed ?_ hSupport, profile_compact_support _ (Real.exp_pos R)
       (chartAmplitude_zero_outside k R hR)⟩
   rintro q ⟨z, hz, rfl⟩
