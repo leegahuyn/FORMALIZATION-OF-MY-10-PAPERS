@@ -47,7 +47,8 @@ theorem unitBoundary_eq_zero_iff (a : Sheaf.H (unitSheaf X) 0) :
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   have hex : Function.Exact (Sheaf.H.map (power X d) 0) (delta k d) := h
   rw [hex a]
-  simp only [map_power_apply]
+  change (∃ c : Sheaf.H (unitSheaf X) 0, Sheaf.H.map (power X d) 0 c = a) ↔ _
+  exact exists_congr (fun c ↦ by rw [map_power_apply X d 0 c])
 
 theorem unitBoundary_surjective
     (hHOne : Subsingleton (Sheaf.H (unitSheaf X) 1)) :

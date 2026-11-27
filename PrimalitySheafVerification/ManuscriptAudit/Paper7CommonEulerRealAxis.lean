@@ -25,8 +25,10 @@ theorem trace_sq_lt_four_prime {p : ℕ} (hp : p.Prime) (hfive : 5 ≤ p) (a : �
   have heF := congrArg (fun z : ℤ => (z : ZMod p)) heZ
   have haF : (a : ZMod p)^2 = 0 := by
     simpa only [Int.cast_pow, Int.cast_mul, Int.cast_natCast, ZMod.natCast_self, mul_zero] using heF
-  have hdvd : (p : ℤ) ∣ a :=
-    (ZMod.intCast_zmod_eq_zero_iff_dvd a p).mp (pow_eq_zero haF)
+  have haF0 : (a : ZMod p) = 0 := by
+    by_contra hn
+    exact pow_ne_zero 2 hn haF
+  have hdvd : (p : ℤ) ∣ a := (ZMod.intCast_zmod_eq_zero_iff_dvd a p).mp haF0
   have ha0 : a ≠ 0 := by
     intro hz
     rw [hz, Int.cast_zero] at he
@@ -36,7 +38,7 @@ theorem trace_sq_lt_four_prime {p : ℕ} (hp : p.Prime) (hfive : 5 ≤ p) (a : �
     simpa only [Int.natAbs_natCast] using Int.natAbs_le_of_dvd_ne_zero hdvd ha0
   have habsReal : (p : ℝ) ≤ |(a : ℝ)| := by
     have h := (show (p : ℝ) ≤ (a.natAbs : ℝ) by exact_mod_cast habs)
-    simpa only [Nat.cast_natAbs] using h
+    simpa only [Nat.cast_natAbs, Int.cast_abs] using h
   have hsq : (p : ℝ)^2 ≤ |(a : ℝ)|^2 := by gcongr
   rw [sq_abs, he] at hsq
   have hcontra : (4 * (p : ℝ)) < (p : ℝ)^2 := by

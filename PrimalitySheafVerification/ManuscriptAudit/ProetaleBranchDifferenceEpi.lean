@@ -112,9 +112,10 @@ theorem locallySurjective_of_terminal_binary
 theorem epi_of_terminal_binary
     (hBin : Presheaf.imageSieve (binaryDifference b₀ b₁ h₀ h₁).hom
       (oneSection (q := q) (terminal (X := X))) ∈ J (X := X) (terminal (X := X))) :
-    Epi (difference p q b₀ b₁ h₀ h₁ M) :=
-  (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{1} _).mp
-    (locallySurjective_of_terminal_binary b₀ b₁ h₀ h₁ M hBin)
+    Epi (difference p q b₀ b₁ h₀ h₁ M) := by
+  let g := difference p q b₀ b₁ h₀ h₁ M
+  letI : Sheaf.IsLocallySurjective g := locallySurjective_of_terminal_binary b₀ b₁ h₀ h₁ M hBin
+  exact Sheaf.epi_of_isLocallySurjective g
 
 end
 end ManuscriptAudit.ProetaleBranchDifferenceEpi

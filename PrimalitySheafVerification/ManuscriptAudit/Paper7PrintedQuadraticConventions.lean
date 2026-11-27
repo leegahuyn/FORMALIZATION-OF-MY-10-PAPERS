@@ -18,8 +18,8 @@ theorem monic_ne_printed_local_denominator (n : ℕ) :
     monic (goodPrime n) (trace n) ≠ denominator (goodPrime n) (trace n) := by
   intro he
   have h := congrFun he 0
-  have hC : (goodPrime n : ℂ) = 1 := by simpa only [monic, denominator,
-    zero_pow (by decide : (2 : ℕ) ≠ 0), mul_zero, sub_zero, zero_add, add_zero] using h
+  have hC : (goodPrime n : ℂ) = 1 := by
+    simpa [monic, denominator] using h
   have hn : goodPrime n = 1 := by exact_mod_cast hC
   have h5 := goodPrime_atLeastFive n
   omega

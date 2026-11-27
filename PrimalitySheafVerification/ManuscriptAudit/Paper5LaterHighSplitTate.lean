@@ -28,7 +28,7 @@ theorem trace_det_79 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 79) L 4)) = -13 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 79) L 4)) = 79 := by
   let z : L := algebraMap (ZMod 79) L (55 : ZMod 79)
-  let n : Fin 3 := 1
+  let n : Fin 3 := ⟨1, by decide⟩
   have h4 : (4 : ZMod 79) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 79) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -42,7 +42,7 @@ theorem trace_det_79 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 79) L) hy0
   have hF : arithmeticFrobenius (ZMod 79) L 1 = (3 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 79) L 1)) +
-        (10 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (10 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = ((3 : ℕ) : ℤ) • (1 : AddMonoid.End (Points L)) +
       ((10 : ℕ) : ℤ) • rotation L
     simp only [negSucc_zsmul, natCast_zsmul, ← sub_eq_add_neg]
@@ -68,7 +68,7 @@ theorem trace_det_97 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 97) L 4)) = 5 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 97) L 4)) = 97 := by
   let z : L := algebraMap (ZMod 97) L (61 : ZMod 97)
-  let n : Fin 3 := 1
+  let n : Fin 3 := ⟨1, by decide⟩
   have h4 : (4 : ZMod 97) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 97) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -82,7 +82,7 @@ theorem trace_det_97 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 97) L) hy0
   have hF : arithmeticFrobenius (ZMod 97) L 1 = (3 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 97) L 1)) +
-        (-8 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (-8 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = ((3 : ℕ) : ℤ) • (1 : AddMonoid.End (Points L)) +
       Int.negSucc 7 • rotation L
     simp only [negSucc_zsmul, natCast_zsmul, ← sub_eq_add_neg]
@@ -108,7 +108,7 @@ theorem trace_det_103 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 103) L 4)) = -7 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 103) L 4)) = 103 := by
   let z : L := algebraMap (ZMod 103) L (56 : ZMod 103)
-  let n : Fin 3 := 1
+  let n : Fin 3 := ⟨1, by decide⟩
   have h4 : (4 : ZMod 103) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 103) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -122,7 +122,7 @@ theorem trace_det_103 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 103) L) hy0
   have hF : arithmeticFrobenius (ZMod 103) L 1 = (9 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 103) L 1)) +
-        (-2 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (-2 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = ((9 : ℕ) : ℤ) • (1 : AddMonoid.End (Points L)) +
       Int.negSucc 1 • rotation L
     simp only [negSucc_zsmul, natCast_zsmul, ← sub_eq_add_neg]
@@ -148,7 +148,7 @@ theorem trace_det_109 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 109) L 4)) = 2 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 109) L 4)) = 109 := by
   let z : L := algebraMap (ZMod 109) L (45 : ZMod 109)
-  let n : Fin 3 := 0
+  let n : Fin 3 := ⟨0, by decide⟩
   have h4 : (4 : ZMod 109) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 109) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -162,7 +162,7 @@ theorem trace_det_109 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 109) L) hy0
   have hF : arithmeticFrobenius (ZMod 109) L 1 = (-5 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 109) L 1)) +
-        (-12 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (-12 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = Int.negSucc 4 • (1 : AddMonoid.End (Points L)) +
       Int.negSucc 11 • rotation L
     simp only [negSucc_zsmul, natCast_zsmul, ← sub_eq_add_neg]

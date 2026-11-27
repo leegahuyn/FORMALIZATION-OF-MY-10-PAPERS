@@ -40,12 +40,12 @@ private theorem component_bijective (U : X.ProEt) :
     apply ContinuousMap.ext
     intro x
     obtain ⟨y, hy⟩ := h.2 x
-    have h' := congrArg (fun g : ULift.{1} (C(pullback U.hom p, M)) ↦ g.down y) e
+    have h' := congrArg (fun g : ULift.{1} (C(↥(pullback U.hom p : Scheme.{0}), M)) ↦ g.down y) e
     change a.down (project p U y) = b.down (project p U y) at h'
     rwa [hy] at h'
   · intro s
-    let u : C(pullback U.hom p, U.left) := ⟨project p U, (project p U).continuous⟩
-    let s' : C(pullback U.hom p, M) := s.down
+    let u : C(↥(pullback U.hom p : Scheme.{0}), U.left) := ⟨project p U, (project p U).continuous⟩
+    let s' : C(↥(pullback U.hom p : Scheme.{0}), M) := s.down
     have hQuot : Topology.IsQuotientMap u :=
       (project p U).isClosedMap.isQuotientMap (project p U).continuous h.2
     have hFac : Function.FactorsThrough s' u := fun a b e ↦ congrArg s' (h.1 e)

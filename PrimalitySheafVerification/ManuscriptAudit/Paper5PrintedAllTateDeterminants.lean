@@ -24,7 +24,7 @@ private theorem trace_square {R M : Type*} [CommRing R] [AddCommGroup M] [Module
 private theorem coefficient_prime {l : ℕ} (hl : l = 2 ∨ l = 3) : l.Prime := by
   rcases hl with rfl | rfl <;> decide
 
-private def rowBasis {r : Row} [Fact r.prime.Prime] (hr : r ∈ printedRows)
+def rowBasis {r : Row} [Fact r.prime.Prime] (hr : r ∈ printedRows)
     (L : Type*) [Field L] [Algebra (ZMod r.prime) L] [IsAlgClosed L] [DecidableEq L]
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     Basis (Fin 2) ℤ_[l] (Tate l (Points (r := r) L)) := by
@@ -34,7 +34,7 @@ private def rowBasis {r : Row} [Fact r.prime.Prime] (hr : r ∈ printedRows)
   · exact ⟨twoAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)⟩
   · exact ⟨threeAdicBasis (ZMod r.prime) L h₂ h₃ (one_ne_zero : (1 : ZMod r.prime) ≠ 0)⟩
 
-private theorem checked_coefficients {r : Row} [Fact r.prime.Prime] (hr : r ∈ printedRows)
+theorem checked_coefficients {r : Row} [Fact r.prime.Prime] (hr : r ∈ printedRows)
     (L : Type*) [Field L] [Algebra (ZMod r.prime) L] [IsAlgClosed L] [DecidableEq L]
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     LinearMap.trace ℤ_[l] (Tate l (Points (r := r) L)) (actual (r := r) L l) = (r.a1 : ℤ_[l]) ∧
@@ -91,6 +91,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper5PrintedAllTateDeterminants.rowBasis,
+      ``ManuscriptAudit.Paper5PrintedAllTateDeterminants.checked_coefficients,
       ``ManuscriptAudit.Paper5PrintedAllTateDeterminants.all_printed_power_determinants,
       ``ManuscriptAudit.Paper5PrintedAllTateDeterminants.all_printed_power_traces] do
     let ax ← collectAxioms name

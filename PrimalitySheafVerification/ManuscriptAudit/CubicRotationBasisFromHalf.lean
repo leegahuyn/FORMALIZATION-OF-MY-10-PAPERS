@@ -49,13 +49,11 @@ theorem exists_basis_from_half (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA
       e v = v.1 • P₄ + v.2 • Q₄ :=
     levelEquivFromLifts_apply G hd hc 1 P₄ Q₄ _ _ _ v
   have h₀ : B 0 = P₄ := by
-    change e (1, 0) = P₄
-    rw [hEval]
-    simp
+    have h : e (1, 0) = P₄ := by rw [hEval] <;> simp
+    simpa [B] using h
   have h₁ : B 1 = Q₄ := by
-    change e (0, 1) = Q₄
-    rw [hEval]
-    simp
+    have h : e (0, 1) = Q₄ := by rw [hEval] <;> simp
+    simpa [B] using h
   refine ⟨B, ?_, ?_⟩
   · exact congrArg (fun R : PowerTorsion G 2 => R.val) h₀
   · change S (B 0) = B 1

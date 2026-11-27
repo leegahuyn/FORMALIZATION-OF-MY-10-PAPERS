@@ -26,7 +26,7 @@ theorem trace_det_37 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 37) L 4)) = -1 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 37) L 4)) = 37 := by
   let z : L := algebraMap (ZMod 37) L (10 : ZMod 37)
-  let n : Fin 3 := 1
+  let n : Fin 3 := ⟨1, by decide⟩
   have h4 : (4 : ZMod 37) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 37) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -40,7 +40,7 @@ theorem trace_det_37 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 37) L) hy0
   have hF : arithmeticFrobenius (ZMod 37) L 1 = (-3 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 37) L 1)) +
-        (4 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (4 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = Int.negSucc 2 • (1 : AddMonoid.End (Points L)) +
       ((4 : ℕ) : ℤ) • rotation L
     rw [negSucc_zsmul, natCast_zsmul]
@@ -66,7 +66,7 @@ theorem trace_det_61 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
       (endMap l (arithmeticFrobenius (ZMod 61) L 4)) = -13 ∧
     LinearMap.det (endMap l (arithmeticFrobenius (ZMod 61) L 4)) = 61 := by
   let z : L := algebraMap (ZMod 61) L (47 : ZMod 61)
-  let n : Fin 3 := 2
+  let n : Fin 3 := ⟨2, by decide⟩
   have h4 : (4 : ZMod 61) ≠ 0 := by decide
   have hΔ4 : (shortCubic (0 : L) (algebraMap (ZMod 61) L 4)).Δ ≠ 0 :=
     shortCubic_discriminant_ne_zero (two_ne_zero L) (three_ne_zero L)
@@ -80,7 +80,7 @@ theorem trace_det_61 (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     simpa only [parameter, div_one, map_pow, map_one] using congrArg (algebraMap (ZMod 61) L) hy0
   have hF : arithmeticFrobenius (ZMod 61) L 1 = (5 : ℤ) •
       (1 : AddMonoid.End (Geometric (ZMod 61) L 1)) +
-        (-4 : ℤ) • CubicCubeRotation.rotate z (cube_rotation L) (discriminant_ne_zero L) := by
+        (-4 : ℤ) • CubicOrdinatePreservingTwist.pointRotation (cube_rotation L) (discriminant_ne_zero L) := by
     change nativeFrobenius L = ((5 : ℕ) : ℤ) • (1 : AddMonoid.End (Points L)) +
       Int.negSucc 3 • rotation L
     rw [natCast_zsmul, negSucc_zsmul, ← sub_eq_add_neg]

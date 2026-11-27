@@ -52,8 +52,7 @@ theorem scale_eq_signed_rotate (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
 /-- Squaring the actual rotation acts by the square of its scalar on abscissas. -/
 theorem rotate_square_eq (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
     (hu₃ : u ^ 3 = 1) (hu₂₃ : (u ^ 2) ^ 3 = 1) :
-    rotate (u ^ 2) hu₂₃ hΔ = (rotate u hu₃ hΔ : AddMonoid.End (Curve A).Point) ^ 2 := by
-  rw [pow_two (rotate u hu₃ hΔ : AddMonoid.End (Curve A).Point)]
+    rotate (u ^ 2) hu₂₃ hΔ = (rotate u hu₃ hΔ).comp (rotate u hu₃ hΔ) := by
   apply AddMonoidHom.ext
   intro P
   change rotate (u ^ 2) hu₂₃ hΔ P = rotate u hu₃ hΔ (rotate u hu₃ hΔ P)

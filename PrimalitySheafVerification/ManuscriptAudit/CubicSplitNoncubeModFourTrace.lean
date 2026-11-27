@@ -107,6 +107,7 @@ theorem native_trace_eq_count {A z : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
     have hSc : scale hw hW hΔ₁ = ε • R ^ 2 := by
       have heq := scale_eq_signed_rotate hΔ₁ hw hW hc hSq ε hε hwSig
       rw [rotate_square_eq hΔ₁ hzL.pow_eq_one hc] at heq
+      change scale hw hW hΔ₁ = ε • R.comp R
       exact heq
     have hTr := trTransfer (R ^ 2) hSc
     rw [mapLinear_sq] at hTr
