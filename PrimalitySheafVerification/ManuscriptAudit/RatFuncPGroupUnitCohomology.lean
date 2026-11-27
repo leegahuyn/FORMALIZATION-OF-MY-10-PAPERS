@@ -41,10 +41,29 @@ private theorem galoisUnits_HTwo_of_normal (F L : Type) [Field F] [Field L] [Alg
     Subsingleton (groupCohomology (Rep.ofAlgebraAutOnUnits F L) 2) := by
   let G := L ≃ₐ[F] L
   let A := Additive Lˣ
+  let ρ : Representation ℤ G A := (Rep.ofAlgebraAutOnUnits F L).ρ
+  letI : DistribMulAction G A :=
+    { smul := fun g x ↦ ρ g x
+      one_smul := fun x ↦ by
+        change ρ 1 x = x
+        rw [map_one] <;> rfl
+      mul_smul := fun g h x ↦ by
+        change ρ (g * h) x = ρ g (ρ h x)
+        rw [map_mul] <;> rfl
+      smul_zero := fun g ↦ (ρ g).map_zero
+      smul_add := fun g x y ↦ (ρ g).map_add x y }
+  letI : SMulCommClass G ℤ A := ⟨fun g z x ↦ (ρ g).map_smul z x⟩
+  letI : SMulCommClass S ℤ A := ⟨fun g z x ↦ (ρ (g : G)).map_smul z x⟩
   let B := Rep.ofDistribMulAction ℤ G A
   let C := Rep.ofDistribMulAction ℤ S A
-  have hb : B = Rep.ofAlgebraAutOnUnits F L := rfl
-  have hc : C = Rep.res S.subtype (Rep.ofAlgebraAutOnUnits F L) := rfl
+  have hb : B = Rep.ofAlgebraAutOnUnits F L := by
+    change Rep.of (Representation.ofDistribMulAction ℤ G A) = Rep.of ρ
+    exact congrArg (fun r : Representation ℤ G A ↦ Rep.of r)
+      (MonoidHom.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl)
+  have hc : C = Rep.res S.subtype (Rep.ofAlgebraAutOnUnits F L) := by
+    change Rep.of (Representation.ofDistribMulAction ℤ S A) = Rep.of (ρ.comp S.subtype)
+    exact congrArg (fun r : Representation ℤ S A ↦ Rep.of r)
+      (MonoidHom.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl)
   have h₁ : Subsingleton (groupCohomology C 1) := by rw [hc]; exact hOne
   have h₂ : Subsingleton (groupCohomology C 2) := by rw [hc]; exact hTwo
   have h₃ : Subsingleton (groupCohomology (B.quotientToInvariants S) 2) := by

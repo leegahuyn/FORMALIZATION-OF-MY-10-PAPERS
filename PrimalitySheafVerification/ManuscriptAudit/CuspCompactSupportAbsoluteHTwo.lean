@@ -35,8 +35,10 @@ theorem affineLine_cyclic_HTwo_subsingleton_of_field (ℓ : ℕ) [NeZero (ℓ : 
   let e := AffineLineDivisorSheaf.affineLineCyclicHTwoEmbedding K (RatFunc K) ℓ
   exact ⟨fun x y ↦ e.property (hField.elim (e.val x) (e.val y))⟩
 
-variable (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (p : ℕ) [pPrime : Fact p.Prime] [pChar : CharP K p]
 variable (ℓ : ℕ) [NeZero (ℓ : K)]
+
+include p pPrime pChar
 
 /-- If the rational function field has vanishing degree-two unit
 cohomology, the actual compactly supported degree-two cusp group

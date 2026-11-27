@@ -11,8 +11,10 @@ open CategoryTheory CuspCompactSupportSequence
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
   KummerCohomologySequence.affineSiteHasExt
 
-variable (K : Type) [Field K] [IsAlgClosed K] (p : ℕ) [Fact p.Prime] [CharP K p]
+variable (K : Type) [Field K] [IsAlgClosed K] (p : ℕ) [pPrime : Fact p.Prime] [pChar : CharP K p]
   (ℓ : ℕ) [NeZero (ℓ : K)]
+
+include p pPrime pChar
 
 theorem nonempty_cuspHcTwoEquiv (hℓ : 2 ≤ ℓ) :
     Nonempty (cuspHc K (AddCommGrpCat.of (ZMod ℓ)) 2 ≃+ ZMod ℓ) :=

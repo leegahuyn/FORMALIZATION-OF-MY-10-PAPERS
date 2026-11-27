@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import PrimalitySheafVerification.ManuscriptAudit.EtaleFieldUnitLocalLift
 import PrimalitySheafVerification.ManuscriptAudit.GaloisCoverAction
 import PrimalitySheafVerification.ManuscriptAudit.SheafSectionDifference
@@ -48,7 +49,12 @@ def unitSectionSequence : ShortComplex (Rep ℤ (L ≃ₐ[K] L)) :=
 theorem unitSectionSequence_shortExact [Mono i] :
     (unitSectionSequence K L i).ShortExact := by
   let S := unitSectionSequence K L i
-  let E := forget₂ (Rep ℤ (L ≃ₐ[K] L)) (ModuleCat ℤ)
+  let E : Rep.{0} ℤ (L ≃ₐ[K] L) ⥤ ModuleCat.{0} ℤ :=
+    forget₂ (Rep.{0} ℤ (L ≃ₐ[K] L)) (ModuleCat.{0} ℤ)
+  letI : E.Additive := by dsimp [E]; infer_instance
+  letI : E.Faithful := by dsimp [E]; infer_instance
+  letI : PreservesFiniteLimits E := by dsimp [E]; infer_instance
+  letI : PreservesFiniteColimits E := by dsimp [E]; infer_instance
   have hExact : S.Exact := by
     apply (S.exact_map_iff_of_faithful E).mp
     refine (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact (S.map E)).mpr ?_

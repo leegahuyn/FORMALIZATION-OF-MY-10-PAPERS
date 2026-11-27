@@ -39,7 +39,9 @@ private theorem conjugate_pointMap_abscissa (W : Affine E) (V : Affine L)
   change rawAbscissa L (Affine.Point.map (W' := W) g (inclusion 3 _ P)) = _
   generalize inclusion 3 _ P = Q
   cases Q with
-  | zero => simp [rawAbscissa, Affine.Point.map_zero]
+  | zero =>
+    change (0 : L) = g 0
+    exact (map_zero g).symm
   | some x y h => rfl
 
 private theorem conjugate_pointMap_ordinate (W : Affine E) (V : Affine L)
@@ -50,8 +52,16 @@ private theorem conjugate_pointMap_ordinate (W : Affine E) (V : Affine L)
   change rawOrdinate L (Affine.Point.map (W' := W) g (inclusion 3 _ P)) = _
   generalize inclusion 3 _ P = Q
   cases Q with
-  | zero => simp [rawOrdinate, Affine.Point.map_zero]
+  | zero =>
+    change (0 : L) = g 0
+    exact (map_zero g).symm
   | some x y h => rfl
+
+private theorem rawAbscissa_centered {A : L} (P : (Curve A).Point) :
+    rawAbscissa L P = abscissa P := by cases P <;> rfl
+
+private theorem rawOrdinate_centered {A : L} (P : (Curve A).Point) :
+    rawOrdinate L P = ordinate P := by cases P <;> rfl
 
 private theorem centered_baseChange (A : E) :
     (Curve A).baseChange L = Curve (algebraMap E L A) := by
@@ -101,11 +111,13 @@ theorem actualFrobenius_trace_det {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E)
   have hg (x : L) : g x = x ^ Fintype.card E := rfl
   have hfix : g (algebraMap E L A) = algebraMap E L A := g.commutes A
   have hx (P : T₃ (algebraMap E L A)) :
-      abscissa (inclusion 3 _ (e.conj f P)) = g (abscissa (inclusion 3 _ P)) :=
-    conjugate_pointMap_abscissa E L (Curve A) _ (centered_baseChange E L A) g P
+      abscissa (inclusion 3 _ (e.conj f P)) = g (abscissa (inclusion 3 _ P)) := by
+    simpa only [rawAbscissa_centered, e, f, centeredTransport, actualFrobenius] using
+      conjugate_pointMap_abscissa E L (Curve A) _ (centered_baseChange E L A) g P
   have hy (P : T₃ (algebraMap E L A)) :
-      ordinate (inclusion 3 _ (e.conj f P)) = g (ordinate (inclusion 3 _ P)) :=
-    conjugate_pointMap_ordinate E L (Curve A) _ (centered_baseChange E L A) g P
+      ordinate (inclusion 3 _ (e.conj f P)) = g (ordinate (inclusion 3 _ P)) := by
+    simpa only [rawOrdinate_centered, e, f, centeredTransport, actualFrobenius] using
+      conjugate_pointMap_ordinate E L (Curve A) _ (centered_baseChange E L A) g P
   obtain ⟨s, hs, hDet, hTrace⟩ :=
     trace_det_of_coordinates h₂L h₃L hAL D (g : L →+* L) (e.conj f)
       (Fintype.card E) hq hg hfix hx hy

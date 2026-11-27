@@ -62,9 +62,21 @@ private theorem rawComponent_jointly_surjective (x : tripleOverlap F L) :
     · simp [Category.assoc, d, i]
     · simp [Category.assoc, d, i, hp]
   have hm : d ≫ m = rawComponent F L σ τ := by
+    have hf : rawComponent F L σ τ ≫ pullback.fst p p = component F L σ :=
+      pullback.lift_fst _ _ _
+    have hs : rawComponent F L σ τ ≫ pullback.snd p p = component F L τ :=
+      pullback.lift_snd _ _ _
     apply pullback.hom_ext
-    · simp [Category.assoc, d, m, i, rawComponent]
-    · simp [Category.assoc, d, m, i, rawComponent]
+    · calc
+        (d ≫ m) ≫ pullback.fst p p = 𝟙 (U L) ≫ component F L σ := by
+          simp [Category.assoc, d, m, i]
+        _ = component F L σ := Category.id_comp _
+        _ = _ := hf.symm
+    · calc
+        (d ≫ m) ≫ pullback.snd p p = 𝟙 (U L) ≫ component F L τ := by
+          simp [Category.assoc, d, m, i]
+        _ = component F L τ := Category.id_comp _
+        _ = _ := hs.symm
   refine ⟨σ, τ, pullback.fst i i w, ?_⟩
   have hPoint : d (pullback.fst i i w) = w := by
     change (pullback.fst i i ≫ d) w = w

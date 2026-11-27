@@ -18,8 +18,8 @@ def doublingQuartic (A u : K) : K[X] :=
 
 theorem doublingQuartic_degree (A u : K) : (doublingQuartic A u).natDegree = 4 := by
   have h₁ : (-(C (4 * u) * (X : K[X]) ^ 3)).natDegree ≤ 3 := by
-    simpa only [natDegree_neg, natDegree_X_pow] using
-      natDegree_C_mul_le (4 * u) ((X : K[X]) ^ 3)
+    rw [natDegree_neg]
+    exact (natDegree_C_mul_le (4 * u) ((X : K[X]) ^ 3)).trans (natDegree_X_pow_le 3)
   have h₂ : (-(C (8 * A) * (X : K[X])) + C (-(4 * u * A))).natDegree ≤ 1 := by
     simpa only [natDegree_add_C, natDegree_neg, natDegree_X] using
       natDegree_C_mul_le (8 * A) (X : K[X])

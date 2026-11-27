@@ -36,17 +36,18 @@ def projectiveHOneEquiv (h2 : (2 : K) ≠ 0) : projectiveHOne K ≃+ ZMod 2 := b
   let u : projectiveHOne K →+ ZMod 2 := e.symm.toAddMonoidHom.comp r
   have hi : Function.Injective u :=
     e.symm.injective.comp (NodalProjectiveHOneRestriction.restriction_injective K h2)
-  have hNT := NodalProjectiveHOne.projectiveNode_HOne_nontrivial K h2
-  obtain ⟨x, y, hxy⟩ := hNT.exists_pair_ne
-  let z := x - y
-  have hz : z ≠ 0 := fun h => hxy (sub_eq_zero.mp h)
-  have h1 : u z = 1 :=
-    nonzero_zmod_two_eq_one (u z) (fun h => hz (hi (h.trans (map_zero u).symm)))
-  refine AddEquiv.ofBijective u ⟨hi, ?_⟩
-  intro a
-  by_cases ha : a = 0
-  · exact ⟨0, (map_zero u).trans ha.symm⟩
-  · exact ⟨z, h1.trans (nonzero_zmod_two_eq_one a ha).symm⟩
+  have hs : Function.Surjective u := by
+    have hNT := NodalProjectiveHOne.projectiveNode_HOne_nontrivial K h2
+    obtain ⟨x, y, hxy⟩ := hNT.exists_pair_ne
+    let z := x - y
+    have hz : z ≠ 0 := fun h => hxy (sub_eq_zero.mp h)
+    have h1 : u z = 1 :=
+      nonzero_zmod_two_eq_one (u z) (fun h => hz (hi (h.trans (map_zero u).symm)))
+    intro a
+    by_cases ha : a = 0
+    · exact ⟨0, (map_zero u).trans ha.symm⟩
+    · exact ⟨z, h1.trans (nonzero_zmod_two_eq_one a ha).symm⟩
+  exact AddEquiv.ofBijective u ⟨hi, hs⟩
 
 /-- The actual affine node has the same single compactly supported mod-two class. -/
 def compactHOneEquiv (h2 : (2 : K) ≠ 0) :
