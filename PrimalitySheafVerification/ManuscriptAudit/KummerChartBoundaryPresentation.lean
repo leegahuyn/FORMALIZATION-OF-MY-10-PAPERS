@@ -12,7 +12,7 @@ namespace ManuscriptAudit.KummerChartBoundaryPresentation
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian Opposite
 open KummerRelativeFull KummerRelativeUnitSections KummerUnitsSheaf
-open OpenEtaleExtension SheafPresheafHOneBoundary
+open OpenEtaleExtension SheafPresheafHOneBoundary SheafPresheafHOneBoundaryAdditive
 
 noncomputable section
 
@@ -51,8 +51,19 @@ theorem boundary_surjective [IsDomain R] [IsPrincipalIdealRing R] :
   let hR := KummerUnitsSheaf.unitHOne_subsingleton_of_pid R
   have hMiddle : Subsingleton (F.H' 1 (Y j)) :=
     ⟨fun x y ↦ h.injective (g.injective (hR.elim _ _))⟩
-  exact (boundaryAddHom_surjective (J (X := X)) _ _ _ hMiddle).comp
-    (coordinateUnitsIso d j).addCommGroupIsoToAddEquiv.symm.surjective
+  let hS := sequence_shortExact k d hd
+  let U := Y j
+  let I := (freeYoneda (J (X := X))).obj U
+  have hBoundary : Function.Surjective (boundaryAddHom (J (X := X)) (S (X := X) d) hS U) := by
+    intro t
+    obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₁ I hS t (hMiddle.elim _ _) (n₀ := 0) rfl
+    obtain ⟨f, rfl⟩ := (Ext.mk₀_bijective I (S (X := X) d).X₃).surjective a
+    let e := sectionEquiv (J (X := X)) (S (X := X) d).X₃ U
+    refine ⟨e f, ?_⟩
+    rw [boundaryAddHom_apply]
+    change (Ext.mk₀ (e.symm (e f))).comp hS.extClass rfl = t
+    simpa only [Equiv.symm_apply_apply] using ha
+  exact hBoundary.comp (coordinateUnitsIso d j).addCommGroupIsoToAddEquiv.symm.surjective
 
 /-- The kernel is exactly the subgroup of coordinate dth powers. -/
 theorem boundary_ker :

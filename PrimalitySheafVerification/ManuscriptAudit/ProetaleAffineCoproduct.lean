@@ -42,7 +42,9 @@ def descent : coproduct V ⟶ T :=
   MorphismProperty.Over.homMk (Sigma.desc (fun i ↦ (a i).left)) (by
     apply Sigma.hom_ext
     intro i
-    simp only [Category.assoc, Sigma.ι_desc_assoc, Sigma.ι_desc]
+    change Sigma.ι (pieces V) i ≫ Sigma.desc (fun k ↦ (a k).left) ≫ T.hom =
+      Sigma.ι (pieces V) i ≫ Sigma.desc (fun k ↦ (V k).hom)
+    rw [Sigma.ι_desc_assoc, Sigma.ι_desc]
     exact MorphismProperty.Over.w (a i))
 
 theorem injection_descent (i : Fin n) : injection V i ≫ descent V a = a i := by
@@ -72,12 +74,13 @@ theorem descent_covers [IsAffine T.left] [∀ i, IsAffine (V i).left]
     (hSurj : ∀ x : T.left, ∃ i, ∃ y : (V i).left, (a i).left y = x) :
     Sieve.generate (Presieve.singleton (descent V a)) ∈ Scheme.ProEt.topology S T := by
   let f := descent V a
-  letI := descent_surjective V a hSurj
+  letI : Surjective f.left := descent_surjective V a hSurj
   letI : QuasiCompact f.left := inferInstance
   apply Precoverage.generate_mem_toGrothendieck
   change (Presieve.singleton f).map (Scheme.ProEt.forget S ⋙ Over.forget S) ∈
     Scheme.proetalePrecoverage T.left
   rw [Presieve.map_singleton]
+  change Presieve.singleton f.left ∈ Scheme.propQCPrecoverage @WeaklyEtale T.left
   exact Scheme.Hom.singleton_mem_propQCPrecoverage (descent_weaklyEtale V a hWeak)
 
 end

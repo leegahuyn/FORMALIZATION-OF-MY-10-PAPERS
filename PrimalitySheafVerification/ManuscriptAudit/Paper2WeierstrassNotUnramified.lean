@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.TrivSqZeroExt.Ideal
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.RingTheory.Unramified.Basic
 import PrimalitySheafVerification.ManuscriptAudit.Paper2WeierstrassDualLifts
 import PrimalitySheafVerification.ManuscriptAudit.LocalizedDualLiftObstruction
@@ -20,10 +21,10 @@ private def evaluation {R : Type*} [CommRing R] [Algebra K R] (W : WeierstrassCu
     (x y : R) (h : (W.map (algebraMap K R)).toAffine.Equation x y) :
     W.toAffine.CoordinateRing →ₐ[K] R := by
   let b : Polynomial K →ₐ[K] R := Polynomial.aeval x
-  have hr : W.toAffine.polynomial.eval₂ b.toRingHom y = 0 := by
+  have hr : W.toAffine.polynomial.eval₂ (b : Polynomial K →+* R) y = 0 := by
     have hEq := (Affine.equation_iff' (W := (W.map (algebraMap K R)).toAffine) x y).mp h
-    have hX : b.toRingHom (X : Polynomial K) = x := aeval_X x
-    have hC (k : K) : b.toRingHom (C k) = algebraMap K R k := aeval_C x k
+    have hX : (b : Polynomial K →+* R) (X : Polynomial K) = x := aeval_X x
+    have hC (k : K) : (b : Polynomial K →+* R) (C k) = algebraMap K R k := aeval_C x k
     simp only [Affine.polynomial, eval₂_sub, eval₂_add, eval₂_mul, eval₂_pow, eval₂_X,
       eval₂_C, map_add, map_mul, map_pow, hX, hC]
     simp only [WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂, WeierstrassCurve.map_a₃,
@@ -95,6 +96,15 @@ theorem not_formally_unramified (W : WeierstrassCurve K) (x y : K)
     (Algebra.FormallyUnramified.lift_unique' r hNil (dualEvaluation W x y a)
       (dualEvaluation W x y b) hSame)
 
+theorem structural_map_not_etale (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y) :
+    ¬ AlgebraicGeometry.Etale (AlgebraicGeometry.Spec.map
+      (CommRingCat.ofHom (algebraMap K W.toAffine.CoordinateRing))) := by
+  intro hEtale
+  have hRing := (AlgebraicGeometry.HasRingHomProperty.Spec_iff (P := @AlgebraicGeometry.Etale)).mp hEtale
+  letI : Algebra.Etale K W.toAffine.CoordinateRing := RingHom.etale_algebraMap.mp hRing
+  exact not_formally_unramified W x y h inferInstance
+
 /-- Formal unramifiedness also fails on the actual local ring at the nonsingular point. -/
 theorem local_not_formally_unramified (W : WeierstrassCurve K) (x y : K)
     (hEq : W.toAffine.Equation x y) (h : W.toAffine.Nonsingular x y)
@@ -122,6 +132,7 @@ run_cmd do
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.dualEvaluation_residue,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.dualEvaluation_injective,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.not_formally_unramified,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.structural_map_not_etale,
       ``ManuscriptAudit.Paper2WeierstrassNotUnramified.local_not_formally_unramified] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

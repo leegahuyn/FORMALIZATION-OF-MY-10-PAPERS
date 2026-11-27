@@ -46,8 +46,10 @@ theorem exists_finite_refinement [IsAffine T.left] (R : Sieve T)
       f := fun i ↦ (b i).left }
   change E.presieve₀ ∈ Scheme.proetalePrecoverage T.left at hG
   letI : QuasiCompactCover E := Scheme.presieve₀_mem_qcPrecoverage_iff.mp hG.1
+  have hCov : Presieve.ofArrows (fun i ↦ (W i).left) (fun i ↦ (b i).left) ∈
+      Scheme.precoverage @WeaklyEtale T.left := hG.2
   have hWeak (i : ι) : WeaklyEtale (b i).left :=
-    (Scheme.presieve₀_mem_precoverage_iff.mp hG.2).2 i
+    ((Scheme.ofArrows_mem_precoverage_iff @WeaklyEtale).mp hCov).2 i
   obtain ⟨n, k, O, hO, hTop⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact E
     (show IsCompact (⊤ : TopologicalSpace.Opens T.left).carrier from isCompact_univ)
   let t (i : Fin n) := (hO i).fromSpec
@@ -67,7 +69,7 @@ theorem exists_finite_refinement [IsAffine T.left] (R : Sieve T)
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
     obtain ⟨y, hy, he⟩ := hi
     refine ⟨i, (hO i).isoSpec.hom.base ⟨y, hy⟩, ?_⟩
-    change (t i ≫ E.f (k i)) ((hO i).isoSpec.hom.base ⟨y, hy⟩) = x
+    change ((hO i).fromSpec ≫ E.f (k i)) ((hO i).isoSpec.hom.base ⟨y, hy⟩) = x
     rw [← Scheme.Hom.comp_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
       Iso.hom_inv_id_assoc]
     simpa using he

@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Data.Rat.Floor
 import PrimalitySheafVerification.ManuscriptAudit.Paper8HolomorphicPartPhase
 
 /-!
@@ -68,11 +69,13 @@ theorem weighted_norm_le_two {k : ℕ} (hk : 0 < k) (S : Finset (Fin (2 * k))) :
     _ = _ := by field_simp [hkR.ne']
 
 private theorem residue_one_zero : residueWeight 1 (0 : Fin 2) = 1 := by
-  have h : dedekindSum 0 2 = 0 := by decide
+  have h : dedekindSum 0 2 = 0 := by
+    norm_num [dedekindSum, Fin.sum_univ_two, sawtooth]
   simp [residueWeight, firstPhase, h]
 
 private theorem residue_one_one : residueWeight 1 (1 : Fin 2) = -1 := by
-  have h : dedekindSum (-1) 2 = 0 := by decide
+  have h : dedekindSum (-1) 2 = 0 := by
+    norm_num [dedekindSum, Fin.sum_univ_two, sawtooth]
   have hp : firstPhase 1 (1 : Fin 2) = 1 / 2 := by
     norm_num [firstPhase, h]
   rw [residueWeight, hp]
@@ -93,19 +96,23 @@ theorem allWeight_one : allWeight 1 = 0 := by
   norm_num
 
 private theorem firstPhase_two_zero : firstPhase 2 (0 : Fin 4) = 0 := by
-  have h : dedekindSum 0 4 = 0 := by decide
+  have h : dedekindSum 0 4 = 0 := by
+    norm_num [dedekindSum, Fin.sum_univ_four, sawtooth]
   norm_num [firstPhase, h]
 
 private theorem firstPhase_two_one : firstPhase 2 (1 : Fin 4) = -1 / 16 := by
-  have h : dedekindSum (-1) 4 = -1 / 8 := by decide
+  have h : dedekindSum (-1) 4 = -1 / 8 := by
+    norm_num [dedekindSum, Fin.sum_univ_four, sawtooth]
   norm_num [firstPhase, h]
 
 private theorem firstPhase_two_two : firstPhase 2 (2 : Fin 4) = 0 := by
-  have h : dedekindSum (-2) 4 = 0 := by decide
+  have h : dedekindSum (-2) 4 = 0 := by
+    norm_num [dedekindSum, Fin.sum_univ_four, sawtooth]
   norm_num [firstPhase, h]
 
 private theorem firstPhase_two_three : firstPhase 2 (3 : Fin 4) = 1 / 16 := by
-  have h : dedekindSum (-3) 4 = 1 / 8 := by decide
+  have h : dedekindSum (-3) 4 = 1 / 8 := by
+    norm_num [dedekindSum, Fin.sum_univ_four, sawtooth]
   norm_num [firstPhase, h]
 
 private theorem residueWeight_re_eq_cos (k : ℕ) (d : Fin (2 * k)) :
@@ -123,7 +130,8 @@ theorem allWeight_two_re :
     norm_num [prefactor, Complex.ofReal_div]
   change (prefactor 2 * (∑ d : Fin 4, residueWeight 2 d)).re = _
   rw [hPref, Fin.sum_univ_four, Complex.mul_re]
-  simp only [Complex.ofReal_re, Complex.ofReal_im, zero_mul, sub_zero, Complex.add_re,
+  simp only [Complex.neg_re, Complex.neg_im, Complex.ofReal_re, Complex.ofReal_im, neg_zero,
+    zero_mul, sub_zero, Complex.add_re,
     residueWeight_re_eq_cos, firstPhase_two_zero, firstPhase_two_one, firstPhase_two_two,
     firstPhase_two_three, mul_zero, Real.cos_zero]
   rw [show 2 * Real.pi * (-1 / 16 : ℝ) = -(Real.pi / 8) by ring,

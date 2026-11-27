@@ -97,14 +97,29 @@ theorem delta_le_scaled {j k : ℕ} (hj : 0 < j) (hjk : j ≤ k) :
   rw [tsum_mul_left] at h
   exact h
 
+private theorem one_div_rpow_eq_decay {k : ℕ} (hk : 0 < k) :
+    ((1 : ℝ) / (k : ℝ)) ^ (5 / 2 : ℝ) = decay k := by
+  have hkR : 0 < (k : ℝ) := by exact_mod_cast hk
+  unfold decay
+  rw [Real.div_rpow zero_le_one hkR.le, Real.one_rpow,
+    show (5 / 2 : ℝ) = 2 + 1 / 2 by norm_num,
+    Real.rpow_add hkR, Real.rpow_two, ← Real.sqrt_eq_rpow]
+
 theorem delta_le_decay {k : ℕ} (hk : 2 ≤ k) : delta k ≤ decay k * delta 1 := by
-  have hkR : 0 < (k : ℝ) := by exact_mod_cast (show 0 < k by omega)
-  have hDecay : ((1 : ℝ) / (k : ℝ)) ^ (5 / 2 : ℝ) = decay k := by
-    unfold decay
-    rw [Real.div_rpow zero_le_one hkR.le, Real.one_rpow,
-      show (5 / 2 : ℝ) = 2 + 1 / 2 by norm_num,
-      Real.rpow_add hkR, Real.rpow_two, ← Real.sqrt_eq_rpow]
-  simpa only [Nat.cast_one, hDecay] using delta_le_scaled (by decide : 0 < (1 : ℕ)) (by omega : 1 ≤ k)
+  simpa only [Nat.cast_one, one_div_rpow_eq_decay (show 0 < k by omega)] using
+    delta_le_scaled (by decide : 0 < (1 : ℕ)) (by omega : 1 ≤ k)
+
+theorem coefficient_succ_le_decay {k : ℕ} (hk : 0 < k) (m : ℕ) :
+    coefficient k (m + 1) ≤ decay k * coefficient 1 (m + 1) := by
+  have hkR : (0 : ℝ) < (k : ℝ) := by exact_mod_cast hk
+  have hkOne : 1 ≤ (k : ℝ) := by exact_mod_cast (show 1 ≤ k by omega)
+  have hBase : (1 : ℝ) / (k : ℝ) ≤ 1 := (div_le_one₀ hkR).2 hkOne
+  have hm : 1 ≤ ((m + 1 : ℕ) : ℝ) := by exact_mod_cast (show 1 ≤ m + 1 by omega)
+  rw [coefficient_relation (by decide : 0 < (1 : ℕ)) hk (m + 1),
+    Nat.cast_one, ← one_div_rpow_eq_decay hk]
+  exact mul_le_mul_of_nonneg_right
+    (Real.rpow_le_rpow_of_exponent_ge (div_pos zero_lt_one hkR) hBase (by linarith))
+    (coefficient_nonneg 1 (m + 1))
 
 end
 end ManuscriptAudit.Paper8ContourCoefficientDecay
@@ -118,7 +133,8 @@ run_cmd do
       ``ManuscriptAudit.Paper8ContourCoefficientDecay.delta_one_pos,
       ``ManuscriptAudit.Paper8ContourCoefficientDecay.termDifference_le_scaled,
       ``ManuscriptAudit.Paper8ContourCoefficientDecay.delta_le_scaled,
-      ``ManuscriptAudit.Paper8ContourCoefficientDecay.delta_le_decay] do
+      ``ManuscriptAudit.Paper8ContourCoefficientDecay.delta_le_decay,
+      ``ManuscriptAudit.Paper8ContourCoefficientDecay.coefficient_succ_le_decay] do
     let axioms ← collectAxioms name
     let bad := axioms.filter fun x => !allowed.contains x
     unless bad.isEmpty do
