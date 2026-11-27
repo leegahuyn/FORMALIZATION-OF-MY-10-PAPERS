@@ -49,7 +49,7 @@ theorem quotientDensity_high (Y : ℝ) (z : ℍ) (hz : 1 < z.im) :
   have hLower : lower (coordinates (heightAmplitude Y)) z.re z.im =
       ((y ^ 2 * d : ℝ) : ℂ) := by
     rw [lower_high _ _ _ hz, hDerivative]
-    push_cast
+    push_cast <;> rfl
   rw [quotientDensity, quotientHeight_high z hz.le, hVal, hUpper, hLower]
   simp only [Complex.norm_real, Real.norm_eq_abs, sq_abs]
   change y ^ 2 * ((a / y) ^ 2 + (d / y + a / (2 * y ^ 2)) ^ 2 + (y * d) ^ 2) = _

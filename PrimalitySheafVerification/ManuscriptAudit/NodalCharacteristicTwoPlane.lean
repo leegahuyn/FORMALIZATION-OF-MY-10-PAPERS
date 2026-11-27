@@ -18,6 +18,8 @@ set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 500000
 
+attribute [local instance] MvPolynomial.gradedAlgebra
+
 universe u
 variable (K : Type u) [Field K] [CharP K 2]
 
@@ -49,9 +51,14 @@ private theorem coordinateChange_involutive : Function.Involutive (coordinateCha
     intro i
     change coordinateChange K (coordinateChange K (X K i)) = X K i
     have hAdd : X K 0 + X K 0 = 0 := by rw [← two_mul, two_eq_zero K, zero_mul]
-    fin_cases i <;>
-      simp only [coordinateChange_X0, coordinateChange_X1, coordinateChange_X2,
-        map_add, add_assoc, hAdd, add_zero]
+    fin_cases i
+    · change coordinateChange K (coordinateChange K (X K 0)) = X K 0
+      rw [coordinateChange_X0, coordinateChange_X0]
+    · change coordinateChange K (coordinateChange K (X K 1)) = X K 1
+      rw [coordinateChange_X1, map_add, coordinateChange_X1, coordinateChange_X0,
+        add_assoc, hAdd, add_zero]
+    · change coordinateChange K (coordinateChange K (X K 2)) = X K 2
+      rw [coordinateChange_X2, coordinateChange_X2]
   intro a
   exact DFunLike.congr_fun h a
 

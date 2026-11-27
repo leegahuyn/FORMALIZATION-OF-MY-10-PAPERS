@@ -33,7 +33,7 @@ private theorem two_eq_zero (q : Polynomial K) : (2 : B K q) = 0 := by
 private theorem square_y (q : Polynomial K) :
     (y K q) ^ 2 = AdjoinRoot.of (equation K q) q := by
   apply sub_eq_zero.mp
-  simpa only [equation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C] using
+  simpa only [y, equation, eval₂_sub, eval₂_pow, eval₂_X, eval₂_C] using
     AdjoinRoot.eval₂_root (equation K q)
 
 private theorem shifted_root (q r : Polynomial K) (h : q = r + X ^ 2) :
@@ -106,13 +106,13 @@ def affineRingEquiv :
 theorem affineRingEquiv_x :
     affineRingEquiv K (AdjoinRoot.of (equation K (nodePolynomial K)) X) =
       AdjoinRoot.of (equation K (cuspPolynomial K)) X :=
-  shift_x K _ _ _
+  shift_x K (nodePolynomial K) (cuspPolynomial K) (node_eq_cusp_add_x_square K)
 
 theorem affineRingEquiv_y :
     affineRingEquiv K (AdjoinRoot.root (equation K (nodePolynomial K))) =
       AdjoinRoot.root (equation K (cuspPolynomial K)) +
         AdjoinRoot.of (equation K (cuspPolynomial K)) X :=
-  shift_y K _ _ _
+  shift_y K (nodePolynomial K) (cuspPolynomial K) (node_eq_cusp_add_x_square K)
 
 end
 end ManuscriptAudit.NodalCharacteristicTwo

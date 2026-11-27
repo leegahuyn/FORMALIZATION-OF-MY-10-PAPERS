@@ -39,7 +39,10 @@ private theorem pochhammer_square_lower {q : ℝ} (hq : 0 ≤ q) (n : ℕ) :
         ring
       _ ≤ (negPochhammer q n) ^ 2 * (1 + q ^ (n + 1)) ^ 2 :=
         mul_le_mul ih hx (by positivity) (sq_nonneg _)
-      _ = _ := by rw [← mul_pow, negPochhammer, Finset.prod_range_succ, ← negPochhammer]
+      _ = _ := by
+        rw [← mul_pow]
+        exact congrArg (fun x : ℝ => x ^ (2 : ℕ))
+          (Finset.prod_range_succ (fun j : ℕ => 1 + q ^ (j + 1)) n).symm
 
 theorem printedTerm_le_geom {q : ℝ} (hq : 1 / 4 ≤ q) (n : ℕ) :
     printedTerm q n ≤ (1 / 2 : ℝ) ^ n := by
@@ -71,7 +74,8 @@ theorem printedTerm_le_geom {q : ℝ} (hq : 1 / 4 ≤ q) (n : ℕ) :
 
 private theorem pochhammer_continuous (n : ℕ) : Continuous fun q : ℝ => negPochhammer q n := by
   induction n with
-  | zero => simp [negPochhammer]
+  | zero => simpa only [negPochhammer, Finset.range_zero, Finset.prod_empty] using
+      (continuous_const : Continuous (fun _ : ℝ => (1 : ℝ)))
   | succ n ih =>
     have h := ih.mul (continuous_const.add (continuous_id.pow (n + 1)))
     simpa only [negPochhammer, Finset.prod_range_succ, id_eq] using h
@@ -87,7 +91,9 @@ theorem printedInside_continuousOn_radial :
       (ne_of_gt (zero_lt_one.trans_le (one_le_negPochhammer hq₀ _)))).continuousWithinAt
   · intro n q hq
     have hq₀ : 0 ≤ q := by linarith [hq.1]
-    rw [Real.norm_of_nonneg (div_nonneg (pow_nonneg hq₀ _) (zero_le_one.trans (one_le_negPochhammer hq₀ _)))]
+    have hnonneg : 0 ≤ printedTerm q n :=
+      div_nonneg (pow_nonneg hq₀ _) (zero_le_one.trans (one_le_negPochhammer hq₀ _))
+    rw [Real.norm_of_nonneg hnonneg]
     exact printedTerm_le_geom hq.1 n
 
 theorem ramanujanF_continuousOn_radial :
@@ -102,14 +108,15 @@ theorem ramanujanF_continuousOn_radial :
       (pow_ne_zero _ (ne_of_gt (zero_lt_one.trans_le (one_le_negPochhammer hq₀ _))))).continuousWithinAt
   · intro n q hq
     have hq₀ : 0 ≤ q := by linarith [hq.1]
-    rw [Real.norm_of_nonneg (div_nonneg (pow_nonneg hq₀ _) (sq_nonneg _))]
+    have hnonneg : 0 ≤ ramanujanTerm q n := div_nonneg (pow_nonneg hq₀ _) (sq_nonneg _)
+    rw [Real.norm_of_nonneg hnonneg]
     have hden : 0 < negPochhammer q (2 * n) :=
       zero_lt_one.trans_le (one_le_negPochhammer hq₀ _)
     exact (div_le_div_of_nonneg_left (pow_nonneg hq₀ _) hden
       (doubled_pochhammer_le_squared hq₀ hq.2 n)).trans (printedTerm_le_geom hq.1 n)
 
 private theorem pochhammer_one (n : ℕ) : negPochhammer 1 n = (2 : ℝ) ^ n := by
-  simp [negPochhammer]
+  norm_num [negPochhammer]
 
 private theorem geometric_sum : (∑' n : ℕ, (1 / 4 : ℝ) ^ n) = 4 / 3 := by
   rw [tsum_geometric_of_lt_one (by norm_num : (0 : ℝ) ≤ 1 / 4) (by norm_num)]

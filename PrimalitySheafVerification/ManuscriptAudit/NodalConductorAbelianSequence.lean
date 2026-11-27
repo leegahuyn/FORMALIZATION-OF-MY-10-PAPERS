@@ -77,10 +77,10 @@ theorem branchDifference_locallySurjective (h2 : (2 : K) ≠ 0) :
     let H := conductorFunctions K M
     let sP := H.obj.map p.op s
     let bP := F.obj.map q.op (unitLift K h2)
-    let b₊ := (positiveTrace K).hom.app (op P) bP
+    let positiveLabel := (positiveTrace K).hom.app (op P) bP
     letI : IsClosedImmersion (originMap K) := NodalAffineOrigin.originMap_isClosedImmersion K
     choose W hW c hc using fun y : P.left ↦
-      exists_open_restriction_const (originMap K) (Pairs M) P (pairedSection K M P sP b₊) y
+      exists_open_restriction_const (originMap K) (Pairs M) P (pairedSection K M P sP positiveLabel) y
     let V (y : P.left) := openObject P (W y)
     let v (y : P.left) : V y ⟶ P := openArrow P (W y)
     let a (y : P.left) : V y ⟶ U := v y ≫ p
@@ -95,7 +95,7 @@ theorem branchDifference_locallySurjective (h2 : (2 : K) ≠ 0) :
     refine (affineNode K).smallEtaleTopology.superset_covering ?_ hcover
     apply (Sieve.generate_le_iff _ _).2
     rintro _ _ ⟨y⟩
-    obtain ⟨hVal, hLabel⟩ := paired_const_components K M (v y) sP b₊ (c y) (hc y)
+    obtain ⟨hVal, hLabel⟩ := paired_const_components K M (v y) sP positiveLabel (c y) (hc y)
     let b := F.obj.map (v y).op bP
     have hDiff : (branchDifference K Binary).hom.app (op (V y)) b =
         ContinuousMap.const (Conductor K (V y)).left (1 : Binary) := by

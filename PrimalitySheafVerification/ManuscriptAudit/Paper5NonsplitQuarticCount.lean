@@ -31,7 +31,7 @@ theorem quartic_count (hp : 5 ≤ p) (hr : p % 3 = 2)
       ((p : ℤ) ^ 2 - 1) ^ 2 := by nlinarith
   have hOne : 1 ≤ p ^ 2 := Nat.succ_le_iff.mpr (pow_pos (Fact.out : p.Prime).pos 2)
   have hCast : (((p ^ 2 - 1) ^ 2 : ℕ) : ℤ) = ((p : ℤ) ^ 2 - 1) ^ 2 := by
-    push_cast [Nat.cast_sub hOne]
+    push_cast [Nat.cast_sub hOne] <;> rfl
   have hc : Nat.card ((paper5TraceCurve p A).baseChange E).toProjective.Point = (p ^ 2 - 1) ^ 2 :=
     Int.ofNat.inj (he.trans hCast.symm)
   rw [printed_eq_centered p A] at hc
