@@ -130,7 +130,7 @@ private theorem originPoint_y_mem : nodeY K ∈ (originPoint K).asIdeal := by
   rw [show (originAlgebra K).toRingHom (nodeY K) = 0 from originAlgebra_y K]
   exact (IsLocalRing.closedPoint K).asIdeal.zero_mem
 
-private theorem nodePoint_not_in_chartOpen : nodePoint K ∉ Set.range (chartOpen K) := by
+theorem nodePoint_not_in_chartOpen : nodePoint K ∉ Set.range (chartOpen K) := by
   intro h
   have hh : originPoint K ∈ (affineOpen K) ⁻¹ᵁ (chartOpen K).opensRange :=
     ((affineOpen K).mem_preimage).mpr h
@@ -212,6 +212,7 @@ run_cmd do
   for name in [``ManuscriptAudit.NodalSmoothLocus.conductorOpen_smooth,
       ``ManuscriptAudit.NodalSmoothLocus.chartOpen_toBase,
       ``ManuscriptAudit.NodalSmoothLocus.chartOpen_smooth,
+      ``ManuscriptAudit.NodalSmoothLocus.nodePoint_not_in_chartOpen,
       ``ManuscriptAudit.NodalSmoothLocus.smooth_pieces_cover_complement,
       ``ManuscriptAudit.NodalSmoothLocus.smoothLocus_eq_complement] do
     let dependencies ← collectAxioms name

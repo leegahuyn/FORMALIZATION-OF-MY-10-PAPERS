@@ -87,7 +87,10 @@ theorem fromStalks_toStalks (f : F ⟶ sheaf P A) :
   change stalkEvaluation P A q.val
       ((TopCat.Presheaf.stalkFunctor G q.val.val).map f.hom
         (TopCat.Presheaf.germ (C := G) F.obj U.unop q.val.val q.property s)) = f.hom.app U s q
-  rw [TopCat.Presheaf.stalkFunctor_map_germ_apply, stalkEvaluation_germ]
+  rw [TopCat.Presheaf.stalkFunctor_map_germ_apply]
+  change stalkEvaluation P A q.val
+    ((presheaf P A).germ U.unop q.val.val q.property (f.hom.app U s)) = f.hom.app U s q
+  exact stalkEvaluation_germ P A q.val U.unop q.property (f.hom.app U s)
 
 theorem fromStalks_natural {E : AbelianSheaf X} (f : E ⟶ F)
     (φ : ∀ p : P, (StalkAt P p).obj F ⟶ AddCommGrpCat.of (A p)) :

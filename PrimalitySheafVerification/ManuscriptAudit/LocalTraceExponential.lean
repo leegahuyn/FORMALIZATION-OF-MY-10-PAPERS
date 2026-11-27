@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! The convergent scalar trace expansion underlying the finite local determinant. -/
@@ -33,51 +33,13 @@ theorem term_norm_summable {z : ℂ} (hz : ‖z‖ < 1) : Summable (fun n => ‖
   Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (term_norm_bound le_rfl)
     (shifted_geometric_summable (norm_nonneg _) hz)
 
-private theorem term_differentiable (n : ℕ) : Differentiable ℂ (term n) := by
-  unfold term
-  exact (differentiable_id.pow _).div_const _
-
-private theorem term_deriv (n : ℕ) (z : ℂ) : deriv (term n) z = z ^ n := by
-  have h := ((hasDerivAt_id z).pow (n + 1)).div_const (((n + 1 : ℕ) : ℂ))
-  have hn : (((n + 1 : ℕ) : ℂ)) ≠ 0 := by exact_mod_cast (Nat.succ_ne_zero n)
-  change deriv (fun t : ℂ => t ^ (n + 1) / ((n + 1 : ℕ) : ℂ)) z = z ^ n
-  have he : deriv (fun t : ℂ => t ^ (n + 1) / ((n + 1 : ℕ) : ℂ)) z =
-      (((n + 1 : ℕ) : ℂ) * z ^ ((n + 1) - 1) * 1) / ((n + 1 : ℕ) : ℂ) := h.deriv
-  rw [he, Nat.add_sub_cancel, mul_one]
-  field_simp [hn] <;> ring
-
-theorem traceLog_hasDerivAt {z : ℂ} (hz : ‖z‖ < 1) :
-    HasDerivAt traceLog (1 / (1 - z)) z := by
-  let r := (‖z‖ + 1) / 2
-  have hr : 0 ≤ r := by dsimp [r]; positivity
-  have hr₁ : r < 1 := by dsimp [r]; linarith
-  have hzBall : z ∈ Metric.ball (0 : ℂ) r := by
-    rw [Metric.mem_ball, dist_zero_right]
-    dsimp [r]
-    linarith
-  have hBound (n : ℕ) (w : ℂ) (hw : w ∈ Metric.ball (0 : ℂ) r) :
-      ‖term n w‖ ≤ r ^ (n + 1) :=
-    term_norm_bound (by simpa only [dist_zero_right] using (Metric.mem_ball.mp hw).le) n
-  have hGeom := shifted_geometric_summable hr hr₁
-  have hFD (n : ℕ) : DifferentiableOn ℂ (term n) (Metric.ball 0 r) :=
-    (term_differentiable n).differentiableOn
-  have hd := Complex.hasSum_deriv_of_summable_norm (F := term)
-    hGeom hFD Metric.isOpen_ball hBound hzBall
-  change HasSum (fun n => deriv (term n) z) (deriv traceLog z) at hd
-  simp only [term_deriv] at hd
-  have he : deriv traceLog z = 1 / (1 - z) := by
-    rw [← hd.tsum_eq, tsum_geometric_of_norm_lt_one hz, one_div]
-  have hTrace := Complex.differentiableOn_tsum_of_summable_norm (F := term)
-    hGeom hFD Metric.isOpen_ball hBound
-  have h := ((hTrace z hzBall).differentiableAt (Metric.isOpen_ball.mem_nhds hzBall)).hasDerivAt
-  change HasDerivAt traceLog (deriv traceLog z) z at h
-  rwa [he] at h
-
-theorem traceLog_zero : traceLog 0 = 0 := by
-  unfold traceLog
-  have h (n : ℕ) : term n 0 = 0 := by
-    rw [term, zero_pow (Nat.succ_ne_zero n), zero_div]
-  simp only [h, tsum_zero]
+theorem traceLog_hasSum {z : ℂ} (hz : ‖z‖ < 1) :
+    HasSum (fun n => term n z) (-Complex.log (1 - z)) := by
+  let f : ℕ → ℂ := fun n => z ^ n / (n : ℂ)
+  change HasSum (fun n => f (n + 1)) (-Complex.log (1 - z))
+  apply (hasSum_nat_add_iff (f := f) 1).mpr
+  simpa only [Finset.sum_range_one, f, Nat.cast_zero, div_zero, add_zero] using
+    Complex.hasSum_taylorSeries_neg_log hz
 
 private theorem one_sub_ne_zero {z : ℂ} (hz : ‖z‖ < 1) : 1 - z ≠ 0 := by
   intro h
@@ -85,28 +47,7 @@ private theorem one_sub_ne_zero {z : ℂ} (hz : ‖z‖ < 1) : 1 - z ≠ 0 := by
   simpa [he] using hz
 
 theorem exp_traceLog {z : ℂ} (hz : ‖z‖ < 1) : Complex.exp (traceLog z) = (1 - z)⁻¹ := by
-  let f : ℂ → ℂ := fun w => Complex.exp (traceLog w) * (1 - w)
-  have hdf {w : ℂ} (hw : w ∈ Metric.ball (0 : ℂ) 1) : HasDerivAt f 0 w := by
-    have hNorm : ‖w‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hw
-    have hSub : HasDerivAt (fun x : ℂ => 1 - x) (-1) w := by
-      simpa only [zero_sub] using (hasDerivAt_const w (1 : ℂ)).sub (hasDerivAt_id w)
-    have h := ((traceLog_hasDerivAt hNorm).cexp).mul hSub
-    have he : Complex.exp (traceLog w) * (1 / (1 - w)) * (1 - w) +
-        Complex.exp (traceLog w) * (-1) = 0 := by
-      field_simp [one_sub_ne_zero hNorm] <;> ring
-    change HasDerivAt f _ w at h
-    rwa [he] at h
-  have hzBall : z ∈ Metric.ball (0 : ℂ) 1 := by simpa [Metric.mem_ball, dist_zero_right] using hz
-  have h0 : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self zero_lt_one
-  have he := Metric.isOpen_ball.is_const_of_deriv_eq_zero (convex_ball (0 : ℂ) 1).isPreconnected
-    (fun w hw => (hdf hw).differentiableAt.differentiableWithinAt)
-    (fun w hw => (hdf hw).deriv) hzBall h0
-  have hpre : Complex.exp (traceLog z) * (1 - z) = 1 := by
-    simpa only [f, traceLog_zero, Complex.exp_zero, sub_zero, mul_one] using he
-  calc
-    _ = (Complex.exp (traceLog z) * (1 - z)) * (1 - z)⁻¹ := by
-      rw [mul_assoc, mul_inv_cancel₀ (one_sub_ne_zero hz), mul_one]
-    _ = _ := by rw [hpre, one_mul]
+  rw [traceLog, (traceLog_hasSum hz).tsum_eq, Complex.exp_neg, Complex.exp_log (one_sub_ne_zero hz)]
 
 end
 end ManuscriptAudit.LocalTraceExponential
@@ -116,7 +57,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.LocalTraceExponential.term_norm_summable,
-      ``ManuscriptAudit.LocalTraceExponential.traceLog_hasDerivAt,
+      ``ManuscriptAudit.LocalTraceExponential.traceLog_hasSum,
       ``ManuscriptAudit.LocalTraceExponential.exp_traceLog] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

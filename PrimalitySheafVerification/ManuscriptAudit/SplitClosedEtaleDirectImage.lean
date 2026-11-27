@@ -92,11 +92,15 @@ private theorem localLift_on_support (r : T ⟶ S) (hir : i ≫ r = 𝟙 S)
     apply pullback.hom_ext
     · change (ht.isoPullback.hom ≫ ((etaleBaseChange i).map g).left) ≫ pullback.fst U.hom i =
         k.left ≫ pullback.fst U.hom i
-      rw [Category.assoc, change_fst, ht.isoPullback_hom_fst_assoc]
+      rw [Category.assoc, change_fst]
+      change ht.isoPullback.hom ≫ pullback.fst (v ≫ U.hom) i ≫ v = _
+      rw [ht.isoPullback_hom_fst_assoc]
       exact htv
     · change (ht.isoPullback.hom ≫ ((etaleBaseChange i).map g).left) ≫ pullback.snd U.hom i =
         k.left ≫ pullback.snd U.hom i
-      rw [Category.assoc, change_snd, ht.isoPullback_hom_snd]
+      rw [Category.assoc, change_snd]
+      change ht.isoPullback.hom ≫ pullback.snd (v ≫ U.hom) i = _
+      rw [ht.isoPullback_hom_snd]
   have hInv : e.inv ≫ k = (etaleBaseChange i).map g := by
     rw [← hNat, ← Category.assoc, e.inv_hom_id, Category.id_comp]
   refine ⟨V', g, ⟨t y, ?_⟩, F.obj.map e.inv.op b, ?_⟩

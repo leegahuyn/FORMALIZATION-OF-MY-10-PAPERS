@@ -61,17 +61,19 @@ private theorem spec_retraction {R S : Type u} [CommRing R] [CommRing S]
   change Spec.map (𝟙 (CommRingCat.of R)) = _
   rw [Spec.map_id]
 
+set_option maxHeartbeats 500000 in
 /-- The first polynomial component is a split closed branch of the swap cover. -/
 theorem first_retraction :
     (first K ≫ toCover K) ≫ firstRetraction K = 𝟙 (affineLine K) := by
   rw [NodalNormalizationSwapPullback.first_toCover, firstRetraction]
-  exact spec_retraction (firstProjection K) (firstSection K) (firstProjection_firstSection K)
+  exact spec_retraction (R := B K) (S := Cover K) (firstProjection K) (firstSection K) (firstProjection_firstSection K)
 
+set_option maxHeartbeats 500000 in
 /-- The second polynomial component is a split closed branch of the swap cover. -/
 theorem second_retraction :
     (second K ≫ toCover K) ≫ secondRetraction K = 𝟙 (affineLine K) := by
   rw [NodalNormalizationSwapPullback.second_toCover, secondRetraction]
-  exact spec_retraction (secondProjection K) (secondSection K) (secondProjection_secondSection K)
+  exact spec_retraction (R := B K) (S := Cover K) (secondProjection K) (secondSection K) (secondProjection_secondSection K)
 
 end
 

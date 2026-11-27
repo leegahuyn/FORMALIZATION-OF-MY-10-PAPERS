@@ -89,7 +89,10 @@ theorem coefficientSequence_shortExact (S : P → ShortComplex G) (hS : ∀ p, (
     intro T f g h
     apply U.map_injective
     apply (cancel_epi (U.map Q.g)).mp
-    rwa [← U.map_comp, ← U.map_comp, h]
+    calc
+      _ = U.map (Q.g ≫ f) := (U.map_comp Q.g f).symm
+      _ = U.map (Q.g ≫ g) := congrArg (fun j => U.map j) h
+      _ = _ := U.map_comp Q.g g
   exact { exact := Q.exact_of_f_is_kernel hK }
 
 end

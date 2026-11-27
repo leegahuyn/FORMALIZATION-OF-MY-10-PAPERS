@@ -19,6 +19,8 @@ private abbrev A := AddCommGrpCat.{u}
 
 variable {Y X : Scheme.{u}} (j : Y ⟶ X) [Etale j] (hj : Function.Surjective j)
 
+include hj
+
 private theorem pullback_projection_surjective (U : X.Etale) :
     Function.Surjective (pullback.fst U.hom j) := by
   intro b
@@ -55,7 +57,7 @@ theorem locallySurjective_of_restriction
     refine X.smallEtaleTopology.superset_covering ?_ hCov'
     apply (Sieve.generate_le_iff _ _).mpr
     rintro _ _ ⟨k⟩
-    have hmem : R (g k) := he.symm ▸ Sieve.le_generate _ (Presieve.ofArrows.mk k)
+    have hmem : R (g k) := he.symm ▸ Sieve.ofArrows_mk W g k
     obtain ⟨b, hb⟩ := hmem
     refine ⟨b, ?_⟩
     change α.hom.app (op (L.obj (W k))) b = G.obj.map (a k).op s

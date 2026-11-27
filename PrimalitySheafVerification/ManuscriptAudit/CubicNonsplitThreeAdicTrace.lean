@@ -29,10 +29,12 @@ def arithmeticTateFrobenius (A : E) :
     Module.End ℤ_[3] (Tate 3 (GeometricPoints E L A)) :=
   endMap 3 (arithmeticPointFrobenius E L A)
 
-theorem actual_trace_zero {A : E}
+/-- The native prime-adic trace vanishes for every prime-adic limit in the nonsplit case. -/
+theorem actual_prime_adic_trace_zero (l : ℕ) [Fact l.Prime] {A : E}
     (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0) (hA : A ≠ 0)
     (hq : Fintype.card E % 3 = 2) :
-    LinearMap.trace ℤ_[3] (Tate 3 (GeometricPoints E L A)) (arithmeticTateFrobenius E L A) = 0 := by
+    LinearMap.trace ℤ_[l] (Tate l (GeometricPoints E L A))
+      (endMap l (arithmeticPointFrobenius E L A)) = 0 := by
   let a := algebraMap E L A
   have h₂L : (2 : L) ≠ 0 := by
     simpa only [map_ofNat] using (map_ne_zero (algebraMap E L)).mpr h₂
@@ -62,7 +64,13 @@ theorem actual_trace_zero {A : E}
     change f (r P) = r (r (f P))
     exact pointMapAt_conjugates_rotation E L (Curve A) (centered_baseChange E L A)
       (FiniteField.frobeniusAlgHom E L) hg hz hΔ P
-  exact CyclotomicTateTrace.trace_eq_zero 3 r f hCube hQuad hConj
+  exact CyclotomicTateTrace.trace_eq_zero l r f hCube hQuad hConj
+
+theorem actual_trace_zero {A : E}
+    (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0) (hA : A ≠ 0)
+    (hq : Fintype.card E % 3 = 2) :
+    LinearMap.trace ℤ_[3] (Tate 3 (GeometricPoints E L A)) (arithmeticTateFrobenius E L A) = 0 :=
+  actual_prime_adic_trace_zero E L 3 h₂ h₃ hA hq
 
 theorem actual_trace_eq_signed_point_count {A : E} [DecidableEq E]
     (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0) (hA : A ≠ 0)
@@ -81,6 +89,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CubicNonsplitThreeAdicTrace.arithmeticTateFrobenius,
+      ``ManuscriptAudit.CubicNonsplitThreeAdicTrace.actual_prime_adic_trace_zero,
       ``ManuscriptAudit.CubicNonsplitThreeAdicTrace.actual_trace_zero,
       ``ManuscriptAudit.CubicNonsplitThreeAdicTrace.actual_trace_eq_signed_point_count] do
     let ax ← collectAxioms name

@@ -28,10 +28,12 @@ private theorem leg_natural {V W : T.Etale} (g : V ⟶ W) (a : Bool) :
     leg q i V a ≫ (etaleBaseChange q).map g =
       (postcompose (i a)).map ((etaleBaseChange (i a ≫ q)).map g) ≫ leg q i W a := by
   apply MorphismProperty.Over.Hom.ext
+  change baseChangeMap (i a) rfl V ≫ ((etaleBaseChange q).map g).left =
+      ((etaleBaseChange (i a ≫ q)).map g).left ≫ baseChangeMap (i a) rfl W
   apply pullback.hom_ext
-  · simp only [leg, baseChangeMap, etaleBaseChange, MorphismProperty.Over.pullback_map_left,
+  · simp only [baseChangeMap, etaleBaseChange, MorphismProperty.Over.pullback_map_left,
       Category.assoc, pullback.lift_fst, pullback.lift_fst_assoc] <;> rfl
-  · simp only [leg, baseChangeMap, etaleBaseChange, MorphismProperty.Over.pullback_map_left,
+  · simp only [baseChangeMap, etaleBaseChange, MorphismProperty.Over.pullback_map_left,
       Category.assoc, pullback.lift_snd, pullback.lift_snd_assoc] <;> rfl
 
 private theorem restrict_restrict (F : Y.Etaleᵒᵖ ⥤ A.{u}) {U V W : Y.Etale}
@@ -42,6 +44,7 @@ private theorem restrict_restrict (F : Y.Etaleᵒᵖ ⥤ A.{u}) {U V W : Y.Etale
 private abbrev branchImage (a : Bool) :=
   restriction (i a) ⋙ directImage (i a ≫ q) A.{u}
 
+include cover disjoint in
 set_option maxHeartbeats 2000000 in
 /-- If both actual branch images of a sheaf map are epimorphisms, then its full direct image is epi. -/
 theorem map_epi_of_branches {F G : Sheaf Y.smallEtaleTopology A.{u}} (α : F ⟶ G)

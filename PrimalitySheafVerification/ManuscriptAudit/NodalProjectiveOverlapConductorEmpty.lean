@@ -7,54 +7,53 @@ import PrimalitySheafVerification.ManuscriptAudit.NodalSmoothLocus
 namespace ManuscriptAudit.NodalProjectiveOverlapConductorEmpty
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
-open NodalProjectiveClosure (projectiveNode affineOpen)
+open NodalProjectiveClosure (affineOpen)
 open NodalProperYChart (chartOpen)
-open NodalAffineOrigin (originMap originPoint)
-open NodalSmoothLocus (nodePoint smooth_pieces_cover_complement)
+open NodalAffineOrigin (originMap)
 
 noncomputable section
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
+universe u
+
+private theorem overlap_avoids_constant_point {X U V S : Scheme.{u}} [Subsingleton S]
+    (j : U ⟶ X) (k : V ⟶ X) (o : S ⟶ U) (s₀ : S)
+    (h : j (o s₀) ∉ Set.range k) :
+    IsEmpty (pullback (pullback.fst j k) o : Scheme.{u}) := by
+  constructor
+  intro z
+  let m := pullback.fst j k
+  let x := pullback.fst m o z
+  let y := pullback.snd m o z
+  have h₁ : j (m x) = k (pullback.snd j k x) :=
+    congrArg (fun a : pullback j k ⟶ X ↦ a x) (pullback.condition (f := j) (g := k))
+  have h₂ : m x = o y :=
+    congrArg (fun a : pullback m o ⟶ U ↦ a z) (pullback.condition (f := m) (g := o))
+  have hy : y = s₀ := Subsingleton.elim _ _
+  exact h ⟨_, h₁.symm.trans (congrArg j (h₂.trans (congrArg o hy)))⟩
+
 variable (K : Type) [Field K]
 
 abbrev overlapMap := pullback.fst (affineOpen K) (chartOpen K)
 abbrev overlap := Scheme.Etale.mk (overlapMap K)
 
-private theorem pullback_no_points {S U V : Scheme.{0}} (f : U ⟶ S) (g : V ⟶ S)
-    (h : ∀ (x : U) (y : V), f x ≠ g y) : IsEmpty (pullback f g : Scheme.{0}) := by
-  refine ⟨fun z ↦ h (pullback.fst f g z) (pullback.snd f g z) ?_⟩
-  exact congrArg (fun m : pullback f g ⟶ S ↦ m z) pullback.condition
-
-set_option maxHeartbeats 350000 in
-/-- The actual overlap of the two standard charts has empty conductor pullback. -/
+/-- Pulling the actual rational conductor point back to the actual chart overlap gives the empty scheme. -/
 theorem overlap_conductor_isEmpty :
-    IsEmpty (pullback (overlapMap K) (originMap K) : Scheme.{0}) := by
-  apply pullback_no_points
-  intro p q hp
-  have hq : q = IsLocalRing.closedPoint K := Subsingleton.elim _ _
-  have hOrigin : overlapMap K p = originPoint K :=
-    hp.trans (congrArg (originMap K) hq)
-  have hSquare : chartOpen K (pullback.snd (affineOpen K) (chartOpen K) p) =
-      affineOpen K (overlapMap K p) :=
-    congrArg (fun m : pullback (affineOpen K) (chartOpen K) ⟶ projectiveNode K ↦ m p)
-      (pullback.condition (f := affineOpen K) (g := chartOpen K)).symm
-  have hChart : nodePoint K ∈ Set.range (chartOpen K) :=
-    ⟨_, hSquare.trans (congrArg (affineOpen K) hOrigin)⟩
-  have hOut : nodePoint K ∈ ({nodePoint K} : Set (projectiveNode K))ᶜ :=
-    (smooth_pieces_cover_complement K).le (Or.inr hChart)
-  exact hOut (Set.mem_singleton _)
+    IsEmpty (pullback (overlapMap K) (originMap K) : Scheme.{0}) :=
+  overlap_avoids_constant_point (affineOpen K) (chartOpen K) (originMap K)
+    (IsLocalRing.closedPoint K) (NodalSmoothLocus.nodePoint_not_in_chartOpen K)
 
 end
 end ManuscriptAudit.NodalProjectiveOverlapConductorEmpty
 
 open Lean Elab Command in
 run_cmd do
+  let name := ``ManuscriptAudit.NodalProjectiveOverlapConductorEmpty.overlap_conductor_isEmpty
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.NodalProjectiveOverlapConductorEmpty.overlap_conductor_isEmpty] do
-    let dependencies ← collectAxioms name
-    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-    unless unexpected.isEmpty do
-      throwError m!"{name} depends on unexpected axioms {unexpected}"
-    logInfo m!"{name} uses {dependencies}"
+  let dependencies ← collectAxioms name
+  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+  unless unexpected.isEmpty do
+    throwError m!"{name} depends on unexpected axioms {unexpected}"
+  logInfo m!"{name} uses {dependencies}"

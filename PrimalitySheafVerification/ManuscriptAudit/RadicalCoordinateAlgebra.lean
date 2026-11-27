@@ -49,8 +49,15 @@ def basis (m : ℕ) (a : R) (hm : m ≠ 0) : Module.Basis (Fin m) R (Extension m
 set_option backward.isDefEq.respectTransparency.types false in
 theorem basis_apply (m : ℕ) (a : R) (hm : m ≠ 0) (i : Fin m) :
     basis m a hm i = root m a ^ (i : ℕ) := by
-  rw [basis, Module.Basis.reindex_apply, PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
-  rfl
+  let P : PowerBasis R (Extension m a) := AdjoinRoot.powerBasis' (monic_X_pow_sub_C a hm)
+  let e : Fin P.dim ≃ Fin m := finCongr (natDegree_X_pow_sub_C (n := m) (r := a))
+  change (P.basis.reindex e) i = _
+  calc
+    _ = P.basis (e.symm i) := Module.Basis.reindex_apply P.basis e i
+    _ = P.gen ^ (e.symm i : ℕ) := P.basis_eq_pow _
+    _ = _ := by
+      change root m a ^ ((finCongr (natDegree_X_pow_sub_C (n := m) (r := a))).symm i : ℕ) = _
+      rw [finCongr_symm_apply, Fin.val_cast]
 
 theorem algebraMap_injective (m : ℕ) (a : R) (hm : m ≠ 0) :
     Function.Injective (algebraMap R (Extension m a)) := by

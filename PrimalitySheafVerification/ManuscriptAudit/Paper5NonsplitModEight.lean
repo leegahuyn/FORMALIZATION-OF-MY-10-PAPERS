@@ -157,6 +157,7 @@ theorem adic_determinant_reduction (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} 
     PadicInt.toZModPow 3 (determinant p L hp hA) = (p : ZMod 8) :=
   (determinant_reduction_eq_native p L hp hA 3).trans (determinant_eq_prime p L hp hr hA)
 
+set_option maxHeartbeats 1200000 in
 theorem charpoly_mod_eight (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A ≠ 0) :
     letI := Module.Free.of_basis (centeredLevelBasis p L hp hA 3)
     letI := Module.Finite.of_basis (centeredLevelBasis p L hp hA 3)
@@ -165,13 +166,13 @@ theorem charpoly_mod_eight (hp : 5 ≤ p) (hr : p % 3 = 2) {A : ZMod p} (hA : A 
   let B := centeredLevelBasis p L hp hA 3
   letI := Module.Free.of_basis B
   letI := Module.Finite.of_basis B
-  let F := frobeniusLinear 8 p L (Curve A)
-  have ht : LinearMap.trace (ZMod 8) (GeometricTorsion p L (2 ^ 3) A) F = 0 :=
+  let F := frobeniusLinear (2 ^ 3) p L (Curve A)
+  have ht : LinearMap.trace (ZMod (2 ^ 3)) (GeometricTorsion p L (2 ^ 3) A) F = 0 :=
     trace_zero_at_level p L hp hr hA 3
-  have hd : LinearMap.det F = (p : ZMod 8) := determinant_eq_prime p L hp hr hA
-  change F.charpoly = _
+  have hd : LinearMap.det F = (p : ZMod (2 ^ 3)) := determinant_eq_prime p L hp hr hA
+  change F.charpoly = X ^ 2 + C (p : ZMod (2 ^ 3))
   rw [← LinearMap.charpoly_toMatrix F B, Matrix.charpoly_fin_two,
-    ← LinearMap.trace_eq_matrix_trace (ZMod 8) B, LinearMap.det_toMatrix B,
+    ← LinearMap.trace_eq_matrix_trace (ZMod (2 ^ 3)) B, LinearMap.det_toMatrix B,
     ht, hd, map_zero, zero_mul, sub_zero]
 
 end

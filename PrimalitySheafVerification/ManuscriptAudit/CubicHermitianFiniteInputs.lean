@@ -31,7 +31,7 @@ theorem exists_primitive_root [IsAlgClosed K] (m : ℕ) [NeZero m] (hm : (m : K)
       Nat.subtype_card _ (fun _ => Multiset.mem_toFinset)
     _ = m := by
       change f.roots.toFinset.card = m
-      rw [Multiset.toFinset_card_of_nodup hsep.nodup_roots, hRoots]
+      rw [Multiset.toFinset_card_of_nodup (Polynomial.nodup_roots hsep), hRoots]
 
 variable (E : Type*) [Field E] [Fintype E]
 variable (K : Type*) [Field K] [Algebra E K]
@@ -53,10 +53,11 @@ theorem root_frobenius_sq_fixed {m : ℕ} (hm : m ∣ q + 1) {a : E} (ha : a ≠
   obtain ⟨k, hk⟩ := hm
   have hq : 1 ≤ q := Fintype.card_pos
   have hExp : q * q = (q + 1) * (q - 1) + 1 := by
-    have h := calc
-      (q + 1) * (q - 1) + (q + 1) = (q + 1) * ((q - 1) + 1) := by rw [mul_add, mul_one]
+    have hAdd : (q + 1) * (q - 1) + (q + 1) = (q + 1) * q := calc
+      _ = (q + 1) * ((q - 1) + 1) := by rw [mul_add, mul_one]
       _ = _ := by rw [Nat.sub_add_cancel hq]
-    rw [add_mul, one_mul] at h
+    have hMul : (q + 1) * q = q * q + q := by rw [add_mul, one_mul]
+    have h := hAdd.trans hMul
     omega
   have hPow : x ^ (q + 1) = algebraMap E K (a ^ k) := by
     rw [hk, pow_mul, hx, map_pow]

@@ -32,7 +32,7 @@ theorem heightPower_hasDerivAt (s : ℂ) {y : ℝ} (hy : y ≠ 0) :
   have hOuter := (Complex.hasStrictFDerivAt_exp_real ((Real.log y : ℂ) * s)).hasFDerivAt
   have h := hOuter.comp_hasDerivAt y hInner
   rw [hasDerivAt_iff_tendsto_slope] at h ⊢
-  simpa [heightPower, Function.comp_def, Complex.ofReal_inv] using h
+  simpa [slope, heightPower, Function.comp_def, Complex.ofReal_inv] using h
 
 theorem heightPower_second (s : ℂ) {y : ℝ} (hy : 0 < y) :
     deriv (deriv (heightPower s)) y =

@@ -28,20 +28,33 @@ def reindexIso (H : IsPullback p q f j) :
   refine NatIso.ofComponents (fun W ↦ MorphismProperty.Over.isoMk (reindex_square H W).isoPullback
     (reindex_square H W).isoPullback_hom_snd) ?_
   intro W Z h
+  let m := ((etaleBaseChange f).map ((postcompose j).map h)).left
+  have hm₁ : m ≫ pullback.fst (Z.hom ≫ j) f = pullback.fst (W.hom ≫ j) f ≫ h.left := by
+    simp only [m, etaleBaseChange, MorphismProperty.Over.pullback_map_left]
+    change pullback.lift (pullback.fst (W.hom ≫ j) f ≫ h.left)
+      (pullback.snd (W.hom ≫ j) f) _ ≫ pullback.fst (Z.hom ≫ j) f = _
+    exact pullback.lift_fst _ _ _
+  have hm₂ : m ≫ pullback.snd (Z.hom ≫ j) f = pullback.snd (W.hom ≫ j) f := by
+    simp only [m, etaleBaseChange, MorphismProperty.Over.pullback_map_left]
+    change pullback.lift (pullback.fst (W.hom ≫ j) f ≫ h.left)
+      (pullback.snd (W.hom ≫ j) f) _ ≫ pullback.snd (Z.hom ≫ j) f = _
+    exact pullback.lift_snd _ _ _
   apply MorphismProperty.Over.Hom.ext
   apply pullback.hom_ext
   · change (((etaleBaseChange q).map h).left ≫ (reindex_square H Z).isoPullback.hom) ≫
         pullback.fst (Z.hom ≫ j) f =
-      ((reindex_square H W).isoPullback.hom ≫ ((etaleBaseChange f).map ((postcompose j).map h)).left) ≫
-        pullback.fst (Z.hom ≫ j) f
-    simp only [Category.assoc, IsPullback.isoPullback_hom_fst, IsPullback.isoPullback_hom_fst_assoc,
-      etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst, pullback.lift_fst_assoc] <;> rfl
+      ((reindex_square H W).isoPullback.hom ≫ m) ≫ pullback.fst (Z.hom ≫ j) f
+    simp only [Category.assoc]
+    rw [(reindex_square H Z).isoPullback_hom_fst, hm₁,
+      (reindex_square H W).isoPullback_hom_fst_assoc]
+    simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
   · change (((etaleBaseChange q).map h).left ≫ (reindex_square H Z).isoPullback.hom) ≫
         pullback.snd (Z.hom ≫ j) f =
-      ((reindex_square H W).isoPullback.hom ≫ ((etaleBaseChange f).map ((postcompose j).map h)).left) ≫
-        pullback.snd (Z.hom ≫ j) f
-    simp only [Category.assoc, IsPullback.isoPullback_hom_snd, MorphismProperty.Over.pullback_map_left,
-      etaleBaseChange, pullback.lift_snd, pullback.lift_snd_assoc]
+      ((reindex_square H W).isoPullback.hom ≫ m) ≫ pullback.snd (Z.hom ≫ j) f
+    simp only [Category.assoc]
+    rw [(reindex_square H Z).isoPullback_hom_snd, hm₂,
+      (reindex_square H W).isoPullback_hom_snd]
+    simp only [etaleBaseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_snd_assoc]
 
 private abbrev A := AddCommGrpCat.{u}
 

@@ -31,14 +31,42 @@ private abbrev z : P K := MvPolynomial.X (2 : Fin 3)
 private abbrev node := NodalConductor.coordinates K
 private abbrev cusp := CuspPunctured.CuspSubalgebra K
 
+private def awayMapAt {v w : P K} (h : gradedChange K v = w) :
+    Away (G K) v →+* Away (G K) w := by
+  subst w
+  exact Away.map (gradedChange K) v
+
+private theorem awayMapAt_mk {v w : P K} (h : gradedChange K v = w)
+    (hv : v ∈ G K 1) (hw : w ∈ G K 1) (n : ℕ) (p : P K) (hp : p ∈ G K (n • 1)) :
+    awayMapAt K h (Away.mk (G K) hv n p hp) =
+      Away.mk (G K) hw n (gradedChange K p) ((gradedChange K).map_mem hp) := by
+  subst w
+  exact Away.map_mk (gradedChange K) v hv n p hp
+
+private theorem awayι_map_at {v w : P K} (h : gradedChange K v = w)
+    (hv : v ∈ G K 1) (hw : w ∈ G K 1) :
+    Proj.awayι (G K) w hw (by decide) ≫ planeChange K =
+      Spec.map (CommRingCat.ofHom (awayMapAt K h)) ≫ Proj.awayι (G K) v hv (by decide) := by
+  subst w
+  exact Proj.awayι_comp_map (gradedChange K) (irrelevant_le_map K) (by decide) v hv
+
+private theorem z_fixed : gradedChange K (z K) = z K :=
+  NodalCharacteristicTwoPlane.coordinateChange_X2 K
+
 def zChartChange : standardZChartRing K →+* standardZChartRing K :=
-  HomogeneousLocalization.Away.map (gradedChange K) (z K)
+  awayMapAt K (z_fixed K)
+
+private theorem zChartChange_mk (n : ℕ) (p : P K) (hp : p ∈ G K (n • 1)) :
+    zChartChange K (Away.mk (G K) (standardPlane_X_mem_one K 2) n p hp) =
+      Away.mk (G K) (standardPlane_X_mem_one K 2) n (gradedChange K p)
+        ((gradedChange K).map_mem hp) :=
+  awayMapAt_mk K (z_fixed K) (standardPlane_X_mem_one K 2)
+    (standardPlane_X_mem_one K 2) n p hp
 
 private theorem z_chart_comm :
     affineZChartι K ≫ planeChange K = Spec.map (CommRingCat.ofHom (zChartChange K)) ≫
       affineZChartι K :=
-  Proj.awayι_comp_map (gradedChange K) (irrelevant_le_map K) (by decide)
-    (z K) (standardPlane_X_mem_one K 2)
+  awayι_map_at K (z_fixed K) (standardPlane_X_mem_one K 2) (standardPlane_X_mem_one K 2)
 
 private def cuspValues (i : Fin 3) : Polynomial K :=
   if i = 0 then (Polynomial.X : Polynomial K) ^ 2
@@ -82,8 +110,8 @@ theorem zChart_eval_comm :
     (Away.mk (G K) (standardPlane_X_mem_one K 2) n p hp)) : cusp K) : Polynomial K) =
     ((affineChartEvaluation K (zChartChange K
     (Away.mk (G K) (standardPlane_X_mem_one K 2) n p hp))) : Polynomial K)
-  unfold NodalProjectiveClosure.chartEvaluation zChartChange
-  rw [standardZChartEvaluation_mk, Away.map_mk]
+  unfold NodalProjectiveClosure.chartEvaluation
+  rw [standardZChartEvaluation_mk, zChartChange_mk]
   have h_eval := affineChartEvaluation_mk_coe K n (gradedChange K p)
     ((gradedChange K).map_mem hp)
   rw [h_eval]
