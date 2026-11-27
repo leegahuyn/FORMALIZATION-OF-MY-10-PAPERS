@@ -121,7 +121,8 @@ open Lean Elab Command in
 run_cmd do
   let name := ``ManuscriptAudit.Paper8ExteriorNegativeRadius.negative_radial_upper
   let ax ← collectAxioms name
-  let bad := ax.filter fun x => ![ ``propext, ``Classical.choice, ``Quot.sound].contains x
+  let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+  let bad := ax.filter fun x => !allowed.contains x
   unless bad.isEmpty do
     throwError m!"{name} depends on unexpected axioms {bad}"
   logInfo m!"{name} uses {ax}"

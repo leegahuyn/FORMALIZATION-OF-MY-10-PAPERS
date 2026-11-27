@@ -81,10 +81,12 @@ def ordinaryEquiv (h2 : (2 : K) ≠ 0) (n : ℕ) :
         rw [if_neg (by omega : ¬ n + 3 ≤ 2)]
         exact trivialEquiv (NodalCompactSupportAbsoluteHigher.projective_H_add_three_subsingleton K h2 d n)
 
-private theorem positive_order (n : ℕ) :
+theorem positiveOrder (n : ℕ) :
     (if n + 1 ≤ 2 then d else 1) = (if n + 1 = 1 ∨ n + 1 = 2 then d else 1) := by
   have h : n + 1 ≤ 2 ↔ n + 1 = 1 ∨ n + 1 = 2 := by omega
-  rw [h]
+  by_cases hn : n + 1 ≤ 2
+  · rw [if_pos hn, if_pos (h.mp hn)]
+  · rw [if_neg hn, if_neg (fun hr ↦ hn (h.mpr hr))]
 
 /-- On the genuine proper model, compact cohomology is cyclic in degrees zero, one and two. -/
 def properEquiv (h2 : (2 : K) ≠ 0) (n : ℕ) :
@@ -100,7 +102,7 @@ def affineEquiv (h2 : (2 : K) ≠ 0) (n : ℕ) :
     exact trivialEquiv (NodalCompactSupportHZero.compact_HZero_subsingleton K (M d))
   | succ n =>
     exact (nodalHcSuccProjectiveEquiv K (M d) n).trans
-      ((ordinaryEquiv K d h2 (n + 1)).trans (ZMod.ringEquivCongr (positive_order d n)).toAddEquiv)
+      ((ordinaryEquiv K d h2 (n + 1)).trans (ZMod.ringEquivCongr (positiveOrder d n)).toAddEquiv)
 
 /-- Compact cohomology of the actual relative smooth open is cyclic in degrees one and two. -/
 def smoothEquiv (h2 : (2 : K) ≠ 0) (n : ℕ) :
@@ -115,7 +117,7 @@ def smoothEquiv (h2 : (2 : K) ≠ 0) (n : ℕ) :
   | succ n =>
     let e := positiveEquiv (smoothOpen K).ι K (projectiveOrigin K) (smooth_range K) (M d) n
     exact e.trans
-      ((ordinaryEquiv K d h2 (n + 1)).trans (ZMod.ringEquivCongr (positive_order d n)).toAddEquiv)
+      ((ordinaryEquiv K d h2 (n + 1)).trans (ZMod.ringEquivCongr (positiveOrder d n)).toAddEquiv)
 
 end
 end ManuscriptAudit.NodalCompactSupportCyclicDegrees

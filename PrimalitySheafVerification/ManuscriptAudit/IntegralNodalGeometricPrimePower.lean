@@ -134,10 +134,7 @@ def smoothEquiv (hp : 2 < p) (hℓp : ℓ ≠ p) (r n : ℕ) :
     exact AddEquiv.ofBijective (0 : smoothHc p (ℓ ^ r) 0 →+ ZMod 1)
       ⟨fun _ _ _ ↦ h.elim _ _, fun _ ↦ ⟨0, Subsingleton.elim _ _⟩⟩
   | succ n =>
-    have hOrder : (if n + 1 ≤ 2 then ℓ ^ r else 1) =
-        (if n + 1 = 1 ∨ n + 1 = 2 then ℓ ^ r else 1) := by
-      have h : n + 1 ≤ 2 ↔ n + 1 = 1 ∨ n + 1 = 2 := by omega
-      rw [h]
+    have hOrder := NodalCompactSupportCyclicDegrees.positiveOrder (ℓ ^ r) n
     let e := NodalCompactSupportCyclicDegrees.ordinaryEquiv (closureField p) (ℓ ^ r)
       (two_ne_zero p hp) (n + 1)
     exact (smoothPositiveModelEquiv p (ℓ ^ r) n).trans (e.trans (ZMod.ringEquivCongr hOrder).toAddEquiv)

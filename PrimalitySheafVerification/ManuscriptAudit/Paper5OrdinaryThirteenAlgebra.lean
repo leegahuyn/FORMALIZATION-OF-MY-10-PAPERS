@@ -19,7 +19,7 @@ theorem numeral_ne_zero (n : ℕ) (h : ¬13 ∣ n) : (n : K) ≠ 0 := by
   rwa [ne_eq, CharP.cast_eq_zero_iff K 13 n]
 
 theorem rotation_cube : (3 : K) ^ 3 = 1 := by
-  linear_combination (2 : K) * thirteen_zero
+  linear_combination (2 : K) * (thirteen_zero (K := K))
 
 theorem rotation_ne_one : (3 : K) ≠ 1 := by
   intro h
@@ -43,27 +43,27 @@ theorem denominator_mul_abscissa (x : K) : denominator 1 x * x = tripleDen (x ^ 
 
 theorem abscissa_gap (t : K) : 3 * tripleDen t - tripleNum t = 7 * (t + 2) := by
   unfold tripleDen tripleNum
-  linear_combination (2 * t ^ 3 + 24 * t ^ 2 + 29 * t - 6) * thirteen_zero
+  linear_combination (2 * t ^ 3 + 24 * t ^ 2 + 29 * t - 6) * (thirteen_zero (K := K))
 
 theorem secant_slope_identity (t : K) :
     tripleSlopeNum t * (tripleNum t - tripleDen t) =
       6 * (t + 1) * (3 * tripleDen t - tripleNum t) * secantNum t := by
   unfold tripleSlopeNum tripleNum tripleDen secantNum
   linear_combination (-36 * t ^ 7 - 516 * t ^ 6 - 1592 * t ^ 5 - 1888 * t ^ 4 -
-    1448 * t ^ 3 - 1952 * t ^ 2 - 1024 * t + 256) * thirteen_zero
+    1448 * t ^ 3 - 1952 * t ^ 2 - 1024 * t + 256) * (thirteen_zero (K := K))
 
 theorem secant_abscissa_identity (t : K) :
     9 * (t + 1) * secantNum t ^ 2 - 3 * tripleDen t - tripleNum t =
       9 * t ^ 4 * tripleDen t := by
   unfold secantNum tripleDen tripleNum
   linear_combination (-27 * t ^ 6 - 72 * t ^ 5 + 36 * t ^ 4 + 56 * t ^ 3 +
-    24 * t ^ 2 - 12 * t + 20) * thirteen_zero
+    24 * t ^ 2 - 12 * t + 20) * (thirteen_zero (K := K))
 
 theorem secant_ordinate_identity (t : K) :
     (1 + (t + 1) ^ 6) * (t + 4) = secantNum t * (9 * t ^ 4 - 3) := by
   unfold secantNum
   linear_combination (-2 * t ^ 7 - 2 * t ^ 6 + 3 * t ^ 5 + 2 * t ^ 4 + 8 * t ^ 3 +
-    6 * t ^ 2 + 2 * t + 2) * thirteen_zero
+    6 * t ^ 2 + 2 * t + 2) * (thirteen_zero (K := K))
 
 end
 end ManuscriptAudit.Paper5OrdinaryThirteenAlgebra

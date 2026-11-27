@@ -13,7 +13,7 @@ open scoped Classical
 
 noncomputable section
 
-variable (E L : Type*) [Field E] [Fintype E] [Field L] [Algebra E L]
+variable (E L : Type*) [Field E] [Fintype E] [Field L] [Algebra E L] [DecidableEq L]
 
 abbrev UnitPoints := (Curve (1 : L)).Point
 
@@ -35,8 +35,9 @@ theorem unitMap_pow (g : L →ₐ[E] L) (n : ℕ) :
     cases P with
     | zero => exact map_zero _
     | some x y h =>
+      change unitMap E L (1 : L →ₐ[E] L) (.some x y h) = .some x y h
       obtain ⟨h', e⟩ := unitMap_some E L (1 : L →ₐ[E] L) h
-      rw [e] <;> rfl
+      exact e
   have hMul (f g : L →ₐ[E] L) :
       unitMap E L (f * g) = unitMap E L f * unitMap E L g := by
     apply AddMonoidHom.ext
@@ -61,6 +62,8 @@ variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) L] [Algebra (ZMod p) E]
 /-- The arithmetic unit twists over the two bases act by the same coordinate powers. -/
 theorem arithmeticUnit_eq_prime_pow :
     arithmeticUnit E L = arithmeticUnit (ZMod p) L ^ Module.finrank (ZMod p) E := by
+  change unitMap E L (FiniteField.frobeniusAlgHom E L) =
+    unitMap (ZMod p) L (FiniteField.frobeniusAlgHom (ZMod p) L) ^ Module.finrank (ZMod p) E
   rw [← unitMap_pow]
   apply AddMonoidHom.ext
   intro P
@@ -97,9 +100,9 @@ theorem prime_square (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (P : UnitPoints L) :
 /-- At degree 2m the genuine q-Frobenius on the reference curve is multiplication by (-p)^m. -/
 theorem arithmeticUnit_eq_scalar (hp : 5 ≤ p) (hp₃ : p % 3 = 2)
     {m : ℕ} (hDegree : Module.finrank (ZMod p) E = 2 * m) :
-    arithmeticUnit E L = ((-(p : ℤ)) ^ m : ℤ) := by
+    arithmeticUnit E L = Int.cast ((-(p : ℤ)) ^ m) := by
   let f := arithmeticUnit (ZMod p) L
-  have hs : f ^ 2 = ((-(p : ℤ)) : AddMonoid.End (UnitPoints L)) := by
+  have hs : f ^ 2 = Int.cast (-(p : ℤ)) := by
     apply AddMonoidHom.ext
     intro P
     rw [pow_two, Int.cast_neg, Int.cast_natCast]
