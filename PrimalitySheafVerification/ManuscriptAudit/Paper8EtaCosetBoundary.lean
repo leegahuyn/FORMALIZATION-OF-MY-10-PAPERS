@@ -79,9 +79,10 @@ theorem closed_cells_ae_eq_open (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] :
 theorem open_cells_meet_ae_orbit (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] :
     ∀ᵐ z : ℍ ∂(volume : Measure ℍ),
       ∃ h : H, ∃ w ∈ cosetCells H ModularGroup.fdo, (h : SL(2, ℤ)) • w = z := by
-  letI : Countable SL(2, ℤ) := Countable.of_injective
-    (fun g : SL(2, ℤ) => (g.1 : Matrix (Fin 2) (Fin 2) ℤ)) Subtype.val_injective
-  letI : Countable H := Countable.of_injective (fun h : H => (h : SL(2, ℤ))) Subtype.val_injective
+  letI : Countable SL(2, ℤ) := Function.Injective.countable
+    (f := fun g : SL(2, ℤ) => (g.1 : Matrix (Fin 2) (Fin 2) ℤ)) Subtype.val_injective
+  letI : Countable H := Function.Injective.countable
+    (f := fun h : H => (h : SL(2, ℤ))) Subtype.val_injective
   let B := ⋃ h : H, translate (h : SL(2, ℤ))
     (cosetCells H ModularGroup.fd \ cosetCells H ModularGroup.fdo)
   have hNull : (volume : Measure ℍ) B = 0 := by

@@ -8,27 +8,30 @@ namespace ManuscriptAudit.SheafHigherCohomologyPresheafZero
 open CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits ConcreteCategory Opposite
 open SheafHigherCohomologyLocalVanishing
 
-universe u v w
+universe u v
 
 noncomputable section
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-private abbrev A := AddCommGrpCat.{v}
-private abbrev S := Sheaf J A
+private abbrev S := Sheaf J AddCommGrpCat.{v}
 
-variable [HasSheafify J A] [HasExt.{w} (S J)] [enough : EnoughInjectives (S J)]
-variable [composeForget : J.HasSheafCompose (forget A)] [wLocal : J.WEqualsLocallyBijective A]
-variable [factorization : HasFunctorialSurjectiveInjectiveFactorization A]
+variable [HasSheafify J AddCommGrpCat.{v}] [HasExt.{v} (S J)] [enough : EnoughInjectives (S J)]
+variable [composeForget : J.HasSheafCompose (forget AddCommGrpCat.{v})] [wLocal : J.WEqualsLocallyBijective AddCommGrpCat.{v}]
+variable [factorization : HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{v}]
 
 include enough composeForget wLocal factorization in
 
 theorem sheafified_isZero (n : ℕ) (F : S J) :
-    IsZero ((presheafToSheaf J A).obj (F.cohomologyPresheaf (n+1))) := by
-  let Z : Cᵒᵖ ⥤ A := (Functor.const Cᵒᵖ).obj (AddCommGrpCat.of (PUnit : Type v))
-  let P := presheafToSheaf J A
+    IsZero ((presheafToSheaf J AddCommGrpCat.{v}).obj (F.cohomologyPresheaf (n+1))) := by
+  let Z : Cᵒᵖ ⥤ AddCommGrpCat.{v} := (Functor.const Cᵒᵖ).obj (AddCommGrpCat.of (PUnit : Type v))
+  let P := presheafToSheaf J AddCommGrpCat.{v}
   let η : F.cohomologyPresheaf (n+1) ⟶ Z := 0
-  have hZ : IsZero Z := Functor.isZero _ (fun _ => AddCommGrpCat.isZero_of_subsingleton _)
+  have hZ : IsZero Z := by
+    apply Functor.isZero
+    intro U
+    change IsZero (AddCommGrpCat.of (PUnit : Type v))
+    exact AddCommGrpCat.isZero_of_subsingleton _
   have hInj : Presheaf.IsLocallyInjective J η := by
     constructor
     intro U x y _

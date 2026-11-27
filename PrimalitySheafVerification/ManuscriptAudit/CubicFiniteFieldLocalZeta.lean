@@ -136,7 +136,10 @@ theorem actual_local_zeta (hp : 5 ≤ p) {A : E} (hA : A ≠ 0) {z : ℂ}
       _ ≤ (‖term n ((q : ℂ)*z) + term n z‖ + ‖term n (α*z)‖) + ‖term n (β*z)‖ :=
         add_le_add (norm_sub_le _ _) le_rfl
       _ ≤ _ := add_le_add (add_le_add (norm_add_le _ _) le_rfl) le_rfl
-  · rw [hSum.tsum_eq, Complex.exp_sub, Complex.exp_sub, Complex.exp_add,
+  · change Complex.exp (∑' n : ℕ, pointTerm p E A z n) =
+        (1 - (signedTrace A : ℂ) * z + (q : ℂ) * z^2) /
+          ((1 - z) * (1 - (q : ℂ) * z))
+    rw [hSum.tsum_eq, Complex.exp_sub, Complex.exp_sub, Complex.exp_add,
       exp_traceLog hpCz, exp_traceLog hz₁, exp_traceLog hαz, exp_traceLog hβz]
     have hFactor : (1-α*z)*(1-β*z) = 1 - (signedTrace A : ℂ)*z + (q : ℂ)*z^2 := by
       linear_combination -z*ha + z^2*hm

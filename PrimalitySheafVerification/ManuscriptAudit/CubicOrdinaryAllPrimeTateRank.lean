@@ -66,7 +66,12 @@ theorem card_and_scalar_surjective (hp : 5 ≤ p) (hs : p % 3 = 1) {A : E} (hA :
   refine ⟨fun n => (Nat.card_congr (torsionEquiv e (l ^ n))).symm.trans (hCard n), ?_⟩
   intro P
   obtain ⟨Q, hQ⟩ := hG (e.symm P)
-  exact ⟨e Q, by rw [← map_nsmul, hQ, e.apply_symm_apply]⟩
+  refine ⟨e Q, ?_⟩
+  change l • e Q = P
+  have hMul : l • Q = e.symm P := hQ
+  calc
+    l • e Q = e (l • Q) := (map_nsmul e l Q).symm
+    _ = P := by rw [hMul, e.apply_symm_apply]
 
 /-- The genuine native Tate module has rank two for every coefficient prime different from p. -/
 def basis (hp : 5 ≤ p) (hs : p % 3 = 1) {A : E} (hA : A ≠ 0) (hl : p ≠ l) :

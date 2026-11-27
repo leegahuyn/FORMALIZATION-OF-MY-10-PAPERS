@@ -49,7 +49,7 @@ theorem exists_kernel_left_identity
       refine ⟨r • k, ?_⟩
       change algebraMap R B (r * (k : R)) =
         (TensorProduct.lid R B) ((K.subtype.rTensor B) (k ⊗ₜ[R] algebraMap R B r))
-      rw [LinearMap.rTensor_tmul, TensorProduct.lid_tmul, Algebra.smul_def, map_mul, mul_comm]
+      rw [LinearMap.rTensor_tmul, TensorProduct.lid_tmul, Algebra.smul_def, map_mul, mul_comm] <;> rfl
     | add u v hu hv =>
       obtain ⟨a, ha⟩ := hu
       obtain ⟨b, hb⟩ := hv

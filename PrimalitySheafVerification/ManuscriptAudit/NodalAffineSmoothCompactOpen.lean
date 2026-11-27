@@ -59,15 +59,18 @@ private theorem range_intersection :
     rw [smooth_preimage K] at hm
     exact ⟨⟨z, hm⟩, hz⟩
 
-set_option maxHeartbeats 1600000 in
-/-- The actual affine smooth locus omits exactly the indicated two disjoint rational points. -/
-theorem compactOpen_range :
-    Set.range (compactOpen K) = (Set.range (projectiveOrigin K) ∪ Set.range (infinityPoint K))ᶜ := by
-  have hAffine : Set.range (affineOpen K) = (Set.range (infinityPoint K))ᶜ := by
-    rw [← affine_complement_eq_infinity K, compl_compl]
-  rw [range_intersection K, hAffine, smooth_range K]
+private theorem inter_eq_compl_union {T : Type u} {A B P Q : Set T}
+    (hA : Aᶜ = Q) (hB : B = Pᶜ) : A ∩ B = (P ∪ Q)ᶜ := by
+  rw [← compl_compl A, hA, hB]
   ext x
   simp only [Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_union, not_or, and_comm]
+
+set_option maxHeartbeats 4200000 in
+/-- The actual affine smooth locus omits exactly the indicated two disjoint rational points. -/
+theorem compactOpen_range :
+    Set.range (compactOpen K) = (Set.range (projectiveOrigin K) ∪ Set.range (infinityPoint K))ᶜ :=
+  (range_intersection K).trans
+    (inter_eq_compl_union (affine_complement_eq_infinity K) (smooth_range K))
 
 private theorem punctured_range :
     Set.range (puncturedZ_toAffine K) = Set.range (affineSmoothOpen K).ι := by

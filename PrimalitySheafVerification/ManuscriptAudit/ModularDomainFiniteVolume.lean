@@ -18,8 +18,8 @@ private theorem reciprocal_square_integrable :
     integrableOn_Ioi_rpow_of_lt (by norm_num) (by norm_num)
   refine h.congr_fun (fun y hy => ?_) measurableSet_Ioi
   have hy₀ : 0 ≤ y := (by norm_num : (0 : ℝ) ≤ 1 / 2).trans hy.le
-  rw [Real.rpow_neg hy₀]
-  norm_num
+  change y ^ (-(2 : ℝ)) = (y ^ (2 : ℕ))⁻¹
+  rw [Real.rpow_neg hy₀, Real.rpow_two]
 
 private theorem reciprocal_square_lintegral_lt_top :
     (∫⁻ y : ℝ in Ici (1 / 2 : ℝ), ENNReal.ofReal ((y ^ 2)⁻¹)) < ⊤ :=

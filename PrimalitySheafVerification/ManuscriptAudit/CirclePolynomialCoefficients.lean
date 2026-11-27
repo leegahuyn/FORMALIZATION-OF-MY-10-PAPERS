@@ -40,9 +40,11 @@ theorem coefficient_polynomial_eval (p : Polynomial ℂ) {R : ℝ} (hR : 0 < R) 
     have hqC : ContinuousOn q.eval (sphere (0 : ℂ) R) :=
       fun _ _ => q.differentiableAt.continuousAt.continuousWithinAt
     simp only [coefficient, Polynomial.eval_add, mul_add, Polynomial.coeff_add] at hp hq ⊢
-    rw [circleIntegral.integral_add
+    have hAdd := circleIntegral.integral_add
       (((continuousOn_kernel m hR).mul hpC).circleIntegrable hR.le)
-      (((continuousOn_kernel m hR).mul hqC).circleIntegrable hR.le), mul_add, hp, hq]
+      (((continuousOn_kernel m hR).mul hqC).circleIntegrable hR.le)
+    simp only [Pi.mul_apply] at hAdd
+    rw [hAdd, mul_add, hp, hq]
   | monomial k a =>
     have hEq : Set.EqOn (fun z : ℂ => kernel m z * (a * z ^ k))
         (fun z => a * z ^ ((k : ℤ) - (m : ℤ) - 1)) (sphere (0 : ℂ) R) := by
@@ -65,12 +67,12 @@ theorem coefficient_polynomial_eval (p : Polynomial ℂ) {R : ℝ} (hR : 0 < R) 
       have hNZ : 2 * (Real.pi : ℂ) * Complex.I ≠ 0 :=
         mul_ne_zero (mul_ne_zero (by norm_num) (by exact_mod_cast Real.pi_ne_zero)) Complex.I_ne_zero
       rw [hPow, hI]
-      simp only [Polynomial.coeff_monomial, if_pos rfl]
+      simp only [Polynomial.coeff_monomial, if_true]
       rw [mul_comm a _, ← mul_assoc, inv_mul_cancel₀ hNZ, one_mul]
     · have hne : ((k : ℤ) - (m : ℤ) - 1) ≠ -1 := by omega
       have hI : (∮ z in C(0, R), z ^ ((k : ℤ) - (m : ℤ) - 1)) = 0 := by
         simpa only [sub_zero] using circleIntegral.integral_sub_zpow_of_ne hne (0 : ℂ) 0 R
-      simp [hI, Polynomial.coeff_monomial, Ne.symm h]
+      simp [hI, Polynomial.coeff_monomial, h]
 
 theorem coefficient_tendsto_uniformly {f : ℕ → ℂ → ℂ} {g : ℂ → ℂ} {R : ℝ}
     (hR : 0 < R) (m : ℕ)

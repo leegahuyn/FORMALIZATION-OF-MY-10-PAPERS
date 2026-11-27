@@ -79,10 +79,9 @@ def sequence : ShortComplex (Sheaf (J (X := X)) A) :=
 
 /-- The literal native continuous adic closed restriction sequence is short exact. -/
 theorem sequence_shortExact : (sequence i ℓ).ShortExact := by
-  letI := restriction_epi i ℓ
   exact ShortComplex.ShortExact.mk'
     (ShortComplex.exact_of_f_is_kernel (sequence i ℓ) (kernelIsKernel (diagonal (M ℓ) i)))
-    inferInstance inferInstance
+    (inferInstanceAs (Mono (inc i (M ℓ)))) (restriction_epi i ℓ)
 
 end
 

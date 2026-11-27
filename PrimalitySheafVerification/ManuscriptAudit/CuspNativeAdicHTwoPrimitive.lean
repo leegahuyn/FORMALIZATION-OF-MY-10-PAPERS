@@ -58,6 +58,7 @@ theorem power_nsmul_injective (r : ℕ) :
   let S := sequence (X K) ℓ r
   let hs := sequence_shortExact (X K) ℓ r
   intro x y h
+  change (ℓ ^ r : ℕ) • x = (ℓ ^ r : ℕ) • y at h
   apply sub_eq_zero.mp
   have hz : Sheaf.H.map S.f 2 (x - y) = 0 := by
     change Sheaf.H.map (multiply (X K) ℓ r) 2 (x - y) = 0
@@ -92,6 +93,7 @@ theorem mem_range_of_power_nsmul_mem (r : ℕ) {x : (X K).EllAdicCohomology ℓ 
   rw [PadicInt.ker_toZModPow, Ideal.mem_span_singleton] at hker
   obtain ⟨b, hb⟩ := hker
   refine ⟨b, power_nsmul_injective K ℓ r ?_⟩
+  change (ℓ ^ r : ℕ) • adicInclusion K ℓ b = (ℓ ^ r : ℕ) • x
   rw [← map_nsmul, nsmul_eq_mul, Nat.cast_pow, ← hb]
   exact ha
 
