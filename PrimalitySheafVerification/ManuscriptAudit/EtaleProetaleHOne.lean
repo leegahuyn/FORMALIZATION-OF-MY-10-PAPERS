@@ -26,7 +26,8 @@ private abbrev C := Sheaf X.smallEtaleTopology A.{u}
 private abbrev D := Sheaf (Scheme.ProEt.topology X) A.{u}
 
 private theorem etaleGrothendieck : IsGrothendieckAbelian.{u + 1} (C X) := by
-  letI : EssentiallySmall.{u + 1} X.Etale := essentiallySmallSelf X.Etale
+  letI : EssentiallySmall.{u + 1} X.Etale :=
+    EssentiallySmall.mk' (AsSmall.equiv : X.Etale ≌ AsSmall.{0} X.Etale)
   exact Sheaf.isGrothendieckAbelian_of_essentiallySmall X.smallEtaleTopology A.{u}
 
 attribute [local instance] etaleGrothendieck

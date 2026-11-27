@@ -30,7 +30,8 @@ def directImage : Sheaf (Scheme.ProEt.topology X) A.{u} ⥤ Sheaf X.smallEtaleTo
 private theorem exists_inverseImage :
     ∃ L : Sheaf X.smallEtaleTopology A.{u} ⥤ Sheaf (Scheme.ProEt.topology X) A.{u},
       Nonempty (L ⊣ directImage X) ∧ PreservesFiniteLimits L := by
-  letI : EssentiallySmall.{u + 1} X.Etale := essentiallySmallSelf X.Etale
+  letI : EssentiallySmall.{u + 1} X.Etale :=
+    EssentiallySmall.mk' (AsSmall.equiv : X.Etale ≌ AsSmall.{0} X.Etale)
   letI : EssentiallySmall.{u + 1} X.ProEt := inferInstance
   exact EssentiallySmallSitePullback.exists_leftExactLeftAdjoint
     X.smallEtaleTopology (Scheme.ProEt.topology X) (inclusion X)

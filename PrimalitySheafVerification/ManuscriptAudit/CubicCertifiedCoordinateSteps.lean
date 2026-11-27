@@ -37,7 +37,11 @@ theorem add_step (hx : x ≠ 0) (he : y ^ 2 = t + a)
   rw [hM] at hX
   rw [hM, hX] at hY
   obtain ⟨hQ, eQ⟩ := add_of_abscissa_ne hx he hne h₁ h₂
-  refine ⟨by simpa only [← hX, ← hY] using hQ, eQ.trans ?_⟩
+  have hNew : (Curve a).Nonsingular (x * u₃.evaluate t) (y * v₃.evaluate t) := by
+    have hOld := hQ
+    rw [← hY, ← hX] at hOld
+    exact hOld
+  refine ⟨hNew, eQ.trans ?_⟩
   rw [Affine.Point.some.injEq]
   exact ⟨congrArg (fun z : L => x * z) hX.symm, congrArg (fun z : L => y * z) hY.symm⟩
 
@@ -63,7 +67,11 @@ theorem double_step (h₂ : (2 : L) ≠ 0) (hx : x ≠ 0) (hy : y ≠ 0)
   rw [hM] at hX
   rw [hM, hX] at hY
   obtain ⟨hQ, eQ⟩ := double_some h₂ hx hy he hv h₁
-  refine ⟨by simpa only [← hX, ← hY] using hQ, eQ.trans ?_⟩
+  have hNew : (Curve a).Nonsingular (x * u₃.evaluate t) (y * v₃.evaluate t) := by
+    have hOld := hQ
+    rw [← hY, ← hX] at hOld
+    exact hOld
+  refine ⟨hNew, eQ.trans ?_⟩
   rw [Affine.Point.some.injEq]
   exact ⟨congrArg (fun z : L => x * z) hX.symm, congrArg (fun z : L => y * z) hY.symm⟩
 

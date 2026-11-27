@@ -14,6 +14,9 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
+local instance residueTopology (d : ℕ) : TopologicalSpace (ZMod d) := ⊥
+local instance residueDiscrete (d : ℕ) : DiscreteTopology (ZMod d) := ⟨rfl⟩
+
 private abbrev A := AddCommGrpCat.{0}
 
 variable (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]

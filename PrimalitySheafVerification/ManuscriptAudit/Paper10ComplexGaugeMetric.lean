@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.Linarith
@@ -18,9 +19,14 @@ theorem complex_bilinear_positive_forces_zero (B : E →ₗ[ℂ] E →ₗ[ℂ] �
   by_contra hx
   have hi : Complex.I • x ≠ 0 := smul_ne_zero Complex.I_ne_zero hx
   have hRotate : B (Complex.I • x) (Complex.I • x) = -B x x := by
-    rw [map_smul, LinearMap.smul_apply, map_smul]
-    change Complex.I * (Complex.I * B x x) = -B x x
-    rw [← mul_assoc, Complex.I_mul_I, neg_one_mul]
+    have hOuter := congrArg (fun f : E →ₗ[ℂ] ℂ => f (Complex.I • x))
+      (B.map_smul Complex.I x)
+    calc
+      _ = Complex.I • B x (Complex.I • x) := hOuter
+      _ = _ := by
+        rw [(B x).map_smul]
+        change Complex.I * (Complex.I * B x x) = -B x x
+        rw [← mul_assoc, Complex.I_mul_I, neg_one_mul]
   have h := hPos (Complex.I • x) hi
   rw [hRotate, Complex.neg_re] at h
   linarith only [h, hPos x hx]
@@ -35,7 +41,7 @@ variable {L : Type*} [LieRing L] [Module ℂ L] [LieAlgebra ℂ L]
 the full complex Lie bracket to vanish if all adjoint directions are skew. -/
 theorem positive_adInvariant_forces_abelian (B : L →+ L →+ ℝ)
     (hPos : ∀ x ≠ 0, 0 < B x x)
-    (hInv : ∀ x y z, B ⁅x, y⁆ z = -B y ⁅x, z⁆) (x y : L) : ⁅x, y⁆ = 0 := by
+    (hInv : ∀ (x y z : L), B ⁅x, y⁆ z = -B y ⁅x, z⁆) (x y : L) : ⁅x, y⁆ = 0 := by
   by_contra hxy
   have hIy : ⁅Complex.I • x, y⁆ ≠ 0 := by
     rw [smul_lie]
@@ -59,8 +65,9 @@ theorem skew_from_invariant_curves (B : E →L[ℝ] E →L[ℝ] ℝ) (a b : ℝ 
     (u v : E) (ha : HasDerivAt a u 0) (hb : HasDerivAt b v 0)
     (hInv : ∀ t, B (a t) (b t) = B (a 0) (b 0)) :
     B u (b 0) = -B (a 0) v := by
+  have hDB : HasFDerivAt (fun x => B x) B (a 0) := B.hasFDerivAt
   have hBa : HasDerivAt (fun t => B (a t)) (B u) 0 :=
-    B.hasFDerivAt.comp_hasDerivAt 0 ha
+    hDB.comp_hasDerivAt 0 ha
   have hPair := hBa.clm_apply hb
   have hFunction : (fun t => B (a t) (b t)) = fun _ => B (a 0) (b 0) :=
     funext hInv
