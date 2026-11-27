@@ -6,9 +6,9 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8InsideComplexAnalytic
 /-!
 # The literal outside series at complex reciprocal arguments
 
-Physical pp. 314 and 341 give the inverted summand and the squared finite
-Pochhammer formula, respectively. On every smaller disk a positive real
-infinite product bounds all finite complex denominators away from zero.
+Physical p. 314 gives the inverted summand with the squared finite product.
+On every smaller disk a positive real infinite product bounds all finite
+complex denominators away from zero.
 -/
 
 namespace ManuscriptAudit.Paper8ExteriorComplex

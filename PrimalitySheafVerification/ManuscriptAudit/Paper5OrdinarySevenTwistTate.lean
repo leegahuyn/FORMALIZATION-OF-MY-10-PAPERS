@@ -68,8 +68,9 @@ private theorem ref_trace_det (hl : l = 2 ∨ l = 3) (A : ZMod 7) (hA : A ≠ 0)
   · have he : endMap l (refOperator L A) = -T := by
       simp [refOperator, signedRotation, h, T, rotatedAction, rotationAction,
         Paper5OrdinarySevenTate.action]
-      exact neg_mul (rotationAction L l ^ (row A).exponent.val)
-        (Paper5OrdinarySevenTate.action L l)
+      apply LinearMap.ext
+      intro x
+      rfl
     have htrace : (row A).trace = -rotatedTrace (row A).exponent := by simpa [h] using hRow
     rw [he, htrace, Int.cast_neg]
     constructor

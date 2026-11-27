@@ -115,6 +115,7 @@ theorem normalized_branch_differentiableOn {s : Set ℂ} {root : ℂ → ℂ}
     simpa [Metric.mem_ball, dist_zero_right] using (hDomain q hq).2
   refine (hRoot.mul (exterior_differentiableOn_unit_disk.mono hSub)).congr ?_
   intro q hq
+  change root q * standard q⁻¹ = root q * exterior q
   rw [standard_inv_eq_exterior (hDomain q hq).1 (hDomain q hq).2]
 
 end

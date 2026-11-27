@@ -43,7 +43,7 @@ theorem affine_card (A : L) (hA : A ≠ 0) :
 theorem projective_card (A : L) (hA : A ≠ 0) :
     Nat.card {P : (shortCubic (0 : L) A).toProjective.Point // (7 : ℕ) • P = 0} = 7 := by
   let e : (shortCubic (0 : L) A).toProjective.Point ≃+ (Curve A).Point :=
-    Projective.Point.toAffineAddEquiv
+    Projective.Point.toAffineAddEquiv ((shortCubic (0 : L) A).toProjective)
   exact (Nat.card_congr (restrict e)).trans (affine_card L A hA)
 
 end
