@@ -73,8 +73,8 @@ def actualFrobenius (A : E) : Module.End (ZMod 3) (ActualTorsion E L A) :=
 /-- A two-element basis of the actual geometric three-torsion. -/
 def actualTorsionBasis {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
     (hA : A ≠ 0) : Module.Basis (Fin 2) (ZMod 3) (ActualTorsion E L A) := by
-  have h₂L : (2 : L) ≠ 0 := by simpa using mapped_nonzero E L 2 h₂
-  have h₃L : (3 : L) ≠ 0 := by simpa using mapped_nonzero E L 3 h₃
+  have h₂L : (2 : L) ≠ 0 := by simpa only [map_ofNat] using mapped_nonzero E L 2 h₂
+  have h₃L : (3 : L) ≠ 0 := by simpa only [map_ofNat] using mapped_nonzero E L 3 h₃
   have hAL := mapped_nonzero E L A hA
   let D := Classical.choice (flexPair_nonempty h₂L hAL)
   exact (basis h₂L h₃L hAL D).map (centeredTransport E L A).symm
@@ -94,8 +94,8 @@ theorem actualFrobenius_trace_det {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E)
   let f := actualFrobenius E L A
   let e := centeredTransport E L A
   let g := FiniteField.frobeniusAlgHom E L
-  have h₂L : (2 : L) ≠ 0 := by simpa using mapped_nonzero E L 2 h₂
-  have h₃L : (3 : L) ≠ 0 := by simpa using mapped_nonzero E L 3 h₃
+  have h₂L : (2 : L) ≠ 0 := by simpa only [map_ofNat] using mapped_nonzero E L 2 h₂
+  have h₃L : (3 : L) ≠ 0 := by simpa only [map_ofNat] using mapped_nonzero E L 3 h₃
   have hAL := mapped_nonzero E L A hA
   let D := Classical.choice (flexPair_nonempty h₂L hAL)
   have hg (x : L) : g x = x ^ Fintype.card E := rfl

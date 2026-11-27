@@ -132,6 +132,11 @@ private theorem at_positive (c : (Conductor K (T K h2)).left) :
   rw [ht] at h
   exact h
 
+private theorem hom_add_one {R S : Type} [CommRing R] [CommRing S]
+    (f : R →+* S) (x : R) : f (x + 1) = f x + 1 := by
+  rw [map_add, map_one]
+
+set_option maxHeartbeats 2500000 in
 private theorem at_negative (c : (Conductor K (T K h2)).left) :
     t K + 1 ∈ ((normIso K h2).inv (minus K (T K h2) c)).asIdeal := by
   let q : PrimeSpectrum (E K) := (normIso K h2).inv (minus K (T K h2) c)
@@ -140,9 +145,9 @@ private theorem at_negative (c : (Conductor K (T K h2)).left) :
     exact RingHom.mem_ker.mpr (by simp)
   have h := (spec_mem_map_iff (lineHom K) q (Polynomial.X + 1)).mpr hq
   have ht : lineHom K (Polynomial.X + 1) = t K + 1 := by
-    let f : B K →ₐ[A K] E K := Algebra.TensorProduct.includeLeft
-    change f (Polynomial.X + 1) = t K + 1
-    exact (map_add f (Polynomial.X : B K) 1).trans (congrArg (fun a : E K => t K + a) (map_one f))
+    let f : B K →+* E K := (Algebra.TensorProduct.includeLeft : B K →ₐ[A K] E K).toRingHom
+    change f (Polynomial.X + 1) = f Polynomial.X + 1
+    exact hom_add_one (R := B K) (S := E K) f Polynomial.X
   rw [ht] at h
   exact h
 

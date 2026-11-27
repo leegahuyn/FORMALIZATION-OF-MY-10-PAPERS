@@ -72,13 +72,24 @@ private theorem matrix_signs [IsAlgClosed K]
     apply inclusion_injective 3 (Curve A).Point
     apply eq_of_coordinates
     · rw [hxMap, abscissa_smul_vertical]
-      simp [T]
+      change σ (abscissa (inclusion 3 _ (vertical h₂ h₃ hA D))) = 0
+      rw [abscissa_vertical, map_zero]
     · rw [hyMap]
       change σ (ordinate (inclusion 3 _ (vertical h₂ h₃ hA D))) = _
       rw [ordinate_vertical, hs]
-      cases s <;> simp [signed, signScalar, T]
+      cases s with
+      | false =>
+        change -D.a = ordinate (inclusion 3 _ ((-1 : ZMod 3) • T))
+        rw [neg_one_smul, map_neg, ordinate_neg]
+        exact congrArg Neg.neg (ordinate_vertical h₂ h₃ hA D).symm
+      | true =>
+        change D.a = ordinate (inclusion 3 _ ((1 : ZMod 3) • T))
+        rw [one_smul]
+        exact (ordinate_vertical h₂ h₃ hA D).symm
     · rw [hyMap]
-      simpa [T] using (map_ne_zero σ).mpr ha
+      change σ (ordinate (inclusion 3 _ (vertical h₂ h₃ hA D))) ≠ 0
+      rw [ordinate_vertical]
+      exact (map_ne_zero σ).mpr ha
   have hColumn (i : Fin 2) : F (B i) = M 0 i • U + M 1 i • T := by
     conv_lhs => rw [← B.sum_repr (F (B i))]
     simp [M, LinearMap.toMatrix_apply, Fin.sum_univ_two, B, U, T]
@@ -105,7 +116,11 @@ private theorem matrix_signs [IsAlgClosed K]
         (ordinate_nonvertical_sum h₂ h₃ hA D _ _ h00ne).symm
       _ = ordinate (inclusion 3 _ (F (B 0))) :=
         congrArg (fun v : T₃ A => ordinate (inclusion 3 _ v)) (hColumn 0).symm
-      _ = _ := by rw [hyMap, hU]; simpa [U] using ht
+      _ = _ := by
+        rw [hyMap, hU]
+        change σ (ordinate (inclusion 3 _ (horizontal h₂ h₃ hA D))) = _
+        rw [ordinate_horizontal]
+        exact ht
   have h00 : M 0 0 = signScalar t := by
     rcases scalar_cases (M 0 0) with h | h | h
     · exact (h00ne h).elim

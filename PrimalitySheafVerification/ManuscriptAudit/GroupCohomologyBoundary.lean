@@ -28,11 +28,11 @@ theorem exists_principal_cocycle_of_HOne_subsingleton (A : Rep R G)
     (hOne : Subsingleton (groupCohomology A 1)) (c : G → A)
     (hc : ∀ g h, c (g * h) = c g + A.ρ g (c h)) :
     ∃ a : A, ∀ g, c g = A.ρ g a - a := by
-  have hc' : c ∈ cocycles₁ A := (mem_cocycles₁_iff A c).mpr
+  have hc' : c ∈ cocycles₁ A := (mem_cocycles₁_iff (A := A) c).mpr
     (fun g h => (hc g h).trans (add_comm _ _))
   let b : cocycles₁ A := ⟨c, hc'⟩
   have hb : H1π A b = 0 := hOne.elim _ _
-  obtain ⟨a, ha⟩ := (H1π_eq_zero_iff A b).mp hb
+  obtain ⟨a, ha⟩ := (H1π_eq_zero_iff b).mp hb
   exact ⟨a, fun g => (congrFun ha g).symm⟩
 
 end ManuscriptAudit.GroupCohomologyBoundary

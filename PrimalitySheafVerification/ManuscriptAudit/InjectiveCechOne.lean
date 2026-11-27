@@ -76,7 +76,8 @@ private def dTwo (U : C) : triples U ⟶ pairs U where
     simp only [AddMonoidHom.comp_apply, map_of_apply, tripleBoundary_of, map_sub, map_add]
 
 private theorem dTwo_dOne (U : C) : dTwo U ≫ dOne U = 0 := by
-  ext1 W
+  ext1
+  funext W
   apply AddCommGrpCat.hom_ext
   exact pairBoundary_comp_tripleBoundary (unop W ⟶ U)
 
@@ -87,7 +88,8 @@ private theorem complex_exact (U : C) : (complex U).Exact := by
   let S := complex U
   change S.Exact
   rw [S.exact_iff_kernel_ι_comp_cokernel_π_zero]
-  ext1 W
+  ext1
+  funext W
   let E := (CategoryTheory.evaluation Cᵒᵖ AddCommGrpCat.{v}).obj W
   have hE : (S.map E).Exact := by
     rw [(S.map E).ab_exact_iff]
@@ -112,20 +114,26 @@ theorem exists_coboundary (U : C) (I : Sheaf J AddCommGrpCat.{v}) [Injective I]
       naturality := by
         intro W V f
         apply AddCommGrpCat.hom_ext
-        change (lift _).comp (FreeAbelianGroup.map _) =
-          (I.obj.map f).hom.comp (lift _)
+        change (lift (fun p : (unop V ⟶ U) × (unop V ⟶ U) => c p.1 p.2)).comp
+          (FreeAbelianGroup.map (fun p : (unop W ⟶ U) × (unop W ⟶ U) =>
+            (f.unop ≫ p.1, f.unop ≫ p.2))) =
+          (I.obj.map f).hom.comp (lift (fun p : (unop W ⟶ U) × (unop W ⟶ U) => c p.1 p.2))
         apply lift_ext
         rintro ⟨a, b⟩
-        simpa only [AddMonoidHom.comp_apply, map_of_apply, lift_apply_of] using
-          (hnat f.unop a b).symm }
+        rw [AddMonoidHom.comp_apply, map_of_apply, lift_apply_of,
+          AddMonoidHom.comp_apply, lift_apply_of]
+        exact (hnat f.unop a b).symm }
   have hz : dTwo U ≫ z = 0 := by
-    ext1 W
+    ext1
+    funext W
     apply AddCommGrpCat.hom_ext
-    change (lift _).comp (tripleBoundary _) = 0
+    let m : FreeAbelianGroup ((unop W ⟶ U) × (unop W ⟶ U)) →+ I.obj.obj W :=
+      lift (fun p => c p.1 p.2)
+    change m.comp (tripleBoundary _) = 0
     apply lift_ext
     rintro ⟨a, b, d⟩
-    simpa only [AddMonoidHom.comp_apply, tripleBoundary_of, map_sub, map_add,
-      lift_apply_of, AddMonoidHom.zero_apply] using hc a b d
+    rw [AddMonoidHom.comp_apply, tripleBoundary_of, m.map_add, m.map_sub]
+    exact hc a b d
   let k := cokernel.desc (dTwo U) (dOne U) (dTwo_dOne U)
   letI : Mono k := (complex U).exact_iff_mono_cokernel_desc.mp (complex_exact U)
   let zbar := cokernel.desc (dTwo U) z hz
@@ -156,7 +164,9 @@ theorem exists_coboundary (U : C) (I : Sheaf J AddCommGrpCat.{v}) [Injective I]
     (m.app (op W)).hom (of (a, d))) hfac
   change (bPresheaf.app (op W)).hom (pairBoundary _ (of (a, d))) =
     lift (fun p => c p.1 p.2) (of (a, d)) at h
-  simpa only [hmap a, hmap d, pairBoundary_of, map_sub, lift_apply_of] using h.symm
+  rw [pairBoundary_of, (bPresheaf.app (op W)).hom.map_sub, lift_apply_of] at h
+  rw [hmap a, hmap d]
+  exact h.symm
 
 end
 end ManuscriptAudit.InjectiveCechOne

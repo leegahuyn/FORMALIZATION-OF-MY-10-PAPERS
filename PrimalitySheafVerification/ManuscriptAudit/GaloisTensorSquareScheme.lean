@@ -45,7 +45,7 @@ def tensorSpecIsoPullback :
 
 variable [FiniteDimensional F L] [IsGalois F L]
 
-private abbrev R (σ : L ≃ₐ[F] L) := CommRingCat.of L
+private abbrev R (_σ : L ≃ₐ[F] L) := CommRingCat.of L
 
 private def coordinateHom (σ : L ≃ₐ[F] L) : T F L ⟶ CommRingCat.of L :=
   CommRingCat.ofHom ((Pi.evalRingHom (fun _ : L ≃ₐ[F] L ↦ L) σ).comp
@@ -87,17 +87,17 @@ private def productSpecIsoTensor :
 def sigmaIsoPullback :
     (∐ fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) ≅
       pullback (baseMap F L) (baseMap F L) :=
-  asIso (Scheme.sigmaSpec (R F L)) ≪≫ productSpecIsoTensor F L ≪≫ tensorSpecIsoPullback F L
+  asIso (AlgebraicGeometry.sigmaSpec (R F L)) ≪≫ productSpecIsoTensor F L ≪≫ tensorSpecIsoPullback F L
 
 /-- The coproduct inclusion is the displayed Galois component. -/
 @[reassoc] theorem sigmaIsoPullback_ι (σ : L ≃ₐ[F] L) :
     Sigma.ι (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ ≫ (sigmaIsoPullback F L).hom =
       component F L σ := by
-  change Sigma.ι _ σ ≫ (Scheme.sigmaSpec (R F L) ≫
+  change Sigma.ι _ σ ≫ (AlgebraicGeometry.sigmaSpec (R F L) ≫
     (productSpecIsoTensor F L).hom ≫ (tensorSpecIsoPullback F L).hom) = _
   have hP : (productSpecIsoTensor F L).hom =
       Spec.map (CommRingCat.ofHom (tensorProductEquiv F L).toRingHom) := rfl
-  rw [Scheme.ι_sigmaSpec_assoc, ← Category.assoc, hP, ← Spec.map_comp] <;> rfl
+  rw [AlgebraicGeometry.ι_sigmaSpec_assoc, ← Category.assoc, hP, ← Spec.map_comp] <;> rfl
 
 /-- Each Galois component is an open immersion. -/
 theorem component_isOpenImmersion (σ : L ≃ₐ[F] L) :
@@ -106,15 +106,15 @@ theorem component_isOpenImmersion (σ : L ≃ₐ[F] L) :
   infer_instance
 
 /-- The Galois components jointly cover the underlying pullback scheme. -/
-theorem component_jointly_surjective (x : pullback (baseMap F L) (baseMap F L)) :
+theorem component_jointly_surjective (x : ↑(pullback (baseMap F L) (baseMap F L))) :
     ∃ (σ : L ≃ₐ[F] L) (y : Spec (CommRingCat.of L)), component F L σ y = x := by
   let e := sigmaIsoPullback F L
   let s := e.inv x
   obtain ⟨⟨σ, y⟩, hy⟩ :=
-    (Scheme.sigmaMk (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L))).surjective s
+    (AlgebraicGeometry.sigmaMk (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L))).surjective s
   refine ⟨σ, y, ?_⟩
   have hy' : Sigma.ι (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ y = s :=
-    (Scheme.sigmaMk_mk _ σ y).symm.trans hy
+    (AlgebraicGeometry.sigmaMk_mk _ σ y).symm.trans hy
   calc
     _ = e.hom (Sigma.ι (fun _ : L ≃ₐ[F] L ↦ Spec (CommRingCat.of L)) σ y) := by
       rw [← sigmaIsoPullback_ι, Scheme.Hom.comp_apply]

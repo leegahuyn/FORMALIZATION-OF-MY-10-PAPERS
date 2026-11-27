@@ -28,7 +28,7 @@ theorem field_card_mod_three_ne_zero (h₃ : (3 : E) ≠ 0) : Fintype.card E % 3
   have hp := (Nat.prime_dvd_prime_iff_eq Nat.prime_three hPrime).mp
     (Nat.prime_three.dvd_of_dvd_pow hd)
   apply h₃
-  have hdiv : p ∣ 3 := by rw [← hp]
+  have hdiv : p ∣ 3 := hp ▸ (dvd_rfl : 3 ∣ 3)
   simpa only [Nat.cast_ofNat] using (CharP.cast_eq_zero_iff E p 3).mpr hdiv
 
 def signedPointTrace (A : E) : ℤ :=

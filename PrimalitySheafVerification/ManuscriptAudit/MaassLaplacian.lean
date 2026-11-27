@@ -48,14 +48,14 @@ private theorem ofReal_derivative (r : ℝ) :
     HasDerivAt (fun t : ℝ => (t : ℂ)) (1 : ℂ) r := by
   simpa only [id_eq, Complex.ofReal_one] using! (hasDerivAt_id r).ofReal_comp
 
-private theorem horizontal_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
+theorem horizontal_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
     (h : HasDerivAt f d (complexPoint x y)) :
     HasDerivAt (fun t => f (complexPoint t y)) d x := by
   have hl : HasDerivAt (fun t => complexPoint t y) (1 : ℂ) x :=
     (ofReal_derivative x).add_const ((y : ℂ) * Complex.I)
   simpa only [Function.comp, one_smul] using! h.scomp x hl
 
-private theorem vertical_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
+theorem vertical_derivative {f : ℂ → ℂ} {x y : ℝ} {d : ℂ}
     (h : HasDerivAt f d (complexPoint x y)) :
     HasDerivAt (fun t => f (complexPoint x t)) (Complex.I * d) y := by
   have hl : HasDerivAt (fun t => complexPoint x t) Complex.I y := by
@@ -175,3 +175,4 @@ run_cmd do
     logInfo m!"{name} uses {dependencies}"
 
 end ManuscriptAudit.MaassLaplacian
+

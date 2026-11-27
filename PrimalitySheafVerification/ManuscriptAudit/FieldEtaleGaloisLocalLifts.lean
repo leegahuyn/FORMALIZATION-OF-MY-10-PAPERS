@@ -17,11 +17,12 @@ theorem galoisArrow_is_cover (K L : Type) [Field K] [Field L] [Algebra K L]
     [Module.Finite K L] [IsGalois K L] :
     Sieve.generate (Presieve.singleton (galoisArrow K L)) ∈
       (Spec (CommRingCat.of K)).smallEtaleTopology (terminalObject K) := by
-  apply KummerSiteCover.singleton_mem_smallEtaleTopology
-  intro y
-  let x : (galoisObject K L).left := Classical.choice
-    (inferInstance : Nonempty (PrimeSpectrum L))
-  exact ⟨x, Subsingleton.elim _ _⟩
+  rw [← Presieve.ofArrows_pUnit]
+  exact KummerSiteCover.singleton_mem_smallEtaleTopology _ (by
+    intro y
+    let x : (galoisObject K L).left := Classical.choice
+      (inferInstance : Nonempty (PrimeSpectrum L))
+    exact ⟨x, Subsingleton.elim _ _⟩)
 
 theorem exists_cokernel_lift_on_finiteGalois_cover (K : Type) [Field K]
     {F I : Sheaf (Spec (CommRingCat.of K)).smallEtaleTopology AddCommGrpCat.{0}}

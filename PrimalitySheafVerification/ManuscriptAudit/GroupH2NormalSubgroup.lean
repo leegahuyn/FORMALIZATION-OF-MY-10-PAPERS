@@ -32,13 +32,13 @@ theorem H2_subsingleton_of_normal
   have hOne' (f : S → A) (hf : IsCocycle₁ f) : IsCoboundary₁ f := by
     let z : cocycles₁ C := cocyclesOfIsCocycle₁ hf
     have hz : H1π C z = 0 := hOne.elim _ _
-    exact isCoboundary₁_of_mem_coboundaries₁ (k := ℤ) f ((H1π_eq_zero_iff C z).mp hz)
+    exact isCoboundary₁_of_mem_coboundaries₁ (k := ℤ) f ((H1π_eq_zero_iff (A := C) z).mp hz)
   have hTwo' (f : S × S → A) (hf : IsCocycle₂ f) : IsCoboundary₂ f := by
     let z : cocycles₂ C := cocyclesOfIsCocycle₂ hf
     have hz : H2π C z = 0 := hTwo.elim _ _
-    exact isCoboundary₂_of_mem_coboundaries₂ (k := ℤ) f ((H2π_eq_zero_iff C z).mp hz)
+    exact isCoboundary₂_of_mem_coboundaries₂ (k := ℤ) f ((H2π_eq_zero_iff (A := C) z).mp hz)
   have eqZero (x : H2 B) : x = 0 := by
-    refine H2_induction_on B x fun z ↦ ?_
+    refine H2_induction_on (A := B) x fun z ↦ ?_
     let c : G × G → A := z
     have hc : IsCocycle₂ c := isCocycle₂_of_mem_cocycles₂ (k := ℤ) c z.property
     have hcS : IsCocycle₂ (fun p : S × S ↦ c (p.1, p.2)) := fun s t v ↦ hc s t v
@@ -48,7 +48,7 @@ theorem H2_subsingleton_of_normal
     obtain ⟨t, ht⟩ := exists_quotient_cocycle₂ S ((c - coboundary a) + coboundary b)
       hb hLeft hRight
     have htZero : H2π Q t = 0 := hQuot.elim _ _
-    obtain ⟨r, hr⟩ := (H2π_eq_zero_iff Q t).mp htZero
+    obtain ⟨r, hr⟩ := (H2π_eq_zero_iff (A := Q) t).mp htZero
     let q := QuotientGroup.mk' S
     let d (g : G) : A := (r (q g)).1
     have hd (g h : G) : coboundary d (g, h) =
@@ -59,7 +59,7 @@ theorem H2_subsingleton_of_normal
       rw [← q.map_mul g h, ht] at hv
       exact hv
     let e (g : G) : A := d g + a g - b g
-    refine (H2π_eq_zero_iff B z).mpr ⟨e, ?_⟩
+    refine (H2π_eq_zero_iff (A := B) z).mpr ⟨e, ?_⟩
     funext p
     obtain ⟨g, h⟩ := p
     change g • e h - e (g * h) + e g = c (g, h)

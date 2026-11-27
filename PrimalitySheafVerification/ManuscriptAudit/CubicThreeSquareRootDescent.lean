@@ -42,6 +42,7 @@ private theorem ne_neg {K : Type*} [Field K] (h₂ : (2 : K) ≠ 0) {x : K} (hx 
 
 private theorem squareRoots_card_two (h₂ : (2 : E) ≠ 0) {A x : E}
     (hA : A ≠ 0) (hx : x ^ 2 = A) : Nat.card (SquareRoots A) = 2 := by
+  classical
   have hx₀ : x ≠ 0 := by
     intro h
     exact hA (by simpa [h] using hx.symm)
@@ -67,7 +68,8 @@ theorem squareRoots_card_of_sign (h₂ : (2 : E) ≠ 0) {A : E} (hA : A ≠ 0)
     Nat.card (SquareRoots A) = if s then 2 else 0 := by
   classical
   have h₂L : (2 : L) ≠ 0 := by
-    simpa using (map_ne_zero (algebraMap E L)).mpr h₂
+    have hn : algebraMap E L (2 : E) ≠ 0 := (map_ne_zero (algebraMap E L)).mpr h₂
+    simpa only [map_ofNat] using hn
   have ha₀ : a ≠ 0 := by
     intro h
     exact (map_ne_zero (algebraMap E L)).mpr hA (by simpa [h] using ha.symm)

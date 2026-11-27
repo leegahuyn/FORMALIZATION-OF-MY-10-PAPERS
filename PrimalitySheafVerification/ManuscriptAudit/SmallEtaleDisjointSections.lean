@@ -35,7 +35,7 @@ private theorem underlyingIsSheaf : Presieve.IsSheaf X.smallEtaleTopology (P F) 
 private theorem covering_of_jointly_surjective
     (h : ∀ x : W.left, ∃ (i : I) (y : (V i).left), (f i).left y = x) :
     Sieve.ofArrows V f ∈ X.smallEtaleTopology W := by
-  apply Scheme.ofArrows_mem_smallEtaleTopology_iff.mpr
+  apply (Scheme.ofArrows_mem_smallEtaleTopology_iff f).mpr
   apply Set.eq_univ_of_forall
   intro x
   obtain ⟨i, y, hy⟩ := h x
@@ -74,8 +74,8 @@ def sectionsEquivOfDisjointCover
   classical
   let m : (F.obj.obj (op W)) →+ (∀ i, F.obj.obj (op (V i))) :=
     { toFun := fun a i ↦ F.obj.map (f i).op a
-      map_zero' := funext (fun i ↦ map_zero (F.obj.map (f i).op))
-      map_add' := fun a b ↦ funext (fun i ↦ map_add (F.obj.map (f i).op) a b) }
+      map_zero' := funext (fun i ↦ map_zero (F.obj.map (f i).op).hom)
+      map_add' := fun a b ↦ funext (fun i ↦ map_add (F.obj.map (f i).op).hom a b) }
   refine AddEquiv.ofBijective m ⟨restriction_injective F f h, ?_⟩
   intro y
   have hCov := covering_of_jointly_surjective f h

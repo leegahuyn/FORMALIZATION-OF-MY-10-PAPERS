@@ -64,7 +64,7 @@ private theorem yChart_restriction_injective (h2 : (2 : K) ≠ 0) :
     have hy := ConcreteCategory.congr_hom (i.hom.naturality a.op) y
     exact hx.symm.trans ((congrArg (i.hom.app V) hxy).trans hy)
   rw [← h, op_comp, Functor.map_comp]
-  let e' := ((F K).cohomologyPresheaf 1).mapIso (overlapEtaleIso K).symm.op
+  let e' := ((F K).cohomologyPresheaf 1).mapIso (overlapEtaleIso K).op
   exact e'.addCommGroupIsoToAddEquiv.injective.comp hF
 
 private theorem affine_restriction_injective (h2 : (2 : K) ≠ 0) :

@@ -86,12 +86,19 @@ def horizontal : T₃ A := by
 
 theorem abscissa_smul_vertical (r : ZMod 3) :
     abscissa (inclusion 3 _ (r • vertical h₂ h₃ hA D)) = 0 := by
-  rcases scalar_cases r with rfl | rfl | rfl <;> simp
+  rcases scalar_cases r with rfl | rfl | rfl
+  · rw [zero_smul, map_zero, abscissa_zero]
+  · rw [one_smul]
+    exact abscissa_vertical h₂ h₃ hA D
+  · rw [neg_one_smul, map_neg, abscissa_neg]
+    exact abscissa_vertical h₂ h₃ hA D
 
 theorem vertical_ne_zero : vertical h₂ h₃ hA D ≠ 0 := by
   intro h
   have ha := congrArg (fun P : T₃ A => ordinate (inclusion 3 _ P)) h
-  have hzero : D.a = 0 := by simpa using ha
+  have hzero : D.a = 0 :=
+    (ordinate_vertical h₂ h₃ hA D).symm.trans
+      (ha.trans (by rw [map_zero, ordinate_zero]))
   exact hA (by simpa [hzero] using D.a_square.symm)
 
 theorem ordinate_horizontal_add_vertical :
@@ -120,12 +127,14 @@ theorem ordinate_nonvertical_sum (r s : ZMod 3) (hr : r ≠ 0) :
   · exact (hr rfl).elim
   · rw [one_smul, if_pos rfl]
     rcases scalar_cases s with rfl | rfl | rfl
-    · simp [U]
+    · rw [zero_smul, add_zero]
+      exact ordinate_horizontal h₂ h₃ hA D
     · simpa only [one_smul] using ha
     · simpa only [neg_one_smul, sub_eq_add_neg] using hs
   · rw [neg_one_smul, if_neg hn]
     rcases scalar_cases s with rfl | rfl | rfl
-    · simp [U]
+    · rw [zero_smul, add_zero, map_neg, ordinate_neg]
+      exact congrArg Neg.neg (ordinate_horizontal h₂ h₃ hA D)
     · rw [one_smul, show -U + T = -(U - T) by abel, map_neg, ordinate_neg, hs]
     · rw [neg_one_smul, show -U + -T = -(U + T) by abel, map_neg, ordinate_neg, ha]
 
