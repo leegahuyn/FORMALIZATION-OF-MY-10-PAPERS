@@ -72,6 +72,34 @@ def reductionH (n : ℕ) :
       extensionH j (AddCommGrpCat.of (ZMod a)) n :=
   Sheaf.H.map (sequence j a b).g n
 
+/-- The morphism on cohomology induced by inclusion of kernel coefficients. -/
+def inclusionH (n : ℕ) :
+    extensionH j (AddCommGrpCat.of (ZMod b)) n →+
+      extensionH j (AddCommGrpCat.of (ZMod (a * b))) n :=
+  Sheaf.H.map (sequence j a b).f n
+
+theorem inclusion_reduction_exact (n : ℕ) :
+    Function.Exact (inclusionH j a b n) (reductionH j a b n) := by
+  let S := sequence j a b
+  let hS : S.ShortExact := sequence_shortExact j a b
+  let Z := (constantSheaf X.smallEtaleTopology A).obj (AddCommGrpCat.of (ULift.{0} ℤ))
+  exact (ShortComplex.ab_exact_iff_function_exact _).mp (Ext.covariant_sequence_exact₂' Z hS n)
+
+/-- Injectivity on the following kernel-coefficient group kills the connecting map. -/
+theorem reductionH_surjective_of_next_injective (n : ℕ)
+    (hInj : Function.Injective (inclusionH j a b (n + 1))) :
+    Function.Surjective (reductionH j a b n) := by
+  let S := sequence j a b
+  let hS : S.ShortExact := sequence_shortExact j a b
+  let Z := (constantSheaf X.smallEtaleTopology A).obj (AddCommGrpCat.of (ULift.{0} ℤ))
+  intro x
+  let δ := hS.extClass.postcomp Z (show n + 1 = n + 1 from rfl)
+  have hExact : Function.Exact δ (inclusionH j a b (n + 1)) :=
+    (ShortComplex.ab_exact_iff_function_exact _).mp (Ext.covariant_sequence_exact₁' Z hS n (n + 1) rfl)
+  have hcomp : inclusionH j a b (n + 1) (δ x) = 0 := (hExact _).mpr ⟨x, rfl⟩
+  have hδ : δ x = 0 := hInj (hcomp.trans (map_zero _).symm)
+  exact Ext.covariant_sequence_exact₃ (X := Z) hS x rfl hδ
+
 /-- Vanishing of the next kernel-coefficient group implies surjectivity of the actual reduction. -/
 theorem reductionH_surjective (n : ℕ)
     (hKer : Subsingleton (extensionH j (AddCommGrpCat.of (ZMod b)) (n + 1))) :
@@ -92,6 +120,8 @@ run_cmd do
   for name in [``ManuscriptAudit.OpenEtaleCoefficientReduction.extendedConstants_shortExact,
       ``ManuscriptAudit.OpenEtaleCoefficientReduction.sequence_shortExact,
       ``ManuscriptAudit.OpenEtaleCoefficientReduction.reductionH,
+      ``ManuscriptAudit.OpenEtaleCoefficientReduction.inclusion_reduction_exact,
+      ``ManuscriptAudit.OpenEtaleCoefficientReduction.reductionH_surjective_of_next_injective,
       ``ManuscriptAudit.OpenEtaleCoefficientReduction.reductionH_surjective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -47,8 +47,9 @@ theorem card_at_exact_factor (hp : 5 ≤ p) (hq : p % 3 = 2) {A : ZMod p} (hA : 
       (frobeniusLinear (l ^ n) p L W ^ Module.finrank (ZMod p) E) P = P := by
     apply inclusion_injective (l ^ n) G
     rw [frobeniusLinear_pow_inclusion, ← point_iterate_eq_map p L W, hDegree,
-      quartic_iterate p L hp hq hA, hCoeff, add_nsmul, one_nsmul, mul_nsmul,
-      (mem_iff (l ^ n) G _).mp P.property, nsmul_zero, zero_add]
+      quartic_iterate p L hp hq hA, hCoeff, add_nsmul, one_nsmul, mul_nsmul]
+    change d • ((l ^ n) • (P : G)) + (P : G) = (P : G)
+    rw [(mem_iff (l ^ n) G _).mp P.property, nsmul_zero, zero_add]
   let e := (rationalTorsionEquiv (l ^ n) p L E i W).trans
     (Equiv.subtypeUnivEquiv hFixed)
   exact (Nat.card_congr e.symm).trans

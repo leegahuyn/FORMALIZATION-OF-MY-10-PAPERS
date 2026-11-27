@@ -116,9 +116,14 @@ private theorem ref_trace_det (hl : l = 2 ∨ l = 3) :
     rw [← Algebra.algebraMap_eq_smul_one, map_ofNat]
   have hQuad : T ^ 2 - (-4 : ℤ_[l]) • T + (7 : ℤ_[l]) • I = 0 := by
     have hNegFour : (-4 : ℤ_[l]) • T = -((4 : ℤ_[l]) • T) := neg_smul (4 : ℤ_[l]) T
-    rw [hNegFour, sub_neg_eq_add, hFour, hSeven]
-    simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using
-      congrArg (endMap l) (point_quad L)
+    calc
+      _ = T ^ 2 + (4 : ℤ_[l]) • T + (7 : ℤ_[l]) • I := by
+        rw [hNegFour]
+        abel
+      _ = 0 := by
+        rw [hFour, hSeven]
+        simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using
+          congrArg (endMap l) (point_quad L)
   exact trace_det_of_quadratic B T hN (-4) 7 hQuad
 
 /-- The actual native Tate coefficients agree with the printed signed count at seven. -/
