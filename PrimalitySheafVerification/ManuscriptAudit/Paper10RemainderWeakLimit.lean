@@ -11,7 +11,7 @@ bounded remainder on the actual quotient square-integrable cusp waves.
 namespace ManuscriptAudit.Paper10RemainderWeakLimit
 
 open Filter ThetaChosenQuotientAnalysis GammaTwoQuotientHeightIntegral
-open Paper9OrthogonalCuspWaves
+open Paper9CuspWaveHilbert Paper9OrthogonalCuspWaves
 open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
 open scoped Topology
 

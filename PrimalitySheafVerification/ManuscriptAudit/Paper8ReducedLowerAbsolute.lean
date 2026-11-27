@@ -119,7 +119,7 @@ theorem inverse_nome_reduced_mass_not_summable {α β : ℝ} (hα : 0 ≤ α) (h
   change (s.card : ℝ) * b / (k : ℝ) ≤ inverseNomeMass α β Q k +
     (s.card : ℝ) * (C * decay k) / (k : ℝ) at hRow
   have h : (1 / 2 : ℝ) * b ≤ inverseNomeMass α β Q k + 2 * (C * decay k) :=
-    hbL.trans (hRow.trans (add_le_add_left hcU _))
+    hbL.trans (hRow.trans (add_le_add_right hcU _))
   unfold b at h
   exact (show coefficient k 0 ≤ (5 / 2 : ℝ) *
     (inverseNomeMass α β Q k + 2 * (C * decay k)) by linarith only [h])

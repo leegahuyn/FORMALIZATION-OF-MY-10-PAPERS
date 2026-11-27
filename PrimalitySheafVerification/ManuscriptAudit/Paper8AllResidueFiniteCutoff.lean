@@ -17,7 +17,7 @@ open Paper8ContourGammaSeries (coefficient)
 open Paper8ContourResidueWeights (prefactor reducedResidues)
 open Paper8AllResidueDivisorSum (reducedFrequencySum all_frequency_sum_eq_divisor_sum)
 open Paper8GcdArithmeticWeight (frequencyWeight)
-open Paper8ReciprocalArithmeticRows (shiftedFrequency fourierCoefficient_eq_arithmeticSum)
+open Paper8ReciprocalArithmeticRows (shiftedFrequency arithmeticSum fourierCoefficient_eq_arithmeticSum)
 open Paper8ReciprocalCommonFourier (fourierCoefficient orderedFourierCoefficient)
 open Paper8EvenGcdOrderedLimit (evenSectorCutoff)
 open Paper8OddGcdActualCutoff (oddClassPart finite_odd_gcd_cutoff)
@@ -34,9 +34,11 @@ def evenClassPart (k n : ℕ) : ℂ :=
 theorem all_residue_row_eq_odd_add_even {k : ℕ} (hk : 0 < k) (n : ℕ) :
     fourierCoefficient (fun _ => Finset.univ) k n = oddClassPart k n + evenClassPart k n := by
   rw [fourierCoefficient_eq_arithmeticSum (fun _ => Finset.univ) hk]
-  change -prefactor k * ((coefficient k 0 : ℂ) *
-      (∑ d : Fin (2 * k), frequencyWeight (2 * k) (shiftedFrequency k n) d)) = _
-  rw [all_frequency_sum_eq_divisor_sum (Nat.mul_pos (by decide) hk)]
+  have hAll : arithmeticSum (fun _ => Finset.univ) k (shiftedFrequency k n) =
+      ∑ d : Fin (2 * k), frequencyWeight (2 * k) (shiftedFrequency k n) d := by
+    unfold arithmeticSum frequencyWeight
+    simp only [Nat.cast_mul, Nat.cast_ofNat]
+  rw [hAll, all_frequency_sum_eq_divisor_sum (Nat.mul_pos (by decide) hk)]
   rw [← Finset.sum_filter_add_sum_filter_not (2 * k).divisors Odd
     (fun g => reducedFrequencySum ((2 * k) / g) (shiftedFrequency k n))]
   simp only [oddClassPart, evenClassPart, mul_add]

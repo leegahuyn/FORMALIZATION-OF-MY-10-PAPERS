@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.CoulombQuotientTestL2
 
 namespace ManuscriptAudit.Paper10RemainderOnCusp
 
-open LiteralCuspTruncation CoulombQuotientTestL2 CoulombNegativeQuotientForm
+open CoulombQuotientTestL2 CoulombNegativeQuotientForm
+open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
 open Paper10RemainderCoercivity
 
 theorem actual_cusp_ray_unbounded (D : GammaTwoFundamentalDomain) (a : ℝ) :

@@ -57,15 +57,24 @@ theorem comparison_injective (F : D X) : Function.Injective (comparison X F) := 
   apply EtaleProetaleHOne.comparison_injective X ((proetaleLift X).obj F)
   exact hxy
 
+private theorem directImageLiftIso_app (F : D X) (W : X.Etaleᵒᵖ) :
+    (directImageLiftIso X F).hom.hom.app W =
+      𝟙 (((direct₁ X).obj ((proetaleLift X).obj F)).obj.obj W) := by
+  let H := sheafToPresheaf X.smallEtaleTopology B
+  change (H.map (directImageLiftIso X F).hom).app W = _
+  rw [directImageLiftIso, Functor.preimageIso_hom]
+  change (H.map (H.preimage _)).app W = _
+  rw [H.map_preimage] <;> rfl
+
 theorem directImageLiftIso_naturality {F G : D X} (f : F ⟶ G) :
     (etaleLift X).map ((direct₀ X).map f) ≫ (directImageLiftIso X G).hom =
       (directImageLiftIso X F).hom ≫ (direct₁ X).map ((proetaleLift X).map f) := by
-  let H := sheafToPresheaf X.smallEtaleTopology B
-  apply H.map_injective
-  simp only [Functor.map_comp, directImageLiftIso, Functor.preimageIso_hom, Functor.map_preimage]
+  apply Sheaf.hom_ext
   apply NatTrans.ext
   funext W
-  simp only [NatTrans.comp_app, Functor.associator_hom_app, Category.comp_id, Category.id_comp] <;> rfl
+  change ((etaleLift X).map ((direct₀ X).map f)).hom.app W ≫ (directImageLiftIso X G).hom.hom.app W =
+    (directImageLiftIso X F).hom.hom.app W ≫ ((direct₁ X).map ((proetaleLift X).map f)).hom.app W
+  simp only [directImageLiftIso_app, Category.comp_id, Category.id_comp] <;> rfl
 
 /-- The natural degree-one comparison from the actual small étale direct image. -/
 theorem comparison_naturality {F G : D X} (f : F ⟶ G)

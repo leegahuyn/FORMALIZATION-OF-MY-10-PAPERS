@@ -14,6 +14,9 @@ variable (l : ℕ) [Fact l.Prime] (G : Type*) [AddCommGroup G]
 variable (B : Basis (Fin 2) (ZMod (l ^ 1)) (PowerTorsion l G 1))
 variable (h : Function.Surjective (fun P : G => l • P))
 
+local instance finiteLevelModule (n : ℕ) : Module ℤ_[l] (PowerTorsion l G n) :=
+  Module.compHom (PowerTorsion l G n) (PadicInt.toZModPow n : ℤ_[l] →+* ZMod (l ^ n))
+
 include B h in
 /-- Native evaluation is reduction by a power of the coefficient prime. -/
 theorem ker_evaluate (n : ℕ) :

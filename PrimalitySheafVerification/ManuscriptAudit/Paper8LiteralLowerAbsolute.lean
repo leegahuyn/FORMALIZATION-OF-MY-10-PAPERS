@@ -81,7 +81,7 @@ theorem reflected_kernel_norm_lower {α β : ℝ} (hα : 0 ≤ α) (hα' : α �
     _ = ‖phiAtQ (-α) (-β) k ζ Q - singleRemainder (-α) (-β) k ζ Q‖ := by
       rw [hEq, add_sub_cancel_right]
     _ ≤ ‖phiAtQ (-α) (-β) k ζ Q‖ + ‖singleRemainder (-α) (-β) k ζ Q‖ := norm_sub_le _ _
-    _ ≤ _ := add_le_add_left hRem ‖phiAtQ (-α) (-β) k ζ Q‖
+    _ ≤ _ := add_le_add_right hRem ‖phiAtQ (-α) (-β) k ζ Q‖
 
 private theorem coefficient_not_summable : ¬ Summable (fun j : ℕ => coefficient (j + 1) 0) := by
   intro h

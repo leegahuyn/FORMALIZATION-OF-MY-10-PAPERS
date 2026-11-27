@@ -34,8 +34,8 @@ def siteIso :
   letI : P.Faithful := (postcomposeFullyFaithful j).faithful
   let c : baseChange (k ≫ j) ≅ B ⋙ baseChange k :=
     MorphismProperty.Over.pullbackComp (P := @WeaklyEtale) (Q := ⊤) k j
-  exact isoWhiskerLeft P c ≪≫ (Functor.associator P B (baseChange k)).symm ≪≫
-    isoWhiskerRight (asIso a.unit).symm (baseChange k) ≪≫ Functor.leftUnitor _
+  exact Functor.isoWhiskerLeft P c ≪≫ (Functor.associator P B (baseChange k)).symm ≪≫
+    Functor.isoWhiskerRight (asIso a.unit).symm (baseChange k) ≪≫ Functor.leftUnitor _
 
 /-- Restriction of the actual full native direct image to the open. -/
 def restrictionDirectImageCompIso :

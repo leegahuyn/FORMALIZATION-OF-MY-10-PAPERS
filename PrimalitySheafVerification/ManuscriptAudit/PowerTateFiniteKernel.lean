@@ -21,7 +21,12 @@ theorem evaluate_eq_nsmul_later (n k : ℕ) (x : Tate l G) :
       have h := congrArg (fun P : PowerTorsion l G (n + k) => P.val)
         (evaluate_transition l G (n + k) x)
       change l • (evaluate l G (n + k + 1) x).val = (evaluate l G (n + k) x).val at h
-      rw [ih, ← h, pow_succ, mul_nsmul']
+      rw [ih, ← h]
+      let P : G := (evaluate l G (n + k + 1) x).val
+      change l ^ k • (l • P) = l ^ (k + 1) • P
+      calc
+        _ = (l ^ k * l) • P := by rw [mul_nsmul']
+        _ = _ := congrArg (fun j : ℕ => j • P) (pow_succ l k).symm
 
 private theorem exists_uniform_annihilator (f : AddMonoid.End G) (hf : Finite ↥f.ker) :
     ∃ k : ℕ, ∀ (n : ℕ) (P : PowerTorsion l G n), f P.val = 0 → (l ^ k) • P.val = 0 := by
@@ -62,8 +67,9 @@ private theorem exists_uniform_annihilator (f : AddMonoid.End G) (hf : Finite �
 theorem endMap_injective (f : AddMonoid.End G) (hf : Finite ↥f.ker) :
     Function.Injective (endMap l f) := by
   apply LinearMap.ker_eq_bot.mp
-  apply Submodule.eq_bot_iff.mpr
+  refine le_antisymm ?_ bot_le
   intro x hx
+  rw [Submodule.mem_bot]
   have hfx := LinearMap.mem_ker.mp hx
   obtain ⟨k, hk⟩ := exists_uniform_annihilator l G f hf
   apply PowerTateModule.ext l G

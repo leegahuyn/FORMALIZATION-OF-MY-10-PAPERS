@@ -55,8 +55,7 @@ private theorem freeSections_natural {X : Scheme.{0}} (W : X.ProEt) {F G : S X}
   change yonedaEquiv ((b.homEquiv T (e.functor.obj G)) ((a.homEquiv (highFree W) G) (f ≫ g))) =
     g.hom.app (op W)
       (yonedaEquiv ((b.homEquiv T (e.functor.obj F)) ((a.homEquiv (highFree W) F) f)))
-  rw [a.homEquiv_naturality_right, b.homEquiv_naturality_right, yonedaEquiv_comp]
-  rfl
+  rw [a.homEquiv_naturality_right, b.homEquiv_naturality_right, yonedaEquiv_comp] <;> rfl
 
 private abbrev eval {X : Scheme.{0}} (W : X.ProEt) :=
   (sheafSections (Scheme.ProEt.topology X) A).obj (op W)
@@ -64,7 +63,7 @@ private abbrev eval {X : Scheme.{0}} (W : X.ProEt) :=
 private def integerSections {X : Scheme.{0}} (W : X.ProEt) {G : A ⥤ S X}
     (a : G ⊣ eval W) (F : S X) : (G.obj Z ⟶ F) ≃ F.obj.obj (op W) :=
   (a.homEquiv Z F).trans
-    (AddCommGrpCat.coyonedaObjIsoForget.{1}.app (F.obj.obj (op W))).toEquiv
+    ((AddCommGrpCat.coyonedaObjIsoForget.{1}).app (F.obj.obj (op W))).toEquiv
 
 private theorem integerSections_natural {X : Scheme.{0}} (W : X.ProEt) {E : A ⥤ S X}
     (a : E ⊣ eval W) {F G : S X} (f : E.obj Z ⟶ F) (g : F ⟶ G) :

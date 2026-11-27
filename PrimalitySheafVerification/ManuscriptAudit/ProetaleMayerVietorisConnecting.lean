@@ -56,7 +56,8 @@ private def middleIso : (S j k l a b hD hCover).X₂ ≅
     (extensionByZero j A).obj (integers U) ⊞ (extensionByZero k A).obj (integers V) := by
   let H := (sheafEquivalence X).inverse
   letI : H.Additive := H.additive_of_preserves_binary_products
-  exact (mapBiprod H _ _) ≪≫ biprod.mapIso (openIso j) (openIso k)
+  letI := preservesBinaryBiproducts_of_preservesBinaryProducts H
+  exact (H.mapBiprod _ _) ≪≫ biprod.mapIso (openIso j) (openIso k)
 
 variable (F : C X) (n : ℕ)
 

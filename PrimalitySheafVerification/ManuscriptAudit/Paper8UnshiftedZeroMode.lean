@@ -45,10 +45,12 @@ theorem sqrt_smul_coefficient (j : ℕ) :
     simpa only [Nat.mul_one, ← Real.sqrt_eq_rpow, squareRootScale] using
       coefficient_zero_rescale (Nat.succ_pos j) (Nat.succ_pos 0)
   have hsC : (squareRootScale j : ℂ) ≠ 0 := by exact_mod_cast hs.ne'
+  have hD : ((j + 1 : ℕ) : ℂ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero j
   unfold unshiftedCoefficient rawTerm
-  rw [hC, Complex.real_smul, neg_zero]
+  rw [hC, Complex.real_smul]
+  simp only [Nat.cast_zero, neg_zero]
   push_cast
-  field_simp [hsC] <;> ring
+  field_simp [hsC, hD] <;> ring
 
 theorem unshifted_zero_mode_has_no_ordered_limit {A : ℂ} (hA : A ≠ 0)
     (hMain : Tendsto (fun N => (squareRootScale N)⁻¹ •
@@ -66,7 +68,8 @@ theorem unshifted_zero_mode_has_no_ordered_limit {A : ℂ} (hA : A ≠ 0)
     refine tendsto_atTop.2 fun b => (eventually_ge_atTop b).mono fun n hn => ?_
     exact hn.trans (Nat.le_succ n)
   have hScale : Tendsto squareRootScale atTop atTop := by
-    simp only [squareRootScale, Real.sqrt_eq_rpow]
+    change Tendsto (fun j : ℕ => Real.sqrt ((j + 1 : ℕ) : ℝ)) atTop atTop
+    simp only [Real.sqrt_eq_rpow]
     exact (tendsto_rpow_atTop (by norm_num : (0 : ℝ) < 1 / 2)).comp
       ((tendsto_natCast_atTop_atTop (R := ℝ)).comp hShift)
   have hz := normalized_partial_sums_tendsto_zero squareRootScale
@@ -75,7 +78,15 @@ theorem unshifted_zero_mode_has_no_ordered_limit {A : ℂ} (hA : A ≠ 0)
       (∑ j ∈ Finset.range (N + 1), squareRootScale j • unshiftedCoefficient (j + 1) 0))
       atTop (𝓝 (-(coefficient 1 0 : ℂ) * A)) := by
     refine (tendsto_const_nhds.mul hMain).congr fun N => ?_
-    simp only [sqrt_smul_coefficient, ← Finset.mul_sum, Complex.real_smul]
+    change -(coefficient 1 0 : ℂ) * ((squareRootScale N)⁻¹ •
+        (∑ j ∈ Finset.range (N + 1), rawTerm j)) =
+      (squareRootScale N)⁻¹ •
+        (∑ j ∈ Finset.range (N + 1), squareRootScale j • unshiftedCoefficient (j + 1) 0)
+    have hRow : (∑ j ∈ Finset.range (N + 1), squareRootScale j • unshiftedCoefficient (j + 1) 0) =
+        ∑ j ∈ Finset.range (N + 1), -(coefficient 1 0 : ℂ) * rawTerm j :=
+      Finset.sum_congr rfl (fun j _ => sqrt_smul_coefficient j)
+    rw [hRow, ← Finset.mul_sum]
+    simp only [Complex.real_smul]
     ring
   have hP : (coefficient 1 0 : ℂ) ≠ 0 := by
     exact_mod_cast (coefficient_pos (Nat.succ_pos 0) 0).ne'

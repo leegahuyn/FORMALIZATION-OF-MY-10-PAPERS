@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper10RemainderOnCusp
 
 namespace ManuscriptAudit.Paper10ActualCuspRemainderAction
 
-open LiteralCuspTruncation CoulombQuotientTestL2 CoulombNegativeQuotientForm
+open CoulombQuotientTestL2 CoulombNegativeQuotientForm
+open Mock2FA.PaperCorrections.AutomorphicSobolev.GammaTwoQuotientGeometry
 open CoulombCuspEnergyIdentity
 
 noncomputable section

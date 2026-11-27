@@ -78,8 +78,11 @@ private theorem correct_split {p : ℕ} [primeRow : Fact p.Prime]
     letI : Fact (Nat.Prime 7) := primeRow
     have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 7) L A)) (action 7 L l A) =
         (signedTrace A : ℤ_[l]) := by
-      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-        Paper5OrdinarySevenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+      have hc : signedTrace A =
+          (8 : ℤ) - (Nat.card (paper5TraceCurve 7 A).toProjective.Point : ℤ) := by
+        rw [signedTrace, ZMod.card, paper_curve_eq] <;> norm_num
+      rw [hc]
+      exact Paper5OrdinarySevenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
     exact ⟨Paper5OrdinarySevenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinarySevenTwistTate.trace_det L l hl A hA).2⟩
   · letI : Algebra (ZMod 13) L := algebraRow
@@ -87,8 +90,11 @@ private theorem correct_split {p : ℕ} [primeRow : Fact p.Prime]
     letI : Fact (Nat.Prime 13) := primeRow
     have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 13) L A)) (action 13 L l A) =
         (signedTrace A : ℤ_[l]) := by
-      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-        Paper5OrdinaryThirteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+      have hc : signedTrace A =
+          (14 : ℤ) - (Nat.card (paper5TraceCurve 13 A).toProjective.Point : ℤ) := by
+        rw [signedTrace, ZMod.card, paper_curve_eq] <;> norm_num
+      rw [hc]
+      exact Paper5OrdinaryThirteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
     exact ⟨Paper5OrdinaryThirteenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinaryThirteenTwistTate.trace_det L l hl A hA).2⟩
   · letI : Algebra (ZMod 19) L := algebraRow
@@ -96,8 +102,11 @@ private theorem correct_split {p : ℕ} [primeRow : Fact p.Prime]
     letI : Fact (Nat.Prime 19) := primeRow
     have ht : LinearMap.trace ℤ_[l] (Tate l (GeometricPoints (ZMod 19) L A)) (action 19 L l A) =
         (signedTrace A : ℤ_[l]) := by
-      simpa only [signedTrace, ZMod.card, paper_curve_eq] using
-        Paper5OrdinaryNineteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
+      have hc : signedTrace A =
+          (20 : ℤ) - (Nat.card (paper5TraceCurve 19 A).toProjective.Point : ℤ) := by
+        rw [signedTrace, ZMod.card, paper_curve_eq] <;> norm_num
+      rw [hc]
+      exact Paper5OrdinaryNineteenTwistPointCounts.actual_trace_eq_signed_count L l hl A hA
     exact ⟨Paper5OrdinaryNineteenTwistTate.tateBasis L l hl A hA, ht,
       (Paper5OrdinaryNineteenTwistTate.trace_det L l hl A hA).2⟩
   · letI : Algebra (ZMod 31) L := algebraRow
@@ -216,7 +225,8 @@ theorem all_printed_twist_extension_trace {r : Row} (hr : r ∈ printedRows)
   have hp := lower_bound hr
   by_cases hn : r.prime % 3 = 2
   · have hlp : l ≠ r.prime := by rcases hl with rfl | rfl <;> omega
-    exact Paper5NonsplitAllPrimeAdic.trace_pow_eq_point_count r.prime L l hp hn hlp E hA
+    simpa only [Int.cast_add, Int.cast_sub, Int.cast_natCast, Int.cast_one] using
+      Paper5NonsplitAllPrimeAdic.trace_pow_eq_point_count r.prime L l hp hn hlp E hA
   · have h3 : r.prime % 3 ≠ 0 := by
       intro he
       have h := (Nat.dvd_prime (printedRows_prime hr)).mp (Nat.dvd_iff_mod_eq_zero.mpr he)

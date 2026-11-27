@@ -70,8 +70,9 @@ theorem covariant_eq_mass_add_exterior (r : ℝ) (hr : 1 ≤ r) :
   have hA : Differentiable ℝ a :=
     (contDiff_infty.mp (amplitude_smooth r) 1).differentiable (by decide)
   have hder (y : ℝ) : HasDerivAt (fun z : ℝ => z*a z^2) (b y) y := by
-    convert (hasDerivAt_id y).mul ((hA y).hasDerivAt.pow 2) using 1
-    <;> simp [b, id] <;> ring
+    have hAy : HasDerivAt a (deriv a y) y := (hA y).hasDerivAt
+    have hProd := HasDerivAt.mul (hasDerivAt_id y) (HasDerivAt.mul hAy hAy)
+    convert hProd using 1 <;> first | rfl | (try simp [b, id, pow_two]; ring)
   have hz : (∫ y : ℝ in (1 : ℝ)..6, b y) = 0 := by
     rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun y _ => hder y)
       (hb.intervalIntegrable (μ := (volume : Measure ℝ)) 1 6)]
@@ -82,9 +83,10 @@ theorem covariant_eq_mass_add_exterior (r : ℝ) (hr : 1 ≤ r) :
       (a y^2 + exteriorDensity r y) + b y := by
     dsimp [a,b,exteriorDensity]
     ring
-  have hm := (ha.pow 2).intervalIntegrable (μ := (volume : Measure ℝ)) (1 : ℝ) 6
-  have he := ((continuous_id.mul hd).pow 2).intervalIntegrable
-    (μ := (volume : Measure ℝ)) (1 : ℝ) 6
+  have hm : IntervalIntegrable (fun y : ℝ => amplitude r y^2) volume 1 6 :=
+    (ha.pow 2).intervalIntegrable 1 6
+  have he : IntervalIntegrable (exteriorDensity r) volume 1 6 :=
+    ((continuous_id.mul hd).pow 2).intervalIntegrable 1 6
   unfold energy mass exteriorEnergy
   simp_rw [show ∀ y, amplitude r y^2 + (y * deriv (amplitude r) y + amplitude r y)^2 =
       (amplitude r y^2 + exteriorDensity r y) + b y from hpoint]

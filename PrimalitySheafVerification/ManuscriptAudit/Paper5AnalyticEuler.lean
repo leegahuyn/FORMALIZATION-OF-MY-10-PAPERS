@@ -196,7 +196,11 @@ theorem actual_euler_hasDerivAt (A : ℤ) {s : ℂ} (hs : 3 / 2 < s.re) :
   have h := paper7_dirichlet_log_series_hasDeriv (root A) (fun _ : Fin 2 => 1)
     (fun _ => by simp) hσ (root_bound A)
   have hD : HasDerivAt (logSum A) (∑' p : Primes, logarithmicDerivative A p s) s := by
-    simpa only [logSum, one_mul, sum_root_logarithmic_derivatives A _ hs] using h
+    change HasDerivAt
+      (fun z : ℂ => ∑' p : Primes, ∑ i : Fin 2,
+        (1 : ℂ) * (-Complex.log (1 - scaledRoot p (root A i p) z)))
+      (∑' p : Primes, logarithmicDerivative A p s) s
+    simpa only [one_mul, sum_root_logarithmic_derivatives A _ hs] using h
   have hopen : IsOpen {z : ℂ | (3 / 2 : ℝ) < z.re} :=
     isOpen_lt continuous_const Complex.continuous_re
   have hEq : (fun z : ℂ => ∏' p : Primes, localFactor A p z) =ᶠ[𝓝 s]

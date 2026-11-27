@@ -12,7 +12,6 @@ namespace ManuscriptAudit.ProetaleMayerVietorisSite
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 open ProetaleOpenLocalLifts (identityObject openObject openArrow)
 open ProetaleTwoOpenHOne (twoOpenCover)
-open TwoOpenCokernelLift (coverObjects coverArrows)
 
 noncomputable section
 
@@ -56,10 +55,8 @@ private theorem twoArrows_cover :
   apply (Sieve.generate_le_iff _ _).mpr
   rintro _ _ ⟨i⟩
   cases i
-  · exact Sieve.ofArrows_mk (coverObjects (openObject j) (openObject k))
-      (coverArrows (openArrow j) (openArrow k)) false
-  · exact Sieve.ofArrows_mk (coverObjects (openObject j) (openObject k))
-      (coverArrows (openArrow j) (openArrow k)) true
+  · exact Sieve.ofArrows_mk _ _ WalkingPair.left
+  · exact Sieve.ofArrows_mk _ _ WalkingPair.right
 
 include hD hCover in
 /-- The higher-universe presentation of the actual native open cover and pullback. -/
