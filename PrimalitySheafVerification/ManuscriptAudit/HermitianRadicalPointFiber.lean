@@ -41,7 +41,7 @@ private def rootPowerEquiv {m : ℕ} [NeZero m] {z : K} (hz : IsPrimitiveRoot z 
 theorem prod_root_differences {D : Type*} [CommRing D] [Algebra K D] (T : D)
     {m : ℕ} [NeZero m] [Fintype (rootsOfUnity m K)] {z : K}
     (hz : IsPrimitiveRoot z m) (u : K) :
-    (∏ x : rootsOfUnity m K, T - algebraMap K D (rootValue x * u)) =
+    (∏ x : rootsOfUnity m K, (T - algebraMap K D (rootValue x * u))) =
       T ^ m - algebraMap K D (u ^ m) := by
   have hp := X_pow_sub_C_eq_prod hz (NeZero.pos m) (show u ^ m = u ^ m from rfl)
   have he := congrArg (Polynomial.eval₂ (algebraMap K D) T) hp

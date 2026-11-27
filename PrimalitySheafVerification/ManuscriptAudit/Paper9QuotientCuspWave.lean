@@ -88,8 +88,11 @@ theorem exists_small_quotient_residual (D : GammaTwoFundamentalDomain)
     continuous_iff_continuousAt.mpr (fun t => (trial_hasDerivAt b b' k R t hb).continuousAt)
   refine ⟨R, hR, ?_⟩
   unfold squaredDensity
-  rw [integral_density D _ ((residual_continuous b' b'' k R hB hC).norm.pow 2) ha hab,
-    integral_density D _ (hTrial.norm.pow 2) ha hab]
+  have hResSq : Continuous (fun t => ‖residual b' b'' k R t‖ ^ (2 : ℕ)) :=
+    (residual_continuous b' b'' k R hB hC).norm.fun_pow 2
+  have hTrialSq : Continuous (fun t => ‖trial b k R t‖ ^ (2 : ℕ)) := hTrial.norm.fun_pow 2
+  rw [integral_density D (fun t => ‖residual b' b'' k R t‖ ^ (2 : ℕ)) hResSq ha hab,
+    integral_density D (fun t => ‖trial b k R t‖ ^ (2 : ℕ)) hTrialSq ha hab]
   simp only [Real.log_exp, mul_one] at hI ⊢
   linarith only [hI]
 

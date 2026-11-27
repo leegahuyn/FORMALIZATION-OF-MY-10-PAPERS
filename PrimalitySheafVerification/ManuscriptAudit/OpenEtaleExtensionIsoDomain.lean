@@ -39,7 +39,11 @@ private theorem counit_isIso_of_iso (F : Sheaf U.smallEtaleTopology C.{u}) :
   apply isIso_of_geometric_stalks
   intro Ω _ _ s
   have h : (s ≫ inv i) ≫ i = s := by simp
-  simpa only [h] using extensionCounit_stalk_isIso i (s ≫ inv i) F
+  let P (t : Spec (CommRingCat.of Ω) ⟶ U) : Prop :=
+    IsIso ((Scheme.pointSmallEtale t).sheafFiber.map
+      ((abelianExtensionByZeroAdjunction i).counit.app F))
+  have hs : P ((s ≫ inv i) ≫ i) := extensionCounit_stalk_isIso i (s ≫ inv i) F
+  exact Eq.mp (congrArg P h) hs
 
 /-- Along a scheme isomorphism, extending the constant abelian sheaf returns the constant sheaf. -/
 def extensionByZeroConstantIsoOfIso (M : C.{u}) :

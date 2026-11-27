@@ -25,11 +25,13 @@ private theorem three_ne (h : (3 : E) ≠ 0) : (3 : L) ≠ 0 := by
 variable {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0) (hA : A ≠ 0)
 variable {z : E} (hz : IsPrimitiveRoot z 3)
 
+include h₂ h₃ hA in
 private theorem discriminant_ne :
     (shortCubic (0 : L) (algebraMap E L A)).Δ ≠ 0 :=
   shortCubic_discriminant_ne_zero (two_ne E L h₂) (three_ne E L h₃)
     ((map_ne_zero (algebraMap E L)).mpr hA)
 
+include hz in
 private theorem primitive : IsPrimitiveRoot (algebraMap E L z) 3 :=
   hz.map_of_injective (algebraMap E L).injective
 
