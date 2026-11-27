@@ -44,7 +44,7 @@ theorem yChartEquiv_x : yChartEquiv K (xY K) = xCoeff K := by
     AdjoinRoot.liftAlgHom_of] <;> rfl
 
 theorem yChartEquiv_z : yChartEquiv K (zY K) = zCoeff K :=
-  AdjoinRoot.algEquivOfEq_root K _ _ (yEquation_eq K)
+  AdjoinRoot.algEquivOfEq_root (R := K) _ _ (yEquation_eq K)
 
 def zSchemeIso : zScheme K ≅ Spec (CommRingCat.of (NodalConductor.coordinates K)) :=
   Scheme.Spec.mapIso (zChartEquiv K).symm.toCommRingCatIso.op

@@ -2,7 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineLineDivisorSheaf
 import PrimalitySheafVerification.ManuscriptAudit.EtaleObjectRestriction
-import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportEtaleCoproduct
+import PrimalitySheafVerification.ManuscriptAudit.FiniteSupportAffineCoproductMap
 
 /-! The restriction of the actual affine-line divisor coproduct to an affine open. -/
 
@@ -13,8 +13,8 @@ open EtaleObjectRestriction FiniteSupportPresheaf IsDedekindDomain
 
 noncomputable section
 
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
+set_option maxHeartbeats 900000
+set_option maxRecDepth 192
 
 variable (K : Type) [Field K] [IsAlgClosed K]
 variable (R : CommRingCat.{0}) (j : Spec R ⟶ X K) [IsOpenImmersion j]
@@ -34,27 +34,24 @@ private abbrev fullPiece (p : P K) :=
 private abbrev affinePiece (p : P K) := (E K).inverse.obj (fullPiece K p)
 
 /-- Restriction from the affine line to its affine open, on affine-sheaf sites. -/
-abbrev affineOpenRestriction := (E K).functor ⋙ restriction j ⋙ (EV R).inverse
+abbrev affineOpenRestriction :
+    Sheaf (Scheme.AffineEtale.topology (X K)) AddCommGrpCat.{0} ⥤
+      Sheaf (Scheme.AffineEtale.topology (V R)) AddCommGrpCat.{0} :=
+  (E K).functor ⋙ (restriction j ⋙ (EV R).inverse)
 
 /-- The open restriction of one geometric summand of the divisor sheaf. -/
 abbrev affineOpenDivisorPiece (p : P K) := (affineOpenRestriction K R j).obj (affinePiece K p)
 
 /-- Restriction carries the actual divisor coproduct to the coproduct
 of the open restrictions of its geometric summands. -/
-set_option maxHeartbeats 2600000 in
 def affineRestrictedDivisorIso :
     (affineOpenRestriction K R j).obj (affineDivisorSheaf K) ≅
       affineEtaleDirectSum (V R) (affineOpenDivisorPiece K R j) := by
   let Q := affineOpenRestriction K R j
-  let a := (E K).toAdjunction.comp ((restrictionAdjunction j).comp (EV R).symm.toAdjunction)
-  letI : PreservesColimitsOfSize.{0, 0} Q := a.leftAdjoint_preservesColimits
-  let F₀ := affinePiece K
-  let c : Cofan F₀ := Cofan.mk (affineDivisorSheaf K) (summand (X K) F₀)
-  let h : IsColimit c := affineEtaleDirectSumIsColimit (X K) F₀
-  let hMapped : IsColimit (Q.mapCocone c) := isColimitOfPreserves Q h
-  let h' := (Cofan.isColimitMapCoconeEquiv Q F₀ c) hMapped
-  exact h'.coconePointUniqueUpToIso
-    (affineEtaleDirectSumIsColimit (V R) (affineOpenDivisorPiece K R j))
+  let G := (EV R).functor ⋙ SmallEtaleBaseChange.directImage j AddCommGrpCat.{0} ⋙ (E K).inverse
+  let adj : Q ⊣ G :=
+    (E K).toAdjunction.comp ((restrictionAdjunction j).comp (EV R).symm.toAdjunction)
+  exact mapAffineDirectSumIso (S := X K) (T := V R) Q adj (affinePiece K)
 
 end
 

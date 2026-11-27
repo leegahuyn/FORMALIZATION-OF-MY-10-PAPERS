@@ -46,6 +46,7 @@ theorem compactSupport_low_degree_cards (hℓ : 2 ≤ ℓ) :
     Nat.card_eq_one_iff_unique.mpr ⟨hP₀, ⟨0⟩⟩,
     Nat.card_congr hC₂.toEquiv, Nat.card_congr hP₁.toEquiv,
     Nat.card_congr hP₂.toEquiv, Nat.card_zmod]
+  exact ⟨rfl, rfl⟩
 
 end ManuscriptAudit.CuspCompactSupportDegreeTwo
 

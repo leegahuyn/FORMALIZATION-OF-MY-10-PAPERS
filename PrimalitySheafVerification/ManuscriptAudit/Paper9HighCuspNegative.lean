@@ -31,13 +31,13 @@ private theorem bump_deriv_differentiable : Differentiable ℝ (deriv cuspBump) 
   exact hs.deriv'.differentiable (by decide)
 
 theorem heightAmplitude_deriv (Y y : ℝ) :
-    deriv (heightAmplitude Y) y = (deriv cuspBump (y - Y) : ℂ) := by
+    deriv (heightAmplitude Y) y = ((deriv cuspBump (y - Y) : ℝ) : ℂ) := by
   have h := ((bump_differentiable (y - Y)).hasDerivAt.comp y
     ((hasDerivAt_id y).sub_const Y)).ofReal_comp
   simpa [Function.comp_def, heightAmplitude, heightTest] using h.deriv
 
 theorem heightAmplitude_second (Y y : ℝ) :
-    deriv (deriv (heightAmplitude Y)) y = (deriv (deriv cuspBump) (y - Y) : ℂ) := by
+    deriv (deriv (heightAmplitude Y)) y = ((deriv (deriv cuspBump) (y - Y) : ℝ) : ℂ) := by
   rw [funext (heightAmplitude_deriv Y)]
   have h := ((bump_deriv_differentiable (y - Y)).hasDerivAt.comp y
     ((hasDerivAt_id y).sub_const Y)).ofReal_comp
@@ -76,6 +76,7 @@ theorem actual_compact_cusp_test_negative (x : ℝ) :
     have him := stripPoint_height x t ht.1
     have hhigh : 1 < (stripPoint x t).im := by rw [him]; linarith [ht.1]
     have hsub : 1 + t - 1 = t := by ring
+    change quadraticDensity 1 (stripPoint x t) = deriv (deriv cuspBump) t * cuspBump t
     rw [quadraticDensity_high _ _ hhigh, him, hsub]
   rw [he]
   exact Paper9CuspLaplacianTest.compact_cusp_test_negative

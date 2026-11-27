@@ -23,12 +23,17 @@ def rootRingCongr {p q : Polynomial (Polynomial S)} (h : p = q) :
 
 private theorem rootRingCongr_of {p q : Polynomial (Polynomial S)} (h : p = q)
     (a : Polynomial S) : rootRingCongr S h (AdjoinRoot.of p a) = AdjoinRoot.of q a := by
-  rw [rootRingCongr, AdjoinRoot.coe_algEquivOfEq, AdjoinRoot.coe_algHomOfDvd,
-    AdjoinRoot.liftAlgHom_of] <;> rfl
+  rw [rootRingCongr, AdjoinRoot.coe_algEquivOfEq, AdjoinRoot.coe_algHomOfDvd]
+  let j := Algebra.ofId (Polynomial S) (AdjoinRoot q)
+  have h0 : p.eval₂ j.toRingHom (AdjoinRoot.root q) = 0 := by
+    change Polynomial.aeval (AdjoinRoot.root q) p = 0
+    rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero]
+    exact h.symm.dvd
+  exact AdjoinRoot.liftAlgHom_of p j (AdjoinRoot.root q) h0 a
 
 private theorem rootRingCongr_root {p q : Polynomial (Polynomial S)} (h : p = q) :
     rootRingCongr S h (AdjoinRoot.root p) = AdjoinRoot.root q :=
-  AdjoinRoot.algEquivOfEq_root S p q h
+  AdjoinRoot.algEquivOfEq_root (R := S) p q h
 
 private def zIso := rootRingCongr S (zEquation_map R S)
 private def yIso := rootRingCongr S (yEquation_map R S)

@@ -62,7 +62,7 @@ theorem series_eq_principal (ψ : DirichletCharacter ℂ 4) (hψ : ψ (-1 : ZMod
       · simp [hn, hψ, principalChar, ho]
     · simp only [principalChar, if_neg ho]
       exact MulChar.map_nonunit ψ (even_residue_not_unit n ho)
-  rw [hCoefficient]
+  exact congrArg (fun u : ℂ => u * jacobiTheta₂_term n 0 τ) hCoefficient
 
 theorem series_eq_zero (ψ : DirichletCharacter ℂ 4) (hψ : ψ (-1 : ZMod 4) = -1) :
     series ψ = 0 := by
@@ -71,7 +71,11 @@ theorem series_eq_zero (ψ : DirichletCharacter ℂ 4) (hψ : ψ (-1 : ZMod 4) =
   have ha (n : ℤ) : a (-n) = -a n := by
     have hc : ψ ((-n : ℤ) : ZMod 4) = -ψ (n : ZMod 4) := by
       rw [Int.cast_neg, ← neg_one_mul (n : ZMod 4), map_mul, hψ, neg_one_mul]
-    simp only [a, hc, jacobiTheta₂_term, mul_zero, zero_add, Int.cast_neg, neg_sq, neg_mul]
+    have hTerm : jacobiTheta₂_term (-n) 0 τ = jacobiTheta₂_term n 0 τ := by
+      simp only [jacobiTheta₂_term, mul_zero, zero_add, Int.cast_neg, neg_sq]
+    change ψ ((-n : ℤ) : ZMod 4) * jacobiTheta₂_term (-n) 0 τ =
+      -(ψ (n : ZMod 4) * jacobiTheta₂_term n 0 τ)
+    rw [hc, hTerm, neg_mul]
   have he : (∑' n, a n) = -(∑' n, a n) := by
     calc
       _ = ∑' n : ℤ, a (-n) := ((Equiv.neg ℤ).tsum_eq a).symm

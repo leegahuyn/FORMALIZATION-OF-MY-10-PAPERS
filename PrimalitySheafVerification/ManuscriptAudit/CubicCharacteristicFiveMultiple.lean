@@ -19,7 +19,7 @@ private theorem five_nsmul_self_of_four {G : Type*} [AddCommGroup G] {P : G}
 private theorem five_nsmul_neg_of_three {G : Type*} [AddCommGroup G] {P : G}
     (h : (3 : ℕ) • P = 0) : (5 : ℕ) • P = -P := by
   have h₆ : (6 : ℕ) • P = 0 := by
-    rw [show (6 : ℕ) = 2 * 3 by decide, mul_nsmul, h, smul_zero]
+    rw [show (6 : ℕ) = 2 * 3 by decide, mul_nsmul', h, smul_zero]
   apply eq_neg_of_add_eq_zero_left
   calc
     _ = (5 : ℕ) • P + (1 : ℕ) • P := by rw [one_nsmul]
@@ -106,26 +106,22 @@ theorem five_some {x y : K} (hA : A ≠ 0) (hA4 : A ^ 4 = 1)
       have d := hySq
       rw [hy, zero_pow (by decide : (2 : ℕ) ≠ 0)] at d
       exact eq_neg_of_add_eq_zero_left ((mul_eq_zero.mp d.symm).resolve_left hA)
-    apply self_case h₄
-    · rw [hx25, ht]; ring
-    · rw [hy]; simp
+    exact self_case h₄ (by rw [hx25, ht]; ring) (by simp [hy])
   have hD : t + 1 ≠ 0 := by
     intro ht
     exact pow_ne_zero 2 hy (by rw [hySq, ht, mul_zero])
   by_cases hx : x = 0
   · have ht : t = 0 := by simp [t, hx]
-    apply flex_case hy
-    · simp [hx]
-    · simp [hx]
-    · rw [hy25, ht, zero_add, one_pow, mul_one]
+    exact flex_case hy (by simp [hx]) (by simp [hx])
+      (by rw [hy25, ht, zero_add, one_pow, mul_one])
   by_cases ht : t = 1
   · have h5 : (5 : K) = 0 := CharP.cast_eq_zero K 5
-    apply flex_case hy
-    · rw [hCube, ht]
+    have hf : x * (x ^ 3 + 4 * A) = 0 := by
+      rw [hCube, ht]
       linear_combination (x * A) * h5
-    · rw [hx25, ht, one_pow, mul_one]
-    · have h12 : (1 + 1 : K) ^ 12 = 1 := by linear_combination 819 * h5
-      rw [hy25, ht, h12, mul_one]
+    have h12 : (1 + 1 : K) ^ 12 = 1 := by linear_combination 819 * h5
+    exact flex_case hy hf (by rw [hx25, ht, one_pow, mul_one])
+      (by rw [hy25, ht, h12, mul_one])
   by_cases hV : ordinateFactor t = 0
   · obtain ⟨h₂P, h₂⟩ := double_some hA hy hP
     have hy₂ : (2 * x ^ 6 - A ^ 2) / y ^ 3 = 0 :=
@@ -136,9 +132,7 @@ theorem five_some {x y : K} (hA : A ≠ 0) (hA4 : A ^ 4 = 1)
       rw [h₂]
       exact (two_nsmul_affine_some_iff two_ne h₂P).mpr hy₂
     obtain ⟨hpow8, hpow12⟩ := fourth_torsion_powers hV
-    apply self_case h₄
-    · rw [hx25, hpow8, mul_one]
-    · rw [hy25, hpow12]; ring
+    exact self_case h₄ (by rw [hx25, hpow8, mul_one]) (by rw [hy25, hpow12]; ring)
   exact five_some_of_secant hA hA4 hx hy ht hD hV hCube hySq hP
 
 end

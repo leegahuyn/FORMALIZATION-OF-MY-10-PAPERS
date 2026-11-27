@@ -13,10 +13,17 @@ noncomputable section
 
 private theorem preimage_quotient_image (A : Set ℍ) :
     gammaTwoQuotientMk ⁻¹' (gammaTwoQuotientMk '' A) = ⋃ g : GammaTwoEffective, g • A := by
-  change (Quotient.mk'' : ℍ → GammaTwoQuotient) ⁻¹'
-    ((Quotient.mk'' : ℍ → GammaTwoQuotient) '' A) = _
-  simpa only [image_smul] using
-    MulAction.quotient_preimage_image_eq_union_mul A (G := GammaTwoEffective)
+  ext z
+  constructor
+  · rintro ⟨w, hw, hq⟩
+    obtain ⟨g, hg⟩ : MulAction.orbitRel GammaTwoEffective ℍ w z := Quotient.exact hq
+    refine mem_iUnion.2 ⟨g⁻¹, ?_⟩
+    rw [mem_smul_set_iff_inv_smul_mem, inv_inv, hg]
+    exact hw
+  · rintro hz
+    obtain ⟨g, hg⟩ := mem_iUnion.1 hz
+    have hA : g⁻¹ • z ∈ A := (mem_smul_set_iff_inv_smul_mem).mp hg
+    exact ⟨g⁻¹ • z, hA, gammaTwoQuotientMk_smul _ _⟩
 
 theorem quotient_image_measure_eq (D : GammaTwoFundamentalDomain)
     {A : Set ℍ} (hA : MeasurableSet A)

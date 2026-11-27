@@ -40,8 +40,8 @@ private theorem reduction_inverts_primeCompl :
   apply isUnit_iff_ne_zero.mpr
   intro h
   apply hn
-  rw [primeFive_eq_kernel, RingHom.mem_ker]
-  exact h
+  rw [primeFive_eq_kernel]
+  exact RingHom.mem_ker.mpr h
 
 private def residueLift : primeFive.asIdeal.ResidueField →+* F₅ :=
   Ideal.ResidueField.lift primeFive.asIdeal (algebraMap ℤ F₅)
