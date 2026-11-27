@@ -20,7 +20,7 @@ noncomputable section
 
 variable (p : ℕ) [Fact p.Prime]
 
-private theorem small_char (K : Type*) [Field K] [CharP K p] (hp : 5 ≤ p) :
+theorem small_char (K : Type*) [Field K] [CharP K p] (hp : 5 ≤ p) :
     (2 : K) ≠ 0 ∧ (3 : K) ≠ 0 := by
   have hsmall (n : ℕ) (h₀ : 0 < n) (hn : n < p) : (n : K) ≠ 0 :=
     (CharP.cast_eq_zero_iff K p n).not.mpr
@@ -28,7 +28,7 @@ private theorem small_char (K : Type*) [Field K] [CharP K p] (hp : 5 ≤ p) :
   exact ⟨by simpa only [Nat.cast_ofNat] using hsmall 2 (by decide) (by omega),
     by simpa only [Nat.cast_ofNat] using hsmall 3 (by decide) (by omega)⟩
 
-private theorem printed_eq_centered (A : ZMod p) :
+theorem printed_eq_centered (A : ZMod p) :
     paper5TraceCurve p A = shortCubic (0 : ZMod p) A := by
   simp [paper5TraceCurve, shortCubic, ZMod.natCast_self]
 
@@ -60,7 +60,7 @@ private theorem geometric_curve_eq (A : ZMod p) :
 
 abbrev GeometricTorsion (m : ℕ) (A : ZMod p) := Torsion m ((Curve A).baseChange L).Point
 
-private theorem geo_card_twoPower (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) (n : ℕ) :
+theorem geo_card_twoPower (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) (n : ℕ) :
     Nat.card (GeometricTorsion p L (2 ^ n) A) = 4 ^ n := by
   letI : CharP L p := charP_of_injective_algebraMap (algebraMap (ZMod p) L).injective p
   obtain ⟨h₂, h₃⟩ := small_char p L hp

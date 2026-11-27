@@ -86,7 +86,9 @@ private theorem lift_yPoint (c : R →+* V) (f : yChart R →+* K)
   · have h := congrArg f (y_relation R)
     simp only [map_mul, map_pow, map_add, hz, add_zero] at h
     have hxpow : f (xY R) ^ 3 = 0 := by rw [pow_succ, ← h]
-    have hx : f (xY R) = 0 := (pow_eq_zero hxpow)
+    have hx : f (xY R) = 0 := by
+      by_contra hn
+      exact (pow_ne_zero 3 hn) hxpow
     exact liftFromY R c f hc 0 0 (by rw [map_zero, hx]) (by rw [map_zero, hz]) (by ring)
   · obtain ⟨g, hg, hbase⟩ := lift_zPoint R c (yAsZ R f hz)
       (fun a => (yAsZ_coeff R f hz a).trans (hc a))
@@ -107,13 +109,14 @@ private theorem factor_through_chart {F : Type u} [Field F]
   exact ⟨b, IsOpenImmersion.lift (chartIn R b) s hincl,
     IsOpenImmersion.lift_fac _ _ _⟩
 
-private theorem chart_spec_witness (S : ValuativeCommSq (toBase R)) (b : Bool)
-    (F : CommRingCat.{u}) (f : F ⟶ CommRingCat.of S.K) (c : CommRingCat.of R ⟶ CommRingCat.of S.R)
-    (k : CommRingCat.of R ⟶ F) (hs : Spec.map f ≫ chartIn R b = S.i₁)
-    (hc : Spec.map c = S.i₂) (hk : Spec.map k = chartToBase R b) :
+private theorem chart_spec_witness (S : ValuativeCommSq (toBase R))
+    (F : CommRingCat.{u}) (f : F ⟶ CommRingCat.of S.K)
+    (c : CommRingCat.of R ⟶ CommRingCat.of S.R) (j : Spec F ⟶ model R)
+    (k : CommRingCat.of R ⟶ F) (hs : Spec.map f ≫ j = S.i₁)
+    (hc : Spec.map c = S.i₂) (hk : j ≫ toBase R = Spec.map k) :
     k ≫ f = c ≫ CommRingCat.ofHom (algebraMap S.R S.K) := by
   apply Spec.map_inj
-  rw [Spec.map_comp, Spec.map_comp, hc, hk, ← chartIn_over, ← Category.assoc, hs]
+  rw [Spec.map_comp, Spec.map_comp, hc, ← hk, ← Category.assoc, hs]
   exact S.commSq.w
 
 /-- Actual scheme-theoretic existence, for every valuation square. -/
@@ -127,7 +130,7 @@ theorem valuative_existence : ValuativeCriterion.Existence (toBase R) := by
     have hG : Spec.map f ≫ chartIn R false = S.i₁ := by rw [hf]; exact hg
     have hw : CommRingCat.ofHom (algebraMap R (zChart R)) ≫ f =
         c ≫ CommRingCat.ofHom (algebraMap S.R S.K) :=
-      chart_spec_witness R S false _ f c _ hG hc rfl
+      chart_spec_witness R S _ f c (chartIn R false) _ hG hc (chartIn_over R false)
     have hC (a : R) : f.hom (algebraMap R (zChart R) a) = algebraMap S.R S.K (c.hom a) :=
       DFunLike.congr_fun (congrArg CommRingCat.Hom.hom hw) a
     obtain ⟨l, hl, hl'⟩ := lift_zPoint R c.hom f.hom hC
@@ -137,7 +140,7 @@ theorem valuative_existence : ValuativeCriterion.Existence (toBase R) := by
     have hG : Spec.map f ≫ chartIn R true = S.i₁ := by rw [hf]; exact hg
     have hw : CommRingCat.ofHom (algebraMap R (yChart R)) ≫ f =
         c ≫ CommRingCat.ofHom (algebraMap S.R S.K) :=
-      chart_spec_witness R S true _ f c _ hG hc rfl
+      chart_spec_witness R S _ f c (chartIn R true) _ hG hc (chartIn_over R true)
     have hC (a : R) : f.hom (algebraMap R (yChart R) a) = algebraMap S.R S.K (c.hom a) :=
       DFunLike.congr_fun (congrArg CommRingCat.Hom.hom hw) a
     obtain ⟨l, hl, hl'⟩ := lift_yPoint R c.hom f.hom hC
@@ -151,7 +154,7 @@ theorem model_proper : IsProper (toBase R) := by
   letI : IsSeparated (toBase R) := NodalIntegralSeparated.model_isSeparated R
   letI : UniversallyClosed (toBase R) :=
     UniversallyClosed.of_valuativeCriterion _ (valuative_existence R)
-  exact ⟨inferInstance, inferInstance, inferInstance⟩
+  exact ⟨⟩
 
 end
 end ManuscriptAudit.NodalIntegralProper

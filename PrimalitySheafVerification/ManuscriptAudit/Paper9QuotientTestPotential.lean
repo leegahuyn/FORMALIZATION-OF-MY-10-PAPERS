@@ -39,7 +39,8 @@ theorem contribution_eq_high_strip (D : GammaTwoFundamentalDomain) (Y : ℝ) (hY
   rw [hs]
   change (∫ q, f q ∂D.quotientMeasure.restrict B) = _
   rw [← GammaTwoHighStripMeasure.quotient_strip_measure D]
-  rw [integral_map measurable_quotient_mk''.aemeasurable hF.aestronglyMeasurable]
+  have hmk : Measurable gammaTwoQuotientMk := measurable_quotient_mk''
+  rw [integral_map hmk.aemeasurable hF.aestronglyMeasurable]
   apply setIntegral_congr_fun GammaTwoHighStripMeasure.strip_measurable
   intro z hz
   have hh : 1 < z.im := hz.1

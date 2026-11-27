@@ -52,11 +52,13 @@ theorem trace_det_reduce (f : AddMonoid.End G) (n : ℕ) :
   have hh := map_trace_det (PadicInt.toZModPow n)
     (coordinateAction l G B h f) (finiteCoordinateAction l G B h f n)
     (reduction_action l G B h f n)
-  have hp : LinearMap.det (coordinateAction l G B h f) = LinearMap.det (endMap l f) :=
-    LinearMap.det_conj _ (padicBasis).symm
+  have hp : LinearMap.det (coordinateAction l G B h f) = LinearMap.det (endMap l f) := by
+    unfold coordinateAction
+    exact LinearMap.det_conj (endMap l f) (padicBasis).symm
   have hn : LinearMap.det (finiteCoordinateAction l G B h f n) =
-      LinearMap.det (mapLinear (l ^ n) f) :=
-    LinearMap.det_conj _ (finiteBasis n).symm
+      LinearMap.det (mapLinear (l ^ n) f) := by
+    unfold finiteCoordinateAction
+    exact LinearMap.det_conj (mapLinear (l ^ n) f) (finiteBasis n).symm
   exact ⟨by simpa only [coordinateAction, finiteCoordinateAction, LinearMap.trace_conj'] using hh.1,
     by simpa only [hp, hn] using hh.2⟩
 

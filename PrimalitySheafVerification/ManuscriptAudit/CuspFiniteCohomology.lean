@@ -104,10 +104,12 @@ theorem puncture_finrank_add_three (n : ℕ) :
   finrank_eq_zero_of_addEquiv_to_subsingleton ℓ (punctureCoefficients K ℓ (n + 3))
     (CuspCompactSupportAllHigher.punctureHc_add_three_subsingleton K p ℓ n)
 
+omit kClosed p pPrime pChar coeffNZ in
 /-- The alternating sum over every degree through N−1. -/
 def eulerThrough (d : ℕ → ℕ) (N : ℕ) : ℤ :=
   ∑ n ∈ Finset.range N, (-1 : ℤ) ^ n * (d n : ℤ)
 
+omit kClosed p pPrime pChar coeffNZ in
 private theorem eulerThrough_eq_three (d : ℕ → ℕ) (hTail : ∀ n, d (n + 3) = 0)
     (N : ℕ) (hN : 3 ≤ N) : eulerThrough d N = eulerThrough d 3 := by
   unfold eulerThrough

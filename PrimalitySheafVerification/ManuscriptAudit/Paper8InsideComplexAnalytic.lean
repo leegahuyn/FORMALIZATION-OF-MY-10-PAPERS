@@ -85,8 +85,10 @@ private theorem norm_quotient_le_majorant {q : ℂ} {r : ℝ} (hqr : ‖q‖ ≤
   have hD : 0 < (1 - r) ^ (2 * n) := pow_pos (sub_pos.mpr hr) _
   rw [norm_div, norm_pow]
   calc
+    _ ≤ r ^ (n ^ 2) / ‖d‖ :=
+      div_le_div_of_nonneg_right (pow_le_pow_left₀ (norm_nonneg _) hqr _) (norm_nonneg d)
     _ ≤ r ^ (n ^ 2) / (1 - r) ^ (2 * n) :=
-      div_le_div₀ (by positivity) (pow_le_pow_left₀ (norm_nonneg _) hqr _) hD hd
+      div_le_div_of_nonneg_left (pow_nonneg ((norm_nonneg q).trans hqr) _) hD hd
     _ = majorant r n := by
       simp only [majorant, div_eq_mul_inv, inv_pow, pow_mul]
 
