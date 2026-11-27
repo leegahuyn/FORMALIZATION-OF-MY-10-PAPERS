@@ -23,7 +23,7 @@ def forms (A : R) (v : Fin 3 → R) : Fin 3 → R :=
 theorem map_forms {S : Type*} [CommRing S] (f : R →+* S) (A : R) (v : Fin 3 → R) :
     forms (f A) (f ∘ v) = f ∘ forms A v := by
   ext i
-  fin_cases i <;> simp [forms, Function.comp_apply]
+  fin_cases i <;> simp [forms, Function.comp_apply, map_ofNat]
 
 variable {K : Type*} [Field K]
 

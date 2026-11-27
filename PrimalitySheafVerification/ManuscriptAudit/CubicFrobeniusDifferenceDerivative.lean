@@ -27,8 +27,8 @@ theorem eval_derivative {k : ℕ} (hq : Fintype.card K = 2 * k + 1) (A x : K) :
     have he := congrArg (fun n : ℕ => (n : K)) hNat
     simpa only [Nat.cast_mul, Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, hQ, zero_add] using he
   change (numerator q k A).derivative.eval x = _
-  simp only [numerator, derivative_add, derivative_C_mul, derivative_C, derivative_X_pow_succ,
-    derivative_pow_succ, eval_add, eval_mul, eval_C, eval_pow, eval_X, eval_zero, add_zero,
+  simp only [numerator, derivative_add, derivative_C_mul, derivative_C, derivative_X,
+    derivative_pow_succ, eval_add, eval_mul, eval_C, eval_pow, eval_X, eval_zero, eval_one, add_zero,
     Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one, hQ, hPow₂, hPow₁]
   linear_combination (3 * x ^ 2 * (x ^ 3 + A) ^ k) * hK
 

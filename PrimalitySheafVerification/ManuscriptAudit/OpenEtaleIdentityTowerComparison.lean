@@ -44,14 +44,19 @@ theorem levelEquiv_naturality (r : ℕ) (x : level X ℓ (r + 1)) :
   let E := extensionByZero (𝟙 X) A
   change Sheaf.H.map (extensionIso X ℓ r).hom 1 (Sheaf.H.map (E.map f) 1 x) =
     Sheaf.H.map f 1 (Sheaf.H.map (extensionIso X ℓ (r + 1)).hom 1 x)
-  rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply]
-  exact congrArg (fun k ↦ Sheaf.H.map k 1 x) ((extensionByZeroIdIso X).hom.naturality f)
+  simp only [← Sheaf.H.map_comp_apply]
+  have h : E.map f ≫ (extensionIso X ℓ r).hom = (extensionIso X ℓ (r + 1)).hom ≫ f :=
+    (extensionByZeroIdIso X).hom.naturality f
+  exact congrArg (fun k ↦ Sheaf.H.map k 1 x) h
 
+set_option maxHeartbeats 1200000 in
 /-- Removing the identity extension yields a coherent equivalence of the ordinary degree-one tower. -/
 def compatibleEquiv : compatibleClasses (𝟙 X) ℓ 1 ≃+ etaleCompatibleHOne X ℓ :=
-  CompatibleTowerCongruence.compatibleEquiv _ _ (transition (𝟙 X) ℓ 1) (etaleTransition X ℓ)
-    (levelEquiv X ℓ) (levelEquiv_naturality X ℓ)
+  CompatibleTowerCongruence.compatibleEquiv (level X ℓ)
+    (fun r ↦ Sheaf.H (etaleCoefficient X ℓ r) 1)
+    (transition (𝟙 X) ℓ 1) (etaleTransition X ℓ) (levelEquiv X ℓ) (levelEquiv_naturality X ℓ)
 
+set_option maxHeartbeats 1200000 in
 theorem compatibleEquiv_apply (x : compatibleClasses (𝟙 X) ℓ 1) (r : ℕ) :
     (compatibleEquiv X ℓ x).val r = levelEquiv X ℓ r (x.val r) := rfl
 

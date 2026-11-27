@@ -25,8 +25,9 @@ private theorem square_trace_ne (j : ℕ) :
   intro h
   change ((signedTrace j : ℤ) : ℂ)^2 = 4 * (goodPrime j : ℂ) at h
   have hZ : signedTrace j ^ 2 = 4 * (goodPrime j : ℤ) := by exact_mod_cast h
+  have hFour : Int.natAbs 4 = 4 := by decide
   have hN : (signedTrace j).natAbs^2 = 4 * goodPrime j := by
-    simpa only [Int.natAbs_pow, Int.natAbs_mul, Int.natAbs_natCast]
+    simpa only [Int.natAbs_pow, Int.natAbs_mul, Int.natAbs_natCast, hFour]
       using congrArg Int.natAbs hZ
   have hp : (goodPrime j).Prime := goodPrime_prime j
   have hp5 := goodPrime_atLeastFive j
@@ -53,7 +54,7 @@ theorem local_root_derivative_ne_zero (j : ℕ) {z : ℂ}
   have hd' : -trace j + 2 * (goodPrime j : ℂ) * z = 0 := by
     have hDer : (quadratic j).derivative.eval z =
         -trace j + 2 * (goodPrime j : ℂ) * z := by
-      simp [quadratic, derivative_X_pow]
+      simp [quadratic]
       <;> ring
     exact hDer.symm.trans hd
   apply square_trace_ne j
@@ -69,8 +70,9 @@ theorem local_root_norm (j : ℕ) {z : ℂ}
   change ‖((signedTrace j : ℤ) : ℂ)‖ ≤ 2 * Real.sqrt (goodPrime j : ℝ) at ha
   rw [← Complex.ofReal_intCast, Complex.norm_real, Real.norm_eq_abs] at ha
   have hRoot : (localPolynomial (goodPrime j : ℝ) (signedTrace j : ℝ)).IsRoot z := by
-    rw [Polynomial.IsRoot, eval_localPolynomial]
-    simpa only [expression, denominator, Complex.ofReal_intCast, Complex.ofReal_natCast] using h
+    rw [Polynomial.IsRoot]
+    simpa only [localPolynomial, eval_add, eval_sub, eval_mul, eval_one, eval_C, eval_X,
+      eval_pow, Complex.ofReal_intCast, Complex.ofReal_natCast, denominator] using h
   simpa only [one_div] using
     ((all_roots_radius_iff (goodPrime j : ℝ) (signedTrace j : ℝ) hp).2 ha) z hRoot
 

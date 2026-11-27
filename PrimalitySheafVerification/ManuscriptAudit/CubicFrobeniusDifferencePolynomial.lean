@@ -19,7 +19,9 @@ theorem numerator_natDegree {q k : ℕ} (hq : q = 2 * k + 1) (hk : 0 < k) (A : K
   let P : K[X] := X ^ (q + 2) + C (2 * A)
   let Q : K[X] := C 2 * D ^ (k + 1)
   have hD : D.natDegree = 3 := by simp [D, natDegree_X_pow]
-  have hP : P.natDegree = q + 2 := by simp [P, natDegree_X_pow]
+  have hP : P.natDegree = q + 2 := by
+    change ((X : K[X]) ^ (q + 2) + C (2 * A)).natDegree = q + 2
+    rw [natDegree_add_C, natDegree_X_pow]
   have hQ : Q.natDegree ≤ (k + 1) * 3 := by
     calc
       _ ≤ (C (2 : K)).natDegree + (D ^ (k + 1)).natDegree := by apply natDegree_mul_le

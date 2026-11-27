@@ -81,11 +81,11 @@ def smoothHOneEquiv : NativeSingularCurveCompactHOne.compact d (smoothOpen K) �
   letI := properOrigin_closed K
   letI := infinityPoint_isClosedImmersion K
   letI := CuspProperBoundary.projectiveCusp_preconnected K
-  have h∞ : Set.range j = (Set.range infinity)ᶜ := by
+  have hBoundary : Set.range j = (Set.range infinity)ᶜ := by
     change Set.range (affineOpen K) = (Set.range (infinityPoint K))ᶜ
     rw [← CuspInfinitySupport.affine_complement_eq_infinity K, compl_compl]
   have h₀ : Subsingleton (Sheaf.H (E.obj (functions M U)) 0) :=
-    ProetaleOpenClosedHZero.compactFunctionsHZero_subsingleton K infinity M j h∞
+    ProetaleOpenClosedHZero.compactFunctionsHZero_subsingleton K infinity M j hBoundary
   let e := cohomologyIso (X := X) (E.mapIso (ProetaleDiscreteConstant.constantIso U M)) 1
   letI := NativeSingularCurveCompactHOne.cusp_affine_subsingleton K d
   have h₁ : Subsingleton (Sheaf.H (E.obj (functions M U)) 1) :=

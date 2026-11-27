@@ -22,6 +22,7 @@ def cancellation (k : ℕ) (A x : K) : ℕ := by
   classical
   exact if x ^ 3 + A = 0 then 1 else if (x ^ 3 + A) ^ k = -1 then 2 else 0
 
+open scoped Classical in
 theorem cast_cancellation {k : ℕ} (hq : Fintype.card K = 2 * k + 1)
     (h₂ : (2 : K) ≠ 0) (hchar : ringChar K ≠ 2) (A x : K) :
     (cancellation K k A x : ℤ) = 1 - quadraticChar K (x ^ 3 + A) := by
@@ -59,8 +60,9 @@ theorem count_add_cancellation {k : ℕ} (hq : Fintype.card K = 2 * k + 1)
         (CubicThreeTorsionCard.shortCubic_discriminant_ne_zero h₂ h₃ hA)
   have hCancel : ((∑ x : K, cancellation K k A x : ℕ) : ℤ) =
       (Fintype.card K : ℤ) - ∑ x : K, quadraticChar K (x ^ 3 + A) := by
-    simp only [Nat.cast_sum, cast_cancellation K hq h₂ hchar, Finset.sum_sub_distrib,
-      Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_one]
+    simp_rw [Nat.cast_sum, cast_cancellation K hq h₂ hchar]
+    rw [Finset.sum_sub_distrib]
+    simp
   have he : (Nat.card (shortCubic (0 : K) A).toProjective.Point : ℤ) +
       ((∑ x : K, cancellation K k A x : ℕ) : ℤ) = 2 * (Fintype.card K : ℤ) + 1 := by
     rw [hCount, hCancel]

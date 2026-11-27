@@ -41,7 +41,7 @@ theorem fixed_half_gcd_zero_mode_has_no_ordered_limit {h : ℕ} (hh : 0 < h)
   have hC : c ≠ 0 := by
     have hPos : 0 < 1 / (h : ℝ) ^ (3 / 2 : ℝ) :=
       div_pos zero_lt_one (Real.rpow_pos_of_pos hR _)
-    exact_mod_cast hPos.ne'
+    exact Complex.ofReal_ne_zero.mpr hPos.ne'
   have hClass (j : ℕ) : halfGcdClass h (j + 1) = c * unshiftedCoefficient (j + 1) 0 := by
     unfold halfGcdClass
     rw [even_residue_class_fourier_rescale hh (Nat.succ_pos j) 0,

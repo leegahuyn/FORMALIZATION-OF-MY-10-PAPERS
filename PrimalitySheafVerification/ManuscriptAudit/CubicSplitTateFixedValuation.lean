@@ -40,7 +40,8 @@ theorem valuation_det_pow_sub_one (h₂ : (2 : ZMod p) ≠ 0) (h₃ : (3 : ZMod 
         (CubicTwoPowerTorsionBasis.affineBasis h₂L h₃L hAL 1)
         (CubicDoublingSurjective.affine_doubling_surjective h₂L h₃L hAL) (F ^ n - 1) hFinite
   · let B := FirstPrimeTorsionBasis.basis 3 G (by
-        simpa only [pow_one] using CubicThreeAdicTate.affine_threePower_card h₂L h₃L hAL 1)
+        change Nat.card (PowerTorsionTower.PowerTorsion 3 G 1) = 9
+         exact CubicThreeAdicTate.affine_threePower_card h₂L h₃L hAL 1)
     simpa only [map_sub, map_pow, map_one] using
       PowerTateGeometricKernelValuation.valuation_eq_card_kernel 3 G B
         (CubicTriplingSurjective.affine_tripling_surjective h₂L h₃L hAL) (F ^ n - 1) hFinite
