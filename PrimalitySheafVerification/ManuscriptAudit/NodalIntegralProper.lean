@@ -115,9 +115,13 @@ private theorem chart_spec_witness (S : ValuativeCommSq (toBase R))
     (k : CommRingCat.of R ⟶ F) (hs : Spec.map f ≫ j = S.i₁)
     (hc : Spec.map c = S.i₂) (hk : j ≫ toBase R = Spec.map k) :
     k ≫ f = c ≫ CommRingCat.ofHom (algebraMap S.R S.K) := by
-  apply Spec.map_inj
-  rw [Spec.map_comp, Spec.map_comp, hc, ← hk, ← Category.assoc, hs]
-  exact S.commSq.w
+  apply Spec.map_inj.mp
+  calc
+    Spec.map (k ≫ f) = Spec.map f ≫ (j ≫ toBase R) := by rw [Spec.map_comp, hk]
+    _ = S.i₁ ≫ toBase R := by rw [← Category.assoc, hs]
+    _ = Spec.map (c ≫ CommRingCat.ofHom (algebraMap S.R S.K)) := by
+      rw [Spec.map_comp, hc]
+      exact S.commSq.w
 
 /-- Actual scheme-theoretic existence, for every valuation square. -/
 theorem valuative_existence : ValuativeCriterion.Existence (toBase R) := by
