@@ -23,6 +23,18 @@ theorem actual_reduced_cubic_roots_on_circle (p : ℕ) [Fact p.Prime] (hp : 5 �
   exact (all_roots_radius_iff (p : ℝ) _ hp₀).mpr
     (CubicHasseBound.paper5_printed_reduction_hasse p hp hA) z hz
 
+/-- The local reciprocal-root radius over an arbitrary finite base with good reduction. -/
+theorem actual_finite_cubic_roots_on_circle (F : Type*) [Field F] [Fintype F] [DecidableEq F]
+    (hF : ringChar F ≠ 2) {A : F} (hA : A ≠ 0)
+    (hΔ : (FiniteFieldPointCount.shortCubic (0 : F) A).Δ ≠ 0)
+    (z : ℂ) (hz : (localPolynomial (Fintype.card F : ℝ) ((Fintype.card F : ℝ) + 1 -
+      (Nat.card (FiniteFieldPointCount.shortCubic (0 : F) A).toProjective.Point : ℝ))).IsRoot z) :
+    ‖z‖ = 1 / Real.sqrt (Fintype.card F : ℝ) := by
+  have hq : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
+  exact (all_roots_radius_iff (Fintype.card F : ℝ) _ hq).mpr
+    (CubicHasseBound.reducedCubic_hasse hF hA hΔ) z hz
+
 end
 end ManuscriptAudit.Paper5ActualEulerRadius
 

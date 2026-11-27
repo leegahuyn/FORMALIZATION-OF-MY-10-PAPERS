@@ -55,6 +55,9 @@ theorem trace_det_linear (B : Basis (Fin 2) R V) (S : Module.End R V)
 
 end Linear
 
+private def rotationCombination {G : Type*} [AddCommGroup G] (r : AddMonoid.End G) (a b : ℤ) :
+    AddMonoid.End G := a • (1 : AddMonoid.End G) + b • r
+
 variable {L : Type*} [Field L] [IsAlgClosed L] [DecidableEq L] {A z : L}
 
 /-- Integral point-group rotation coefficients give exact coefficients on both geometric Tate modules. -/
@@ -62,7 +65,7 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (hA : A ≠ 0)
     (hz : z ^ 3 = 1) (hz₁ : z ≠ 1) (hΔ : (shortCubic (0 : L) A).Δ ≠ 0)
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3)
     (F : AddMonoid.End (Curve A).Point) (a b : ℤ)
-    (hF : F = a • (1 : AddMonoid.End (Curve A).Point) + b • (CubicCubeRotation.rotate z hz hΔ : AddMonoid.End (Curve A).Point)) :
+    (hF : F = rotationCombination (CubicCubeRotation.rotate z hz hΔ) a b) :
     LinearMap.trace ℤ_[l] (Tate l (Curve A).Point) (endMap l F) = ((2 * a - b : ℤ) : ℤ_[l]) ∧
       LinearMap.det (endMap l F) = ((a ^ 2 - a * b + b ^ 2 : ℤ) : ℤ_[l]) := by
   let B := CubicRotationTateRankTwo.tateBasis h₂ h₃ hA hz hz₁ l hl
@@ -78,7 +81,7 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (hA : A ≠ 0)
   have hS : S ^ 2 + S + 1 = 0 := by
     simpa only [S, map_add, map_pow, map_one, map_zero] using congrArg (endMap l) hr
   have hF' : endMap l F = (a : ℤ_[l]) • 1 + (b : ℤ_[l]) • S := by
-    simpa only [S, r, map_add, map_zsmul, map_one, Int.cast_smul_eq_zsmul] using congrArg (endMap l) hF
+    simpa only [rotationCombination, S, r, map_add, map_zsmul, map_one, Int.cast_smul_eq_zsmul] using congrArg (endMap l) hF
   rw [hF']
   simpa only [Int.cast_sub, Int.cast_add, Int.cast_mul, Int.cast_pow, Int.cast_ofNat] using
     trace_det_linear B S hN hS (a : ℤ_[l]) (b : ℤ_[l])

@@ -29,7 +29,8 @@ private theorem twice_le_square_add (n : ℕ) : 2 * n ≤ n ^ 2 + n := by
   cases n with
   | zero => decide
   | succ n =>
-      have h := Nat.mul_le_mul_left (n + 1) (Nat.succ_le_succ (Nat.zero_le n))
+      have hOne : 1 ≤ n + 1 := Nat.succ_le_succ (Nat.zero_le n)
+      have h : (n + 1) * 1 ≤ (n + 1) * (n + 1) := Nat.mul_le_mul_left (n + 1) hOne
       simpa only [mul_one, two_mul, pow_two] using Nat.add_le_add_right h (n + 1)
 
 theorem norm_nat_term_le {r : ℝ} (hr : 0 < r) (h₁ : r ≤ 1) (n : ℕ) :
@@ -55,9 +56,10 @@ private theorem nat_abs_summable {r : ℝ} (hr : 0 < r) (h₁ : r < 1) :
 
 theorem abs_summable {r : ℝ} (hr : 0 < r) (h₁ : r < 1) :
     Summable (fun n : ℤ => ‖term r n‖) := by
-  apply Summable.of_nat_of_neg (nat_abs_summable hr h₁)
-  simp only [term_reflection hr]
-  exact nat_abs_summable hr h₁
+  have hPos : Summable (fun n : ℕ => ‖term r (n : ℤ)‖) := nat_abs_summable hr h₁
+  have hNeg : Summable (fun n : ℕ => ‖term r (-(n : ℤ))‖) :=
+    hPos.congr fun n => congrArg (fun t : ℝ => ‖t‖) (term_reflection hr (n : ℤ)).symm
+  exact Summable.of_nat_of_neg (f := fun n : ℤ => ‖term r n‖) hPos hNeg
 
 private theorem tail_abs_le :
     |∑' n : ℕ, term (1 / 4) ((n + 1 : ℕ) : ℤ)| ≤ 1 / 15 := by

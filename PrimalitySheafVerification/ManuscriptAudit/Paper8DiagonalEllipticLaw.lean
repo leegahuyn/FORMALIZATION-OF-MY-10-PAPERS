@@ -17,12 +17,12 @@ open Paper8HolomorphicPartPhase (periodCoefficient qParameter qParameter_norm_lt
 
 noncomputable section
 
-def phase (τ u v : ℂ) (λ : ℤ) : ℂ :=
-  -(Real.pi : ℂ) * Complex.I * (λ : ℂ) ^ 2 * τ -
-    2 * (Real.pi : ℂ) * Complex.I * (λ : ℂ) * (u + v)
+def phase (τ u v : ℂ) (a : ℤ) : ℂ :=
+  -(Real.pi : ℂ) * Complex.I * (a : ℂ) ^ 2 * τ -
+    2 * (Real.pi : ℂ) * Complex.I * (a : ℂ) * (u + v)
 
-def multiplier (τ u v : ℂ) (λ μ : ℤ) : ℂ :=
-  (-1 : ℂ) ^ (λ + μ) * Complex.exp (phase τ u v λ)
+def multiplier (τ u v : ℂ) (a b : ℤ) : ℂ :=
+  (-1 : ℂ) ^ (a + b) * Complex.exp (phase τ u v a)
 
 private theorem multiplier_one (τ u v : ℂ) :
     multiplier τ u v 1 0 = -Complex.exp (phase τ u v 1) := by
@@ -78,9 +78,9 @@ theorem value_zero_of_literal_steps {F : ℂ → ℂ → ℂ} {τ u v : ℂ} (h�
 theorem literal_diagonal_elliptic_law_forces_zero {τ : ℂ} (hτ : 0 < τ.im)
     (D : ℂ → ℂ → Prop) (F : ℂ → ℂ → ℂ)
     (hClosed : ∀ u v, D u v → D (u + τ) (v + τ))
-    (hLaw : ∀ u v, D u v → ∀ λ μ : ℤ,
-      F (u + (λ : ℂ) * τ + (μ : ℂ)) (v + (λ : ℂ) * τ + (μ : ℂ)) =
-        multiplier τ u v λ μ * F u v) :
+    (hLaw : ∀ u v, D u v → ∀ a b : ℤ,
+      F (u + (a : ℂ) * τ + (b : ℂ)) (v + (a : ℂ) * τ + (b : ℂ)) =
+        multiplier τ u v a b * F u v) :
     ∀ u v, D u v → F u v = 0 := by
   intro u v hD
   apply value_zero_of_literal_steps hτ

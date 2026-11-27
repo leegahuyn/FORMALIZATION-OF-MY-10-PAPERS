@@ -45,7 +45,9 @@ theorem evaluation_difference_epi (W : X.ProEt) :
   have w : E.map (difference X ℓ) ≫ e.hom = e.hom ≫ d :=
     ComplexTowerDifference.map_difference_comp_comparison (residueSheaf X ℓ)
       (residueTransition X ℓ) E
-  exact epi_of_epi_fac w
+  have h : Epi (E.map (difference X ℓ) ≫ e.hom) := w.symm ▸
+    (inferInstanceAs (Epi (e.hom ≫ d)))
+  exact (epi_comp_iff_of_isIso (E.map (difference X ℓ)) e.hom).mp h
 
 end
 end ManuscriptAudit.ProetaleAdicProductChartEpi

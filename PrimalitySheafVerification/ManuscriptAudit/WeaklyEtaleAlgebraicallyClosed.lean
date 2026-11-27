@@ -43,8 +43,11 @@ private theorem flatTensorMultiplication (K B : Type u) [Field K] [CommRing B] [
   let g := Spec.map (CommRingCat.ofHom (algebraMap K B))
   let e := AlgebraicGeometry.pullbackSpecIso K B B
   have h : Flat (pullback.diagonal g ≫ e.hom) := inferInstance
-  apply Flat.SpecMap_iff.mp
-  simpa only [g, e, AlgebraicGeometry.diagonal_SpecMap, Category.assoc, Iso.inv_hom_id, Category.comp_id] using h
+  let μ := CommRingCat.ofHom (Algebra.TensorProduct.lmul' (S := B) K).toRingHom
+  have hμ : Flat (Spec.map μ) := by
+    simpa only [μ, g, e, AlgebraicGeometry.diagonal_SpecMap, Category.assoc, Iso.inv_hom_id,
+      Category.comp_id] using h
+  exact (Flat.SpecMap_iff (f := μ)).mp hμ
 
 /-- Every point of a weakly étale scheme over an algebraically closed
 field gives an actual rational section through that point. -/

@@ -28,8 +28,9 @@ theorem isIso_of_injective_of_residueFieldMap {X Y : Scheme.{u}} (f : X ⟶ Y)
     [WeaklyEtale f] [QuasiCompact f] [QuasiCompact (pullback.diagonal f)]
     [Surjective f] (hf : Function.Injective f)
     (hκ : ∀ x, (f.residueFieldMap x).hom.IsPurelyInseparable) : IsIso f := by
-  letI : UniversallyInjective f :=
-    ((tfae_universallyInjective f).out 2 0).mp ⟨hf, hκ⟩
+  have h : (Function.Injective f ∧ ∀ x, (f.residueFieldMap x).hom.IsPurelyInseparable) ↔
+      UniversallyInjective f := (tfae_universallyInjective f).out 2 0
+  letI : UniversallyInjective f := h.mp ⟨hf, hκ⟩
   exact isIso_of_surjective_of_universallyInjective f
 
 end ManuscriptAudit.WeaklyEtaleIsomorphism

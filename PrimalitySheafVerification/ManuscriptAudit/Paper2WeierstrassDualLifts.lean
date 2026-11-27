@@ -26,25 +26,36 @@ def dy (W : WeierstrassCurve K) (x y : K) : K :=
 private theorem dual_value (W : WeierstrassCurve K) (x y a b : K) :
     value (W.map (algebraMap K K[ε])) ⟨x, a⟩ ⟨y, b⟩ =
     (⟨value W x y, dx W x y * a + dy W x y * b⟩ : K[ε]) := by
+  have hy_sq : ((⟨y, b⟩ : K[ε]) ^ 2) =
+      (⟨y * y, y * b + b * y⟩ : K[ε]) := by
+    rw [pow_two] <;> rfl
+  have hx_sq : ((⟨x, a⟩ : K[ε]) ^ 2) =
+      (⟨x * x, x * a + a * x⟩ : K[ε]) := by
+    rw [pow_two] <;> rfl
+  have hx_cube : ((⟨x, a⟩ : K[ε]) ^ 3) =
+      (⟨(x * x) * x, (x * x) * a + (x * a + a * x) * x⟩ : K[ε]) := by
+    rw [show (3 : ℕ) = 2 + 1 by decide, pow_succ, hx_sq] <;> rfl
+  unfold value
+  rw [hy_sq, hx_sq, hx_cube]
   apply TrivSqZeroExt.ext
-  · simp only [value, WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
-      WeierstrassCurve.map_a₃, WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆,
-      TrivSqZeroExt.fst_add, TrivSqZeroExt.fst_sub, TrivSqZeroExt.fst_mul,
-      TrivSqZeroExt.fst_pow, TrivSqZeroExt.fst_mk, TrivSqZeroExt.algebraMap_eq_inl,
-      TrivSqZeroExt.fst_inl]
-  · simp only [value, dx, dy, WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
-      WeierstrassCurve.map_a₃, WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆,
-      pow_succ, pow_zero, mul_one, TrivSqZeroExt.snd_add, TrivSqZeroExt.snd_sub,
-      DualNumber.snd_mul, TrivSqZeroExt.fst_mul, TrivSqZeroExt.fst_mk,
-      TrivSqZeroExt.snd_mk, TrivSqZeroExt.algebraMap_eq_inl, TrivSqZeroExt.fst_inl,
-      TrivSqZeroExt.snd_inl]
+  · change y * y + W.a₁ * x * y + W.a₃ * y -
+        ((x * x) * x + W.a₂ * (x * x) + W.a₄ * x + W.a₆) =
+      y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆)
+    ring
+  · change y * b + b * y + (W.a₁ * x * b + (W.a₁ * a + 0 * x) * y) +
+        (W.a₃ * b + 0 * y) -
+        ((x * x * a + (x * a + a * x) * x) +
+          (W.a₂ * (x * a + a * x) + 0 * (x * x)) + (W.a₄ * a + 0 * x) + 0) =
+      dx W x y * a + dy W x y * b
+    unfold dx dy
     ring
 
 /-- The actual Weierstrass equation over the dual numbers is its exact first variation. -/
 theorem equation_iff (W : WeierstrassCurve K) (x y a b : K) :
     (W.map (algebraMap K K[ε])).toAffine.Equation ⟨x, a⟩ ⟨y, b⟩ ↔
       W.toAffine.Equation x y ∧ dx W x y * a + dy W x y * b = 0 := by
-  rw [Affine.equation_iff', Affine.equation_iff']
+  rw [Affine.equation_iff' (W := (W.map (algebraMap K K[ε])).toAffine) ⟨x, a⟩ ⟨y, b⟩,
+    Affine.equation_iff' (W := W.toAffine) x y]
   change value (W.map (algebraMap K K[ε])) ⟨x, a⟩ ⟨y, b⟩ = 0 ↔
     value W x y = 0 ∧ dx W x y * a + dy W x y * b = 0
   rw [dual_value]
@@ -72,11 +83,12 @@ private def firstCoordinate (W : WeierstrassCurve K) (x y : K)
     ⟨hEq, by field_simp [hY] <;> ring⟩⟩
   left_inv z := by
     apply Subtype.ext
-    apply Prod.ext rfl
-    change -(dx W x y * z.1.1) / dy W x y = z.1.2
-    apply (div_eq_iff hY).2
-    have h := ((equation_iff W x y _ _).mp z.2).2
-    linear_combination -h
+    apply Prod.ext
+    · rfl
+    · change -(dx W x y * z.1.1) / dy W x y = z.1.2
+      apply (div_eq_iff hY).2
+      have h := ((equation_iff W x y _ _).mp z.2).2
+      linear_combination -h
   right_inv _ := rfl
 
 private def secondCoordinate (W : WeierstrassCurve K) (x y : K)

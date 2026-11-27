@@ -69,13 +69,18 @@ theorem trace_det (hl : l = 2 ∨ l = 3) :
         _ = 0 := sub_eq_zero.mpr (hF.symm.trans hc)
     exact hS (scalar_of_linear_relation B S (by norm_num : (6 : ℤ_[l]) ≠ 0) hRel)
   have h₄ : (-4 : ℤ_[l]) • F = -((4 : Module.End ℤ_[l] (Tate l (Points L))) * F) := by
-    rw [neg_smul, Algebra.smul_def, map_ofNat]
+    have h₄plus : (4 : ℤ_[l]) • F =
+        (4 : Module.End ℤ_[l] (Tate l (Points L))) * F := by
+      rw [Algebra.smul_def, map_ofNat]
+    exact (neg_smul (4 : ℤ_[l]) F).trans (congrArg Neg.neg h₄plus)
   have h₃₁ : (31 : ℤ_[l]) • I = (31 : Module.End ℤ_[l] (Tate l (Points L))) := by
     change (31 : ℤ_[l]) • (1 : Module.End ℤ_[l] (Tate l (Points L))) = _
     rw [← Algebra.algebraMap_eq_smul_one, map_ofNat]
   have hQ : F ^ 2 - (-4 : ℤ_[l]) • F + (31 : ℤ_[l]) • I = 0 := by
-    rw [h₄, h₃₁, sub_neg_eq_add]
-    exact tate_quadratic L l
+    rw [h₄, h₃₁]
+    calc
+      _ = F ^ 2 + (4 : Module.End ℤ_[l] (Tate l (Points L))) * F + 31 := by abel
+      _ = 0 := tate_quadratic L l
   exact trace_det_of_quadratic B F hN (-4) 31 hQ
 
 /-- The true geometric Tate characteristic polynomial at both coefficient primes. -/
