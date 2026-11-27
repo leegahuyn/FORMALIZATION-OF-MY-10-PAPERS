@@ -11,6 +11,8 @@ open Complex Paper9PrincipalThetaStrip
 
 noncomputable section
 
+local instance : Fact (1 < 4) := ⟨by decide⟩
+
 def thetaWith (a : ℤ → ℂ) (τ : ℂ) : ℂ :=
   ∑' n : ℤ, a n * jacobiTheta₂_term n 0 τ
 
@@ -44,7 +46,8 @@ private theorem even_cast_mod_four_not_unit (n : ℤ) (hn : n % 2 ≠ 1) :
     rw [hm]; push_cast
     calc
       _ = (4 : ZMod 4) * (m : ZMod 4) ^ 2 := by ring
-      _ = _ := by norm_num
+      _ = _ := by
+        rw [show (4 : ZMod 4) = 0 by decide, zero_mul]
   have hp := h.pow 2
   rw [hzero] at hp
   exact not_isUnit_zero hp

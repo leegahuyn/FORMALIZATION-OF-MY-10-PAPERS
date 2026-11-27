@@ -55,13 +55,16 @@ theorem exists_singleton_cover_lift
     AffineEtaleCoverProduct.product_affine_etale_faithfullyFlat (fun k : Fin n ↦ (B k : Type u)) hPrime
   letI : Algebra.Etale A C := hEt
   letI : Module.FaithfullyFlat A C := hFaithful
-  let aPi : A ⟶ AffineEtaleProductGluing.productRing B := CommRingCat.ofHom (algebraMap A C)
-  let g : Spec (AffineEtaleProductGluing.productRing B) ⟶ X := Spec.map aPi ≫ U.hom
+  let R := @AffineEtaleProductGluing.productRing (Fin n) B
+  let aPi : A ⟶ R := by
+    change A ⟶ CommRingCat.of C
+    exact CommRingCat.ofHom (algebraMap A C)
+  let g : Spec R ⟶ X := Spec.map aPi ≫ U.hom
   letI : Etale (Spec.map aPi) := (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
     (RingHom.etale_algebraMap.mpr (inferInstance : Algebra.Etale A C))
   letI : Etale U.hom := U.prop
-  letI : Etale g := by change Etale (Spec.map aPi ≫ U.hom); infer_instance
-  let W := @AffineEtaleProductGluing.productObject X (Fin n) B g inferInstance
+  letI hEtProduct : Etale g := by change Etale (Spec.map aPi ≫ U.hom); infer_instance
+  let W := @AffineEtaleProductGluing.productObject X (Fin n) B g hEtProduct
   let v : W ⟶ U := MorphismProperty.CostructuredArrow.homMk aPi.op trivial rfl
   have hCov : Sieve.generate (Presieve.singleton v) ∈ Scheme.AffineEtale.topology X U := by
     rw [← Presieve.ofArrows_of_unique (fun _ : Unit ↦ v)]
@@ -72,14 +75,18 @@ theorem exists_singleton_cover_lift
     change Function.Surjective (PrimeSpectrum.comap (algebraMap A C))
     exact PrimeSpectrum.comap_surjective_of_faithfullyFlat
   let xW := Q.obj.map v.op x
+  let compObj (k : Fin n) :=
+    @AffineEtaleProductGluing.componentObject X (Fin n) B g hEtProduct k
+  let compMap (k : Fin n) : compObj k ⟶ W :=
+    @AffineEtaleProductGluing.componentArrow X (Fin n) B g hEtProduct k
   have hComponents (k : Fin n) :
-      ∃ y : P.obj.obj (op (AffineEtaleProductGluing.componentObject B g k)),
-        q.hom.app (op (AffineEtaleProductGluing.componentObject B g k)) y =
-          Q.obj.map (AffineEtaleProductGluing.componentArrow B g k).op xW := by
-    let Vc := AffineEtaleProductGluing.componentObject B g k
-    let vc : Vc ⟶ W := AffineEtaleProductGluing.componentArrow B g k
-    let ev : AffineEtaleProductGluing.productRing B ⟶ B k :=
-      CommRingCat.ofHom (Pi.evalRingHom (fun j ↦ (B j : Type u)) k)
+      ∃ y : P.obj.obj (op (compObj k)), q.hom.app (op (compObj k)) y =
+          Q.obj.map (compMap k).op xW := by
+    let Vc := compObj k
+    let vc : Vc ⟶ W := compMap k
+    let ev : R ⟶ B k := by
+      change CommRingCat.of C ⟶ B k
+      exact CommRingCat.ofHom (Pi.evalRingHom (fun j ↦ (B j : Type u)) k)
     have hm : aPi ≫ ev = a k := by
       apply CommRingCat.hom_ext
       exact RingHom.ext fun _ ↦ rfl
@@ -107,7 +114,7 @@ theorem exists_singleton_cover_lift
         rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
       _ = Q.obj.map vc.op (Q.obj.map v.op x) := by
         rw [hArrow, op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
-  obtain ⟨y, hy⟩ := AffineEtaleProductGluing.exists_lift_from_component_lifts B g q xW hComponents
+  obtain ⟨y, hy⟩ := AffineEtaleProductGluing.exists_lift_from_component_lifts (X := X) (ι := Fin n) B g q xW hComponents
   exact ⟨W, v, hCov, y, hy⟩
 
 end

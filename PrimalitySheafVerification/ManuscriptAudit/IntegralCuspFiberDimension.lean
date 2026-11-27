@@ -39,8 +39,8 @@ theorem fiber_dimension (K : Type) [Field K] :
   change topologicalKrullDim
     (pullback (IntegralCuspNodalAffine.coefficientPoint K) IntegralCuspNodalAffine.cuspToInt :
       Scheme.{0}) = topologicalKrullDim (PrimeSpectrum (A K)) at hDim
-  exact hDim.trans (PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim.trans
-    (coordinate_ring_dimension K))
+  rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim] at hDim
+  exact hDim.trans (coordinate_ring_dimension K)
 
 private abbrev F₅ := ZMod 5
 local instance : Fact (Nat.Prime 5) := ⟨by decide⟩

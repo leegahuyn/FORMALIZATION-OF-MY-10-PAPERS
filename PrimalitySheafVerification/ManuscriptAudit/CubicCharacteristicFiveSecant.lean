@@ -32,21 +32,32 @@ theorem secant_coordinates {x y t : K}
   let l := (y - v) / (x - u)
   let L := x ^ 2 * T / (2 * y * V)
   change x ≠ u ∧ l ^ 2 - x - u = x * t ^ 8 ∧ l * (x - x * t ^ 8) - y = -(y * D ^ 12)
+  have hD₀ : D ≠ 0 := hD
+  have hV₀ : V ≠ 0 := hV
+  have hyD : y ^ 2 = A * D := hySq
   have h₂ : (2 : K) ≠ 0 := two_ne
   have h₄ : (4 : K) ≠ 0 := by
     rw [show (4 : K) = 2 ^ 2 by ring]
     exact pow_ne_zero _ h₂
+  have hDV₂ : D * V ^ 2 ≠ 0 := mul_ne_zero hD₀ (pow_ne_zero _ hV₀)
+  have hD₂V₃ : D ^ 2 * V ^ 3 ≠ 0 := mul_ne_zero (pow_ne_zero _ hD₀) (pow_ne_zero _ hV₀)
+  have h₄DV₂ : (4 : K) * D * V ^ 2 ≠ 0 :=
+    mul_ne_zero (mul_ne_zero h₄ hD₀) (pow_ne_zero _ hV₀)
+  have huMul : u * (D * V ^ 2) = x * M := div_mul_cancel₀ _ hDV₂
+  have hvMul : v * (D ^ 2 * V ^ 3) = y * N := div_mul_cancel₀ _ hD₂V₃
   have huDiff : u - x = x * (2 * (t - 1)) / (D * V ^ 2) := by
     calc
       _ = x * (M - D * V ^ 2) / (D * V ^ 2) := by
-        dsimp only [u]
-        field_simp [hD, hV] <;> ring
+        apply (eq_div_iff hDV₂).mpr
+        rw [sub_mul, huMul]
+        ring
       _ = _ := by rw [show M - D * V ^ 2 = _ from fourth_abscissa_difference t]
   have hvDiff : v - y = y * (t * (t - 1) * T) / (D ^ 2 * V ^ 3) := by
     calc
       _ = y * (N - D ^ 2 * V ^ 3) / (D ^ 2 * V ^ 3) := by
-        dsimp only [v]
-        field_simp [hD, hV] <;> ring
+        apply (eq_div_iff hD₂V₃).mpr
+        rw [sub_mul, hvMul]
+        ring
       _ = _ := by rw [show N - D ^ 2 * V ^ 3 = _ from fourth_ordinate_difference t]
   have hdif : u - x ≠ 0 := by
     rw [huDiff]
@@ -59,40 +70,57 @@ theorem secant_coordinates {x y t : K}
     suffices hvu : v - y = L * (u - x) by linear_combination -hvu
     rw [hvDiff, huDiff]
     dsimp only [L]
-    have hCubeD : x ^ 3 * D = y ^ 2 * t := by rw [hCube, hySq]; ring
+    have hCubeD : x ^ 3 * D = y ^ 2 * t := by rw [hCube, hyD]; ring
     calc
       _ = (y ^ 2 * t) * ((t - 1) * T) / (y * D ^ 2 * V ^ 3) := by
-        field_simp [hy, hD, hV] <;> ring
+        field_simp [hy, hD₀, hV₀] <;> ring
       _ = (x ^ 3 * D) * ((t - 1) * T) / (y * D ^ 2 * V ^ 3) := by rw [hCubeD]
-      _ = _ := by field_simp [h₂, hy, hD, hV] <;> ring
+      _ = _ := by field_simp [h₂, hy, hD₀, hV₀] <;> ring
   have hLsq : L ^ 2 = x * (t * T ^ 2) / (4 * D * V ^ 2) := by
     calc
       _ = x * x ^ 3 * T ^ 2 / (4 * y ^ 2 * V ^ 2) := by
         dsimp only [L]
-        field_simp [h₂, h₄, hy, hV] <;> ring
-      _ = _ := by rw [hCube, hySq]; field_simp [h₄, hA, hD, hV] <;> ring
+        field_simp [h₂, h₄, hy, hV₀] <;> ring
+      _ = _ := by
+        rw [hCube, hyD]
+        have hAden : (4 : K) * (A * D) * V ^ 2 ≠ 0 :=
+          mul_ne_zero (mul_ne_zero h₄ (mul_ne_zero hA hD₀)) (pow_ne_zero _ hV₀)
+        apply (div_eq_div_iff hAden h₄DV₂).mpr
+        ring
   refine ⟨hxu, ?_, ?_⟩
   · rw [hL, hLsq]
     calc
       _ = x * (t * T ^ 2 - 4 * (M + D * V ^ 2)) / (4 * D * V ^ 2) := by
-        dsimp only [u]
-        field_simp [h₄, hD, hV] <;> ring
+        apply (eq_div_iff h₄DV₂).mpr
+        rw [sub_mul, sub_mul, div_mul_cancel₀ _ h₄DV₂]
+        have huFour : u * ((4 : K) * D * V ^ 2) = 4 * (x * M) := by
+          calc
+            _ = 4 * (u * (D * V ^ 2)) := by ring
+            _ = _ := by rw [huMul]
+        rw [huFour]
+        ring
       _ = _ := by
-        rw [show t * T ^ 2 - 4 * (M + D * V ^ 2) = _ from fifth_abscissa t]
-        field_simp [h₄, hD, hV] <;> ring
+        rw [show t * T ^ 2 - 4 * (M + D * V ^ 2) = 4 * t ^ 8 * D * V ^ 2 from fifth_abscissa t]
+        apply (div_eq_iff h₄DV₂).mpr
+        ring
   · rw [hL]
     have hLmul : L * (x - x * t ^ 8) = y * (t * T * (1 - t ^ 8)) / (2 * D * V) := by
       calc
         _ = x ^ 3 * (T * (1 - t ^ 8)) / (2 * y * V) := by
           dsimp only [L]
-          field_simp [h₂, hy, hV] <;> ring
+          field_simp [h₂, hy, hV₀] <;> ring
         _ = (A * t) * (T * (1 - t ^ 8)) / (2 * y * V) := by rw [hCube]
         _ = (y ^ 2 / D * t) * (T * (1 - t ^ 8)) / (2 * y * V) := by
-          rw [hySq]
-          field_simp [h₂, hy, hD, hV] <;> ring
-        _ = _ := by field_simp [h₂, hy, hD, hV] <;> ring
-    rw [hLmul, show t * T * (1 - t ^ 8) = _ from fifth_ordinate t]
-    field_simp [h₂, hD, hV] <;> ring
+          have hAD : y ^ 2 / D = A := (div_eq_iff hD₀).mpr hyD
+          rw [hAD]
+        _ = _ := by field_simp [h₂, hy, hD₀, hV₀] <;> ring
+    rw [hLmul, show t * T * (1 - t ^ 8) = 2 * D * V * (1 - D ^ 12) from fifth_ordinate t]
+    have hDen : (2 : K) * D * V ≠ 0 := mul_ne_zero (mul_ne_zero h₂ hD₀) hV₀
+    have hCancel : y * (2 * D * V * (1 - D ^ 12)) / (2 * D * V) = y * (1 - D ^ 12) := by
+      apply (div_eq_iff hDen).mpr
+      ring
+    rw [hCancel]
+    ring
 
 /-- Native multiplication by five in the nondegenerate affine case. -/
 theorem five_some_of_secant {x y t : K}

@@ -18,19 +18,17 @@ universe u
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 
 def rootRingCongr {p q : Polynomial (Polynomial S)} (h : p = q) :
-    AdjoinRoot p ≃ₐ[S] AdjoinRoot q := by
-  subst q
-  exact .refl
+    AdjoinRoot p ≃ₐ[S] AdjoinRoot q :=
+  AdjoinRoot.algEquivOfEq S p q h
 
 private theorem rootRingCongr_of {p q : Polynomial (Polynomial S)} (h : p = q)
     (a : Polynomial S) : rootRingCongr S h (AdjoinRoot.of p a) = AdjoinRoot.of q a := by
-  subst q
-  rfl
+  rw [rootRingCongr, AdjoinRoot.coe_algEquivOfEq, AdjoinRoot.coe_algHomOfDvd,
+    AdjoinRoot.liftAlgHom_of] <;> rfl
 
 private theorem rootRingCongr_root {p q : Polynomial (Polynomial S)} (h : p = q) :
-    rootRingCongr S h (AdjoinRoot.root p) = AdjoinRoot.root q := by
-  subst q
-  rfl
+    rootRingCongr S h (AdjoinRoot.root p) = AdjoinRoot.root q :=
+  AdjoinRoot.algEquivOfEq_root S p q h
 
 private def zIso := rootRingCongr S (zEquation_map R S)
 private def yIso := rootRingCongr S (yEquation_map R S)

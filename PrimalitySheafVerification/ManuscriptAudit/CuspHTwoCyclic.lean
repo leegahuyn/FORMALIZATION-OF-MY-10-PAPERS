@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.CuspCompactSupportHZero
 import PrimalitySheafVerification.ManuscriptAudit.CuspCompactSupportAbsoluteHOne
 import PrimalitySheafVerification.ManuscriptAudit.CuspCompactSupportAbsoluteHTwo
 import PrimalitySheafVerification.ManuscriptAudit.RatFuncEtaleUnitsHTwo
@@ -34,7 +35,7 @@ theorem compactSupport_low_degree_cards (hℓ : 2 ≤ ℓ) :
     (Nat.card (punctureHc K (AddCommGrpCat.of (ZMod ℓ)) 0),
       Nat.card (punctureHc K (AddCommGrpCat.of (ZMod ℓ)) 1),
       Nat.card (punctureHc K (AddCommGrpCat.of (ZMod ℓ)) 2)) = (1, ℓ, ℓ) := by
-  obtain ⟨hP₀, hC₀⟩ := CuspCompactSupportHZero.compactSupportHZero_subsingleton K
+  obtain ⟨hP₀, hC₀⟩ := CuspCompactSupportSequence.compactSupportHZero_subsingleton K
     (AddCommGrpCat.of (ZMod ℓ))
   have hP₁ := CuspCompactSupportAbsoluteHOne.punctureHcOneEquiv K p ℓ
   have hC₁ := CuspCompactSupportAbsoluteHOne.cuspHcOne_subsingleton K p ℓ

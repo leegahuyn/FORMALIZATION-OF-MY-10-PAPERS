@@ -23,8 +23,25 @@ private theorem cast_map_isPullback {p : Polynomial (Polynomial R)}
       (Spec.map (CommRingCat.ofHom ((rootRingCongr S h).toRingHom.comp
         (PlaneEquationBaseChange.ringMap R S p))))
       (PlaneEquationBaseChange.changeBase R S) (PlaneEquationBaseChange.structureMap R p) := by
-  subst q
-  exact PlaneEquationBaseChange.square_isPullback R S p
+  let e := Scheme.Spec.mapIso (rootRingCongr S h).toCommRingCatIso.op
+  exact (PlaneEquationBaseChange.square_isPullback R S p).of_iso' e
+    (.refl _) (.refl _) (.refl _)
+    (by
+      change Spec.map (CommRingCat.ofHom (rootRingCongr S h).toRingHom) ≫
+        Spec.map (CommRingCat.ofHom (algebraMap S (AdjoinRoot (PlaneEquationBaseChange.equation R S p)))) =
+        Spec.map (CommRingCat.ofHom (algebraMap S (AdjoinRoot q))) ≫ 𝟙 _
+      rw [Category.comp_id, ← Spec.map_comp]
+      apply congrArg Spec.map
+      apply CommRingCat.hom_ext
+      apply RingHom.ext
+      exact (rootRingCongr S h).commutes)
+    (by
+      change Spec.map (CommRingCat.ofHom (rootRingCongr S h).toRingHom) ≫
+        Spec.map (CommRingCat.ofHom (PlaneEquationBaseChange.ringMap R S p)) =
+        Spec.map (CommRingCat.ofHom ((rootRingCongr S h).toRingHom.comp
+          (PlaneEquationBaseChange.ringMap R S p))) ≫ 𝟙 _
+      rw [Category.comp_id, ← Spec.map_comp] <;> rfl)
+    (by simp) (by simp)
 
 theorem zSquare_isPullback :
     IsPullback (PlaneEquationBaseChange.structureMap S (zEquation S))

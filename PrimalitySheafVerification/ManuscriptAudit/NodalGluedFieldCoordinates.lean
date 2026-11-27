@@ -33,29 +33,18 @@ theorem zChartEquiv_y :
     zChartEquiv K (yZ K) = NodalAwayNormalization.nodeY K :=
   NodalAffinePresentation.parameter_root K
 
-private def rootCongr {p q : Polynomial (Polynomial K)} (h : p = q) :
-    AdjoinRoot p ≃ₐ[K] AdjoinRoot q := by
-  subst q
-  exact .refl
-
-private theorem rootCongr_of {p q : Polynomial (Polynomial K)} (h : p = q)
-    (a : Polynomial K) : rootCongr K h (AdjoinRoot.of p a) = AdjoinRoot.of q a := by
-  subst q
-  rfl
-
-private theorem rootCongr_root {p q : Polynomial (Polynomial K)} (h : p = q) :
-    rootCongr K h (AdjoinRoot.root p) = AdjoinRoot.root q := by
-  subst q
-  rfl
+private theorem yEquation_eq : yEquation K = NodalYChartImmersion.yEquation K :=
+  (NodalYChartImmersion.yEquation_printed K).symm
 
 def yChartEquiv : yChart K ≃ₐ[K] yCoordinateRing K :=
-  rootCongr K (NodalYChartImmersion.yEquation_printed K).symm
+  AdjoinRoot.algEquivOfEq K _ _ (yEquation_eq K)
 
-theorem yChartEquiv_x : yChartEquiv K (xY K) = xCoeff K :=
-  rootCongr_of K _ Polynomial.X
+theorem yChartEquiv_x : yChartEquiv K (xY K) = xCoeff K := by
+  rw [xY, yChartEquiv, AdjoinRoot.coe_algEquivOfEq, AdjoinRoot.coe_algHomOfDvd,
+    AdjoinRoot.liftAlgHom_of] <;> rfl
 
 theorem yChartEquiv_z : yChartEquiv K (zY K) = zCoeff K :=
-  rootCongr_root K _
+  AdjoinRoot.algEquivOfEq_root K _ _ (yEquation_eq K)
 
 def zSchemeIso : zScheme K ≅ Spec (CommRingCat.of (NodalConductor.coordinates K)) :=
   Scheme.Spec.mapIso (zChartEquiv K).symm.toCommRingCatIso.op

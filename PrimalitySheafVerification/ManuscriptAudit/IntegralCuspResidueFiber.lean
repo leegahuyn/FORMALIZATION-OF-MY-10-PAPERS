@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.ResidueField
+import Mathlib.Algebra.Field.ZMod
 import PrimalitySheafVerification.ManuscriptAudit.IntegralCuspNodalAffine
 
 /-! The field pullback over five agrees with the canonical residue

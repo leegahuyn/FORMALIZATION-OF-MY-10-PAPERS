@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Real.Pi.Bounds
 import PrimalitySheafVerification.ManuscriptAudit.Paper9PrincipalThetaStrip
 
 /-! At two complementary imaginary heights the principal modulo-four theta fails the printed S norm law. -/

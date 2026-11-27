@@ -26,10 +26,9 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
-variable (K B : Type) [Field K] [IsAlgClosed K] [Field B]
-  [Algebra (RatFunc K) B] [FiniteDimensional (RatFunc K) B]
-
-theorem finiteExtension_etale_units_hasAcyclicGaloisSections :
+theorem finiteExtension_etale_units_hasAcyclicGaloisSections
+    (K B : Type) [Field K] [IsAlgClosed K] [Field B]
+    [Algebra (RatFunc K) B] [FiniteDimensional (RatFunc K) B] :
     HasAcyclicGaloisSections B (fullCoordinateUnitSheaf (Spec (CommRingCat.of B))) := by
   intro F L _ _ _ _ _ j _ n
   let a := Spec.preimage j
@@ -52,13 +51,16 @@ theorem finiteExtension_etale_units_hasAcyclicGaloisSections :
 
 /-- The unit sheaf on every finite extension field of K(t) has zero
 actual small étale cohomology in all positive degrees. -/
-theorem finiteExtension_etale_units_H_succ_subsingleton (n : ℕ) :
+theorem finiteExtension_etale_units_H_succ_subsingleton
+    (K B : Type) [Field K] [IsAlgClosed K] [Field B]
+    [Algebra (RatFunc K) B] [FiniteDimensional (RatFunc K) B] (n : ℕ) :
     Subsingleton (Sheaf.H (fullCoordinateUnitSheaf (Spec (CommRingCat.of B))) (n + 1)) :=
   FieldEtaleCohomologyAcyclic.H_succ_subsingleton B _
     (finiteExtension_etale_units_hasAcyclicGaloisSections K B) n
 
 /-- Specialization to K(t). -/
-theorem rationalFunction_etale_units_H_succ_subsingleton (n : ℕ) :
+theorem rationalFunction_etale_units_H_succ_subsingleton
+    (K : Type) [Field K] [IsAlgClosed K] (n : ℕ) :
     Subsingleton (Sheaf.H (fullCoordinateUnitSheaf (Spec (CommRingCat.of (RatFunc K)))) (n + 1)) :=
   finiteExtension_etale_units_H_succ_subsingleton K (RatFunc K) n
 
