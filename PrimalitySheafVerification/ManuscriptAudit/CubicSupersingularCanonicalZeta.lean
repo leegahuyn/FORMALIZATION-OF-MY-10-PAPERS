@@ -62,6 +62,21 @@ variable [DecidableEq F]
 def actualCounts (A : F) : ℂ⟦X⟧ :=
   CubicSupersingularHasseWeil.counts F (Extension p F) A
 
+/-- The literal count in every degree is the signed two-root formula. -/
+theorem count_coefficient_eq (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0)
+    {α β : ℂ} (hSum : α + β = (signedCount F A : ℂ))
+    (hProd : α * β = (Fintype.card F : ℂ)) (n : ℕ) :
+    PowerSeries.coeff (n + 1) (actualCounts p F A) =
+      (Fintype.card F : ℂ) ^ (n + 1) + 1 - α ^ (n + 1) - β ^ (n + 1) := by
+  classical
+  letI : Algebra.IsAlgebraic (ZMod p) (Closure F) :=
+    Algebra.IsAlgebraic.trans (ZMod p) F (Closure F)
+  have h := CubicSupersingularHasseWeil.counts_eq_two_roots F (Extension p F) p (Closure F)
+    hp hP (relativeRank p F) hA hSum hProd
+  change PowerSeries.coeff (n + 1) (CubicSupersingularHasseWeil.counts F (Extension p F) A) = _
+  rw [h]
+  simp only [twoRootCounts, coeff_succ_X_mul, coeff_mk] <;> ring
+
 theorem zeta_eq (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0) :
     zetaOfCountSeries (actualCounts p F A) =
       (1 - X * C (signedCount F A : ℂ) + X ^ 2 * C (Fintype.card F : ℂ)) *
@@ -80,6 +95,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.CubicSupersingularCanonicalZeta.relativeRank,
+      ``ManuscriptAudit.CubicSupersingularCanonicalZeta.count_coefficient_eq,
       ``ManuscriptAudit.CubicSupersingularCanonicalZeta.zeta_eq] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

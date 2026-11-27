@@ -49,7 +49,9 @@ scheme turns a continuous Hausdorff-valued map into a locally constant one. -/
 theorem of_etaleChart (X : Scheme.{u}) [IsLocallyNoetherian X] (U : X.Etale)
     {M : Type v} [TopologicalSpace M] [T2Space M] {f : U.left → M} (hf : Continuous f) :
     IsLocallyConstant f := by
-  letI : IsLocallyNoetherian U.left := LocallyOfFiniteType.isLocallyNoetherian U.hom
+  let g : U.left ⟶ X := U.hom
+  letI : LocallyOfFiniteType g := inferInstanceAs (LocallyOfFiniteType U.hom)
+  letI : IsLocallyNoetherian U.left := LocallyOfFiniteType.isLocallyNoetherian g
   exact of_locallyNoetherian U.left hf
 
 end ManuscriptAudit.EtaleLocallyConstantHausdorff

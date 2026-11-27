@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import PrimalitySheafVerification.ManuscriptAudit.ProetaleAdicProductEpi
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleAdicProductChartEpi
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleCoefficientUniverseLift
 
 /-! The actual residue-product difference gives a short exact sequence
@@ -39,7 +39,7 @@ theorem shortExact : (sequence X ℓ).ShortExact := by
   have hm : Mono S.f := inferInstanceAs (Mono ((lift X).map (inclusion X ℓ)))
   have he : Epi S.g :=
     epi_map_of_chartwise X (difference X ℓ) (fun W ↦
-      ProetaleAdicProductEpi.evaluation_difference_epi X ℓ W.unop)
+      ProetaleAdicProductChartEpi.evaluation_difference_epi X ℓ W.unop)
   exact ShortComplex.ShortExact.mk' (S.exact_of_f_is_kernel (firstIsKernel X ℓ)) hm he
 
 /-- The left cohomology term of the sequence is exactly Mathlib's native group. -/

@@ -24,11 +24,15 @@ set_option maxHeartbeats 300000 in
 set_option synthInstance.maxHeartbeats 30000 in
 /-- The native residue-product difference is an epimorphism of pro-étale sheaves. -/
 theorem difference_epi : Epi (difference X ℓ) := by
-  let E := sheafToPresheaf (Scheme.ProEt.topology X) AddCommGrpCat.{0}
-  letI : Epi (E.map (difference X ℓ)) := (NatTrans.epi_iff_epi_app _).mpr fun W ↦ by
-    change Epi ((difference X ℓ).hom.app W)
-    exact evaluation_difference_epi X ℓ W.unop
-  exact E.epi_of_epi_map (difference X ℓ)
+  constructor
+  intro Z a b hab
+  apply Sheaf.hom_ext
+  apply NatTrans.ext
+  funext W
+  letI : Epi ((difference X ℓ).hom.app W) := evaluation_difference_epi X ℓ W.unop
+  apply (cancel_epi ((difference X ℓ).hom.app W)).mp
+  have h := congrArg (fun t : ProetaleAdicProductKernel.product X ℓ ⟶ Z ↦ t.hom.app W) hab
+  exact h
 
 /-- The actual adic sheaf is the kernel of an epic consecutive residue-product difference. -/
 theorem product_sequence :

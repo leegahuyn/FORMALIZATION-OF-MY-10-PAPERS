@@ -24,7 +24,7 @@ variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) F] [CharP F p]
 variable [∀ n, Algebra (ZMod p) (E n)] [∀ n, CharP (E n) p]
 variable [∀ n, IsScalarTower (ZMod p) F (E n)]
 
-private theorem counts_eq_two_roots (L : Type*) [Field L] [DecidableEq L] [IsAlgClosed L]
+theorem counts_eq_two_roots (L : Type*) [Field L] [DecidableEq L] [IsAlgClosed L]
     [Algebra F L] [Algebra (ZMod p) L] [Algebra.IsAlgebraic (ZMod p) L]
     [∀ n, Algebra (E n) L] [∀ n, IsScalarTower F (E n) L]
     (hp : 5 ≤ p) (hP : p % 3 = 2)
@@ -76,10 +76,12 @@ end ManuscriptAudit.CubicSupersingularHasseWeil
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.CubicSupersingularHasseWeil.zeta_eq
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.CubicSupersingularHasseWeil.counts_eq_two_roots,
+      ``ManuscriptAudit.CubicSupersingularHasseWeil.zeta_eq] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

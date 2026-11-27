@@ -30,7 +30,8 @@ def SectionHasLift {X : Scheme.{u}} (S : ShortComplex (ÉtaleSheaf X))
     (W : X.Etale) (s : S.X₃.obj.obj (op W)) : Prop :=
   ∃ t : S.X₂.obj.obj (op W), S.g.hom.app (op W) t = s
 
-private theorem sectionHasLift_iso {X : Scheme.{u}}
+/-- Transport of liftability along an actual isomorphism of short complexes. -/
+theorem sectionHasLift_iso {X : Scheme.{u}}
     {S T : ShortComplex (ÉtaleSheaf X)} (e : S ≅ T) (W : X.Etale)
     (s : S.X₃.obj.obj (op W)) :
     SectionHasLift T W (e.hom.τ₃.hom.app (op W) s) ↔ SectionHasLift S W s := by
@@ -54,13 +55,15 @@ private theorem sectionHasLift_iso {X : Scheme.{u}}
 variable {U V X : Scheme.{u}} (j : U ⟶ X) (k : V ⟶ X)
 variable [IsOpenImmersion j] [IsOpenImmersion k]
 
-private def postcomposeTerminalIso :
+/-- The terminal object of the open identifies with its actual ambient chart. -/
+def postcomposeTerminalIso :
     (etalePostcompose j).obj (identityObject U) ≅ Scheme.Etale.mk j :=
   MorphismProperty.Over.isoMk (Iso.refl U) (by rfl)
 
 private abbrev innerOverlap := Scheme.Etale.mk (pullback.fst j k)
 
-private theorem postcompose_overlap_arrow :
+/-- The actual represented overlap restriction agrees with open postcomposition. -/
+theorem postcompose_overlap_arrow :
     (etalePostcompose j).map (openArrow (pullback.fst j k)) ≫ (postcomposeTerminalIso j).hom =
       fstLeg j k := by
   apply MorphismProperty.Over.Hom.ext

@@ -41,9 +41,11 @@ end ManuscriptAudit.Paper5ActualEulerRadius
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.Paper5ActualEulerRadius.actual_reduced_cubic_roots_on_circle
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [
+      ``ManuscriptAudit.Paper5ActualEulerRadius.actual_reduced_cubic_roots_on_circle,
+      ``ManuscriptAudit.Paper5ActualEulerRadius.actual_finite_cubic_roots_on_circle] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

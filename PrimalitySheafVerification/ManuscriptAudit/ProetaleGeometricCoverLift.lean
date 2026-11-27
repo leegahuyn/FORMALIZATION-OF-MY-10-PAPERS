@@ -25,6 +25,15 @@ theorem exists_lift {U : S.ProEt} (R : Sieve U) (hR : R ∈ Scheme.ProEt.topolog
       ∃ b : Spec (CommRingCat.of K) ⟶ V.left, b ≫ f.left = a := by
   let J := Scheme.ProEt.precoverage S
   let G := Scheme.ProEt.forget S ⋙ Over.forget S
+  letI : J.IsStableUnderComposition := by
+    change (Scheme.proetalePrecoverage.comap G).IsStableUnderComposition
+    infer_instance
+  letI : J.IsStableUnderBaseChange := by
+    change (Scheme.proetalePrecoverage.comap G).IsStableUnderBaseChange
+    infer_instance
+  letI : J.HasIsos := by
+    change (Scheme.proetalePrecoverage.comap G).HasIsos
+    infer_instance
   obtain ⟨P, hP, hPR⟩ := (J.mem_toGrothendieck_iff_of_isStableUnderComposition).mp hR
   rw [Precoverage.mem_iff_exists_zeroHypercover] at hP
   obtain ⟨E, rfl⟩ := hP

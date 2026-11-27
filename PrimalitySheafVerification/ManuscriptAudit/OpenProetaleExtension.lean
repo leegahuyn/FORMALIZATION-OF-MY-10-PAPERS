@@ -68,6 +68,15 @@ theorem postcomposeCoverPreserving :
     let G := Scheme.ProEt.forget U ⋙ Over.forget U
     let H := Scheme.ProEt.forget X ⋙ Over.forget X
     let J := Scheme.ProEt.precoverage U
+    letI : J.IsStableUnderComposition := by
+      change (Scheme.proetalePrecoverage.comap G).IsStableUnderComposition
+      infer_instance
+    letI : J.IsStableUnderBaseChange := by
+      change (Scheme.proetalePrecoverage.comap G).IsStableUnderBaseChange
+      infer_instance
+    letI : J.HasIsos := by
+      change (Scheme.proetalePrecoverage.comap G).HasIsos
+      infer_instance
     obtain ⟨P, hP, hPS⟩ := (J.mem_toGrothendieck_iff_of_isStableUnderComposition).mp hS
     have h₀ : P.map G ∈ Scheme.proetalePrecoverage W.left := hP
     have h₁ : P.map F ∈ Scheme.ProEt.precoverage X (F.obj W) := by

@@ -3,6 +3,7 @@ import Mathlib.Algebra.TrivSqZeroExt.Ideal
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.RingTheory.Unramified.Basic
 import PrimalitySheafVerification.ManuscriptAudit.Paper2WeierstrassDualLifts
+import PrimalitySheafVerification.ManuscriptAudit.LocalizedDualLiftObstruction
 
 /-! A smooth affine Weierstrass point disproves formal unramifiedness of the whole curve over its field. -/
 
@@ -39,6 +40,42 @@ private theorem evaluation_y {R : Type*} [CommRing R] [Algebra K R] (W : Weierst
   unfold evaluation
   rw [AdjoinRoot.liftAlgHom_root]
 
+/-- Evaluation on the actual affine coordinate algebra at the residual point. -/
+def residueAt (W : WeierstrassCurve K) (x y : K) (h : W.toAffine.Equation x y) :
+    W.toAffine.CoordinateRing →ₐ[K] K :=
+  evaluation W x y (by simpa only [Algebra.algebraMap_self, WeierstrassCurve.map_id] using h)
+
+/-- The actual affine algebra morphism associated to a first-order coordinate lift. -/
+def dualEvaluation (W : WeierstrassCurve K) (x y : K) (z : DualLifts W x y) :
+    W.toAffine.CoordinateRing →ₐ[K] K[ε] :=
+  evaluation W (dual x z.1.1) (dual y z.1.2) z.2
+
+theorem dualEvaluation_residue (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Equation x y) (a : DualLifts W x y) :
+    (TrivSqZeroExt.fstHom K K K).comp (dualEvaluation W x y a) = residueAt W x y h := by
+  apply AdjoinRoot.algHom_ext'
+  · apply Polynomial.algHom_ext
+    change (TrivSqZeroExt.fstHom K K K) (dualEvaluation W x y a (AdjoinRoot.of W.toAffine.polynomial X)) =
+      residueAt W x y h (AdjoinRoot.of W.toAffine.polynomial X)
+    simp only [dualEvaluation, residueAt, evaluation_x, TrivSqZeroExt.fstHom_apply,
+      fst_dual]
+  · change (TrivSqZeroExt.fstHom K K K) (dualEvaluation W x y a (AdjoinRoot.root W.toAffine.polynomial)) =
+      residueAt W x y h (AdjoinRoot.root W.toAffine.polynomial)
+    simp only [dualEvaluation, residueAt, evaluation_y, TrivSqZeroExt.fstHom_apply,
+      fst_dual]
+
+theorem dualEvaluation_injective (W : WeierstrassCurve K) (x y : K) :
+    Function.Injective (dualEvaluation W x y) := by
+  intro a b he
+  apply Subtype.ext
+  apply Prod.ext
+  · have hx := congrArg (fun f : W.toAffine.CoordinateRing →ₐ[K] K[ε] =>
+        (f (AdjoinRoot.of W.toAffine.polynomial X)).snd) he
+    simpa only [dualEvaluation, evaluation_x, snd_dual] using hx
+  · have hy := congrArg (fun f : W.toAffine.CoordinateRing →ₐ[K] K[ε] =>
+        (f (AdjoinRoot.root W.toAffine.polynomial)).snd) he
+    simpa only [dualEvaluation, evaluation_y, snd_dual] using hy
+
 theorem not_formally_unramified (W : WeierstrassCurve K) (x y : K)
     (h : W.toAffine.Nonsingular x y) : ¬ Algebra.FormallyUnramified K W.toAffine.CoordinateRing := by
   intro hUnramified
@@ -46,40 +83,45 @@ theorem not_formally_unramified (W : WeierstrassCurve K) (x y : K)
   apply nonunique_dual_lift W x y h
   constructor
   intro a b
-  let g (z : DualLifts W x y) : W.toAffine.CoordinateRing →ₐ[K] K[ε] :=
-    evaluation W ⟨x, z.1.1⟩ ⟨y, z.1.2⟩ z.2
   let r : K[ε] →ₐ[K] K := TrivSqZeroExt.fstHom K K K
-  have hSame : r.comp (g a) = r.comp (g b) := by
-    apply AdjoinRoot.algHom_ext'
-    · apply Polynomial.algHom_ext
-      change r (g a (AdjoinRoot.of W.toAffine.polynomial X)) =
-        r (g b (AdjoinRoot.of W.toAffine.polynomial X))
-      simp only [g, evaluation_x, r, TrivSqZeroExt.fstHom_apply, TrivSqZeroExt.fst_mk]
-    · change r (g a (AdjoinRoot.root W.toAffine.polynomial)) =
-        r (g b (AdjoinRoot.root W.toAffine.polynomial))
-      simp only [g, evaluation_y, r, TrivSqZeroExt.fstHom_apply, TrivSqZeroExt.fst_mk]
-  have hNil : IsNilpotent (RingHom.ker (r : K[ε] →+* K)) := by
-    refine ⟨2, ?_⟩
-    exact TrivSqZeroExt.kerIdeal_sq K K
-  have he := Algebra.FormallyUnramified.lift_unique' r hNil (g a) (g b) hSame
-  apply Subtype.ext
-  apply Prod.ext
-  · have hx := congrArg (fun f : W.toAffine.CoordinateRing →ₐ[K] K[ε] =>
-        (f (AdjoinRoot.of W.toAffine.polynomial X)).snd) he
-    simpa only [g, evaluation_x, TrivSqZeroExt.snd_mk] using hx
-  · have hy := congrArg (fun f : W.toAffine.CoordinateRing →ₐ[K] K[ε] =>
-        (f (AdjoinRoot.root W.toAffine.polynomial)).snd) he
-    simpa only [g, evaluation_y, TrivSqZeroExt.snd_mk] using hy
+  have hEq : W.toAffine.Equation x y := ((Affine.nonsingular_iff' (W := W.toAffine) x y).mp h).1
+  have hSame : r.comp (dualEvaluation W x y a) = r.comp (dualEvaluation W x y b) :=
+    (dualEvaluation_residue W x y hEq a).trans (dualEvaluation_residue W x y hEq b).symm
+  have hNil : IsNilpotent (RingHom.ker r.toRingHom) := ⟨2, TrivSqZeroExt.kerIdeal_sq K K⟩
+  exact dualEvaluation_injective W x y
+    (Algebra.FormallyUnramified.lift_unique' r hNil (dualEvaluation W x y a)
+      (dualEvaluation W x y b) hSame)
+
+/-- Formal unramifiedness also fails on the actual local ring at the nonsingular point. -/
+theorem local_not_formally_unramified (W : WeierstrassCurve K) (x y : K)
+    (hEq : W.toAffine.Equation x y) (h : W.toAffine.Nonsingular x y)
+    (P : Ideal W.toAffine.CoordinateRing) [P.IsPrime]
+    (hP : P = RingHom.ker (residueAt W x y hEq).toRingHom)
+    (S : Type*) [CommRing S] [Algebra K S] [Algebra W.toAffine.CoordinateRing S]
+    [IsScalarTower K W.toAffine.CoordinateRing S] [IsLocalization P.primeCompl S] :
+    ¬ Algebra.FormallyUnramified K S := by
+  obtain ⟨e⟩ := dual_lifts_of_nonsingular W x y h
+  let a := e.symm 0
+  let b := e.symm 1
+  have hNe : a ≠ b := fun he => zero_ne_one (e.symm.injective he)
+  exact LocalizedDualLiftObstruction.not_formally_unramified_of_local_lifts
+    (residueAt W x y hEq) P hP S (dualEvaluation W x y a) (dualEvaluation W x y b)
+    (dualEvaluation_residue W x y hEq a) (dualEvaluation_residue W x y hEq b)
+    (fun he => hNe (dualEvaluation_injective W x y he))
 
 end
 end ManuscriptAudit.Paper2WeierstrassNotUnramified
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.Paper2WeierstrassNotUnramified.not_formally_unramified
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.dualEvaluation_residue,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.dualEvaluation_injective,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.not_formally_unramified,
+      ``ManuscriptAudit.Paper2WeierstrassNotUnramified.local_not_formally_unramified] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

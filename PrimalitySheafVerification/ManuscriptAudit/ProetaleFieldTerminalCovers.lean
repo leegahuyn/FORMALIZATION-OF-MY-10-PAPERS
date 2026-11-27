@@ -24,7 +24,7 @@ abbrev base := Spec (CommRingCat.of K)
 def terminalObject : (base K).ProEt :=
   Scheme.ProEt.mk (𝟙 (base K))
 
-theorem terminalObject_isTerminal : IsTerminal (terminalObject K) :=
+def terminalObject_isTerminal : IsTerminal (terminalObject K) :=
   MorphismProperty.Over.mkIdTerminal @WeaklyEtale (base K)
 
 variable [IsAlgClosed K]
@@ -37,6 +37,15 @@ theorem covering_eq_top (R : Sieve (terminalObject K))
   let T := terminalObject K
   let J := Scheme.ProEt.precoverage S
   let G := Scheme.ProEt.forget S ⋙ Over.forget S
+  letI : J.IsStableUnderComposition := by
+    change (Scheme.proetalePrecoverage.comap G).IsStableUnderComposition
+    infer_instance
+  letI : J.IsStableUnderBaseChange := by
+    change (Scheme.proetalePrecoverage.comap G).IsStableUnderBaseChange
+    infer_instance
+  letI : J.HasIsos := by
+    change (Scheme.proetalePrecoverage.comap G).HasIsos
+    infer_instance
   obtain ⟨P, hP, hPR⟩ := (J.mem_toGrothendieck_iff_of_isStableUnderComposition).mp hR
   rw [Precoverage.mem_iff_exists_zeroHypercover] at hP
   obtain ⟨E, rfl⟩ := hP

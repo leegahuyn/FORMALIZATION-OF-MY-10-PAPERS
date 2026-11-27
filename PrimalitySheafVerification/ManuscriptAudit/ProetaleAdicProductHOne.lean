@@ -27,7 +27,7 @@ theorem HZero_difference_surjective : Function.Surjective (Sheaf.H.map (Q X ℓ)
   let T := Scheme.ProEt.mk (𝟙 X)
   let hT : IsTerminal T := MorphismProperty.Over.mkIdTerminal @WeaklyEtale X
   have he₀ : Epi ((difference X ℓ).hom.app (op T)) :=
-    ProetaleAdicProductEpi.evaluation_difference_epi X ℓ T
+    ProetaleAdicProductChartEpi.evaluation_difference_epi X ℓ T
   have he₁ : Epi ((Q X ℓ).g.hom.app (op T)) :=
     epi_map_app_of_epi_app X (difference X ℓ) (op T) he₀
   intro y
