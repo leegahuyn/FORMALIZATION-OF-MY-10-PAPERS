@@ -36,8 +36,8 @@ theorem charts_cover (p : model R) :
   | none =>
     left
     refine ⟨overlapToZ R q, ?_⟩
-    rw [← Scheme.Hom.comp_apply, overlapToZ_chartIn]
-    exact hq
+    have h := congrArg (fun f : overlapScheme R ⟶ model R => f q) (overlapToZ_chartIn R)
+    exact h.trans hq
   | some b =>
     cases b
     · exact Or.inl ⟨q, hq⟩
@@ -51,7 +51,7 @@ private theorem overlap_range :
   constructor
   · rintro ⟨q, rfl⟩
     refine ⟨overlapToY R q, ?_⟩
-    rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, overlap_condition]
+    exact congrArg (fun f : overlapScheme R ⟶ model R => f q) (overlap_condition R).symm
   · rintro ⟨q, hq⟩
     have h : colimit.ι (diagram R) (some false) p =
         colimit.ι (diagram R) (some true) q := hq.symm

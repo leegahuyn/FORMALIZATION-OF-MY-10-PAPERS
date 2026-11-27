@@ -53,7 +53,8 @@ theorem exists_cocycle_of_local_lift (x : (cokernel j).obj.obj (op T)) (y : M.ob
     rw [NatTrans.naturality_apply j.hom d.op b, hb]
     change (M.obj.map d.op).hom (M.obj.map (second f).op y - M.obj.map (first f).op y) = _
     rw [map_sub]
-    exact sub_congr (restrict_restrict M d (second f) y) (restrict_restrict M d (first f) y)
+    exact congrArg₂ (fun a b : M.obj.obj (op (Triple f)) ↦ a - b)
+      (restrict_restrict M d (second f) y) (restrict_restrict M d (first f) y)
   have h23s : edge23 f ≫ second f = edge13 f ≫ second f := by
     rw [edge23, pullback.lift_snd]
   have h23f : edge23 f ≫ first f = edge12 f ≫ second f := by

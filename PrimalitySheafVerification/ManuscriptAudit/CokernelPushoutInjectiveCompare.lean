@@ -42,13 +42,17 @@ theorem projection_enlargedQuotientMap :
   apply pushout.hom_ext
   · change pushout.inl i r ≫ (q ≫ u) = pushout.inl i r ≫ (k ≫ π)
     calc
-      _ = cokernel.π i ≫ u := by rw [← Category.assoc, inl_sequence_g]
+      _ = (pushout.inl i r ≫ q) ≫ u := (Category.assoc _ _ _).symm
+      _ = cokernel.π i ≫ u :=
+        congrArg (fun e : M ⟶ cokernel i ↦ e ≫ u) (inl_sequence_g i r)
       _ = (pushout.inl i r ≫ k) ≫ π := cokernel.π_desc _ _ _
       _ = _ := Category.assoc _ _ _
   · change pushout.inr i r ≫ (q ≫ u) = pushout.inr i r ≫ (k ≫ π)
     have h : pushout.inr i r ≫ q = 0 := (sequence i r).zero
     calc
-      _ = 0 := by rw [← Category.assoc, h, zero_comp]
+      _ = (pushout.inr i r ≫ q) ≫ u := (Category.assoc _ _ _).symm
+      _ = 0 ≫ u := congrArg (fun e : D' ⟶ cokernel i ↦ e ≫ u) h
+      _ = 0 := zero_comp
       _ = j ≫ π := (cokernel.condition j).symm
       _ = _ := Category.assoc _ _ _
 

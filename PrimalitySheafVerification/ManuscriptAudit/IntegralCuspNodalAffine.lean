@@ -79,6 +79,14 @@ private theorem specAlgIso_over {A B : Type} [CommRing A] [CommRing B]
   apply RingHom.ext
   exact e.symm.commutes
 
+private theorem chained_over {C : Type*} [Category C] {W X Y Z T : C}
+    (e₀ : W ≅ X) (e₁ : X ≅ Y) (e₂ : Y ≅ Z)
+    {q₀ : W ⟶ T} {q₁ : X ⟶ T} {q₂ : Y ⟶ T} {q₃ : Z ⟶ T}
+    (h₂ : e₂.hom ≫ q₃ = q₂) (h₁ : e₁.hom ≫ q₂ = q₁)
+    (h₀ : e₀.hom ≫ q₁ = q₀) :
+    (e₀ ≪≫ e₁ ≪≫ e₂).hom ≫ q₃ = q₀ := by
+  simp only [Iso.trans_hom, Category.assoc, h₂, h₁, h₀]
+
 set_option maxHeartbeats 800000 in
 private theorem identifiedFiber_over {B : Type} [CommRing B] [Algebra K B]
     (q : Polynomial ℤ) {p : Polynomial K} (h : q.map (algebraMap ℤ K) = p)
@@ -97,9 +105,7 @@ private theorem identifiedFiber_over {B : Type} [CommRing B] [Algebra K B]
   have h₀ : e₀.hom ≫ toBase K (q.map (algebraMap ℤ K)) =
       pullback.fst (coefficientPoint K) (toBase ℤ q) :=
     schemeBaseChange_over ℤ K q
-  change e₀.hom ≫ e₁.hom ≫ e₂.hom ≫
-    Spec.map (CommRingCat.ofHom (algebraMap K B)) = _
-  rw [h₂, h₁, h₀]
+  exact chained_over e₀ e₁ e₂ h₂ h₁ h₀
 
 /-- The native pullback of the integral cusp is the actual affine cusp scheme. -/
 def cuspFiberIso :

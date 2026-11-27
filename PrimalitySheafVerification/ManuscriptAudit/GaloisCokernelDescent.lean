@@ -42,7 +42,8 @@ def terminalObject_isTerminal : IsTerminal (T K) :=
     (fun U a => MorphismProperty.Over.Hom.ext (by
       have h := MorphismProperty.Over.w a
       change a.left ≫ 𝟙 (X K) = U.hom at h
-      rwa [Category.comp_id] at h))
+      change a.left = U.hom
+      exact (Category.comp_id a.left).symm.trans h))
 
 theorem exists_global_cokernel_lift_of_HOne
     {F I : Sheaf (J K) AddCommGrpCat.{0}} (i : F ⟶ I) [Mono i]

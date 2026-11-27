@@ -119,7 +119,8 @@ theorem affineEtaleDirectSum_HTwo_subsingleton {I : Type} (P : I → C S)
       _ = _ := by
         change (p.hom.app (op W)).hom (_ - _) = _
         rw [map_sub]
-        exact sub_congr (NatTrans.naturality_apply p.hom (second f).op s)
+        exact congrArg₂ (fun x y : (cokernel i').obj.obj (op W) ↦ x - y)
+          (NatTrans.naturality_apply p.hom (second f).op s)
           (NatTrans.naturality_apply p.hom (first f).op s)
   have hβ : Sheaf.H.map u 1 β = 0 := by
     rw [← hx]

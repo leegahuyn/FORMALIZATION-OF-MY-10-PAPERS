@@ -15,14 +15,14 @@ noncomputable section
 variable {K : Type*} [Field K] [CharP K 5] [DecidableEq K] {A : K}
 
 theorem two_ne : (2 : K) ≠ 0 := by
-  change ((2 : ℕ) : K) ≠ 0
-  rw [CharP.cast_eq_zero_iff K 5 2]
-  decide
+  change ¬ ((2 : ℕ) : K) = 0
+  intro h
+  exact (show ¬ 5 ∣ (2 : ℕ) by decide) ((CharP.cast_eq_zero_iff K 5 2).mp h)
 
 theorem three_ne : (3 : K) ≠ 0 := by
-  change ((3 : ℕ) : K) ≠ 0
-  rw [CharP.cast_eq_zero_iff K 5 3]
-  decide
+  change ¬ ((3 : ℕ) : K) = 0
+  intro h
+  exact (show ¬ 5 ∣ (3 : ℕ) by decide) ((CharP.cast_eq_zero_iff K 5 3).mp h)
 
 theorem negY (x y : K) : (Curve A).negY x y = -y := by
   simp [Curve, CubicAffine, shortCubic, Affine.negY]
@@ -60,8 +60,9 @@ theorem double_some {x y : K} (hA : A ≠ 0) (hy : y ≠ 0)
   have hl : l = -x ^ 2 / y := by
     change (Curve A).slope x x y y = _
     rw [Affine.slope_of_Y_ne rfl hyNeg, negY, sub_neg_eq_add, ← two_mul]
-    change (3 * x ^ 2) / (2 * y) = _
-    rw [h3neg]
+    have hnum : 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y = 3 * x ^ 2 := by
+      simp [W, Curve, CubicAffine, shortCubic]
+    rw [hnum, h3neg]
     field_simp [two_ne (K := K), hy]
     <;> ring
   have hX : W.addX x x l = -x * (x ^ 3 + 2 * A) / y ^ 2 := by

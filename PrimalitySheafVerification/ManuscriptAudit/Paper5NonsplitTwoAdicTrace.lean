@@ -6,6 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper5TwoAdicCoefficients
 
 namespace ManuscriptAudit.Paper5NonsplitTwoAdicTrace
 
+open WeierstrassCurve FiniteFieldPointCount
+open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
 open CubicThreeTorsionOrdinate CubicNonsplitFrobeniusTrace
 open Paper5TwoPowerFrobenius Paper5TwoAdicCoefficients
 open TorsionFrobeniusModule TwoPowerTorsionCompatibleBasis TwoPowerTorsionCoordinateOperator
@@ -24,7 +26,14 @@ theorem coordinate_trace_eq_native (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) (n
   change LinearMap.trace (ZMod (2 ^ n)) (Coordinates n)
     (e.symm.conj (mapLinear (2 ^ n) (pointFrobenius p L A))) = _
   rw [LinearMap.trace_conj']
-  rfl
+  have hW : Paper5FrobeniusModTwo.printedAffine p A = Curve A := by
+    change (paper5TraceCurve p A).toProjective.toAffine =
+      (shortCubic (0 : ZMod p) A).toProjective.toAffine
+    apply congrArg (fun W : WeierstrassCurve (ZMod p) => W.toProjective.toAffine)
+    simp [paper5TraceCurve, shortCubic, ZMod.natCast_self]
+  exact congrArg (fun W : Affine (ZMod p) =>
+    LinearMap.trace (ZMod (2 ^ n)) (TwoPowerTorsionTower.PowerTorsion (W.baseChange L).Point n)
+      (pointMap (2 ^ n) W (FiniteField.frobeniusAlgHom (ZMod p) L))) hW
 
 theorem trace_eq_zero (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) (hq : p % 3 = 2) :
     trace p L hp hA = 0 := by

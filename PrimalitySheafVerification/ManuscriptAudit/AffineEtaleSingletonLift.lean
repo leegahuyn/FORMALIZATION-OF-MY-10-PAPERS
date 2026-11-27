@@ -55,13 +55,13 @@ theorem exists_singleton_cover_lift
     AffineEtaleCoverProduct.product_affine_etale_faithfullyFlat (fun k : Fin n ↦ (B k : Type u)) hPrime
   letI : Algebra.Etale A C := hEt
   letI : Module.FaithfullyFlat A C := hFaithful
-  let aPi : A ⟶ CommRingCat.of C := CommRingCat.ofHom (algebraMap A C)
-  let g : Spec (CommRingCat.of C) ⟶ X := Spec.map aPi ≫ U.hom
+  let aPi : A ⟶ AffineEtaleProductGluing.productRing B := CommRingCat.ofHom (algebraMap A C)
+  let g : Spec (AffineEtaleProductGluing.productRing B) ⟶ X := Spec.map aPi ≫ U.hom
   letI : Etale (Spec.map aPi) := (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
     (RingHom.etale_algebraMap.mpr (inferInstance : Algebra.Etale A C))
   letI : Etale U.hom := U.prop
   letI : Etale g := by change Etale (Spec.map aPi ≫ U.hom); infer_instance
-  let W := AffineEtaleProductGluing.productObject B g
+  let W := @AffineEtaleProductGluing.productObject X (Fin n) B g inferInstance
   let v : W ⟶ U := MorphismProperty.CostructuredArrow.homMk aPi.op trivial rfl
   have hCov : Sieve.generate (Presieve.singleton v) ∈ Scheme.AffineEtale.topology X U := by
     rw [← Presieve.ofArrows_of_unique (fun _ : Unit ↦ v)]

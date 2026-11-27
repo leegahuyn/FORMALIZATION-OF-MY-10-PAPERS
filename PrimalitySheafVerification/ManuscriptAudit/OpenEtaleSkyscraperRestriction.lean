@@ -1,5 +1,6 @@
 import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 import PrimalitySheafVerification.ManuscriptAudit.EtaleObjectRestriction
 import PrimalitySheafVerification.ManuscriptAudit.GeometricSkyscraperHigherCohomology
@@ -32,8 +33,12 @@ private def fiberEquiv (t : Spec (.of Ω) ⟶ U) (W : U.Etale) :
   invFun s := Over.homMk s.left (by
     change s.left ≫ (W.hom ≫ j) = t ≫ j
     rw [← Category.assoc, show s.left ≫ W.hom = t from Over.w s])
-  left_inv s := CostructuredArrow.hom_ext rfl
-  right_inv s := CostructuredArrow.hom_ext rfl
+  left_inv s := by
+    apply CostructuredArrow.hom_ext
+    rfl
+  right_inv s := by
+    apply CostructuredArrow.hom_ext
+    rfl
 
 /-- A geometric point factoring through an open gives the same fibers
 on the actual open-site postcomposition functor. -/
@@ -43,7 +48,8 @@ def fiberPostcomposeIso (t : Spec (.of Ω) ⟶ U) :
   NatIso.ofComponents (fun W ↦ (fiberEquiv j t W).toIso) (fun {W V} f ↦ by
     apply ConcreteCategory.hom_ext
     intro s
-    exact CostructuredArrow.hom_ext rfl)
+    apply CostructuredArrow.hom_ext
+    rfl)
 
 /-- The actual restriction of a skyscraper at a point inside the open
 is the skyscraper at its factorization. -/
