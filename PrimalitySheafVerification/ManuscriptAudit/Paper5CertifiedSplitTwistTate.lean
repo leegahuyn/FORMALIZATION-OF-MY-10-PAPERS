@@ -20,14 +20,16 @@ variable (c : Certificate p) (L : Type*) [Field L] [Algebra (ZMod p) L] [IsAlgCl
 include c in
 private theorem two_ne_zero : (2 : L) ≠ 0 := by
   have h : 2 < p := by have := c.lower; omega
-  simpa only [map_natCast, Nat.cast_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr
-    (small_cast_ne_zero 2 (by decide) h)
+  have h₂ : (2 : ZMod p) ≠ 0 := small_cast_ne_zero 2 (by decide) h
+  have he := (map_ne_zero (algebraMap (ZMod p) L)).mpr h₂
+  rwa [map_ofNat] at he
 
 include c in
 private theorem three_ne_zero : (3 : L) ≠ 0 := by
   have h : 3 < p := by have := c.lower; omega
-  simpa only [map_natCast, Nat.cast_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr
-    (small_cast_ne_zero 3 (by decide) h)
+  have h₃ : (3 : ZMod p) ≠ 0 := small_cast_ne_zero 3 (by decide) h
+  have he := (map_ne_zero (algebraMap (ZMod p) L)).mpr h₃
+  rwa [map_ofNat] at he
 
 private theorem primitive_image : IsPrimitiveRoot (algebraMap (ZMod p) L c.z) 3 :=
   c.primitive.map_of_injective (algebraMap (ZMod p) L).injective

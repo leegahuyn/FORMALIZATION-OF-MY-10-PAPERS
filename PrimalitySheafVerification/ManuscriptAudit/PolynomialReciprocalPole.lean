@@ -25,8 +25,14 @@ theorem no_continuous_reciprocal_extension (P : ℂ[X]) (hP : P ≠ 0) {z₀ : �
     rw [hgZ, inv_mul_cancel₀ hz]
   have hOneLim : Tendsto (fun z => g z * P.eval z) (𝓝[S] z₀) (𝓝 1) :=
     tendsto_const_nhds.congr' hOne
+  have hPolynomial : Continuous (fun z : ℂ => P.eval z) := by
+    induction P using Polynomial.induction_on' with
+    | add Q R hQ hR => simpa only [Polynomial.eval_add] using hQ.add hR
+    | monomial n a =>
+      simpa only [Polynomial.eval_monomial, id_eq] using
+        (continuous_const : Continuous (fun _ : ℂ => a)).mul (continuous_id.pow n)
   have hCont : ContinuousAt (fun z => g z * P.eval z) z₀ :=
-    hg.mul P.continuous.continuousAt
+    hg.mul hPolynomial.continuousAt
   have hZeroLim : Tendsto (fun z => g z * P.eval z) (𝓝[S] z₀) (𝓝 0) := by
     simpa only [hz₀, mul_zero] using hCont.mono_left nhdsWithin_le_nhds
   exact one_ne_zero (tendsto_nhds_unique hOneLim hZeroLim)

@@ -26,9 +26,9 @@ noncomputable def fiber_bijection {g n : ℕ} (hg : 0 < g) :
     have he' : g*i.val.val = g*j.val.val := congrArg (fun d => d.val.val) he
     exact Subtype.ext (Fin.ext (mul_left_cancel₀ hg.ne' he'))
   · intro d
-    have hdvd : g ∣ d.val.val := by
-      rw [← d.property]
-      exact Nat.gcd_dvd_left _ _
+    have hG : Nat.gcd d.val.val (g*n) = g := d.property
+    have hdvd : g ∣ d.val.val :=
+      (congrArg (fun v : ℕ => v ∣ d.val.val) hG).mp (Nat.gcd_dvd_left _ _)
     obtain ⟨u, hu⟩ := hdvd
     have hul : u < n := by
       by_contra! h

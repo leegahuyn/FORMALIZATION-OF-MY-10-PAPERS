@@ -70,8 +70,9 @@ theorem exists_positive_power {m : ℕ} [NeZero m] (a b : ℤ)
   rw [matrix_power] at hA
   refine ⟨n, hn, ?_, ?_⟩
   · exact congrArg (fun M : Matrix (Fin 2) (Fin 2) (ZMod m) => M 0 0) hA
-  · simpa only [matrix, Matrix.one_apply, show (1 : Fin 2) ≠ 0 by decide, if_false] using
-      congrArg (fun M : Matrix (Fin 2) (Fin 2) (ZMod m) => M 1 0) hA
+  · have hb := congrArg (fun M : Matrix (Fin 2) (Fin 2) (ZMod m) => M 1 0) hA
+    change ((coefficients a b n).2 : ZMod m) = (1 : Matrix (Fin 2) (Fin 2) (ZMod m)) 1 0 at hb
+    simpa only [Matrix.one_apply, show (1 : Fin 2) ≠ 0 by decide, if_false] using hb
 
 end ManuscriptAudit.EisensteinPowerCongruence
 

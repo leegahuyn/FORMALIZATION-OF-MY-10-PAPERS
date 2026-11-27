@@ -18,8 +18,21 @@ noncomputable section
 
 set_option maxHeartbeats 1400000
 
+/-- Transport the native affine point group across equality of the model. -/
+def transport {K : Type*} [Field K] [DecidableEq K] {W V : Affine K} (h : W = V) :
+    W.Point ≃+ V.Point := by
+  subst V
+  exact AddEquiv.refl _
+
 variable (p : ℕ) [Fact p.Prime] (L : Type*) [Field L] [Algebra (ZMod p) L]
   [IsAlgClosed L] [DecidableEq L]
+
+private theorem pointMapAt_transport (W : Affine (ZMod p)) {V : Affine L}
+    (h : W.baseChange L = V) (P : (W.baseChange L).Point) :
+    pointMapAt (ZMod p) L W V h (FiniteField.frobeniusAlgHom (ZMod p) L) (transport h P) =
+      transport h (frobeniusOnPoints p L W P) := by
+  subst V
+  rfl
 
 /-- The kernel of the n-th actual Frobenius power minus the identity is finite and has the
 actual projective point count determined by the covered split-field recurrence. -/
@@ -45,11 +58,10 @@ theorem finite_and_card (h₂ : (2 : ZMod p) ≠ 0) (h₃ : (3 : ZMod p) ≠ 0)
   let F := arithmeticPointFrobenius (ZMod p) L A
   let F₀ := frobeniusOnPoints p L W
   let K := (F ^ n - 1).ker
-  let e : G₀ ≃+ G := pointTransport L (centered_baseChange (ZMod p) L A)
+  let e : G₀ ≃+ G := transport (centered_baseChange (ZMod p) L A)
   change Finite ↥K ∧ (Nat.card ↥K : ℤ) = _
-  have hFE (P : G₀) : F (e P) = e (F₀ P) := by
-    change e (F₀ (e.symm (e P))) = e (F₀ P)
-    rw [e.symm_apply_apply]
+  have hFE (P : G₀) : F (e P) = e (F₀ P) :=
+    pointMapAt_transport p L W (centered_baseChange (ZMod p) L A) P
   have hPow (j : ℕ) (P : G₀) : (F ^ j) (e P) = e (((⇑F₀)^[j]) P) := by
     induction j with
     | zero =>
@@ -61,7 +73,7 @@ theorem finite_and_card (h₂ : (2 : ZMod p) ≠ 0) (h₃ : (3 : ZMod p) ≠ 0)
         rw [ih, hFE, Function.iterate_succ_apply']
   let j : H →+ G := e.toAddMonoidHom.comp (Affine.Point.map (W' := W) i)
   have hMem (P : G) : P ∈ K ↔ ∃ Q : H, j Q = P := by
-    rw [AddMonoidHom.mem_ker]
+    change (F ^ n - 1 : AddMonoid.End G) P = 0 ↔ ∃ Q : H, j Q = P
     obtain ⟨P₀, rfl⟩ := e.surjective P
     change (F ^ n) (e P₀) - e P₀ = 0 ↔ ∃ Q : H, j Q = e P₀
     rw [sub_eq_zero, hPow]
@@ -88,7 +100,7 @@ theorem finite_and_card (h₂ : (2 : ZMod p) ≠ 0) (h₃ : (3 : ZMod p) ≠ 0)
   have hCard : Nat.card K =
       Nat.card (shortCubic (0 : E) (algebraMap (ZMod p) E A)).toProjective.Point :=
     (Nat.card_congr eK).symm.trans (Nat.card_congr
-      ((pointTransport E (centered_baseChange (ZMod p) E A)).toEquiv.trans hProj.toEquiv.symm))
+      ((transport (centered_baseChange (ZMod p) E A)).toEquiv.trans hProj.toEquiv.symm))
   refine ⟨Finite.of_injective eK.symm eK.symm.injective, ?_⟩
   have hDiv : 3 ∣ Fintype.card (ZMod p) - 1 := by
     rw [ZMod.card]

@@ -91,12 +91,13 @@ theorem trace_det (hl : l = 2 ∨ l = 3) {A : ZMod 31} (hA : A ≠ 0) :
   have h := CubicSexticTwistCoefficientFormula.trace_det (A := (1 : ZMod 31)) (B := A)
     (k := 5) h₂ h₃ one_ne_zero hA (by rw [ZMod.card]) primitive_five 1 6
     (by
-      change Paper5OrdinaryThirtyOneFrobenius.nativeFrobenius L =
-        (1 : ℤ) • (1 : AddMonoid.End (Points L)) +
-          (6 : ℤ) • (CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one
-            (discriminant_ne_zero L) : AddMonoid.End (Points L))
+      apply AddMonoidHom.ext
+      intro P
+      change Paper5OrdinaryThirtyOneFrobenius.nativeFrobenius L P =
+        (1 : ℤ) • P + (6 : ℤ) •
+          (CubicCubeRotation.rotate (i (5 : ZMod 31)) hRoot.pow_eq_one (discriminant_ne_zero L) P)
       rw [one_zsmul, ofNat_zsmul, hRot]
-      exact hF) l hl
+      exact congrArg (fun f : AddMonoid.End (Points L) => f P) hF) l hl
   obtain ⟨ht, hd⟩ := h
   change LinearMap.trace ℤ_[l] (Tate l (Geometric (ZMod 31) L A)) (action L l A) =
     (predictedTrace (5 : ZMod 31) ((A / 1) ^ 5) 1 6 : ℤ_[l]) at ht
