@@ -33,7 +33,7 @@ private theorem restricted_point_in_open (U : X.ProEt) (W : U.left.Opens)
     projection i U (((baseChange i).map (openArrow U W)).left q) ∈ W := by
   have h : ((baseChange i).map (openArrow U W)).left ≫ projection i U =
       projection i (openObject U W) ≫ W.ι := by
-    simp only [projection, baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
+    simp only [projection, baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst] <;> rfl
   have hq := congrArg (fun f ↦ f q) h
   change projection i U (((baseChange i).map (openArrow U W)).left q) =
     W.ι (projection i (openObject U W) q) at hq

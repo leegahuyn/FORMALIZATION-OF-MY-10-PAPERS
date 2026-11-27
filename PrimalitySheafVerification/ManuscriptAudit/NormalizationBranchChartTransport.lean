@@ -40,7 +40,7 @@ theorem normIso_hom_snd :
 private theorem conductorSquare :
     IsPullback (pullback.fst a i) (pullback.snd a i) (a ≫ j) (i ≫ j) := by
   let h := IsPullback.of_hasPullback a i
-  refine IsPullback.mk' ?_ h.hom_ext ?_
+  refine IsPullback.mk' ?_ (fun {_ _ _} h₁ h₂ ↦ h.hom_ext h₁ h₂) ?_
   · simpa only [← Category.assoc] using
       congrArg (fun f : pullback a i ⟶ Y ↦ f ≫ j) h.w
   · intro T u v hu
@@ -73,7 +73,8 @@ theorem branchIso_natural :
   · rw [Category.assoc, pullbackMap_fst, conductorIso_hom_fst, Category.assoc,
       normIso_hom_fst, pullbackMap_fst]
   · rw [Category.assoc, pullbackMap_snd, ← Category.assoc, conductorIso_hom_snd,
-      Category.assoc, normIso_hom_snd, ← Category.assoc, pullbackMap_snd, Category.assoc]
+      Category.assoc, normIso_hom_snd]
+    simp only [Category.assoc, pullbackMap_snd_assoc]
 
 end
 end ManuscriptAudit.NormalizationBranchChartTransport

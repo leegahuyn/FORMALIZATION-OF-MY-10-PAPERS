@@ -14,9 +14,9 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-universe u v
+universe u v w
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable (S : ShortComplex (Sheaf J AddCommGrpCat.{v}))
+variable (S : ShortComplex (Sheaf J AddCommGrpCat.{w}))
 
 /-- Assemble pointwise injective exactness into the native sheaf kernel. -/
 def kernel_isLimit

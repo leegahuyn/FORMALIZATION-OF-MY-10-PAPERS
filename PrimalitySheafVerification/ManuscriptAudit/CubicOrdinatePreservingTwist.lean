@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CubicFrobeniusSexticTwists
 import PrimalitySheafVerification.ManuscriptAudit.CubicCubeRotation
+import PrimalitySheafVerification.ManuscriptAudit.TorsionFrobeniusModule
 
 /-! A sextic twist with trivial ordinate correction acts by a pure cubic rotation on the source. -/
 
@@ -13,11 +14,15 @@ noncomputable section
 
 variable {L : Type*} [Field L] [DecidableEq L] {A z : L}
 
+abbrev pointRotation (hz : z ^ 3 = 1) (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) :
+    AddMonoid.End (Curve A).Point :=
+  CubicCubeRotation.rotate z hz hΔ
+
 private theorem rotation_pow_some (hz : z ^ 3 = 1)
     (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) (n : ℕ) {x y : L}
     (h : (Curve A).Nonsingular x y) :
     ∃ h' : (Curve A).Nonsingular (z ^ n * x) y,
-      (CubicCubeRotation.rotate z hz hΔ ^ n) (Affine.Point.some x y h) =
+      (pointRotation hz hΔ ^ n) (Affine.Point.some x y h) =
         Affine.Point.some (z ^ n * x) y h' := by
   induction n with
   | zero =>
@@ -35,15 +40,15 @@ private theorem rotation_pow_some (hz : z ^ 3 = 1)
       rw [pow_succ', mul_assoc]
     refine ⟨by simpa only [hx] using h'', ?_⟩
     rw [pow_succ']
-    change CubicCubeRotation.rotate z hz hΔ
-      ((CubicCubeRotation.rotate z hz hΔ ^ n) (Affine.Point.some x y h)) = _
+    change pointRotation hz hΔ
+      ((pointRotation hz hΔ ^ n) (Affine.Point.some x y h)) = _
     rw [he, CubicCubeRotation.rotate_some, Affine.Point.some.injEq]
     exact ⟨hx, rfl⟩
 
 theorem scale_eq_rotation_pow (hz : z ^ 3 = 1)
     (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) {v : L} (hv : v ≠ 0)
     (hV : v ^ 6 * A = A) (n : ℕ) (hx : v ^ 2 = z ^ n) (hy : v ^ 3 = 1) :
-    scale hv hV hΔ = CubicCubeRotation.rotate z hz hΔ ^ n := by
+    scale hv hV hΔ = pointRotation hz hΔ ^ n := by
   apply AddMonoidHom.ext
   intro P
   cases P with
@@ -63,7 +68,7 @@ theorem frobenius_conjugate_rotation (A B : E) (hA : A ≠ 0) (hB : B ≠ 0)
     (hy : (algebraMap E L (parameter A B k)) ^ 3 = 1) :
     ∃ e : Geometric E L A ≃+ Geometric E L B, ∀ P,
       arithmeticFrobenius E L B (e P) =
-        e ((CubicCubeRotation.rotate z hz hΔA ^ n * arithmeticFrobenius E L A) P) := by
+        e ((pointRotation hz hΔA ^ n * arithmeticFrobenius E L A) P) := by
   obtain ⟨hv, hV, e, he⟩ := CubicFrobeniusSexticTwists.exists_conjugacy
     E L hA hB hq hΔA hΔB
   refine ⟨e, fun P => ?_⟩

@@ -58,7 +58,9 @@ theorem extension_trace_eq_recurrence {A : F}
   have hc := extension_actual_point_count (E := E) hF (char_ne_two h₂E) hχ hψ hA
     (shortCubic_discriminant_ne_zero h₂E h₃E hAE)
   rw [← hrec] at hc
-  unfold signedTrace
+  change (Fintype.card E : ℤ) + 1 -
+    (Nat.card (shortCubic (0 : E) (algebraMap F E A)).toProjective.Point : ℤ) =
+      recurrence (Fintype.card F) (signedTrace A) (Module.finrank F E)
   exact_mod_cast hc
 
 end

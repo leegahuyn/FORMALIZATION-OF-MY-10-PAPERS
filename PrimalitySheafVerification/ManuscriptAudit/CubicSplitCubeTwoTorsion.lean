@@ -1,6 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.Ring
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import PrimalitySheafVerification.ManuscriptAudit.CubicThreeTorsionOrdinate
+import PrimalitySheafVerification.ManuscriptAudit.TorsionFrobeniusModule
 
 /-! The four rational two-torsion points of a split centered cubic with cube coefficient. -/
 
@@ -17,7 +19,7 @@ private def rootsEquiv {A z t : K} (hA : A ≠ 0) (hz : IsPrimitiveRoot z 3)
     (ht : t ^ 3 = -A) : Fin 3 ≃ CubicRoots (0 : K) A := by
   have ht₀ : t ≠ 0 := by
     intro he
-    rw [he, zero_pow (by decide)] at ht
+    rw [he, zero_pow (by decide : (3 : ℕ) ≠ 0)] at ht
     exact hA (neg_eq_zero.mp ht.symm)
   let e (i : Fin 3) : CubicRoots (0 : K) A := ⟨t * z ^ i.val, by
     have hp : (z ^ i.val) ^ 3 = 1 := by
@@ -26,9 +28,8 @@ private def rootsEquiv {A z t : K} (hA : A ≠ 0) (hz : IsPrimitiveRoot z 3)
     rw [zero_mul, sub_zero, mul_pow, ht, hp, mul_one, neg_add_cancel]⟩
   refine Equiv.ofBijective e ⟨?_, ?_⟩
   · intro i j h
-    apply Fin.ext
-    apply hz.pow_inj i.isLt j.isLt
-    exact mul_left_cancel₀ ht₀ (congrArg (fun x : CubicRoots (0 : K) A => x.val) h)
+    exact Fin.ext (hz.pow_inj i.isLt j.isLt
+      (mul_left_cancel₀ ht₀ (congrArg (fun x : CubicRoots (0 : K) A => x.val) h)))
   · intro x
     have hx : x.val ^ 3 = -A := by
       have he := x.property

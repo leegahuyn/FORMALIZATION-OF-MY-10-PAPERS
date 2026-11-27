@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleContinuousDirectImageMaps
 import PrimalitySheafVerification.ManuscriptAudit.SheafPointwiseKernel
 
-/-! A finite surjective map with at most the displayed two branches
+/-! A universally closed surjective map with at most the displayed two branches
 has the expected native continuous-function kernel on every chart. -/
 
 namespace ManuscriptAudit.ProetaleTwoBranchKernel
@@ -44,7 +44,7 @@ def sequence : ShortComplex (Sheaf (Scheme.ProEt.topology Z) AddCommGrpCat.{1}) 
   ShortComplex.mk (diagonal M p) (difference p q b₀ b₁ h₀ h₁ M)
     (diagonal_difference_zero p q b₀ b₁ h₀ h₁ M)
 
-variable [IsFinite p] [Surjective p]
+variable [UniversallyClosed p] [Surjective p]
 
 private theorem projection_quotient (U : Z.ProEt) : Topology.IsQuotientMap (project p U) :=
   (project p U).isClosedMap.isQuotientMap (project p U).continuous
@@ -54,6 +54,7 @@ private theorem projection_quotient (U : Z.ProEt) : Topology.IsQuotientMap (proj
 theorem diagonal_injective (U : Z.ProEt) :
     Function.Injective ((diagonal M p).hom.app (op U)) := by
   intro a b h
+  change ULift.{1} (C(U.left, M)) at a b
   apply ULift.ext
   apply ContinuousMap.ext
   intro y

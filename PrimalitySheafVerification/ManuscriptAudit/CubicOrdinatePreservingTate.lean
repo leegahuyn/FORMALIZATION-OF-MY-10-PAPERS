@@ -32,7 +32,7 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (A B : E)
     LinearMap.trace ℤ_[l] (Tate l (Geometric E L B))
       (endMap l (arithmeticFrobenius E L B)) = ((2 * c - d : ℤ) : ℤ_[l]) ∧
     LinearMap.det (endMap l (arithmeticFrobenius E L B)) = ((c ^ 2 - c * d + d ^ 2 : ℤ) : ℤ_[l]) := by
-  let r := CubicCubeRotation.rotate z hz hΔA
+  let r : AddMonoid.End (Geometric E L A) := pointRotation hz hΔA
   have h₀ : algebraMap E L A ≠ 0 := (map_ne_zero (algebraMap E L)).mpr hA
   have hr : r ^ 2 + r + (1 : AddMonoid.End (Geometric E L A)) = 0 := by
     apply AddMonoidHom.ext

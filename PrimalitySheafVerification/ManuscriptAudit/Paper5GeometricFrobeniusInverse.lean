@@ -7,13 +7,13 @@ import PrimalitySheafVerification.ManuscriptAudit.CubicNonsplitTwoThreeAdicCharp
 
 namespace ManuscriptAudit.Paper5GeometricFrobeniusInverse
 
-open PowerTateModule CubicNonsplitThreeAdicTrace CubicNonsplitPrimeAdicFrobenius
+open Module PowerTateModule CubicNonsplitThreeAdicTrace CubicNonsplitPrimeAdicFrobenius
 open CubicNonsplitTwoThreeAdicCharpoly
 open scoped TensorProduct
 
 noncomputable section
 
-private theorem determinant_baseChange {R S V : Type*} [CommRing R] [CommRing S]
+theorem determinant_baseChange {R S V : Type*} [CommRing R] [CommRing S]
     [Algebra R S] [AddCommGroup V] [Module R V]
     (b : Basis (Fin 2) R V) (f : Module.End R V) :
     LinearMap.det (f.baseChange S) = algebraMap R S (LinearMap.det f) := by
@@ -72,7 +72,7 @@ variable (L : Type*) [Field L] [Algebra (ZMod 5) L] [IsAlgClosed L] [DecidableEq
 
 theorem literal_inverse_det_ne_five :
     LinearMap.det (inverseGenerator (ZMod 5) L (A := 1) (by decide) (by decide)
-      one_ne_zero (by rw [ZMod.card]; decide)) ≠ (5 : ℚ_[2]) := by
+      one_ne_zero (by rw [ZMod.card])) ≠ (5 : ℚ_[2]) := by
   rw [inverse_det, ZMod.card]
   norm_num
 

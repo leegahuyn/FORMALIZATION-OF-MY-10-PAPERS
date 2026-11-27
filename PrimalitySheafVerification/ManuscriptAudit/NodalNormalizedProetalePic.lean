@@ -56,6 +56,7 @@ theorem globalUnits_restrict_bijective :
     (ProetaleTwoOpenHOne.twoOpenCover (yToNormalized K) (zToNormalized K h2) (charts_cover K h2))
     (firstLeg_injective K) (fun b ↦ (firstLeg_order_exact K _).mp (secondLeg_order_zero K h2 b))
 
+include h2 in
 /-- Every global regular unit of the actual normalization has a
 positive-order root in the global unit group. -/
 theorem globalUnits_nsmul_surjective (n : ℕ) (hn : 0 < n) :
@@ -69,6 +70,7 @@ theorem globalUnits_nsmul_surjective (n : ℕ) (hn : 0 < n) :
   rw [map_nsmul, AddEquiv.apply_symm_apply]
   exact congrArg Additive.ofMul hb
 
+include h2 in
 set_option maxHeartbeats 1600000 in
 /-- Native degree-one unit cohomology of the actual normalization is
 torsion-free, using the integer order on its actual overlap. -/
