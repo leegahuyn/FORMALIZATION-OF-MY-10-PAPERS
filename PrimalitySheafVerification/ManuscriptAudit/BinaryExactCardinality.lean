@@ -1,6 +1,8 @@
+import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.ZMod.Basic
+import Mathlib.GroupTheory.Index
 
 /-! Finite cardinal bounds for two consecutive binary labels. -/
 
@@ -80,6 +82,40 @@ theorem four_le_card [Finite G] (p : G →+ H) (a b : G)
   simpa only [Nat.card_eq_fintype_card, Fintype.card_prod, ZMod.card] using
     Fintype.card_le_of_injective f hi
 
+/-- A map from a four-element group that kills one nonzero class and
+detects another has a two-element kernel and image. -/
+theorem card_kernel_range_eq_two [Finite G] (p : G →+ H) (a b : G)
+    (ha : a ≠ 0) (hpa : p a = 0) (hpb : p b ≠ 0) (hG : Nat.card G = 4) :
+    Nat.card p.ker = 2 ∧ Nat.card p.range = 2 := by
+  let a' : p.ker := ⟨a, hpa⟩
+  let b' : p.range := ⟨p b, ⟨b, rfl⟩⟩
+  letI : Nontrivial p.ker := ⟨⟨a', 0, fun h => ha (congrArg Subtype.val h)⟩⟩
+  letI : Nontrivial p.range := ⟨⟨b', 0, fun h => hpb (congrArg Subtype.val h)⟩⟩
+  letI : Finite p.range := Finite.of_surjective p.rangeRestrict p.rangeRestrict_surjective
+  letI : Fintype p.ker := Fintype.ofFinite _
+  letI : Fintype p.range := Fintype.ofFinite _
+  have h₁ : 2 ≤ Nat.card p.ker := by
+    rw [Nat.card_eq_fintype_card]
+    exact Nat.succ_le_of_lt Fintype.one_lt_card
+  have h₂ : 2 ≤ Nat.card p.range := by
+    rw [Nat.card_eq_fintype_card]
+    exact Nat.succ_le_of_lt Fintype.one_lt_card
+  have hp : Nat.card p.ker * Nat.card p.range = 4 := by
+    rw [← AddSubgroup.index_ker, AddSubgroup.card_mul_index, hG]
+  have h₁' : Nat.card p.ker ≤ 2 := by
+    by_contra h
+    have hu : 3 ≤ Nat.card p.ker := by omega
+    have hv := Nat.mul_le_mul hu h₂
+    rw [hp] at hv
+    omega
+  have h₂' : Nat.card p.range ≤ 2 := by
+    by_contra h
+    have hu : 3 ≤ Nat.card p.range := by omega
+    have hv := Nat.mul_le_mul h₁ hu
+    rw [hp] at hv
+    omega
+  exact ⟨le_antisymm h₁' h₁, le_antisymm h₂' h₂⟩
+
 end
 end ManuscriptAudit.BinaryExactCardinality
 
@@ -87,7 +123,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.BinaryExactCardinality.finite_card_le_four,
-      ``ManuscriptAudit.BinaryExactCardinality.four_le_card] do
+      ``ManuscriptAudit.BinaryExactCardinality.four_le_card,
+      ``ManuscriptAudit.BinaryExactCardinality.card_kernel_range_eq_two] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

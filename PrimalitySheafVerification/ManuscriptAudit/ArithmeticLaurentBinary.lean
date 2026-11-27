@@ -40,7 +40,8 @@ private theorem pairReduction_eq_zero_iff (x : Additive Kˣ × ℤ) :
     change (x.1 : scalarClasses K) = 0 at h₁
     change (x.2 : ZMod 2) = 0 at h₂
     obtain ⟨u, hu⟩ := (mem_powerSubgroup 2 x.1).mp ((QuotientAddGroup.eq_zero_iff x.1).mp h₁)
-    obtain ⟨n, hn⟩ := (CharP.intCast_eq_zero_iff (ZMod 2) 2).mp h₂
+    rw [CharP.intCast_eq_zero_iff (ZMod 2) 2] at h₂
+    obtain ⟨n, hn⟩ := h₂
     refine ⟨(Additive.ofMul u, n), Prod.ext ?_ ?_⟩
     · change 2 • Additive.ofMul u = x.1
       exact (ofMul_square u).symm.trans (congrArg Additive.ofMul hu)
@@ -54,7 +55,7 @@ private theorem pairReduction_eq_zero_iff (x : Additive Kˣ × ℤ) :
       apply (mem_powerSubgroup 2 _).mpr
       exact ⟨y.1.toMul, congrArg Additive.toMul (ofMul_square y.1.toMul)⟩
     · change (((2 : ℕ) • y.2 : ℤ) : ZMod 2) = 0
-      apply (CharP.intCast_eq_zero_iff (ZMod 2) 2).mpr
+      rw [CharP.intCast_eq_zero_iff (ZMod 2) 2]
       exact ⟨y.2, by rw [two_nsmul, two_mul] <;> rfl⟩
 
 private def unitReduction : Additive (LaurentPolynomial K)ˣ →+ scalarClasses K × ZMod 2 :=
@@ -80,12 +81,18 @@ private theorem unitReduction_ker :
       (ofMul_square v).symm.trans (congrArg Additive.ofMul hv)
     rw [← map_nsmul, he]
 
+set_option maxHeartbeats 1200000 in
 def unitSquareClassesEquiv :
     (Additive (LaurentPolynomial K)ˣ ⧸ powerSubgroup (LaurentPolynomial K) 2) ≃+
       scalarClasses K × ZMod 2 :=
-  (QuotientAddGroup.quotientAddEquivOfEq (unitReduction_ker K).symm).trans
-    (QuotientAddGroup.quotientKerEquivOfSurjective (unitReduction K)
-      ((pairReduction_surjective K).comp (unitCoordinates K).symm.surjective))
+  by
+    let f := unitReduction K
+    have hf : Function.Surjective f :=
+      (pairReduction_surjective K).comp (unitCoordinates K).symm.surjective
+    let toKer : (Additive (LaurentPolynomial K)ˣ ⧸ powerSubgroup (LaurentPolynomial K) 2) ≃+
+        (Additive (LaurentPolynomial K)ˣ ⧸ f.ker) :=
+      QuotientAddGroup.quotientAddEquivOfEq (unitReduction_ker K).symm
+    exact toKer.trans (QuotientAddGroup.quotientKerEquivOfSurjective f hf)
 
 def laurentBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
     (ZMod 2 × ZMod 2) ≃+

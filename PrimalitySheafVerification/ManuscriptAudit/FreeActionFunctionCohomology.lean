@@ -58,8 +58,10 @@ private def orbitCoordinates
       exact (Quotient.sound h).trans (Quotient.out_eq q)
     constructor
     · rintro ⟨q, g⟩ ⟨r, h⟩ hEq
-      have hq : q = r := by
-        rw [← hOrbit q g, ← hOrbit r h, hEq]
+      change MulOpposite.op g • q.out = MulOpposite.op h • r.out at hEq
+      have hq : q = r :=
+        (hOrbit q g).symm.trans
+          ((congrArg (Quotient.mk (MulAction.orbitRel Gᵐᵒᵖ X)) hEq).trans (hOrbit r h))
       subst r
       exact Prod.ext rfl (hFree q.out hEq)
     · intro x

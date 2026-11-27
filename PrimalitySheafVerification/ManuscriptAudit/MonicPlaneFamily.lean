@@ -1,10 +1,9 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.AlgebraicGeometry.Morphisms.Flat
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-! A monic plane equation y²=q(x) gives an actual flat finite-type family;
 its scheme pullback along any coefficient extension is the fiber of the
@@ -48,25 +47,12 @@ theorem flat_finite_type (q : Polynomial R) :
   exact RingHom.finiteType_algebraMap.mpr (inferInstanceAs (Algebra.FiniteType R A))
 
 private def polynomialBaseChange : S ⊗[R] Polynomial R ≃ₐ[S] Polynomial S :=
-  (Algebra.TensorProduct.congr (AlgEquiv.refl : S ≃ₐ[S] S)
-    (MvPolynomial.uniqueAlgEquiv R PUnit).symm).trans
-    ((MvPolynomial.algebraTensorAlgEquiv R S).trans (MvPolynomial.uniqueAlgEquiv S PUnit))
-
-private theorem polynomialBaseChange_X :
-    polynomialBaseChange R S ((1 : S) ⊗ₜ[R] (Polynomial.X : Polynomial R)) = Polynomial.X := by
-  simp [polynomialBaseChange, MvPolynomial.uniqueAlgEquiv]
+  (polyEquivTensor' R S).symm
 
 private theorem polynomialBaseChange_tmul_one (f : Polynomial R) :
     polynomialBaseChange R S ((1 : S) ⊗ₜ[R] f) = f.map (algebraMap R S) := by
-  let i : Polynomial R →ₐ[R] S ⊗[R] Polynomial R := Algebra.TensorProduct.includeRight
-  let l := ((polynomialBaseChange R S).toAlgHom.restrictScalars R).comp i
-  let r : Polynomial R →ₐ[R] Polynomial S := Polynomial.mapAlgHom (Algebra.ofId R S)
-  have h : l = r := by
-    apply Polynomial.algHom_ext
-    change polynomialBaseChange R S ((1 : S) ⊗ₜ[R] (Polynomial.X : Polynomial R)) =
-      Polynomial.X.map (algebraMap R S)
-    rw [polynomialBaseChange_X, Polynomial.map_X]
-  exact DFunLike.congr_fun h f
+  change (polyEquivTensor R S).symm ((1 : S) ⊗ₜ[R] f) = f.map (algebraMap R S)
+  rw [polyEquivTensor_symm_apply_tmul_eq_smul, one_smul]
 
 /-- The actual tensor fiber is the displayed equation after mapping coefficients. -/
 def coordinateBaseChange (q : Polynomial R) :

@@ -75,7 +75,7 @@ def padicRingEquiv : ℤ_[p] ≃+* systems p :=
       congrArg (evaluate p n) h,
     by
     intro s
-    refine ⟨PadicInt.lift (evaluate_compatible p), Subtype.ext (funext fun n => ?_)⟩
+    refine ⟨PadicInt.lift (evaluate_compatible p) s, Subtype.ext (funext fun n => ?_)⟩
     exact RingHom.congr_fun (PadicInt.lift_spec (evaluate_compatible p) n) s⟩
 
 @[simp] theorem evaluate_padicRingEquiv (n : ℕ) (x : ℤ_[p]) :

@@ -40,7 +40,7 @@ private def yRestriction :
     ambientPresheafHOne K →+ (F K).H' 1 (Scheme.Etale.mk (chartOpen K)) :=
   (((F K).cohomologyPresheaf 1).map (openArrow (chartOpen K)).op).hom
 
-private theorem field_class_detected (h2 : (2 : K) ≠ 0) (u : Kˣ)
+theorem field_class_detected (h2 : (2 : K) ≠ 0) (u : Kˣ)
     (hu : ¬ ∃ v : Kˣ, v ^ (2 : ℕ) = u) :
     ∃ b : ambientPresheafHOne K, yRestriction K b ≠ 0 := by
   letI : NeZero ((2 : ℕ) : K) := ⟨by simpa using h2⟩
@@ -98,10 +98,11 @@ end ManuscriptAudit.NodalArithmeticProjectiveHOne
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.NodalArithmeticProjectiveHOne.finite_card_eq_four
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.NodalArithmeticProjectiveHOne.finite_card_eq_four,
+      ``ManuscriptAudit.NodalArithmeticProjectiveHOne.field_class_detected] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
