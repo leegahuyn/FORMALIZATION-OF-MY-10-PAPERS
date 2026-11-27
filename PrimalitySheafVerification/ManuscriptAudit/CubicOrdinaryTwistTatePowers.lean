@@ -41,8 +41,8 @@ theorem power_trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
       LinearMap.det F = (Fintype.card D : ℤ_[l]) := by
   let F := endMap l (arithmeticPointFrobenius E L A)
   obtain ⟨ht, hd⟩ := CubicOrdinaryTwistTateCoefficients.trace_det p E L l hp hs hl hA
-  obtain ⟨h₂, h₃⟩ := small_char p E hp
-  obtain ⟨h₂L, h₃L⟩ := small_char p L hp
+  obtain ⟨h₂, h₃⟩ := CubicOrdinaryTwistTateCoefficients.small_char_of_algebra p E hp
+  obtain ⟨h₂L, h₃L⟩ := CubicOrdinaryTwistTateCoefficients.small_char_of_algebra p L hp
   let B := CubicOrdinaryTwistTateCoefficients.centeredBasis L l h₂L h₃L
     ((map_ne_zero (algebraMap E L)).mpr hA) hl
   have hAri := extension_trace_eq_recurrence (E := D) h₂ h₃ hA (three_dvd_card_sub_one p E hs)

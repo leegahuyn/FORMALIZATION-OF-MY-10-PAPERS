@@ -42,7 +42,9 @@ theorem rational_zeta_derivative_ne_zero_at_zero (p : ℕ) [Fact p.Prime] (hp : 
   have hD : DifferentiableAt ℂ D z := by
     unfold D
     fun_prop
-  have hDeriv := (P.hasDerivAt z).div hD.hasDerivAt hzD
+  have hDeriv : HasDerivAt (fun w => P.eval w / D w)
+      ((P.derivative.eval z * D z - P.eval z * deriv D z) / D z^2) z :=
+    (P.hasDerivAt z).div hD.hasDerivAt hzD
   rw [← hR, hDeriv.deriv, hPz, zero_mul, sub_zero]
   exact div_ne_zero (mul_ne_zero hp' hzD) (pow_ne_zero _ hzD)
 

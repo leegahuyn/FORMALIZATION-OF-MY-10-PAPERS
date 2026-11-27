@@ -17,7 +17,7 @@ open Function.Periodic Set
 noncomputable section
 
 def widthUnit (w : ℕ) (q : ℂ) : ℂ :=
-  ∏' n : ℕ, 1 - (q ^ w) ^ (n + 1)
+  ∏' n : ℕ, (1 - (q ^ w) ^ (n + 1))
 
 theorem widthUnit_at_zero {w : ℕ} (hw : 0 < w) :
     widthUnit w 0 = 1 := by

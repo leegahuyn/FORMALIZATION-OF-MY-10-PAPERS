@@ -44,7 +44,7 @@ theorem unitComparison_power_naturality (d : ℕ) :
     (inverseImage X).map (d • 𝟙 (etaleUnits X)) ≫ unitComparison X =
       unitComparison X ≫ (d • 𝟙 (proetaleUnits X)) := by
   letI : (inverseImage X).Additive := Functor.additive_of_preserves_binary_products (inverseImage X)
-  rw [Functor.map_nsmul, Functor.map_id, nsmul_comp, id_comp, comp_nsmul, comp_id]
+  rw [Functor.map_nsmul, (inverseImage X).map_id, nsmul_comp, id_comp, comp_nsmul, comp_id]
 
 /-- The unit coefficient comparison gives actual derived maps in every degree. -/
 def unitCohomologyComparison (n : ℕ) :

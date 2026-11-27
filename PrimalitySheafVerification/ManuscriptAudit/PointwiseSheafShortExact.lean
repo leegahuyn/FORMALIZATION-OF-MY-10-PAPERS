@@ -48,10 +48,10 @@ theorem shortExact : S.ShortExact := by
   let c := KernelFork.ofι S.f S.zero
   have hc : IsLimit c := by
     apply isLimitOfReflects (P J)
-    apply (KernelFork.isLimitMapConeEquiv c (P J)).symm
+    refine (KernelFork.isLimitMapConeEquiv c (P J)).symm ?_
     apply evaluationJointlyReflectsLimits
     intro U
-    apply (KernelFork.isLimitMapConeEquiv (c.map (P J)) ((evaluation Cᵒᵖ A).obj U)).symm
+    refine (KernelFork.isLimitMapConeEquiv (c.map (P J)) ((evaluation Cᵒᵖ A).obj U)).symm ?_
     exact (h U).fIsKernel
   exact ShortComplex.ShortExact.mk' (S.exact_of_f_is_kernel hc) hm he
 

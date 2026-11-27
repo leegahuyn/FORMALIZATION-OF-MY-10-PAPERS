@@ -25,7 +25,11 @@ def basis (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3) :
     Module.Basis (Fin 2) ℤ_[l] (Tate l (GeometricPoints (ZMod p) L A)) := by
   let G := GeometricPoints (ZMod p) L A
-  obtain ⟨h₂, h₃⟩ := small_char p L hp
+  obtain ⟨h₂K, h₃K⟩ := small_char p (ZMod p) hp
+  have h₂ : (2 : L) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₂K
+  have h₃ : (3 : L) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₃K
   have hAL : algebraMap (ZMod p) L A ≠ 0 := (map_ne_zero (algebraMap (ZMod p) L)).mpr hA
   rcases hl with rfl | rfl
   · let B := CubicTwoPowerTorsionBasis.affineBasis h₂ h₃ hAL 1
@@ -60,8 +64,20 @@ theorem native_relation (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0)
   have h := CubicFrobeniusCharacteristicAllPoints.characteristic_relation (ZMod p) L h₂ h₃ hchar hA
   have he := congrArg (endMap l) h
   simp only [characteristicError, map_pow, map_sub, map_add, map_zsmul, map_one, map_zero] at he
-  rw [Int.cast_smul_eq_zsmul, ← Int.cast_natCast, Int.cast_smul_eq_zsmul]
-  simpa only [native, ZMod.card] using he
+  rw [ZMod.card] at he
+  let S := Module.End ℤ_[l] (Tate l (GeometricPoints (ZMod p) L A))
+  let F : S := native p L A l
+  let t := arithmeticTrace (ZMod p) A
+  change F ^ 2 - t • F + (p : ℤ) • (1 : S) = 0 at he
+  have ht : (t : S) = (t : ℤ_[l]) • (1 : S) := by
+    rw [← Algebra.algebraMap_eq_smul_one, map_intCast]
+  have hq : (p : S) = (p : ℤ_[l]) • (1 : S) := by
+    rw [← Algebra.algebraMap_eq_smul_one, map_natCast]
+  change F ^ 2 - (t : ℤ_[l]) • F + (p : ℤ_[l]) • (1 : S) = 0
+  calc
+    _ = F ^ 2 - (t : S) * F + (p : S) := by
+      rw [ht, hq, smul_mul_assoc, one_mul]
+    _ = 0 := by simpa only [zsmul_eq_mul, mul_one, Int.cast_natCast] using he
 
 /-- Exact signed arithmetic trace and determinant p, on the native 2-adic or 3-adic Tate module. -/
 theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) {A : ZMod p} (hA : A ≠ 0)

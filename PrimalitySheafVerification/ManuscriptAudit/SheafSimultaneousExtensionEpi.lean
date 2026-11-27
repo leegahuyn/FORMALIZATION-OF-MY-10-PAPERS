@@ -19,27 +19,24 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-universe u v w
+universe u v
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable [HasSheafify J AddCommGrpCat.{w}]
+variable [HasSheafify J AddCommGrpCat.{max u v}]
 
-private abbrev G := AddCommGrpCat.{w}
-private abbrev Z := AddCommGrpCat.of (ULift.{w} ℤ)
-
-private def fromInteger {A : G.{w}} (a : A) : Z.{w} ⟶ A :=
+private def fromInteger {A : AddCommGrpCat.{max u v}} (a : A) : AddCommGrpCat.of (ULift.{max u v} ℤ) ⟶ A :=
   AddCommGrpCat.ofHom
     { toFun := fun z ↦ z.down • a
       map_zero' := zero_zsmul _
       map_add' x y := add_zsmul _ _ _ }
 
-private theorem fromInteger_comp {A B : G.{w}} (a : A) (q : A ⟶ B) :
+private theorem fromInteger_comp {A B : AddCommGrpCat.{max u v}} (a : A) (q : A ⟶ B) :
     fromInteger a ≫ q = fromInteger (q a) := by
   apply AddCommGrpCat.ext
   intro z
   exact map_zsmul q.hom z.down a
 
 variable {T U : C} (hT : IsTerminal T) (f : U ⟶ T)
-variable (S : ℕ → ShortComplex (Sheaf J G.{w}))
+variable (S : ℕ → ShortComplex (Sheaf J AddCommGrpCat.{max u v}))
 variable (a : ∀ n, integerSheaf J ⟶ (S n).X₃)
 
 set_option maxHeartbeats 2000000 in
@@ -49,10 +46,10 @@ theorem projection_epi
     (hCover : Sieve.ofArrows (fun _ : Unit ↦ U) (fun _ : Unit ↦ f) ∈ J T)
     (hLift : ∀ n, ∃ s : (S n).X₂.obj.obj (op U), (S n).g.hom.app (op U) s =
       (a n).hom.app (op U) ((integerSheaf J).obj.map f.op (generator J hT))) :
-    Epi (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a) := by
+    Epi (projection (C := Sheaf J AddCommGrpCat.{max u v}) (A := integerSheaf J) S a) := by
   apply epi_of_local_generator J hT f hCover
   choose b hb using hLift
-  let E := sheafToPresheaf J G.{w} ⋙ (evaluation Cᵒᵖ G.{w}).obj (op U)
+  let E := sheafToPresheaf J AddCommGrpCat.{max u v} ⋙ (evaluation Cᵒᵖ AddCommGrpCat.{max u v}).obj (op U)
   let X₂ (n : ℕ) := (S n).X₂
   let X₃ (n : ℕ) := (S n).X₃
   let v := fromInteger ((integerSheaf J).obj.map f.op (generator J hT))
@@ -79,12 +76,12 @@ theorem projection_epi
     exact congrArg fromInteger (hb n).symm
   let H := PreservesPullback.iso E d p
   let L := pullback.lift v q hc ≫ H.inv
-  have hL : L ≫ E.map (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a) = v := by
+  have hL : L ≫ E.map (projection (C := Sheaf J AddCommGrpCat.{max u v}) (A := integerSheaf J) S a) = v := by
     change pullback.lift v q hc ≫ H.inv ≫ E.map (pullback.fst d p) = v
     rw [PreservesPullback.iso_inv_fst, pullback.lift_fst]
   refine ⟨L ⟨1⟩, ?_⟩
-  have he := ConcreteCategory.congr_hom hL (⟨1⟩ : Z.{w})
-  change (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a).hom.app (op U) (L ⟨1⟩) =
+  have he := ConcreteCategory.congr_hom hL (⟨1⟩ : AddCommGrpCat.of (ULift.{max u v} ℤ))
+  change (projection (C := Sheaf J AddCommGrpCat.{max u v}) (A := integerSheaf J) S a).hom.app (op U) (L ⟨1⟩) =
     (1 : ℤ) • ((integerSheaf J).obj.map f.op (generator J hT)) at he
   simpa only [one_zsmul] using he
 

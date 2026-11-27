@@ -19,6 +19,14 @@ variable (p : ℕ) [Fact p.Prime] (E L : Type*) [Field E] [Fintype E] [Algebra (
   [Field L] [DecidableEq L] [Algebra E L] [Algebra (ZMod p) L] [IsAlgClosed L]
 variable (l : ℕ) [Fact l.Prime]
 
+/-- The nonzero small integers remain nonzero in any extension of a good prime field. -/
+theorem small_char_of_algebra (K : Type*) [Field K] [Algebra (ZMod p) K] (hp : 5 ≤ p) :
+    (2 : K) ≠ 0 ∧ (3 : K) ≠ 0 := by
+  obtain ⟨h₂, h₃⟩ := small_char p (ZMod p) hp
+  constructor
+  · simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) K)).mpr h₂
+  · simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) K)).mpr h₃
+
 /-- Genuine rank-two basis on any good centered cubic over the algebraic closure. -/
 def centeredBasis {a : L} (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (ha : a ≠ 0)
     (hl : l = 2 ∨ l = 3) : Basis (Fin 2) ℤ_[l] (Tate l (Curve a).Point) := by
@@ -53,7 +61,7 @@ theorem unit_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3) :
 theorem det_arithmetic (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
     {A : E} (hA : A ≠ 0) :
     LinearMap.det (endMap l (arithmeticPointFrobenius E L A)) = (Fintype.card E : ℤ_[l]) := by
-  obtain ⟨h₂, h₃⟩ := small_char p L hp
+  obtain ⟨h₂, h₃⟩ := small_char_of_algebra p L hp
   let B := centeredBasis L l h₂ h₃ (one_ne_zero : (1 : L) ≠ 0) hl
   rw [CubicTwistTateDeterminant.determinant_eq_unit E L l hl h₂ h₃ B hA]
   exact unit_det p E L l hp hs hl
@@ -64,8 +72,8 @@ theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
     let F := endMap l (arithmeticPointFrobenius E L A)
     LinearMap.trace ℤ_[l] _ F = (arithmeticTrace E A : ℤ_[l]) ∧
       LinearMap.det F = (Fintype.card E : ℤ_[l]) := by
-  obtain ⟨h₂, h₃⟩ := small_char p E hp
-  obtain ⟨h₂L, h₃L⟩ := small_char p L hp
+  obtain ⟨h₂, h₃⟩ := small_char_of_algebra p E hp
+  obtain ⟨h₂L, h₃L⟩ := small_char_of_algebra p L hp
   have hchar : ringChar E ≠ 2 := by
     intro h
     exact h₂ ((ringChar.spec E 2).mpr (by simpa only [h] using (dvd_rfl : (2 : ℕ) ∣ 2)))
@@ -75,8 +83,19 @@ theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
   let F := endMap l (arithmeticPointFrobenius E L A)
   have hQuad : F ^ 2 - (arithmeticTrace E A : ℤ_[l]) • F +
       (Fintype.card E : ℤ_[l]) • (1 : Module.End ℤ_[l] (Tate l (GeometricPoints E L A))) = 0 := by
-    rw [Int.cast_smul_eq_zsmul, ← Int.cast_natCast, Int.cast_smul_eq_zsmul]
-    exact he
+    let S := Module.End ℤ_[l] (Tate l (GeometricPoints E L A))
+    let t := arithmeticTrace E A
+    let q := Fintype.card E
+    change F ^ 2 - t • F + (q : ℤ) • (1 : S) = 0 at he
+    have ht : (t : S) = (t : ℤ_[l]) • (1 : S) := by
+      rw [← Algebra.algebraMap_eq_smul_one, map_intCast]
+    have hq : (q : S) = (q : ℤ_[l]) • (1 : S) := by
+      rw [← Algebra.algebraMap_eq_smul_one, map_natCast]
+    change F ^ 2 - (t : ℤ_[l]) • F + (q : ℤ_[l]) • (1 : S) = 0
+    calc
+      _ = F ^ 2 - (t : S) * F + (q : S) := by
+        rw [ht, hq, smul_mul_assoc, one_mul]
+      _ = 0 := by simpa only [zsmul_eq_mul, mul_one, Int.cast_natCast] using he
   have hD : LinearMap.det F = (Fintype.card E : ℤ_[l]) := det_arithmetic p E L l hp hs hl hA
   have hNZ : (Fintype.card E : ℤ_[l]) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_pos.ne'
   let B := centeredBasis L l h₂L h₃L ((map_ne_zero (algebraMap E L)).mpr hA) hl
@@ -85,13 +104,13 @@ theorem trace_det (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
 /-- Full characteristic polynomial of the actual Frobenius, even for a twist defined only over E. -/
 theorem charpoly (hp : 5 ≤ p) (hs : p % 3 = 1) (hl : l = 2 ∨ l = 3)
     {A : E} (hA : A ≠ 0) :
-    let hL := small_char p L hp
+    let hL := small_char_of_algebra p L hp
     let B := centeredBasis L l hL.1 hL.2 ((map_ne_zero (algebraMap E L)).mpr hA) hl
     letI : Module.Free ℤ_[l] (Tate l (GeometricPoints E L A)) := Module.Free.of_basis B
     letI : Module.Finite ℤ_[l] (Tate l (GeometricPoints E L A)) := Module.Finite.of_basis B
     (endMap l (arithmeticPointFrobenius E L A)).charpoly =
       X ^ 2 - C (arithmeticTrace E A : ℤ_[l]) * X + C (Fintype.card E : ℤ_[l]) := by
-  let hL := small_char p L hp
+  let hL := small_char_of_algebra p L hp
   let B := centeredBasis L l hL.1 hL.2 ((map_ne_zero (algebraMap E L)).mpr hA) hl
   letI : Module.Free ℤ_[l] (Tate l (GeometricPoints E L A)) := Module.Free.of_basis B
   letI : Module.Finite ℤ_[l] (Tate l (GeometricPoints E L A)) := Module.Finite.of_basis B
@@ -108,6 +127,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : Array Name := #[`propext, `Classical.choice, `Quot.sound]
   for name in #[
+      ``ManuscriptAudit.CubicOrdinaryTwistTateCoefficients.small_char_of_algebra,
       ``ManuscriptAudit.CubicOrdinaryTwistTateCoefficients.centeredBasis,
       ``ManuscriptAudit.CubicOrdinaryTwistTateCoefficients.unit_det,
       ``ManuscriptAudit.CubicOrdinaryTwistTateCoefficients.det_arithmetic,
