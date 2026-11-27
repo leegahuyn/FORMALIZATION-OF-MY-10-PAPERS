@@ -21,21 +21,27 @@ private theorem printedAffine_eq (A : ZMod p) :
   simp [Paper5FrobeniusModTwo.printedAffine, paper5TraceCurve, Curve, CubicAffine, shortCubic,
     ZMod.natCast_self]
 
-/-- Actual 2-adic Frobenius determinant reduces to p in Z/4 for every prime p congruent to 2 mod 3. -/
-theorem determinant_reduction_eq_prime (hp : 5 ≤ p) (hp3 : p % 3 = 2)
-    {A : ZMod p} (hA : A ≠ 0) :
-    PadicInt.toZModPow 2 (determinant p L hp hA) = (p : ZMod 4) := by
-  rw [(reduction_trace_det p L hp hA 2).2]
+/-- The actual Tate determinant reduces to the native point-map determinant at each level. -/
+theorem determinant_reduction_eq_native (hp : 5 ≤ p) {A : ZMod p} (hA : A ≠ 0) (n : ℕ) :
+    PadicInt.toZModPow n (determinant p L hp hA) =
+      LinearMap.det (frobeniusLinear (2 ^ n) p L (Curve A)) := by
+  rw [(reduction_trace_det p L hp hA n).2]
   let e := compatibleLevelEquiv (GeometricPoints p L A)
-    (geometricDoublingSurj p L hp hA) (geometricTwoTorsionCard p L hp hA) 2
-  let f := mapLinear 4 (pointFrobenius p L A)
+    (geometricDoublingSurj p L hp hA) (geometricTwoTorsionCard p L hp hA) n
+  let f := mapLinear (2 ^ n) (pointFrobenius p L A)
   change LinearMap.det (e.symm.conj f) = _
   have he : LinearMap.det (e.symm.conj f) = LinearMap.det f :=
     LinearMap.det_conj f e.symm
   rw [he]
-  change LinearMap.det (frobeniusLinear 4 p L (Paper5FrobeniusModTwo.printedAffine p A)) = _
+  change LinearMap.det (frobeniusLinear (2 ^ n) p L (Paper5FrobeniusModTwo.printedAffine p A)) = _
   rw [printedAffine_eq]
-  exact Paper5NonsplitFrobeniusModFour.determinant_eq_prime p L hp hp3 hA
+
+/-- Actual 2-adic Frobenius determinant reduces to p in Z/4 for every prime p congruent to 2 mod 3. -/
+theorem determinant_reduction_eq_prime (hp : 5 ≤ p) (hp3 : p % 3 = 2)
+    {A : ZMod p} (hA : A ≠ 0) :
+    PadicInt.toZModPow 2 (determinant p L hp hA) = (p : ZMod 4) :=
+  (determinant_reduction_eq_native p L hp hA 2).trans
+    (Paper5NonsplitFrobeniusModFour.determinant_eq_prime p L hp hp3 hA)
 
 theorem coordinate_charpoly_eq (hp : 5 ≤ p) (hp3 : p % 3 = 2) {A : ZMod p} (hA : A ≠ 0) :
     (coordinateFrobenius p L hp hA 2).toLinearMap.charpoly = X ^ 2 + C (p : ZMod 4) := by
@@ -60,6 +66,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.Paper5NonsplitTwoAdicModFour.determinant_reduction_eq_native,
       ``ManuscriptAudit.Paper5NonsplitTwoAdicModFour.determinant_reduction_eq_prime,
       ``ManuscriptAudit.Paper5NonsplitTwoAdicModFour.coordinate_charpoly_eq] do
     let ax ← collectAxioms name

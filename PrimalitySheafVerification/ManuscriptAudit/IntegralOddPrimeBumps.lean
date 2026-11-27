@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Data.Nat.Prime.Infinite
 import PrimalitySheafVerification.ManuscriptAudit.IntegralOddPrimeFibers
 import PrimalitySheafVerification.ManuscriptAudit.Paper6ArithmeticFiberBumps
 
@@ -102,6 +103,42 @@ theorem node_zero_bump_and_nonsmooth (hp : 2 < p) :
   obtain ⟨h, h'⟩ := node_finranks p hp
   exact ⟨by rw [h, h', sub_self], node_not_smooth p⟩
 
+
+/-- The printed nonnegative graph Betti number plus delta term does
+not give the actual canonical cusp bump at any odd prime. -/
+theorem cusp_not_graph_plus_delta (hp : 2 < p) (betti delta : ℕ) :
+    letI := binaryModule (cuspFiber p)
+    letI := binaryModule (cuspSmooth p)
+    (Module.finrank R (H (cuspFiber p)) : ℤ) -
+      Module.finrank R (H (cuspSmooth p)) ≠ (betti : ℤ) + delta := by
+  letI := binaryModule (cuspFiber p)
+  letI := binaryModule (cuspSmooth p)
+  intro h
+  rw [cusp_signed_bump p hp] at h
+  have hn : 0 ≤ (betti : ℤ) + delta := add_nonneg (Int.natCast_nonneg _) (Int.natCast_nonneg _)
+  rw [← h] at hn
+  exact (by decide : ¬ (0 : ℤ) ≤ -1) hn
+
+/-- The two counterexamples occur beyond every fixed bound on the
+residue prime, with the same integral models. -/
+theorem arbitrarily_large_prime_counterexamples (n : ℕ) :
+    ∃ q, ∃ hq : q.Prime, n < q ∧
+      letI : Fact q.Prime := ⟨hq⟩
+      letI := binaryModule (cuspFiber q)
+      letI := binaryModule (cuspSmooth q)
+      letI := binaryModule (nodalFiber q)
+      letI := binaryModule (nodeSmooth q)
+      ((Module.finrank R (H (cuspFiber q)) : ℤ) -
+        Module.finrank R (H (cuspSmooth q)) = -1) ∧
+      ((Module.finrank R (H (nodalFiber q)) : ℤ) -
+        Module.finrank R (H (nodeSmooth q)) = 0) ∧
+      ¬ AlgebraicGeometry.Smooth (nodeToResidue q) := by
+  obtain ⟨q, hq, hPrime⟩ := Nat.exists_infinite_primes (max (n + 1) 3)
+  have hn : n < q := (Nat.lt_succ_self n).trans_le ((le_max_left _ _).trans hq)
+  have h₂ : 2 < q := (by decide : 2 < 3).trans_le ((le_max_right _ _).trans hq)
+  letI : Fact q.Prime := ⟨hPrime⟩
+  exact ⟨q, hPrime, hn, cusp_signed_bump q h₂, node_zero_bump_and_nonsmooth q h₂⟩
+
 end
 end ManuscriptAudit.IntegralOddPrimeBumps
 
@@ -111,7 +148,9 @@ run_cmd do
   for name in [``ManuscriptAudit.IntegralOddPrimeBumps.cusp_finranks,
       ``ManuscriptAudit.IntegralOddPrimeBumps.cusp_signed_bump,
       ``ManuscriptAudit.IntegralOddPrimeBumps.node_finranks,
-      ``ManuscriptAudit.IntegralOddPrimeBumps.node_zero_bump_and_nonsmooth] do
+      ``ManuscriptAudit.IntegralOddPrimeBumps.node_zero_bump_and_nonsmooth,
+      ``ManuscriptAudit.IntegralOddPrimeBumps.cusp_not_graph_plus_delta,
+      ``ManuscriptAudit.IntegralOddPrimeBumps.arbitrarily_large_prime_counterexamples] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
