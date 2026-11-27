@@ -102,10 +102,7 @@ theorem extendedSection_realSmooth_of_closed_support (a : ℝ → ℂ) (ha : Con
   have hHw : ∀ᶠ v : ℂ in 𝓝 w, 0 < v.im :=
     UpperHalfPlane.isOpen_upperHalfPlaneSet.mem_nhds hw
   by_cases hq : gammaTwoQuotientMk z ∈ K
-  · obtain ⟨u, hu, hqU⟩ := hq
-    have huHigh : 1 < u.im := by
-      have h := (show u.im ∈ Icc (Y + 2) (Y + 5) from hu.2).1
-      linarith
+  · obtain ⟨u, huHigh, hqU⟩ := hHigh _ hq
     obtain ⟨γ, hγ⟩ := orbitLift hqU
     have hΓ := matrixMap_formula γ w hw
     have hW : 1 < (matrixMap γ w).im := by

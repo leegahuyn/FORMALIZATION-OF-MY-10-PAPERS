@@ -4,6 +4,7 @@ import PrimalitySheafVerification.ManuscriptAudit.IntegralCuspGeometricFiber
 import PrimalitySheafVerification.ManuscriptAudit.IntegralOddPrimeBumps
 import PrimalitySheafVerification.ManuscriptAudit.NodalCompactSupportScalar
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtensionIsoDomain
+import PrimalitySheafVerification.ManuscriptAudit.OpenComplementRationalPointCohomology
 
 /-! Arithmetic ordinary and geometric compact-support comparisons on one fixed integral cusp. -/
 

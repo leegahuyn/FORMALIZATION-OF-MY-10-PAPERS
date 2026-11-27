@@ -1,12 +1,13 @@
 import Lean.Util.CollectAxioms
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import PrimalitySheafVerification.ManuscriptAudit.ReciprocalWeight
 
 /-! Distinct exact weights prevent cancellation between the two parity products. -/
 
 namespace ManuscriptAudit.Paper7NoWeightCancellation
 
-open Matrix Polynomial ReciprocalWeight
+open Matrix Polynomial Paper07
 open scoped BigOperators
 
 noncomputable section
@@ -37,7 +38,8 @@ theorem parity_products_coprime (I : Finset ℕ) (F : ∀ i, Matrix (ι i) (ι i
     (hPure : ∀ i ∈ I, ∀ α : ℂ, (F i).charpoly.IsRoot α → ‖α‖ = q ^ (w i / 2)) :
     IsCoprime (evenProduct I F) (oddProduct I F) := by
   classical
-  apply (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed ℂ _ _).mpr
+  apply (Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed ℂ
+    (evenProduct I F) (oddProduct I F)).mpr
   intro z
   by_contra! h
   obtain ⟨he, ho⟩ := h

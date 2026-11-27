@@ -19,7 +19,7 @@ private abbrev W₀ := (ordinaryCurve (ZMod 7)).toAffine
 private abbrev W := (ordinaryCurve L).toAffine
 
 theorem ordinary_baseChange : W₀.baseChange L = W L := by
-  simp [W₀, W, ordinaryCurve, WeierstrassCurve.baseChange, WeierstrassCurve.map]
+  simp [W₀, W, ordinaryCurve, WeierstrassCurve.baseChange, WeierstrassCurve.map, map_ofNat]
 
 def nativeFrobenius : AddMonoid.End (Points L) :=
   pointMapAt (ZMod 7) L W₀ (W L) (ordinary_baseChange L) (FiniteField.frobeniusAlgHom (ZMod 7) L)

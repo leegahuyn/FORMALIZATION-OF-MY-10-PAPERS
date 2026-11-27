@@ -37,7 +37,7 @@ private theorem weighted_profile_smoothAt (g : ℝ → ℂ) (hg : ContDiff ℝ �
     {y : ℝ} (hy : 0 < y) :
     ContDiffAt ℝ ∞ (weightedLogProfile g) y := by
   have hPow : ContDiffAt ℝ ∞ (fun y : ℝ => y ^ (1 / 2 : ℝ)) y :=
-    contDiffAt_rpow_const_of_ne hy.ne'
+    Real.contDiffAt_rpow_const_of_ne hy.ne'
   have hCast : ContDiffAt ℝ ∞ (fun y : ℝ => ((y ^ (1 / 2 : ℝ) : ℝ) : ℂ)) y :=
     Complex.ofRealCLM.contDiff.contDiffAt.comp y hPow
   have hLog : ContDiffAt ℝ ∞ Real.log y := Real.contDiffAt_log.mpr hy.ne'

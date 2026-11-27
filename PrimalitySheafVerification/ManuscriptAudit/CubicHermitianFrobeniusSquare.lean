@@ -16,7 +16,9 @@ noncomputable section
 private theorem add_nsmul_eq_zero_of_dvd {G : Type*} [AddCommGroup G]
     {q d : ℕ} (h : d ∣ q + 1) (P : G) (hP : d • P = 0) : q • P + P = 0 := by
   obtain ⟨k, hk⟩ := h
-  rw [← succ_nsmul, Nat.succ_eq_add_one, hk, mul_nsmul, hP, nsmul_zero]
+  calc
+    _ = (q + 1) • P := by rw [add_nsmul, one_nsmul]
+    _ = 0 := by rw [hk, mul_nsmul', hP, nsmul_zero]
 
 variable (E K : Type*) [Field E] [Fintype E] [Field K] [Algebra E K] [IsAlgClosed K] [DecidableEq K]
 
@@ -31,8 +33,10 @@ theorem some_frobenius_relation {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) �
       Affine.Point.some (x ^ Q) (y ^ Q) hP' = 0 := by
   let c := algebraMap E K A
   have hc : c ≠ 0 := by simpa only [c, map_zero] using (algebraMap E K).injective.ne hA
-  have h₂' : (2 : K) ≠ 0 := by simpa using (algebraMap E K).injective.ne h₂
-  have h₃' : (3 : K) ≠ 0 := by simpa using (algebraMap E K).injective.ne h₃
+  have h₂' : (2 : K) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap E K)).mpr h₂
+  have h₃' : (3 : K) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap E K)).mpr h₃
   have hΔ := shortCubic_discriminant_ne_zero h₂' h₃' hc
   have hXY : y ^ 2 = x ^ 3 + c := (nonsingular_iff hΔ x y).mp hP
   have hQ : Q ≠ 0 := Nat.mul_ne_zero Fintype.card_ne_zero Fintype.card_ne_zero
@@ -84,7 +88,9 @@ theorem frobenius_sq_eq_neg_card {A : E} (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) 
     fun _ _ => some_frobenius_relation E K h₂ h₃ hA hq3 hq2
   have hRel : Relation (W.baseChange K) := Eq.mpr (congrArg Relation hW) hCentered
   cases P with
-  | zero => simp
+  | zero =>
+    change F (F (0 : (W.baseChange K).Point)) = -(q • 0)
+    simp only [map_zero, nsmul_zero, neg_zero]
   | some x y h =>
     have h₁ := (W.baseChange_nonsingular (f := g) g.injective x y).mpr h
     have h₂ := (W.baseChange_nonsingular (f := g) g.injective (g x) (g y)).mpr h₁
