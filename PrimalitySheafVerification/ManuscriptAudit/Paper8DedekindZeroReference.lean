@@ -21,8 +21,8 @@ noncomputable section
 private theorem sawtooth_neg (x : ℚ) : sawtooth (-x) = -sawtooth x := by
   by_cases hx : x = (⌊x⌋ : ℚ)
   · obtain ⟨z, rfl⟩ : ∃ z : ℤ, (z : ℚ) = x := ⟨⌊x⌋, hx.symm⟩
-    simp only [sawtooth, ← Int.cast_neg, Int.floor_intCast, if_pos rfl, neg_zero]
-  · have hLower : (⌊x⌋ : ℚ) < x := lt_of_le_of_ne (Int.floor_le x) hx.symm
+    simp [sawtooth, ← Int.cast_neg]
+  · have hLower : (⌊x⌋ : ℚ) < x := lt_of_le_of_ne (Int.floor_le x) (Ne.symm hx)
     have hUpper : x < (⌊x⌋ : ℚ) + 1 := Int.lt_floor_add_one x
     have hFloor : ⌊-x⌋ = -⌊x⌋ - 1 := by
       apply Int.floor_eq_iff.mpr
@@ -32,7 +32,8 @@ private theorem sawtooth_neg (x : ℚ) : sawtooth (-x) = -sawtooth x := by
       rw [hFloor]
       push_cast
       linarith
-    simp only [sawtooth, if_neg hx, if_neg hNeg, hFloor]
+    unfold sawtooth
+    rw [if_neg hNeg, if_neg hx, hFloor]
     push_cast
     ring
 

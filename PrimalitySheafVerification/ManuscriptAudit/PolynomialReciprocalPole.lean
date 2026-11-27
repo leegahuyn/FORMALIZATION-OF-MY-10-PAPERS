@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Analysis.Complex.Basic
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.Module.Cardinality
 

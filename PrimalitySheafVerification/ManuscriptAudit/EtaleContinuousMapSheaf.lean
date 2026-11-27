@@ -177,4 +177,3 @@ run_cmd do
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
-gh: Not Found (HTTP 404)

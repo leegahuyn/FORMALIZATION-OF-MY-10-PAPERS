@@ -28,12 +28,15 @@ theorem normalized_partial_sums_tendsto_zero (a : ℕ → ℝ) (g : ℕ → ℂ)
     refine tendsto_atTop.2 fun b => (eventually_ge_atTop b).mono fun n hn => ?_
     exact hn.trans (Nat.le_succ n)
   have hSmall : Tendsto (fun n : ℕ => G (n + 1) - L) atTop (𝓝 0) := by
-    simpa only [sub_self] using (hG.comp hShift).sub tendsto_const_nhds
+    have hShifted : Tendsto (fun n => G (n + 1)) atTop (𝓝 L) := hG.comp hShift
+    have hL : Tendsto (fun _ : ℕ => L) atTop (𝓝 L) := tendsto_const_nhds
+    simpa only [sub_self] using hShifted.sub hL
   have hF : F =o[atTop] Δ := by
     refine isLittleO_iff.2 fun ε hε => ?_
     filter_upwards [Metric.tendsto_nhds.1 hSmall ε hε] with n hn
     rw [dist_zero_right] at hn
-    rw [F, norm_smul, Real.norm_of_nonneg (hd n)]
+    change ‖Δ n • (G (n + 1) - L)‖ ≤ ε * ‖Δ n‖
+    rw [norm_smul, Real.norm_of_nonneg (hd n)]
     simpa only [mul_comm ε] using mul_le_mul_of_nonneg_left hn.le (hd n)
   have hTelLim : Tendsto (fun n => ∑ i ∈ Finset.range n, Δ i) atTop atTop := by
     refine tendsto_atTop.2 fun c => ?_
@@ -55,7 +58,9 @@ theorem normalized_partial_sums_tendsto_zero (a : ℕ → ℝ) (g : ℕ → ℂ)
       rw [smul_eq_mul, inv_mul_cancel₀ (haPos n).ne']
   have hDivLim := (isLittleO_one_iff ℝ).1 hDiv
   have hHead : Tendsto (fun n => (a n)⁻¹ • (a 0 • L)) atTop (𝓝 0) := by
-    simpa only [zero_smul] using ha.inv_tendsto_atTop.smul
+    have hi : Tendsto (fun n => (a n)⁻¹) atTop (𝓝 (0 : ℝ)) := by
+      simpa only [Pi.inv_apply] using ha.inv_tendsto_atTop
+    simpa only [zero_smul] using hi.smul
       (tendsto_const_nhds : Tendsto (fun _ : ℕ => a 0 • L) atTop (𝓝 (a 0 • L)))
   have hLim : Tendsto (fun n => (G (n + 1) - L) -
       (a n)⁻¹ • (∑ i ∈ Finset.range n, F i) + (a n)⁻¹ • (a 0 • L)) atTop (𝓝 0) := by
@@ -72,8 +77,8 @@ theorem normalized_partial_sums_tendsto_zero (a : ℕ → ℝ) (g : ℕ → ℂ)
   simp only [Nat.add_sub_cancel] at hParts
   change (∑ i ∈ Finset.range (n + 1), a i • g i) =
     a n • G (n + 1) - ∑ i ∈ Finset.range n, Δ i • G (i + 1) at hParts
-  rw [hParts, hSplit, smul_sub, smul_smul, inv_mul_cancel₀ (haPos n).ne', one_smul,
-    smul_add, sub_smul, smul_sub, smul_smul, inv_mul_cancel₀ (haPos n).ne', one_smul]
+  simp only [hParts, hSplit, smul_sub, smul_add, sub_smul, smul_smul,
+    inv_mul_cancel₀ (haPos n).ne', one_smul]
   abel
 
 end

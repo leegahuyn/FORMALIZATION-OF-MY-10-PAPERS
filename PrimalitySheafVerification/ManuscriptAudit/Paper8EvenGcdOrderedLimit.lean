@@ -78,9 +78,9 @@ def unshiftedCoefficient (D n : ℕ) : ℂ :=
 /-- All pairs of positive half-gcd and denominator with product at most the cutoff. -/
 def evenSectorCutoff (N n : ℕ) : ℂ :=
   ∑ h ∈ Finset.range N, ∑ d ∈ Finset.range (N / (h + 1)),
-    let k := (h + 1) * (d + 1)
-    -prefactor k * ((coefficient k 0 : ℂ) *
-      reducedFrequencySum (d + 1) (shiftedFrequency k n))
+    (-prefactor ((h + 1) * (d + 1))) *
+      ((coefficient ((h + 1) * (d + 1)) 0 : ℂ) *
+        reducedFrequencySum (d + 1) (shiftedFrequency ((h + 1) * (d + 1)) n))
 
 theorem evenSectorCutoff_eq_progressions (N n : ℕ) :
     evenSectorCutoff N n = ∑ r ∈ Finset.range 4,

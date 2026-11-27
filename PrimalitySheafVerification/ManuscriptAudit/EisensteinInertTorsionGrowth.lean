@@ -62,8 +62,7 @@ theorem card_and_transition (l q : ℕ) [Fact l.Prime] (hl : l % 3 = 2) (hq : 1 
     intro hv
     have hz := (ZMod.intCast_zmod_eq_zero_iff_dvd (d : ℤ) l).mpr (Int.natCast_dvd_natCast.mpr hv)
     have hN := norm_ne_zero l hl hPrim
-    apply hN
-    rwa [hD, Int.cast_sub, Int.cast_add, Int.cast_mul, Int.cast_pow] at hz
+    exact hN (by simpa only [hD, Int.cast_add, Int.cast_sub, Int.cast_mul, Int.cast_pow] using hz)
   have hPow : F ^ k - 1 = (l ^ t : ℕ) • combination r u w := by
     calc
       _ = combination r (v.1 - 1) v.2 := by
@@ -78,7 +77,8 @@ theorem card_and_transition (l q : ℕ) [Fact l.Prime] (hl : l % 3 = 2) (hq : 1 
       (Nat.card ↥((F ^ k - 1).ker) : ℤ) = ((l ^ t) ^ 2 * d : ℕ) := by
     rw [hK, ← difference_norm_eq_count a b q hNorm k]
     change (v.1 - 1) ^ 2 - (v.1 - 1) * v.2 + v.2 ^ 2 = _
-    rw [hu, hw, Nat.cast_mul, Nat.cast_pow, hD]
+    rw [hu, hw, Nat.cast_mul, hD]
+    simp only [Nat.cast_pow]
     ring
   have hCount : Nat.card ↥((F ^ k - 1).ker) = (l ^ t) ^ 2 * d := by exact_mod_cast hArit
   rw [hPow] at hFin hCount

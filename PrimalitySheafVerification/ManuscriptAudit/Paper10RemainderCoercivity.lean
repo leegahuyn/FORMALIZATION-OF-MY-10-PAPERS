@@ -34,8 +34,9 @@ theorem action_unbounded_on_every_nonzero_ray (a : ℝ) {v : V} (hv : v ≠ 0) (
     ∃ t : ℝ, 0 ≤ t ∧ action a (t • v) < B := by
   let C := |a+1| + |B| + 2
   have hC : 2 ≤ C := by dsimp only [C]; linarith [abs_nonneg (a+1), abs_nonneg B]
-  have hC2 : C ≤ C^2 := by nlinarith [mul_nonneg (show 0 ≤ C by linarith)
-      (show 0 ≤ C-1 by linarith)]
+  have hC0 : 0 ≤ C := by linarith
+  have hC1 : 0 ≤ C-1 := by linarith
+  have hC2 : C ≤ C^2 := by nlinarith [mul_nonneg hC0 hC1]
   have hCα : a+1 - C^2 ≤ -1 := by
     have h₁ : a+1 ≤ |a+1| := le_abs_self _
     have h₂ : |a+1| + 2 ≤ C := by dsimp only [C]; linarith [abs_nonneg B]

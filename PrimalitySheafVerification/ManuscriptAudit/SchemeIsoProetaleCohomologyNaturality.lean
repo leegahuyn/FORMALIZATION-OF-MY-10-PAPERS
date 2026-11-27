@@ -30,16 +30,24 @@ variable {M N : Type} [AddCommGroup M] [AddCommGroup N]
   [TopologicalSpace M] [TopologicalSpace N] [IsTopologicalAddGroup M] [IsTopologicalAddGroup N]
 variable (f : M →+ N) (hf : Continuous f)
 
+private theorem functionsIso_app (T : Type) [AddCommGroup T] [TopologicalSpace T]
+    [IsTopologicalAddGroup T] (U : Y.ProEtᵒᵖ) :
+    (functionsIso e T).hom.hom.app U = 𝟙 ((functions T Y).obj.obj U) := by
+  let G := sheafToPresheaf (Scheme.ProEt.topology Y) A
+  change (G.map (functionsIso e T).hom).app U = _
+  rw [functionsIso, Functor.preimageIso_hom]
+  change (G.map (G.preimage _)).app U = _
+  rw [G.map_preimage] <;> rfl
+
 private theorem functionsIso_natural :
     (F e).map (map f hf X) ≫ (functionsIso e N).hom =
       (functionsIso e M).hom ≫ map f hf Y := by
-  let G := sheafToPresheaf (Scheme.ProEt.topology Y) A
-  apply G.map_injective
-  simp only [Functor.map_comp, functionsIso, Functor.preimageIso_hom, Functor.map_preimage]
+  apply Sheaf.hom_ext
   apply NatTrans.ext
   funext U
-  simp only [NatTrans.comp_app, NatIso.ofComponents_hom_app, Iso.refl_hom,
-    Category.comp_id, Category.id_comp] <;> rfl
+  change ((F e).map (map f hf X)).hom.app U ≫ (functionsIso e N).hom.hom.app U =
+    (functionsIso e M).hom.hom.app U ≫ (map f hf Y).hom.app U
+  simp only [functionsIso_app, Category.comp_id, Category.id_comp] <;> rfl
 
 private theorem continuousCohomologyEquiv_apply (n : ℕ) (x : Sheaf.H (functions M X) n) :
     continuousCohomologyEquiv e M n x =
