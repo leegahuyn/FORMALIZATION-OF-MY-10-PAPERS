@@ -14,6 +14,8 @@ open PrimalitySheafVerification.ManuscriptAudit (paper5TraceCurve)
 
 noncomputable section
 
+local instance : Fact (Nat.Prime 19) := ⟨by decide⟩
+
 variable (L : Type*) [Field L] [Algebra (ZMod 19) L] [CharP L 19] [IsAlgClosed L] [DecidableEq L]
 variable (l : ℕ) [Fact l.Prime]
 
@@ -52,8 +54,8 @@ theorem trace_eq_extension_count
     LinearMap.trace ℤ_[l] (Tate l (Points L)) (action L l ^ Module.finrank (ZMod 19) E) =
       (((Fintype.card E : ℤ) + 1 -
         (Nat.card ((paper5TraceCurve 19 (1 : ZMod 19)).baseChange E).toProjective.Point : ℤ) : ℤ) : ℤ_[l]) := by
-  exact Paper5SplitTatePointCounts.trace_power_eq_extension_count (E := E)
-    (by decide) (by decide) one_ne_zero
+  exact Paper5SplitTatePointCounts.trace_power_eq_extension_count (p := 19) (E := E)
+    (by decide) (by decide) (one_ne_zero : (1 : ZMod 19) ≠ 0)
     (tateBasis L l hl) (action L l) (trace_eq_signed_count L l hl)
     (by simpa only [Nat.cast_ofNat] using (trace_det L l hl).2)
 

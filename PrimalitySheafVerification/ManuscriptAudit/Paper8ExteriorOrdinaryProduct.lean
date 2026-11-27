@@ -32,7 +32,7 @@ theorem U_split {q : ℝ} (hq : 0 ≤ q) (h₁ : q < 1) (a : ℝ) (n : ℕ) :
     rw [hShift]
     exact U_multipliable hq h₁ (a * q ^ n)
   have h := Multipliable.prod_mul_tprod_nat_mul' (f := fun j : ℕ => 1 + a * q ^ (j + 1)) (k := n) hTail
-  change product q a n * (∏' j : ℕ, 1 + a * q ^ ((j + n) + 1)) = U q a at h
+  change product q a n * tprod (fun j : ℕ => 1 + a * q ^ ((j + n) + 1)) = U q a at h
   rw [hShift] at h
   exact h
 

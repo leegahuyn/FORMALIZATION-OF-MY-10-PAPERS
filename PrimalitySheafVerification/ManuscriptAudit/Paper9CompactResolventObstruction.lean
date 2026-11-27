@@ -52,14 +52,22 @@ theorem no_compact_resolvent_inverse (D : GammaTwoFundamentalDomain)
       relativeResidual cuspBump (deriv cuspBump) (deriv (deriv cuspBump)) 1 6 k (scale n) := by
     have hResidualForm : e n = c n • (T (v n) - eigenvalue • (v n : quotientL2 D)) := by
       change T (c n • v n) - eigenvalue • (c n • (v n : quotientL2 D)) = _
-      rw [map_smul, smul_sub, smul_comm eigenvalue]
-    rw [hResidualForm, norm_smul, c, norm_inv, Complex.norm_real, Real.norm_eq_abs,
-      abs_of_nonneg (norm_nonneg _), mul_pow, inv_pow, mul_comm, ← div_eq_mul_inv]
+      have hT : T (c n • v n) = c n • T (v n) := T.toFun.map_smul (c n) (v n)
+      rw [hT, smul_sub, smul_comm eigenvalue]
+    have hcn : ‖c n‖ = ‖(v n : quotientL2 D)‖⁻¹ := by
+      change ‖((‖(v n : quotientL2 D)‖ : ℂ)⁻¹)‖ = _
+      rw [norm_inv, Complex.norm_real, Real.norm_eq_abs, abs_of_nonneg (norm_nonneg _)]
+    have hRatio : ‖e n‖ ^ 2 =
+        ‖T (v n) - eigenvalue • (v n : quotientL2 D)‖ ^ 2 /
+          ‖(v n : quotientL2 D)‖ ^ 2 := by
+      rw [hResidualForm, norm_smul, hcn, mul_pow, inv_pow, div_eq_mul_inv]
+      exact mul_comm (‖(v n : quotientL2 D)‖ ^ 2)⁻¹
+        (‖T (v n) - eigenvalue • (v n : quotientL2 D)‖ ^ 2)
     have hA : ‖T (v n) - eigenvalue • (v n : quotientL2 D)‖ ^ (2 : ℕ) = _ :=
       hResidual (scale n) (scale_one_le n)
     have hB : ‖(v n : quotientL2 D)‖ ^ (2 : ℕ) = _ :=
       waveVector_norm_sq D k (scale n) (scale_positive n)
-    rw [hA, hB]
+    rw [hRatio, hA, hB]
     exact quotient_relative_eq D cuspBump (deriv cuspBump) (deriv (deriv cuspBump)) k (scale n)
       (scale_positive n) (fun t => ((h1.differentiable (by decide)) t).hasDerivAt)
       h1.continuous_deriv_one hd.continuous_deriv_one hM.ne'

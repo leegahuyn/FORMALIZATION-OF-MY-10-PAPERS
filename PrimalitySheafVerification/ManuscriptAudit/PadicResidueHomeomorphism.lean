@@ -36,7 +36,7 @@ theorem reduction_kernel_open (n : ℕ) :
 /-- Every actual p-adic reduction to the discrete finite ring is continuous. -/
 theorem reduction_continuous (n : ℕ) : Continuous (PadicInt.toZModPow n : ℤ_[p] → ZMod (p ^ n)) := by
   apply continuous_of_tendsto_nhds_zero (PadicInt.toZModPow n : ℤ_[p] →+* ZMod (p ^ n)).toAddMonoidHom
-  rw [nhds_discrete (0 : ZMod (p ^ n))]
+  rw [nhds_discrete (ZMod (p ^ n))]
   exact tendsto_pure.mpr ((reduction_kernel_open p n).mem_nhds (map_zero _))
 
 /-- The native residue ring equivalence is a homeomorphism for the product-subspace topology. -/

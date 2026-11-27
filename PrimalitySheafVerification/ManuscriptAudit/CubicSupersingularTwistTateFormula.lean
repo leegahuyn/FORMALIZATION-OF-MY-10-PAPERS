@@ -72,7 +72,8 @@ theorem trace_det_for_twist (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
     (Int.cast (k * (-(p : ℤ)) ^ m) : ℤ_[l]) ∧ LinearMap.det T = (Fintype.card E : ℤ_[l])
   constructor
   · rw [← hConj, LinearMap.trace_conj', hScale, map_smul, hTrace, smul_eq_mul, Int.cast_mul]
-    exact mul_comm _ _
+    change c * (k : ℤ_[l]) = (k : ℤ_[l]) * c
+    exact mul_comm c (k : ℤ_[l])
   · have hConj' : eT.conj R = eT.toLinearMap ∘ₗ R ∘ₗ eT.symm.toLinearMap := by
       apply LinearMap.ext
       intro x
