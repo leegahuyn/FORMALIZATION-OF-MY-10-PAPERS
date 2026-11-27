@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper5PrintedAllTateDeterminants
 import PrimalitySheafVerification.ManuscriptAudit.Paper5GeometricFrobeniusInverse
 import PrimalitySheafVerification.ManuscriptAudit.RankTwoInverseTrace
+import PrimalitySheafVerification.ManuscriptAudit.FrobeniusDualConvention
 
 /-! The inverse point-Frobenius convention in all 28 printed rows and both rational Tate modules. -/
 
@@ -65,7 +66,7 @@ theorem inverse_coefficients (hr : r ∈ printedRows) (hl : l = 2 ∨ l = 3) :
 
 theorem inverse_power_det (hr : r ∈ printedRows) (hl : l = 2 ∨ l = 3) (m : ℕ) :
     LinearMap.det (inverseAction L l hr hl ^ m) = ((r.prime^m : ℕ) : ℚ_[l])⁻¹ := by
-  rw [map_pow, (inverse_coefficients L l hr hl).2, ← inv_pow, Nat.cast_pow]
+  rw [map_pow, (inverse_coefficients L l hr hl).2, Nat.cast_pow, ← inv_pow]
 
 theorem inverse_det_disagrees_with_printed_prime
     (hr : r ∈ printedRows) (hl : l = 2 ∨ l = 3) :
@@ -76,8 +77,22 @@ theorem inverse_det_disagrees_with_printed_prime
   have h1 := inv_mul_cancel₀ hp
   rw [h, ← pow_two] at h1
   have hNat : r.prime^2 = 1 := by exact_mod_cast h1
-  have h5 := printedRows_prime_at_least_five hr
-  nlinarith
+  have h2 := (printedRows_prime hr).two_le
+  have h4 : (2 : ℕ)^2 ≤ r.prime^2 := by gcongr
+  norm_num at h4
+  omega
+
+/-- On the linear dual the inverse group element recovers the printed arithmetic coefficients. -/
+theorem dual_inverse_printed_coefficients (hr : r ∈ printedRows) (hl : l = 2 ∨ l = 3) :
+    let F := FrobeniusDualConvention.dualAction (arithmeticEquiv L l hr hl).symm
+    LinearMap.trace ℚ_[l] (Module.Dual ℚ_[l] (RationalRowTate (r := r) L l)) F =
+        (r.a1 : ℚ_[l]) ∧ LinearMap.det F = (r.prime : ℚ_[l]) := by
+  have he := FrobeniusDualConvention.inverse_generator_coefficients
+    (rationalBasis L l hr hl) (arithmeticEquiv L l hr hl)
+  have hF : (arithmeticEquiv L l hr hl).toLinearMap = rationalArithmetic (r := r) L l := rfl
+  rw [hF] at he
+  obtain ⟨ht, hd⟩ := rational_coefficients L l hr hl
+  exact ⟨he.1.trans ht, he.2.trans hd⟩
 
 end
 end ManuscriptAudit.Paper5AllPrintedInverseTate
@@ -89,7 +104,8 @@ run_cmd do
       ``ManuscriptAudit.Paper5AllPrintedInverseTate.rational_coefficients,
       ``ManuscriptAudit.Paper5AllPrintedInverseTate.inverse_coefficients,
       ``ManuscriptAudit.Paper5AllPrintedInverseTate.inverse_power_det,
-      ``ManuscriptAudit.Paper5AllPrintedInverseTate.inverse_det_disagrees_with_printed_prime] do
+      ``ManuscriptAudit.Paper5AllPrintedInverseTate.inverse_det_disagrees_with_printed_prime,
+      ``ManuscriptAudit.Paper5AllPrintedInverseTate.dual_inverse_printed_coefficients] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

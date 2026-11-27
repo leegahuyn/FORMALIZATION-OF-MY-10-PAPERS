@@ -32,9 +32,10 @@ private abbrev k : Y K ⟶ Spec (CommRingCat.of K) :=
   Spec.map (CommRingCat.ofHom (algebraMap K (R K)))
 
 local instance laurentDomain : IsDomain (R K) :=
-  IsLocalization.isDomain_of_le_nonZeroDivisors (R K) (by
-    rintro _ ⟨n, rfl⟩
-    exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n Polynomial.X_ne_zero))
+  IsLocalization.isDomain_of_le_nonZeroDivisors (R K)
+    (show Submonoid.powers (Polynomial.X : Polynomial K) ≤ (Polynomial K)⁰ from by
+      rintro _ ⟨n, rfl⟩
+      exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero n Polynomial.X_ne_zero))
 
 local instance laurentPID : IsPrincipalIdealRing (R K) := ⟨fun I ↦ by
   rw [← IsLocalization.map_under (Submonoid.powers (Polynomial.X : Polynomial K)) (R K) I]

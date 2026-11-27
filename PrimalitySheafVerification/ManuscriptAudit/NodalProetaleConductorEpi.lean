@@ -42,7 +42,7 @@ private def yArrow : Y K ⟶ T K :=
 private def bArrow : B K h2 ⟶ T K :=
   MorphismProperty.Over.homMk (coverMap K ≫ affineOpen K) (Category.comp_id _)
 
-private theorem yOriginEmpty : IsEmpty (pullback (chartOpen K) (projectiveOrigin K)) := by
+private theorem yOriginEmpty : IsEmpty (↥(pullback (chartOpen K) (projectiveOrigin K) : Scheme.{0})) := by
   constructor
   intro a
   let u := pullback.fst (chartOpen K) (projectiveOrigin K) a

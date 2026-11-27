@@ -54,7 +54,9 @@ private theorem overlap_preconnected : PreconnectedSpace (D K).left := by
   have hi := h.image (e.inv : Spec (CommRingCat.of (LaurentPolynomial K)) → (D K).left)
     e.inv.continuous.continuousOn
   have hs : Function.Surjective (e.inv : Spec (CommRingCat.of (LaurentPolynomial K)) → (D K).left) := by
-    simpa only [Scheme.Hom.homeomorph_apply] using e.inv.homeomorph.surjective
+    intro x
+    obtain ⟨y, hy⟩ := e.inv.homeomorph.surjective x
+    exact ⟨y, by simpa only [Scheme.Hom.homeomorph_apply] using hy⟩
   rwa [Set.image_univ, hs.range_eq] at hi
 
 private theorem overlap_nonempty : Nonempty (D K).left := by

@@ -41,7 +41,7 @@ private abbrev n := affineNormalization K
 variable {W : Scheme.{0}} (a : W ⟶ X K)
 
 private theorem points_equal_over_Y
-    (s t : pullback a (p K)) (w : W) (y : nodeYChart K)
+    (s t : ↥(pullback a (p K) : Scheme.{0})) (w : W) (y : nodeYChart K)
     (hy : a w = chartOpen K y)
     (hs : pullback.fst a (p K) s = w) (ht : pullback.fst a (p K) t = w) : s = t := by
   let m := pullback.fst a (chartOpen K)
@@ -65,9 +65,9 @@ private abbrev liftPlus := pullbackMap a (plus K h2) (plus_over K h2)
 private abbrev liftMinus := pullbackMap a (minus K h2) (minus_over K h2)
 
 private theorem pair_over_Z
-    (s t : pullback a (p K)) (w : W) (z : affineNode K) (hz : a w = j K z)
+    (s t : ↥(pullback a (p K) : Scheme.{0})) (w : W) (z : affineNode K) (hz : a w = j K z)
     (hs : pullback.fst a (p K) s = w) (ht : pullback.fst a (p K) t = w) :
-    s = t ∨ ∃ c : pullback a (projectiveOrigin K),
+    s = t ∨ ∃ c : ↥(pullback a (projectiveOrigin K) : Scheme.{0}),
       (liftPlus K a h2 c = s ∧ liftMinus K a h2 c = t) ∨
       (liftPlus K a h2 c = t ∧ liftMinus K a h2 c = s) := by
   let m := pullback.fst a (j K)
@@ -79,12 +79,12 @@ private theorem pair_over_Z
     fromChart_isPullback m b a (j K) hc (n K) (e K h2) (p K) H
   let cMap : pullback b (originMap K) ⟶ pullback a (projectiveOrigin K) :=
     fromChart m b a (j K) hc (originMap K) (𝟙 _) (projectiveOrigin K) (Category.id_comp _)
-  have hPlus (c : pullback b (originMap K)) :
+  have hPlus (c : ↥(pullback b (originMap K) : Scheme.{0})) :
       l (NodalAffineNormalizationFibers.plus K b c) = liftPlus K a h2 (cMap c) :=
     congrArg (fun f : pullback b (originMap K) ⟶ pullback a (p K) ↦ f c)
       (fromChart_branch m b a (j K) hc (n K) (e K h2) (p K) H.w
         (originMap K) (branchMap K 1) (plus_over_node K))
-  have hMinus (c : pullback b (originMap K)) :
+  have hMinus (c : ↥(pullback b (originMap K) : Scheme.{0})) :
       l (NodalAffineNormalizationFibers.minus K b c) = liftMinus K a h2 (cMap c) :=
     congrArg (fun f : pullback b (originMap K) ⟶ pullback a (p K) ↦ f c)
       (fromChart_branch m b a (j K) hc (n K) (e K h2) (p K) H.w

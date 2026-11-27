@@ -33,10 +33,10 @@ theorem coefficient_envelope (m : ℕ) {c : ℕ} (hc : 0 < c) {ε : ℝ} (hε : 
   by_cases hm : m = 1
   · subst m
     have hc1 : (1 : ℝ) ≤ (c : ℝ) := by exact_mod_cast (show 1 ≤ c from hc)
-    simp only [coefficient, if_pos rfl, abs_of_nonneg (Real.sqrt_nonneg _),
-      Nat.gcd_one_left, Nat.cast_one, Real.sqrt_one, mul_one]
-    rw [Real.sqrt_eq_rpow]
-    exact Real.rpow_le_rpow_of_exponent_le hc1 (by linarith)
+    have hLeft : coefficient 1 c = Real.sqrt (c : ℝ) := by simp [coefficient]
+    rw [hLeft, abs_of_nonneg (Real.sqrt_nonneg _), Real.sqrt_eq_rpow]
+    simp only [Nat.gcd_one_left, Nat.cast_one, Real.sqrt_one, mul_one]
+    exact Real.rpow_le_rpow_of_exponent_le hc1 (show (1 / 2 : ℝ) ≤ 1 / 2 + ε by linarith)
   · rw [coefficient, if_neg hm, abs_zero]
     positivity
 

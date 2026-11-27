@@ -58,19 +58,22 @@ private theorem chartCusp_val_zero : (chartCusp 0 : OnePoint ℝ) = infinity := 
 private theorem chartCusp_val_one : (chartCusp 1 : OnePoint ℝ) = cuspZero := by
   change mapGL ℝ (chart 1) • (∞ : OnePoint ℝ) = ((0 : ℝ) : OnePoint ℝ)
   have h : chart 1 = S := rfl
+  have h10 : (mapGL ℝ S) 1 0 = 1 := by rw [mapGL_entry]; norm_num [ModularGroup.S]
+  have h00 : (mapGL ℝ S) 0 0 = 0 := by rw [mapGL_entry]; norm_num [ModularGroup.S]
   rw [h, OnePoint.smul_infty_eq_ite]
-  norm_num [mapGL_entry, ModularGroup.S]
+  simp only [h10, h00, one_ne_zero, if_false, zero_div]
 
 private theorem chartCusp_val_two : (chartCusp 2 : OnePoint ℝ) = cuspOne := by
   change mapGL ℝ (chart 2) • infinity = ((1 : ℝ) : OnePoint ℝ)
   have h : chart 2 = T * S := rfl
   have hs : mapGL ℝ S • infinity = cuspZero := chartCusp_val_one
+  have h11 : (mapGL ℝ T) 1 1 = 1 := by rw [mapGL_entry]; norm_num [ModularGroup.T]
+  have h01 : (mapGL ℝ T) 0 1 = 1 := by rw [mapGL_entry]; norm_num [ModularGroup.T]
   rw [h, map_mul, mul_smul, hs, cuspZero, OnePoint.smul_some_eq_ite]
-  norm_num [mapGL_entry, ModularGroup.T]
+  simp only [mul_zero, zero_add, h11, h01, one_ne_zero, if_false, div_one]
 
 private theorem translation_fixes_infinity (m : ℤ) :
-    mapGL ℝ (T ^ m) • infinity = infinity := by
-  change mapGL ℝ (T ^ m) • (∞ : OnePoint ℝ) = ∞
+    mapGL ℝ (T ^ m) • (∞ : OnePoint ℝ) = ∞ := by
   rw [OnePoint.smul_infty_eq_self_iff, mapGL_entry]
   simp [ModularGroup.coe_T_zpow]
 

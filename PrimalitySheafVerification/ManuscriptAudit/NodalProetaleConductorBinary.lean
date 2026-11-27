@@ -69,7 +69,7 @@ private abbrev conductorIso :=
   NormalizationBranchChartTransport.conductorIso (a K) (j K) (i K)
 
 private theorem transport_on_branch (b : Spec (CommRingCat.of K) ⟶ L K)
-    (hb : b ≫ n K = i K) (c : pullback (a K ≫ j K) (projectiveOrigin K)) :
+    (hb : b ≫ n K = i K) (c : ↥(pullback (a K ≫ j K) (projectiveOrigin K) : Scheme.{0})) :
     (normIso K h2).inv
       (pullbackMap (a K ≫ j K) (b ≫ e K h2)
         (NormalizationBranchChartTransport.branch_over (j K) (n K) (e K h2) (m K)
@@ -92,7 +92,7 @@ private theorem transport_on_branch (b : Spec (CommRingCat.of K) ⟶ L K)
 /-- An actual binary separator on the ambient pullback of the certified swap cover. -/
 def separator :
     (functionsOver Binary (m K)).obj.obj (op (swapObject K h2)) :=
-  let t : C(pullback (a K) (n K), Binary) := NodalSwapConductorUnit.unitLift K h2
+  let t : C(↥(pullback (a K) (n K) : Scheme.{0}), Binary) := NodalSwapConductorUnit.unitLift K h2
   ⟨t.comp ⟨(normIso K h2).inv, (normIso K h2).inv.continuous⟩⟩
 
 /-- Its ordered branch difference is the actual constant label 1. -/
@@ -103,12 +103,12 @@ theorem separator_difference :
   apply ULift.ext
   apply ContinuousMap.ext
   intro c
-  let t : C(pullback (a K) (n K), Binary) := NodalSwapConductorUnit.unitLift K h2
+  let t : C(↥(pullback (a K) (n K) : Scheme.{0}), Binary) := NodalSwapConductorUnit.unitLift K h2
   change t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (plus K h2) (plus_over K h2) c)) -
     t ((normIso K h2).inv (pullbackMap (a K ≫ j K) (minus K h2) (minus_over K h2) c)) = 1
   rw [transport_on_branch K h2 (branchMap K 1) (plus_over_node K) c,
     transport_on_branch K h2 (branchMap K (-1)) (minus_over_node K) c]
-  exact congrArg (fun s : C(pullback (a K) (i K), Binary) ↦ s ((conductorIso K).inv c))
+  exact congrArg (fun s : C(↥(pullback (a K) (i K) : Scheme.{0}), Binary) ↦ s ((conductorIso K).inv c))
     (NodalSwapConductorUnit.unitLift_difference K h2)
 
 end

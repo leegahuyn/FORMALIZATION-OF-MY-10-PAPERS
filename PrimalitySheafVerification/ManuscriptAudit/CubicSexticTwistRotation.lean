@@ -63,7 +63,7 @@ theorem rotate_square_eq (hΔ : (shortCubic (0 : K) A).Δ ≠ 0)
       simp only [map_zero]
   | some x y hP =>
       simp only [rotate_some, Affine.Point.some.injEq]
-      exact ⟨by ring, rfl⟩
+      exact ⟨by ring, True.intro⟩
 
 end
 end ManuscriptAudit.CubicSexticTwistRotation

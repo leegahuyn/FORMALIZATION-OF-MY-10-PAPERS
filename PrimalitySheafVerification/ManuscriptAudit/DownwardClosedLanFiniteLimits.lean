@@ -42,7 +42,7 @@ private def isZeroAt (W : D) [IsEmpty (CostructuredArrow L W)] (F : C ⥤ A) :
     IsZero ((L.lan.obj F).obj W) := by
   letI := hPoint F
   let H := L.isPointwiseLeftKanExtensionLeftKanExtensionUnit F W
-  let h := (isColimitEquivIsInitialOfIsEmpty _).mp H
+  let h : IsInitial ((L.lan.obj F).obj W) := (isColimitEquivIsInitialOfIsEmpty _) H
   exact (isZero_zero A).of_iso (h.uniqueUpToIso zeroIsInitial)
 
 include hPoint in
@@ -56,6 +56,10 @@ theorem lan_preservesFiniteLimits
   by_cases hb : Nonempty (CostructuredArrow L W)
   · obtain ⟨a⟩ := hb
     obtain ⟨V, ⟨e⟩⟩ := hDown W a
+    letI : PreservesFiniteLimits ((evaluation C A).obj V) :=
+      ⟨fun I _ _ ↦ by
+        letI : HasLimitsOfShape I A := inferInstance
+        infer_instance⟩
     exact preservesFiniteLimits_of_natIso (evaluationIso L hPoint e)
   · letI : IsEmpty (CostructuredArrow L W) := ⟨fun a ↦ hb ⟨a⟩⟩
     refine ⟨fun I _ _ ↦ ⟨fun {K} ↦ ⟨fun {c} _ ↦ ⟨?_⟩⟩⟩⟩

@@ -9,6 +9,9 @@ namespace ManuscriptAudit.Paper1NativeVisibilityGate
 
 open IntPrimeResidueFiber
 
+local instance closedPoint_isPrime (p : ℕ) [Fact p.Prime] :
+    (closedPoint p).asIdeal.IsPrime := (closedPoint p : PrimeSpectrum ℤ).isPrime
+
 /-- At every visible prime point up to the integer square root, X must be a local unit. -/
 def passes (U : Set (PrimeSpectrum ℤ)) (X : ℕ) : Prop :=
   ∀ (p : ℕ) [Fact p.Prime], closedPoint p ∈ U → p ≤ X.sqrt →
@@ -58,7 +61,7 @@ theorem prime_passes {U : Set (PrimeSpectrum ℤ)} {X : ℕ} (hX : X.Prime) :
   have hlt : p < p*p := by
     calc
       p = p*1 := (mul_one _).symm
-      _ < p*p := mul_lt_mul_of_pos_left (by omega) hp.pos
+      _ < p*p := mul_lt_mul_of_pos_left (Nat.lt_of_succ_le hp.two_le) hp.pos
   exact (not_le_of_gt hlt) hSq
 
 theorem omitted_prime_square_passes {U : Set (PrimeSpectrum ℤ)} (p : ℕ) [Fact p.Prime]
@@ -73,6 +76,7 @@ theorem omitted_prime_square_passes {U : Set (PrimeSpectrum ℤ)} (p : ℕ) [Fac
     exact hmiss hvis
   · intro h
     rw [pow_two, Nat.prime_mul_iff] at h
+    have h2 := hp.two_le
     rcases h with ⟨_, h⟩ | ⟨_, h⟩ <;> omega
 
 theorem global_correctness_iff_full_visibility (U : Set (PrimeSpectrum ℤ)) :
@@ -98,9 +102,9 @@ theorem omitted_D_prime_square_passes (f : ℤ) (p : ℕ) [Fact p.Prime]
     passes (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum ℤ)) (p^2) ∧ ¬ (p^2).Prime := by
   apply omitted_prime_square_passes p
   intro h
-  apply (PrimeSpectrum.mem_basicOpen.mp h)
-  rw [closedPoint_ideal p, Ideal.mem_span_singleton]
-  exact hdiv
+  change f ∉ (closedPoint p).asIdeal at h
+  apply h
+  rwa [closedPoint_ideal p, Ideal.mem_span_singleton]
 
 end ManuscriptAudit.Paper1NativeVisibilityGate
 

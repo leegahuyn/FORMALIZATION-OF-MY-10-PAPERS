@@ -47,7 +47,6 @@ theorem trace_det {r : TateRow} (hr : r ∈ tateRows)
       (r.determinant : ℤ_[l]) := by
   letI primeRow : Fact r.prime.Prime := ⟨(row_primes r hr).1⟩
   letI : Fact l.Prime := ⟨coefficient_prime hl⟩
-  dsimp only
   by_cases hn : r.prime % 3 = 2
   · obtain ⟨hT, hD⟩ := Paper5LaterNonsplitTate.data_exact r hr hn
     rw [hT, hD, Int.cast_zero]

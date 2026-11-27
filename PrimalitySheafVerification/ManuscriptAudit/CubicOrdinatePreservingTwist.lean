@@ -18,7 +18,7 @@ abbrev pointRotation (hz : z ^ 3 = 1) (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) :
     AddMonoid.End (Curve A).Point :=
   CubicCubeRotation.rotate z hz hΔ
 
-private theorem rotation_pow_some (hz : z ^ 3 = 1)
+theorem rotation_pow_some (hz : z ^ 3 = 1)
     (hΔ : (shortCubic (0 : L) A).Δ ≠ 0) (n : ℕ) {x y : L}
     (h : (Curve A).Nonsingular x y) :
     ∃ h' : (Curve A).Nonsingular (z ^ n * x) y,
@@ -98,6 +98,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
+      ``ManuscriptAudit.CubicOrdinatePreservingTwist.rotation_pow_some,
       ``ManuscriptAudit.CubicOrdinatePreservingTwist.scale_eq_rotation_pow,
       ``ManuscriptAudit.CubicOrdinatePreservingTwist.frobenius_conjugate_rotation] do
     let ax ← collectAxioms name
