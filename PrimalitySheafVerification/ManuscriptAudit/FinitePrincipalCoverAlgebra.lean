@@ -68,7 +68,7 @@ def labels (c : I → M) : C(Spec (CommRingCat.of (Ring r)), M) := by
   let h : Continuous (fun x : Σ i, PrimeSpectrum (Local r i) ↦ c x.1) := by
     rw [continuous_sigma_iff]
     intro i
-    exact continuous_const
+    exact (continuous_const : Continuous fun _ : PrimeSpectrum (Local r i) ↦ c i)
   exact ⟨(fun x ↦ c x.1) ∘ e.symm, h.comp e.symm.continuous⟩
 
 theorem labels_branch (c : I → M) (i : I) (p : PrimeSpectrum (Local r i)) :

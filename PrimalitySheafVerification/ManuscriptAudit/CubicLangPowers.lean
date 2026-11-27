@@ -18,9 +18,9 @@ private theorem lang_at (E L : Type*) [Field E] [Fintype E] [Field L] [Decidable
     [IsAlgClosed L] [Algebra E L] (h₂ : (2 : E) ≠ 0) (h₃ : (3 : E) ≠ 0)
     (hchar : ringChar E ≠ 2) {a : E} (ha : a ≠ 0)
     (V : Affine L) (hV : Curve (algebraMap E L a) = V) :
-    Function.Surjective (⇑(pointMapAt E L (Curve a) V
-      ((centered_baseChange E L a).trans hV) (FiniteField.frobeniusAlgHom E L) - 1 :
-      AddMonoid.End V.Point)) := by
+    let F : AddMonoid.End V.Point := pointMapAt E L (Curve a) V
+      ((centered_baseChange E L a).trans hV) (FiniteField.frobeniusAlgHom E L)
+    Function.Surjective (⇑(F - (1 : AddMonoid.End V.Point))) := by
   subst V
   exact CubicLangSurjective.surjective E L h₂ h₃ hchar ha
 

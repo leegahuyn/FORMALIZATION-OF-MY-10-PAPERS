@@ -65,8 +65,11 @@ private theorem comparison_bijective (F : D X) (E : C X) (j : (directImage X).ob
     funext a
     obtain ⟨f, rfl⟩ := (Ext.mk₀_bijective (ZE X) E).surjective a
     rw [comparison_mk₀]
-    simpa only [h, Equiv.trans_apply, Ext.homEquiv₀, Equiv.symm_symm,
-      Equiv.ofBijective_apply, Equiv.symm_apply_apply]
+    change Ext.mk₀ (homComparison X F E j f) =
+      Ext.mk₀ (homComparison X F E j (Ext.homEquiv₀ (Ext.mk₀ f)))
+    have hf : Ext.homEquiv₀ (Ext.mk₀ f) = f :=
+      Ext.homEquiv₀.symm_apply_apply f
+    rw [hf]
   rw [he]
   exact h.bijective
 

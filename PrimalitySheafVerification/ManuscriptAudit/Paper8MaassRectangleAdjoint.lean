@@ -63,9 +63,9 @@ private theorem density_difference (F G : Profile) (x y : ℝ) (hy : (y : ℂ) �
   simp only [Prod.fst, Prod.snd, star_add, star_sub, star_mul, hStarI, hStarY, hq]
   field_simp [hy] <;> ring
 
+set_option maxHeartbeats 1600000 in
 /-- The actual raising and formal adjoint expressions are adjoint on a rectangle whenever
 their horizontal and vertical fluxes match on the pairs of opposite edges. -/
-set_option maxHeartbeats 1600000 in
 theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤ d)
     (F G : Profile)
     (hF : ContinuousOn F.uncurry (rectangle a b c d))
@@ -116,8 +116,13 @@ theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤
         rw [uIcc_of_le hcd] at hy'
         have hline : ContinuousOn (fun x => rateX F G x y) (uIcc a b) := by
           rw [uIcc_of_le hab]
-          exact hRx.comp (continuous_id.prodMk continuous_const).continuousOn
-            (fun _ h => ⟨h, hy'⟩)
+          let line : ℝ → ℝ × ℝ := fun t => (t, y)
+          have hC : Continuous line :=
+            continuous_id.prodMk (continuous_const : Continuous (fun _ : ℝ => y))
+          have hM : MapsTo line (Icc a b) (rectangle a b c d) :=
+            fun _ ht => ⟨ht, hy'⟩
+          change ContinuousOn ((rateX F G).uncurry ∘ line) (Icc a b)
+          exact hRx.comp hC.continuousOn hM
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt
           (f := fun x => fluxX F G x y) (f' := fun x => rateX F G x y) ?_ hline.intervalIntegrable]
         · simp only [fluxX, hx y hy', sub_self]
@@ -134,8 +139,13 @@ theorem green_identity {a b c d : ℝ} (hab : a ≤ b) (hc : 0 < c) (hcd : c ≤
         rw [uIcc_of_le hab] at hx'
         have hline : ContinuousOn (rateY F G x) (uIcc c d) := by
           rw [uIcc_of_le hcd]
-          exact hRy.comp (continuous_const.prodMk continuous_id).continuousOn
-            (fun _ h => ⟨hx', h⟩)
+          let line : ℝ → ℝ × ℝ := fun t => (x, t)
+          have hC : Continuous line :=
+            (continuous_const : Continuous (fun _ : ℝ => x)).prodMk continuous_id
+          have hM : MapsTo line (Icc c d) (rectangle a b c d) :=
+            fun _ ht => ⟨hx', ht⟩
+          change ContinuousOn ((rateY F G).uncurry ∘ line) (Icc c d)
+          exact hRy.comp hC.continuousOn hM
         rw [intervalIntegral.integral_eq_sub_of_hasDerivAt
           (f := fluxY F G x) (f' := rateY F G x) ?_ hline.intervalIntegrable]
         · apply sub_eq_zero.mpr

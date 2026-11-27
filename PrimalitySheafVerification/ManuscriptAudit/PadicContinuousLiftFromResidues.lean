@@ -7,7 +7,7 @@ to a compatible system and hence to an actual continuous adic lift. -/
 namespace ManuscriptAudit.PadicContinuousLiftFromResidues
 
 open ProetalePadicSectionTower (sectionTransition compatibleSections continuousSectionsEquiv)
-open CyclicPowerInverseLimit (reduction)
+open PadicResidueSystems (reduction)
 
 noncomputable section
 

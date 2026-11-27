@@ -31,21 +31,34 @@ instance directedStages : DirectedSystem (Stage B) (fun i j h ↦ transition B i
   map_self := by
     intro i x
     have h : homOfLE (Nat.le_refl i) = 𝟙 i := Subsingleton.elim _ _
-    change ((diagram B).map (homOfLE (Nat.le_refl i))).hom x = x
-    rw [h, Functor.map_id]
-    rfl
+    calc
+      transition B i i (Nat.le_refl i) x =
+          (𝟙 (stage B i) : stage B i ⟶ stage B i).hom x :=
+        congrArg (fun f : stage B i ⟶ stage B i ↦ f.hom x)
+          ((congrArg (fun f : i ⟶ i ↦ (diagram B).map f) h).trans ((diagram B).map_id i))
+      _ = x := rfl
   map_map := by
     intro k j i hij hjk x
     have h : homOfLE hij ≫ homOfLE hjk = homOfLE (hij.trans hjk) := Subsingleton.elim _ _
-    have heq := congrArg (fun φ : i ⟶ k ↦ ((diagram B).map φ).hom x) h
-    simpa only [Functor.map_comp, CommAlgCat.hom_comp, AlgHom.comp_apply, transition] using heq
+    calc
+      transition B j k hjk (transition B i j hij x) =
+          (((diagram B).map (homOfLE hij)) ≫ ((diagram B).map (homOfLE hjk))).hom x := rfl
+      _ = ((diagram B).map (homOfLE hij ≫ homOfLE hjk)).hom x :=
+        congrArg (fun f : stage B i ⟶ stage B k ↦ f.hom x)
+          (((diagram B).map_comp (homOfLE hij) (homOfLE hjk)).symm)
+      _ = transition B i k (hij.trans hjk) x :=
+        congrArg (fun f : i ⟶ k ↦ ((diagram B).map f).hom x) h
 
 theorem transition_injective (hFlat : ∀ n, Module.FaithfullyFlat R (B n))
     {i j : ℕ} (hij : i ≤ j) : Function.Injective (transition B i j hij) := by
   induction hij using Nat.leRec with
   | refl =>
     intro x y h
-    simpa only [DirectedSystem.map_self] using h
+    have hx : transition B i i (Nat.le_refl i) x = x :=
+      (directedStages B).map_self x
+    have hy : transition B i i (Nat.le_refl i) y = y :=
+      (directedStages B).map_self y
+    exact hx.symm.trans (h.trans hy)
   | @le_succ_of_le j hj ih =>
     have h : homOfLE (by omega : i ≤ j + 1) = homOfLE hj ≫ homOfLE (Nat.le_add_right j 1) :=
       Subsingleton.elim _ _
@@ -57,11 +70,11 @@ abbrev Tower := DirectLimit (Stage B) (transition B)
 
 /-- The actual maps from each finite tensor stage into the countable tensor algebra. -/
 def stageMap (n : ℕ) : Stage B n →ₐ[R] Tower B :=
-  Algebra.DirectLimit.of (Stage B) (transition B) n
+  DirectLimit.Algebra.of (Stage B) (transition B) n
 
 theorem stageMap_transition {i j : ℕ} (h : i ≤ j) (x : Stage B i) :
     stageMap B j (transition B i j h x) = stageMap B i x :=
-  Algebra.DirectLimit.of_f (G := Stage B) (f := transition B) h x
+  DirectLimit.Algebra.of_f (G := Stage B) (f := transition B) h x
 
 theorem stageMap_injective (hFlat : ∀ n, Module.FaithfullyFlat R (B n)) (n : ℕ) :
     Function.Injective (stageMap B n) := by
@@ -72,7 +85,7 @@ theorem stageMap_injective (hFlat : ∀ n, Module.FaithfullyFlat R (B n)) (n : �
 
 theorem exists_stage (x : Tower B) :
     ∃ n, ∃ z : Stage B n, stageMap B n z = x := by
-  obtain ⟨n, z, hz⟩ := DirectLimit.exists_eq_mk x
+  obtain ⟨n, z, hz⟩ := DirectLimit.exists_eq_mk (transition B) x
   exact ⟨n, z, hz.symm⟩
 
 end

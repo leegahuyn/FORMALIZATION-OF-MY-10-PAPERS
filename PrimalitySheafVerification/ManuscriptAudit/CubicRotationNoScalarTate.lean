@@ -63,7 +63,10 @@ theorem rotation_not_scalar (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (hA : 
   let j (P : PowerTorsion l G 2) : (D.atField L).ker := ⟨P.val, by
     change c • P.val - r P.val = 0
     rw [hPoint, sub_self]⟩
-  have hj : Function.Injective j := fun _ _ he => Subtype.ext (congrArg Subtype.val he)
+  have hj : Function.Injective j := by
+    intro x y he
+    apply Subtype.ext
+    exact congrArg (fun P : (D.atField L).ker => P.val) he
   have hHeight := shifted_height h₂ h₃ hA hz hz₁ c
   have hPos : 0 < c ^ 2 + c + 1 := by nlinarith [sq_nonneg (2 * c + 1)]
   have hH : height A (antiInvariantApply D (genericAntiPoint A h₂ h₃ hA)) ≠ 0 := by

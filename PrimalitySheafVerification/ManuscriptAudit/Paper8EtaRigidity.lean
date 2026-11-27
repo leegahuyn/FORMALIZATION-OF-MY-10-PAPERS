@@ -11,18 +11,18 @@ open Set Filter Function UpperHalfPlane ModularForm
 open Paper8ActualEtaSquaredModularity
 open scoped MatrixGroups Manifold ModularForm Topology
 
-private theorem eta_holomorphic : MDiff (fun z : ℍ => ModularForm.eta z) := by
+theorem eta_holomorphic : MDiff (fun z : ℍ => ModularForm.eta z) := by
   rw [UpperHalfPlane.mdifferentiable_iff]
   refine DifferentiableOn.congr
     (fun z hz => (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hz).differentiableWithinAt) ?_
   intro z hz
   simp [Function.comp_def, ofComplex_apply_of_im_pos hz]
 
-private theorem translate_holomorphic {F : ℍ → ℂ} (hF : MDiff F)
+theorem translate_holomorphic {F : ℍ → ℂ} (hF : MDiff F)
     (g : SL(2, ℤ)) : MDiff (fun z : ℍ => F (g • z)) := by
   have hSlash := hF.slash (0 : ℤ) (g : GL (Fin 2) ℝ)
   change MDiff (F ∣[(0 : ℤ)] g) at hSlash
-  simpa only [SL_slash_def, UpperHalfPlane.sl_moeb, neg_zero, zpow_zero, mul_one] using hSlash
+  simpa only [SL_slash_def, neg_zero, zpow_zero, mul_one] using hSlash
 
 theorem translate_periodic_of_conjugatedTranslation_mem {H : Subgroup SL(2, ℤ)}
     {F : ℍ → ℂ} (hF : ∀ g : SL(2, ℤ), g ∈ H → ∀ z : ℍ, F (g • z) = F z)
@@ -48,7 +48,7 @@ theorem translate_periodic_of_conjugatedTranslation_mem {H : Subgroup SL(2, ℤ)
   · have hz' : (z + ((w : ℝ) : ℂ)).im ≤ 0 := by simpa using hz
     simp only [Function.comp_apply, ofComplex_apply_eq_of_im_nonpos hz' hz]
 
-private theorem bounded_of_tendsto {F : ℍ → ℂ} {L : ℂ} (h : Tendsto F atImInfty (𝓝 L)) :
+theorem bounded_of_tendsto {F : ℍ → ℂ} {L : ℂ} (h : Tendsto F atImInfty (𝓝 L)) :
     IsBoundedAtImInfty F := by
   have hZero : ZeroAtFilter atImInfty (F - Function.const ℍ L) := by
     simpa only [ZeroAtFilter, Pi.sub_def, Function.const_apply, sub_self] using

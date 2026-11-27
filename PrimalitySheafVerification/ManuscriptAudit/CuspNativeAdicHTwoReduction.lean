@@ -64,7 +64,7 @@ private theorem overlap_reduction (n : ℕ)
     (x : Sheaf.H ((restriction (l K) A).obj (functions ℤ_[ℓ] (X K))) 1) :
     finiteOverlap K ℓ n (Sheaf.H.map ((restriction (l K) A).map (r ℓ (X K) n)) 1 x) =
       Sheaf.H.map (r ℓ (laurent K) n) 1 (integralOverlap K ℓ x) := by
-  let d := (PadicInt.toZModPow n).toAddMonoidHom
+  let d : ℤ_[ℓ] →+ ZMod (ℓ ^ n) := (PadicInt.toZModPow n).toAddMonoidHom
   let hd := PadicResidueHomeomorphism.reduction_continuous ℓ n
   let e := SchemeIsoProetaleCohomology.continuousCohomologyEquiv (overlapIsoLaurent K) (ZMod (ℓ ^ n)) 1
   let y := CuspNativeAdicHTwoLower.restrictEquiv K ℓ (l K) x

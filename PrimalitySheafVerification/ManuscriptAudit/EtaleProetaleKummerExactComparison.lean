@@ -1,5 +1,7 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Sites.EpiMono
 import PrimalitySheafVerification.ManuscriptAudit.EtaleProetaleKummerComparison
 
 /-! Both actual Kummer sequences are exact in invertible degree on the same comparison. -/
@@ -26,51 +28,26 @@ local instance etaleHasExt (X : Scheme.{0}) : HasExt.{1} (Sheaf X.smallEtaleTopo
 
 variable {K : Type} [Field K] {X : Scheme.{0}} (k : X ⟶ Spec (CommRingCat.of K))
 
-private abbrev Jₐ (X : Scheme.{0}) := Scheme.AffineEtale.topology X
-private abbrev q (X : Scheme.{0}) : Sheaf (Jₐ X) A ⥤ Sheaf (Jₐ X) B :=
-  sheafCompose (Jₐ X) U
 private abbrev p (X : Scheme.{0}) :
     Sheaf X.smallEtaleTopology A ⥤ Sheaf X.smallEtaleTopology B :=
   sheafCompose X.smallEtaleTopology U
 
 include k in
-private theorem lifted_affine_power_epi (d : ℕ) (hd : 0 < d) [NeZero (d : K)] :
-    Epi ((q X).map (KummerSheafSequence.sequence X d).g) := by
-  let f := KummerSheafSequence.sheafPower X d
-  have hLoc : Presheaf.IsLocallySurjective (Jₐ X) (KummerUnitsPresheaf.power X d) := by
-    apply KummerUnitsPresheaf.power_isLocallySurjective d hd
-    intro W
-    have hUnit : IsUnit (d : K) := isUnit_iff_ne_zero.mpr (NeZero.ne _)
-    simpa only [map_natCast] using hUnit.map (KummerRelativeCoefficients.coefficientMap k W)
-  letI : Sheaf.IsLocallySurjective f :=
-    (Presheaf.isLocallySurjective_presheafToSheaf_map_iff (Jₐ X)
-      (KummerUnitsPresheaf.power X d)).mpr hLoc
-  letI : Sheaf.IsLocallySurjective ((q X).map f) := by
-    constructor
-    intro W y
-    refine (Jₐ X).superset_covering ?_ (Presheaf.imageSieve_mem (Jₐ X) f.hom y.down)
-    intro V j hj
-    obtain ⟨x, hx⟩ := hj
-    exact ⟨ULift.up x, congrArg ULift.up hx⟩
-  change Epi ((q X).map f)
-  infer_instance
-
-include k in
 private theorem lifted_etale_power_epi (d : ℕ) (hd : 0 < d) [NeZero (d : K)] :
     Epi (etaleSequence X d).g := by
-  let e₀ := Scheme.AffineEtale.sheafEquiv X A
-  let e₁ := Scheme.AffineEtale.sheafEquiv X B
-  let f := (KummerSheafSequence.sequence X d).g
-  let F := q X
-  haveI : Epi (F.map f) := lifted_affine_power_epi k d hd
-  apply e₁.inverse.epi_of_epi_map
-  change Epi (F.map (e₀.inverse.map (e₀.functor.map f)))
-  let e := e₀.unitIso.app (KummerSheafSequence.sequence X d).X₂
-  have hNat : f ≫ e.hom = e.hom ≫ e₀.inverse.map (e₀.functor.map f) :=
-    e₀.unitIso.hom.naturality f
-  have hEq : e₀.inverse.map (e₀.functor.map f) = e.inv ≫ f ≫ e.hom := by
-    rw [hNat, ← Category.assoc, Iso.inv_hom_id, Category.id_comp]
-  rw [hEq, Functor.map_comp, Functor.map_comp]
+  let J := X.smallEtaleTopology
+  let f := (KummerRelativeFull.sequence X d).g
+  have hf : Epi f := (KummerRelativeFull.sequence_shortExact k d hd).epi_g
+  letI : Sheaf.IsLocallySurjective f :=
+    (Sheaf.isLocallySurjective_iff_epi' A f).mpr hf
+  letI : Sheaf.IsLocallySurjective ((p X).map f) := by
+    constructor
+    intro W y
+    refine J.superset_covering ?_ (Presheaf.imageSieve_mem J f.hom y.down)
+    intro V g hg
+    obtain ⟨x, hx⟩ := hg
+    exact ⟨ULift.up x, congrArg ULift.up hx⟩
+  change Epi ((p X).map f)
   infer_instance
 
 include k in
