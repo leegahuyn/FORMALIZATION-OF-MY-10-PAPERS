@@ -46,7 +46,7 @@ theorem projective_card_add {A d : K}
   have hd₀ : d ≠ 0 := fun h => hd (h.symm ▸ IsSquare.zero)
   have hchar : ringChar K ≠ 2 := by
     intro h
-    exact h₂ (by simpa only [h, Nat.cast_ofNat] using (Nat.cast_ringChar (R := K)))
+    exact h₂ ((ringChar.spec K 2).mpr (by simpa only [h] using (dvd_rfl : (2 : ℕ) ∣ 2)))
   have hB : d ^ 3 * A ≠ 0 := mul_ne_zero (pow_ne_zero _ hd₀) hA
   have hcA := shortCubic_projective_count_int hchar (shortCubic_discriminant_ne_zero h₂ h₃ hA)
   have hcB := shortCubic_projective_count_int hchar (shortCubic_discriminant_ne_zero h₂ h₃ hB)

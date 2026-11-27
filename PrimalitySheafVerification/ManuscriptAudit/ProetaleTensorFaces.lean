@@ -48,17 +48,14 @@ theorem double_isPullback :
 theorem face_first_first : e₀₂ A B ≫ p₀ A B = e₀₁ A B ≫ p₀ A B := by
   rw [arrow_comp, arrow_comp]
   congr 1
-  exact AlgHom.ext fun b ↦ by simp
 
 theorem face_second_first : e₁₂ A B ≫ p₀ A B = e₀₁ A B ≫ p₁ A B := by
   rw [arrow_comp, arrow_comp]
   congr 1
-  exact AlgHom.ext fun b ↦ by simp
 
 theorem face_second_second : e₁₂ A B ≫ p₁ A B = e₀₂ A B ≫ p₁ A B := by
   rw [arrow_comp, arrow_comp]
   congr 1
-  exact AlgHom.ext fun b ↦ by simp
 
 end
 end ManuscriptAudit.ProetaleTensorFaces

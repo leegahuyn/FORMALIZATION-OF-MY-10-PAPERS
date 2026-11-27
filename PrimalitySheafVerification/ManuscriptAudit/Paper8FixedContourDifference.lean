@@ -24,7 +24,7 @@ def regularDifference (ζ q s : ℂ) : ℂ := regular 23 24 ζ q s - regular (2 
 
 def difference (k : ℕ) (ζ q : ℂ) : ℂ := phiAtQ 23 24 k ζ q - phiAtQ (2 / 3) 16 k ζ q
 
-private theorem sphere_point_ne_zero {s : ℂ} (hs : s ∈ sphere (0 : ℂ) fixedRadius) : s ≠ 0 := by
+theorem sphere_point_ne_zero {s : ℂ} (hs : s ∈ sphere (0 : ℂ) fixedRadius) : s ≠ 0 := by
   have h : ‖s‖ = fixedRadius := by simpa only [mem_sphere, dist_zero_right] using hs
   exact norm_pos_iff.mp (by simpa only [h] using fixedRadius_pos)
 
@@ -32,7 +32,7 @@ private theorem a_continuousOn {k : ℕ} (hk : 0 < k) :
     ContinuousOn (a k) (sphere (0 : ℂ) fixedRadius) :=
   (differentiableOn_punctured hk).continuousOn.mono (fun _ hs => sphere_point_ne_zero hs)
 
-private theorem first_continuousOn (k : ℕ) :
+theorem first_continuousOn (k : ℕ) :
     ContinuousOn (term k 0) (sphere (0 : ℂ) fixedRadius) := by
   have h : ContinuousOn (fun s : ℂ => (coefficient k 0 : ℂ) / s)
       (sphere (0 : ℂ) fixedRadius) :=
@@ -41,10 +41,11 @@ private theorem first_continuousOn (k : ℕ) :
     (sphere (0 : ℂ) fixedRadius)
   simpa only [zero_add, pow_one] using h
 
-private theorem remainder_continuousOn {k : ℕ} (hk : 0 < k) :
+theorem remainder_continuousOn {k : ℕ} (hk : 0 < k) :
     ContinuousOn (remainder k) (sphere (0 : ℂ) fixedRadius) := by
   have h := (a_continuousOn hk).sub (first_continuousOn k)
   refine h.congr fun s hs => ?_
+  change remainder k s = a k s - term k 0 s
   rw [a_eq_first_add_remainder hk (sphere_point_ne_zero hs)]
   ring
 
@@ -89,18 +90,22 @@ theorem difference_eq_remainder_circleIntegral {k : ℕ} (hk : 0 < k) {ζ q : �
   unfold difference phiAtQ
   rw [← mul_sub, ← circleIntegral.integral_sub hR hL]
   congr 1
-  have hTerm := ((first_continuousOn k).mul (regularDifference_continuousOn hζ hq)).circleIntegrable
-    fixedRadius_pos.le
+  have hTerm : CircleIntegrable (fun s => term k 0 s * regularDifference ζ q s) 0 fixedRadius :=
+    ((first_continuousOn k).mul (regularDifference_continuousOn hζ hq)).circleIntegrable fixedRadius_pos.le
   calc
     _ = circleIntegral (fun s => term k 0 s * regularDifference ζ q s +
           remainder k s * regularDifference ζ q s) 0 fixedRadius := by
       apply circleIntegral.integral_congr fixedRadius_pos.le
       intro s hs
-      rw [a_eq_first_add_remainder hk (sphere_point_ne_zero hs), regularDifference]
+      change a k s * regular 23 24 ζ q s - a k s * regular (2 / 3) 16 ζ q s =
+        term k 0 s * regularDifference ζ q s + remainder k s * regularDifference ζ q s
+      rw [a_eq_first_add_remainder hk (sphere_point_ne_zero hs)]
+      unfold regularDifference
       ring
-    _ = _ := by
-      rw [circleIntegral.integral_add hTerm (remainderDifference_integrable hk hζ hq),
-        first_circle_cancel_eq_zero k hζ hq, zero_add]
+    _ = circleIntegral (fun s => term k 0 s * regularDifference ζ q s) 0 fixedRadius +
+          circleIntegral (fun s => remainder k s * regularDifference ζ q s) 0 fixedRadius :=
+      circleIntegral.integral_add hTerm (remainderDifference_integrable hk hζ hq)
+    _ = _ := by rw [first_circle_cancel_eq_zero k hζ hq, zero_add]
 
 private theorem phiAtQ_zero (α β : ℝ) (k : ℕ) (ζ : ℂ) :
     phiAtQ α β k ζ 0 = atZero α k fixedRadius := by

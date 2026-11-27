@@ -39,10 +39,10 @@ theorem multiplicative_factorization_even {G : Type*} [CommGroup G] [Finite G]
   let P : Sylow l G := default
   have hmap : P.toSubgroup.map ρ.toMonoidHom ≤ P.toSubgroup :=
     (P.isPGroup'.map ρ.toMonoidHom).le_sylow_of_normal P
-  let φ : P.toSubgroup →* P.toSubgroup where
-    toFun x := ⟨ρ x.val, hmap ⟨x.val, x.property, rfl⟩⟩
-    map_one' := Subtype.ext (map_one ρ)
-    map_mul' x y := Subtype.ext (map_mul ρ x.val y.val)
+  let φ : P.toSubgroup →* P.toSubgroup :=
+    { toFun := fun x => ⟨ρ x.val, hmap ⟨x.val, x.property, rfl⟩⟩
+      map_one' := Subtype.ext (map_one ρ)
+      map_mul' := fun x y => Subtype.ext (map_mul ρ x.val y.val) }
   have hφ : Function.Injective φ := by
     intro x y h
     exact Subtype.ext (ρ.injective (congrArg Subtype.val h))
@@ -55,10 +55,10 @@ theorem multiplicative_factorization_even {G : Type*} [CommGroup G] [Finite G]
     apply Subtype.ext
     exact cube_apply ρ hquad x.val
   let C := Subgroup.zpowers e
-  letI : MulAction C P.toSubgroup where
-    smul g x := g.val x
-    one_smul _ := rfl
-    mul_smul _ _ _ := rfl
+  letI : MulAction C P.toSubgroup :=
+    { smul := fun g x => g.val x
+      one_smul := fun _ => rfl
+      mul_smul := fun _ _ _ => rfl }
   letI : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
   have hC : IsPGroup 3 C := by
     intro g

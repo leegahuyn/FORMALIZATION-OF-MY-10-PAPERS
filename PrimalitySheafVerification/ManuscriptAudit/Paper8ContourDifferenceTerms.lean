@@ -20,10 +20,10 @@ noncomputable section
 def term (residues : ∀ k : ℕ, Finset (Fin (2 * k))) (k : ℕ) (q : ℂ) : ℂ :=
   prefactor k * ∑ d ∈ residues k, residueWeight k d * difference k (root k ^ (d.val : ℤ)) q
 
-private theorem root_power_norm (k : ℕ) (d : Fin (2 * k)) : ‖root k ^ (d.val : ℤ)‖ = 1 := by
+theorem root_power_norm (k : ℕ) (d : Fin (2 * k)) : ‖root k ^ (d.val : ℤ)‖ = 1 := by
   rw [norm_zpow, root_norm, one_zpow]
 
-private theorem norm_weighted_le {k : ℕ} (hk : 0 < k) (S : Finset (Fin (2 * k)))
+theorem norm_weighted_le {k : ℕ} (hk : 0 < k) (S : Finset (Fin (2 * k)))
     (f : Fin (2 * k) → ℂ) {c : ℝ} (hc : 0 ≤ c) (h : ∀ d ∈ S, ‖f d‖ ≤ c) :
     ‖prefactor k * ∑ d ∈ S, residueWeight k d * f d‖ ≤ 2 * c := by
   have hkR : 0 < (k : ℝ) := by exact_mod_cast hk

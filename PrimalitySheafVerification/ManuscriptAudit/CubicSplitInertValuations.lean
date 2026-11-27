@@ -23,12 +23,12 @@ theorem projective_count_factorization_even
     Even ((Nat.card (shortCubic (0 : K) A).toProjective.Point).factorization l) := by
   have hΔ := shortCubic_discriminant_ne_zero h₂ h₃ hA
   let r : (Curve A).Point →+ (Curve A).Point := rotate z hz hΔ
-  let R : (Curve A).Point ≃+ (Curve A).Point where
-    toFun := r
-    invFun x := r (r x)
-    left_inv x := rotate_cube hz hΔ x
-    right_inv x := rotate_cube hz hΔ x
-    map_add' := map_add r
+  let R : (Curve A).Point ≃+ (Curve A).Point :=
+    { toFun := r
+      invFun := fun x => r (r x)
+      left_inv := fun x => rotate_cube hz hΔ x
+      right_inv := fun x => rotate_cube hz hΔ x
+      map_add' := map_add r }
   letI : Finite (Curve A).Point :=
     Finite.of_injective _ (Curve A).nonsingularPointEquiv.injective
   have hf := CyclotomicFiniteGroupValuation.additive_factorization_even l hl R

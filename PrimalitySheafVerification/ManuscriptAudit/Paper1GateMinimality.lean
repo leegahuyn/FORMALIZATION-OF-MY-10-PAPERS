@@ -37,13 +37,32 @@ theorem every_ordered_pair_separated (i j : Fin 4) (h : i ≠ j) :
   refine ⟨some i, Or.inr rfl, ?_⟩
   simp [accepts, h]
 
+private theorem accepts_none_of_two {i j : Fin 4} (hij : i ≠ j)
+    {a : Option (Fin 4)} (hi : accepts i a) (hj : accepts j a) : a = none := by
+  rcases hi with h | h
+  · exact h
+  · rw [h] at hj
+    simp [accepts, hij] at hj
+
 theorem every_single_gate_redundant (i : Fin 4) :
     {a | ∀ j, accepts j a} = {a | ∀ j, j ≠ i → accepts j a} := by
   ext a
   change (∀ j, accepts j a) ↔ (∀ j, j ≠ i → accepts j a)
-  simp only [accepts]
-  revert i a
-  decide
+  constructor
+  · intro h j _
+    exact h j
+  · intro h j
+    apply Or.inl
+    by_cases h0 : i = 0
+    · subst i
+      exact accepts_none_of_two (i := 1) (j := 2) (by decide)
+        (h 1 (by decide)) (h 2 (by decide))
+    · by_cases h1 : i = 1
+      · subst i
+        exact accepts_none_of_two (i := 0) (j := 2) (by decide)
+          (h 0 (by decide)) (h 2 (by decide))
+      · exact accepts_none_of_two (i := 0) (j := 1) (by decide)
+          (h 0 (Ne.symm h0)) (h 1 (Ne.symm h1))
 
 end ManuscriptAudit.Paper1GateMinimality
 

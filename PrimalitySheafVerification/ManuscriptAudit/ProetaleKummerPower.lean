@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Sites.EpiMono
 import PrimalitySheafVerification.ManuscriptAudit.KummerSiteCover
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleOpenCover
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleUnitSheaf
@@ -35,6 +36,7 @@ theorem power_eval (d : ℕ) {U : X.ProEt} (s : (unitSheaf X).obj.obj (op U)) :
 variable {R : CommRingCat.{0}} (g : Spec R ⟶ X) [WeaklyEtale g]
   (d : ℕ) (hpos : 0 < d) (hd : IsUnit (d : R))
 
+include hpos hd in
 /-- A unit on a displayed affine weakly étale chart has a d-th root
 on a native covering arrow, given by the finite étale root algebra. -/
 theorem imageSieve_mem_of_spec (s : (unitSheaf X).obj.obj (op (Scheme.ProEt.mk g))) :
@@ -74,18 +76,19 @@ theorem imageSieve_mem_of_spec (s : (unitSheaf X).obj.obj (op (Scheme.ProEt.mk g
 
 variable {K : Type} [Field K] (k : X ⟶ Spec (CommRingCat.of K))
 
+include k in
 /-- The native Kummer power map is locally surjective on all
 pro-étale objects, by ordinary affine open covers. -/
 theorem power_locallySurjective (d : ℕ) (hpos : 0 < d) [NeZero (d : K)] :
     Presheaf.IsLocallySurjective (J X) (power X d).hom where
   imageSieve_mem {U} s := by
-    let C := U.unop.left.affineOpenCover
+    let C := U.left.affineOpenCover
     let O := C.openCover
-    apply ProetaleOpenCover.covering_of_covering_on_open U.unop O
+    apply ProetaleOpenCover.covering_of_covering_on_open U O
     intro i
     rw [Presheaf.pullback_imageSieve]
     let R := C.X i
-    let g : Spec R ⟶ X := C.f i ≫ U.unop.hom
+    let g : Spec R ⟶ X := C.f i ≫ U.hom
     letI : WeaklyEtale g := inferInstance
     let r : CommRingCat.of K ⟶ R := Spec.preimage (g ≫ k)
     have hd : IsUnit (d : R) := by

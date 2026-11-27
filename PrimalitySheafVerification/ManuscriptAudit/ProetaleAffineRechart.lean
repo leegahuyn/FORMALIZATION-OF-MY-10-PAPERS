@@ -45,16 +45,19 @@ theorem rechart_comp_toTerminal (f : W ⟶ terminal A) :
   apply MorphismProperty.Over.Hom.ext
   change W.left.isoSpec.inv ≫ f.left = structureMap A (coordinateRing A W)
   have hw : f.left = W.hom := by
-    simpa only [Category.comp_id] using f.w
+    have h : f.left ≫ 𝟙 (spectrum A) = W.hom := MorphismProperty.Over.w f
+    exact (Category.comp_id f.left).symm.trans h
   rw [hw, structureMap_eq]
 
 theorem coordinateChartSurjective {f : W ⟶ terminal A} (hf : Surjective f.left) :
     Surjective (structureMap A (coordinateRing A W)) := by
   rw [structureMap_eq]
   have hw : f.left = W.hom := by
-    simpa only [Category.comp_id] using f.w
+    have h : f.left ≫ 𝟙 (spectrum A) = W.hom := MorphismProperty.Over.w f
+    exact (Category.comp_id f.left).symm.trans h
+  change Surjective (W.left.isoSpec.inv ≫ W.hom)
   rw [← hw]
-  letI := hf
+  letI : Surjective f.left := hf
   infer_instance
 
 end
