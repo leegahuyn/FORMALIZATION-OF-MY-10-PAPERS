@@ -36,10 +36,10 @@ private theorem normalizationLabel
     (hLine : ZMod 2 ≃+ NodalNormalizationHOneComparison.normalizationHOne K) :
     ∃ p : Sheaf.H (normalizationFunctions K M) 1 →+ ZMod 2, Function.Injective p := by
   obtain ⟨q, hq⟩ := AffineEtaleDirectImageHOneEmbedding.HOne_embedding
-    (CommRingCat.of (A K)) (CommRingCat.of (B K)) (affineNormalization K) F
+    (CommRingCat.of (A K)) (CommRingCat.of (B K)) (affineNormalization K) (F K)
   let e := ((Sheaf.functorH (affineLine K).smallEtaleTopology 1).mapIso
     (constantSheafContinuousMapIso (affineLine K) M)).addCommGroupIsoToAddEquiv
-  let label : ZMod 2 ≃+ Sheaf.H F 1 :=
+  let label : ZMod 2 ≃+ Sheaf.H (F K) 1 :=
     hLine.trans e
   exact ⟨label.symm.toAddMonoidHom.comp q, label.symm.injective.comp hq⟩
 
@@ -64,7 +64,8 @@ theorem finite_card_le_four (h2 : (2 : K) ≠ 0)
     rw [AddEquiv.symm_apply_apply]
     exact hy
   obtain ⟨hF, hcard⟩ := BinaryExactCardinality.finite_card_le_four δ p hKernel
-  let e := ((Sheaf.functorH (affineNode K).smallEtaleTopology 1).mapIso
+  let e : affineHOne K ≃+ Sheaf.H S.X₁ 1 :=
+    ((Sheaf.functorH (affineNode K).smallEtaleTopology 1).mapIso
     (constantSheafContinuousMapIso (affineNode K) M)).addCommGroupIsoToAddEquiv
   letI : Finite (Sheaf.H S.X₁ 1) := hF
   exact ⟨Finite.of_injective e e.injective, (Nat.card_congr e.toEquiv).trans_le hcard⟩

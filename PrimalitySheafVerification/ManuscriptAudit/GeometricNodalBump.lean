@@ -38,6 +38,8 @@ def properModule (h2 : (2 : K) ≠ 0) : Module M (projectiveHOne K) :=
 def smoothModule (h2 : (2 : K) ≠ 0) : Module M (smoothHOne K) :=
   coefficientModule ((projectiveHOneEquiv K h2).symm.trans (properSmoothHOneEquiv K h2))
 
+set_option maxRecDepth 7000 in
+set_option maxHeartbeats 650000 in
 /-- Both actual ordinary degree-one dimensions are one. -/
 theorem finranks (h2 : (2 : K) ≠ 0) :
     letI := properModule K h2
@@ -45,8 +47,8 @@ theorem finranks (h2 : (2 : K) ≠ 0) :
     Module.finrank M (projectiveHOne K) = 1 ∧ Module.finrank M (smoothHOne K) = 1 := by
   letI := properModule K h2
   letI := smoothModule K h2
-  let e := (projectiveHOneEquiv K h2).symm
-  let f := e.trans (properSmoothHOneEquiv K h2)
+  let e : M ≃+ projectiveHOne K := (projectiveHOneEquiv K h2).symm
+  let f : M ≃+ smoothHOne K := e.trans (properSmoothHOneEquiv K h2)
   let eL : M ≃ₗ[M] projectiveHOne K := { e with map_smul' := ZMod.map_smul e }
   let fL : M ≃ₗ[M] smoothHOne K := { f with map_smul' := ZMod.map_smul f }
   exact ⟨eL.finrank_eq.symm.trans (CommSemiring.finrank_self _),

@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.EtaleMayerVietorisNontrivial
+import PrimalitySheafVerification.ManuscriptAudit.EtaleMayerVietorisCompatiblePair
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleExtendShortExact
 import PrimalitySheafVerification.ManuscriptAudit.SheafPresheafHOneBoundary
 
@@ -69,7 +69,7 @@ private theorem postcompose_overlap_arrow :
 
 /-- A nonliftable section on U that lifts on U∩V detects nonzero ambient
 H¹, when the kernel of the short exact sequence extends to X. -/
-theorem HOne_nontrivial_of_local_section_lift
+theorem existsHOne_first_not_second_of_local_section_lift
     (hCover : Set.range j ∪ Set.range k = Set.univ)
     (F : ÉtaleSheaf X) (S : ShortComplex (ÉtaleSheaf U)) (hS : S.ShortExact)
     (e : S.X₁ ≅ (restriction j G.{u}).obj F)
@@ -77,7 +77,9 @@ theorem HOne_nontrivial_of_local_section_lift
     (h₀ : ¬ SectionHasLift S (identityObject U) s)
     (h₁ : SectionHasLift S (innerOverlap j k)
       (S.X₃.obj.map (openArrow (pullback.fst j k)).op s)) :
-    Nontrivial (Sheaf.H F 1) := by
+    ∃ z : F.H' 1 (identityObject X),
+      (F.cohomologyPresheaf 1).map (openArrow j).op z ≠ 0 ∧
+      (F.cohomologyPresheaf 1).map (openArrow k).op z = 0 := by
   let T := extended j S F e
   let hT : T.ShortExact := extended_shortExact j S F e hS
   let φ := restrictedExtensionIso j S F e hS
@@ -119,23 +121,45 @@ theorem HOne_nontrivial_of_local_section_lift
     exact h
   have hArrow : fstLeg j k ≫ q.inv = r := by
     rw [← postcompose_overlap_arrow j k, Category.assoc, Iso.hom_inv_id, Category.comp_id]
-  apply HOne_nontrivial_of_overlap_zero j k F hCover c hc
-  have hOp : q.inv.op ≫ (fstLeg j k).op = r.op := by
-    rw [← op_comp, hArrow]
-  change (F.cohomologyPresheaf 1).map (fstLeg j k).op
-    ((F.cohomologyPresheaf 1).map q.inv.op c₀) = 0
-  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, hOp]
-  exact hz
+  have hc0 : (F.cohomologyPresheaf 1).map (fstLeg j k).op c = 0 := by
+    have hOp : q.inv.op ≫ (fstLeg j k).op = r.op := by rw [← op_comp, hArrow]
+    change (F.cohomologyPresheaf 1).map (fstLeg j k).op
+      ((F.cohomologyPresheaf 1).map q.inv.op c₀) = 0
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, hOp]
+    exact hz
+  have hPair : (F.cohomologyPresheaf 1).map (fstLeg j k).op c =
+      (F.cohomologyPresheaf 1).map (sndLeg j k).op 0 := by
+    rw [hc0, map_zero]
+  obtain ⟨z, hz₁, hz₂⟩ := existsHOne_of_compatible_pair j k F hCover c 0 hPair
+  exact ⟨z, fun h => hc (hz₁.symm.trans h), hz₂⟩
+
+/-- A nonliftable section on a chart that lifts on the overlap produces a
+nonzero ambient cohomology class. -/
+theorem HOne_nontrivial_of_local_section_lift
+    (hCover : Set.range j ∪ Set.range k = Set.univ)
+    (F : ÉtaleSheaf X) (S : ShortComplex (ÉtaleSheaf U)) (hS : S.ShortExact)
+    (e : S.X₁ ≅ (restriction j G.{u}).obj F)
+    (s : S.X₃.obj.obj (op (identityObject U)))
+    (h₀ : ¬ SectionHasLift S (identityObject U) s)
+    (h₁ : SectionHasLift S (innerOverlap j k)
+      (S.X₃.obj.map (openArrow (pullback.fst j k)).op s)) :
+    Nontrivial (Sheaf.H F 1) := by
+  obtain ⟨z, hz, _⟩ := existsHOne_first_not_second_of_local_section_lift j k hCover F S hS e s h₀ h₁
+  have h : z ≠ 0 := fun h => hz (by rw [h, map_zero])
+  let i := (terminalCohomologyIso F 1).addCommGroupIsoToAddEquiv
+  exact ⟨⟨i z, 0, fun h' => h (i.injective (h'.trans (map_zero i).symm))⟩⟩
 
 end
 end ManuscriptAudit.EtaleMayerVietoris
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.EtaleMayerVietoris.HOne_nontrivial_of_local_section_lift
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.EtaleMayerVietoris.existsHOne_first_not_second_of_local_section_lift,
+      ``ManuscriptAudit.EtaleMayerVietoris.HOne_nontrivial_of_local_section_lift] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
+

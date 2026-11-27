@@ -16,7 +16,8 @@ open NodalChartIntersection (charts_cover)
 open NodalSwapCoverOverlapObject (overlapAffineObject overlapAffineObjectIso overlapObjectSection)
 open NodalSwapCoverFullTrace (shortComplex shortComplex_shortExact terminalOne terminal_one_unlifted
   constantIso fullTrace_app_surjective_of_section)
-open EtaleMayerVietoris (SectionHasLift HOne_nontrivial_of_local_section_lift)
+open EtaleMayerVietoris (SectionHasLift HOne_nontrivial_of_local_section_lift
+  existsHOne_first_not_second_of_local_section_lift)
 open OpenEtaleExtension (restriction restrictionConstantIso)
 open EtaleTwoOpenHOne (identityObject openArrow)
 
@@ -65,6 +66,18 @@ private theorem overlap_lifted (h2 : (2 : K) ≠ 0) :
       rw [hv, ← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, Iso.hom_inv_id,
         op_id, S.X₃.obj.map_id] <;> rfl
 
+/-- The actual split-node class is nonzero on its singular affine chart
+and zero on the second, smooth chart. -/
+theorem exists_class_nonzero_affine_zero_y (h2 : (2 : K) ≠ 0) :
+    ∃ z : (F K).H' 1 (identityObject (projectiveNode K)),
+      ((F K).cohomologyPresheaf 1).map (openArrow (affineOpen K)).op z ≠ 0 ∧
+      ((F K).cohomologyPresheaf 1).map (openArrow (chartOpen K)).op z = 0 := by
+  let e : (shortComplex K h2).X₁ ≅ (restriction (affineOpen K) AddCommGrpCat.{0}).obj (F K) :=
+    (constantIso K).symm ≪≫ ((restrictionConstantIso (affineOpen K)).app coeff).symm
+  exact existsHOne_first_not_second_of_local_section_lift (affineOpen K) (chartOpen K)
+    (chart_ranges_cover K) (F K) (shortComplex K h2) (shortComplex_shortExact K h2)
+    e (terminalOne K) (terminal_unlifted K h2) (overlap_lifted K h2)
+
 /-- The actual proper nodal curve has nontrivial ordinary small-étale
 H¹ with constant Z/2 coefficients whenever 2 is invertible in K. -/
 theorem projectiveNode_HOne_nontrivial (h2 : (2 : K) ≠ 0) : Nontrivial (Sheaf.H (F K) 1) := by
@@ -79,10 +92,12 @@ end ManuscriptAudit.NodalProjectiveHOne
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.NodalProjectiveHOne.projectiveNode_HOne_nontrivial
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.NodalProjectiveHOne.exists_class_nonzero_affine_zero_y,
+      ``ManuscriptAudit.NodalProjectiveHOne.projectiveNode_HOne_nontrivial] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"
+

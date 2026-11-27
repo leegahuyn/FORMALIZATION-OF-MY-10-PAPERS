@@ -46,18 +46,21 @@ def unitSectionSequence : ShortComplex (Rep ℤ (L ≃ₐ[K] L)) :=
         (cokernel.condition i)) x
     exact h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitSectionSequence_shortExact [Mono i] :
     (unitSectionSequence K L i).ShortExact := by
   let S := unitSectionSequence K L i
   let E : Rep.{0} ℤ (L ≃ₐ[K] L) ⥤ ModuleCat.{0} ℤ :=
-    forget₂ (Rep.{0} ℤ (L ≃ₐ[K] L)) (ModuleCat.{0} ℤ)
-  letI : E.Additive := by dsimp [E]; infer_instance
-  letI : E.Faithful := by dsimp [E]; infer_instance
+    Rep.RepToAction ℤ (L ≃ₐ[K] L) ⋙ Action.forget (ModuleCat.{0} ℤ) (L ≃ₐ[K] L)
   letI : PreservesFiniteLimits E := by dsimp [E]; infer_instance
   letI : PreservesFiniteColimits E := by dsimp [E]; infer_instance
+  letI : E.Additive := E.additive_of_preserves_binary_products
+  letI : E.Faithful := by dsimp [E]; infer_instance
   have hExact : S.Exact := by
     apply (S.exact_map_iff_of_faithful E).mp
     refine (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact (S.map E)).mpr ?_
+    change Function.Exact (fun x => i.hom.app (op (U K L)) x)
+      (fun x => (cokernel.π i).hom.app (op (U K L)) x)
     exact SheafSectionDifference.cokernel_sections_exact i (U K L)
   have hMono : Mono S.f := (Rep.mono_iff_injective (sectionsRepMap K L i)).mpr
     (SheafSectionDifference.section_injective i (U K L))

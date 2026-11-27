@@ -26,16 +26,23 @@ set_option backward.isDefEq.respectTransparency false
 
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
-variable (K : Type) [Field K] [IsAlgClosed K]
+variable (K : Type) [Field K]
 
 private abbrev C := AddCommGrpCat.{0}
 private abbrev A := AddCommGrpCat.of (ZMod 2)
 private abbrev J := (projectiveNode K).smallEtaleTopology
 private abbrev F := (constantSheaf (J K) C).obj A
 
-private def rootLabelIso [NeZero (2 : K)] :
+theorem primitiveNegOne (h2 : (2 : K) ≠ 0) : IsPrimitiveRoot (-1 : K) 2 := by
+  apply IsPrimitiveRoot.neg_one (ringChar K)
+  intro h
+  have hcast : ((2 : ℕ) : K) = 0 :=
+    (CharP.cast_eq_zero_iff K (ringChar K) 2).mpr (by rw [h] <;> exact dvd_rfl)
+  exact h2 (by simpa using hcast)
+
+def rootLabelIso (h2 : (2 : K) ≠ 0) :
     KummerConstantCoefficients.coefficientGroup K 2 ≅ A := by
-  let e := CuspRootCoefficients.rootsOfUnityEquivZMod K 2
+  let e := CuspRootCoefficients.rootsOfUnityEquivZModOfPrimitiveRoot (primitiveNegOne K h2)
   let e' : Additive (rootsOfUnity 2 K) ≃+ ZMod 2 :=
     e.toAdditive
   exact e'.toAddCommGrpIso
@@ -44,13 +51,16 @@ private theorem yChart_restriction_injective (h2 : (2 : K) ≠ 0) :
     Function.Injective (((F K).cohomologyPresheaf 1).map
       (sndLeg (affineOpen K) (chartOpen K)).op) := by
   letI : NeZero (2 : K) := ⟨h2⟩
+  letI : HasEnoughRootsOfUnity K 2 :=
+    { prim := ⟨-1, primitiveNegOne K h2⟩
+      cyc := rootsOfUnity.isCyclic K 2 }
   let j := chartOpen K
   let a := KummerRelativeUnitSections.chartArrow (principalRingHom K) j
   let e := (overlapEtaleIso K).hom
   have h : e ≫ a = sndLeg (affineOpen K) j := overlapEtaleIso_snd K
   let G := (constantSheaf (J K) C).obj (KummerConstantCoefficients.coefficientGroup K 2)
   let i := (Sheaf.cohomologyPresheafFunctor (J K) 1).mapIso
-    ((constantSheaf (J K) C).mapIso (rootLabelIso K).symm)
+    ((constantSheaf (J K) C).mapIso (rootLabelIso K h2).symm)
   let U := op (Scheme.Etale.mk j)
   let V := op (principalObject K)
   have hG : Function.Injective ((G.cohomologyPresheaf 1).map a.op) :=

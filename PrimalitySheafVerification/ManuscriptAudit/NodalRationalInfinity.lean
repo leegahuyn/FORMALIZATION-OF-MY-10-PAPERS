@@ -141,6 +141,14 @@ theorem affine_complement_eq_infinity :
     rw [hq]
     exact infinityPoint_outside K
 
+/-- The smooth Y-chart contains an actual K-rational point over the base. -/
+theorem exists_chart_rational_point :
+    ∃ p : Spec (CommRingCat.of K) ⟶ nodeYChart K,
+      p ≫ chartOpen K ≫ projectiveNodeToBase K = 𝟙 _ := by
+  refine ⟨originInChart K, ?_⟩
+  rw [← Category.assoc]
+  exact infinityPoint_overBase K
+
 end
 end ManuscriptAudit.NodalRationalInfinity
 
@@ -150,9 +158,11 @@ run_cmd do
   for name in [``ManuscriptAudit.NodalRationalInfinity.infinityPoint_overBase,
       ``ManuscriptAudit.NodalRationalInfinity.infinityPoint_isClosedImmersion,
       ``ManuscriptAudit.NodalRationalInfinity.infinityPoint_outside,
-      ``ManuscriptAudit.NodalRationalInfinity.affine_complement_eq_infinity] do
+      ``ManuscriptAudit.NodalRationalInfinity.affine_complement_eq_infinity,
+      ``ManuscriptAudit.NodalRationalInfinity.exists_chart_rational_point] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do
       throwError m!"{name} depends on unexpected axioms {unexpected}"
     logInfo m!"{name} uses {dependencies}"
+

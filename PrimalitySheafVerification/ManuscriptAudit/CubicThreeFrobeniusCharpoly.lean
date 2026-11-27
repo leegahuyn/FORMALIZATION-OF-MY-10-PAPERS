@@ -44,6 +44,7 @@ theorem actualFrobenius_arithmetic_trace_det {A : E}
   obtain ⟨a, s, ha, hs, hDet, hTrace⟩ := actualFrobenius_trace_det E L h₂ h₃ hA hq
   refine ⟨?_, hDet⟩
   unfold signedPointTrace
+  simp only [Int.cast_sub, Int.cast_add, Int.cast_natCast, Int.cast_one]
   by_cases hq₁ : Fintype.card E % 3 = 1
   · have hc := squareRoots_card_of_sign h₂ hA ha hs
     have hv : LinearMap.trace (ZMod 3) (ActualTorsion E L A) (actualFrobenius E L A) =

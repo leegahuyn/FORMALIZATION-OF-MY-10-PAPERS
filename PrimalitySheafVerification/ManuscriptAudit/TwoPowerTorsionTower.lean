@@ -31,6 +31,7 @@ theorem transition_surjective
     Function.Surjective (transition G n) := by
   intro Q
   obtain ⟨P, hP⟩ := h (Q : G)
+  change (2 : ℕ) • P = (Q : G) at hP
   have hT : (2 ^ (n + 1) : ℕ) • P = 0 := by
     rw [pow_succ, mul_nsmul', hP]
     exact (mem_iff (2 ^ n) G _).mp Q.property
@@ -72,6 +73,7 @@ theorem card_powerTorsion
   induction n with
   | zero =>
     letI : Unique (PowerTorsion G 0) := ⟨⟨0⟩, fun P => Subtype.ext (by
+      change (P : G) = 0
       simpa only [pow_zero, one_nsmul] using (mem_iff (2 ^ 0) G _).mp P.property)⟩
     rw [Nat.card_unique, pow_zero]
   | succ n ih => rw [transition_card_mul G h n, ih, hfour, pow_succ]
@@ -82,7 +84,7 @@ variable {G} {H : Type*} [AddCommGroup H]
 theorem map_transition (f : G →+ H) (n : ℕ) (P : PowerTorsion G (n + 1)) :
     transition H n (mapAdd (2 ^ (n + 1)) f P) =
       mapAdd (2 ^ n) f (transition G n P) :=
-  Subtype.ext (map_nsmul f (P : G) 2).symm
+  Subtype.ext (map_nsmul f 2 (P : G)).symm
 
 end
 end ManuscriptAudit.TwoPowerTorsionTower

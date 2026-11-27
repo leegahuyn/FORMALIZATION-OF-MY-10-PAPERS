@@ -59,7 +59,9 @@ private theorem double_abscissa_coordinates {u x y : K}
   have hv : W.Nonsingular u v := hu ▸ hh
   refine ⟨v, hv, ?_⟩
   rw [two_nsmul, Affine.Point.add_of_Y_ne hyNeg]
-  simpa only [Affine.Point.some.injEq] using And.intro hu (rfl : v = v)
+  rw [Affine.Point.some.injEq]
+  change W.addX x x ell = u ∧ v = v
+  exact ⟨hu, rfl⟩
 
 variable [IsAlgClosed K]
 
@@ -87,7 +89,7 @@ theorem affine_doubling_surjective (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     · have hNeg : (2 : ℕ) • P = -(Affine.Point.some u v hQ : (Curve A).Point) := by
         rw [hDouble, Affine.Point.neg_some]
         simpa only [Affine.Point.some.injEq, true_and, negY_formula] using hminus
-      exact ⟨-P, by rw [nsmul_neg, hNeg, neg_neg]⟩
+      exact ⟨-P, by rw [smul_neg, hNeg, neg_neg]⟩
 
 /-- Every actual projective point has a preimage under doubling. -/
 theorem projective_doubling_surjective (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
@@ -96,6 +98,7 @@ theorem projective_doubling_surjective (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
   let e := Projective.Point.toAffineAddEquiv (W := (shortCubic (0 : K) A).toProjective)
   intro Q
   obtain ⟨P, hP⟩ := affine_doubling_surjective h₂ h₃ hA (e Q)
+  change (2 : ℕ) • P = e Q at hP
   refine ⟨e.symm P, e.injective ?_⟩
   rw [map_nsmul, e.apply_symm_apply, hP]
 

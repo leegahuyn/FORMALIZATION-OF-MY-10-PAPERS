@@ -14,9 +14,15 @@ noncomputable section
 variable (K : Type) [Field K]
 
 private def squareHom : Additive Kˣ →+ Additive Kˣ where
-  toFun u := 2 • u
-  map_zero' := nsmul_zero 2
-  map_add' := nsmul_add 2
+  toFun u := Additive.ofMul (u.toMul ^ (2 : ℕ))
+  map_zero' := by
+    change Additive.ofMul ((1 : Kˣ) ^ (2 : ℕ)) = 0
+    simp
+  map_add' := by
+    intro u v
+    apply Additive.ext
+    change (u.toMul * v.toMul) ^ (2 : ℕ) = u.toMul ^ (2 : ℕ) * v.toMul ^ (2 : ℕ)
+    exact mul_pow _ _ _
 
 private def negativeUnit : Kˣ := Units.mk0 (-1 : K) (neg_ne_zero.mpr one_ne_zero)
 
@@ -26,8 +32,8 @@ private def kernelLabel (b : Bool) : (squareHom K).ker :=
   | true => ⟨Additive.ofMul (negativeUnit K), by
       apply Additive.ext
       apply Units.ext
-      change (-1 : K) ^ (2 : ℕ) = 1
-      simp⟩
+      change ((negativeUnit K ^ (2 : ℕ) : Kˣ) : K) = 1
+      simp [negativeUnit]⟩
 
 theorem squareRootUnit_card (h₂ : (2 : K) ≠ 0) :
     Nat.card (squareHom K).ker = 2 := by
@@ -49,8 +55,9 @@ theorem squareRootUnit_card (h₂ : (2 : K) ≠ 0) :
     · rfl
   have hsurj : Function.Surjective (kernelLabel K) := by
     intro u
-    have hSq : (u.1.toMul : K) ^ (2 : ℕ) = 1 :=
-      congrArg (fun t : Additive Kˣ => (t.toMul : K)) u.2
+    have hu : squareHom K u.1 = 0 := u.2
+    have hSq : (u.1.toMul : K) ^ (2 : ℕ) = 1 := by
+      simpa [squareHom] using congrArg (fun t : Additive Kˣ => (t.toMul : K)) hu
     have hProd : ((u.1.toMul : K) - 1) * ((u.1.toMul : K) + 1) = 0 := by
       linear_combination hSq
     rcases mul_eq_zero.mp hProd with h | h
@@ -66,9 +73,13 @@ private theorem range_squareHom_eq : (squareHom K).range = powerSubgroup K 2 := 
   rw [AddMonoidHom.mem_range, mem_powerSubgroup]
   constructor
   · rintro ⟨u, h⟩
-    exact ⟨u.toMul, congrArg Additive.toMul h⟩
+    refine ⟨u.toMul, ?_⟩
+    change Additive.ofMul (u.toMul ^ (2 : ℕ)) = x at h
+    exact congrArg Additive.toMul h
   · rintro ⟨u, h⟩
-    exact ⟨Additive.ofMul u, congrArg Additive.ofMul h⟩
+    refine ⟨Additive.ofMul u, ?_⟩
+    change Additive.ofMul (u ^ (2 : ℕ)) = x
+    exact congrArg Additive.ofMul h
 
 theorem squareClass_card [Finite K] (h₂ : (2 : K) ≠ 0) :
     Nat.card (Additive Kˣ ⧸ powerSubgroup K 2) = 2 := by
@@ -86,6 +97,17 @@ theorem squareClass_card [Finite K] (h₂ : (2 : K) ≠ 0) :
   rw [← range_squareHom_eq]
   exact hIndex
 
+theorem exists_nonsquare_unit [Finite K] (h₂ : (2 : K) ≠ 0) :
+    ∃ u : Kˣ, ¬ ∃ v : Kˣ, v ^ (2 : ℕ) = u := by
+  let Q := Additive Kˣ ⧸ powerSubgroup K 2
+  have hQ : Nat.card Q = 2 := squareClass_card K h₂
+  letI : Finite Q := Nat.finite_of_card_ne_zero (by rw [hQ]; decide)
+  letI : Nontrivial Q := Finite.one_lt_card_iff_nontrivial.mp (by rw [hQ]; decide)
+  obtain ⟨c, hc⟩ := exists_ne (0 : Q)
+  obtain ⟨x, rfl⟩ := QuotientAddGroup.mk_surjective c
+  exact ⟨x.toMul, fun hx => hc ((QuotientAddGroup.eq_zero_iff x).mpr
+    ((mem_powerSubgroup 2 x).mpr hx))⟩
+
 end
 end ManuscriptAudit.FiniteFieldSquareClasses
 
@@ -94,7 +116,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.FiniteFieldSquareClasses.squareRootUnit_card,
-      ``ManuscriptAudit.FiniteFieldSquareClasses.squareClass_card] do
+      ``ManuscriptAudit.FiniteFieldSquareClasses.squareClass_card,
+      ``ManuscriptAudit.FiniteFieldSquareClasses.exists_nonsquare_unit] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

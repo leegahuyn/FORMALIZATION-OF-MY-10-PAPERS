@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import PrimalitySheafVerification.ManuscriptAudit.CuspRootCoefficients
 import PrimalitySheafVerification.ManuscriptAudit.FiniteFieldSquareClasses
 
@@ -84,6 +85,20 @@ theorem affineLine_binary_HOne_card [Finite K] (h₂ : (2 : K) ≠ 0) :
   exact (Nat.card_congr (e.trans (squareClassHOneEquiv K (Polynomial K) h₂)).toEquiv).symm.trans
     (FiniteFieldSquareClasses.squareClass_card K h₂)
 
+private def cyclicEquivOfCardTwo (G : Type) [AddGroup G] (h : Nat.card G = 2) :
+    ZMod 2 ≃+ G := by
+  letI : Fact (Nat.Prime 2) := ⟨by decide⟩
+  have hCyc := isAddCyclic_of_prime_card h
+  simpa only [h] using zmodAddCyclicAddEquiv hCyc
+
+def residueBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
+    ZMod 2 ≃+ binaryHOne K :=
+  cyclicEquivOfCardTwo _ (residue_binary_HOne_card K h₂)
+
+def affineLineBinaryHOneEquiv [Finite K] (h₂ : (2 : K) ≠ 0) :
+    ZMod 2 ≃+ binaryHOne (Polynomial K) :=
+  cyclicEquivOfCardTwo _ (affineLine_binary_HOne_card K h₂)
+
 end
 end ManuscriptAudit.ArithmeticKummerSquareClasses
 
@@ -94,7 +109,9 @@ run_cmd do
       ``ManuscriptAudit.ArithmeticKummerSquareClasses.primitiveNegOne,
       ``ManuscriptAudit.ArithmeticKummerSquareClasses.squareClassHOneEquiv,
       ``ManuscriptAudit.ArithmeticKummerSquareClasses.residue_binary_HOne_card,
-      ``ManuscriptAudit.ArithmeticKummerSquareClasses.affineLine_binary_HOne_card] do
+      ``ManuscriptAudit.ArithmeticKummerSquareClasses.affineLine_binary_HOne_card,
+      ``ManuscriptAudit.ArithmeticKummerSquareClasses.residueBinaryHOneEquiv,
+      ``ManuscriptAudit.ArithmeticKummerSquareClasses.affineLineBinaryHOneEquiv] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do
