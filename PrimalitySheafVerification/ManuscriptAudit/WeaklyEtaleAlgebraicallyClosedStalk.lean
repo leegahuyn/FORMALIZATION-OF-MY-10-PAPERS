@@ -26,6 +26,12 @@ private theorem flat_stalkMap_injective {U V : Scheme.{u}} (s : U ⟶ V) [Flat s
       (Flat.stalkMap s y) (s.toLRSHom.prop y)
   exact ‹RingHom.FaithfullyFlat _›.injective
 
+private theorem stalkMap_isIso_of_eq_id {T : Scheme.{u}} (g : T ⟶ T)
+    (h : g = 𝟙 T) (y : T) : IsIso (g.stalkMap y) := by
+  subst g
+  rw [Scheme.Hom.stalkMap_id]
+  infer_instance
+
 variable (K : Type u) [Field K] [IsAlgClosed K]
 variable {X : Scheme.{u}} (f : X ⟶ Spec (CommRingCat.of K)) [WeaklyEtale f]
 
@@ -37,8 +43,8 @@ theorem stalkMap_bijective (x : X) : Function.Bijective (f.stalkMap x).hom := by
   letI : WeaklyEtale (s ≫ f) := by rw [hs]; infer_instance
   letI : WeaklyEtale s := WeaklyEtale.of_comp s f
   letI : IsIso (f.stalkMap (s y) ≫ s.stalkMap y) := by
-    rw [← Scheme.Hom.stalkMap_comp, hs, Scheme.Hom.stalkMap_id]
-    infer_instance
+    rw [← Scheme.Hom.stalkMap_comp]
+    exact stalkMap_isIso_of_eq_id (s ≫ f) hs y
   have hc : Function.Bijective (f.stalkMap (s y) ≫ s.stalkMap y).hom :=
     (asIso (f.stalkMap (s y) ≫ s.stalkMap y)).commRingCatIsoToRingEquiv.bijective
   have hi : Function.Injective (s.stalkMap y).hom := flat_stalkMap_injective s y

@@ -46,7 +46,7 @@ private theorem quadratic_q_tail :
         -(Real.pi / 6) * z.im := by ring
     rw [norm_qParam, UpperHalfPlane.coe_im, pow_two, ← Real.exp_add, hArg, Real.sqrt_eq_rpow]
     exact mul_comm _ _
-  simpa only [Function.comp_apply, hEq] using hDecay
+  exact hDecay.congr (fun z => (hEq z).symm)
 
 private theorem density_eventual_bound :
     ∀ᶠ z : ℍ in atImInfty, realDensity z ≤ 4 := by
@@ -110,7 +110,8 @@ theorem mass_fdo_pos : 0 < mass ModularGroup.fdo := by
   have hSupp : Function.support density ∩ ModularGroup.fdo = ModularGroup.fdo :=
     inter_eq_right.mpr fun z _ => (density_pos z).ne'
   apply (setLIntegral_pos_iff measurable_density).mpr
-  rwa [hSupp]
+  rw [hSupp]
+  exact volume_fdo_pos
 
 def baseline : ℝ := (mass ModularGroup.fdo).toReal
 

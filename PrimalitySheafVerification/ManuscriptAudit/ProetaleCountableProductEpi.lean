@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import PrimalitySheafVerification.ManuscriptAudit.AbelianCountableProductShortExact
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleCountableAffineRefinement
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleFiniteQuasiCompactCover
 
@@ -9,6 +10,7 @@ import PrimalitySheafVerification.ManuscriptAudit.ProetaleFiniteQuasiCompactCove
 namespace ManuscriptAudit.ProetaleCountableProductEpi
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
+open AbelianCountableProductShortExact (mapProduct mapProduct_π)
 
 noncomputable section
 
@@ -59,14 +61,14 @@ private theorem coordinates_restrict (F : ℕ → C X) {W T : X.ProEt} (f : W �
 
 private theorem coordinates_map {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n) (W : X.ProEt)
     (z : (∏ᶜ I : C X).obj.obj (op W)) (n : ℕ) :
-    coordinates Q W ((Pi.map q).hom.app (op W) z) n =
+    coordinates Q W ((mapProduct q).hom.app (op W) z) n =
       (q n).hom.app (op W) (coordinates I W z n) := by
   rw [coordinates_apply, coordinates_apply]
-  exact congrArg (fun f : (∏ᶜ I : C X) ⟶ Q n => f.hom.app (op W) z) (Pi.map_π q n)
+  exact congrArg (fun f : (∏ᶜ I : C X) ⟶ Q n => f.hom.app (op W) z) (mapProduct_π q n)
 
 theorem product_locallySurjective {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n)
     (h : ∀ n, Sheaf.IsLocallySurjective (q n)) :
-    Sheaf.IsLocallySurjective (Pi.map q) := by
+    Sheaf.IsLocallySurjective (mapProduct q) := by
   constructor
   intro T x
   apply ProetaleFiniteQuasiCompactCover.of_affine_pullbacks
@@ -77,7 +79,7 @@ theorem product_locallySurjective {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n)
     I Q q h (coordinates Q V x')
   choose y hy using hl
   let z := (coordinates I W).symm y
-  have hz : (Pi.map q).hom.app (op W) z = (∏ᶜ Q : C X).obj.map f.op x' := by
+  have hz : (mapProduct q).hom.app (op W) z = (∏ᶜ Q : C X).obj.map f.op x' := by
     apply (coordinates Q W).injective
     funext n
     rw [coordinates_map, coordinates_restrict]
@@ -90,7 +92,7 @@ theorem product_locallySurjective {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n)
   exact ⟨z, hz⟩
 
 theorem product_epi {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n) (h : ∀ n, Epi (q n)) :
-    Epi (Pi.map q) := by
+    Epi (mapProduct q) := by
   have h' (n : ℕ) : Sheaf.IsLocallySurjective (q n) :=
     (Sheaf.isLocallySurjective_iff_epi' A (q n)).mpr (h n)
   letI := product_locallySurjective q h'

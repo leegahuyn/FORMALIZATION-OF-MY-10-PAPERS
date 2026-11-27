@@ -62,7 +62,9 @@ theorem weightTwoTranslate_periodic {H : Subgroup SL(2, ℤ)} {f : ℍ → ℂ}
   have hShift (z : ℍ) : weightTwoTranslate f g (ModularGroup.T ^ (w : ℤ) • z) =
       weightTwoTranslate f g z := by
     have hD : denominator (ModularGroup.T ^ (w : ℤ)) z = 1 := by
-      simp [denominator, ModularGroup.coe_T_zpow]
+      unfold denominator
+      rw [ModularGroup.coe_T_zpow]
+      norm_num
     have h := congrFun hSlash z
     rw [SL_slash_apply, ← denominator_eq, hD, one_zpow, mul_one] at h
     exact h
@@ -83,7 +85,7 @@ theorem norm_weightTwoTranslate (f : ℍ → ℂ) (g : SL(2, ℤ)) (z : ℍ) :
   have hD : ‖denominator g z‖ ≠ 0 := norm_ne_zero_iff.mpr (denominator_ne_zero g z)
   have hEta : ‖ModularForm.eta z‖ ≠ 0 := norm_ne_zero_iff.mpr (ModularForm.eta_ne_zero z.im_pos)
   rw [weightTwoTranslate, SL_slash_apply, ← denominator_eq]
-  simp only [weightTwoProduct, etaRatio, norm_mul, norm_pow, norm_div, norm_zpow,
+  simp only [weightTwoProduct, etaRatio, norm_mul, norm_pow, norm_div, norm_inv,
     zpow_neg, zpow_ofNat, div_pow]
   rw [eta_norm_square_transform]
   field_simp [hD, hEta] <;> ring
@@ -100,7 +102,7 @@ theorem etaRatio_pow_twentyFour_invariant {H : Subgroup SL(2, ℤ)} {f : ℍ →
   calc
     _ = (etaRatio f (g • z) ^ 2) ^ 12 := by rw [← pow_mul]
     _ = (etaRatio f z ^ 2) ^ 12 := by
-      rw [hRatio, mul_pow, ← pow_mul, ← inv_pow]
+      rw [hRatio, mul_pow, ← pow_mul, inv_pow]
       change (squaredMultiplier g ^ 24)⁻¹ * (etaRatio f z ^ 2) ^ 12 = _
       have h : squaredMultiplier g ^ 24 = 1 := by
         calc

@@ -12,13 +12,13 @@ def squareIndex (k : ℤ) : ℕ := (6 * k - 1).natAbs
 
 private theorem cast_natAbs_square (k : ℤ) : (k.natAbs : ℤ) ^ 2 = k ^ 2 := by
   apply Int.natAbs_eq_iff_sq_eq.mp
-  simp
+  rfl
 
 theorem squareIndex_sq (k : ℤ) : squareIndex k ^ 2 = 24 * pentagonal k + 1 := by
-  apply Int.ofNat.inj
-  push_cast
-  rw [squareIndex, cast_natAbs_square]
-  nlinarith only [two_mul_natCast_pentagonal k]
+  have h : (squareIndex k : ℤ) ^ 2 = 24 * (pentagonal k : ℤ) + 1 := by
+    rw [squareIndex, cast_natAbs_square]
+    nlinarith only [two_mul_natCast_pentagonal k]
+  exact_mod_cast h
 
 private theorem cast_squareIndex_cases (k : ℤ) :
     (squareIndex k : ℤ) = 6 * k - 1 ∨ (squareIndex k : ℤ) = -(6 * k - 1) := by
@@ -26,7 +26,8 @@ private theorem cast_squareIndex_cases (k : ℤ) :
   · exact Or.inl (Int.natAbs_of_nonneg h)
   · right
     calc
-      (squareIndex k : ℤ) = ((-(6 * k - 1)).natAbs : ℤ) := by simp [squareIndex]
+      (squareIndex k : ℤ) = ((-(6 * k - 1)).natAbs : ℤ) :=
+        congrArg (fun n : ℕ => (n : ℤ)) (Int.natAbs_neg (6 * k - 1)).symm
       _ = _ := Int.natAbs_of_nonneg (by omega)
 
 theorem squareIndex_mod_six (k : ℤ) : squareIndex k % 6 = 1 ∨ squareIndex k % 6 = 5 := by

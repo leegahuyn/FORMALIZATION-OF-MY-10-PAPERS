@@ -62,6 +62,20 @@ include a in
 theorem totallySeparated : TotallySeparatedSpace (PrimeSpectrum R) :=
   totallySeparatedSpace_of_t0_of_basis_clopen (clopen_basis K a)
 
+/-- Every actual affine weakly étale scheme over the algebraically closed
+field has the same Stone point topology as its coordinate spectrum. -/
+theorem totallySeparated_affine {T : Scheme.{u}} [IsAffine T]
+    (f : T ⟶ Spec (CommRingCat.of K)) [WeaklyEtale f] : TotallySeparatedSpace T := by
+  let e := T.isoSpec
+  let g := e.inv ≫ f
+  letI : WeaklyEtale g := inferInstanceAs (WeaklyEtale (e.inv ≫ f))
+  have ht := totallySeparated K g
+  apply totallySeparatedSpace_iff_exists_isClopen.mpr
+  intro x y h
+  obtain ⟨V, hV, hx, hy⟩ := totallySeparatedSpace_iff_exists_isClopen.mp ht
+    (e.hom.homeomorph.injective.ne h)
+  exact ⟨e.hom ⁻¹' V, hV.preimage e.hom.continuous, hx, hy⟩
+
 end
 end ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone
 
@@ -70,7 +84,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.isClopen_basicOpen,
       ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.clopen_basis,
-      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated] do
+      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated,
+      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

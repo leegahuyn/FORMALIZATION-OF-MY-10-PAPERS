@@ -46,7 +46,9 @@ theorem unit_circle_coefficient {R : ℝ} (hR : 0 < R) (hR₁ : R < 1) (m : ℕ)
     hSphere).hasProdUniformlyOn_of_isCompact (isCompact_sphere (0 : ℂ) R)
   have hUniform : TendstoUniformlyOn (fun n : ℕ => (partialPolynomial n).eval)
       etaUnit atTop (sphere (0 : ℂ) R) := by
-    simpa only [partialPolynomial_eval, etaUnit] using hP.tendstoUniformlyOn_finsetRange
+    change TendstoUniformlyOn (fun n : ℕ => (partialPolynomial n).eval)
+      (fun x : ℂ => ∏' j : ℕ, (1 - x ^ (j + 1))) atTop (sphere (0 : ℂ) R)
+    simpa only [partialPolynomial_eval] using hP.tendstoUniformlyOn_finsetRange
   have hC (n : ℕ) : ContinuousOn (partialPolynomial n).eval (sphere (0 : ℂ) R) :=
     fun _ _ => (partialPolynomial n).differentiableAt.continuousAt.continuousWithinAt
   have hT := coefficient_tendsto_uniformly hR m hC hUniform
@@ -66,6 +68,7 @@ private theorem cauchy_apply_eq_coefficient (f : ℂ → ℂ) {R : ℝ} (hR : 0 
     have hzpow : (z⁻¹ : ℂ) ^ m * z⁻¹ = z ^ (-(m : ℤ) - 1) := by
       rw [← pow_succ, ← zpow_natCast, inv_zpow, ← zpow_neg, Int.natCast_succ]
       congr 1 <;> ring
+    change (q / z) ^ m * (z⁻¹ * f z) = q ^ m * (z ^ (-(m : ℤ) - 1) * f z)
     rw [div_eq_mul_inv, mul_pow]
     calc
       q ^ m * (z⁻¹ ^ m) * (z⁻¹ * f z) = q ^ m * (((z⁻¹) ^ m * z⁻¹) * f z) := by ring
@@ -74,6 +77,8 @@ private theorem cauchy_apply_eq_coefficient (f : ℂ → ℂ) {R : ℝ} (hR : 0 
   simp only [sub_zero, smul_eq_mul]
   rw [circleIntegral.integral_congr hR.le hEq, circleIntegral.integral_const_mul]
   unfold coefficient
+  change _ = ((2 * (Real.pi : ℂ) * Complex.I)⁻¹ *
+    ∮ z in C(0, R), z ^ (-(m : ℤ) - 1) * f z) * q ^ m
   ring
 
 /-- The signed pentagonal coefficient series converges to the actual analytic Euler product. -/

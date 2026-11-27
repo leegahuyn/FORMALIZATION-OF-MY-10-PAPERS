@@ -47,9 +47,10 @@ private theorem section_eq_off_chart {Z : Scheme.{0}} {V : X.ProEt} (i : Z ⟶ X
 private theorem arrow_disjoint {V W : X.ProEt} (a : W ⟶ V) {Z : Scheme.{0}} {i : Z ⟶ X}
     (h : Disjoint (Set.range V.hom) (Set.range i)) :
     Disjoint (Set.range W.hom) (Set.range i) := by
-  refine disjoint_of_subset_left ?_ h
-  rintro _ ⟨x, rfl⟩
-  exact ⟨a.left x, congrArg (fun f : W.left ⟶ X ↦ f x) a.w⟩
+  apply Set.disjoint_left.mpr
+  rintro _ ⟨x, rfl⟩ hx
+  exact Set.disjoint_left.mp h
+    ⟨a.left x, congrArg (fun f : W.left ⟶ X ↦ f x) a.w⟩ hx
 
 private theorem lift_first {V : X.ProEt}
     (s : (G i₀ i₁ ℓ).obj.obj (op V)) (h : Disjoint (Set.range V.hom) (Set.range i₁)) :
@@ -130,9 +131,10 @@ def sequence : ShortComplex (Sheaf (J (X := X)) A) :=
 
 theorem sequence_shortExact (hDisjoint : Disjoint (Set.range i₀) (Set.range i₁)) :
     (sequence i₀ i₁ ℓ).ShortExact := by
+  letI := pairRestriction_epi i₀ i₁ ℓ hDisjoint
   exact ShortComplex.ShortExact.mk'
     (ShortComplex.exact_of_f_is_kernel (sequence i₀ i₁ ℓ) (kernelIsKernel (d i₀ i₁ ℓ)))
-    (inferInstanceAs (Mono (inclusion i₀ i₁ ℓ))) (pairRestriction_epi i₀ i₁ ℓ hDisjoint)
+    inferInstance inferInstance
 
 end
 end ManuscriptAudit.ProetaleAdicClosedPairEpi

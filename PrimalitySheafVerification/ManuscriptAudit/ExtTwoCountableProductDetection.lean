@@ -30,7 +30,7 @@ private def projectionMap (F : ℕ → C) (B : C) :
 /-- Exact countable products give joint detection in degree two by one dimension shift. -/
 theorem projections_jointly_injective [EnoughInjectives C]
     (hProducts : ∀ (F G : ℕ → C) (f : ∀ n, F n ⟶ G n),
-      (∀ n, Epi (f n)) → Epi (Pi.map f))
+      (∀ n, Epi (f n)) → Epi (mapProduct f))
     (F : ℕ → C) (B : C) :
     Function.Injective (fun x : Ext B (∏ᶜ F) 2 =>
       fun n => x.comp (Ext.mk₀ (Pi.π F n)) (add_zero 2)) := by

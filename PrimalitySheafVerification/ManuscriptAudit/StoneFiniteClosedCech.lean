@@ -94,7 +94,9 @@ private theorem solve_finset (T : Finset I) :
     have hW (i : I) : IsClosed (W i) := (closed i).inter (closed k)
     have hU : IsClosed U := isClosed_finset_union T W (fun i _ ↦ hW i)
     have hidx (x : U) : ∃ i ∈ T, x.val ∈ W i := by
-      simpa only [U, Set.mem_iUnion] using x.property
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp x.property
+      obtain ⟨hiT, hx⟩ := Set.mem_iUnion.mp hi
+      exact ⟨i, hiT, hx⟩
     choose idx idxT idxW using hidx
     let p : U → D := fun x ↦ b (idx x) x + c (idx x) k x
     have hEq (i : I) (hi : i ∈ T) (x : U) (hx : x.val ∈ W i) :
@@ -119,8 +121,9 @@ private theorem solve_finset (T : Finset I) :
         exact (hW i).preimage continuous_subtype_val
       · intro i hi
         have hf : Continuous (fun x : U ↦ b i x.val + c i k x.val) :=
-          ((b i).continuous.comp continuous_subtype_val).add
-            ((c i k).continuous.comp continuous_subtype_val)
+          (continuous_of_discreteTopology : Continuous (fun q : D × D ↦ q.1 + q.2)).comp
+            (((b i).continuous.comp continuous_subtype_val).prodMk
+              ((c i k).continuous.comp continuous_subtype_val))
         exact hf.continuousOn.congr (fun x hx ↦ hEq i hi x hx)
     obtain ⟨g, hg⟩ := StoneFiniteSectionExtension.exists_extension U hU ⟨p, hp⟩
     have hG (i : I) (hi : i ∈ T) (x : X) (hx : x ∈ W i) :
@@ -130,20 +133,23 @@ private theorem solve_finset (T : Finset I) :
     let b' : I → C(X, D) := fun i ↦ if i = k then g else b i
     refine ⟨b', ?_⟩
     intro i hi j hj x hxi hxj
-    rcases Finset.mem_insert.mp hi with rfl | hi
-    · rcases Finset.mem_insert.mp hj with rfl | hj
-      · rw [sub_self, diagonal_zero Z c cocycle k hxi]
-      · have hj' : j ≠ k := fun h ↦ hk (h ▸ hj)
+    rcases Finset.mem_insert.mp hi with hik | hiT
+    · subst i
+      rcases Finset.mem_insert.mp hj with hjk | hjT
+      · subst j
+        rw [sub_self, diagonal_zero Z c cocycle k hxi]
+      · have hj' : j ≠ k := fun h ↦ hk (h ▸ hjT)
         simp only [b', if_pos rfl, if_neg hj']
-        rw [← reverse_sign Z c cocycle j k hxj hxi, hG j hj x ⟨hxj, hxi⟩]
+        rw [← reverse_sign Z c cocycle j k hxj hxi, hG j hjT x ⟨hxj, hxi⟩]
         abel
-    · have hi' : i ≠ k := fun h ↦ hk (h ▸ hi)
-      rcases Finset.mem_insert.mp hj with rfl | hj
-      · simp only [b', if_pos rfl, if_neg hi']
-        rw [hG i hi x ⟨hxi, hxj⟩]
+    · have hi' : i ≠ k := fun h ↦ hk (h ▸ hiT)
+      rcases Finset.mem_insert.mp hj with hjk | hjT
+      · subst j
+        simp only [b', if_pos rfl, if_neg hi']
+        rw [hG i hiT x ⟨hxi, hxj⟩]
         abel
-      · have hj' : j ≠ k := fun h ↦ hk (h ▸ hj)
-        simpa only [b', if_neg hi', if_neg hj'] using hb i hi j hj x hxi hxj
+      · have hj' : j ≠ k := fun h ↦ hk (h ▸ hjT)
+        simpa only [b', if_neg hi', if_neg hj'] using hb i hiT j hjT x hxi hxj
 
 include closed cocycle in
 /-- The cocycle is a literal difference of sections on all pairwise closed intersections. -/

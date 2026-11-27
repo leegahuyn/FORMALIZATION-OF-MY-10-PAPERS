@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Tactic.FinCases
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaCosetMass
 
@@ -80,7 +81,16 @@ theorem open_cells_meet_ae_orbit (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] :
     ∀ᵐ z : ℍ ∂(volume : Measure ℍ),
       ∃ h : H, ∃ w ∈ cosetCells H ModularGroup.fdo, (h : SL(2, ℤ)) • w = z := by
   letI : Countable SL(2, ℤ) := Function.Injective.countable
-    (f := fun g : SL(2, ℤ) => (g.1 : Matrix (Fin 2) (Fin 2) ℤ)) Subtype.val_injective
+    (f := fun g : SL(2, ℤ) => ((g 0 0, g 0 1), (g 1 0, g 1 1))) (by
+      intro A B h
+      apply Subtype.ext
+      apply Matrix.ext
+      intro i j
+      fin_cases i <;> fin_cases j
+      · exact congrArg (fun p : (ℤ × ℤ) × (ℤ × ℤ) => p.1.1) h
+      · exact congrArg (fun p : (ℤ × ℤ) × (ℤ × ℤ) => p.1.2) h
+      · exact congrArg (fun p : (ℤ × ℤ) × (ℤ × ℤ) => p.2.1) h
+      · exact congrArg (fun p : (ℤ × ℤ) × (ℤ × ℤ) => p.2.2) h)
   letI : Countable H := Function.Injective.countable
     (f := fun h : H => (h : SL(2, ℤ))) Subtype.val_injective
   let B := ⋃ h : H, translate (h : SL(2, ℤ))

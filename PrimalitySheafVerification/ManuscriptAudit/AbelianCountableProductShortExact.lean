@@ -16,6 +16,16 @@ noncomputable section
 variable {C : Type u} [Category.{v} C] [Abelian C]
 variable [HasLimitsOfShape (Discrete ℕ) C]
 
+def mapProduct {F G : ℕ → C} (f : ∀ n, F n ⟶ G n) :
+    (∏ᶜ F) ⟶ ∏ᶜ G :=
+  Pi.lift (fun n => Pi.π F n ≫ f n)
+
+@[reassoc]
+theorem mapProduct_π {F G : ℕ → C} (f : ∀ n, F n ⟶ G n) (n : ℕ) :
+    mapProduct f ≫ Pi.π G n = Pi.π F n ≫ f n := by
+  unfold mapProduct
+  rw [Pi.lift_π]
+
 variable (S : ℕ → ShortComplex C)
 
 abbrev leftTerms (n : ℕ) := (S n).X₁
@@ -23,10 +33,10 @@ abbrev middleTerms (n : ℕ) := (S n).X₂
 abbrev rightTerms (n : ℕ) := (S n).X₃
 
 def product : ShortComplex C :=
-  ShortComplex.mk (Pi.map (fun n => (S n).f)) (Pi.map (fun n => (S n).g)) (by
+  ShortComplex.mk (mapProduct (fun n => (S n).f)) (mapProduct (fun n => (S n).g)) (by
     apply Pi.hom_ext
     intro n
-    rw [Category.assoc, Pi.map_π, ← Category.assoc, Pi.map_π, Category.assoc,
+    rw [Category.assoc, mapProduct_π, ← Category.assoc, mapProduct_π, Category.assoc,
       (S n).zero, comp_zero, zero_comp])
 
 def projection (n : ℕ) : product S ⟶ S n where
@@ -35,12 +45,12 @@ def projection (n : ℕ) : product S ⟶ S n where
   τ₃ := Pi.π (rightTerms S) n
   comm₁₂ := by
     change Pi.π (leftTerms S) n ≫ (S n).f =
-      Pi.map (fun i => (S i).f) ≫ Pi.π (middleTerms S) n
-    exact (Pi.map_π _ _).symm
+      mapProduct (fun i => (S i).f) ≫ Pi.π (middleTerms S) n
+    exact (mapProduct_π _ _).symm
   comm₂₃ := by
     change Pi.π (middleTerms S) n ≫ (S n).g =
-      Pi.map (fun i => (S i).g) ≫ Pi.π (rightTerms S) n
-    exact (Pi.map_π _ _).symm
+      mapProduct (fun i => (S i).g) ≫ Pi.π (rightTerms S) n
+    exact (mapProduct_π _ _).symm
 
 theorem product_mono (h : ∀ n, (S n).ShortExact) : Mono (product S).f := by
   constructor
@@ -50,9 +60,9 @@ theorem product_mono (h : ∀ n, (S n).ShortExact) : Mono (product S).f := by
   letI : Mono (S n).f := (h n).mono_f
   apply (cancel_mono ((S n).f)).mp
   have ht := congrArg (fun t => t ≫ Pi.π (middleTerms S) n) hab
-  change (a ≫ Pi.map (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n =
-    (b ≫ Pi.map (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n at ht
-  simpa only [Category.assoc, Pi.map_π] using ht
+  change (a ≫ mapProduct (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n =
+    (b ≫ mapProduct (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n at ht
+  simpa only [Category.assoc, mapProduct_π] using ht
 
 theorem product_shortExact (h : ∀ n, (S n).ShortExact) (hEpi : Epi (product S).g) :
     (product S).ShortExact := by
@@ -61,17 +71,17 @@ theorem product_shortExact (h : ∀ n, (S n).ShortExact) (hEpi : Epi (product S)
     refine KernelFork.IsLimit.ofι' _ _ (fun {W} a ha => ?_)
     have hComp (n : ℕ) : (a ≫ Pi.π (middleTerms S) n) ≫ (S n).g = 0 := by
       have he := congrArg (fun t => t ≫ Pi.π (rightTerms S) n) ha
-      change (a ≫ Pi.map (fun i => (S i).g)) ≫ Pi.π (rightTerms S) n = _ at he
-      simpa only [Category.assoc, Pi.map_π, zero_comp] using he
+      change (a ≫ mapProduct (fun i => (S i).g)) ≫ Pi.π (rightTerms S) n = _ at he
+      simpa only [Category.assoc, mapProduct_π, zero_comp] using he
     let l (n : ℕ) := (h n).fIsKernel.lift (KernelFork.ofι _ (hComp n))
     have hl (n : ℕ) : l n ≫ (S n).f = a ≫ Pi.π (middleTerms S) n :=
       (h n).fIsKernel.fac (KernelFork.ofι _ (hComp n)) WalkingParallelPair.zero
     refine ⟨Pi.lift l, ?_⟩
     apply Pi.hom_ext
     intro n
-    change (Pi.lift l ≫ Pi.map (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n =
+    change (Pi.lift l ≫ mapProduct (fun i => (S i).f)) ≫ Pi.π (middleTerms S) n =
       a ≫ Pi.π (middleTerms S) n
-    rw [Category.assoc, Pi.map_π, ← Category.assoc, Pi.lift_π, hl]
+    rw [Category.assoc, mapProduct_π, ← Category.assoc, Pi.lift_π, hl]
   exact ShortComplex.ShortExact.mk' ((product S).exact_of_f_is_kernel hK)
     (product_mono S h) hEpi
 

@@ -22,16 +22,16 @@ private abbrev P (X : Scheme.{0}) := Sheaf (Scheme.ProEt.topology X) A
 
 variable (X : Scheme.{0})
 
-private abbrev raisedEtale : X.Etale ≌ AsSmall.{1} X.Etale := AsSmall.equiv
-private abbrev etaleTopology := (raisedEtale X).inverse.inducedTopology X.smallEtaleTopology
+abbrev raisedEtale : X.Etale ≌ AsSmall.{1} X.Etale := AsSmall.equiv
+abbrev etaleTopology := (raisedEtale X).inverse.inducedTopology X.smallEtaleTopology
 
-private def etaleSheafEquiv : E X ≌ Sheaf (etaleTopology X) A :=
+def etaleSheafEquiv : E X ≌ Sheaf (etaleTopology X) A :=
   (raisedEtale X).sheafCongr X.smallEtaleTopology (etaleTopology X) A
 
 private abbrev etaleYoneda (W : X.Etale) :=
   yoneda.obj ((raisedEtale X).functor.obj W)
 
-private abbrev highEtaleFree (W : X.Etale) :=
+abbrev highEtaleFree (W : X.Etale) :=
   (presheafToSheaf (etaleTopology X) A).obj (etaleYoneda X W ⋙ AddCommGrpCat.free)
 
 abbrev etaleFree (W : X.Etale) : E X :=
@@ -128,6 +128,51 @@ def inverseImageFreeIso (W : X.Etale) :
     rw [← q]
     exact (e (targetFree X W)).apply_symm_apply (𝟙 _)
 
+/-- The actual sheafified Yoneda arrow in the raised étale universe. -/
+def etaleFreeMap {U V : X.Etale} (f : U ⟶ V) : etaleFree X U ⟶ etaleFree X V :=
+  (etaleSheafEquiv X).inverse.map
+    ((presheafToSheaf (etaleTopology X) A).map
+      (whiskerRight (yoneda.map ((raisedEtale X).functor.map f)) AddCommGrpCat.free))
+
+theorem etaleSections_freeMap {U V : X.Etale} (f : U ⟶ V) {F : E X}
+    (g : etaleFree X V ⟶ F) :
+    etaleSections X U F (etaleFreeMap X f ≫ g) =
+      F.obj.map f.op (etaleSections X V F g) := by
+  let e := etaleSheafEquiv X
+  let a := e.symm.toAdjunction
+  let b := etaleFreeAdj X
+  let y := yoneda.map ((raisedEtale X).functor.map f)
+  let H := (Functor.whiskeringRight (AsSmall.{1} X.Etale)ᵒᵖ _ _).obj AddCommGrpCat.free ⋙
+    presheafToSheaf (etaleTopology X) A
+  change yonedaEquiv ((b.homEquiv (etaleYoneda X U) (e.functor.obj F))
+      ((a.homEquiv (highEtaleFree X U) F) (e.inverse.map (H.map y) ≫ g))) =
+    F.obj.map f.op (yonedaEquiv ((b.homEquiv (etaleYoneda X V) (e.functor.obj F))
+      ((a.homEquiv (highEtaleFree X V) F) g)))
+  rw [a.homEquiv_naturality_left, b.homEquiv_naturality_left, ← yonedaEquiv_naturality] <;> rfl
+
+/-- The actual sheafified Yoneda arrow in the raised pro-étale universe. -/
+def proFreeMap {U V : X.ProEt} (f : U ⟶ V) : nativeFree U ⟶ nativeFree V :=
+  (proEquiv X).inverse.map
+    ((presheafToSheaf (proTopology X) A).map
+      (whiskerRight (yoneda.map ((ProetaleMayerVietorisSite.siteEquivalence X).functor.map f))
+        AddCommGrpCat.free))
+
+theorem proSections_freeMap {U V : X.ProEt} (f : U ⟶ V) {F : P X}
+    (g : nativeFree V ⟶ F) :
+    proSections X U F (proFreeMap X f ≫ g) =
+      F.obj.map f.op (proSections X V F g) := by
+  let e := proEquiv X
+  let a := e.symm.toAdjunction
+  let b := proFreeAdj X
+  let y := yoneda.map ((ProetaleMayerVietorisSite.siteEquivalence X).functor.map f)
+  let H := (Functor.whiskeringRight (AsSmall.{1} X.ProEt)ᵒᵖ _ _).obj AddCommGrpCat.free ⋙
+    presheafToSheaf (proTopology X) A
+  change yonedaEquiv ((b.homEquiv (proYoneda X U) (e.functor.obj F))
+      ((a.homEquiv (highProFree X U) F) (e.inverse.map (H.map y) ≫ g))) =
+    F.obj.map f.op (yonedaEquiv ((b.homEquiv (proYoneda X V) (e.functor.obj F))
+      ((a.homEquiv (highProFree X V) F) g)))
+  rw [a.homEquiv_naturality_left, b.homEquiv_naturality_left, ← yonedaEquiv_naturality] <;> rfl
+
 end
 end ManuscriptAudit.EtaleProetaleFreeRepresentable
 
@@ -137,7 +182,9 @@ run_cmd do
   for name in [``ManuscriptAudit.EtaleProetaleFreeRepresentable.etaleSections_natural,
       ``ManuscriptAudit.EtaleProetaleFreeRepresentable.proSections_natural,
       ``ManuscriptAudit.EtaleProetaleFreeRepresentable.sectionComparison_natural,
-      ``ManuscriptAudit.EtaleProetaleFreeRepresentable.inverseImageFreeIso] do
+      ``ManuscriptAudit.EtaleProetaleFreeRepresentable.inverseImageFreeIso,
+      ``ManuscriptAudit.EtaleProetaleFreeRepresentable.etaleSections_freeMap,
+      ``ManuscriptAudit.EtaleProetaleFreeRepresentable.proSections_freeMap] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

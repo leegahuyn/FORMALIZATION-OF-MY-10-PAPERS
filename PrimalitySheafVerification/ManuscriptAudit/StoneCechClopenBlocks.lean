@@ -55,7 +55,9 @@ theorem exists_blocks :
   obtain ⟨T, hT⟩ := isCompact_univ.elim_finite_subcover V
     (fun i ↦ (hV i).isOpen) (fun y _ ↦ Set.mem_iUnion.mpr ⟨y,hmem y⟩)
   refine ⟨T, V, hV, fun y ↦ ?_, hZero⟩
-  simpa only [Set.mem_iUnion] using hT (Set.mem_univ y)
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hT (Set.mem_univ y))
+  obtain ⟨hiT, hy⟩ := Set.mem_iUnion.mp hi
+  exact ⟨i, hiT, hy⟩
 
 end
 end ManuscriptAudit.StoneCechClopenBlocks

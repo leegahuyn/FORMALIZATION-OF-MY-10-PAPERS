@@ -37,9 +37,6 @@ private abbrev l := overlapOpen K
 private abbrev F := functions ℤ_[ℓ] (X K)
 private abbrev O := Sheaf.H ((restriction (l K) A).obj (F K ℓ)) 1
 
-local instance : Module ℤ_[ℓ] ((X K).EllAdicCohomology ℓ 2) := adicModule (X K) ℓ 2
-local instance : Module ℤ_[ℓ] ((laurent K).EllAdicCohomology ℓ 1) := adicModule (laurent K) ℓ 1
-
 private def toLaurent : O K ℓ ≃+ (laurent K).EllAdicCohomology ℓ 1 :=
   (restrictEquiv K ℓ (l K)).trans
     (SchemeIsoProetaleCohomology.adicCohomologyEquiv (overlapIsoLaurent K) ℓ 1)
@@ -47,7 +44,7 @@ private def toLaurent : O K ℓ ≃+ (laurent K).EllAdicCohomology ℓ 1 :=
 private abbrev scaleOverlap (r : ℤ_[ℓ]) : O K ℓ →+ O K ℓ :=
   Sheaf.H.map ((restriction (l K) A).map (scalarMap (X K) ℓ r)) 1
 
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 600000 in
 private theorem toLaurent_scale (r : ℤ_[ℓ]) (x : O K ℓ) :
     toLaurent K ℓ (scaleOverlap K ℓ r x) =
       Sheaf.H.map (scalarMap (laurent K) ℓ r) 1 (toLaurent K ℓ x) := by
@@ -64,27 +61,43 @@ private theorem toLaurent_label (a : ℤ_[ℓ]) :
     toLaurent K ℓ ((overlapEquiv K ℓ).symm a) = (adicEquiv K ℓ).symm a :=
   (toLaurent K ℓ).apply_symm_apply ((adicEquiv K ℓ).symm a)
 
-private theorem overlap_label_smul (r a : ℤ_[ℓ]) :
-    (overlapEquiv K ℓ).symm (r • a) =
+set_option maxHeartbeats 600000 in
+private theorem overlap_label_mul (r a : ℤ_[ℓ]) :
+    (overlapEquiv K ℓ).symm (r * a) =
       scaleOverlap K ℓ r ((overlapEquiv K ℓ).symm a) := by
-  apply (toLaurent K ℓ).injective
-  rw [toLaurent_label, toLaurent_scale, toLaurent_label]
-  exact ProetaleLaurentNativeAdicLinear.coordinate_smul K ℓ r a
+  let x := (overlapEquiv K ℓ).symm a
+  let T := toLaurent K ℓ
+  let σ := Sheaf.H.map (scalarMap (laurent K) ℓ r) 1
+  apply T.injective
+  calc
+    T ((overlapEquiv K ℓ).symm (r * a)) = (adicEquiv K ℓ).symm (r * a) :=
+      toLaurent_label K ℓ (r * a)
+    _ = σ ((adicEquiv K ℓ).symm a) :=
+      ProetaleLaurentNativeAdicLinear.coordinate_smul K ℓ r a
+    _ = σ (T x) := congrArg σ (toLaurent_label K ℓ a).symm
+    _ = T (scaleOverlap K ℓ r x) := (toLaurent_scale K ℓ r x).symm
 
-set_option maxHeartbeats 2400000 in
+set_option maxHeartbeats 700000 in
+theorem adicInclusion_map_mul (r a : ℤ_[ℓ]) :
+    adicInclusion K ℓ (r * a) =
+      Sheaf.H.map (scalarMap (X K) ℓ r) 2 (adicInclusion K ℓ a) := by
+  let D := connecting (affineOpen K) (lineOpen K) (l K) (fstLeg K) (sndLeg K)
+    (overlap K) (cover K) (F K ℓ) 1
+  let x := (overlapEquiv K ℓ).symm a
+  change D ((overlapEquiv K ℓ).symm (r * a)) =
+    Sheaf.H.map (scalarMap (X K) ℓ r) 2 (D x)
+  calc
+    _ = D (scaleOverlap K ℓ r x) := congrArg D (overlap_label_mul K ℓ r a)
+    _ = _ := ProetaleMayerVietorisNaturality.connecting_naturality (affineOpen K) (lineOpen K) (l K)
+      (fstLeg K) (sndLeg K) (overlap K) (cover K) (scalarMap (X K) ℓ r) 1 x
+
+local instance : Module ℤ_[ℓ] ((X K).EllAdicCohomology ℓ 2) := adicModule (X K) ℓ 2
+
 /-- The native Laurent boundary is an adic-linear inclusion
 into the actual proper-cusp degree-two cohomology group. -/
 def adicLinearInclusion : ℤ_[ℓ] →ₗ[ℤ_[ℓ]] ((X K).EllAdicCohomology ℓ 2) where
   toAddHom := adicInclusion K ℓ
-  map_smul' r a := by
-    let D := connecting (affineOpen K) (lineOpen K) (l K) (fstLeg K) (sndLeg K)
-      (overlap K) (cover K) (F K ℓ) 1
-    let x := (overlapEquiv K ℓ).symm a
-    change D ((overlapEquiv K ℓ).symm (r • a)) =
-      Sheaf.H.map (scalarMap (X K) ℓ r) 2 (D x)
-    rw [overlap_label_smul]
-    exact ProetaleMayerVietorisNaturality.connecting_naturality (affineOpen K) (lineOpen K) (l K)
-      (fstLeg K) (sndLeg K) (overlap K) (cover K) (scalarMap (X K) ℓ r) 1 x
+  map_smul' := adicInclusion_map_mul K ℓ
 
 theorem adicLinearInclusion_injective : Function.Injective (adicLinearInclusion K ℓ) :=
   CuspNativeAdicHTwoLower.adicInclusion_injective K ℓ
@@ -96,7 +109,8 @@ end ManuscriptAudit.CuspNativeAdicHTwoLinear
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.CuspNativeAdicHTwoLinear.adicLinearInclusion,
+  for name in [``ManuscriptAudit.CuspNativeAdicHTwoLinear.adicInclusion_map_mul,
+      ``ManuscriptAudit.CuspNativeAdicHTwoLinear.adicLinearInclusion,
       ``ManuscriptAudit.CuspNativeAdicHTwoLinear.adicLinearInclusion_injective] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

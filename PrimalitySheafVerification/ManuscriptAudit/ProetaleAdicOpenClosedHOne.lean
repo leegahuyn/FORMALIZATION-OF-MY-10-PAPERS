@@ -36,7 +36,7 @@ private abbrev integers := (constantSheaf (J (X := X)) A).obj (AddCommGrpCat.of 
 
 private abbrev S := ProetaleAdicClosedRestrictionEpi.sequence i ℓ
 
-theorem closedSequence_shortExact : (S i ℓ).ShortExact :=
+theorem closedSequence_shortExact : (S L i ℓ).ShortExact :=
   ProetaleAdicClosedRestrictionEpi.sequence_shortExact i ℓ
 
 theorem restriction_HZero_surjective : Function.Surjective (Sheaf.H.map (diagonal (M ℓ) i) 0) := by
@@ -61,7 +61,7 @@ private theorem closedImage_HOne_subsingleton : Subsingleton (Sheaf.H (functions
 
 /-- Actual H¹ of the continuous adic support kernel maps bijectively to ambient H¹. -/
 def kernelHOneEquiv : Sheaf.H (K i (M ℓ)) 1 ≃+ Sheaf.H (functions (M ℓ) X) 1 := by
-  let hS := closedSequence_shortExact i ℓ
+  let hS := closedSequence_shortExact L i ℓ
   let C := integers (X := X)
   let δ : Sheaf.H (functionsOver (M ℓ) i) 0 →+ Sheaf.H (K i (M ℓ)) 1 :=
     hS.extClass.postcomp C (show 0 + 1 = 1 by rfl)
