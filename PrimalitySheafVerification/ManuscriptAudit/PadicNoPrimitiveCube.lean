@@ -30,7 +30,7 @@ theorem no_root_of_residue (n : ℕ) (hR : ∀ z : ZMod (l ^ n), z ^ 2 + z + 1 �
     change (((z ^ 2 + z + 1 : ℤ_[l]) : ℚ_[l])) = ((0 : ℤ_[l]) : ℚ_[l])
     push_cast
     exact h
-  let f := PadicInt.toZModPow n
+  let f : ℤ_[l] →+* ZMod (l ^ n) := PadicInt.toZModPow n
   have he := congrArg f hz
   simp only [map_add, map_pow, map_one, map_zero] at he
   exact hR (f z) he

@@ -56,7 +56,10 @@ theorem map_arithmeticFrobenius (A : K) (f : L →ₐ[K] M) (P : GeometricPoints
     pointsMap A f (arithmeticPointFrobenius K L A P) =
       arithmeticPointFrobenius K M A (pointsMap A f P) := by
   cases P with
-  | zero => simp
+  | zero =>
+    change pointsMap A f (arithmeticPointFrobenius K L A 0) =
+      arithmeticPointFrobenius K M A (pointsMap A f 0)
+    simp only [map_zero]
   | some x y h =>
     obtain ⟨hFL, eFL⟩ := actual_frobenius_some K L A x y h
     obtain ⟨hM, eM⟩ := pointsMap_some A f x y h

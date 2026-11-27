@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import PrimalitySheafVerification.ManuscriptAudit.CyclicPowerInverseLimit
 import PrimalitySheafVerification.ManuscriptAudit.ExtOneProduct
@@ -128,7 +129,9 @@ theorem exists_lift_of_product_class (x : compatibleHOne X ℓ) (z : Sheaf.H (Q 
     funext n
     change Sheaf.H.map (projection X ℓ n) 1 (Sheaf.H.map (Q X ℓ).g 1 z) =
       Sheaf.H.map (projection X ℓ n) 1 0
-    rw [map_zero, ← Sheaf.H.map_comp_apply, difference_comp_projection]
+    rw [map_zero]
+    refine (Sheaf.H.map_comp_apply (Q X ℓ).g (projection X ℓ n) z).symm.trans ?_
+    rw [difference_comp_projection]
     let t := projection X ℓ (n + 1) ≫ transition X ℓ n
     let P := Sheaf.functorH (Scheme.ProEt.topology X) 1
     have he := ConcreteCategory.congr_hom (P.map_sub (projection X ℓ n) t) z
@@ -137,14 +140,19 @@ theorem exists_lift_of_product_class (x : compatibleHOne X ℓ) (z : Sheaf.H (Q 
     rw [he]
     change Sheaf.H.map (projection X ℓ n) 1 z -
       Sheaf.H.map (projection X ℓ (n + 1) ≫ transition X ℓ n) 1 z = 0
-    rw [Sheaf.H.map_comp_apply, hz, hz, x.property n, sub_self]
+    rw [Sheaf.H.map_comp_apply (projection X ℓ (n + 1)) (transition X ℓ n) z, hz, hz, x.property n, sub_self]
   obtain ⟨a, ha⟩ := Ext.covariant_sequence_exact₂ (integers X)
     (ProetaleAdicNativeExactSequence.shortExact X ℓ) z hd
   refine ⟨a, Subtype.ext ?_⟩
   funext n
   change Sheaf.H.map (reduction X ℓ n) 1 a = x.val n
   change Sheaf.H.map (Q X ℓ).f 1 a = z at ha
-  rw [← inclusion_comp_projection, Sheaf.H.map_comp_apply, ha, hz]
+  calc
+    _ = Sheaf.H.map ((Q X ℓ).f ≫ projection X ℓ n) 1 a :=
+      congrArg (fun g ↦ Sheaf.H.map g 1 a) (inclusion_comp_projection X ℓ n).symm
+    _ = Sheaf.H.map (projection X ℓ n) 1 (Sheaf.H.map (Q X ℓ).f 1 a) :=
+      Sheaf.H.map_comp_apply (Q X ℓ).f (projection X ℓ n) a
+    _ = _ := by rw [ha, hz]
 
 /-- The same criterion uses the actual product of the finite residue sheaves. -/
 theorem exists_lift_of_actual_product_class (x : compatibleHOne X ℓ)
@@ -154,12 +162,13 @@ theorem exists_lift_of_actual_product_class (x : compatibleHOne X ℓ)
   let e := productIso X ℓ
   apply exists_lift_of_product_class X ℓ x (Sheaf.H.map e.inv 1 z)
   intro n
-  rw [← Sheaf.H.map_comp_apply]
   have h : e.inv ≫ projection X ℓ n = Pi.π (finiteCoefficient X ℓ) n := by
     rw [← productIso_hom_π, ← Category.assoc, e.inv_hom_id, Category.id_comp]
-  change Sheaf.H.map (e.inv ≫ projection X ℓ n) 1 z = x.val n
-  rw [h]
-  exact hz n
+  calc
+    _ = Sheaf.H.map (e.inv ≫ projection X ℓ n) 1 z :=
+      (Sheaf.H.map_comp_apply e.inv (projection X ℓ n) z).symm
+    _ = Sheaf.H.map (Pi.π (finiteCoefficient X ℓ) n) 1 z := congrArg (fun g ↦ Sheaf.H.map g 1 z) h
+    _ = _ := hz n
 
 end
 end ManuscriptAudit.ProetaleAdicHOneDetection

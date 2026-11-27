@@ -56,7 +56,7 @@ theorem polynomialPair_xRep (h₂ : (2 : K) ≠ 0) {P : Points A} (hP : P ∈ an
   | zero =>
     refine ⟨1, one_ne_zero, ?_⟩
     intro i
-    fin_cases i <;> simp [polynomialPair, Affine.Point.xRep_zero]
+    fin_cases i <;> simp [polynomialPair, Affine.Point.xRep]
   | some x y h =>
     have h₂' : (2 : RatFunc K) ≠ 0 := by
       simpa only [map_ofNat] using (map_ne_zero (algebraMap K (RatFunc K))).mpr h₂

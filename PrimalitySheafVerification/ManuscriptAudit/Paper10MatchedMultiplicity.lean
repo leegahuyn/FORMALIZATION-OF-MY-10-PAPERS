@@ -32,7 +32,7 @@ def hamiltonian : Module.End ℝ E where
 private theorem inner_coordinates (x y : E) :
     inner ℝ x y = x 0 * y 0 + x 1 * y 1 + x 2 * y 2 := by
   rw [PiLp.inner_apply, Fin.sum_univ_succ, Fin.sum_univ_two]
-  simp [Real.inner_apply, add_assoc]
+  simp [add_assoc] <;> ring
 
 private theorem norm_sq_coordinates (x : E) :
     ‖x‖ ^ 2 = x 0 ^ 2 + x 1 ^ 2 + x 2 ^ 2 := by
@@ -66,7 +66,7 @@ theorem matched_is_ground_eigenspace : matched = eigenspace hamiltonian 2 := by
     fin_cases i <;> simp [hamiltonian_apply, coefficient, hx]
   · intro hx
     have h := congrArg (fun y : E => y 2) hx
-    simp only [hamiltonian_apply, coefficient, if_pos rfl, PiLp.smul_apply, smul_eq_mul] at h
+    norm_num [hamiltonian_apply, coefficient, PiLp.smul_apply, smul_eq_mul] at h
     linarith
 
 private theorem ambient_finrank : Module.finrank ℝ E = 3 := by
@@ -80,7 +80,7 @@ theorem matched_finrank : Module.finrank ℝ matched = 2 := by
     change (EuclideanSpace.single (2 : Fin 3) r) 2 = r
     simp
   have hd := LinearMap.finrank_range_add_finrank_ker projection
-  rw [LinearMap.range_eq_top.mpr hs, Submodule.finrank_top, Module.finrank_self,
+  rw [LinearMap.range_eq_top.mpr hs, finrank_top, Module.finrank_self,
     ambient_finrank] at hd
   change 1 + Module.finrank ℝ matched = 3 at hd
   omega
@@ -114,7 +114,10 @@ theorem exact_ground_normalized_hypotheses :
   · intro x
     rw [norm_sq_coordinates]
     simp only [mass, inner_coordinates, hamiltonian_apply]
-    norm_num [coefficient] <;> ring
+    have h₀ : (0 : Fin 3) ≠ 2 := by decide
+    have h₁ : (1 : Fin 3) ≠ 2 := by decide
+    simp only [coefficient, if_neg h₀, if_neg h₁, if_pos (rfl : (2 : Fin 3) = 2)]
+    ring
   · exact ⟨axis 2, by simp [axis], by simp [axis, PiLp.single_eq_zero_iff]⟩
 
 /-- The real eigenvalues in decreasing order, including multiplicities. -/
@@ -130,7 +133,8 @@ private theorem level_values (i : Fin 3) : levels i = 2 ∨ levels i = 3 := by
     simpa using h j
   obtain ⟨j, hj⟩ := hcoord
   have he : coefficient j * x j = levels i * x j := by
-    simpa only [levels, hamiltonian_apply, PiLp.smul_apply, smul_eq_mul] using
+    simpa only [levels, hamiltonian_apply, PiLp.smul_apply, smul_eq_mul,
+      RCLike.ofReal_real_eq_id, id_eq] using
       congrArg (fun y : E => y j) hx.apply_eq_smul
   have hm : (coefficient j - levels i) * x j = 0 := by rw [sub_mul, he, sub_self]
   have hv : coefficient j = levels i :=
@@ -141,7 +145,8 @@ private theorem level_values (i : Fin 3) : levels i = 2 ∨ levels i = 3 := by
 theorem lowest_two_levels_equal : levels 2 = 2 ∧ levels 1 = 2 ∧ levels 0 = 3 := by
   classical
   have hcard : Finset.card {i : Fin 3 | levels i = 2} = 2 := by
-    simpa only [levels, ← matched_is_ground_eigenspace, matched_finrank] using
+    simpa only [levels, RCLike.ofReal_real_eq_id, id_eq, ← matched_is_ground_eigenspace,
+      matched_finrank] using
       hamiltonian_symmetric.card_filter_eigenvalues_eq ambient_finrank (2 : ℝ)
   have hmono : Antitone levels := hamiltonian_symmetric.eigenvalues_antitone ambient_finrank
   have h₀ : levels 0 = 3 := by
@@ -157,7 +162,7 @@ theorem lowest_two_levels_equal : levels 2 = 2 ∧ levels 1 = 2 ∧ levels 0 = 3
   have hnot₀ : levels 0 ≠ 2 := by rw [h₀]; norm_num
   have h₁ : levels 1 = 2 := by
     by_contra h
-    have hsub : {i : Fin 3 | levels i = 2} ⊆ ({2} : Finset (Fin 3)) := by
+    have hsub : Finset.univ.filter (fun i : Fin 3 => levels i = 2) ⊆ ({2} : Finset (Fin 3)) := by
       intro i hi
       fin_cases i <;> simp_all
     have hh := Finset.card_le_card hsub

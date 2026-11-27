@@ -16,7 +16,7 @@ variable (K : Type*) [CommRing K] (ℓ : ℕ)
 def stageExponent (n : ℕ) : ℤ →+ Exponent ℓ where
   toFun z := z • rootExponent ℓ n
   map_zero' := zero_smul ℤ _
-  map_add' a b := add_smul a b _
+  map_add' a b := add_zsmul _ a b
 
 /-- The finite Laurent stage embeds its coordinate as the chosen power root. -/
 def stageMap (n : ℕ) : LaurentPolynomial K →+* Tower K ℓ :=
@@ -33,9 +33,15 @@ def link : LaurentPolynomial K →+* LaurentPolynomial K :=
 
 private theorem stageExponent_comp (n : ℕ) :
     (stageExponent ℓ (n + 1)).comp (linkExponent ℓ) = stageExponent ℓ n := by
-  ext z
+  apply AddMonoidHom.ext
+  intro z
   change (ℓ • z) • rootExponent ℓ (n + 1) = z • rootExponent ℓ n
-  rw [smul_assoc, smul_comm ℓ z, rootExponent_succ]
+  simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_natCast]
+  have h : (ℓ : Exponent ℓ) * rootExponent ℓ (n + 1) = rootExponent ℓ n := by
+    simpa only [nsmul_eq_mul] using rootExponent_succ ℓ n
+  calc
+    _ = (z : Exponent ℓ) * ((ℓ : Exponent ℓ) * rootExponent ℓ (n + 1)) := by ring
+    _ = _ := by rw [h]
 
 theorem stageMap_comp_link (n : ℕ) :
     (stageMap K ℓ (n + 1)).comp (link K ℓ) = stageMap K ℓ n := by
@@ -54,7 +60,7 @@ theorem stage_mono : Monotone (stage K ℓ) :=
 
 private theorem stage_single (n : ℕ) (z : ℤ) (a : K) :
     stageMap K ℓ n (AddMonoidAlgebra.single z a) = AddMonoidAlgebra.single (stageExponent ℓ n z) a :=
-  AddMonoidAlgebra.mapDomain_single _ _ _
+  AddMonoidAlgebra.mapDomain_single
 
 /-- Every element, including arbitrary finite linear combinations of monomials,
 is in the image of a single actual finite Laurent stage. -/
@@ -72,14 +78,15 @@ theorem exists_stage (v : Tower K ℓ) : ∃ n : ℕ, ∃ u : LaurentPolynomial 
       apply (le_iSup (stage K ℓ) n)
       refine ⟨AddMonoidAlgebra.single z 1, ?_⟩
       rw [stage_single, AddMonoidAlgebra.of_apply]
-      exact congrArg (fun y : Exponent ℓ ↦ AddMonoidAlgebra.single y (1 : K)) hz
+      change AddMonoidAlgebra.single (z • rootExponent ℓ n) (1 : K) = AddMonoidAlgebra.single x 1
+      rw [hz]
     · intro a b ha hb
       exact S.add_mem ha hb
     · intro a v hv
-      rw [Algebra.smul_def]
-      exact S.mul_mem (hScalar a) hv
+      have h : a • v = algebraMap K (Tower K ℓ) a * v := Algebra.smul_def a v
+      exact Eq.mpr (congrArg (fun b : Tower K ℓ ↦ b ∈ S) h) (S.mul_mem (hScalar a) hv)
   have hdir : Directed (· ≤ ·) (stage K ℓ) := (stage_mono K ℓ).directed_le
-  exact (Subring.mem_iSup_of_directed _ hdir).mp hV
+  exact (Subring.mem_iSup_of_directed hdir).mp hV
 
 end
 end ManuscriptAudit.LaurentKummerTowerFiniteStages

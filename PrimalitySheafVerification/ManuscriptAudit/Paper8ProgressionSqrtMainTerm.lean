@@ -41,7 +41,7 @@ private theorem cutoffLog_succ_ratio :
     refine (Real.tendsto_log_nat_add_one_sub_log.comp hAt).congr fun N => ?_
     have ha : ((N + 2 : ℕ) : ℝ) + 1 = (((N + 1) + 2 : ℕ) : ℝ) := by push_cast; ring
     change Real.log (((N + 2 : ℕ) : ℝ) + 1) - cutoffLog N = _
-    rw [ha, cutoffLog]
+    simp only [ha, cutoffLog]
   have hInv : Tendsto (fun N => (cutoffLog (N + 1))⁻¹) atTop (𝓝 (0 : ℝ)) :=
     ((tendsto_inv_atTop_zero (𝕜 := ℝ)).comp cutoffLog_tendsto_atTop).comp hShift
   have hP : Tendsto (fun N => (cutoffLog (N + 1) - cutoffLog N) / cutoffLog (N + 1))

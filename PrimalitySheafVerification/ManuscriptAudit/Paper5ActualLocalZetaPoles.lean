@@ -18,8 +18,11 @@ def awayFromPoles (q : ℂ) : Set ℂ := {z | z ≠ 1 ∧ z ≠ q⁻¹}
 theorem away_from_poles_dense (q : ℂ) : Dense (awayFromPoles q) := by
   have h : ({1, q⁻¹} : Set ℂ).Finite :=
     (Set.finite_singleton (q⁻¹)).insert 1
-  simpa [awayFromPoles, Set.mem_insert_iff, Set.mem_singleton_iff, not_or] using
-    h.countable.dense_compl ℝ
+  have hSet : awayFromPoles q = ({1, q⁻¹} : Set ℂ)ᶜ := by
+    ext z
+    simp [awayFromPoles, Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+  rw [hSet]
+  exact h.countable.dense_compl ℝ
 
 private theorem linear_factor_ne_zero {q z : ℂ} (hq : q ≠ 0) (hz : z ≠ q⁻¹) :
     1-q*z ≠ 0 := by
@@ -35,9 +38,11 @@ private theorem residue_at_one {q a : ℂ} (hq : q ≠ 0) (hq₁ : q ≠ 1) :
       (𝓝 ((1-a+q)/(q-1))) := by
   have hden : 1-q*1 ≠ 0 := by simpa using sub_ne_zero.mpr (Ne.symm hq₁)
   have hc : ContinuousAt (fun z : ℂ => -(numerator q a z) / (1-q*z)) 1 := by
-    apply ContinuousAt.div _ (by fun_prop) hden
-    unfold numerator
-    fun_prop
+    have hTop : ContinuousAt (fun z : ℂ => -(numerator q a z)) 1 := by
+      unfold numerator
+      fun_prop
+    have hBot : ContinuousAt (fun z : ℂ => 1-q*z) 1 := by fun_prop
+    exact hTop.div hBot hden
   have hval : -(numerator q a 1) / (1-q*1) = (1-a+q)/(q-1) := by
     unfold numerator
     field_simp [sub_ne_zero.mpr hq₁, sub_ne_zero.mpr (Ne.symm hq₁)] <;> ring
@@ -58,11 +63,12 @@ private theorem residue_at_inverse {q a : ℂ} (hq : q ≠ 0) (hq₁ : q ≠ 1) 
       (𝓝 (-(1-a+q)/(q*(q-1)))) := by
   have he : q*(1-q⁻¹) = q-1 := by field_simp [hq] <;> ring
   have hc : ContinuousAt (fun z : ℂ => -(numerator q a z) / (q*(1-z))) q⁻¹ := by
-    apply ContinuousAt.div _ (by fun_prop)
-    · unfold numerator
+    have hTop : ContinuousAt (fun z : ℂ => -(numerator q a z)) q⁻¹ := by
+      unfold numerator
       fun_prop
-    · rw [he]
-      exact sub_ne_zero.mpr hq₁
+    have hBot : ContinuousAt (fun z : ℂ => q*(1-z)) q⁻¹ := by fun_prop
+    have hDen : q * (1-q⁻¹) ≠ 0 := by rw [he]; exact sub_ne_zero.mpr hq₁
+    exact hTop.div hBot hDen
   have hval : -(numerator q a q⁻¹) / (q*(1-q⁻¹)) = -(1-a+q)/(q*(q-1)) := by
     rw [he]
     unfold numerator
@@ -76,8 +82,11 @@ private theorem residue_at_inverse {q a : ℂ} (hq : q ≠ 0) (hq₁ : q ≠ 1) 
   change z ≠ 1 ∧ z ≠ q⁻¹ at hz
   have hz₁ : 1-z ≠ 0 := sub_ne_zero.mpr (Ne.symm hz.1)
   have hz₂ := linear_factor_ne_zero hq hz.2
+  have hz₂' : 1-z*q ≠ 0 := by simpa only [mul_comm] using hz₂
+  have hdiff : z-q⁻¹ = -(1-q*z)/q := by field_simp [hq] <;> ring
+  rw [hdiff]
   unfold rationalZeta numerator
-  field_simp [hq, hz₁, hz₂] <;> ring
+  field_simp [hq, hz₁, hz₂, hz₂'] <;> ring
 
 private theorem card_projective_pos (p : ℕ) [Fact p.Prime] (A : ZMod p) :
     0 < Nat.card (paper5TraceCurve p A).toProjective.Point := by

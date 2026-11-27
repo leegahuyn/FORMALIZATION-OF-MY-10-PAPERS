@@ -56,12 +56,12 @@ variable {X}
 variable {K : Type} [Field K] (k : X ⟶ Spec (CommRingCat.of K))
 
 /-- The native boundary taken in the actual categorical kernel, before trivializing roots. -/
-abbrev kernelBoundary (d : ℕ) [NeZero d] [NeZero (d : K)] :
+abbrev kernelBoundary (d : ℕ) [NeZero d] [NeZero (d : K)] [HasEnoughRootsOfUnity K d] :
     Sheaf.H (unitSheaf X) 0 →+ Sheaf.H (kernel (power X d)) 1 :=
   (sequence_shortExact k d).extClass.postcomp (integers X) (show 0 + 1 = 1 by rfl)
 
 /-- Reducing an actual Kummer class in the kernel preserves the fixed unit defining it. -/
-theorem kernelBoundary_transition [Fact ℓ.Prime] [NeZero (ℓ : K)]
+theorem kernelBoundary_transition [IsAlgClosed K] [Fact ℓ.Prime] [NeZero (ℓ : K)]
     (u : Sheaf.H (unitSheaf X) 0) :
     haveI : NeZero (ℓ ^ n) := ⟨pow_ne_zero _ (show ℓ.Prime from Fact.out).ne_zero⟩
     haveI : NeZero (ℓ ^ (n + 1)) := ⟨pow_ne_zero _ (show ℓ.Prime from Fact.out).ne_zero⟩

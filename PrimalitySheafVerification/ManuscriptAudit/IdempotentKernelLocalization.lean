@@ -35,7 +35,9 @@ theorem isLocalization_of_local_identities
     exact isUnit_one
   · intro s
     obtain ⟨x, hx⟩ := onto s
-    exact ⟨(x, 1), by rw [map_one, mul_one, hx]⟩
+    refine ⟨(x, 1), ?_⟩
+    change s * algebraMap R S 1 = algebraMap R S x
+    rw [map_one, mul_one, hx]
   · intro x y he
     have hd : algebraMap R S (x - y) = 0 := by rw [map_sub, he, sub_self]
     obtain ⟨e, he₀, he₁⟩ := h (x - y) hd

@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
-import Mathlib.LinearAlgebra.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.Tactic.LinearCombination
 
