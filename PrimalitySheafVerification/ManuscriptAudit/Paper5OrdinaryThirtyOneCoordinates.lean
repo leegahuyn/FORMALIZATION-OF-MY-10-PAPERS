@@ -71,10 +71,12 @@ theorem computed_some {x y : L} (hP : (Curve (a L)).Nonsingular x y)
   have ht : t ≠ 0 := by
     simpa only [eval₂_X] using hGuard X (by simp [excluded])
   have hs : t + 1 ≠ 0 := by
-    simpa only [eval₂_add, eval₂_X, eval₂_one] using hGuard (X + 1) (by simp [excluded])
+    have h := hGuard (X + 1) (by simp [excluded])
+    rw [eval₂_add, eval₂_X, eval₂_one] at h
+    exact h
   have hx : x ≠ 0 := fun h => ht (by simp [t, h])
   have he := (nonsingular_iff (discriminant_ne_zero L) x y).mp hP
-  have he' : y ^ 2 = t + 1 := by simpa only [t, a, map_one] using he
+  have he' : y ^ 2 = x ^ 3 + 1 := by simpa only [t, a, map_one] using he
   have hy : y ≠ 0 := fun h => hs (by simpa only [h, zero_pow (by decide : (2 : ℕ) ≠ 0)] using he'.symm)
   have h₂ : (2 : L) ≠ 0 := numeral_ne_zero L 2 (by decide)
   have hUnit : unit.evaluate t = (1 : L) := by simp [unit]
@@ -131,14 +133,20 @@ theorem computed_some {x y : L} (hP : (Curve (a L)).Nonsingular x y)
   obtain ⟨hF, eF⟩ := add_step hx he hVUnit hVUnit hVRot hV₆
     (valid mF (by simp [excluded])) (Fraction.valid_polynomial _ _) (Fraction.valid_polynomial _ _)
     (hGap rotatedSixX hVRot (by simp [excluded])) slope_frobenius x_frobenius y_frobenius h₀ hRot
-  have hX : x * frobeniusX.evaluate t = x ^ 31 := by
+  have hX : x * frobeniusX.evaluate (x ^ 3) = x ^ 31 := by
     simp only [frobeniusX, Fraction.evaluate_polynomial, eval₂_pow, eval₂_X, t]
     ring
-  have hY : y * frobeniusY.evaluate t = y ^ 31 := by
+  have hY : y * frobeniusY.evaluate (x ^ 3) = y ^ 31 := by
     simp only [frobeniusY, Fraction.evaluate_polynomial, eval₂_pow, eval₂_add, eval₂_X, eval₂_one]
     rw [← he']
     ring
-  refine ⟨by simpa only [hX, hY] using hF, ?_⟩
+  have hFinal : (Curve (a L)).Nonsingular (x ^ 31) (y ^ 31) := by
+    have hOld := hF
+    change (Curve (a L)).Nonsingular (x * frobeniusX.evaluate (x ^ 3))
+      (y * frobeniusY.evaluate (x ^ 3)) at hOld
+    rw [hX, hY] at hOld
+    exact hOld
+  refine ⟨hFinal, ?_⟩
   change P + (6 : ℕ) • rotation L P = _
   rw [← map_nsmul (rotation L), e₆, eRot, e₀, eF, Affine.Point.some.injEq]
   exact ⟨hX, hY⟩

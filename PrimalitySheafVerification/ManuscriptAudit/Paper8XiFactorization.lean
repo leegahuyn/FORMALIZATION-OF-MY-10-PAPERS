@@ -47,7 +47,9 @@ theorem unconjugatedXi_eq_literal (k : ℝ) (F : Field) (x y : ℝ) :
 
 private theorem heightPower_hasDerivAt (a : ℝ) {y : ℝ} (hy : 0 < y) :
     HasDerivAt (heightPower a) ((a : ℂ) * heightPower (a - 1) y) y := by
-  simpa only [heightPower, Complex.ofReal_mul] using
+  change HasDerivAt (fun t : ℝ => ((t ^ a : ℝ) : ℂ))
+    ((a : ℂ) * ((y ^ (a - 1) : ℝ) : ℂ)) y
+  simpa only [Complex.ofReal_mul] using!
     (Real.hasDerivAt_rpow_const (p := a) (Or.inl hy.ne')).ofReal_comp
 
 private theorem conj_heightPower (a y : ℝ) : conj (heightPower a y) = heightPower a y :=
@@ -87,8 +89,14 @@ theorem conjugated_composition_eq_neg_delta (k : ℝ) (F : Field) {x y : ℝ} (h
   have hY := (heightPower_hasDerivAt k hy).mul
     (((hasDerivAt_conj hxy.hasDerivAt).const_mul Complex.I).add
       (hasDerivAt_conj hyy.hasDerivAt))
-  have hx : partialX (conjugatedXi k F) x y = _ := hX.deriv
-  have hy' : partialY (conjugatedXi k F) x y = _ := hY.deriv
+  have hx : partialX (conjugatedXi k F) x y =
+      heightPower k y * (Complex.I * conj (partialX (partialX F) x y) +
+        conj (partialX (partialY F) x y)) := hX.deriv
+  have hy' : partialY (conjugatedXi k F) x y =
+      ((k : ℂ) * heightPower (k - 1) y) *
+        (Complex.I * conj (partialX F x y) + conj (partialY F x y)) +
+      heightPower k y * (Complex.I * conj (partialY (partialX F) x y) +
+        conj (partialY (partialY F) x y)) := hY.deriv
   change heightPower (2 - k) y * (Complex.I * conj (partialX (conjugatedXi k F) x y) +
     conj (partialY (conjugatedXi k F) x y)) = _
   calc

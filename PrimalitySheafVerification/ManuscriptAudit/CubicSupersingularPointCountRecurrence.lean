@@ -15,14 +15,14 @@ def signedCount (F : Type*) [Field F] [Fintype F] [DecidableEq F] (A : F) : ℤ 
   (Fintype.card F : ℤ) + 1 - (Nat.card (shortCubic (0 : F) A).toProjective.Point : ℤ)
 
 variable (p : ℕ) [Fact p.Prime]
-variable (F E L : Type*) [Field F] [Field E] [Field L]
-variable [Fintype F] [Fintype E] [DecidableEq F] [DecidableEq E] [DecidableEq L]
-variable [Algebra (ZMod p) F] [Algebra (ZMod p) E] [Algebra (ZMod p) L]
+variable (F E : Type*) [Field F] [Field E]
+variable [Fintype F] [Fintype E] [DecidableEq F] [DecidableEq E]
+variable [Algebra (ZMod p) F] [Algebra (ZMod p) E]
 variable [CharP F p] [CharP E p] [Algebra F E] [IsScalarTower (ZMod p) F E]
-variable [Algebra F L] [Algebra E L] [IsScalarTower F E L]
-variable [IsAlgClosed L] [Algebra.IsAlgebraic (ZMod p) L]
-
-theorem signed_count_eq_recurrence (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0) :
+theorem signed_count_eq_recurrence (L : Type*) [Field L] [DecidableEq L]
+    [Algebra F L] [Algebra E L] [IsScalarTower F E L] [Algebra (ZMod p) L]
+    [IsAlgClosed L] [Algebra.IsAlgebraic (ZMod p) L]
+    (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0) :
     signedCount E (algebraMap F E A) =
       Paper5PrintedRecurrence.recurrence (Fintype.card F) (signedCount F A) (Module.finrank F E) := by
   letI : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩

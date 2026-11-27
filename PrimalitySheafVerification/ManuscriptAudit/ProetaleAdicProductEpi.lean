@@ -1,60 +1,34 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import PrimalitySheafVerification.ManuscriptAudit.AbProductDifference
-import PrimalitySheafVerification.ManuscriptAudit.ProetaleAdicProductKernel
-import PrimalitySheafVerification.ManuscriptAudit.ProetaleResidueChartSurjectivity
+import PrimalitySheafVerification.ManuscriptAudit.ProetaleAdicProductChartEpi
 
 /-! The actual residue-product difference is epic on the pro-étale topos. -/
 
 namespace ManuscriptAudit.ProetaleAdicProductEpi
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
-open ProetaleResidueSheaves (residueSheaf residueTransition)
 open ProetaleAdicProductKernel (inclusion difference inclusion_comp_difference inclusionIsKernel)
-open ProetaleResidueChartSurjectivity (chart_difference_surjective)
 
 noncomputable section
 
 set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
-
-private abbrev A := AddCommGrpCat.{0}
 
 variable (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime]
 
-private abbrev J := Scheme.ProEt.topology X
-private abbrev evaluationOn (W : X.ProEt) :=
-  sheafToPresheaf (J X) A ⋙ (evaluation (X.ProEt)ᵒᵖ A).obj (op W)
-
-/-- The actual residue difference is epic on each individual pro-étale chart. -/
+/-- The native product difference is epic on every individual chart. -/
 theorem evaluation_difference_epi (W : X.ProEt) :
-    Epi ((evaluationOn X W).map (difference X ℓ)) := by
-  let E := evaluationOn X W
-  let G := fun n ↦ E.obj (residueSheaf X ℓ n)
-  let t := fun n ↦ E.map (residueTransition X ℓ n)
-  letI : E.Additive := ⟨by intros; rfl⟩
-  letI : PreservesLimit (Discrete.functor (residueSheaf X ℓ)) E := by
-    dsimp only [E, evaluationOn]
-    infer_instance
-  let e := PreservesProduct.iso E (residueSheaf X ℓ)
-  let d := ComplexTowerDifference.difference G t
-  letI : Epi d := AbProductDifference.difference_epi_of_surjective G t
-    (chart_difference_surjective ℓ X W)
-  have h : Epi (e.hom ≫ d) := inferInstance
-  have w : E.map (difference X ℓ) ≫ e.hom = e.hom ≫ d :=
-    ComplexTowerDifference.map_difference_comp_comparison (residueSheaf X ℓ)
-      (residueTransition X ℓ) E
-  rw [← w] at h
-  exact (epi_comp_iff_of_isIso _ e.hom).mp h
+    Epi ((difference X ℓ).hom.app (op W)) :=
+  ProetaleAdicProductChartEpi.evaluation_difference_epi X ℓ W
 
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The native residue-product difference is an epimorphism of pro-étale sheaves. -/
 theorem difference_epi : Epi (difference X ℓ) := by
-  let E := sheafToPresheaf (J X) A
-  apply E.epi_of_epi_map
-  apply (NatTrans.epi_iff_epi_app _).mpr
-  intro W
-  exact evaluation_difference_epi X ℓ W.unop
+  let E := sheafToPresheaf (Scheme.ProEt.topology X) AddCommGrpCat.{0}
+  letI : Epi (E.map (difference X ℓ)) := (NatTrans.epi_iff_epi_app _).mpr fun W ↦ by
+    change Epi ((difference X ℓ).hom.app W)
+    exact evaluation_difference_epi X ℓ W.unop
+  exact E.epi_of_epi_map (difference X ℓ)
 
 /-- The actual adic sheaf is the kernel of an epic consecutive residue-product difference. -/
 theorem product_sequence :

@@ -34,7 +34,7 @@ instance lift_additive : (lift X).Additive where
     apply NatTrans.ext
     funext W
     change U.map (f.hom.app W + g.hom.app W) = U.map (f.hom.app W) + U.map (g.hom.app W)
-    exact U.map_add (f.hom.app W) (g.hom.app W)
+    exact U.map_add
 
 instance lift_preservesFiniteLimits : PreservesFiniteLimits (lift X) := by
   let F := sheafToPresheaf (J X) B
@@ -44,17 +44,31 @@ instance lift_preservesFiniteLimits : PreservesFiniteLimits (lift X) := by
     infer_instance
   exact preservesFiniteLimits_of_reflects_of_preserves (lift X) F
 
+/-- The actual coefficient lift preserves countable residue products. -/
+instance lift_preservesCountableProducts : PreservesLimitsOfShape (Discrete ℕ) (lift X) := by
+  let F := sheafToPresheaf (J X) B
+  haveI : PreservesLimitsOfShape (Discrete ℕ) (lift X ⋙ F) := by
+    change PreservesLimitsOfShape (Discrete ℕ) (sheafToPresheaf (J X) A ⋙
+      (Functor.whiskeringRight (X.ProEt)ᵒᵖ A B).obj U)
+    infer_instance
+  exact preservesLimitsOfShape_of_reflects_of_preserves (lift X) F
+
+/-- A chartwise epimorphism stays epic on the same chart after coefficient lifting. -/
+theorem epi_map_app_of_epi_app {F G : Sheaf (J X) A} (f : F ⟶ G)
+    (W : (X.ProEt)ᵒᵖ) (h : Epi (f.hom.app W)) : Epi (((lift X).map f).hom.app W) := by
+  change Epi (U.map (f.hom.app W))
+  apply (AddCommGrpCat.epi_iff_surjective _).mpr
+  intro y
+  obtain ⟨x, hx⟩ := (AddCommGrpCat.epi_iff_surjective _).mp h y.down
+  exact ⟨ULift.up x, congrArg ULift.up hx⟩
+
 /-- Chartwise epimorphisms are epimorphisms after the actual coefficient universe lift. -/
 theorem epi_map_of_chartwise {F G : Sheaf (J X) A} (f : F ⟶ G)
     (h : ∀ W : (X.ProEt)ᵒᵖ, Epi (f.hom.app W)) : Epi ((lift X).map f) := by
   apply (sheafToPresheaf (J X) B).epi_of_epi_map
   apply (NatTrans.epi_iff_epi_app _).mpr
   intro W
-  change Epi (U.map (f.hom.app W))
-  apply (AddCommGrpCat.epi_iff_surjective _).mpr
-  intro y
-  obtain ⟨x, hx⟩ := (AddCommGrpCat.epi_iff_surjective _).mp (h W) y.down
-  exact ⟨ULift.up x, congrArg ULift.up hx⟩
+  exact epi_map_app_of_epi_app X f W (h W)
 
 end
 end ManuscriptAudit.ProetaleCoefficientUniverseLift
@@ -64,6 +78,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleCoefficientUniverseLift.lift_additive,
       ``ManuscriptAudit.ProetaleCoefficientUniverseLift.lift_preservesFiniteLimits,
+      ``ManuscriptAudit.ProetaleCoefficientUniverseLift.lift_preservesCountableProducts,
+      ``ManuscriptAudit.ProetaleCoefficientUniverseLift.epi_map_app_of_epi_app,
       ``ManuscriptAudit.ProetaleCoefficientUniverseLift.epi_map_of_chartwise] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

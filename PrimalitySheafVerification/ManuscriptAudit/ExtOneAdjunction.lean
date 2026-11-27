@@ -20,7 +20,8 @@ universe u v u' v' w w'
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] [EnoughInjectives C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D] [HasExt.{w'} D]
 
-private theorem exists_extension {X Y : C} (e : Ext X Y 1) :
+/-- Every degree-one class is represented by a native short exact extension. -/
+theorem exists_extension {X Y : C} (e : Ext X Y 1) :
     ∃ (E : C) (j : Y ⟶ E) (p : E ⟶ X) (w : j ≫ p = 0)
       (h : (ShortComplex.mk j p w).ShortExact), h.extClass = e := by
   let I : InjectivePresentation Y := Classical.arbitrary _

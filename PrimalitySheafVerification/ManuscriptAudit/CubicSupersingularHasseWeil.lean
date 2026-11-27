@@ -23,11 +23,11 @@ def counts (A : F) : ℂ⟦X⟧ :=
 variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) F] [CharP F p]
 variable [∀ n, Algebra (ZMod p) (E n)] [∀ n, CharP (E n) p]
 variable [∀ n, IsScalarTower (ZMod p) F (E n)]
-variable (L : Type*) [Field L] [DecidableEq L] [IsAlgClosed L]
-variable [Algebra F L] [Algebra (ZMod p) L] [Algebra.IsAlgebraic (ZMod p) L]
-variable [∀ n, Algebra (E n) L] [∀ n, IsScalarTower F (E n) L]
 
-private theorem counts_eq_two_roots (hp : 5 ≤ p) (hP : p % 3 = 2)
+private theorem counts_eq_two_roots (L : Type*) [Field L] [DecidableEq L] [IsAlgClosed L]
+    [Algebra F L] [Algebra (ZMod p) L] [Algebra.IsAlgebraic (ZMod p) L]
+    [∀ n, Algebra (E n) L] [∀ n, IsScalarTower F (E n) L]
+    (hp : 5 ≤ p) (hP : p % 3 = 2)
     (hDegree : ∀ n, Module.finrank F (E n) = n + 1)
     {A : F} (hA : A ≠ 0) {α β : ℂ}
     (hSum : α + β = (signedCount F A : ℂ)) (hProd : α * β = (Fintype.card F : ℂ)) :
@@ -50,7 +50,10 @@ private theorem counts_eq_two_roots (hp : 5 ≤ p) (hP : p % 3 = 2)
     rw [recurrence_cast_eq_root_powers (Fintype.card F) (signedCount F A) α β hSum hProd] at ht'
     linear_combination -ht'
 
-theorem zeta_eq (hp : 5 ≤ p) (hP : p % 3 = 2)
+theorem zeta_eq (L : Type*) [Field L] [DecidableEq L] [IsAlgClosed L]
+    [Algebra F L] [Algebra (ZMod p) L] [Algebra.IsAlgebraic (ZMod p) L]
+    [∀ n, Algebra (E n) L] [∀ n, IsScalarTower F (E n) L]
+    (hp : 5 ≤ p) (hP : p % 3 = 2)
     (hDegree : ∀ n, Module.finrank F (E n) = n + 1) {A : F} (hA : A ≠ 0) :
     zetaOfCountSeries (counts F E A) =
       (1 - X * C (signedCount F A : ℂ) + X ^ 2 * C (Fintype.card F : ℂ)) *

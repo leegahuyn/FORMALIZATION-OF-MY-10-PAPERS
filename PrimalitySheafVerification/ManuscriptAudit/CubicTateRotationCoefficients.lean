@@ -29,10 +29,14 @@ theorem trace_det_linear (B : Basis (Fin 2) R V) (S : Module.End R V)
   have hM : LinearMap.toMatrix B B (a • I + b • S) = a • (1 : Matrix (Fin 2) (Fin 2) R) + b • M := by
     simp only [M, I, map_add, map_smul, LinearMap.toMatrix_one]
   have hMt : M 0 0 + M 1 1 = -1 := by
-    rw [← Matrix.trace_fin_two, M, ← LinearMap.trace_eq_matrix_trace R B]
+    rw [← Matrix.trace_fin_two]
+    change Matrix.trace (LinearMap.toMatrix B B S) = -1
+    rw [← LinearMap.trace_eq_matrix_trace R B]
     exact ht
   have hMd : M 0 0 * M 1 1 - M 0 1 * M 1 0 = 1 := by
-    rw [← Matrix.det_fin_two, M, LinearMap.det_toMatrix B]
+    rw [← Matrix.det_fin_two]
+    change Matrix.det (LinearMap.toMatrix B B S) = 1
+    rw [LinearMap.det_toMatrix B]
     exact hd
   constructor
   · calc
@@ -58,11 +62,11 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (hA : A ≠ 0)
     (hz : z ^ 3 = 1) (hz₁ : z ≠ 1) (hΔ : (shortCubic (0 : L) A).Δ ≠ 0)
     (l : ℕ) [Fact l.Prime] (hl : l = 2 ∨ l = 3)
     (F : AddMonoid.End (Curve A).Point) (a b : ℤ)
-    (hF : F = a • (1 : AddMonoid.End (Curve A).Point) + b • CubicCubeRotation.rotate z hz hΔ) :
+    (hF : F = a • (1 : AddMonoid.End (Curve A).Point) + b • (CubicCubeRotation.rotate z hz hΔ : AddMonoid.End (Curve A).Point)) :
     LinearMap.trace ℤ_[l] (Tate l (Curve A).Point) (endMap l F) = ((2 * a - b : ℤ) : ℤ_[l]) ∧
       LinearMap.det (endMap l F) = ((a ^ 2 - a * b + b ^ 2 : ℤ) : ℤ_[l]) := by
   let B := CubicRotationTateRankTwo.tateBasis h₂ h₃ hA hz hz₁ l hl
-  let r := CubicCubeRotation.rotate z hz hΔ
+  let r : AddMonoid.End (Curve A).Point := CubicCubeRotation.rotate z hz hΔ
   let S := endMap l r
   have hN : ¬∃ c : ℤ_[l], S = c • (1 : Module.End ℤ_[l] (Tate l (Curve A).Point)) :=
     CubicRotationTateRankTwo.rotation_not_scalar h₂ h₃ hA hz hz₁ l hl

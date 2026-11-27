@@ -15,8 +15,8 @@ noncomputable section
 
 variable {k : Type*} [CommRing k]
 
-/-- The arithmetic tests needed to certify a finite centered-cubic point computation. -/
 set_option maxHeartbeats 1600000 in
+/-- The arithmetic tests needed to certify a finite centered-cubic point computation. -/
 inductive Program (A z : k) : Term → CoefficientFraction k → CoefficientFraction k → Type _
   | identity : Program A z .identity (scalar 1) (scalar 1)
   | double {f : Term} {u v m U V : CoefficientFraction k}
