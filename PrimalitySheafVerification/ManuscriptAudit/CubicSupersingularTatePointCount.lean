@@ -70,15 +70,51 @@ theorem trace_det_eq_point_count (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠
       ring
   exact ⟨ht.trans (congrArg (fun z : ℤ => (Int.cast z : ℤ_[l])) hEq), hd⟩
 
+/-- The genuine Tate module has two coordinates over its coefficient ring. -/
+def tateBasis (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
+    {A : E} (hA : A ≠ 0) : Basis (Fin 2) ℤ_[l] (Tate l (GeometricPoints E L A)) := by
+  obtain ⟨h₂p, h₃p⟩ := Paper5NonsplitFrobeniusModFour.small_char p (ZMod p) hp
+  have h₂ : (2 : L) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₂p
+  have h₃ : (3 : L) ≠ 0 := by
+    simpa only [map_ofNat] using (map_ne_zero (algebraMap (ZMod p) L)).mpr h₃p
+  have ha : algebraMap E L A ≠ 0 := (map_ne_zero (algebraMap E L)).mpr hA
+  exact CubicNonsplitFiniteFieldTate.centeredBasis p L l hp hp₃ hlp ha
+    (shortCubic_discriminant_ne_zero h₂ h₃ ha)
+
+/-- Actual characteristic polynomial expressed by the signed projective point count. -/
+theorem charpoly_eq_point_count (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
+    {m : ℕ} (hm : finrank (ZMod p) E = 2 * m) (hm₀ : 0 < m)
+    {A : E} (hA : A ≠ 0) :
+    let B := tateBasis p L l E hp hp₃ hlp hA
+    letI := Module.Free.of_basis B
+    letI := Module.Finite.of_basis B
+    let T := endMap l (arithmeticPointFrobenius E L A)
+    T.charpoly = Polynomial.X ^ 2 - Polynomial.C
+      (Int.cast ((Fintype.card E : ℤ) + 1 -
+        (Nat.card (shortCubic (0 : E) A).toProjective.Point : ℤ)) : ℤ_[l]) * Polynomial.X +
+      Polynomial.C (Fintype.card E : ℤ_[l]) := by
+  let B := tateBasis p L l E hp hp₃ hlp hA
+  letI := Module.Free.of_basis B
+  letI := Module.Finite.of_basis B
+  let T := endMap l (arithmeticPointFrobenius E L A)
+  obtain ⟨ht, hd⟩ := trace_det_eq_point_count p L l E hp hp₃ hlp hm hm₀ hA
+  change T.charpoly = _
+  rw [← LinearMap.charpoly_toMatrix T B, Matrix.charpoly_fin_two,
+    ← LinearMap.trace_eq_matrix_trace ℤ_[l] B, LinearMap.det_toMatrix B, ht, hd]
+
 end
 end ManuscriptAudit.CubicSupersingularTatePointCount
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.CubicSupersingularTatePointCount.trace_det_eq_point_count
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.CubicSupersingularTatePointCount.trace_det_eq_point_count,
+      ``ManuscriptAudit.CubicSupersingularTatePointCount.tateBasis,
+      ``ManuscriptAudit.CubicSupersingularTatePointCount.charpoly_eq_point_count] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

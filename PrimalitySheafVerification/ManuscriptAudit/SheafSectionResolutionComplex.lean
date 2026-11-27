@@ -32,7 +32,7 @@ instance sections_additive (T : C) : (sections J T).Additive :=
   ⟨by intros; rfl⟩
 
 /-- The chosen injective resolution of the actual coefficient sheaf. -/
-abbrev resolution (F : S) : InjectiveResolution F := injectiveResolution F
+abbrev resolution (F : S) : InjectiveResolution F := InjectiveResolution.of F
 
 /-- The actual integer-indexed sections complex on the chosen injective resolution. -/
 def sectionComplex (T : C) (F : S) : Ch :=

@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper8HolomorphicPartPhase
 
 /-!
-# The exact unary target series on physical pp. 332 and 338
+# The exact positive-index unary target series on physical p. 338
 
 In the root coordinate `w=exp(2πiτ/24)` the series consists of the
 terms `χ(n) n w^(n²)`. Index zero contributes zero. The estimates prove

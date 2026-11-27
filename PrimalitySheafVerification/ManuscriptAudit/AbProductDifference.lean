@@ -48,15 +48,20 @@ theorem difference_comp_productIso :
   simp only [productIso_apply]
   exact CategoryTheory.congr_fun (difference_π G transition r) x
 
-/-- Surjectivity of every transition makes the categorical difference an epimorphism. -/
-theorem difference_epi (onto : ∀ r, Function.Surjective (transition r : G (r + 1) → G r)) :
+/-- Surjectivity on concrete tuples makes the categorical difference an epimorphism. -/
+theorem difference_epi_of_surjective
+    (onto : Function.Surjective (concreteDifference G transition)) :
     Epi (difference G transition) := by
-  letI : Epi (concreteDifference G transition) := (AddCommGrpCat.epi_iff_surjective _).mpr
-    (productDifference_surjective (fun r ↦ G r) (fun r ↦ (transition r).hom) onto)
+  letI : Epi (concreteDifference G transition) := (AddCommGrpCat.epi_iff_surjective _).mpr onto
   have h : Epi ((productIso G).hom ≫ concreteDifference G transition) := inferInstance
   rw [← difference_comp_productIso] at h
-  letI := h
-  exact epi_of_epi (difference G transition) (productIso G).hom
+  exact (epi_comp_iff_of_isIso (difference G transition) (productIso G).hom).mp h
+
+/-- Surjectivity of every transition makes the categorical difference an epimorphism. -/
+theorem difference_epi (onto : ∀ r, Function.Surjective (transition r : G (r + 1) → G r)) :
+    Epi (difference G transition) :=
+  difference_epi_of_surjective G transition
+    (productDifference_surjective (fun r ↦ G r) (fun r ↦ (transition r).hom) onto)
 
 private theorem concrete_kernel :
     (concreteDifference G transition).hom.ker =
@@ -83,6 +88,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.AbProductDifference.productIso,
       ``ManuscriptAudit.AbProductDifference.difference_comp_productIso,
+      ``ManuscriptAudit.AbProductDifference.difference_epi_of_surjective,
       ``ManuscriptAudit.AbProductDifference.difference_epi,
       ``ManuscriptAudit.AbProductDifference.kernelEquiv] do
     let dependencies ← collectAxioms name

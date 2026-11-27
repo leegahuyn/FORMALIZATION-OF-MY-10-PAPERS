@@ -71,7 +71,9 @@ theorem cycleClass_surjective (n : ℕ) : Function.Surjective (cycleClass J hT R
     change (sections J T).map (R.cocomplex.d (n + 1) (n + 2)) (a f) = 0
     rw [← homEquiv_comp, hf, map_zero]
   refine ⟨⟨v, hv⟩, ?_⟩
-  change R.extMk (a.symm (a f)) (n + 2) rfl _ = x
+  have hc : a.symm (a f) ≫ R.cocomplex.d (n + 1) (n + 2) = 0 := by
+    simpa only [AddEquiv.symm_apply_apply] using hf
+  change R.extMk (a.symm (a f)) (n + 2) rfl hc = x
   simpa only [AddEquiv.symm_apply_apply] using hfx
 
 /-- A cycle represents zero exactly when it is a boundary in the evaluated resolution. -/

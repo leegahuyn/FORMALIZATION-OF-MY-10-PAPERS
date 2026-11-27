@@ -41,7 +41,7 @@ theorem rotate_one (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) :
 
 theorem rotate_eq_id (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
     {z : L} (hz : z ^ 3 = 1) (h : z = 1) :
-    (rotate z hz hΔ : AddMonoid.End (UnitPoints L)) = 1 := by
+    rotate z hz hΔ = (1 : AddMonoid.End (UnitPoints L)) := by
   subst z
   exact rotate_one L hΔ
 

@@ -23,7 +23,7 @@ private theorem cubicCharacter_mem {ζ : ℂ} (hζ : IsPrimitiveRoot ζ 3)
   · have h₃ : χ ^ 3 = 1 := by simpa only [hχ] using pow_orderOf_eq_one χ
     have hpow : χ x ^ 3 = 1 := by
       rw [← MulChar.pow_apply' χ (by decide : (3 : ℕ) ≠ 0) x, h₃,
-        MulChar.one_apply hx.isUnit]
+        MulChar.one_apply (isUnit_iff_ne_zero.mpr hx)]
     obtain ⟨j, _, hj⟩ := hζ.eq_pow_of_pow_eq_one hpow
     rw [← hj]
     exact (eisensteinSubring ζ hζ).pow_mem (root_mem hζ) _
@@ -60,12 +60,12 @@ theorem exists_integral_trace_norm (hF : ringChar F ≠ 2)
   obtain ⟨χ, hχ⟩ := exists_orderThree_character (F := F) hsplit
   obtain ⟨a, b, he⟩ := jacobiRoot_coordinates hζ hχ A
   refine ⟨a, b, ?_, ?_⟩
-  · apply (Int.cast_injective (R := ℂ))
+  · apply (Int.cast_injective (α := ℂ))
     push_cast
     rw [projective_count_trace_complex hF hΔ, cubicTraceSum_eq_neg_jacobiRoots hF hχ hA,
       jacobiRoots_conjugate hχ A, he]
     simpa only [Int.cast_sub, Int.cast_mul, Int.cast_ofNat] using trace_coordinates hζ a b
-  · apply (Int.cast_injective (R := ℂ))
+  · apply (Int.cast_injective (α := ℂ))
     push_cast
     have hprod := jacobiRoots_product hF hχ hA
     rw [jacobiRoots_conjugate hχ A, he] at hprod

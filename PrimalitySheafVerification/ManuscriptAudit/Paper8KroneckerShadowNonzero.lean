@@ -43,20 +43,17 @@ private theorem shadowTerm_one (w : ℂ) : shadowTerm 1 w = w := by
     norm_num [kroneckerNegTwelve, jacobiSym.one_right]
   norm_num [shadowTerm, coefficient, hChi]
 
+set_option maxHeartbeats 400000 in
 private theorem series_split {w : ℂ} (hw : ‖w‖ < 1) :
     shadowSeries w = w + ∑' k : ℕ, shadowTerm (k + 2) w := by
   have hSum : Summable (fun n : ℕ => shadowTerm n w) :=
     (shadowSeries_absolute_summability hw).of_norm
-  have hTail : Summable (fun n : ℕ => shadowTerm (n + 1) w) := (summable_nat_add_iff 1).mpr hSum
-  have hFirst : shadowSeries w = shadowTerm 0 w + (∑' n : ℕ, shadowTerm (n + 1) w) :=
-    hSum.tsum_eq_zero_add
-  have hSecond : (∑' n : ℕ, shadowTerm (n + 1) w) =
-      shadowTerm 1 w + (∑' k : ℕ, shadowTerm (k + 2) w) :=
-    hTail.tsum_eq_zero_add
-  calc
-    _ = shadowTerm 0 w + (∑' n : ℕ, shadowTerm (n + 1) w) := hFirst
-    _ = w + (∑' k : ℕ, shadowTerm (k + 2) w) := by
-      rw [shadowTerm_zero, zero_add, hSecond, shadowTerm_one]
+  have hSplit : ((∑ n ∈ Finset.range 2, shadowTerm n w) +
+      (∑' k : ℕ, shadowTerm (k + 2) w)) = shadowSeries w :=
+    Summable.sum_add_tsum_nat_add 2 hSum
+  have hFinite : (∑ n ∈ Finset.range 2, shadowTerm n w) = w := by
+    simp [Finset.sum_range_succ, shadowTerm_zero, shadowTerm_one]
+  exact hSplit.symm.trans (congrArg (fun z : ℂ => z + ∑' k : ℕ, shadowTerm (k + 2) w) hFinite)
 
 private theorem quarter_real_majorant :
     HasSum (fun k : ℕ => ((1 : ℝ) / 8) ^ (k + 2)) ((1 : ℝ) / 56) := by

@@ -29,10 +29,12 @@ def diagramComplex (F : J ⥤ Ch) : CochainComplex (J ⥤ A) ℤ where
     { app := fun t ↦ (F.obj t).d i j
       naturality := fun _ _ f ↦ (F.map f).comm i j }
   shape i j h := by
-    ext t : 1
+    rw [NatTrans.ext_iff, funext_iff]
+    intro t
     exact (F.obj t).shape i j h
   d_comp_d' i j k _ _ := by
-    ext t : 1
+    rw [NatTrans.ext_iff, funext_iff]
+    intro t
     exact (F.obj t).d_comp_d i j k
 
 private abbrev H (n : ℤ) := homologyFunctor A c n
@@ -71,7 +73,7 @@ def isLimitHomologyCone (F : J ⥤ Ch) (n : ℤ) :
     S₀.mapHomologyIso L
   let a := (Cone.postcompose e.hom).obj baseCone
   let b := (H n).mapCone (coneOfHasLimitEval F)
-  have p : a.pt ≅ b.pt := pointComparison.symm
+  let p : a.pt ≅ b.pt := pointComparison.symm
   refine hBase.ofIsoLimit (Cone.ext (c := a) (c' := b) p ?_)
   intro t
   let E := evaluation J A
