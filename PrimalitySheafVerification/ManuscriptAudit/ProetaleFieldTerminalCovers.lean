@@ -60,7 +60,7 @@ theorem covering_eq_top (R : Sieve (terminalObject K))
     WeaklyEtaleAlgebraicallyClosed.rationalSectionThrough K (E.X i).hom x
   let a : T ⟶ E.X i := MorphismProperty.Over.homMk s hs
   have h : a ≫ E.f i = 𝟙 T := (terminalObject_isTerminal K).hom_ext _ _
-  apply (Sieve.id_mem_iff_eq_top R).mp
+  rw [← Sieve.id_mem_iff_eq_top]
   have ha := R.downward_closed (hPR _ (E.f i) ⟨i⟩) a
   rwa [h] at ha
 

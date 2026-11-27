@@ -48,8 +48,8 @@ theorem progressionTerm_neg_succ (τ : ℂ) (m : ℕ) :
     push_cast
     ring
   rw [progressionTerm, hIndex, shadowTerm_root_eq_exponential, coefficient,
-    kronecker_nat_mod6, if_neg hNotOne, if_pos hMod, Int.cast_neg, Int.cast_one,
-    Int.cast_natCast, neg_one_mul, neg_sq]
+    kronecker_nat_mod6, if_neg hNotOne, if_pos hMod]
+  simp only [Int.cast_neg, Int.cast_one, Int.cast_natCast, neg_one_mul, neg_sq]
 
 theorem progression_absolute_summability {τ : ℂ} (hτ : 0 < τ.im) :
     Summable (fun m : ℤ => ‖progressionTerm τ m‖) := by
@@ -58,11 +58,12 @@ theorem progression_absolute_summability {τ : ℂ} (hτ : 0 < τ.im) :
     intro a b h
     change a * 6 + j = b * 6 + j at h
     omega
-  have hPos : Summable (fun n : ℕ => ‖progressionTerm τ (n : ℤ)‖) := by
-    simpa only [Function.comp_apply, progressionTerm_nat] using hSeries.comp_injective (hinj 1)
-  have hNeg : Summable (fun n : ℕ => ‖progressionTerm τ (-((n : ℤ) + 1))‖) := by
-    simpa only [Function.comp_apply, progressionTerm_neg_succ] using
-      hSeries.comp_injective (hinj 5)
+  have hBlock (j : ℕ) : Summable (fun n : ℕ => ‖shadowTerm (n * 6 + j) (rootParameter τ)‖) :=
+    hSeries.comp_injective (hinj j)
+  have hPos : Summable (fun n : ℕ => ‖progressionTerm τ (n : ℤ)‖) :=
+    (hBlock 1).congr fun n => congrArg (fun w : ℂ => ‖w‖) (progressionTerm_nat τ n).symm
+  have hNeg : Summable (fun n : ℕ => ‖progressionTerm τ (-((n : ℤ) + 1))‖) :=
+    (hBlock 5).congr fun n => congrArg (fun w : ℂ => ‖w‖) (progressionTerm_neg_succ τ n).symm
   exact Summable.of_nat_of_neg_add_one (f := fun m : ℤ => ‖progressionTerm τ m‖) hPos hNeg
 
 private theorem residue_block (τ : ℂ) (k : ℕ) :

@@ -47,7 +47,8 @@ def reductionMap : X.EllAdicCohomology ℓ 1 →+ compatibleHOne X ℓ where
     rw [← Sheaf.H.map_comp_apply]
     change Sheaf.H.map ((lift X).map (residueReduction X ℓ (n + 1)) ≫
       (lift X).map (residueTransition X ℓ n)) 1 x = _
-    rw [← (lift X).map_comp, residueReduction_comp]⟩
+    rw [← (lift X).map_comp, residueReduction_comp]
+    rfl⟩
   map_zero' := by
     apply Subtype.ext
     funext n

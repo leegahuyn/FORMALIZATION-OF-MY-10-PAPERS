@@ -32,11 +32,13 @@ theorem globalSections_surjective {F G : D K} (f : F ⟶ G) [Epi f] :
   let J := Scheme.ProEt.topology (base K)
   let T := terminalObject K
   letI : Presheaf.IsLocallySurjective J f.hom :=
-    (Sheaf.isLocallySurjective_iff_epi' f).mpr inferInstance
+    (Sheaf.isLocallySurjective_iff_epi' A.{u} f).mpr inferInstance
   intro z
   let R : Sieve T := Presheaf.imageSieve f.hom z
   have hR : R ∈ J T := Presheaf.imageSieve_mem J f.hom z
-  have hId : R (𝟙 T) := (Sieve.id_mem_iff_eq_top R).mpr (covering_eq_top K R hR)
+  have hId : R (𝟙 T) := by
+    rw [Sieve.id_mem_iff_eq_top]
+    exact covering_eq_top K R hR
   obtain ⟨x, hx⟩ := hId
   exact ⟨x, by simpa using hx⟩
 

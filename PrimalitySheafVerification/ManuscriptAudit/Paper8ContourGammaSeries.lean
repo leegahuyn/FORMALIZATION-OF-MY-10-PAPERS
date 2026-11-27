@@ -109,8 +109,12 @@ theorem hasSumLocallyUniformlyOn_punctured {k : ℕ} (hk : 0 < k) :
   have hsR : s ∈ {z : ℂ | r < ‖z‖} := by
     change ‖s‖ / 2 < ‖s‖
     linarith
-  exact ⟨_, mem_nhdsWithin_of_mem_nhds (hOpen.mem_nhds hsR),
-    (hasSumUniformlyOn_of_lower_norm hk hr).mono (fun _ hz => hz.le)⟩
+  have hSub : {z : ℂ | r < ‖z‖} ⊆ {z : ℂ | r ≤ ‖z‖} := by
+    intro z hz
+    change r ≤ ‖z‖
+    exact (show r < ‖z‖ from hz).le
+  exact ⟨{z : ℂ | r < ‖z‖}, mem_nhdsWithin_of_mem_nhds (hOpen.mem_nhds hsR),
+    (hasSumUniformlyOn_of_lower_norm hk hr).mono hSub⟩
 
 theorem differentiableOn_punctured {k : ℕ} (hk : 0 < k) :
     DifferentiableOn ℂ (a k) {s : ℂ | s ≠ 0} := by
@@ -127,8 +131,11 @@ theorem differentiableOn_punctured {k : ℕ} (hk : 0 < k) :
     intro z hz
     have hzNorm : r < ‖z‖ := hz
     have hz₀ : z ≠ 0 := norm_pos_iff.mp (hr.trans hzNorm)
-    exact ((differentiableAt_const (c := (coefficient k m : ℂ))).div
-      (differentiableAt_id.pow (m + 1)) (pow_ne_zero _ hz₀)).differentiableWithinAt
+    have hConst : DifferentiableAt ℂ (fun _ : ℂ => (coefficient k m : ℂ)) z :=
+      differentiableAt_const (c := (coefficient k m : ℂ))
+    have hPow : DifferentiableAt ℂ (fun w : ℂ => w ^ (m + 1)) z :=
+      differentiableAt_id.pow (m + 1)
+    exact (hConst.div hPow (pow_ne_zero _ hz₀)).differentiableWithinAt
   have hDiff : DifferentiableOn ℂ (a k) U :=
     Complex.differentiableOn_tsum_of_summable_norm (F := term k) (majorant_summable hk hr)
       hTerm hOpen (fun m _ hz => norm_term_le_majorant hk hr (le_of_lt hz) m)

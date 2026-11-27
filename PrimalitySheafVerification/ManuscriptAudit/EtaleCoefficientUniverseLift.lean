@@ -81,7 +81,7 @@ instance lift_preservesFiniteLimits : PreservesFiniteLimits (lift X) := by
 instance lift_preservesEpimorphisms : (lift X).PreservesEpimorphisms where
   preserves f hf := by
     letI : Presheaf.IsLocallySurjective (J X) f.hom :=
-      (Sheaf.isLocallySurjective_iff_epi' f).mpr hf
+      (Sheaf.isLocallySurjective_iff_epi' A f).mpr hf
     letI : Sheaf.IsLocallySurjective ((lift X).map f) := locallySurjective_whisker X f.hom
     infer_instance
 

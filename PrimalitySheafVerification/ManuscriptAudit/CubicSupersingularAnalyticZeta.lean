@@ -21,7 +21,9 @@ private theorem factor_norm (F : Type*) [Field F] [Fintype F] [DecidableEq F]
     ‖α‖ = Real.sqrt (Fintype.card F : ℝ) := by
   let q : ℝ := Fintype.card F
   let a : ℝ := signedCount F A
-  have hq : 0 < q := by exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
+  have hq : 0 < q := by
+    change (0 : ℝ) < (Fintype.card F : ℝ)
+    exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
   have hqC : (Fintype.card F : ℂ) ≠ 0 := by
     exact_mod_cast (Fintype.card_ne_zero : Fintype.card F ≠ 0)
   have hα : α ≠ 0 := by
@@ -59,8 +61,12 @@ theorem actual_zeta_eq (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0)
     Paper5ActualHasseWeil.exist_two_roots (signedCount F A : ℂ) (Fintype.card F : ℂ)
   let q : ℝ := Fintype.card F
   let qC : ℂ := Fintype.card F
-  have hq : 0 < q := by exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
-  have hq₁ : 1 ≤ q := by exact_mod_cast (le_of_lt (Fintype.one_lt_card : 1 < Fintype.card F))
+  have hq : 0 < q := by
+    change (0 : ℝ) < (Fintype.card F : ℝ)
+    exact_mod_cast (Fintype.card_pos : 0 < Fintype.card F)
+  have hq₁ : 1 ≤ q := by
+    change (1 : ℝ) ≤ (Fintype.card F : ℝ)
+    exact_mod_cast (le_of_lt (Fintype.one_lt_card : 1 < Fintype.card F))
   have h₂ : ringChar F ≠ 2 := by rw [ringChar.eq F p]; omega
   obtain ⟨h₂p, h₃p⟩ := Paper5NonsplitFrobeniusModFour.small_char p (ZMod p) hp
   have h₂F : (2 : F) ≠ 0 := by
@@ -93,9 +99,13 @@ theorem actual_zeta_eq (hp : 5 ≤ p) (hP : p % 3 = 2) {A : F} (hA : A ≠ 0)
     ring
   have hHas : HasSum (pointTerm p F A z)
       (traceLog (qC * z) + traceLog z - traceLog (α * z) - traceLog (β * z)) := by
-    have h := (((traceLog_hasSum hqCz).add (traceLog_hasSum hz₁)).sub
-      (traceLog_hasSum hαz)).sub (traceLog_hasSum hβz)
-    exact h.congr (fun n => (hTerm n).symm)
+    have H (w : ℂ) (hw : ‖w‖ < 1) : HasSum (fun n => term n w) (traceLog w) :=
+      (traceLog_hasSum hw).summable.hasSum
+    have h := (((H _ hqCz).add (H _ hz₁)).sub (H _ hαz)).sub (H _ hβz)
+    have hEq : (fun n : ℕ => term n (qC * z) + term n z - term n (α * z) - term n (β * z)) =
+        pointTerm p F A z := funext (fun n => (hTerm n).symm)
+    rw [hEq] at h
+    exact h
   refine ⟨hHas.summable, ?_⟩
   rw [hHas.tsum_eq, Complex.exp_sub, Complex.exp_sub, Complex.exp_add,
     exp_traceLog hqCz, exp_traceLog hz₁, exp_traceLog hαz, exp_traceLog hβz]

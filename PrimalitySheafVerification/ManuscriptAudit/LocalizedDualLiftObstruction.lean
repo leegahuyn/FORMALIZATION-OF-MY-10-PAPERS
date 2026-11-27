@@ -30,9 +30,10 @@ theorem not_formally_unramified_of_local_lifts (v : A →ₐ[K] K) (P : Ideal A)
     rw [show r (f x) = v x from AlgHom.congr_fun h x]
     apply isUnit_iff_ne_zero.mpr
     intro hz
-    apply (Ideal.mem_primeCompl_iff.mp x.2)
-    rw [hP]
-    exact RingHom.mem_ker.mpr hz
+    let u : A := x
+    have hup : u ∉ P := Ideal.mem_primeCompl_iff.mp x.2
+    have huk : u ∈ RingHom.ker v.toRingHom := RingHom.mem_ker.mpr hz
+    exact hup (Eq.mpr (congrArg (fun J : Ideal A => u ∈ J) hP) huk)
   let aS : S →ₐ[K] K[ε] := IsLocalization.liftAlgHom (hUnit a ha)
   let bS : S →ₐ[K] K[ε] := IsLocalization.liftAlgHom (hUnit b hb)
   have haS (x : A) : aS (algebraMap A S x) = a x :=
@@ -49,7 +50,8 @@ theorem not_formally_unramified_of_local_lifts (v : A →ₐ[K] K) (P : Ideal A)
   have hNil : IsNilpotent (RingHom.ker r.toRingHom) := ⟨2, TrivSqZeroExt.kerIdeal_sq K K⟩
   have hMaps := Algebra.FormallyUnramified.lift_unique' r hNil aS bS hSame
   apply hNe
-  ext x
+  apply AlgHom.ext
+  intro x
   exact (haS x).symm.trans ((AlgHom.congr_fun hMaps (algebraMap A S x)).trans (hbS x))
 
 end

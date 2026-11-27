@@ -40,6 +40,7 @@ private theorem dual_value (W : WeierstrassCurve K) (x y a b : K) :
   · simp only [value, dx, dy, WeierstrassCurve.map_a₁, WeierstrassCurve.map_a₂,
       WeierstrassCurve.map_a₃, WeierstrassCurve.map_a₄, WeierstrassCurve.map_a₆,
       pow_succ, pow_zero, mul_one, TrivSqZeroExt.snd_add, TrivSqZeroExt.snd_sub,
+      TrivSqZeroExt.fst_one, TrivSqZeroExt.snd_one,
       DualNumber.snd_mul, TrivSqZeroExt.fst_mul, fst_dual, snd_dual,
       TrivSqZeroExt.algebraMap_eq_inl, TrivSqZeroExt.fst_inl, TrivSqZeroExt.snd_inl]
     ring

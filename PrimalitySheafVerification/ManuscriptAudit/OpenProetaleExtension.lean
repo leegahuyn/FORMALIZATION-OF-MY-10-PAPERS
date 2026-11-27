@@ -83,7 +83,10 @@ theorem postcomposeCoverPreserving :
       change (P.map F).map H ∈ Scheme.proetalePrecoverage W.left
       obtain ⟨ι, Y, f, rfl⟩ := P.exists_eq_ofArrows
       rw [Presieve.map_ofArrows, Presieve.map_ofArrows]
-      simpa only [Presieve.map_ofArrows] using h₀
+      rw [Presieve.map_ofArrows] at h₀
+      change Presieve.ofArrows (fun i ↦ (Y i).left) (fun i ↦ (f i).left) ∈
+        Scheme.proetalePrecoverage W.left at h₀ ⊢
+      exact h₀
     apply (Scheme.ProEt.topology X).superset_covering _
       (Precoverage.generate_mem_toGrothendieck h₁)
     apply (Sieve.generate_le_iff _ _).mpr

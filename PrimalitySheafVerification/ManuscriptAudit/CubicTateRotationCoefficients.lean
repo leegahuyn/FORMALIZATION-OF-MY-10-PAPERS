@@ -85,12 +85,12 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (hA : A ≠ 0)
     let J : Module.End ℤ_[l] (Tate l (Curve A).Point) := 1
     have hFa : (endMap l) (a • I) = (a : ℤ_[l]) • J := by
       calc
-        _ = a • (endMap l) I := map_zsmul (endMap l) I a
+        _ = a • (endMap l) I := map_zsmul (endMap l) a I
         _ = a • J := congrArg (fun f : Module.End ℤ_[l] (Tate l (Curve A).Point) => a • f)
           (map_one (endMap l))
         _ = _ := (Int.cast_smul_eq_zsmul ℤ_[l] a J).symm
     have hFb : (endMap l) (b • r) = (b : ℤ_[l]) • S :=
-      (map_zsmul (endMap l) r b).trans (Int.cast_smul_eq_zsmul ℤ_[l] b S).symm
+      (map_zsmul (endMap l) b r).trans (Int.cast_smul_eq_zsmul ℤ_[l] b S).symm
     have he := congrArg (endMap l) hF
     change (endMap l) F = (endMap l) (a • I + b • r) at he
     exact he.trans ((map_add (endMap l) (a • I) (b • r)).trans (congrArg₂ (· + ·) hFa hFb))

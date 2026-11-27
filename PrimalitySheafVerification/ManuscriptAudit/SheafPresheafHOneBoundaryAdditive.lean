@@ -36,7 +36,7 @@ def sectionAddEquiv (F : Sheaf J AddCommGrpCat.{v}) (U : C) :
   toEquiv := sectionEquiv J F U
   map_add' f g := by
     change sectionEquiv J F U (f + g) = sectionEquiv J F U f + sectionEquiv J F U g
-    simp only [sectionEquiv_eval]
+    rw [sectionEquiv_eval J F U (f + g), sectionEquiv_eval J F U f, sectionEquiv_eval J F U g]
     rfl
 
 /-- The usual section boundary as an additive homomorphism. -/
