@@ -95,10 +95,13 @@ theorem normalizationEssSurj : (normalizationPullback K).EssSurj where
     obtain ⟨R, d, hd, a, ha⟩ := CuspProetaleAffineDescent.affine_weaklyEtale_descends K p _ f
     letI : WeaklyEtale d := hd
     let W := AffineProetaleSite.mk (Cusp K) d
-    let e' : (AffineProetaleSite.mk (Normalization K) f).obj ≅
-        ((normalizationPullback K).obj W).obj :=
+    let V := AffineProetaleSite.mk (Normalization K) f
+    let e' : (inclusion (Normalization K)).obj V ≅
+        (inclusion (Normalization K)).obj ((normalizationPullback K).obj W) :=
       MorphismProperty.Over.isoMk ha.isoPullback ha.isoPullback_hom_snd
-    let h := (affineObjects (Normalization K)).fullyFaithfulι.preimageIso e'
+    let h : V ≅ (normalizationPullback K).obj W :=
+      (affineObjects (Normalization K)).fullyFaithfulι.preimageIso
+        (X := V) (Y := (normalizationPullback K).obj W) e'
     exact ⟨W, ⟨h.symm ≪≫ e.symm⟩⟩
 
 include p pPrime kCharP in

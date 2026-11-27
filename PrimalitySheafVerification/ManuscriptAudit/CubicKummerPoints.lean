@@ -34,8 +34,8 @@ private theorem sym2x_diagonal (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     have hx : x ≠ 0 := by
       intro he
       exact hA (by simpa [he] using hB)
+    have hB' : A = -(x ^ 3) := eq_neg_of_add_eq_zero_right hB
     have hVal : x ^ 4 - 8 * A * x = (3 : K) ^ 2 * x ^ 4 := by
-      have hB' : A = -(x ^ 3) := eq_neg_of_add_eq_zero_right hB
       rw [hB']
       ring
     refine ⟨x ^ 4 - 8 * A * x, by
@@ -44,7 +44,7 @@ private theorem sym2x_diagonal (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
     change forms A ((Affine.Point.some x y hP).sym2x _) = _
     rw [Affine.Point.sym2x_some_some]
     ext i
-    fin_cases i <;> simp [forms] <;> ring_nf at hB ⊢ <;> linear_combination hB
+    fin_cases i <;> simp [forms, hB'] <;> ring
   · have hY : y ≠ (Curve A).negY x y := by
       rw [negY_formula]
       intro h
@@ -59,12 +59,16 @@ private theorem sym2x_diagonal (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
       fun i => (4 * y ^ 2) * (((Affine.Point.some x y hP) + (.some x y hP)).sym2x 0 i)
     rw [Affine.Point.add_of_Y_ne hY, Affine.Point.sym2x_some_zero, Affine.Point.sym2x_some_some,
       Affine.slope_of_Y_ne rfl hY, negY_formula]
-    have hDen : y - -y ≠ 0 := sub_ne_zero.mpr (by simpa [negY_formula] using hY)
+    have hAddY : y + y = (2 : K) * y := by ring
+    have hDen : y + y ≠ 0 := by rw [hAddY]; exact mul_ne_zero h₂ hy
+    have hScaleSq : (4 : K) * y ^ 2 = (y + y) ^ 2 := by ring
+    have hProd : (4 * y ^ 2) * ((3 * x ^ 2 / (y + y)) ^ 2) = (3 * x ^ 2) ^ 2 := by
+      rw [hScaleSq, div_pow, mul_comm, div_mul_cancel₀ _ (pow_ne_zero 2 hDen)]
     ext i
     fin_cases i
     · simp [forms, Curve, CubicAffine, shortCubic, Affine.addX]
-      field_simp [hDen, show y + y ≠ 0 by simpa only [sub_neg_eq_add] using hDen]
-      linear_combination 32 * x * y ^ 2 * hyq
+      rw [mul_sub, mul_sub, hProd]
+      linear_combination (8 * x) * hyq
     · simp [forms]
       linear_combination -4 * hyq
     · simp [forms] <;> ring
@@ -133,7 +137,8 @@ theorem sym2x_add_sub (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0)
           rw [Affine.Point.neg_some, Affine.Point.some.injEq, negY_formula]
           exact ⟨rfl, rfl⟩
         refine ⟨(x - z) ^ 2, pow_ne_zero _ (sub_ne_zero.mpr hxz), ?_⟩
-        rw [sub_eq_add_neg, hNeg, Affine.Point.add_of_X_ne (h₁ := hP) (h₂ := hQ) hxz,
+        rw [sub_eq_add_neg (Affine.Point.some x y hP : (Curve A).Point) (.some z w hQ),
+          hNeg, Affine.Point.add_of_X_ne (h₁ := hP) (h₂ := hQ) hxz,
           Affine.Point.add_of_X_ne (h₁ := hP) (h₂ := hQ') hxz]
         simp only [Affine.Point.sym2x_some_some, Affine.slope_of_X_ne hxz]
         simpa [Curve, CubicAffine, shortCubic, Affine.addX, sub_neg_eq_add] using secant_forms hxz hy hw

@@ -16,7 +16,7 @@ def symmetric {R : Type*} [CommRing R] (a b : Fin 2 → R) : Fin 3 → R :=
 theorem map_symmetric {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (a b : Fin 2 → R) :
     symmetric (f ∘ a) (f ∘ b) = f ∘ symmetric a b := by
-  ext i
+  funext i
   fin_cases i <;> simp [symmetric, Function.comp_apply]
 
 theorem symmetric_ne_zero {R : Type*} [CommRing R] [IsDomain R]
@@ -28,12 +28,12 @@ theorem symmetric_ne_zero {R : Type*} [CommRing R] [IsDomain R]
   have hA : a 0 = 0 → a 1 ≠ 0 := by
     intro h j
     apply ha
-    ext i
+    funext i
     fin_cases i <;> assumption
   have hB : b 0 = 0 → b 1 ≠ 0 := by
     intro h j
     apply hb
-    ext i
+    funext i
     fin_cases i <;> assumption
   rcases mul_eq_zero.mp h₀ with h | h
   · have ha₁ := hA h
@@ -68,7 +68,7 @@ theorem coeff_pairHeight_ne_zero {a : Fin 2 → K[X]} (ha : a ≠ 0) :
       change (a 0).coeff (pairHeight a) = 0 at h0
       rwa [hH, ← hd, coeff_natDegree, leadingCoeff_eq_zero] at h0
     apply ha
-    ext i
+    funext i
     fin_cases i <;> assumption
   · change (a 0).coeff (max (a 0).natDegree (a 1).natDegree) = 0 at h0
     rw [max_eq_left hl, coeff_natDegree, leadingCoeff_eq_zero] at h0
@@ -78,7 +78,7 @@ theorem coeff_pairHeight_ne_zero {a : Fin 2 → K[X]} (ha : a ≠ 0) :
       change (a 1).coeff (pairHeight a) = 0 at h1
       rwa [hH, ← hd, coeff_natDegree, leadingCoeff_eq_zero] at h1
     apply ha
-    ext i
+    funext i
     fin_cases i <;> assumption
 
 /-- The symmetric product has the sum of the degrees of its polynomial factors. -/
@@ -93,7 +93,7 @@ theorem height_symmetric {a b : Fin 2 → K[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     intro i
     fin_cases i
     · exact hm 0 0
-    · exact natDegree_add_le.trans (max_le (hm 0 1) (hm 1 0))
+    · exact le_trans (by apply natDegree_add_le) (max_le (hm 0 1) (hm 1 0))
     · exact hm 1 1
   refine le_antisymm hUpper ?_
   have hCoeff (i j : Fin 2) :
@@ -101,13 +101,13 @@ theorem height_symmetric {a b : Fin 2 → K[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     coeff_mul_add_eq_of_natDegree_le (natDegree_le_pairHeight a i) (natDegree_le_pairHeight b j)
   have hEq : (fun i => (symmetric a b i).coeff d) =
       symmetric (fun i => (a i).coeff (pairHeight a)) (fun i => (b i).coeff (pairHeight b)) := by
-    ext i
+    funext i
     fin_cases i <;> simp [symmetric, hCoeff]
   have hNe := symmetric_ne_zero (coeff_pairHeight_ne_zero ha) (coeff_pairHeight_ne_zero hb)
   rw [← hEq] at hNe
   by_contra! hLt
   apply hNe
-  funext i
+  funfunext i
   exact coeff_eq_zero_of_natDegree_lt ((natDegree_le_height _ i).trans_lt hLt)
 
 end

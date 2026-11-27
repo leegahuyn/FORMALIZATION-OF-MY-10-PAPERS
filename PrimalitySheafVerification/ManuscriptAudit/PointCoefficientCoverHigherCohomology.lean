@@ -65,7 +65,7 @@ abbrev CoverCochain (n : ℕ) :=
   ∀ t : Fin (n+1) → I, ∀ p : InIntersection P U t, M p.val
 
 def coverReindex (n : ℕ) :
-    CoverCochain P U M n ≃+ (∀ p : P, (Fin (n+1) → VisibleAt U p) → M p) where
+    CoverCochain P U M n ≃+ (∀ p : P, (Fin (n+1) → VisibleAt P U p) → M p) where
   toFun c p t := c (fun j => (t j).val) ⟨p, fun j => (t j).property⟩
   invFun c t p := c p.val (fun j => ⟨t j, p.property j⟩)
   left_inv c := by
@@ -77,13 +77,18 @@ def coverReindex (n : ℕ) :
   map_add' _ _ := rfl
 
 def coverDifferential (n : ℕ) (c : CoverCochain P U M n) : CoverCochain P U M (n+1) :=
-  (coverReindex P U M (n+1)).symm (fun p => alternating n (coverReindex P U M n c p))
+  fun t p => ∑ i : Fin (n+2), ((-1 : ℤ)^i.val) •
+    c (t ∘ i.succAbove) ⟨p.val, fun j => p.property (i.succAbove j)⟩
 
 theorem cover_differential_formula (n : ℕ) (c : CoverCochain P U M n)
     (t : Fin (n+2) → I) (p : InIntersection P U t) :
     coverDifferential P U M n c t p =
       ∑ i : Fin (n+2), ((-1 : ℤ)^i.val) •
         c (t ∘ i.succAbove) ⟨p.val, fun j => p.property (i.succAbove j)⟩ := rfl
+
+private theorem coverReindex_differential (n : ℕ) (c : CoverCochain P U M n) :
+    coverReindex P U M (n+1) (coverDifferential P U M n c) =
+      fun p => alternating n (coverReindex P U M n c p) := rfl
 
 set_option maxHeartbeats 1400000 in
 theorem any_cover_positive_cocycle_is_coboundary (hCover : iSup U = ⊤) (n : ℕ)
@@ -95,14 +100,15 @@ theorem any_cover_positive_cocycle_is_coboundary (hCover : iSup U = ⊤) (n : �
     apply Opens.mem_iSup.mp
     rw [hCover]
     trivial
-  let i (p : P) : VisibleAt U p := ⟨Classical.choose (h p), Classical.choose_spec (h p)⟩
+  let i (p : P) : VisibleAt P U p := ⟨Classical.choose (h p), Classical.choose_spec (h p)⟩
   let e := coverReindex P U M n
   let e' := coverReindex P U M (n+1)
   let a := e.symm (fun p t => e' c p (Fin.cons (i p) t))
   have hD := congrArg (coverReindex P U M (n+2)) hc
-  rw [coverDifferential, AddEquiv.apply_symm_apply, map_zero] at hD
+  rw [coverReindex_differential, map_zero] at hD
   refine ⟨a, e'.injective ?_⟩
-  simp only [coverDifferential, e', AddEquiv.apply_symm_apply]
+  change coverReindex P U M (n+1) (coverDifferential P U M n a) = e' c
+  rw [coverReindex_differential]
   funext p
   rw [show coverReindex P U M n a = (fun p t => e' c p (Fin.cons (i p) t)) from
     e.apply_symm_apply _]

@@ -55,7 +55,7 @@ theorem height_characteristic_relation (D : QuadraticMap ℤ G ℤ) (F : G →+ 
   have hBTrace : B (F (F P)) P = t ^ 2 - 2 * q := by nlinarith only [hSq]
   have hTrace : q + 1 - D (F P - P) = t := by
     have hNeg : B (F P) (-P) = -t := QuadraticMap.polar_neg_right D (F P) P
-    rw [sub_eq_add_neg, hAdd, D.map_neg, hDP, hP, hNeg]
+    rw [sub_eq_add_neg (F P) P, hAdd, D.map_neg, hDP, hP, hNeg]
     ring
   dsimp only
   rw [hTrace, sub_eq_add_neg, ← neg_zsmul, hAdd₃]

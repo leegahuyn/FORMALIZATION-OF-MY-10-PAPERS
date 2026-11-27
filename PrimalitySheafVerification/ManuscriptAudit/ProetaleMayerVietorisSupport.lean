@@ -33,6 +33,7 @@ variable {U V W X : Scheme.{0}} (j : U ⟶ X) (k : V ⟶ X) (l : W ⟶ X)
 private abbrev P := (coverComplex j k l a b hD hCover).X₁
 private abbrev Q := (coverComplex j k l a b hD hCover).X₃
 
+include hZ in
 private theorem overlap_ext_subsingleton (n : ℕ) :
     Subsingleton (Ext (P j k l a b hD hCover) S.X₃ n) := by
   letI := ExtSupportExactness.ext_subsingleton_of_isZero
@@ -54,6 +55,7 @@ def overlapEquiv (n : ℕ) :
     ((overlapExtEquiv j k l a b hD hCover hS hZ n).trans
       (firstEquiv j k l a b hD hCover S.X₂ (n + 1)))
 
+include hS hZ in
 set_option maxHeartbeats 1200000 in
 /-- An injective ambient connecting arrow stays injective for the support kernel. -/
 theorem connecting_injective_of_support (n : ℕ)

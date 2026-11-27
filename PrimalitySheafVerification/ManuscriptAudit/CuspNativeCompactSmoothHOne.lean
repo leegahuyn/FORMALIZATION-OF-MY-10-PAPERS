@@ -28,13 +28,15 @@ variable (K : Type) [Field K] [IsAlgClosed K]
 
 private abbrev A := AddCommGrpCat.{1}
 
-private theorem punctured_range :
+/-- The actual smooth affine open removes the rational origin. -/
+theorem punctured_range :
     Set.range (cuspPuncturedOpen K).ι = (Set.range (cuspOrigin K))ᶜ := by
   change ((cuspPuncturedOpen K).ι.opensRange : Set (affineCusp K)) = (Set.range (cuspOrigin K))ᶜ
   rw [Scheme.Opens.opensRange_ι]
   rfl
 
-private theorem properOrigin_closed : IsClosedImmersion (cuspOrigin K ≫ affineOpen K) := by
+/-- The rational cusp origin is closed also in the proper compactification. -/
+theorem properOrigin_closed : IsClosedImmersion (cuspOrigin K ≫ affineOpen K) := by
   apply isClosedImmersion_of_comp_eq_id (projectiveCuspToBase K)
   have h : CommRingCat.ofHom (algebraMap K (CuspPunctured.CuspSubalgebra K)) ≫
       CuspConductorSquare.origin K = 𝟙 (CommRingCat.of K) := by

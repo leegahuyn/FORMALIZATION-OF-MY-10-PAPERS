@@ -35,7 +35,8 @@ theorem reflects_covering [Surjective f] {U : Affine Y} (R : Sieve U)
   classical
   let G := F f
   have hx := ((inclusion X).functorPushforward_mem_iff (topology X) (Scheme.ProEt.topology X)).mpr hR
-  rw [← Sieve.functorPushforward_comp, baseChange_comp_inclusion] at hx
+  rw [← Sieve.functorPushforward_comp] at hx
+  change R.functorPushforward G ∈ Scheme.ProEt.topology X (G.obj U) at hx
   letI : IsAffine (G.obj U).left := ((baseChange f).obj U).property
   obtain ⟨n, V, a, _, _, ha, hSurj⟩ :=
     ProetaleAffineCover.exists_finite_refinement (T := G.obj U) (R.functorPushforward G) hx
@@ -71,7 +72,9 @@ theorem preserves_covering {U : Affine Y} (R : Sieve U)
     (hR : R ∈ topology Y U) :
     R.functorPushforward (baseChange f) ∈ topology X ((baseChange f).obj U) := by
   apply ((inclusion X).functorPushforward_mem_iff (topology X) (Scheme.ProEt.topology X)).mp
-  rw [← Sieve.functorPushforward_comp, baseChange_comp_inclusion, Sieve.functorPushforward_comp]
+  rw [← Sieve.functorPushforward_comp]
+  change R.functorPushforward (F f) ∈ Scheme.ProEt.topology X ((F f).obj U)
+  rw [Sieve.functorPushforward_comp]
   exact (ProetaleBaseChange.coverPreserving f).cover_preserve
     (((inclusion Y).functorPushforward_mem_iff (topology Y) (Scheme.ProEt.topology Y)).mpr hR)
 
