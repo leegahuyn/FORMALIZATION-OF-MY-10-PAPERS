@@ -29,10 +29,10 @@ def diagramComplex (F : J ⥤ Ch) : CochainComplex (J ⥤ A) ℤ where
     { app := fun t ↦ (F.obj t).d i j
       naturality := fun _ _ f ↦ (F.map f).comm i j }
   shape i j h := by
-    ext t
+    ext t : 1
     exact (F.obj t).shape i j h
   d_comp_d' i j k _ _ := by
-    ext t
+    ext t : 1
     exact (F.obj t).d_comp_d i j k
 
 private abbrev H (n : ℤ) := homologyFunctor A c n
@@ -60,7 +60,7 @@ whenever the shape has exact limits in abelian groups. -/
 def isLimitHomologyCone (F : J ⥤ Ch) (n : ℤ) :
     IsLimit ((H n).mapCone (coneOfHasLimitEval F)) := by
   let L : (J ⥤ A) ⥤ A := lim
-  letI : L.Additive := Functor.additive_of_preservesBinaryBiproducts L
+  letI : L.Additive := L.additive_of_preserves_binary_products
   letI : L.PreservesHomology := inferInstance
   let S₀ := S F n
   let e := diagramHomologyIso F n
@@ -69,7 +69,10 @@ def isLimitHomologyCone (F : J ⥤ Ch) (n : ℤ) :
     (IsLimit.postcomposeHomEquiv e baseCone).symm (limit.isLimit S₀.homology)
   let pointComparison : (H n).obj (coneOfHasLimitEval F).pt ≅ limit S₀.homology :=
     S₀.mapHomologyIso L
-  apply hBase.ofIsoLimit (Cone.ext pointComparison.symm ?_)
+  let a := (Cone.postcompose e.hom).obj baseCone
+  let b := (H n).mapCone (coneOfHasLimitEval F)
+  have p : a.pt ≅ b.pt := pointComparison.symm
+  refine hBase.ofIsoLimit (Cone.ext (c := a) (c' := b) p ?_)
   intro t
   let E := evaluation J A
   change (lim.π t).app S₀.homology ≫ (S₀.mapHomologyIso (E.obj t)).inv =
@@ -78,7 +81,7 @@ def isLimitHomologyCone (F : J ⥤ Ch) (n : ℤ) :
   simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
 /-- Homology preserves the given native exact-shaped limit of abelian-group complexes. -/
-def preservesLimit (F : J ⥤ Ch) (n : ℤ) : PreservesLimit F (H n) :=
+theorem preservesLimit (F : J ⥤ Ch) (n : ℤ) : PreservesLimit F (H n) :=
   preservesLimit_of_preserves_limit_cone (isLimitConeOfHasLimitEval F) (isLimitHomologyCone F n)
 
 end

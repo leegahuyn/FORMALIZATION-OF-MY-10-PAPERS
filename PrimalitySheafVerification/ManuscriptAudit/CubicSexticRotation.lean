@@ -39,6 +39,12 @@ theorem rotate_one (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) :
     rw [rotate_some, Affine.Point.some.injEq]
     simp only [one_mul, and_self]
 
+theorem rotate_eq_id (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0)
+    {z : L} (hz : z ^ 3 = 1) (h : z = 1) :
+    (rotate z hz hΔ : AddMonoid.End (UnitPoints L)) = 1 := by
+  subst z
+  exact rotate_one L hΔ
+
 theorem sextic_eq_rotation {v : L} (hv : v ^ 6 = 1)
     (hΔ : (shortCubic (0 : L) 1).Δ ≠ 0) (hs : v ^ 3 = 1) :
     sexticScale L hv hΔ = rotate (v ^ 2) (square_cube L hv) hΔ := by

@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Topology.MetricSpace.Ultra.Basic
 import PrimalitySheafVerification.ManuscriptAudit.IntegralNodalGeometricBoundary
 
 /-! Degree zero of Mathlib's actual pro-étale ℓ-adic coefficient sheaf. -/
@@ -30,6 +31,10 @@ def continuousEquiv : X.EllAdicCohomology ℓ 0 ≃+ C(X, ℤ_[ℓ]) := by
 
 /-- On a nonempty preconnected scheme the actual pro-étale ℓ-adic H⁰ is the coefficient group. -/
 def connectedEquiv [PreconnectedSpace X] (x : X) : X.EllAdicCohomology ℓ 0 ≃+ ℤ_[ℓ] := by
+  letI : TotallySeparatedSpace ℤ_[ℓ] := totallySeparatedSpace_iff_exists_isClopen.mpr (by
+    intro a b hab
+    exact ⟨Metric.ball a (dist a b), IsUltrametricDist.isClopen_ball _ _,
+      Metric.mem_ball_self (dist_pos.mpr hab), by simp [Metric.mem_ball, dist_comm]⟩)
   let e : C(X, ℤ_[ℓ]) ≃+ ℤ_[ℓ] :=
     { toFun := fun f ↦ f x
       invFun := ContinuousMap.const X

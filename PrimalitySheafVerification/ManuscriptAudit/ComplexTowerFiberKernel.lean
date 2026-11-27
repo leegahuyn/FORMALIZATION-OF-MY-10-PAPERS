@@ -30,7 +30,7 @@ theorem homology_projection_mono (n₀ n₁ : ℤ) (hn : n₀ + 1 = n₁)
   have hd : δ = 0 :=
     (cancel_epi (homologyMap (difference K transition) n₀)).mp
       ((CochainComplex.homologyMap_homologyδOfTriangle T hT n₀ n₁ hn).trans
-        (comp_zero _).symm)
+        (by simp))
   let S := ShortComplex.mk δ (homologyMap (toProduct K transition) n₁)
     (CochainComplex.homologyδOfTriangle_homologyMap T hT n₀ n₁ hn)
   have hS : S.Exact := CochainComplex.homologyMap_exact₁_of_distTriang T hT n₀ n₁ hn
@@ -48,7 +48,7 @@ def homologyKernelIso (n₀ n₁ : ℤ) (hn : n₀ + 1 = n₁)
       (triangle_distinguished K transition) n₁)
   letI : Mono S.f := homology_projection_mono K transition n₀ n₁ hn
   have hS : S.Exact := homology_exact K transition n₁
-  exact hS.fIsKernel.conePointUniqueUpToIso (kernelIsKernel g)
+  exact hS.fIsKernel.conePointUniqueUpToIso (limit.isLimit (parallelPair g 0))
 
 end
 end ManuscriptAudit.ComplexTowerFiberKernel

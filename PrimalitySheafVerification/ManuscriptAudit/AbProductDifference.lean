@@ -26,7 +26,7 @@ variable (G : ℕ → A) (transition : ∀ r, G (r + 1) ⟶ G r)
 def productIso : ∏ᶜ G ≅ AddCommGrpCat.of (∀ r, G r) :=
   (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone G).isLimit
 
-private theorem productIso_apply (x : ∏ᶜ G) (r : ℕ) :
+private theorem productIso_apply (x : (∏ᶜ G : A)) (r : ℕ) :
     (productIso G).hom x r = Pi.π G r x :=
   CategoryTheory.congr_fun (IsLimit.conePointUniqueUpToIso_hom_comp
     (limit.isLimit _) (AddCommGrpCat.HasLimit.productLimitCone G).isLimit (Discrete.mk r)) x
@@ -56,7 +56,7 @@ theorem difference_epi (onto : ∀ r, Function.Surjective (transition r : G (r +
   have h : Epi ((productIso G).hom ≫ concreteDifference G transition) := inferInstance
   rw [← difference_comp_productIso] at h
   letI := h
-  exact epi_of_epi _ _
+  exact epi_of_epi (difference G transition) (productIso G).hom
 
 private theorem concrete_kernel :
     (concreteDifference G transition).hom.ker =
@@ -65,7 +65,7 @@ private theorem concrete_kernel :
   exact productDifference_eq_zero_iff (fun r ↦ G r) (fun r ↦ (transition r).hom) x
 
 /-- The native categorical kernel is exactly the compatible-class group. -/
-def kernelEquiv : kernel (difference G transition) ≃+
+def kernelEquiv : (kernel (difference G transition) : A) ≃+
     compatibleTuples (fun r ↦ G r) (fun r ↦ (transition r).hom) := by
   let g := concreteDifference G transition
   let e := productIso G

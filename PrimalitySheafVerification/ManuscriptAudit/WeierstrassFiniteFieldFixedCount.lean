@@ -82,8 +82,8 @@ theorem kernel_card (W : Affine E) :
 
 variable [IsAlgClosed L]
 
-/-- The fixed subgroup of the native centered Frobenius counts literal projective points. -/
 set_option maxHeartbeats 500000 in
+/-- The fixed subgroup of the native centered Frobenius counts literal projective points. -/
 theorem centered_kernel_card (A : E) :
     Nat.card ↥((1 - arithmeticPointFrobenius E L A).ker) =
       Nat.card (shortCubic (0 : E) A).toProjective.Point := by

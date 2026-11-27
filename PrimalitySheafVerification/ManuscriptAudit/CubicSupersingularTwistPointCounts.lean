@@ -37,8 +37,7 @@ theorem count_from_rotation (hp : 5 ≤ p) (hp₃ : p % 3 = 2)
   have hCount := (WeierstrassFiniteFieldFixedCount.centered_kernel_card E L A).symm.trans hConjCount
   rw [hCount]
   by_cases h : z = 1
-  · have hR : r = 1 := by
-      simpa only [r, h] using rotate_one L hΔ
+  · have hR : r = 1 := rotate_eq_id L hΔ hz h
     rw [if_pos h, hR]
     exact scalar_kernel_card s (multiplication_and_torsion p L hp hp₃ _
       (scalar_norm_coprime p Fact.out hs)).2

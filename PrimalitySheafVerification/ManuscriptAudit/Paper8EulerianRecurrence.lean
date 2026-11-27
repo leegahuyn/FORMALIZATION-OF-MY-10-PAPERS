@@ -63,9 +63,9 @@ theorem H_recurrence {q a : ℝ} (hq : 0 ≤ q) (h₁ : q < 1) (ha : 0 ≤ a) (h
     have h := adjacent_term hq ha n
     rw [pow_succ' q n] at h ⊢
     linear_combination h
-  have hAdjacentSum := congrArg (fun f : ℕ → ℝ => ∑' n : ℕ, f n) (funext hAdjacent)
-  change (∑' n : ℕ, term q a (n + 1) + a * weightedTerm q a (n + 1)) =
-    ∑' n : ℕ, (-a ^ 2 * q) * weightedTerm q a n at hAdjacentSum
+  have hAdjacentSum : (∑' n : ℕ, term q a (n + 1) + a * weightedTerm q a (n + 1)) =
+      (∑' n : ℕ, (-a ^ 2 * q) * weightedTerm q a n) :=
+    congrArg (fun f : ℕ → ℝ => ∑' n : ℕ, f n) (funext hAdjacent)
   rw [hsTail.tsum_add (hwTail.mul_left a), hwTail.tsum_mul_left, hw.tsum_mul_left,
     hTail, hWeightedTail] at hAdjacentSum
   have hAQ : a * q ≤ 1 := by
@@ -76,9 +76,9 @@ theorem H_recurrence {q a : ℝ} (hq : 0 ≤ q) (h₁ : q < 1) (ha : 0 ≤ a) (h
   have hShift (n : ℕ) :
       (1 + a * q) * weightedTerm q a (n + 1) = -(a ^ 2 * q ^ 2) * term q (a * q) n :=
     shifted_term hq ha n
-  have hShiftSum := congrArg (fun f : ℕ → ℝ => ∑' n : ℕ, f n) (funext hShift)
-  change (∑' n : ℕ, (1 + a * q) * weightedTerm q a (n + 1)) =
-    ∑' n : ℕ, -(a ^ 2 * q ^ 2) * term q (a * q) n at hShiftSum
+  have hShiftSum : (∑' n : ℕ, (1 + a * q) * weightedTerm q a (n + 1)) =
+      (∑' n : ℕ, -(a ^ 2 * q ^ 2) * term q (a * q) n) :=
+    congrArg (fun f : ℕ → ℝ => ∑' n : ℕ, f n) (funext hShift)
   rw [hwTail.tsum_mul_left, hsShift.tsum_mul_left, hWeightedTail] at hShiftSum
   change H q a - 1 + a * (weighted q a - 1) = (-a ^ 2 * q) * weighted q a at hAdjacentSum
   change (1 + a * q) * (weighted q a - 1) = -(a ^ 2 * q ^ 2) * H q (a * q) at hShiftSum

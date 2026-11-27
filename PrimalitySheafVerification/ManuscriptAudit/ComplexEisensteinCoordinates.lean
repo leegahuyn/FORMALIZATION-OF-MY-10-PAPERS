@@ -46,8 +46,9 @@ theorem primitive_conj {ζ : ℂ} (hζ : IsPrimitiveRoot ζ 3) : (starRingEnd �
     simp [h] at hp
   apply mul_left_cancel₀ hz
   calc
-    _ = 1 := by rw [Complex.mul_conj', hζ.norm'_eq_one (by decide)]; simp
-    _ = _ := by rw [← pow_succ', hζ.pow_eq_one]
+    ζ * (starRingEnd ℂ) ζ = 1 := by
+      simpa [hζ.norm'_eq_one (by decide : (3 : ℕ) ≠ 0)] using Complex.mul_conj' ζ
+    _ = ζ * ζ ^ 2 := by rw [← pow_succ', hζ.pow_eq_one]
 
 theorem trace_coordinates {ζ : ℂ} (hζ : IsPrimitiveRoot ζ 3) (a b : ℤ) :
     ((a : ℂ) + (b : ℂ) * ζ) + (starRingEnd ℂ) ((a : ℂ) + (b : ℂ) * ζ) =

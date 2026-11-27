@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Data.ZMod.Basic
+import Mathlib.FieldTheory.Finite.Basic
 
 /-! The integral trace-and-norm pair has a unique zero reduction at a chosen prime-field cube root. -/
 
@@ -66,7 +66,7 @@ private theorem square_ne_root {z : ZMod p} (hz : IsPrimitiveRoot z 3) : z ≠ z
     intro hz₀
     have hp := hz.pow_eq_one
     simp [hz₀] at hp
-  have h1 : z * 1 = z * z := by rw [mul_one, ← pow_two, h]
+  have h1 : z * 1 = z * z := (mul_one z).trans (h.trans (pow_two z))
   exact hz.ne_one (by decide) (mul_left_cancel₀ h0 h1).symm
 
 private theorem not_both_zero {a b : ℤ} {z : ZMod p} (hz : IsPrimitiveRoot z 3)

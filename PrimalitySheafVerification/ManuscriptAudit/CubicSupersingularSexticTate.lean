@@ -35,7 +35,7 @@ theorem trace_det_formula (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
   have hRank : finrank ℤ_[l] U = 2 := by rw [finrank_eq_card_basis B, Fintype.card_fin]
   have hR : LinearMap.trace ℤ_[l] U R = (Int.cast k : ℤ_[l]) ∧ LinearMap.det R = 1 := by
     by_cases h : v ^ 2 = 1
-    · have he : r = 1 := by simpa only [r, h] using rotate_one L hΔ
+    · have he : r = 1 := rotate_eq_id L hΔ (square_cube L hv) h
       refine ⟨?_, ?_⟩
       · simp [R, he, hRank, k, h]
       · simp [R, he]
@@ -43,10 +43,11 @@ theorem trace_det_formula (hp : 5 ≤ p) (hp₃ : p % 3 = 2) (hlp : l ≠ p)
         p L l hp hp₃ hlp h₂ h₃ hΔ (square_cube L hv) h
       exact ⟨by simpa [k, h] using ht, hd⟩
   have hS : endMap l (sexticScale L hv hΔ) = a • R := by
-    change endMap l (sexticScale L hv hΔ) = (Int.cast (twistSign L v) : ℤ_[l]) • endMap l r
-    rw [Int.cast_smul_eq_zsmul]
-    exact (congrArg (endMap l) (sextic_eq_signed_rotation L hv hΔ)).trans
-      (map_zsmul (endMap l) r (twistSign L v))
+    calc
+      _ = twistSign L v • R :=
+        (congrArg (endMap l) (sextic_eq_signed_rotation L hv hΔ)).trans
+          (map_zsmul (endMap l) r (twistSign L v))
+      _ = _ := (Int.cast_smul_eq_zsmul ℤ_[l] (twistSign L v) R).symm
   have hA : a ^ 2 = 1 := by
     rcases twistSign_cases L v with h | h <;> simp [a, h]
   change LinearMap.trace ℤ_[l] U (endMap l (sexticScale L hv hΔ)) =

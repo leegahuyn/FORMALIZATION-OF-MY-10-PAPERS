@@ -45,18 +45,26 @@ private theorem shadowTerm_one (w : ℂ) : shadowTerm 1 w = w := by
 
 private theorem series_split {w : ℂ} (hw : ‖w‖ < 1) :
     shadowSeries w = w + ∑' k : ℕ, shadowTerm (k + 2) w := by
-  have hSum := (shadowSeries_absolute_summability hw).of_norm
+  have hSum : Summable (fun n : ℕ => shadowTerm n w) :=
+    (shadowSeries_absolute_summability hw).of_norm
   have hTail : Summable (fun n : ℕ => shadowTerm (n + 1) w) := (summable_nat_add_iff 1).mpr hSum
-  rw [shadowSeries, hSum.tsum_eq_zero_add, shadowTerm_zero, zero_add,
-    hTail.tsum_eq_zero_add, shadowTerm_one]
+  have hFirst : shadowSeries w = shadowTerm 0 w + (∑' n : ℕ, shadowTerm (n + 1) w) :=
+    hSum.tsum_eq_zero_add
+  have hSecond : (∑' n : ℕ, shadowTerm (n + 1) w) =
+      shadowTerm 1 w + (∑' k : ℕ, shadowTerm (k + 2) w) :=
+    hTail.tsum_eq_zero_add
+  calc
+    _ = shadowTerm 0 w + (∑' n : ℕ, shadowTerm (n + 1) w) := hFirst
+    _ = w + (∑' k : ℕ, shadowTerm (k + 2) w) := by
+      rw [shadowTerm_zero, zero_add, hSecond, shadowTerm_one]
 
 private theorem quarter_real_majorant :
     HasSum (fun k : ℕ => ((1 : ℝ) / 8) ^ (k + 2)) ((1 : ℝ) / 56) := by
-  convert (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 : ℝ) / 8)
-    (by norm_num : (1 : ℝ) / 8 < 1)).mul_right (((1 : ℝ) / 8) ^ (2 : ℕ)) using 1
-  · funext k
-    exact pow_add _ _ _
-  · norm_num
+  have hGeom := (hasSum_geometric_of_lt_one (by norm_num : 0 ≤ (1 : ℝ) / 8)
+    (by norm_num : (1 : ℝ) / 8 < 1)).mul_right (((1 : ℝ) / 8) ^ (2 : ℕ))
+  have hValue : (1 - (1 : ℝ) / 8)⁻¹ * ((1 : ℝ) / 8) ^ (2 : ℕ) = 1 / 56 := by
+    norm_num
+  simpa only [pow_add, hValue] using hGeom
 
 private theorem quarter_tail_bound :
     ‖∑' k : ℕ, shadowTerm (k + 2) ((1 / 4 : ℝ) : ℂ)‖ ≤ (1 : ℝ) / 56 :=

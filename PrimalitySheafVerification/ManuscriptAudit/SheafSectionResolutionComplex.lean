@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Abelian.Injective.Ext
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import PrimalitySheafVerification.ManuscriptAudit.ComplexTowerDifference
 

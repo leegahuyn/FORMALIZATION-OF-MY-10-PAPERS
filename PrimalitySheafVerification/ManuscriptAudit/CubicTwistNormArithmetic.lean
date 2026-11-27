@@ -14,11 +14,13 @@ theorem scalar_kernel_eq (s : ℤ) :
     ((1 - s • (1 : AddMonoid.End G)).ker) = subgroup (1 - s).natAbs G := by
   ext x
   change x - s • x = 0 ↔ (1 - s).natAbs • x = 0
-  have h : x - s • x = (1 - s) • x := by rw [sub_zsmul, one_zsmul]
+  have h : x - s • x = (1 - s) • x := by rw [sub_zsmul, one_zsmul, sub_eq_add_neg]
   rw [h]
   generalize 1 - s = z
   cases z with
-  | ofNat n => simp only [Int.natAbs_ofNat, natCast_zsmul]
+  | ofNat n =>
+    change (n : ℤ) • x = 0 ↔ n • x = 0
+    rw [natCast_zsmul]
   | negSucc n =>
     change (-((n + 1 : ℕ) : ℤ)) • x = 0 ↔ (n + 1) • x = 0
     rw [neg_zsmul, neg_eq_zero, natCast_zsmul]
@@ -58,7 +60,8 @@ theorem rotational_norm_coprime (p : ℕ) (hp : p.Prime) {s : ℤ} (hs : (p : �
   have hTail : (p : ℤ) ∣ s + s * s := dvd_add hs (dvd_mul_of_dvd_left hs s)
   have hOne : (p : ℤ) ∣ 1 := by
     have hSub := dvd_sub hD hTail
-    convert hSub using 1 <;> ring
+    have hEq : (1 + s + s * s) - (s + s * s) = 1 := by ring
+    rwa [hEq] at hSub
   exact hp.not_dvd_one (by exact_mod_cast hOne)
 
 end ManuscriptAudit.CubicTwistNormArithmetic
