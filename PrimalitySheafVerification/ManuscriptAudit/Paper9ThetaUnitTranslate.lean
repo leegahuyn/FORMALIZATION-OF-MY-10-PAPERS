@@ -21,7 +21,7 @@ def positiveTerm (y : ℝ) (n : ℕ) : ℝ :=
 private theorem axis_im (y : ℝ) : (axis y).im = y := by simp [axis, Complex.mul_im]
 
 private theorem term_axis (y : ℝ) (n : ℕ) : term (axis y) n = (positiveTerm y n : ℂ) := by
-  rw [term, positiveTerm, ← Complex.ofReal_exp]
+  rw [term, positiveTerm, Complex.ofReal_exp]
   congr 1
   unfold axis
   push_cast
@@ -101,7 +101,8 @@ theorem translated_theta_norm_strictly_smaller {y : ℝ} (hy : 0 < y) :
       rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
       have hTwo : ‖(2 : ℂ)‖ = 2 := by norm_num
       rw [hTwo]
-    _ ≤ |1 - 2 * A| + 2 * R := add_le_add_left (mul_le_mul_of_nonneg_left hTail (by norm_num)) _
+    _ ≤ |1 - 2 * A| + 2 * R :=
+      add_le_add_left (mul_le_mul_of_nonneg_left hTail (by norm_num : (0 : ℝ) ≤ 2)) _
     _ < _ := by
       have h₀ : |1 - 2 * A| < 1 + 2 * A := abs_lt.mpr ⟨by linarith, by linarith⟩
       linarith

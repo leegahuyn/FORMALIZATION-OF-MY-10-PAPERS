@@ -44,11 +44,14 @@ theorem native_trace_det_at_every_finite_extension {r : TateRow} [Fact r.prime.P
     (E := E) hp h₄
   rw [row_signed_point_count hr] at hCount
   obtain ⟨ht, hd⟩ := trace_det_of_every_power (L := L) hr l hl n
-  refine ⟨ht.trans (congrArg (fun z : ℤ => (z : ℤ_[l])) hCount.symm), ?_⟩
-  have hq : Fintype.card E = r.prime^n := by
-    rw [Module.card_eq_pow_finrank (K := ZMod r.prime) (V := E), ZMod.card]
-  rw [hq]
-  exact hd
+  constructor
+  · apply ht.trans
+    simpa only [Int.cast_sub, Int.cast_add, Int.cast_one] using
+      congrArg (fun z : ℤ => (z : ℤ_[l])) hCount.symm
+  · have hq : Fintype.card E = r.prime^n := by
+      rw [Module.card_eq_pow_finrank (K := ZMod r.prime) (V := E), ZMod.card]
+    rw [hq]
+    exact hd
 
 end
 end ManuscriptAudit.Paper5LaterTateExtensionCounts

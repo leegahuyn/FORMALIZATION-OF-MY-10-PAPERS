@@ -27,16 +27,20 @@ private theorem rotationIndex_spec {z v : K} (h : ∃ j : Fin 3, z ^ j.val = v ^
   unfold rotationIndex
   split
   · rename_i he
+    change v ^ 2 = z ^ (0 : ℕ)
     simpa only [pow_zero] using he
   · rename_i h₀
     split
     · rename_i he
+      change v ^ 2 = z ^ (1 : ℕ)
       simpa only [pow_one] using he
     · rename_i h₁
       obtain ⟨j, hj⟩ := h
       fin_cases j
-      · exact (h₀ hj.symm).elim
-      · exact (h₁ hj.symm).elim
+      · change z ^ (0 : ℕ) = v ^ 2 at hj
+        exact (h₀ (by simpa only [pow_zero] using hj.symm)).elim
+      · change z ^ (1 : ℕ) = v ^ 2 at hj
+        exact (h₁ (by simpa only [pow_one] using hj.symm)).elim
       · exact hj.symm
 
 private theorem ordinateSign_spec {v : K} (h : v ^ 3 = 1 ∨ v ^ 3 = -1) :

@@ -44,9 +44,11 @@ theorem restriction_closed_isZero (hComplement : Set.range j = (Set.range i)ᶜ)
   funext U
   apply ConcreteCategory.hom_ext
   intro a
-  letI := empty_closed_pullback i j U.unop hComplement
   apply ULift.ext
-  exact ContinuousMap.ext (fun x ↦ isEmptyElim x)
+  apply ContinuousMap.ext
+  intro x
+  change ↥(pullback (U.unop.hom ≫ j) i : Scheme.{0}) at x
+  exact ((empty_closed_pullback i j U.unop hComplement).false x).elim
 
 /-- Actual restriction along an open is the same sheaf of continuous functions on that open. -/
 def restrictionFunctionsIso :

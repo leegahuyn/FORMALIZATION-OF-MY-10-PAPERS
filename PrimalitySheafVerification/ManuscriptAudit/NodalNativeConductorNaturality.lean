@@ -47,7 +47,9 @@ theorem boundary_natural (m : M) :
     apply (originHZeroEquiv K N).injective
     rw [AddEquiv.apply_symm_apply]
     change originHZeroEquiv K N (Sheaf.H.map (mapOver f hf (projectiveOrigin K)) 0 x) = f m
-    rw [originHZero_natural, x, AddEquiv.apply_symm_apply]
+    rw [originHZero_natural]
+    change f (originHZeroEquiv K M ((originHZeroEquiv K M).symm m)) = f m
+    rw [AddEquiv.apply_symm_apply]
   change (x.comp h₁.extClass (show 0 + 1 = 1 by rfl)).comp (Ext.mk₀ φ.τ₁) (add_zero 1) =
     ((originHZeroEquiv K N).symm (f m)).comp h₂.extClass (show 0 + 1 = 1 by rfl)
   rw [← hx, Sheaf.H.map_apply, Ext.comp_assoc_of_third_deg_zero,

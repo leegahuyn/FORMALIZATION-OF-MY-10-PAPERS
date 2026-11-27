@@ -56,15 +56,36 @@ theorem eq_pow [Algebra K E] [IsAlgClosed L] (m n : ℕ) (A : K)
   change x ^ ((Fintype.card K) ^ n) = x ^ Fintype.card E
   rw [hCard]
 
+/-- The extension comparison is already an equality on the full point group. -/
+theorem point_eq_pow [Algebra K E] [IsAlgClosed L] (n : ℕ) (A : K)
+    (hA : algebraMap E L (algebraMap K E A) = algebraMap K L A)
+    (hCard : Fintype.card E = (Fintype.card K) ^ n) :
+    pointMapAt E L (Curve (algebraMap K E A)) (Curve (algebraMap K L A))
+        ((centered_baseChange E L _).trans (congrArg Curve hA))
+        (FiniteField.frobeniusAlgHom E L) = arithmeticPointFrobenius K L A ^ n := by
+  let φ := pointMapAtMonoidHom K L (Curve A) (Curve (algebraMap K L A))
+    (centered_baseChange K L A)
+  let g := FiniteField.frobeniusAlgHom K L
+  change _ = (φ g) ^ n
+  rw [← map_pow φ g n]
+  symm
+  apply pointMapAt_eq_of_scalars
+  intro x
+  change (g ^ n) x = (FiniteField.frobeniusAlgHom E L) x
+  rw [field_frobenius_power_apply]
+  change x ^ ((Fintype.card K) ^ n) = x ^ Fintype.card E
+  rw [hCard]
+
 end
 end ManuscriptAudit.CubicExtensionFrobeniusAt
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.CubicExtensionFrobeniusAt.eq_pow
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [``ManuscriptAudit.CubicExtensionFrobeniusAt.eq_pow,
+      ``ManuscriptAudit.CubicExtensionFrobeniusAt.point_eq_pow] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

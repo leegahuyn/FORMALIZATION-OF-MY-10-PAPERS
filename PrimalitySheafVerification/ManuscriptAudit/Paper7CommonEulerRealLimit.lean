@@ -39,6 +39,7 @@ theorem no_continuous_pointwise_limit_on_real_slice {r : ℝ} (hr : 0 < r) :
     · have hx : ‖z‖ ≠ 0 := (norm_pos_iff.mpr hne).ne'
       have hZero := actual_product_tendsto_zero_on_real_axis hx
       have hg0 := tendsto_nhds_unique (h ‖z‖ (norm_nonneg _) hz) hZero
+      change Tendsto (partialProduct goodPrime trace z) atTop (𝓝 (g ‖z‖))
       rw [hg0]
       exact tendsto_at_nonzero goodPrime_tendsto trace_hasse hne
 

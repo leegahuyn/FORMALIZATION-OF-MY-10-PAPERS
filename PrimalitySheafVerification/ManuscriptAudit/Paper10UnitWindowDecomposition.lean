@@ -19,11 +19,13 @@ private abbrev Tail := {j : ι // R ≤ t j}
 
 private def window (k : ℕ) : Set (Tail t R) := {j | j.val ∈ S k}
 
+include hS in
 private theorem tail_in_unique_window (j : Tail t R) :
     ∃! k : ℕ, j ∈ window t R S k := by
   have hz : 0 ≤ t j.val - R := sub_nonneg.mpr j.property
   refine ⟨⌊t j.val-R⌋₊, ?_, ?_⟩
-  · rw [window, Set.mem_setOf_eq, hS]
+  · change j.val ∈ S ⌊t j.val-R⌋₊
+    apply (hS _ j.val).mpr
     exact ⟨by linarith only [Nat.floor_le hz], by linarith only [Nat.lt_floor_add_one (t j.val-R)]⟩
   · intro k hk
     have h := (hS k j.val).mp hk
@@ -36,6 +38,7 @@ private def windowIndices (k : ℕ) : window t R S k ≃ {j : ι // j ∈ S k} w
   left_inv _ := rfl
   right_inv _ := rfl
 
+include hS in
 theorem actual_tail_summable_and_bound (w : ι → ℝ)
     {C B : ℝ} (hR : 1 ≤ R) (hC : 0 ≤ C) (hB : 0 ≤ B) (A : ℕ)
     (hDecay : ∀ j : ι, R ≤ t j → |w j| ≤ B / (1+t j)^(A+3))
