@@ -2,7 +2,7 @@ import Lean.Elab.BuiltinEvalCommand
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineLineOpenDivisorCech
 import PrimalitySheafVerification.ManuscriptAudit.KummerAffineCohomology
-import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleCohomologyComparison
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleSheafCohomology
 
 /-! The actual restricted divisor sheaf has no positive étale cohomology
 on any affine open of the affine line. -/

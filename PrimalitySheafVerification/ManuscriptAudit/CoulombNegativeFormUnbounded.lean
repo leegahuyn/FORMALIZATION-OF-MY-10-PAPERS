@@ -67,7 +67,9 @@ theorem negative_form_no_mass_lower_bound (C : ℝ) (hC : 0 ≤ C) :
   have hComparison : C * mass r < r * D := by
     rw [hm, show C * (2 * r⁻¹ * U) = (2 * C * U) / r by rw [div_eq_mul_inv]; ring]
     apply (div_lt_iff₀ hr₀).mpr
-    convert hLarge using 1 <;> ring
+    calc
+      _ < r ^ 2 * D := hLarge
+      _ = (r * D) * r := by ring
   have hE : r * D ≤ energy r := energy_lower r hr
   nlinarith only [hComparison.trans_le hE]
 

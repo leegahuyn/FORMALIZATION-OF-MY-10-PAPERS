@@ -38,7 +38,7 @@ private theorem euclidean_upper_image (f : ℝ → ℝ) :
   have hp : MeasurePreserving UpperHalfPlane.coe
       ((volume : Measure ℂ).comap UpperHalfPlane.coe)
       ((volume : Measure ℂ).restrict (range UpperHalfPlane.coe)) :=
-    ⟨UpperHalfPlane.measurable_coe, UpperHalfPlane.measurableEmbedding_coe.map_comap⟩
+    ⟨UpperHalfPlane.measurable_coe, UpperHalfPlane.measurableEmbedding_coe.map_comap volume⟩
   have he := (hp.setIntegral_image_emb UpperHalfPlane.measurableEmbedding_coe
     (fun w : ℂ => f w.im) strip).symm
   rw [Measure.restrict_restrict_of_subset (image_subset_range _ _)] at he

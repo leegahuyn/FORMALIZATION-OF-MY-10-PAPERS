@@ -37,7 +37,11 @@ theorem normSq_measurable (Y : ℝ) (hY : 1 ≤ Y) : Measurable (normSq Y) := by
     Y hY (heightAmplitude_zero Y)).continuousOn
   have hc : Continuous (extendedSection (heightAmplitude Y)) := by
     have he := h.comp_continuous UpperHalfPlane.continuous_coe (fun z => z.im_pos)
-    simpa only [Function.comp_apply, UpperHalfPlane.ofComplex_apply] using he
+    convert he using 1
+    funext z
+    change extendedSection (heightAmplitude Y) z =
+      extendedSection (heightAmplitude Y) (UpperHalfPlane.ofComplex (z : ℂ))
+    rw [UpperHalfPlane.ofComplex_apply]
   exact measurable_descendInvariant _ _ (hc.measurable.norm.pow_const 2)
 
 theorem image_closedStrip_subset_highStrip (Y : ℝ) (hY : 1 ≤ Y) :
