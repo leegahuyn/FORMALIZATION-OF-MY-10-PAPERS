@@ -42,19 +42,26 @@ private def yArrow : Y K ⟶ T K :=
 private def bArrow : B K h2 ⟶ T K :=
   MorphismProperty.Over.homMk (coverMap K ≫ affineOpen K) (Category.comp_id _)
 
-private theorem yOriginEmpty : IsEmpty (↥(pullback (chartOpen K) (projectiveOrigin K) : Scheme.{0})) := by
+private theorem empty_pullback_of_range_complement {A B X : Scheme.{0}} (f : A ⟶ X) (g : B ⟶ X)
+    (h : Set.range f ⊆ (Set.range g)ᶜ) : IsEmpty (↥(pullback f g : Scheme.{0})) := by
   constructor
-  intro a
-  let u := pullback.fst (chartOpen K) (projectiveOrigin K) a
-  let v := pullback.snd (chartOpen K) (projectiveOrigin K) a
-  have h : chartOpen K u = projectiveOrigin K v := by
-    exact congrArg (fun f : pullback (chartOpen K) (projectiveOrigin K) ⟶ X K ↦ f a)
-      (pullback.condition (f := chartOpen K) (g := projectiveOrigin K))
-  have hv : v = IsLocalRing.closedPoint K := Subsingleton.elim _ _
-  apply NodalSmoothLocus.nodePoint_not_in_chartOpen K
-  refine ⟨u, ?_⟩
-  rw [h, hv]
-  rfl
+  intro x
+  have hEq : f (pullback.fst f g x) = g (pullback.snd f g x) :=
+    congrArg (fun k : pullback f g ⟶ X ↦ k x) (pullback.condition (f := f) (g := g))
+  exact h ⟨pullback.fst f g x, rfl⟩ ⟨pullback.snd f g x, hEq.symm⟩
+
+private theorem yOriginEmpty : IsEmpty (↥(pullback (chartOpen K) (projectiveOrigin K) : Scheme.{0})) := by
+  apply empty_pullback_of_range_complement
+  rw [← NodalSmoothRationalBoundary.smooth_range K]
+  rintro _ ⟨y, rfl⟩
+  let f := chartOpen K
+  let q := NodalProjectiveClosure.projectiveNodeToBase K
+  letI : Smooth (f ≫ q) := NodalSmoothLocus.chartOpen_smooth K
+  have hy : f y ∈ q.smoothLocus := by
+    apply (f.mem_preimage).mp
+    rw [f.preimage_smoothLocus_eq, Scheme.Hom.smoothLocus_eq_top]
+    trivial
+  exact ⟨⟨f y, hy⟩, rfl⟩
 
 private theorem separatorCover :
     Sieve.ofArrows (coverObjects (B K h2) (Y K)) (coverArrows (bArrow K h2) (yArrow K)) ∈
@@ -88,6 +95,7 @@ theorem terminal_binary_cover :
     Presheaf.imageSieve
       (binaryDifference (plus K h2) (minus K h2) (plus_over K h2) (minus_over K h2)).hom
       (oneSection (q := projectiveOrigin K) (T K)) ∈ Scheme.ProEt.topology (X K) (T K) := by
+  letI := projectiveOrigin_closed K
   apply (Scheme.ProEt.topology (X K)).superset_covering _ (separatorCover K h2)
   apply (Sieve.generate_le_iff _ _).mpr
   rintro _ _ ⟨i⟩

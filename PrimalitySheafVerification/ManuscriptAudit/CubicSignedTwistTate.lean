@@ -79,7 +79,7 @@ theorem trace_det (h₂ : (2 : L) ≠ 0) (h₃ : (3 : L) ≠ 0) (A B : E)
     exact rotation_pow_linear r hr n a b
   have hComb : F = c • (1 : AddMonoid.End (Geometric E L A)) + d • r := by
     change ε • (r ^ n.val * arithmeticFrobenius E L A) = _
-    rw [hRot, smul_add, smul_smul, smul_smul] <;> rfl
+    simp only [hRot, zsmul_add, ← mul_zsmul, c, d, signedCoefficients]
   obtain ⟨ht, hd⟩ := CubicTateRotationCoefficients.trace_det h₂ h₃ h₀ hz hz₁ hΔA
     l hl F c d hComb
   rw [signedCoefficients_norm n ε a b hε] at hd

@@ -7,7 +7,7 @@ namespace ManuscriptAudit.Paper5LaterAllTatePowers
 
 open Paper5LaterTables PowerTateModule CubicFrobeniusSexticTwists
 open CubicNonsplitTwoThreeAdicCharpoly Paper5PrintedSupersingular Paper5NonsplitFrobeniusModFour
-open Paper5PrintedRecurrence
+open Module Paper5PrintedRecurrence
 
 noncomputable section
 
@@ -43,7 +43,7 @@ theorem trace_det_of_every_power (hr : r ∈ tateRows) (l : ℕ) (hl : l = 2 ∨
   rw [(row_metadata r hr).2.2] at hd
   change LinearMap.trace ℤ_[l] _ (F^n) = _ ∧ LinearMap.det (F^n) = _
   refine ⟨Paper5LinearTraceRecurrence.trace_pow_eq_recurrence
-    (rowBasis L hr l hl) F r.prime r.trace ht hd n, ?_⟩
+    (rowBasis (L := L) hr l hl) F r.prime r.trace ht hd n, ?_⟩
   rw [map_pow, hd, Nat.cast_pow]
 
 end

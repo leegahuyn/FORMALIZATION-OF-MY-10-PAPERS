@@ -56,7 +56,7 @@ theorem grouped_tail_summable_and_bound {ι : Type*} (S : ℕ → Finset ι) (t 
   have hbase : Summable (fun k : ℕ => 1 / ((k : ℝ)+1)^2) := by
     have h : Summable (fun k : ℕ => 1 / (k : ℝ)^2) :=
       Real.summable_one_div_nat_pow.mpr (by decide : 1 < (2 : ℕ))
-    simpa only [Nat.cast_add, Nat.cast_one] using (summable_nat_add_iff 1).mp h
+    simpa only [Nat.cast_add, Nat.cast_one] using (summable_nat_add_iff (f := fun k : ℕ => 1 / (k : ℝ)^2) 1).mpr h
   have hmajor := hbase.mul_left (C*B / R^A)
   have hterm (k : ℕ) := shell_estimate (S k) t w hR hC hB A k (ht k) (hw k) (hcount k)
   have hsum : Summable (fun k => ∑ j ∈ S k, |w j|) :=

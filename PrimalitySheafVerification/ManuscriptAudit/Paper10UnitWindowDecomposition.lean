@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import PrimalitySheafVerification.ManuscriptAudit.Paper10SpectralTailEstimate
 
@@ -71,15 +72,38 @@ theorem actual_tail_summable_and_bound (w : ι → ℝ)
     _ = ∑' k, ∑ j ∈ S k, |w j| := hG.tsum_sigma.trans (tsum_congr hEq)
     _ ≤ _ := hBound
 
+/-- The cutoff used in the manuscript gives the claimed uniform polynomial rate
+when the decay and window bounds have the stated uniform constants. -/
+theorem logarithmic_cutoff_bound (w : ι → ℝ) (T : ℝ) (hT : 1 ≤ T) (A : ℕ)
+    {C B : ℝ} (hC : 0 ≤ C) (hB : 0 ≤ B)
+    (hWindows : ∀ (k : ℕ) (j : ι), j ∈ S k ↔
+      T + (Real.log T)^2 + (k : ℝ) ≤ t j ∧ t j < T + (Real.log T)^2 + (k : ℝ) + 1)
+    (hDecay : ∀ j : ι, T + (Real.log T)^2 ≤ t j → |w j| ≤ B / (1+t j)^(A+3))
+    (hCount : ∀ k : ℕ, ((S k).card : ℝ) ≤ C * (1 + (T + (Real.log T)^2) + (k : ℝ))) :
+    Summable (fun j : {j : ι // T + (Real.log T)^2 ≤ t j} => |w j.val|) ∧
+      (∑' j : {j : ι // T + (Real.log T)^2 ≤ t j}, |w j.val|) ≤
+        (C*B / T^A) * (∑' k : ℕ, 1 / ((k : ℝ)+1)^2) := by
+  have hTR : T ≤ T + (Real.log T)^2 := le_add_of_nonneg_right (sq_nonneg _)
+  have hR : 1 ≤ T + (Real.log T)^2 := hT.trans hTR
+  obtain ⟨hs, hb⟩ := actual_tail_summable_and_bound t _ S hWindows w hR hC hB A hDecay hCount
+  refine ⟨hs, hb.trans ?_⟩
+  have hTA : T^A ≤ (T + (Real.log T)^2)^A := by gcongr <;> linarith
+  apply mul_le_mul_of_nonneg_right
+  · exact div_le_div_of_nonneg_left (mul_nonneg hC hB)
+      (pow_pos (by linarith : 0 < T) _) hTA
+  · exact tsum_nonneg (fun _ => by positivity)
+
 end
 end ManuscriptAudit.Paper10UnitWindowDecomposition
 
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.Paper10UnitWindowDecomposition.actual_tail_summable_and_bound
-  let ax ← collectAxioms name
-  let bad := ax.filter fun x => !allowed.contains x
-  unless bad.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {bad}"
-  logInfo m!"{name} uses {ax}"
+  for name in [
+      ``ManuscriptAudit.Paper10UnitWindowDecomposition.actual_tail_summable_and_bound,
+      ``ManuscriptAudit.Paper10UnitWindowDecomposition.logarithmic_cutoff_bound] do
+    let ax ← collectAxioms name
+    let bad := ax.filter fun x => !allowed.contains x
+    unless bad.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {bad}"
+    logInfo m!"{name} uses {ax}"

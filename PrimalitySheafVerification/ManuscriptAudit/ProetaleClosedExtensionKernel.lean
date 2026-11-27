@@ -108,7 +108,7 @@ def extensionKernelIso (hComplement : Set.range j = (Set.range i)ᶜ) :
   letI := raw_locallyInjective i j M
   letI := raw_locallySurjective i j M hComplement
   letI : IsIso (Q.map (raw i j M)) :=
-    ((J (X := X)).W_iff Q).mp ((J (X := X)).W_of_isLocallyBijective (raw i j M))
+    ((J (X := X)).W_iff (raw i j M)).mp ((J (X := X)).W_of_isLocallyBijective (raw i j M))
   exact asIso (Q.map (raw i j M)) ≪≫ (sheafificationIso (K i M)).symm
 
 end

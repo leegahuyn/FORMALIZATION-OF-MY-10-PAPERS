@@ -21,11 +21,12 @@ theorem exists_sixth_root_of_pow_one {k : ℕ} (hk : 0 < k)
   let w := Units.mk0 v hv
   have hw : w ^ k = 1 := by
     apply Units.ext
-    simpa only [Units.val_pow, Units.val_one, w, Units.val_mk0] using h
+    simpa only [Units.val_pow_eq_pow_val, Units.val_one, w, Units.val_mk0] using h
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Kˣ)
   obtain ⟨n, hn⟩ : w ∈ Submonoid.powers g := by
     rw [mem_powers_iff_mem_zpowers]
     exact hg w
+  change g ^ n = w at hn
   have hN : orderOf g = 6 * k := by
     rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card,
       Fintype.card_units, hq] <;> omega

@@ -46,8 +46,14 @@ private theorem trace_det_three {A : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) �
     mapLinear_transport K L W V h g 3
   obtain ⟨ht, hd⟩ := CubicThreeFrobeniusCharpoly.actualFrobenius_arithmetic_trace_det K L h₂ h₃ hA
   dsimp only
-  rw [← he, LinearMap.trace_conj' F e, LinearMap.det_conj F e]
-  exact ⟨ht, hd⟩
+  rw [← he]
+  refine ⟨(LinearMap.trace_conj' F e).trans ht, ?_⟩
+  have hMap : e.conj F = e.toLinearMap ∘ₗ F ∘ₗ e.symm.toLinearMap := by
+    apply LinearMap.ext
+    intro P
+    rfl
+  rw [hMap]
+  exact (LinearMap.det_conj F e).trans hd
 
 def basisTwelve {A : K} (h₂ : (2 : K) ≠ 0) (h₃ : (3 : K) ≠ 0) (hA : A ≠ 0) :
     Basis (Fin 2) (ZMod 12) (Torsion 12 (GeometricPoints K L A)) :=

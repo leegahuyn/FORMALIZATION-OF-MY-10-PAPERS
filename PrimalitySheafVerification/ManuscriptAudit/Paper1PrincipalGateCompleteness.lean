@@ -40,7 +40,7 @@ theorem principal_open_is_complete_iff_unit (f : ℤ) :
         exact hn isUnit_one
       · have h1 : f = -1 := by omega
         rw [h1] at hn
-        exact hn (isUnit_neg.mpr isUnit_one)
+        exact hn ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩
     obtain ⟨p, hp, hd⟩ := Nat.exists_prime_and_dvd hne
     letI : Fact p.Prime := ⟨hp⟩
     have he := h p
