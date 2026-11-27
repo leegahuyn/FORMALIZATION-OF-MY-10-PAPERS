@@ -41,6 +41,7 @@ private theorem unitMap_generator (m : ℕ) :
   let a := unitMap K m
   have h : E.homEquiv Z F a =
       E.homEquiv Z (integerSheaf (J (base K))) (𝟙 _) ≫ a.hom.app (op (terminalObject K)) := by
+    change E.homEquiv Z F a = _ ≫ ((sheafSections (J (base K)) G).obj (op (terminalObject K))).map a
     simpa only [Category.id_comp] using E.homEquiv_naturality_right (𝟙 (integerSheaf (J (base K)))) a
   exact (ConcreteCategory.congr_hom h (⟨1⟩ : Z)).symm
 

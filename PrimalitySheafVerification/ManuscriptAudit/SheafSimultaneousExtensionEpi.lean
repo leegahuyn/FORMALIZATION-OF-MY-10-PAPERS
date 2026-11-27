@@ -35,7 +35,7 @@ private theorem fromInteger_comp {A B : G} (a : A) (q : A ⟶ B) :
     fromInteger a ≫ q = fromInteger (q a) := by
   apply AddCommGrpCat.ext
   intro z
-  exact map_zsmul q.hom a z.down
+  exact map_zsmul q.hom z.down a
 
 variable {T U : C} (hT : IsTerminal T) (f : U ⟶ T)
 variable (S : ℕ → ShortComplex (Sheaf J G))
@@ -48,7 +48,7 @@ theorem projection_epi
     (hCover : Sieve.ofArrows (fun _ : Unit ↦ U) (fun _ : Unit ↦ f) ∈ J T)
     (hLift : ∀ n, ∃ s : (S n).X₂.obj.obj (op U), (S n).g.hom.app (op U) s =
       (a n).hom.app (op U) ((integerSheaf J).obj.map f.op (generator J hT))) :
-    Epi (projection S a) := by
+    Epi (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a) := by
   apply epi_of_local_generator J hT f hCover
   choose b hb using hLift
   let E := sheafToPresheaf J G ⋙ (evaluation Cᵒᵖ G).obj (op U)
@@ -59,7 +59,8 @@ theorem projection_epi
   let e₃ := PreservesProduct.iso E X₃
   let q := (Pi.lift (fun n ↦ fromInteger (b n))) ≫ e₂.inv
   let d := Pi.lift a
-  let p := Pi.map (fun n ↦ (S n).g)
+  let p : (∏ᶜ X₂) ⟶ ∏ᶜ X₃ :=
+    CategoryTheory.Limits.Pi.map (f := X₂) (g := X₃) (fun n ↦ (S n).g)
   have hq (n : ℕ) : q ≫ E.map (Pi.π X₂ n) = fromInteger (b n) := by
     change (Pi.lift (fun n ↦ fromInteger (b n))) ≫ e₂.inv ≫ E.map (Pi.π X₂ n) = _
     rw [show e₂.inv ≫ E.map (Pi.π X₂ n) = Pi.π (fun i ↦ E.obj (X₂ i)) n from
@@ -77,12 +78,12 @@ theorem projection_epi
     exact congrArg fromInteger (hb n).symm
   let H := PreservesPullback.iso E d p
   let L := pullback.lift v q hc ≫ H.inv
-  have hL : L ≫ E.map (projection S a) = v := by
+  have hL : L ≫ E.map (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a) = v := by
     change pullback.lift v q hc ≫ H.inv ≫ E.map (pullback.fst d p) = v
     rw [PreservesPullback.iso_inv_fst, pullback.lift_fst]
   refine ⟨L ⟨1⟩, ?_⟩
   have he := ConcreteCategory.congr_hom hL (⟨1⟩ : Z)
-  change (projection S a).hom.app (op U) (L ⟨1⟩) =
+  change (projection (C := Sheaf J AddCommGrpCat.{w}) (A := integerSheaf J) S a).hom.app (op U) (L ⟨1⟩) =
     (1 : ℤ) • ((integerSheaf J).obj.map f.op (generator J hT)) at he
   simpa only [one_zsmul] using he
 

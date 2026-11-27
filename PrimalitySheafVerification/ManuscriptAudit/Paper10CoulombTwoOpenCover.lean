@@ -50,9 +50,10 @@ theorem actual_weights_smooth (i : Bool) :
   have hL : ContDiff ℝ ∞ (fun p : ℝ×ℝ => leftWeight p.1) :=
     Real.smoothTransition.contDiff.comp hA
   cases i
-  · simpa [weight, Function.uncurry] using
-      (contDiff_const : ContDiff ℝ ∞ (fun _ : ℝ×ℝ => (1 : ℝ))).sub hL
-  · simpa [weight, Function.uncurry] using hL
+  · change ContDiff ℝ ∞ (fun x : ℝ×ℝ => 1 - leftWeight x.1)
+    exact (contDiff_const : ContDiff ℝ ∞ (fun _ : ℝ×ℝ => (1 : ℝ))).sub hL
+  · change ContDiff ℝ ∞ (fun x : ℝ×ℝ => leftWeight x.1)
+    exact hL
 
 theorem arcs_and_weights_periodic (i : Bool) (x y : ℝ) (m : ℤ) :
     (x+2*(m : ℝ) ∈ arc i ↔ x ∈ arc i) ∧ weight i (x+2*(m : ℝ)) y = weight i x y := by
@@ -66,7 +67,7 @@ theorem explicit_partition (x y : ℝ) :
   refine ⟨?_, ?_, ?_⟩
   · intro i
     cases i <;> simp [weight, h₀, sub_nonneg.mpr h₁]
-  · simp [Fintype.sum_bool, weight]
+  · simp [weight]
   · intro i
     cases i
     · simp only [arc, Bool.false_eq_true, if_false, rightArc, Set.mem_setOf_eq, not_lt, weight]

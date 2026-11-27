@@ -86,7 +86,8 @@ theorem constantComparison_naturality {M N : A.{u}} (f : M ⟶ N) (n : ℕ)
       Sheaf.H.map ((constantSheaf (Scheme.ProEt.topology X) A.{u}).map f) n
         (constantComparison X M n e) := by
   simp only [constantComparison, AddMonoidHom.comp_apply]
-  rw [pullback_naturality X ((constantSheaf X.smallEtaleTopology A.{u}).map f) n e]
+  have hpb := pullback_naturality X ((constantSheaf X.smallEtaleTopology A.{u}).map f) n e
+  refine (congrArg (fun c => Sheaf.H.map ((constantInverseImageIso X).app N).hom n c) hpb).trans ?_
   rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply]
   have h : (inverseImage X).map ((constantSheaf X.smallEtaleTopology A.{u}).map f) ≫
       ((constantInverseImageIso X).app N).hom =
@@ -124,7 +125,12 @@ theorem nativeResidueComparison_transition (r n : ℕ) (e :
         (ProetaleResidueSheaves.residueTransition Y ℓ r)) n
         (nativeResidueComparison Y ℓ (r+1) n e) := by
   simp only [nativeResidueComparison, AddMonoidHom.comp_apply, etaleResidueTransition]
-  rw [constantComparison_naturality Y _ n e]
+  let f : residueCoefficient ℓ (r+1) ⟶ residueCoefficient ℓ r :=
+    AddCommGrpCat.uliftFunctor.{1}.map
+      (AddCommGrpCat.ofHom (PadicResidueSystems.reduction ℓ (Nat.le_succ r)).toAddMonoidHom)
+  have h := constantComparison_naturality Y f n e
+  refine (congrArg (fun c => Sheaf.H.map (ProetaleDiscreteConstant.nativeResidueIso Y ℓ r).hom n c)
+    h).trans ?_
   rw [← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply,
     ProetaleDiscreteConstant.nativeResidueIso_naturality]
 

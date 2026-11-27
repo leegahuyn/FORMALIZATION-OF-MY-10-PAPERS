@@ -82,10 +82,13 @@ theorem chosenShift_unique {D : ℕ} (hOdd : Odd D) (A : NormalizedRow D) (m : Z
 def toCross {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : NormalizedRow D) : CrossRow D := by
   let m : ℤ := (chosenShift hOdd A).val
   let g := A.1 * ModularGroup.T ^ m
-  obtain ⟨ha, hc, hd⟩ := rightTranslation_entries A.1 m
+  have hEntries := rightTranslation_entries A.1 m
+  have ha := hEntries.1
+  have hc := hEntries.2.1
+  have hd := hEntries.2.2
   have hDInt : 0 < (D : ℤ) := by exact_mod_cast hD
   have hm0 : 0 ≤ m := Int.natCast_nonneg _
-  have hm4 : m < 4 := by exact_mod_cast (ZMod.val_lt (chosenShift hOdd A))
+  have hm4 : m < 4 := Int.ofNat_lt.mpr (ZMod.val_lt (chosenShift hOdd A))
   have hm3 : m ≤ 3 := by omega
   have hlow : 0 ≤ A.1 1 1 + (D : ℤ) * m :=
     add_nonneg A.property.2.2.1 (mul_nonneg hDInt.le hm0)
@@ -109,7 +112,10 @@ def toCross {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : NormalizedRow D) : CrossR
 def fromCross {D : ℕ} (hD : 0 < D) (A : CrossRow D) : NormalizedRow D := by
   let m : ℤ := A.matrix 1 1 / (D : ℤ)
   let g := A.matrix * ModularGroup.T ^ (-m)
-  obtain ⟨ha, hc, hd⟩ := rightTranslation_entries A.matrix (-m)
+  have hEntries := rightTranslation_entries A.matrix (-m)
+  have ha := hEntries.1
+  have hc := hEntries.2.1
+  have hd := hEntries.2.2
   have hDInt : 0 < (D : ℤ) := by exact_mod_cast hD
   have hdmod : g 1 1 = A.matrix 1 1 % (D : ℤ) := by
     change (A.matrix * ModularGroup.T ^ (-m)) 1 1 = _
@@ -125,6 +131,14 @@ def fromCross {D : ℕ} (hD : 0 < D) (A : CrossRow D) : NormalizedRow D := by
   · rw [hdmod]
     exact ⟨Int.emod_nonneg _ hDInt.ne', Int.emod_lt_of_pos _ hDInt⟩
 
+theorem toCross_matrix {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : NormalizedRow D) :
+    (toCross hD hOdd A).matrix = A.1 * ModularGroup.T ^ ((chosenShift hOdd A).val : ℤ) :=
+  rfl
+
+theorem fromCross_matrix {D : ℕ} (hD : 0 < D) (A : CrossRow D) :
+    (fromCross hD A).1 = A.matrix * ModularGroup.T ^ (-(A.matrix 1 1 / (D : ℤ))) :=
+  rfl
+
 theorem fromCross_toCross {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : NormalizedRow D) :
     fromCross hD (toCross hD hOdd A) = A := by
   let m : ℤ := (chosenShift hOdd A).val
@@ -134,6 +148,7 @@ theorem fromCross_toCross {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : NormalizedR
       Int.add_mul_ediv_left _ _ hDInt.ne',
       Int.ediv_eq_zero_of_lt A.property.2.2.1 A.property.2.2.2, zero_add]
   apply Subtype.ext
+  rw [fromCross_matrix, toCross_matrix]
   change (A.1 * ModularGroup.T ^ m) *
     ModularGroup.T ^ (-(((A.1 * ModularGroup.T ^ m) 1 1) / (D : ℤ))) = A.1
   rw [hShift, mul_assoc, ← zpow_add, add_neg_cancel, zpow_zero, mul_one]
@@ -151,12 +166,14 @@ theorem toCross_fromCross {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (A : CrossRow D)
     rw [ZMod.val_natCast, Nat.mod_eq_of_lt hqN, Int.toNat_of_nonneg hq0]
   have hLevel : cuspTranslate (fromCross hD A).1 (z.val : ℤ) ∈
       CongruenceSubgroup.Gamma0 4 := by
+    rw [cuspTranslate, fromCross_matrix]
     change (A.matrix * ModularGroup.T ^ (-q)) * ModularGroup.T ^ (z.val : ℤ) *
       ModularGroup.S⁻¹ ∈ CongruenceSubgroup.Gamma0 4
     rw [hz, mul_assoc A.matrix, ← zpow_add, neg_add_cancel, zpow_zero, mul_one]
     exact A.atLevel
   have hChoice := chosenShift_unique hOdd (fromCross hD A) z hLevel
   have hMat : (toCross hD hOdd (fromCross hD A)).matrix = A.matrix := by
+    rw [toCross_matrix, fromCross_matrix]
     change (A.matrix * ModularGroup.T ^ (-q)) *
       ModularGroup.T ^ ((chosenShift hOdd (fromCross hD A)).val : ℤ) = A.matrix
     rw [← hChoice, hz, mul_assoc, ← zpow_add, neg_add_cancel, zpow_zero, mul_one]

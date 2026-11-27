@@ -18,7 +18,7 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-variable (K : Type) [Field K] (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
+variable (K : Type) [Field K] (ℓ : ℕ) [hPrime : Fact ℓ.Prime] [hInvertible : NeZero (ℓ : K)]
 
 private abbrev R := LaurentPolynomial K
 
@@ -57,6 +57,8 @@ private theorem stages_cover (u : Tower K ℓ) : ∃ n, u ∈ stages K ℓ n := 
   obtain ⟨n, v, hv⟩ := exists_stage K ℓ u
   exact ⟨n, ⟨v, hv⟩⟩
 
+include hPrime hInvertible
+
 private theorem stage_finite_etale (n : ℕ) :
     IsFinite (Spec.map (CommRingCat.ofHom (link K (ℓ ^ n)))) ∧
       Etale (Spec.map (CommRingCat.ofHom (link K (ℓ ^ n)))) := by
@@ -74,10 +76,13 @@ private theorem stages_etale (n : ℕ) : Algebra.Etale (R K) (stages K ℓ n) :=
   letI : Algebra.Etale (R K) (R K) := RingHom.etale_algebraMap.mp he
   exact Algebra.Etale.of_equiv (stageEquiv K ℓ n)
 
+set_option maxHeartbeats 1200000 in
 private theorem stages_integral (n : ℕ) : Algebra.IsIntegral (R K) (stages K ℓ n) := by
   letI := stageAlgebra K ℓ n
-  have h := (IsFinite.SpecMap_iff (CommRingCat.ofHom (link K (ℓ ^ n)))).mp (stage_finite_etale K ℓ n).1
-  letI : Module.Finite (R K) (R K) := RingHom.finite_algebraMap.mp h
+  letI : Module (R K) (R K) := (stageAlgebra K ℓ n).toModule
+  have h : (link K (ℓ ^ n)).Finite :=
+    (IsFinite.SpecMap_iff (CommRingCat.ofHom (link K (ℓ ^ n)))).mp (stage_finite_etale K ℓ n).1
+  letI : Module.Finite (R K) (R K) := h
   let e := stageEquiv K ℓ n
   letI : Module.Finite (R K) (stages K ℓ n) := Module.Finite.of_surjective e.toLinearMap e.surjective
   infer_instance
@@ -110,12 +115,20 @@ theorem covering : Sieve.ofArrows (fun _ : Unit ↦ coverObject K ℓ)
     (fun _ : Unit ↦ coverArrow K ℓ) ∈ Scheme.ProEt.topology (base K) (terminalObject K) := by
   letI : IsAffine (terminalObject K).left := inferInstanceAs (IsAffine (base K))
   letI : Surjective (coverMap K ℓ) := cover_surjective K ℓ
-  apply ProetaleFiniteAffineCover.covering
-  · intro i
-    exact inferInstanceAs (IsAffine (Spec (CommRingCat.of (Tower K ℓ))))
-  · intro x
-    obtain ⟨y, hy⟩ := (coverMap K ℓ).surj x
-    exact ⟨(), y, hy⟩
+  have hFin : Sieve.ofArrows (fun _ : Fin 1 ↦ coverObject K ℓ)
+      (fun _ : Fin 1 ↦ coverArrow K ℓ) ∈ Scheme.ProEt.topology (base K) (terminalObject K) := by
+    apply ProetaleFiniteAffineCover.covering
+    · intro i
+      exact inferInstanceAs (IsAffine (Spec (CommRingCat.of (Tower K ℓ))))
+    · intro x
+      obtain ⟨y, hy⟩ := (coverMap K ℓ).surj x
+      exact ⟨0, y, hy⟩
+  apply (Scheme.ProEt.topology (base K)).superset_covering _ hFin
+  apply (Sieve.generate_le_iff _ _).mpr
+  rintro _ _ ⟨n⟩
+  exact Sieve.ofArrows_mk (fun _ : Unit ↦ coverObject K ℓ) (fun _ : Unit ↦ coverArrow K ℓ) ()
+
+omit hPrime hInvertible
 
 end
 end ManuscriptAudit.LaurentKummerTowerCover

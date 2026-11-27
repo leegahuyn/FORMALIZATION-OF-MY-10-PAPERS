@@ -71,6 +71,7 @@ private theorem crossEntry_eq {D : ℕ} (hD : 0 < D) (a d : ℤ) :
   congr 2
   simp only [periodCoefficient, map_sub, map_mul, map_ofNat, Complex.conj_ofReal, Complex.conj_I]
   push_cast
+  simp only [map_div₀, map_neg, map_one, map_ofNat]
   ring
 
 theorem translated_crossEntry_eq {D : ℕ} (hD : 0 < D) (a d m : ℤ) :

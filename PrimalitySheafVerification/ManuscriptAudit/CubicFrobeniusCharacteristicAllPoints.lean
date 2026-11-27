@@ -33,8 +33,11 @@ theorem double_characteristicError {k : ℕ} (hq : Fintype.card K = 2 * k + 1) (
     (2 : ℕ) • characteristicError K L A P = 0 := by
   let a := algebraMap K L A
   let M := Model a
-  letI : Algebra K M := ((algebraMap L M).comp (algebraMap K L)).toAlgebra
-  letI : IsScalarTower K L M := IsScalarTower.of_algebraMap_eq' rfl
+  letI : Algebra K (RatFunc L) := inferInstance
+  letI : IsScalarTower K L (RatFunc L) := inferInstance
+  letI : Algebra K M := inferInstanceAs (Algebra K (QuadraticAlgebra (RatFunc L) (radicand a) 0))
+  letI : IsScalarTower K L M :=
+    inferInstanceAs (IsScalarTower K L (QuadraticAlgebra (RatFunc L) (radicand a) 0))
   let f := IsScalarTower.toAlgHom K L M
   let b := pointsMap A f
   have h₂' : (2 : L) ≠ 0 := by
