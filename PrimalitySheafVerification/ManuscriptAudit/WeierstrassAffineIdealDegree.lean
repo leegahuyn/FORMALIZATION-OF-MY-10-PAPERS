@@ -48,7 +48,7 @@ private theorem degree_prod (s : Multiset (Ideal W.CoordinateRing))
     (hs : ∀ P ∈ s, Prime P) : degree W s.prod = s.card := by
   induction s using Multiset.induction_on with
   | empty =>
-    rw [Multiset.prod_zero, Multiset.card_zero]
+    rw [Multiset.prod_zero, Multiset.card_zero, Ideal.one_eq_top]
     change Module.finrank K (W.CoordinateRing ⧸ (⊤ : Ideal W.CoordinateRing)) = 0
     exact Module.finrank_zero_of_subsingleton
   | cons P s ih =>
@@ -62,7 +62,7 @@ private theorem degree_prod (s : Multiset (Ideal W.CoordinateRing))
 theorem degree_eq_card_factors (I : Ideal W.CoordinateRing) (hI : I ≠ 0) :
     degree W I = (normalizedFactors I).card := by
   conv_lhs => rw [← Ideal.prod_normalizedFactors_eq_self hI]
-  exact degree_prod W (normalizedFactors I) fun _ hP => prime_of_normalized_factor hP
+  exact degree_prod W (normalizedFactors I) fun P hP => prime_of_normalized_factor P hP
 
 /-- Quotient degree is additive on products of nonzero integral ideals. -/
 theorem degree_mul {I J : Ideal W.CoordinateRing} (hI : I ≠ 0) (hJ : J ≠ 0) :

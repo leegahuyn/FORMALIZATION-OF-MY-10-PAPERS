@@ -40,7 +40,7 @@ theorem exists_global_stage {κ : Type u} [Finite κ] (z : κ → B) :
   letI : Algebra.Etale (F K) E := hE.2
   letI : Algebra A E := Algebra.compHom E (algebraMap A (F K))
   letI : IsScalarTower A (F K) E := IsScalarTower.of_algebraMap_eq' rfl
-  let f : E →ₐ[A] G := E.val.restrictScalars A
+  let f : E →ₐ[Polynomial K] genericFibre K B := E.val.restrictScalars A
   have hf : Function.Injective f := Subtype.val_injective
   obtain ⟨ι, hι, L, hField, hAlg, e, hExt⟩ :=
     (Algebra.Etale.iff_exists_algEquiv_prod (F K) E).mp hE.2
@@ -52,7 +52,8 @@ theorem exists_global_stage {κ : Type u} [Finite κ] (z : κ → B) :
   letI (i : ι) : Module.Finite (F K) (L i) := (hExt i).1
   letI (i : ι) : Algebra.IsSeparable (F K) (L i) := (hExt i).2
   obtain ⟨g, hg, _, hDen⟩ :=
-    WeaklyEtaleAffineLineFiniteNormalization.exists_model_map K B L e f hf
+    WeaklyEtaleAffineLineFiniteNormalization.exists_model_map K B L (E := E) e f
+      (show Function.Injective f from hf)
   have h (i : κ) : ∃ (a : A) (d : model K L), a ≠ 0 ∧ g d = algebraMap A B a * z i := by
     let x : E := ⟨inclusion K B (z i), Algebra.subset_adjoin (Set.mem_range_self i)⟩
     obtain ⟨a, d, hd⟩ := hDen x

@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Ring.Under.Basic
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageFinitePresentationContinuity
 import PrimalitySheafVerification.ManuscriptAudit.DiagonalCoproductColimit
 

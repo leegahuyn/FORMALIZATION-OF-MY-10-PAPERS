@@ -75,8 +75,11 @@ theorem picardClass_eq_one_iff_coboundary (ht : IsCocycle A B t) :
   refine ⟨exists_coboundary_of_picard_one A B t ht, ?_⟩
   rintro ⟨u, hu⟩
   have he : (t : Double A B) = first A B (↑(u⁻¹) : B) * second A B (u : B) := by
-    have h := congrArg Units.val hu
-    simpa only [← map_inv] using h
+    let f := Units.map (first A B).toMonoidHom
+    let g := Units.map (second A B).toMonoidHom
+    have hu' : t = f (u⁻¹) * g u := hu.trans
+      (congrArg (fun w => w * g u) (map_inv f u).symm)
+    exact congrArg (fun v : (Double A B)ˣ => (v : Double A B)) hu'
   have hChange : second A B (u : B) * ((1 : (Double A B)ˣ) : Double A B) =
       (t : Double A B) * first A B (u : B) := by
     rw [he, Units.val_one, mul_one, mul_right_comm, ← map_mul, Units.inv_mul, map_one, one_mul]

@@ -31,7 +31,7 @@ private theorem complexProfile_continuous {G : ℂ → ℂ}
       fun w hw => (hG w hw).differentiableWithinAt).continuousOn
   exact h.comp_continuous UpperHalfPlane.continuous_coe (fun z => z.im_pos)
 
-private theorem levelFourOpenCells_isOpen : IsOpen (cosetCells Γ₄ ModularGroup.fdo) := by
+theorem levelFourOpenCells_isOpen : IsOpen (cosetCells Γ₄ ModularGroup.fdo) := by
   apply isOpen_iUnion
   intro q
   let g := cellRepresentative Γ₄ q
@@ -49,7 +49,7 @@ private theorem levelFourOpenCells_isOpen : IsOpen (cosetCells Γ₄ ModularGrou
   change Continuous (fun z : ℍ => Matrix.SpecialLinearGroup.mapGL ℝ (g⁻¹) • z)
   exact continuous_const_smul _
 
-private theorem actualVolume_isOpenPosMeasure : (volume : Measure ℍ).IsOpenPosMeasure := by
+theorem actualVolume_isOpenPosMeasure : (volume : Measure ℍ).IsOpenPosMeasure := by
   let μ : Measure ℍ := (volume : Measure ℂ).comap UpperHalfPlane.coe
   let D (z : ℍ) : ℝ≥0∞ := ↑((1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2)
   haveI : μ.IsOpenPosMeasure :=
@@ -108,7 +108,7 @@ theorem raisingField_ae_zero_on_cells {G : ℂ → ℂ}
     have hNN : 0 ≤ᵐ[μ] (U n).indicator Q :=
       Eventually.of_forall (fun z => indicator_nonneg (fun _ _ => sq_nonneg _) _)
     have hLe : (∫ z, (U n).indicator Q z ∂μ) ≤ 0 := by
-      apply le_of_tendsto hLim
+      apply ge_of_tendsto hLim
       filter_upwards [eventually_ge_atTop n] with m hm
       have hCutoff : 2 < (m : ℝ) + 3 := by
         have hCast : 0 ≤ (m : ℝ) := by positivity

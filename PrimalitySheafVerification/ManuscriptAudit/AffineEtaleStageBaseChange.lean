@@ -28,15 +28,15 @@ def baseChangeStage (T : Stage A D) : Stage B D :=
     (Algebra.TensorProduct.lift (Algebra.ofId B D) T.toChart (fun _ _ ↦ Commute.all _ _))
 
 /-- The natural map from the absolute stage ring to its base change. -/
-abbrev transition (T : Stage A D) : T.carrier →ₐ[A] (baseChangeStage (B := B) T).carrier :=
+abbrev transition (T : Stage A D) : T.carrier →ₐ[A] B ⊗[A] T.carrier :=
   Algebra.TensorProduct.includeRight
 
 /-- The original map into the chart is unchanged on composing
 with the actual base change. -/
-theorem factor (T : Stage A D) :
-    ((baseChangeStage (B := B) T).toChart.restrictScalars A).comp (transition T) = T.toChart :=
-  Algebra.TensorProduct.lift_comp_includeRight (Algebra.ofId B D) T.toChart
-    (fun _ _ ↦ Commute.all _ _)
+theorem factor (T : Stage A D) (x : T.carrier) :
+    (baseChangeStage (B := B) T).toChart (transition (B := B) T x) = T.toChart x :=
+  DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight (Algebra.ofId B D) T.toChart
+    (fun _ _ ↦ Commute.all _ _)) x
 
 /-- Morphisms between absolute stages base change compatibly with
 the original maps to the chart. -/

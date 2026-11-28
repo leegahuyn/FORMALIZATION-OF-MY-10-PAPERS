@@ -41,18 +41,15 @@ theorem cutoffFlux_zero_above {Y : ℝ} (hY : 0 < Y) (F G : ℂ → ℂ) (z : �
     (hz : 2 * Y < maximumHeight z) : cutoffFlux Y F G z = 0 := by
   simp [cutoffFlux, complexCutoff_coe, modularCutoff, taper_eq_zero hY hz.le]
 
-theorem cutoffFlux_contDiffOn {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
+theorem cutoffFlux_contDiffOn_of_partner {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
     (hF : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im})
-    (hG : ∀ w : ℂ, 0 < w.im → DifferentiableAt ℝ G w)
-    (hAdj : ∀ x y : ℝ, 0 < y → adjointExpression (realProfile G) x y = 0) :
+    (hAdjGauge : ContDiffOn ℝ 1 (fun w => ModularForm.eta w * adjointPartner G w) {w : ℂ | 0 < w.im}) :
     ContDiffOn ℝ 1 (cutoffFlux Y F G) {w : ℂ | 0 < w.im} := by
   let U : Set ℂ := {w : ℂ | 0 < w.im}
   have hEtaC : DifferentiableOn ℂ ModularForm.eta U := fun w hw =>
     (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hw).differentiableWithinAt
   have hEta : ContDiffOn ℝ 1 ModularForm.eta U :=
     (hEtaC.contDiffOn isOpen_upper).restrict_scalars ℝ
-  have hAdjGauge : ContDiffOn ℝ 1 (fun w => ModularForm.eta w * adjointPartner G w) U :=
-    ((adjointGaugeProduct_differentiableOn hG hAdj).contDiffOn isOpen_upper).restrict_scalars ℝ
   intro w hw
   let z : ℍ := ⟨w, hw⟩
   have hN := isOpen_upper.mem_nhds hw
@@ -81,6 +78,32 @@ theorem cutoffFlux_contDiffOn {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
   have hJ : ContDiffAt ℝ 1 (fluxCurrent F G) w :=
     (hConj.contDiffAt.comp w hRatio).mul ((hAdjGauge w hw).contDiffAt hN)
   exact ((hChi.pow 2).mul hJ).contDiffWithinAt
+
+theorem cutoffFlux_contDiffOn {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
+    (hF : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im})
+    (hG : ∀ w : ℂ, 0 < w.im → DifferentiableAt ℝ G w)
+    (hAdj : ∀ x y : ℝ, 0 < y → adjointExpression (realProfile G) x y = 0) :
+    ContDiffOn ℝ 1 (cutoffFlux Y F G) {w : ℂ | 0 < w.im} := by
+  apply cutoffFlux_contDiffOn_of_partner hY hF
+  exact ((adjointGaugeProduct_differentiableOn hG hAdj).contDiffOn isOpen_upper).restrict_scalars ℝ
+
+theorem cutoffFlux_contDiffOn_of_realSmooth {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
+    (hF : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im})
+    (hG : ContDiffOn ℝ 1 G {w : ℂ | 0 < w.im}) :
+    ContDiffOn ℝ 1 (cutoffFlux Y F G) {w : ℂ | 0 < w.im} := by
+  apply cutoffFlux_contDiffOn_of_partner hY hF
+  let U : Set ℂ := {w : ℂ | 0 < w.im}
+  have hEtaC : DifferentiableOn ℂ ModularForm.eta U := fun w hw =>
+    (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hw).differentiableWithinAt
+  have hEta : ContDiffOn ℝ 1 ModularForm.eta U :=
+    (hEtaC.contDiffOn isOpen_upper).restrict_scalars ℝ
+  intro w hw
+  have hN := isOpen_upper.mem_nhds hw
+  have hPow : ContDiffAt ℝ 1 (fun t : ℝ => t ^ (-(3 / 4 : ℝ))) w.im :=
+    Real.contDiffAt_rpow_const_of_ne (ne_of_gt hw)
+  have hHeight : ContDiffAt ℝ 1 (fun v : ℂ => ((v.im ^ (-(3 / 4 : ℝ)) : ℝ) : ℂ)) w :=
+    Complex.ofRealCLM.contDiff.contDiffAt.comp w (hPow.comp w Complex.imCLM.contDiff.contDiffAt)
+  exact (((hEta w hw).contDiffAt hN).mul (hHeight.mul ((hG w hw).contDiffAt hN))).contDiffWithinAt
 
 theorem cutoffFlux_slash (Y : ℝ) {F G : ℂ → ℂ} (hLaw : OddMaassLaw F)
     (hF : ∀ w : ℂ, 0 < w.im → DifferentiableAt ℝ F w)

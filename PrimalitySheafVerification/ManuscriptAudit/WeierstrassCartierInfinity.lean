@@ -65,9 +65,11 @@ theorem atInfinity_outside_affine (p : linePoint (K := K)) :
     exact p.asIdeal.zero_mem
   rintro ⟨x, hx⟩
   apply hOrigin
-  change WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) ∈ _
+  change WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) ∈
+    Proj.basicOpen (grading K) (CuspYChartAlgebra.z K)
   rw [← WeierstrassProperInfinityChart.chartOpen_inPlane]
-  change (inPlane W).imageι (atInfinity W p) ∈ _
+  change (inPlane W).imageι (atInfinity W p) ∈
+    Proj.basicOpen (grading K) (CuspYChartAlgebra.z K)
   rw [← hx]
   exact affine_in_Z_chart W x
 

@@ -63,6 +63,15 @@ def isColimit_rawSectionCocone : IsColimit (rawSectionCocone (B := B) I) :=
   (IsColimit.precomposeHomEquiv (stageComparison (B := B) I).symm _).symm
     ((indexIsColimit (B := B) I).whiskerEquivalence (E (A := A) (B := B)))
 
+/-- The actual raw colimit leg is the Kan unit followed by the chart restriction. -/
+theorem rawSection_ι (T : Stage A B) :
+    (rawSectionCocone (B := B) I).ι.app T =
+      (η I).app (((E (A := A) (B := B)).functor.obj T).left) ≫
+        (raw (X (A := A)) I).map (chartArrow T).op := by
+  change I.obj.map (𝟙 (op (etaleObject T))) ≫
+      ((η I).app _ ≫ (raw (X (A := A)) I).map (chartArrow T).op) = _
+  rw [CategoryTheory.Functor.map_id, Category.id_comp]
+
 set_option maxHeartbeats 4000000 in
 /-- The canonical map of this raw colimit to the actual inverse image
 has exactly the adjunction-unit restrictions on all stage sections. -/
@@ -82,11 +91,12 @@ theorem raw_toNative_fac (T : Stage A B) :
   have h := congrArg (fun p ↦ p.app U) hb
   change (η I).app U ≫ d.app ((K (A := A)).obj U) =
     (a.unit.app I).hom.app (op (etaleObject T)) at h
-  change (𝟙 _ ≫ ((η I).app U ≫ (raw Y I).map (chartArrow T).op)) ≫
+  rw [rawSection_ι]
+  change ((η I).app U ≫ (raw Y I).map (chartArrow T).op) ≫
       d.app (V (A := A) (B := B)) =
     (a.unit.app I).hom.app (op (etaleObject T)) ≫
       ((EtaleProetaleInverseImage.inverseImage Y).obj I).obj.map (chartArrow T).op
-  rw [Category.id_comp, Category.assoc, d.naturality, ← Category.assoc, h]
+  rw [Category.assoc, d.naturality, ← Category.assoc, h]
 
 end
 end ManuscriptAudit.NativeAffineEtaleRawSections

@@ -21,6 +21,12 @@ noncomputable section
 
 
 variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
+/-- Faithfully flat scalar extension reflects bijectivity of linear maps. -/
+theorem of_lTensor_bijective {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+    [Module A M] [Module A N] (f : M →ₗ[A] N) (hf : Function.Bijective (f.lTensor B)) :
+    Function.Bijective f :=
+  (Module.FaithfullyFlat.lTensor_bijective_iff_bijective A B f).mp hf
+
 variable (t : (Double A B)ˣ)
 
 theorem inverse_isCocycle (ht : IsCocycle A B t) : IsCocycle A B t⁻¹ := by

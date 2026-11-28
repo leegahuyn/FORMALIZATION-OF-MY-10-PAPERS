@@ -88,8 +88,11 @@ private theorem translated_quad_le (x y a : ℝ) (hy : 0 < y)
     rw [abs_of_nonneg ha0] at h2
     linarith
   have hSq : (|(n : ℝ)| + 1) ^ 2 ≤ (|u| + B) ^ 2 := by
-    gcongr
-    linarith [show B = |x| + 2 from rfl]
+    have hLe : |(n : ℝ)| + 1 ≤ |u| + B := by
+      linarith [show B = |x| + 2 from rfl]
+    have hSum : 0 ≤ (|u| + B) + (|(n : ℝ)| + 1) :=
+      add_nonneg (add_nonneg (abs_nonneg _) hB) (by positivity)
+    nlinarith only [mul_nonneg (sub_nonneg.mpr hLe) hSum]
   have hSquare : (|u| + B) ^ 2 ≤ 2 * u ^ 2 + 2 * B ^ 2 := by
     nlinarith [sq_nonneg (|u| - B), sq_abs u]
   have hY : K * y ^ 2 = 2 * y ^ 2 + 2 * B ^ 2 := by

@@ -26,7 +26,7 @@ private theorem pointAtHeight_ne_zero (u : ℝ) {y : ℝ} (hy : 0 < y) :
 private theorem kernelHeight_pos {y c : ℝ} (hy : 0 < y) (hc : 0 < c) (u : ℝ) :
     0 < y / (c ^ 2 * (u ^ 2 + y ^ 2)) := by positivity
 
-private theorem crossRealKernel_continuous (s : ℂ) {y c : ℝ} (hy : 0 < y) (hc : 0 < c) :
+theorem crossRealKernel_continuous (s : ℂ) {y c : ℝ} (hy : 0 < y) (hc : 0 < c) :
     Continuous (crossRealKernel s y c) := by
   let w (u : ℝ) := complexPoint u y
   let h (u : ℝ) := y / (c ^ 2 * (u ^ 2 + y ^ 2))

@@ -111,18 +111,31 @@ theorem raisedField_differentiableAt {F : ℂ → ℂ} (hF : ContDiffOn ℝ 2 F 
   exact ((((differentiableAt_const _).mul hH).mul hX).add (hH.mul hY)).sub
     ((differentiableAt_const _).mul hP)
 
-theorem critical_raisedField_adjoint {F : ℂ → ℂ}
+theorem raisedField_contDiffOn {F : ℂ → ℂ} (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im}) :
+    ContDiffOn ℝ 1 (raisedField F) {w : ℂ | 0 < w.im} := by
+  let U : Set ℂ := {w : ℂ | 0 < w.im}
+  have hL : ContDiffOn ℝ 1 (fderiv ℝ F) U :=
+    ((contDiffOn_succ_iff_fderiv_of_isOpen (n := 1) isOpen_upper).1 hF).2.2
+  have hD (v : ℂ) : ContDiffOn ℝ 1 (fun w : ℂ => fderiv ℝ F w v) U := by
+    intro w hw
+    exact ((ContinuousLinearMap.apply ℝ ℂ v).contDiff.contDiffAt.comp w
+      ((hL w hw).contDiffAt (isOpen_upper.mem_nhds hw))).contDiffWithinAt
+  have hHeight : ContDiff ℝ 1 (fun w : ℂ => (w.im : ℂ)) :=
+    Complex.ofRealCLM.contDiff.comp Complex.imCLM.contDiff
+  have hF' : ContDiffOn ℝ 1 F U := hF.of_le (by norm_num)
+  unfold raisedField
+  exact (((contDiffOn_const.mul hHeight.contDiffOn).mul (hD 1)).add
+    (hHeight.contDiffOn.mul (hD Complex.I))).sub (contDiffOn_const.mul hF')
+
+theorem raisedField_adjoint_of_eigenvalue {F : ℂ → ℂ} {λ : ℝ}
     (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im})
     (hEigen : ∀ x y : ℝ, 0 < y →
-      maassDelta (-1 / 2) (realProfile F) x y = (3 / 16 : ℂ) * realProfile F x y)
-    (x y : ℝ) (hy : 0 < y) : adjointExpression (realProfile (raisedField F)) x y = 0 := by
+      maassDelta (-1 / 2) (realProfile F) x y = (λ : ℂ) * realProfile F x y)
+    (x y : ℝ) (hy : 0 < y) : adjointExpression (realProfile (raisedField F)) x y =
+      ((λ - 3 / 16 : ℝ) : ℂ) * realProfile F x y := by
   obtain ⟨hx, hy', hxx, hxy, hyx, hyy, hMixed⟩ := second_order_coordinates hF x y hy
-  have hP : maassDelta (-1 / 2) (realProfile F) x y =
-      (((3 / 16 : ℝ) : ℂ)) * realProfile F x y := by
-    push_cast
-    exact hEigen x y hy
-  have hSpec := spectral_equation_for_raising (realProfile F) x y (3 / 16)
-    hx hy' hxx hxy hyx hyy hMixed hP
+  have hSpec := spectral_equation_for_raising (realProfile F) x y λ
+    hx hy' hxx hxy hyx hyy hMixed (hEigen x y hy)
   have hX : (fun t => realProfile (raisedField F) t y) =
       (fun t => raising (realProfile F) t y) := by
     funext t
@@ -141,8 +154,19 @@ theorem critical_raisedField_adjoint {F : ℂ → ℂ}
   unfold adjointExpression
   rw [hPX, hPY, show realProfile (raisedField F) x y = raising (realProfile F) x y from
     raisedField_realProfile hF x y hy]
-  change adjointExpression (raising (realProfile F)) x y = 0
-  simpa only [sub_self, Complex.ofReal_zero, zero_mul] using hSpec
+  change adjointExpression (raising (realProfile F)) x y = _
+  exact hSpec
+
+theorem critical_raisedField_adjoint {F : ℂ → ℂ}
+    (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im})
+    (hEigen : ∀ x y : ℝ, 0 < y →
+      maassDelta (-1 / 2) (realProfile F) x y = (3 / 16 : ℂ) * realProfile F x y)
+    (x y : ℝ) (hy : 0 < y) : adjointExpression (realProfile (raisedField F)) x y = 0 := by
+  have hP (u v : ℝ) (hv : 0 < v) : maassDelta (-1 / 2) (realProfile F) u v =
+      (((3 / 16 : ℝ) : ℂ)) * realProfile F u v := by
+    push_cast
+    exact hEigen u v hv
+  simpa only [sub_self, Complex.ofReal_zero, zero_mul] using raisedField_adjoint_of_eigenvalue hF hP x y hy
 
 end
 end ManuscriptAudit.Paper8OddMaassSmoothFactorization

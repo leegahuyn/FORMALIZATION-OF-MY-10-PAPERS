@@ -12,7 +12,7 @@ of nonterminal objects. -/
 
 namespace ManuscriptAudit.InjectiveNativeCechPositive
 
-open CategoryTheory CategoryTheory.Limits Opposite
+open AlgebraicTopology CategoryTheory CategoryTheory.Limits Opposite
 open CechNerveLowDegrees (N face)
 open NativeCechFreeChains (freeYoneda boundary boundary_formula boundary_squared evaluateHom)
 open NativeCechNerve (Cech cochainExactAt_succ_iff)

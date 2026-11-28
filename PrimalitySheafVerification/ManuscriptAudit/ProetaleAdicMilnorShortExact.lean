@@ -34,6 +34,12 @@ private theorem quotientInclusion_range : (quotientInclusion d c h).range = c.ra
   · rintro ⟨u, hu⟩
     exact ⟨QuotientAddGroup.mk' d.range u, hu⟩
 
+private theorem quotientInclusion_exact {J : Type*} [AddCommGroup J]
+    (ρ : H →+ J) (hr : c.range = ρ.ker) (x : H) :
+    (∃ y, quotientInclusion d c h y = x) ↔ ρ x = 0 := by
+  have h' := (quotientInclusion_range d c h).trans hr
+  exact Iff.of_eq (congrArg (fun A : AddSubgroup H ↦ x ∈ A) h')
+
 end Quotient
 
 set_option maxHeartbeats 1000000
@@ -50,13 +56,13 @@ abbrev inclusion :=
 preceding positive-degree product by the consecutive difference. -/
 theorem exact_sequence :
     Function.Injective (inclusion X ℓ d) ∧
-    (inclusion X ℓ d).range = (reductionMap X ℓ (d+2)).ker ∧
+    (∀ x, (∃ y, inclusion X ℓ d y = x) ↔ reductionMap X ℓ (d+2) x = 0) ∧
     Function.Surjective (reductionMap X ℓ (d+2)) := by
   let D := differenceTuples X ℓ d
   let c := connecting X ℓ d
   let h := connecting_kernel X ℓ d
   exact ⟨quotientInclusion_injective D c h,
-    (quotientInclusion_range D c h).trans (connecting_range X ℓ d),
+    quotientInclusion_exact D c h (reductionMap X ℓ (d+2)) (connecting_range X ℓ d),
     ProetaleAdicMilnorPositive.reduction_surjective X ℓ (d+1)⟩
 
 end

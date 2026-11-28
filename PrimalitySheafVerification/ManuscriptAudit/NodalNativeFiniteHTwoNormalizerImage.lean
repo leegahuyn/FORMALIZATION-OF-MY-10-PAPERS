@@ -44,7 +44,9 @@ def normalizationImageEquiv (h2 : (2 : K) ≠ 0) :
   refine AddEquiv.ofBijective (Sheaf.H.map S.f 2) ⟨?_, ?_⟩
   · intro x y hxy
     apply sub_eq_zero.mp
-    have h0 : Sheaf.H.map S.f 2 (x-y) = 0 := by rw [map_sub, hxy, sub_self]
+    have h0 : Sheaf.H.map S.f 2 (x-y) = 0 := by
+      rw [map_sub]
+      exact sub_eq_zero.mpr hxy
     obtain ⟨z, hz⟩ := Ext.covariant_sequence_exact₁ (X := integers K) hS (x-y) h0
       (show 1+1=2 by rfl)
     have hz₀ : z = 0 := hOne.elim _ _

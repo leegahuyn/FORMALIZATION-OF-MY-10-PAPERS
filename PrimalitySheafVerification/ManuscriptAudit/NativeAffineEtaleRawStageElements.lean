@@ -12,7 +12,7 @@ open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 open ProetaleAffineTensor (structureMap specMap)
 open AffineEtaleStageCategory (Stage)
 open NativeAffineEtaleStageSections (chartArrow etaleObject sectionDiagram)
-open NativeAffineEtaleRawSections (rawSectionCocone isColimit_rawSectionCocone)
+open NativeAffineEtaleRawSections (rawSectionCocone isColimit_rawSectionCocone rawSection_ι)
 open NativeAffineEtaleKanComparison (L affineRestriction raw)
 
 noncomputable section
@@ -53,9 +53,10 @@ theorem rawSection_map (f : B →ₐ[A] C) (T : Stage A B) :
     apply MorphismProperty.Over.Hom.ext
     change specMap A f ≫ specMap A T.toChart = specMap A (f.comp T.toChart)
     rw [← Spec.map_comp] <;> rfl
-  change (𝟙 _ ≫ (η.app U ≫ F.map (chartArrow T).op)) ≫ F.map (chartMap f).op =
-    𝟙 _ ≫ (η.app U ≫ F.map (chartArrow (stageAfterMap f T)).op)
-  rw [Category.id_comp, Category.id_comp, Category.assoc, ← Functor.map_comp, ← op_comp, h]
+  rw [rawSection_ι, rawSection_ι]
+  change (η.app U ≫ F.map (chartArrow T).op) ≫ F.map (chartMap f).op =
+    η.app U ≫ F.map (chartArrow (stageAfterMap f T)).op
+  rw [Category.assoc, ← CategoryTheory.Functor.map_comp, ← op_comp, h]
 
 omit [CommRing C] [Algebra A C] [WeaklyEtale (structureMap A C)] in
 /-- Each actual raw section is represented on one actual affine étale stage. -/

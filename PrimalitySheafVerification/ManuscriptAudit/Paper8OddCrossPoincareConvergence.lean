@@ -190,6 +190,37 @@ theorem actualOddCrossSeries_summable (s : ℂ) (hs : 1 < s.re) (z : ℍ) :
     Summable (fun i => ‖actualCrossPhase z i * oddCrossSeed s z i‖) :=
   oddCrossSeries_summable s hs z _ (fun i => (actualCrossPhase_norm z i).le)
 
+instance : Countable CrossIndex :=
+  Function.Injective.countable (f := majorantIndex) majorantIndex_injective
+
+theorem exists_summable_crossMajorant_on_unit_strip (s : ℂ) (hs : 1 < s.re) {y : ℝ} (hy : 0 < y) :
+    ∃ M : CrossIndex → ℝ, Summable M ∧
+      ∀ (z : ℍ), z.im = y → |z.re| ≤ 1 → ∀ i, ‖actualCrossPhase z i * oddCrossSeed s z i‖ ≤ M i := by
+  let K : ℝ := 2 + 18 / y ^ 2
+  let C : ℝ := (y * K) ^ s.re * (2 : ℝ) ^ (-2 * s.re)
+  let M : CrossIndex → ℝ := fun i => C * crossMajorant s.re (majorantIndex i)
+  have hSummable : Summable M :=
+    ((crossMajorant_summable hs).comp_injective majorantIndex_injective).mul_left C
+  refine ⟨M, hSummable, fun z hY hX i => ?_⟩
+  rcases i with ⟨D, A, n⟩
+  have hHt : crossHeightConstant z ≤ K := by
+    unfold crossHeightConstant K
+    rw [hY]
+    have hB : (|z.re| + 2) ^ 2 ≤ (3 : ℝ) ^ 2 := by
+      gcongr <;> linarith
+    have hSquare : 2 * (|z.re| + 2) ^ 2 ≤ 18 := by linarith
+    exact add_le_add_left (div_le_div_of_nonneg_right hSquare (sq_nonneg y)) _
+  have hPow : (z.im * crossHeightConstant z) ^ s.re ≤ (y * K) ^ s.re := by
+    rw [hY]
+    exact Real.rpow_le_rpow (mul_nonneg hy.le (crossHeightConstant_pos z).le)
+      (mul_le_mul_of_nonneg_left hHt hy.le) (by linarith)
+  rw [norm_mul, actualCrossPhase_norm, one_mul]
+  refine (oddCrossSeed_norm_le s z ⟨D, A, n⟩).trans ?_
+  refine (scaledCross_rpow_le (by linarith) (Nat.succ_pos D) A z n).trans ?_
+  unfold M C crossMajorant majorantIndex
+  push_cast
+  gcongr
+
 end
 end ManuscriptAudit.Paper8OddCrossPoincareConvergence
 

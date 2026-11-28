@@ -49,6 +49,8 @@ private theorem integralMultiples_unique {G : A} (p q : E ⟶ G)
     rcases z with ⟨n⟩
     change ULift.up (n • (1 : ℤ)) = ULift.up n
     rw [zsmul_eq_mul, mul_one]
+    change ULift.up ((Int.castAddHom ℤ) n) = ULift.up n
+    rw [Int.castAddHom_int] <;> rfl
   change p z = q z
   rw [← hz]
   exact (p.hom.map_zsmul _ _).trans ((congrArg (fun v : G ↦ z.down • v) h).trans (q.hom.map_zsmul _ _).symm)

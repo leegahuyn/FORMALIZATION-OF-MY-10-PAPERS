@@ -10,7 +10,7 @@ objectwise in all positive degrees, for any arrow and any base. -/
 
 namespace ManuscriptAudit.NativeCechFreeChains
 
-open CategoryTheory CategoryTheory.Limits Opposite
+open AlgebraicTopology CategoryTheory CategoryTheory.Limits Opposite
 open CechNerveLowDegrees (N face)
 open NativeCechPointwiseCone (prepend prepend_face_zero prepend_face_succ)
 open scoped Simplicial BigOperators
@@ -40,7 +40,7 @@ def evaluateHom {V W : G.{v,w}} (x : V) : (V ⟶ W) →+ W where
 theorem freeYoneda_map_of {X Y W : C} (f : X ⟶ Y) (a : W ⟶ X) :
     ((freeYoneda.{u,v,w}).map f).app (op W) (FreeAbelianGroup.of (ULift.up a)) =
       FreeAbelianGroup.of (ULift.up (a ≫ f)) :=
-  FreeAbelianGroup.map_of_apply _ _
+  FreeAbelianGroup.map_of_apply _
 
 variable [HasFiniteLimits C] {U T : C} (f : U ⟶ T)
 
@@ -64,7 +64,9 @@ private theorem boundary_of {W : C} (n : ℕ) (a : W ⟶ N f (n + 1)) :
       ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) •
         (FreeAbelianGroup.of (ULift.up (a ≫ face f n i))) := by
   rw [boundary_formula, NatTrans.app_sum]
-  change (evaluateHom (FreeAbelianGroup.of (ULift.up a))) (∑ i, _) = _
+  let ev := evaluateHom (V := ((freeYoneda.{u,v,w}).obj (N f (n + 1))).obj (op W))
+    (W := ((freeYoneda.{u,v,w}).obj (N f n)).obj (op W)) (FreeAbelianGroup.of (ULift.up a))
+  change ev (∑ i, _) = _
   rw [map_sum]
   apply Finset.sum_congr rfl
   intro i _
@@ -81,7 +83,7 @@ private def cone (W : C) (n : ℕ) :
 private theorem cone_of {W : C} (n : ℕ) (a : W ⟶ N f n) :
     cone.{u,v,w} f W n (FreeAbelianGroup.of (ULift.up a)) =
       FreeAbelianGroup.of (ULift.up (prepend f n a)) :=
-  FreeAbelianGroup.map_of_apply _ _
+  FreeAbelianGroup.map_of_apply _
 
 set_option maxHeartbeats 3900000 in
 private theorem cone_identity (W : C) (n : ℕ) :
@@ -90,8 +92,12 @@ private theorem cone_identity (W : C) (n : ℕ) :
         AddMonoidHom.id (((freeYoneda.{u,v,w}).obj (N f (n + 1))).obj (op W)) := by
   apply FreeAbelianGroup.lift_ext
   rintro ⟨a⟩
-  simp only [AddMonoidHom.add_apply, AddMonoidHom.comp_apply, AddMonoidHom.id_apply,
-    cone_of, boundary_of, map_sum, map_zsmul]
+  change (boundary.{u,v,w} f (n + 1)).app (op W)
+      (cone.{u,v,w} f W (n + 1) (FreeAbelianGroup.of (ULift.up a))) +
+    cone.{u,v,w} f W n ((boundary.{u,v,w} f n).app (op W) (FreeAbelianGroup.of (ULift.up a))) =
+      FreeAbelianGroup.of (ULift.up a)
+  rw [cone_of, boundary_of, boundary_of, map_sum]
+  simp_rw [map_zsmul, cone_of]
   rw [Fin.sum_univ_succ]
   simp only [Fin.val_zero, pow_zero, one_zsmul, prepend_face_zero,
     Fin.val_succ, pow_succ, mul_neg, mul_one, neg_smul, prepend_face_succ,

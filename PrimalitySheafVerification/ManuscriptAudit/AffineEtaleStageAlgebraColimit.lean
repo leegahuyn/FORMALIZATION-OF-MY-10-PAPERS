@@ -34,7 +34,9 @@ def liftIsColimit {J : Type*} [Category* J] [Nonempty J]
       (d.ι.app j).right at h
     calc
       _ = ((D.obj j).hom ≫ (c.ι.app j).right) ≫
-          hc.desc ((Under.forget R).mapCocone d) := by rw [Under.w]
+          hc.desc ((Under.forget R).mapCocone d) :=
+          congrArg (fun m : R ⟶ c.pt.right ↦ m ≫ hc.desc ((Under.forget R).mapCocone d))
+            (Under.w (c.ι.app j)).symm
       _ = (D.obj j).hom ≫ (d.ι.app j).right := by rw [Category.assoc, h]
       _ = _ := Under.w _)
   fac d j := by
@@ -72,8 +74,9 @@ variable [WeaklyEtale (structureMap A B)]
 set_option maxHeartbeats 2200000 in
 /-- The actual affine stage cocone is a colimit in algebras over A. -/
 def isColimit_algebra (hApprox : FiniteTupleApproximation A B) :
-    IsColimit (algebraCocone (A := A) (B := B)) :=
-  liftIsColimit (AffineEtaleStageColimit.isColimit_chart hApprox)
+    IsColimit (algebraCocone (A := A) (B := B)) := by
+  letI : Nonempty (Stage A B) := ⟨Stage.of A B (Algebra.ofId A B)⟩
+  exact liftIsColimit (AffineEtaleStageColimit.isColimit_chart hApprox)
 
 /-- Taking the diagonal tensor square in the category of A-algebras
 preserves the actual stage colimit. -/

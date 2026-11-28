@@ -22,7 +22,7 @@ local notation "T" => ((B ⊗[R] B) ⊗[R] B)
 abbrev images (U : ℕ → Subalgebra R B) : ℕ → Subalgebra R T :=
   fun n => (FlatTensorStageInjections.stageTriple U n).range
 
-set_option maxHeartbeats 550000 in
+set_option maxHeartbeats 1900000 in
 /-- Each finite discrete section already factors through the image of one literal
 triple tensor stage. -/
 theorem factor_triple_image (U : ℕ → Subalgebra R B) (hMono : Monotone U)
@@ -36,7 +36,7 @@ theorem factor_triple_image (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     exact ⟨n, w, hw⟩
   exact SpectrumFiniteContinuousFactorization.factor (images U) hM hC f hF
 
-set_option maxHeartbeats 550000 in
+set_option maxHeartbeats 1900000 in
 /-- Injectivity of the literal triple stage maps identifies the factorization with
 a function on the actual coordinate ring of that stage. -/
 theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
@@ -45,11 +45,12 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     (f : PrimeSpectrum T → A) (hF : Continuous f) :
     ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
       ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x := by
+  have hM : Monotone (images U) := TensorTripleIncreasingUnion.range_mono U hMono
+  have hC : ∀ b : T, ∃ n, ∃ w, FlatTensorStageInjections.stageTriple U n w = b :=
+    TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover
   exact SpectrumFiniteSectionsInStageImages.factor_of_injective_stage_maps
     (fun n ↦ (U n ⊗[R] U n) ⊗[R] U n)
-    (FlatTensorStageInjections.stageTriple U) hInj
-    (TensorTripleIncreasingUnion.range_mono U hMono)
-    (TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover) f hF
+    (FlatTensorStageInjections.stageTriple U) hInj hM hC f hF
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsTriple

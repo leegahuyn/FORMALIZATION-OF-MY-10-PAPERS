@@ -31,18 +31,18 @@ theorem exists_factorization [Algebra.FinitePresentation A P]
   classical
   obtain ⟨n, f, hf, hFg⟩ := Algebra.FinitePresentation.out (R := A) (A := P)
   let z (i : Fin n) := g (f (MvPolynomial.X i))
-  obtain ⟨C, hR, hA, hE, k, hk⟩ := hApprox z
+  obtain ⟨C, hR, hA, hE, k, hk⟩ := hApprox (fun i : ULift.{u} (Fin n) ↦ z i.down)
   letI : CommRing C := hR
   letI : Algebra A C := hA
   letI : Algebra.Etale A C := hE
   choose y hy using hk
-  let m : MvPolynomial (Fin n) A →ₐ[A] C := MvPolynomial.aeval y
+  let m : MvPolynomial (Fin n) A →ₐ[A] C := MvPolynomial.aeval (fun i ↦ y (ULift.up i))
   have hm : k.comp m = g.comp f := by
     apply MvPolynomial.algHom_ext
     intro i
-    change k (MvPolynomial.aeval y (MvPolynomial.X i)) = z i
+    change k (MvPolynomial.aeval (fun j ↦ y (ULift.up j)) (MvPolynomial.X i)) = z i
     rw [MvPolynomial.aeval_X]
-    exact hy i
+    exact hy (ULift.up i)
   obtain ⟨s, hS⟩ := hFg
   have hSpan : Ideal.span (s : Set (MvPolynomial (Fin n) A)) = RingHom.ker f.toRingHom := hS
   let r (a : s) := m a.val
