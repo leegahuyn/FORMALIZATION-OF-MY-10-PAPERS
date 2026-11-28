@@ -117,6 +117,7 @@ theorem classMap_injective : Function.Injective (classMap p) := by
       simpa only [classMap, ClassGroup.extendedHom_mk0] using hc
     exact (ClassGroup.mk0_eq_one_iff (ClassGroup.extendedIdeal R (S p) I).property).mp hMap
   have hUnit : q.map (algebraMap R (S p)) = 1 := by
+    rw [Ideal.one_eq_top]
     change (Ideal.span ({p} : Set R)).map (algebraMap R (S p)) = ⊤
     rw [Ideal.map_span, Set.image_singleton, Ideal.span_singleton_eq_top]
     exact IsLocalization.Away.algebraMap_isUnit (S := S p) p

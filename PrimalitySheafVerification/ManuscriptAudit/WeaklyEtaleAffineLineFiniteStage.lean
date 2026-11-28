@@ -75,7 +75,8 @@ theorem exists_etale_neighborhood (r : Ideal B) [r.IsPrime]
     Function.Injective.moduleIsTorsionFree g hg (fun a x ↦ g.toLinearMap.map_smul a x)
   letI : Module.Flat A D := inferInstance
   letI : Module.Finite A D := model_finite K L
-  letI : Algebra.FinitePresentation A D := inferInstance
+  letI : Algebra.FinitePresentation A D :=
+    (Algebra.FinitePresentation.of_finiteType (R := A) (A := D)).mp inferInstance
   have hLoc (i : κ) : ∃ v : Localization.AtPrime q,
       Localization.localRingHom q r g.toRingHom rfl v =
         algebraMap B (Localization.AtPrime r) (z i) := by

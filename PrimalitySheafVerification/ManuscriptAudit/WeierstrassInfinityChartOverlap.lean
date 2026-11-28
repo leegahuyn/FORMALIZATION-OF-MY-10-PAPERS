@@ -73,17 +73,21 @@ def toYChart : A W →ₐ[K] YOverlap W :=
 
 theorem toZChart_x :
     toZChart W (WeierstrassInfinityChartAlgebra.x W) = zx W * zInv W :=
-  (AdjoinRoot.liftAlgHom_of (WeierstrassInfinityChartAlgebra.equation W) _
-    _ (toZ_relation W) X).trans (Polynomial.aeval_X _)
+  (AdjoinRoot.liftAlgHom_of (WeierstrassInfinityChartAlgebra.equation W)
+    (Polynomial.aeval (R := K) (zx W * zInv W))
+    (zInv W) (toZ_relation W) X).trans (Polynomial.aeval_X _)
 
 theorem toZChart_z : toZChart W (WeierstrassInfinityChartAlgebra.z W) = zInv W :=
-  AdjoinRoot.liftAlgHom_root _ _ _ (toZ_relation W)
+  AdjoinRoot.liftAlgHom_root (WeierstrassInfinityChartAlgebra.equation W)
+    (Polynomial.aeval (R := K) (zx W * zInv W)) (zInv W) (toZ_relation W)
 
 theorem toYChart_x : toYChart W (affineX W) = yx W * yInv W :=
-  (AdjoinRoot.liftAlgHom_of W.polynomial _ _ (toY_relation W) X).trans (Polynomial.aeval_X _)
+  (AdjoinRoot.liftAlgHom_of W.polynomial (Polynomial.aeval (R := K) (yx W * yInv W))
+    (yInv W) (toY_relation W) X).trans (Polynomial.aeval_X _)
 
 theorem toYChart_y : toYChart W (affineY W) = yInv W :=
-  AdjoinRoot.liftAlgHom_root _ _ _ (toY_relation W)
+  AdjoinRoot.liftAlgHom_root W.polynomial (Polynomial.aeval (R := K) (yx W * yInv W))
+    (yInv W) (toY_relation W)
 
 def toZOverlap : YOverlap W →ₐ[K] ZOverlap W :=
   IsLocalization.Away.liftAlgHom (WeierstrassInfinityChartAlgebra.z W) (f := toZChart W)

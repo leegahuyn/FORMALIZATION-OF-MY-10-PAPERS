@@ -9,7 +9,7 @@ expressions whose denominators divide the numerators on its stalks. -/
 namespace ManuscriptAudit.AffineOpenStageSections
 
 open AlgebraicGeometry CategoryTheory Opposite
-open ProetaleAffineTensor (spectrum structureMap specMap)
+open ProetaleAffineTensor (structureMap specMap)
 open PrincipalDivisibilityLocus
   (divisibilityOpen mem_divisibilityOpen_iff dvd_of_forall_atPrime map_dvd_atPrime)
 
@@ -26,11 +26,12 @@ variable {A B D : Type u} [CommRing A] [CommRing B] [CommRing D]
 set_option maxHeartbeats 3300000 in
 /-- For an actual affine open containing the chart image, a family of
 regular fractions becomes a family of global sections of its étale ring. -/
-theorem exists_stage (g : D →ₐ[A] B) (U : (spectrum D).Opens) (hAff : IsAffineOpen U)
+theorem exists_stage (g : D →ₐ[A] B) (U : (ProetaleAffineTensor.spectrum D).Opens) (hAff : IsAffineOpen U)
     (hImage : Set.range (specMap A g) ⊆ Set.range U.ι)
-    (hEt : (U : Set (PrimeSpectrum D)) ⊆ Algebra.etaleLocus A D)
+    (hEt : (U : Set (ProetaleAffineTensor.spectrum D)) ⊆ Algebra.etaleLocus A D)
     {ι : Type u} (a : ι → A) (d : ι → D) (z : ι → B)
-    (hDiv : ∀ i, (U : Set (PrimeSpectrum D)) ⊆ divisibilityOpen (algebraMap A D (a i)) (d i))
+    (hDiv : ∀ i, (U : Set (ProetaleAffineTensor.spectrum D)) ⊆
+      (divisibilityOpen (algebraMap A D (a i)) (d i) : Set (PrimeSpectrum D)))
     (hReg : ∀ i, IsLeftRegular (algebraMap A B (a i)))
     (hEq : ∀ i, g (d i) = algebraMap A B (a i) * z i) :
     ∃ (C : Type u) (_ : CommRing C) (_ : Algebra A C),
@@ -38,9 +39,9 @@ theorem exists_stage (g : D →ₐ[A] B) (U : (spectrum D).Opens) (hAff : IsAffi
   letI : IsAffine U.toScheme := hAff
   let C : CommRingCat.{u} := Scheme.Γ.obj (op U.toScheme)
   let e : U.toScheme ≅ Spec C := U.toScheme.isoSpec
-  let v : Spec C ⟶ spectrum D := e.inv ≫ U.ι
-  let w : spectrum B ⟶ U.toScheme := IsOpenImmersion.lift U.ι (specMap A g) hImage
-  let u : spectrum B ⟶ Spec C := w ≫ e.hom
+  let v : Spec C ⟶ ProetaleAffineTensor.spectrum D := e.inv ≫ U.ι
+  let w : ProetaleAffineTensor.spectrum B ⟶ U.toScheme := IsOpenImmersion.lift U.ι (specMap A g) hImage
+  let u : ProetaleAffineTensor.spectrum B ⟶ Spec C := w ≫ e.hom
   let φ : CommRingCat.of D ⟶ C := Spec.preimage v
   let ψ : C ⟶ CommRingCat.of B := Spec.preimage u
   letI : Algebra D C := φ.hom.toAlgebra

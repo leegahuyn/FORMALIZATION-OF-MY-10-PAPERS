@@ -30,6 +30,7 @@ abbrev FiniteTupleApproximation (A B : Type u) [CommRing A] [CommRing B] [Algebr
 
 variable (hApprox : FiniteTupleApproximation A B)
 
+include hApprox in
 private theorem exists_lift (b : B) : ∃ (X : Stage A B) (x : X.carrier), X.toChart x = b := by
   obtain ⟨C, hR, hA, hE, g, h⟩ := hApprox (fun _ : ULift.{u} Unit ↦ b)
   letI : CommRing C := hR
@@ -40,6 +41,7 @@ private theorem exists_lift (b : B) : ∃ (X : Stage A B) (x : X.carrier), X.toC
 
 /-- Equal chart values of two stage elements become equal at a
 common actual étale stage. -/
+include hApprox in
 theorem exists_equal_stage (X Y : Stage A B) (x : X.carrier) (y : Y.carrier)
     (h : X.toChart x = Y.toChart y) :
     ∃ (Z : Stage A B) (f : X ⟶ Z) (g : Y ⟶ Z), hom f x = hom g y := by
@@ -63,6 +65,7 @@ theorem exists_equal_stage (X Y : Stage A B) (x : X.carrier) (y : Y.carrier)
   rw [map_sub] at he
   exact ⟨Z, f ≫ e, g ≫ e, sub_eq_zero.mp he⟩
 
+include hApprox in
 private theorem exists_two_lifts (b c : B) :
     ∃ (X : Stage A B) (x y : X.carrier), X.toChart x = b ∧ X.toChart y = c := by
   obtain ⟨X, x, hx⟩ := exists_lift hApprox b
@@ -71,6 +74,7 @@ private theorem exists_two_lifts (b c : B) :
   let g := IsFiltered.rightToMax X Y
   exact ⟨_, hom f x, hom g y, (hom_toChart f x).trans hx, (hom_toChart g y).trans hy⟩
 
+include hApprox in
 set_option maxHeartbeats 3200000 in
 /-- The literal chart ring is the filtered colimit of its actual
 affine étale stages, in commutative rings. -/

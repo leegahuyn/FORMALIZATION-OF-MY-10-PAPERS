@@ -71,11 +71,11 @@ theorem comparison_mem_W : (J X).W (toNative X I) := by
         (E.map (a.unit.app I)).hom :=
       Equiv.apply_symm_apply _ _
     rw [Adjunction.homEquiv_naturality_right, hu]
-    change (E.map (a.unit.app I)).hom ≫
-        (Functor.whiskerLeft (L X) p) =
-      (E.map (a.homEquiv I T ((Sheaf.homEquiv (X := F) (Y := T)).symm p))).hom
-    rw [Adjunction.homEquiv_unit, Functor.map_comp]
-    rfl
+    have he : b.homEquiv ((E.obj I).obj) H (e p) =
+        (E.map (a.homEquiv I T ((Sheaf.homEquiv (X := F) (Y := T)).symm p))).hom := by
+      change b.homEquiv ((E.obj I).obj) H ((b.homEquiv ((E.obj I).obj) H).symm _) = _
+      exact Equiv.apply_symm_apply _ _
+    rw [he, Adjunction.homEquiv_unit, Functor.map_comp] <;> rfl
   rw [hfun]
   exact e.bijective
 

@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.AlgebraicGeometry.Sites.Etale
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-! A matching section on an actual singleton étale cover
 descends, using the actual small étale topology. -/

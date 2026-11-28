@@ -121,23 +121,51 @@ private theorem tensorPairing_bijective (ht : IsCocycle A B t) :
   rw [he]
   exact r.symm.bijective.comp e.bijective
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-private theorem reflect_tensor_bijective (R S : Type u) [CommRing R] [CommRing S]
-    [Algebra R S] [Module.FaithfullyFlat R S] {M N : Type u}
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) :
-    Function.Bijective (f.lTensor S) → Function.Bijective f :=
-  (Module.FaithfullyFlat.lTensor_bijective_iff_bijective R S f).mp
+private theorem tensorPairing_tmul (b : B) (v : PairingDomain A B t) :
+    tensorPairing A B t (b ⊗ₜ[A] v) = b ⊗ₜ[A] pairing A B t v := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 600000 in
-theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
-  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
-  have h : Function.Bijective (g.lTensor B) := by
-    change Function.Bijective (tensorPairing A B t)
-    exact tensorPairing_bijective A B t ht
-  exact reflect_tensor_bijective (M := PairingDomain A B t) (N := A) A B g h
+private theorem pairing_injective (ht : IsCocycle A B t) :
+    Function.Injective (pairing A B t) := by
+  intro x y h
+  have he : (1 : B) ⊗ₜ[A] x = (1 : B) ⊗ₜ[A] y :=
+    (tensorPairing_bijective A B t ht).1 (by
+      rw [tensorPairing_tmul, tensorPairing_tmul, h])
+  have hz : (1 : B) ⊗ₜ[A] (x - y) = 0 := by
+    rw [TensorProduct.tmul_sub, he, sub_self]
+  exact sub_eq_zero.mp ((Module.FaithfullyFlat.one_tmul_eq_zero_iff
+    (R := A) (M := PairingDomain A B t) (A := B) (m := x - y)).mp hz)
+
+private theorem pairing_surjective (ht : IsCocycle A B t) :
+    Function.Surjective (pairing A B t) := by
+  let I : Ideal A := (pairing A B t).range
+  let r := TensorProduct.rid A B
+  have hMem (v : B ⊗[A] PairingDomain A B t) :
+      r (tensorPairing A B t v) ∈ I • (⊤ : Submodule A B) := by
+    induction v using TensorProduct.induction_on with
+    | zero =>
+      rw [map_zero, map_zero]
+      exact (I • (⊤ : Submodule A B)).zero_mem
+    | tmul b x =>
+      rw [tensorPairing_tmul]
+      change pairing A B t x • b ∈ I • (⊤ : Submodule A B)
+      exact Submodule.smul_mem_smul (show pairing A B t x ∈ I from ⟨x, rfl⟩) Submodule.mem_top
+    | add x y hx hy =>
+      rw [map_add, map_add]
+      exact (I • (⊤ : Submodule A B)).add_mem hx hy
+  have hTop : I • (⊤ : Submodule A B) = ⊤ := by
+    apply eq_top_iff.mpr
+    intro b _
+    obtain ⟨v, hv⟩ := (tensorPairing_bijective A B t ht).2 (b ⊗ₜ[A] (1 : A))
+    have h := hMem v
+    rw [hv] at h
+    change (1 : A) • b ∈ I • (⊤ : Submodule A B) at h
+    simpa only [one_smul] using h
+  have hI : I = ⊤ :=
+    ((Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top A B).mp inferInstance).2 I hTop
+  exact LinearMap.range_eq_top.mp hI
+
+theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) :=
+  ⟨pairing_injective A B t ht, pairing_surjective A B t ht⟩
 
 /-- A genuine faithfully flat unit cocycle determines an invertible module. -/
 theorem invariants_invertible (ht : IsCocycle A B t) :

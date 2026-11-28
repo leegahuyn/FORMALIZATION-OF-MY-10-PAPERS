@@ -86,7 +86,7 @@ theorem scaledCross_row_exponential_phase {D : ℕ} (hD : 0 < D) (A : CrossRow D
   have hc : scaledCrossMatrix A 1 0 ≠ 0 := by
     rw [scaledCrossMatrix_lowerLeft]
     exact mul_ne_zero (by norm_num) hD0
-  have h := row_exponential_phase _ hc hy oddInfinityFrequency oddZeroFrequency
+  have h := row_exponential_phase (scaledCrossMatrix A) (x := x) hc hy oddInfinityFrequency oddZeroFrequency
   dsimp only at h ⊢
   rw [show ((oddInfinityFrequency * (scaledCrossMatrix A) 0 0 +
       oddZeroFrequency * (scaledCrossMatrix A) 1 1) / (scaledCrossMatrix A) 1 0 : ℝ) =

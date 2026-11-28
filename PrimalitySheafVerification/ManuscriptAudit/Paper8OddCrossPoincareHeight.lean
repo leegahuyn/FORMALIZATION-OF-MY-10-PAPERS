@@ -44,7 +44,7 @@ theorem matrixMoebius_im (g : SL(2, ℝ)) (z : ℍ) (hc : g 1 0 ≠ 0) :
   change ((g • z : ℍ) : ℂ).im = _
   rw [hAct, matrixMoebius, Complex.div_im, hNorm]
   simp only [Complex.add_im, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, zero_mul,
-    add_zero, Complex.add_re, Complex.mul_re, sub_zero]
+    add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div]
   congr 1
   linear_combination z.im * hDet
 

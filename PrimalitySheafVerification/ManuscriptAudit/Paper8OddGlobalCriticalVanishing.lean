@@ -96,7 +96,9 @@ theorem raisingField_ae_zero_on_cells {G : ℂ → ℂ}
       exact sq_nonneg _
   have hAE (n : ℕ) : (U n).indicator Q =ᵐ[μ] 0 := by
     have hInt' : Integrable (cutoffEnergy ((n : ℝ) + 3) G) μ :=
-      cutoffEnergy_integrableOn (by positivity) hGc
+      cutoffEnergy_integrableOn (by
+        have hCast : 0 ≤ (n : ℝ) := by positivity
+        linarith) hGc
     have hInt : Integrable ((U n).indicator Q) μ :=
       hInt'.mono' ((hQ.indicator (hU n)).aestronglyMeasurable) (Eventually.of_forall (fun z => by
         have h : 0 ≤ (U n).indicator Q z := indicator_nonneg (fun _ => sq_nonneg _) _
@@ -106,7 +108,10 @@ theorem raisingField_ae_zero_on_cells {G : ℂ → ℂ}
     have hLe : (∫ z, (U n).indicator Q z ∂μ) ≤ 0 := by
       apply le_of_tendsto hLim
       filter_upwards [eventually_ge_atTop n] with m hm
-      exact integral_mono hInt (cutoffEnergy_integrableOn (by positivity) hGc) (hPoint n m hm)
+      have hCutoff : 2 < (m : ℝ) + 3 := by
+        have hCast : 0 ≤ (m : ℝ) := by positivity
+        linarith
+      exact integral_mono hInt (cutoffEnergy_integrableOn hCutoff hGc) (hPoint n m hm)
     exact (integral_eq_zero_iff_of_nonneg_ae hNN hInt).mp
       (le_antisymm hLe (integral_nonneg_of_ae hNN))
   have hAll : ∀ᵐ z ∂μ, ∀ n : ℕ, (U n).indicator Q z = 0 := ae_all_iff.2 hAE

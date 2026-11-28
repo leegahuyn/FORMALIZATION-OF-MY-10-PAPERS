@@ -84,9 +84,14 @@ theorem exists_factorization_with_two_relations
   let jk := IsFiltered.rightToMax i j
   let v := g ≫ D.map jk
   have hv : v ≫ c.ι.app k = f := by
-    simpa only [v, Category.assoc, c.w jk] using hg
+    change (g ≫ D.map jk) ≫ c.ι.app k = f
+    rw [Category.assoc]
+    exact (congrArg (fun m ↦ g ≫ m) (c.w jk)).trans hg
   have h₁' : (a ≫ v) ≫ c.ι.app k = (p ≫ D.map ik) ≫ c.ι.app k := by
-    simpa only [Category.assoc, hv, c.w ik] using h₁
+    calc
+      _ = a ≫ f := by rw [Category.assoc, hv]
+      _ = p ≫ c.ι.app i := h₁
+      _ = _ := by rw [Category.assoc]; exact (congrArg (fun m ↦ p ≫ m) (c.w ik)).symm
   obtain ⟨k', kk', hK⟩ := exists_equalizer P hc hP (a ≫ v) (p ≫ D.map ik) h₁'
   let v' := v ≫ D.map kk'
   let ik' := ik ≫ kk'

@@ -6,7 +6,7 @@ norm degree. Here exactness is expressed by a nonzero residue after clearing. -/
 
 namespace ManuscriptAudit.WeierstrassInfinityNormPole
 
-open Polynomial WeierstrassCurve.Affine
+open Polynomial Module WeierstrassCurve.Affine
 open WeierstrassInfinityChartCoordinates WeierstrassInfinityChartAlgebra
 open WeierstrassInfinityOriginIdeal WeierstrassInfinityOpenCover
 open WeierstrassInfinityPoleCoordinates WeierstrassInfinityPolynomialResidue
@@ -97,6 +97,15 @@ theorem exact_pole_degree_norm (f : W.CoordinateRing) (hf : f ≠ 0) :
     · rw [norm_natDegree_both W p q hp hq]
       exact exact_weighted_leading_residue W p q hp hq
 
+/-- The exact pole exponent is the dimension of the actual affine quotient.
+This counts the affine zero scheme of the same original function with multiplicity. -/
+theorem exact_pole_degree_quotient (f : W.CoordinateRing) (hf : f ≠ 0) :
+    ∃ a : N W, localOrigin W a ≠ 0 ∧ algebraMap (N W) (P W) a =
+      affineToPuncture W f * punctureX W ^
+        Module.finrank K (W.CoordinateRing ⧸ Ideal.span ({f} : Set W.CoordinateRing)) := by
+  rw [finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) hf]
+  exact exact_pole_degree_norm W f hf
+
 end
 
 end ManuscriptAudit.WeierstrassInfinityNormPole
@@ -105,7 +114,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.WeierstrassInfinityNormPole.map_smul_basis,
-      ``ManuscriptAudit.WeierstrassInfinityNormPole.exact_pole_degree_norm] do
+      ``ManuscriptAudit.WeierstrassInfinityNormPole.exact_pole_degree_norm,
+      ``ManuscriptAudit.WeierstrassInfinityNormPole.exact_pole_degree_quotient] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n
     unless bad.isEmpty do

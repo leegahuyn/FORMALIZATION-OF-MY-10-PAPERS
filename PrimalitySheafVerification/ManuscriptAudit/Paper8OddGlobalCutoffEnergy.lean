@@ -49,10 +49,14 @@ theorem cutoffEnergy_integrableOn {Y : ℝ} (hY : 2 < Y) {G : ℂ → ℂ}
   have hChi : Continuous (modularCutoff Y) := by
     have h := (modularCutoff_real_smooth hY).continuousOn.comp_continuous UpperHalfPlane.continuous_coe
       (fun z => z.im_pos)
-    convert h using 1
-    funext z
-    rw [ofComplex_apply_of_im_pos z.im_pos]
-  apply integrableOn_cusp_support (CongruenceSubgroup.Gamma0 4) (cutoffEnergy Y G) ((hChi.mul hG.norm).pow 2)
+    have hEq : (fun w : ℂ => modularCutoff Y (ofComplex w)) ∘
+        ((↑) : ℍ → ℂ) = modularCutoff Y := by
+      funext z
+      change modularCutoff Y (ofComplex (z : ℂ)) = modularCutoff Y z
+      rw [ofComplex_apply_of_im_pos z.im_pos]
+    rwa [hEq] at h
+  refine integrableOn_cusp_support (CongruenceSubgroup.Gamma0 4) (cutoffEnergy Y G)
+    (B := 2 * Y) ((hChi.mul hG.norm).pow 2) ?_
   intro z hz
   simp [cutoffEnergy, modularCutoff, taper_eq_zero (by linarith : 0 < Y) hz.le]
 
@@ -75,7 +79,7 @@ theorem cutoffError_weighted_bound :
         (C * ‖F z‖) * (modularCutoff Y z * ‖G z‖) := by
       have hIm : 0 < z.im ^ 2 := sq_pos_of_pos z.im_pos
       have h := (le_div_iff₀ hIm).mp hBound
-      convert h using 1 <;> ring
+      simpa only [mul_assoc, mul_left_comm, mul_comm] using h
     have hYoung := sq_nonneg (C * ‖F z‖ - modularCutoff Y z * ‖G z‖)
     calc
       _ ≤ ‖weightedCutoffError Y F G z‖ := Complex.re_le_norm _
@@ -133,7 +137,8 @@ theorem cutoffEnergy_le_cusp_tail {F G : ℂ → ℂ} (hLaw : OddMaassLaw F)
     (hA.add (hP.const_mul _)).div_const _
   have hI := integral_odd_cutoff_energy hY hLaw hF hG hRaise hAdj
   change (∫ z in S, A z) = (∫ z in S, E z).re at hI
-  rw [← integral_re hE] at hI
+  have hRe : (∫ z in S, (E z).re) = (∫ z in S, E z).re := integral_re hE
+  rw [← hRe] at hI
   have hMon := integral_mono hEr hB (hBound Y hY N hNY F G)
   rw [← hI, integral_div, integral_add hA (hP.const_mul _), integral_const_mul] at hMon
   have hPInt : (∫ z in S, P z) = ∫ z in S ∩ T, ‖F z‖ ^ 2 := by
@@ -159,7 +164,10 @@ theorem cutoffEnergy_tendsto_zero {F G : ℂ → ℂ} (hLaw : OddMaassLaw F)
         (∫⁻ z in T n, normSquareDensity F z).toReal := by
       exact integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (fun z : ℍ => sq_nonneg ‖F z‖))
         ((hFc.norm.pow 2).aestronglyMeasurable)
-    simpa only [Function.comp_def, ENNReal.toReal_zero, ← hEq] using hTo
+    have hFun : (fun n : ℕ => ∫ z in T n, ‖F z‖ ^ 2) =
+        (fun n : ℕ => (∫⁻ z in T n, normSquareDensity F z).toReal) := funext hEq
+    rw [hFun]
+    simpa only [Function.comp_def, ENNReal.toReal_zero, T] using hTo
   obtain ⟨C, _, hBound⟩ := cutoffEnergy_le_cusp_tail hLaw hF hG hRaise hAdj hMass
   have hHigh : Tendsto (fun n : ℕ => C ^ 2 * (∫ z in T n, ‖F z‖ ^ 2)) atTop (𝓝 0) := by
     simpa only [mul_zero] using (tendsto_const_nhds (x := C ^ 2)).mul hLim
@@ -167,7 +175,8 @@ theorem cutoffEnergy_tendsto_zero {F G : ℂ → ℂ} (hLaw : OddMaassLaw F)
   · intro n
     exact integral_nonneg (fun z => sq_nonneg _)
   · intro n
-    exact hBound ((n : ℝ) + 3) (by positivity) (n : ℝ) (by linarith)
+    have hn : 0 ≤ (n : ℝ) := by positivity
+    exact hBound ((n : ℝ) + 3) (by linarith) (n : ℝ) (by linarith)
 
 end
 end ManuscriptAudit.Paper8OddGlobalCutoffEnergy

@@ -1,16 +1,21 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.WeaklyEtaleAffineLineGlobalStageFromModel
+import Mathlib.RingTheory.Flat.TorsionFree
+import PrimalitySheafVerification.ManuscriptAudit.AffineOpenStageSections
+import PrimalitySheafVerification.ManuscriptAudit.DedekindFiniteProductAffineOpen
+import PrimalitySheafVerification.ManuscriptAudit.FlatUnramifiedEtaleNeighborhood
+import PrimalitySheafVerification.ManuscriptAudit.WeaklyEtaleAffineLineLocalExtension
+import PrimalitySheafVerification.ManuscriptAudit.WeaklyEtaleAffineLineNormalStageStalk
 
-/-! A finite family on the actual weakly étale affine-line chart
-is represented over one actual affine étale algebra globally. -/
+/-! One common global affine étale neighbourhood carries all
+specified sections of the actual weakly étale affine-line chart. -/
 
-namespace ManuscriptAudit.WeaklyEtaleAffineLineGlobalStage
+namespace ManuscriptAudit.WeaklyEtaleAffineLineGlobalStageFromModel
 
 open AlgebraicGeometry CategoryTheory
-open ProetaleAffineTensor (structureMap)
-open WeaklyEtaleAffineLineGenericStage (F genericFibre inclusion inclusion_injective)
-open WeaklyEtaleAffineLineFiniteNormalization (model)
-open scoped nonZeroDivisors
+open ProetaleAffineTensor (structureMap specMap)
+open PrincipalDivisibilityLocus (divisibilityOpen mem_divisibilityOpen_iff)
+open WeaklyEtaleAffineLineGenericStage (F)
+open WeaklyEtaleAffineLineFiniteNormalization (model model_finite component_dedekind)
 
 noncomputable section
 
@@ -24,56 +29,81 @@ variable (K B : Type u) [Field K] [IsAlgClosed K] [CommRing B] [Algebra (Polynom
 
 private abbrev R := Polynomial K
 
-set_option maxHeartbeats 3100000 in
-/-- All members of a finite family on the entire actual affine chart
-are the images of elements on a single affine étale stage over the affine line. -/
-theorem exists_global_stage {κ : Type u} [Finite κ] (z : κ → B) :
+variable {ι : Type u} (L : ι → Type u) [Finite ι]
+  [∀ i, Field (L i)] [∀ i, Algebra (F K) (L i)]
+  [∀ i, Algebra (R K) (L i)] [∀ i, IsScalarTower (R K) (F K) (L i)]
+  [∀ i, Module.Finite (F K) (L i)] [∀ i, Algebra.IsSeparable (F K) (L i)]
+
+set_option maxHeartbeats 3600000 in
+/-- From one actual finite normal model and nonzero scalar multiples
+of the tuple, construct one affine étale stage through which all
+elements factor globally, including where their chosen denominators vanish. -/
+theorem exists_stage (g : model K L →ₐ[R K] B) (hg : Function.Injective g)
+    {κ : Type u} [Finite κ] (a : κ → R K) (d : κ → model K L) (z : κ → B)
+    (ha : ∀ i, a i ≠ 0) (hEq : ∀ i, g (d i) = algebraMap (R K) B (a i) * z i) :
     ∃ (C : Type u) (_ : CommRing C) (_ : Algebra (R K) C),
       Algebra.Etale (R K) C ∧ ∃ j : C →ₐ[R K] B, ∀ i, ∃ x : C, j x = z i := by
-  classical
   let A := R K
-  let G := genericFibre K B
-  let s : Set G := Set.range (fun i ↦ inclusion K B (z i))
-  let E := Algebra.adjoin (F K) s
-  have hE := WeaklyEtaleAffineLineGenericStage.adjoin_finite_etale K B s (Set.finite_range _)
-  letI : Module.Finite (F K) E := hE.1
-  letI : Algebra.Etale (F K) E := hE.2
-  letI : Algebra A E := Algebra.compHom E (algebraMap A (F K))
-  letI : IsScalarTower A (F K) E := IsScalarTower.of_algebraMap_eq' rfl
-  let f : E →ₐ[Polynomial K] genericFibre K B := E.val.restrictScalars A
-  have hf : Function.Injective f := Subtype.val_injective
-  obtain ⟨ι, hι, L, hField, hAlg, e, hExt⟩ :=
-    (Algebra.Etale.iff_exists_algEquiv_prod (F K) E).mp hE.2
-  letI : Finite ι := hι
-  letI (i : ι) : Field (L i) := hField i
-  letI (i : ι) : Algebra (F K) (L i) := hAlg i
-  letI (i : ι) : Algebra A (L i) := Algebra.compHom (L i) (algebraMap A (F K))
-  letI (i : ι) : IsScalarTower A (F K) (L i) := IsScalarTower.of_algebraMap_eq' rfl
-  letI (i : ι) : Module.Finite (F K) (L i) := (hExt i).1
-  letI (i : ι) : Algebra.IsSeparable (F K) (L i) := (hExt i).2
-  obtain ⟨g, hg, _, hDen⟩ :=
-    WeaklyEtaleAffineLineFiniteNormalization.exists_model_map K B L (E := E) e f
-      (show Function.Injective f from hf)
-  have h (i : κ) : ∃ (a : A) (d : model K L), a ≠ 0 ∧ g d = algebraMap A B a * z i := by
-    let x : E := ⟨inclusion K B (z i), Algebra.subset_adjoin (Set.mem_range_self i)⟩
-    obtain ⟨a, d, hd⟩ := hDen x
-    refine ⟨a, d, nonZeroDivisors.ne_zero a.property, inclusion_injective K B ?_⟩
-    calc
-      inclusion K B (g d) = f (a • x) := hd
-      _ = algebraMap A G a * inclusion K B (z i) := by
-        change f ((a : A) • x) = _
-        rw [Algebra.smul_def, map_mul, f.commutes] <;> rfl
-      _ = inclusion K B (algebraMap A B a * z i) := by
-        rw [map_mul, (inclusion K B).commutes]
-  choose a d ha hEq using h
-  exact WeaklyEtaleAffineLineGlobalStageFromModel.exists_stage K B L g hg a d z ha hEq
+  let D := model K L
+  let φ := CommRingCat.ofHom (algebraMap A B)
+  letI : Module.Flat A B := (RingHom.flat_algebraMap_iff).mp
+    ((Flat.SpecMap_iff (f := φ)).mp (inferInstanceAs (Flat (structureMap A B))))
+  letI : Module.IsTorsionFree A D :=
+    Function.Injective.moduleIsTorsionFree g hg (fun x y ↦ g.toLinearMap.map_smul x y)
+  letI : Module.Flat A D := inferInstance
+  letI : Module.Finite A D := model_finite K L
+  letI : Algebra.FinitePresentation A D := (Algebra.FinitePresentation.of_finiteType).mp inferInstance
+  let E : (ProetaleAffineTensor.spectrum D).Opens := ⟨Algebra.etaleLocus A D, Algebra.isOpen_etaleLocus⟩
+  let V (i : κ) := divisibilityOpen (algebraMap A D (a i)) (d i)
+  let U : (ProetaleAffineTensor.spectrum D).Opens := E ⊓ ⨅ i, V i
+  have hU (p : PrimeSpectrum D) : p ∈ U ↔ p ∈ E ∧ ∀ i, p ∈ V i := by
+    change p ∈ (U : Set (ProetaleAffineTensor.spectrum D)) ↔ _
+    simp only [U, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_iInf,
+      Set.mem_inter_iff, Set.mem_iInter, SetLike.mem_coe]
+  have hAt (p : PrimeSpectrum B) : PrimeSpectrum.comap g.toRingHom p ∈ U := by
+    let q := PrimeSpectrum.comap g.toRingHom p
+    obtain ⟨hD, hVal, hUn⟩ :=
+      WeaklyEtaleAffineLineNormalStageStalk.local_properties K B L g p.asIdeal
+    letI : IsDomain (Localization.AtPrime q.asIdeal) := hD
+    letI : ValuationRing (Localization.AtPrime q.asIdeal) := hVal
+    letI : Algebra.IsUnramifiedAt A q.asIdeal := hUn
+    apply (hU q).mpr
+    constructor
+    · have h₁ : (1 : D) ∉ q.asIdeal :=
+        fun h ↦ q.isPrime.ne_top (Ideal.eq_top_iff_one.mpr h)
+      obtain ⟨s, hs, _, hEt⟩ :=
+        FlatUnramifiedEtaleNeighborhood.exists_etale_away A D q.asIdeal 1 h₁
+      exact (Algebra.basicOpen_subset_etaleLocus_iff_etale.mpr hEt)
+        ((PrimeSpectrum.mem_basicOpen s q).mpr hs)
+    · intro i
+      obtain ⟨x, hx, _⟩ :=
+        WeaklyEtaleAffineLineLocalExtension.exists_local_preimage_with_quotient
+          g p.asIdeal q.asIdeal rfl (a i) (ha i) (d i) (z i) (hEq i)
+      apply (mem_divisibilityOpen_iff _ _ q).mpr
+      refine ⟨x, ?_⟩
+      rw [← IsScalarTower.algebraMap_apply A D (Localization.AtPrime q.asIdeal)]
+      exact hx.symm
+  have hImage : Set.range (specMap A g) ⊆ Set.range U.ι := by
+    rintro _ ⟨p, rfl⟩
+    exact ⟨⟨specMap A g p, hAt p⟩, rfl⟩
+  letI (i : ι) : IsDedekindDomain (integralClosure A (L i)) := component_dedekind K L i
+  have hAff : IsAffineOpen U :=
+    DedekindFiniteProductAffineOpen.isAffineOpen (fun i ↦ integralClosure A (L i)) U
+  have hReg (i : κ) : IsLeftRegular (algebraMap A B (a i)) := by
+    intro x y e
+    apply Module.Flat.isSMulRegular_of_nonZeroDivisors (M := B)
+      (mem_nonZeroDivisors_of_ne_zero (ha i))
+    simpa only [Algebra.smul_def] using e
+  exact AffineOpenStageSections.exists_stage g U hAff hImage
+    (fun p hp ↦ ((hU p).mp hp).1) a d z
+    (fun i p hp ↦ ((hU p).mp hp).2 i) hReg hEq
 
 end
-end ManuscriptAudit.WeaklyEtaleAffineLineGlobalStage
+end ManuscriptAudit.WeaklyEtaleAffineLineGlobalStageFromModel
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.WeaklyEtaleAffineLineGlobalStage.exists_global_stage
+  let name := ``ManuscriptAudit.WeaklyEtaleAffineLineGlobalStageFromModel.exists_stage
   let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

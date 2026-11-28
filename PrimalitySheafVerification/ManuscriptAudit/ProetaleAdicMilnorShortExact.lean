@@ -13,6 +13,12 @@ open ProetaleAdicReductionAllDegrees
 
 noncomputable section
 
+set_option synthInstance.maxHeartbeats 160000
+set_option maxHeartbeats 1000000
+set_option maxRecDepth 4000
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 variable (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime] (d : ℕ)
 
 abbrev firstDerivedLimit := Tuples X ℓ d ⧸ (differenceTuples X ℓ d).range

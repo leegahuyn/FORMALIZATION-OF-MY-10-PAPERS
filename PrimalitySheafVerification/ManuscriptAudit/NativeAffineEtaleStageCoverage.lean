@@ -64,7 +64,8 @@ theorem exists_stage (U : (spectrum A).Etale) [IsAffine U.left]
   change specMap A g ≫ e.inv = f.left
   rw [show specMap A g = w from hψ]
   change (f.left ≫ e.hom) ≫ e.inv = f.left
-  rw [Category.assoc, e.hom_inv_id, Category.comp_id]
+  rw [Category.assoc, e.hom_inv_id]
+  exact Category.comp_id f.left
 
 end
 end ManuscriptAudit.NativeAffineEtaleStageCoverage

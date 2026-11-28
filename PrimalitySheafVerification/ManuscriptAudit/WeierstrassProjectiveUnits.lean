@@ -43,6 +43,8 @@ private theorem restriction_injective : Function.Injective (restriction W).hom :
     simp only [map_zero]
     rw [← ConcreteCategory.comp_apply, j.naturality]
     change (j.app ⊤).hom s = 0 at hs
+    change ((affineScheme W).presheaf.map
+      ((TopologicalSpace.Opens.map j.base).map i).op).hom ((j.app ⊤).hom s) = 0
     rw [hs, map_zero]
   exact (Scheme.ΓSpecIso (A W)).commRingCatIsoToRingEquiv.injective.comp hj
 
