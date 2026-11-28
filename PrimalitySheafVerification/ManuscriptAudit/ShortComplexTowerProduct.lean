@@ -28,8 +28,7 @@ private theorem difference_natural
         sub_comp, Category.assoc]
     _ = Pi.π A n ≫ g n - Pi.π A (n+1) ≫ g (n+1) ≫ b n := by rw [hg]
     _ = _ := by
-      rw [Category.assoc, difference_π, comp_sub, mapProduct_π,
-        ← Category.assoc, mapProduct_π, Category.assoc]
+      simp only [Category.assoc, difference_π, comp_sub, mapProduct_π, mapProduct_π_assoc]
 
 variable (S : ℕ → ShortComplex C) (s : ∀ n, S (n+1) ⟶ S n)
 

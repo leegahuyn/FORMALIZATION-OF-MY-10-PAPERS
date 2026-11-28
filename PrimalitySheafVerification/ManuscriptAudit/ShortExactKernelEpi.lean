@@ -36,7 +36,9 @@ theorem epi_right (hT : T.Exact) [Epi S.g] [Epi v.τ₁]
     have hleft : (g ≫ f ≫ b) ≫ v.τ₂ = d ≫ v.τ₁ ≫ T.f := by
       calc
         _ = g ≫ (f ≫ b ≫ v.τ₂) := by simp only [Category.assoc]
-        _ = _ := by rw [← Category.assoc f b v.τ₂, hc, ← Category.assoc g c T.f, hd]
+        _ = g ≫ (c ≫ T.f) := congrArg (fun h ↦ g ≫ h) hc
+        _ = (g ≫ c) ≫ T.f := (Category.assoc _ _ _).symm
+        _ = _ := by rw [hd, Category.assoc]
     rw [sub_comp, hleft, v.comm₁₂, Category.assoc, sub_self]
   let k := k₂.lift (KernelFork.ofι w hw)
   have hk : k ≫ i.τ₂ = w := k₂.fac (KernelFork.ofι w hw) WalkingParallelPair.zero

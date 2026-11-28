@@ -52,26 +52,33 @@ private theorem affine_in_Z_chart (x : affineScheme W) :
   rw [← Proj.opensRange_awayι (grading K) (CuspYChartAlgebra.z K) (X_mem_one K 2) (by decide)]
   exact ⟨_, rfl⟩
 
+private theorem origin_not_in_Z_chart (p : linePoint (K := K)) :
+    originToChart W p ∉ (WeierstrassInfinityChartImmersion.inPlane W) ⁻¹ᵁ
+      Proj.basicOpen (grading K) (CuspYChartAlgebra.z K) := by
+  rw [WeierstrassInfinityChartImmersion.inPlane_preimage_z]
+  change ¬ (z W ∉ (PrimeSpectrum.comap (origin W).toRingHom p).asIdeal)
+  apply not_not.mpr
+  change origin W (z W) ∈ p.asIdeal
+  rw [origin_z]
+  exact p.asIdeal.zero_mem
+
+private theorem inPlane_atInfinity (p : linePoint (K := K)) :
+    (inPlane W).imageι (atInfinity W p) =
+      WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) := by
+  change (WeierstrassProperInfinityChart.chartOpen W ≫ (inPlane W).imageι)
+      (originToChart W p) = _
+  exact congrArg (fun f : WeierstrassInfinityChartImmersion.chartScheme W ⟶
+    CuspYChartAlgebra.plane K => f (originToChart W p))
+    (WeierstrassProperInfinityChart.chartOpen_inPlane W)
+
+set_option maxHeartbeats 1000000 in
 theorem atInfinity_outside_affine (p : linePoint (K := K)) :
     atInfinity W p ∉ Set.range (affineOpen W) := by
-  have hOrigin : originToChart W p ∉
-      (WeierstrassInfinityChartImmersion.inPlane W) ⁻¹ᵁ
-        Proj.basicOpen (grading K) (CuspYChartAlgebra.z K) := by
-    rw [WeierstrassInfinityChartImmersion.inPlane_preimage_z]
-    change ¬ (z W ∉ (PrimeSpectrum.comap (origin W).toRingHom p).asIdeal)
-    apply not_not.mpr
-    change origin W (z W) ∈ p.asIdeal
-    rw [origin_z]
-    exact p.asIdeal.zero_mem
   rintro ⟨x, hx⟩
-  apply hOrigin
-  change WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) ∈
-    Proj.basicOpen (grading K) (CuspYChartAlgebra.z K)
-  rw [← WeierstrassProperInfinityChart.chartOpen_inPlane]
-  change (inPlane W).imageι (atInfinity W p) ∈
-    Proj.basicOpen (grading K) (CuspYChartAlgebra.z K)
-  rw [← hx]
-  exact affine_in_Z_chart W x
+  have h := affine_in_Z_chart W x
+  have he := congrArg (fun z : projectiveScheme W => (inPlane W).imageι z) hx
+  rw [he, inPlane_atInfinity] at h
+  exact origin_not_in_Z_chart W p h
 
 theorem range_atInfinity : Set.range (atInfinity W) = (Set.range (affineOpen W))ᶜ := by
   obtain ⟨q, -, hq⟩ := WeierstrassProjectiveInfinity.existsUnique_boundary W

@@ -36,7 +36,7 @@ def restrictionPresheafIso (I : Sheaf (Scheme.AffineEtale.topology X) C.{u}) :
   let e : (Scheme.AffineEtale.Spec X).op ⋙ F.obj ≅ I.obj :=
     (sheafToPresheaf (Scheme.AffineEtale.topology X) C.{u}).mapIso ((E X).unitIso.app I).symm
   change A.op ⋙ F.obj ≅ _
-  exact (isoWhiskerRight fOp F.obj) ≪≫ (isoWhiskerLeft (affinePostcompose j).op e)
+  exact (Functor.isoWhiskerRight fOp F.obj) ≪≫ (Functor.isoWhiskerLeft (affinePostcompose j).op e)
 
 end
 

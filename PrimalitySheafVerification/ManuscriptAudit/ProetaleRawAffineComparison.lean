@@ -35,9 +35,11 @@ theorem affine_pullback {X Y T : S.ProEt} (f : X ⟶ T) (g : Y ⟶ T)
   let D := P ⋙ F
   have h (i : WalkingCospan) : IsAffine (D.obj i) := by
     cases i with
-    | left => exact inferInstanceAs (IsAffine X.left)
-    | right => exact inferInstanceAs (IsAffine Y.left)
-    | one => exact inferInstanceAs (IsAffine T.left)
+    | none => exact inferInstanceAs (IsAffine T.left)
+    | some i =>
+      cases i with
+      | left => exact inferInstanceAs (IsAffine X.left)
+      | right => exact inferInstanceAs (IsAffine Y.left)
   let E : WalkingCospan ⥤ AffineScheme.{u} :=
     { obj := fun i ↦ AffineScheme.mk (D.obj i) (h i)
       map := fun a ↦ InducedCategory.homMk (D.map a)
@@ -70,6 +72,7 @@ private theorem nat_apply {P Q : S.ProEtᵒᵖ ⥤ G.{u}} (η : P ⟶ Q)
 variable {P : S.ProEtᵒᵖ ⥤ G.{u}} {F : Sheaf (J (S := S)) G.{u}}
   (η : P ⟶ F.obj) (hP : AffineFamilyDescent P)
 
+include hP in
 set_option maxHeartbeats 2700000 in
 /-- The local equality in the unit is global on each actual affine chart. -/
 theorem injective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
@@ -82,6 +85,7 @@ theorem injective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
   rintro W _ ⟨i⟩
   exact hm i
 
+include hP in
 set_option maxHeartbeats 5200000 in
 /-- Compatible local lifts glue, and the sheafified unit therefore
 gives the actual affine section isomorphism. -/
@@ -116,6 +120,7 @@ theorem surjective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
           ((map_map k r (y j)).trans (congrArg (fun e ↦ P.map e.op (y j)) hc'))))
   obtain ⟨t, ht, _⟩ :=
     (Presieve.isSheafFor_arrows_iff (P := P₀) a).mp (hP n V a hV hw hc) y hY
+  have ht' (i : Fin n) : P.map (a i).op t = y i := ht i
   let d := descent V a
   have hd : F.obj.map d.op (η.app (op T) t) = F.obj.map d.op x := by
     let w := F.obj.map d.op x
@@ -125,7 +130,7 @@ theorem surjective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
         F.obj.map (injection V i).op (F.obj.map d.op (η.app (op T) t)) =
           F.obj.map (injection V i).op w := by
       change _ = F.obj.map (injection V i).op (F.obj.map d.op x)
-      rw [map_map, map_map, injection_descent, ← nat_apply, ht, hy]
+      rw [map_map, map_map, injection_descent, ← nat_apply, ht', hy]
     exact (hs _ hv).trans ((hs w (fun _ ↦ rfl)).symm)
   let F₀ := F.obj ⋙ CategoryTheory.forget G.{u}
   letI : PreservesLimitsOfSize.{u, u + 1} (CategoryTheory.forget G.{u}) :=
@@ -134,7 +139,7 @@ theorem surjective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
     (isSheaf_iff_isSheaf_of_type (J (S := S)) _).mp
       (Presheaf.isSheaf_comp_of_isSheaf _ _ (CategoryTheory.forget G.{u}) F.property)
   have hD : Presieve.IsSheafFor F₀ (Presieve.singleton d) :=
-    (Presieve.isSheafFor_iff_generate _).mpr (hF.isSheafFor _ (descent_covers V a hw hc))
+    hF.isSheafFor (Presieve.singleton d) (descent_covers V a hw hc)
   refine ⟨t, hD.isSeparatedFor.ext ?_⟩
   rintro W _ ⟨rfl⟩
   exact hd

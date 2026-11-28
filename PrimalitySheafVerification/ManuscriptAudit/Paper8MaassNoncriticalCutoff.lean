@@ -62,10 +62,12 @@ theorem weightedCurl_cutoffFlux_eq_shifted_energy {Y δ : ℝ} (hY : 2 < Y) {F G
   have hChiSq : DifferentiableAt ℝ (fun v => complexCutoff Y v ^ 2) w := hChi.pow 2
   rw [complexCurl_mul hChiSq hJ, hC2, hJcurl]
   unfold cutoffEnergy weightedCutoffError cutoffError
-  simp only [complexCutoff_coe]
+  have hChiZ : complexCutoff Y w = (modularCutoff Y z : ℂ) := complexCutoff_coe Y z
+  simp only [hChiZ, complexCutoff_coe]
   simp only [Complex.ofReal_div, Complex.ofReal_pow, Complex.ofReal_mul]
   rw [show (starRingEnd ℂ) (F w) * ((δ : ℂ) * F w) = (δ : ℂ) * (‖F w‖ : ℂ) ^ 2 by
     rw [← hNorm]; ring]
+  dsimp only [w]
   field_simp [Complex.ofReal_ne_zero.mpr z.im_pos.ne'] <;> ring
 
 end

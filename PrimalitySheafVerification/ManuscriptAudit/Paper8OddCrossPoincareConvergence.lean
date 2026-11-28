@@ -28,8 +28,12 @@ private def rowIndex {D : ℕ} (hD : 0 < D) (A : CrossRow D) : ZMod D :=
 private theorem rowIndex_injective {D : ℕ} (hD : 0 < D) :
     Function.Injective (rowIndex hD) := by
   intro A B h
-  exact (crossRowsEquiv hD (crossRow_odd A)).symm.injective
-    ((rowsEquiv hD).injective (Subtype.ext h))
+  have hEq : rowsEquiv hD ((crossRowsEquiv hD (crossRow_odd A)).symm A) =
+      rowsEquiv hD ((crossRowsEquiv hD (crossRow_odd B)).symm B) := by
+    apply Subtype.ext
+    change rowIndex hD A = rowIndex hD B
+    exact h
+  exact (crossRowsEquiv hD (crossRow_odd A)).symm.injective ((rowsEquiv hD).injective hEq)
 
 private def majorantIndex : CrossIndex → MajorantIndex
   | ⟨D, A, n⟩ => ⟨D, rowIndex (Nat.succ_pos D) A, n⟩
@@ -41,7 +45,7 @@ private theorem majorantIndex_injective : Function.Injective majorantIndex := by
   have hPair : (rowIndex (Nat.succ_pos D) A, n) = (rowIndex (Nat.succ_pos D) B, m) := by
     exact eq_of_heq (Sigma.mk.inj_iff.mp h).2
   have hA := rowIndex_injective (Nat.succ_pos D) (congrArg Prod.fst hPair)
-  have hn := congrArg Prod.snd hPair
+  have hn : n = m := congrArg Prod.snd hPair
   subst B
   subst m
   rfl
@@ -67,7 +71,7 @@ private theorem crossMajorant_summable {σ : ℝ} (hσ : 1 < σ) :
   have hb : Summable b := shiftMajorant_summable hσ
   have hProd (D : ℕ) : Summable
       (fun p : ZMod (D + 1) × ℤ => ((D : ℝ) + 1) ^ (-2 * σ) * b p.2) :=
-    (Real.summable_prod_of_nonneg (fun _ => by
+    (summable_prod_of_nonneg (fun _ => by
       dsimp only [b, shiftMajorant]
       positivity)).2 ⟨fun _ => hb.mul_left _, by
         exact summable_of_finite⟩
@@ -86,7 +90,7 @@ private theorem crossMajorant_summable {σ : ℝ} (hσ : 1 < σ) :
         ← Real.rpow_neg (by positivity : 0 ≤ (D : ℝ) + 1)]
       congr 1
       ring
-  apply (Real.summable_sigma_of_nonneg (fun i => by
+  apply (summable_sigma_of_nonneg (fun i => by
     unfold crossMajorant shiftMajorant
     positivity)).2
   exact ⟨hProd, (hs.mul_left _).congr (fun D => (hReduce D).symm)⟩
@@ -160,7 +164,7 @@ def actualCrossPhase (z : ℍ) (i : CrossIndex) : ℂ :=
 private theorem oddEtaPhase_norm (g : CongruenceSubgroup.Gamma0 4) (z : ℍ) :
     ‖oddEtaPhase g z‖ = 1 := by
   have h : ‖(levelCharacter g : ℂ)‖ ^ 2 = 1 := by
-    rw [← norm_pow, ← Int.cast_pow, levelCharacter_sq, Int.cast_one, norm_one]
+    rw [← norm_pow, levelCharacter_sq, norm_one]
   have hC : ‖(levelCharacter g : ℂ)‖ = 1 := by
     nlinarith [norm_nonneg (levelCharacter g : ℂ)]
   rw [oddEtaPhase, norm_mul, hC, negativePhase_norm, one_mul]
@@ -209,7 +213,7 @@ theorem exists_summable_crossMajorant_on_unit_strip (s : ℂ) (hs : 1 < s.re) {y
     have hB : (|z.re| + 2) ^ 2 ≤ (3 : ℝ) ^ 2 := by
       gcongr <;> linarith
     have hSquare : 2 * (|z.re| + 2) ^ 2 ≤ 18 := by linarith
-    exact add_le_add_left (div_le_div_of_nonneg_right hSquare (sq_nonneg y)) _
+    exact add_le_add le_rfl (div_le_div_of_nonneg_right hSquare (sq_nonneg y))
   have hPow : (z.im * crossHeightConstant z) ^ s.re ≤ (y * K) ^ s.re := by
     rw [hY]
     exact Real.rpow_le_rpow (mul_nonneg hy.le (crossHeightConstant_pos z).le)
@@ -219,7 +223,7 @@ theorem exists_summable_crossMajorant_on_unit_strip (s : ℂ) (hs : 1 < s.re) {y
   refine (scaledCross_rpow_le (by linarith) (Nat.succ_pos D) A z n).trans ?_
   unfold M C crossMajorant majorantIndex
   push_cast
-  gcongr
+  gcongr <;> unfold shiftMajorant <;> positivity
 
 end
 end ManuscriptAudit.Paper8OddCrossPoincareConvergence

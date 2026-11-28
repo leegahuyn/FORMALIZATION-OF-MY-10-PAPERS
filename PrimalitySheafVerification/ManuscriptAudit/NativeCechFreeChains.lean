@@ -92,12 +92,18 @@ private theorem cone_identity (W : C) (n : ℕ) :
         AddMonoidHom.id (((freeYoneda.{u,v,w}).obj (N f (n + 1))).obj (op W)) := by
   apply FreeAbelianGroup.lift_ext
   rintro ⟨a⟩
+  change W ⟶ N f (n + 1) at a
   change (boundary.{u,v,w} f (n + 1)).app (op W)
       (cone.{u,v,w} f W (n + 1) (FreeAbelianGroup.of (ULift.up a))) +
     cone.{u,v,w} f W n ((boundary.{u,v,w} f n).app (op W) (FreeAbelianGroup.of (ULift.up a))) =
       FreeAbelianGroup.of (ULift.up a)
   rw [cone_of, boundary_of, boundary_of, map_sum]
-  simp_rw [map_zsmul, cone_of]
+  have h (i : Fin (n + 2)) :
+      cone.{u,v,w} f W n ((-1 : ℤ) ^ (i : ℕ) •
+        FreeAbelianGroup.of (ULift.up (a ≫ face f n i))) =
+      (-1 : ℤ) ^ (i : ℕ) • FreeAbelianGroup.of (ULift.up (prepend f n (a ≫ face f n i))) := by
+    rw [map_zsmul, cone_of]
+  simp only [h]
   rw [Fin.sum_univ_succ]
   simp only [Fin.val_zero, pow_zero, one_zsmul, prepend_face_zero,
     Fin.val_succ, pow_succ, mul_neg, mul_one, neg_smul, prepend_face_succ,

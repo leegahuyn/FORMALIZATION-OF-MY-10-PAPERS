@@ -64,12 +64,13 @@ variable (x : (cokernel ι).obj.obj (op (baseObject R)))
 variable (y : I.obj.obj (op (U R B)))
 variable (hy : (cokernel.π ι).hom.app (op (U R B)) y =
   (cokernel ι).obj.map (coverArrow R B).op x)
+include hy
 
 /-- The pullback of a local lift is a lift of the same global section on the refinement. -/
 theorem refine_lifts :
     (cokernel.π ι).hom.app (op (V R C)) (I.obj.map (ofAlgHom f).op y) =
       (cokernel ι).obj.map (coverArrow R C).op x := by
-  rw [NatTrans.naturality_apply, hy,
+  rw [NatTrans.naturality_apply (cokernel.π ι).hom (ofAlgHom f).op y, hy,
     restrictMap_comp (F := (cokernel ι).obj) R (coverArrow R B) (ofAlgHom f) x]
   have hT : IsTerminal (baseObject R) :=
     KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)
@@ -92,7 +93,7 @@ theorem transition_refine :
     transition_image R C ι x y' (refine_lifts R B C f ι x y hy)
   have h : (G R).obj.map s.op (Additive.ofMul t) = Additive.ofMul t' := by
     apply section_injective ι (E R C)
-    rw [NatTrans.naturality_apply, hB, hC]
+    rw [NatTrans.naturality_apply ι.hom s.op (Additive.ofMul t), hB, hC]
     change (I.obj.map s.op).hom (_ - _) = _
     rw [map_sub]
     change I.obj.map s.op (I.obj.map (firstProjection R B).op y) -

@@ -1,6 +1,5 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.SpectrumFiniteSectionsInStageImages
-import PrimalitySheafVerification.ManuscriptAudit.TensorTripleIncreasingUnion
+import PrimalitySheafVerification.ManuscriptAudit.SpectrumFiniteSectionsTripleImages
 
 /-! Descent of each genuine finite coefficient section on the triple affine product. -/
 
@@ -19,24 +18,27 @@ variable {R B A : Type*} [CommRing R] [CommRing B] [Algebra R B]
 
 local notation "T" => ((B ⊗[R] B) ⊗[R] B)
 
-abbrev images (U : ℕ → Subalgebra R B) : ℕ → Subalgebra R T :=
-  fun n => (FlatTensorStageInjections.stageTriple U n).range
+abbrev images := @SpectrumFiniteSectionsTripleImages.images
+abbrev factor_triple_image := @SpectrumFiniteSectionsTripleImages.factor_triple_image
 
-set_option maxHeartbeats 1900000 in
-/-- Each finite discrete section already factors through the image of one literal
-triple tensor stage. -/
-theorem factor_triple_image (U : ℕ → Subalgebra R B) (hMono : Monotone U)
-    (hCover : ∀ b : B, ∃ n, b ∈ U n)
-    (f : PrimeSpectrum T → A) (hF : Continuous f) :
-    ∃ (n : ℕ) (g : PrimeSpectrum (images U n) → A), Continuous g ∧
-      ∀ x, g (comap (images U n).val.toRingHom x) = f x := by
-  have hM : Monotone (images U) := TensorTripleIncreasingUnion.range_mono U hMono
-  have hC (b' : T) : ∃ n, b' ∈ images U n := by
-    obtain ⟨n, w, hw⟩ := TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover b'
-    exact ⟨n, w, hw⟩
-  exact SpectrumFiniteContinuousFactorization.factor (images U) hM hC f hF
+private theorem transport {D C : Type*} [CommRing D] [CommRing C] [Algebra R D] [Algebra R C]
+    (j : D →ₐ[R] C) (hj : Function.Injective j) (g : PrimeSpectrum j.range → A)
+    (hg : Continuous g) :
+    ∃ f : PrimeSpectrum D → A, Continuous f ∧
+      ∀ x : PrimeSpectrum C, f (comap j.toRingHom x) = g (comap j.range.val.toRingHom x) := by
+  let e : D ≃ₐ[R] j.range := AlgEquiv.ofInjective j hj
+  let r : j.range →+* D := e.symm.toRingHom
+  have hr (x : j.range) : j (r x) = x.val := congrArg Subtype.val (e.apply_symm_apply x)
+  refine ⟨g ∘ comap r, hg.comp (continuous_comap r), ?_⟩
+  intro x
+  have h : comap r (comap j.toRingHom x) = comap j.range.val.toRingHom x := by
+    apply PrimeSpectrum.ext
+    ext z
+    change j (r z) ∈ x.asIdeal ↔ z.val ∈ x.asIdeal
+    rw [hr]
+  exact congrArg g h
 
-set_option maxHeartbeats 1900000 in
+set_option maxHeartbeats 1400000 in
 /-- Injectivity of the literal triple stage maps identifies the factorization with
 a function on the actual coordinate ring of that stage. -/
 theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
@@ -45,12 +47,12 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     (f : PrimeSpectrum T → A) (hF : Continuous f) :
     ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
       ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x := by
-  have hM : Monotone (images U) := TensorTripleIncreasingUnion.range_mono U hMono
-  have hC : ∀ b : T, ∃ n, ∃ w, FlatTensorStageInjections.stageTriple U n w = b :=
-    TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover
-  exact SpectrumFiniteSectionsInStageImages.factor_of_injective_stage_maps
-    (fun n ↦ (U n ⊗[R] U n) ⊗[R] U n)
-    (FlatTensorStageInjections.stageTriple U) hInj hM hC f hF
+  obtain ⟨n, g, hg, hFac⟩ := factor_triple_image U hMono hCover f hF
+  let D := (U n ⊗[R] U n) ⊗[R] U n
+  let j : D →ₐ[R] T := FlatTensorStageInjections.stageTriple U n
+  have hJ : Function.Injective j := hInj n
+  obtain ⟨φ, hφ, hEq⟩ := transport j hJ g hg
+  exact ⟨n, φ, hφ, fun x ↦ (hEq x).trans (hFac x)⟩
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsTriple
@@ -58,8 +60,7 @@ end ManuscriptAudit.SpectrumFiniteSectionsTriple
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.SpectrumFiniteSectionsTriple.factor_triple_image,
-      ``ManuscriptAudit.SpectrumFiniteSectionsTriple.factor_triple] do
+  for name in [``ManuscriptAudit.SpectrumFiniteSectionsTriple.factor_triple] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

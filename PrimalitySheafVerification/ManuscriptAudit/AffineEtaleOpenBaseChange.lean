@@ -57,6 +57,27 @@ def doubleMap :
     exact ((overlapMap A B S).commutes a).trans
       (IsScalarTower.algebraMap_apply A S (Double S (Cover A B S)) a))
 
+
+/-- The map from the affine base object of the open to the ambient base. -/
+def baseMap :
+    (affinePostcompose (j A S)).obj (baseObject S) ⟶ baseObject A :=
+  MorphismProperty.CostructuredArrow.homMk
+    (CommRingCat.ofHom (algebraMap A S)).op trivial (by
+      change j A S ≫ 𝟙 (X A) = 𝟙 (X S) ≫ j A S
+      rw [Category.comp_id, Category.id_comp])
+
+/-- The original singleton cover maps to the actual base-changed singleton cover. -/
+theorem coverSquare :
+    coverMap A B S ≫ coverArrow A B =
+      (affinePostcompose (j A S)).map (coverArrow S (Cover A B S)) ≫ baseMap A S := by
+  apply MorphismProperty.CostructuredArrow.Hom.ext
+  apply Quiver.Hom.unop_inj
+  apply CommRingCat.hom_ext
+  ext a
+  change h A B S (algebraMap A B a) =
+    algebraMap S (Cover A B S) (algebraMap A S a)
+  exact ((h A B S).commutes a).trans (IsScalarTower.algebraMap_apply A S (Cover A B S) a)
+
 /-- Actual first projection of the overlap commutes with restriction. -/
 theorem firstSquare :
     doubleMap A B S ≫ firstProjection A B =
@@ -86,7 +107,8 @@ end ManuscriptAudit.AffineEtaleOpenBaseChange
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.AffineEtaleOpenBaseChange.firstSquare,
+  for name in [``ManuscriptAudit.AffineEtaleOpenBaseChange.coverSquare,
+      ``ManuscriptAudit.AffineEtaleOpenBaseChange.firstSquare,
       ``ManuscriptAudit.AffineEtaleOpenBaseChange.secondSquare] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n

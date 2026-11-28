@@ -102,8 +102,7 @@ theorem existsUnique_sections (x : ∀ i, I.obj.obj (op (objectOf (A := A) (C i)
             PrimeSpectrum.sigmaToPiHomeo_apply, PrimeSpectrum.sigmaToPi_apply]
           exact he
         exact hij (congrArg Sigma.fst ((PrimeSpectrum.sigmaToPiHomeo C).injective hSigma))⟩
-      letI : Subsingleton (I.obj.obj (op W)) := empty_subsingleton I W
-      exact Subsingleton.elim _ _
+      exact @Subsingleton.elim _ (empty_subsingleton I W) _ _
   exact (Presieve.isSheafFor_arrows_iff (P := P) f).mp
     ((underlying_isSheaf I).isSheafFor _ hCov) x hComp
 

@@ -24,8 +24,11 @@ theorem map_connecting {S : ShortComplex C} {T : ShortComplex D}
       ((((Ext.mk₀ x).comp hS.extClass (zero_add 1)).mapExactFunctor R).comp
         (Ext.mk₀ φ.τ₁) (add_zero 1)) (zero_add 1) =
       (Ext.mk₀ (z ≫ R.map x ≫ φ.τ₃)).comp hT.extClass (zero_add 1) := by
-  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀, Ext.mapExactFunctor_extClass,
-    Ext.comp_assoc_of_third_deg_zero, (hS.map_of_exact R).extClass_naturality hT φ]
+  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀, Ext.mapExactFunctor_extClass]
+  let h := hS.map_of_exact R
+  have e := Ext.comp_assoc_of_third_deg_zero (Ext.mk₀ (R.map x)) h.extClass
+    (Ext.mk₀ φ.τ₁) (zero_add 1)
+  rw [e, h.extClass_naturality hT φ]
   simp only [Ext.mk₀_comp_mk₀_assoc]
 
 end ManuscriptAudit.ConnectingExtNaturality

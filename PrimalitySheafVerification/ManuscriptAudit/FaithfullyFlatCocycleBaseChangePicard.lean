@@ -32,6 +32,14 @@ theorem picardClass_baseChange (t : (Double A B)ˣ) (ht : IsCocycle A B t)
   apply CommRing.Pic.mk_eq_mk_iff.mpr
   exact ⟨(e.baseChange A S _ _).trans (lineBaseChange A B S t)⟩
 
+
+theorem picardClass_baseChange_of_eq (t : (Double A B)ˣ)
+    (s : (Double S (Cover A B S))ˣ) (ht : IsCocycle A B t)
+    (hs : IsCocycle S (Cover A B S) s) (h : s = pulledUnit A B S t) :
+    CommRing.Pic.mapAlgebra A S (picardClass A B t ht) = picardClass S (Cover A B S) s hs := by
+  subst s
+  exact picardClass_baseChange A B S t ht hs
+
 end
 
 end ManuscriptAudit.FaithfullyFlatCocycleBaseChangePicard

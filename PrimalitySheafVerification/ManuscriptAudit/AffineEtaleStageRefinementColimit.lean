@@ -59,6 +59,7 @@ set_option maxHeartbeats 3000000 in
 of the chosen affine stage. -/
 def isColimit_refinement (hApprox : FiniteTupleApproximation A B) :
     IsColimit (refinementCocone T) := by
+  letI : Nonempty (Under T) := ⟨Under.mk (𝟙 T)⟩
   apply AffineEtaleStageAlgebraColimit.liftIsColimit
   exact (Functor.Final.isColimitWhiskerEquiv (Under.forget T)
     (chartCocone (A := A) (B := B))).symm

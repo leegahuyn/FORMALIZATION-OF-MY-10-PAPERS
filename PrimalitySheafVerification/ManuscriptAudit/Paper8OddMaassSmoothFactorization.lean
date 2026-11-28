@@ -127,14 +127,14 @@ theorem raisedField_contDiffOn {F : ℂ → ℂ} (hF : ContDiffOn ℝ 2 F {w : �
   exact (((contDiffOn_const.mul hHeight.contDiffOn).mul (hD 1)).add
     (hHeight.contDiffOn.mul (hD Complex.I))).sub (contDiffOn_const.mul hF')
 
-theorem raisedField_adjoint_of_eigenvalue {F : ℂ → ℂ} {λ : ℝ}
+theorem raisedField_adjoint_of_eigenvalue {F : ℂ → ℂ} {eigenvalue : ℝ}
     (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im})
     (hEigen : ∀ x y : ℝ, 0 < y →
-      maassDelta (-1 / 2) (realProfile F) x y = (λ : ℂ) * realProfile F x y)
+      maassDelta (-1 / 2) (realProfile F) x y = (eigenvalue : ℂ) * realProfile F x y)
     (x y : ℝ) (hy : 0 < y) : adjointExpression (realProfile (raisedField F)) x y =
-      ((λ - 3 / 16 : ℝ) : ℂ) * realProfile F x y := by
+      ((eigenvalue - 3 / 16 : ℝ) : ℂ) * realProfile F x y := by
   obtain ⟨hx, hy', hxx, hxy, hyx, hyy, hMixed⟩ := second_order_coordinates hF x y hy
-  have hSpec := spectral_equation_for_raising (realProfile F) x y λ
+  have hSpec := spectral_equation_for_raising (realProfile F) x y eigenvalue
     hx hy' hxx hxy hyx hyy hMixed (hEigen x y hy)
   have hX : (fun t => realProfile (raisedField F) t y) =
       (fun t => raising (realProfile F) t y) := by

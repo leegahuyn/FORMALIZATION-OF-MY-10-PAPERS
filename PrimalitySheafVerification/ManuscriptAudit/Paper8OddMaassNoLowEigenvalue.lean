@@ -36,15 +36,15 @@ private theorem real_cusp_mass_tendsto_zero {F : ℂ → ℂ}
   rw [hFun]
   simpa only [Function.comp_def, ENNReal.toReal_zero, T] using hTo
 
-theorem odd_maass_below_critical_eigenfunction_eq_zero {F : ℂ → ℂ} {λ : ℝ}
-    (hLaw : OddMaassLaw F) (hλ : λ < 3 / 16)
+theorem odd_maass_below_critical_eigenfunction_eq_zero {F : ℂ → ℂ} {eigenvalue : ℝ}
+    (hLaw : OddMaassLaw F) (heigenvalue : eigenvalue < 3 / 16)
     (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im})
     (hEigen : ∀ x y : ℝ, 0 < y →
-      maassDelta (-1 / 2) (realProfile F) x y = (λ : ℂ) * realProfile F x y)
+      maassDelta (-1 / 2) (realProfile F) x y = (eigenvalue : ℂ) * realProfile F x y)
     (hMass : (∫⁻ z in levelFourCells, normSquareDensity F z) < ⊤) :
     ∀ z : ℍ, F z = 0 := by
   let G := raisedField F
-  let δ := λ - 3 / 16
+  let δ := eigenvalue - 3 / 16
   have hF1 : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im} := hF.of_le (by norm_num)
   have hG : ContDiffOn ℝ 1 G {w : ℂ | 0 < w.im} := raisedField_contDiffOn hF
   have hOpenU : IsOpen {w : ℂ | 0 < w.im} := isOpen_lt continuous_const Complex.continuous_im
@@ -100,14 +100,14 @@ theorem odd_maass_below_critical_eigenfunction_eq_zero {F : ℂ → ℂ} {λ : �
   intro z
   exact congrFun (Measure.eq_of_ae_eq hAll hCont continuous_const) z
 
-theorem odd_maass_at_or_below_eta_eigenfunction_eq_zero {F : ℂ → ℂ} {λ : ℝ}
-    (hLaw : OddMaassLaw F) (hλ : λ ≤ 3 / 16)
+theorem odd_maass_at_or_below_eta_eigenfunction_eq_zero {F : ℂ → ℂ} {eigenvalue : ℝ}
+    (hLaw : OddMaassLaw F) (heigenvalue : eigenvalue ≤ 3 / 16)
     (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im})
     (hEigen : ∀ x y : ℝ, 0 < y →
-      maassDelta (-1 / 2) (realProfile F) x y = (λ : ℂ) * realProfile F x y)
+      maassDelta (-1 / 2) (realProfile F) x y = (eigenvalue : ℂ) * realProfile F x y)
     (hMass : (∫⁻ z in levelFourCells, normSquareDensity F z) < ⊤) :
     ∀ z : ℍ, F z = 0 := by
-  rcases lt_or_eq_of_le hλ with h | rfl
+  rcases lt_or_eq_of_le heigenvalue with h | rfl
   · exact odd_maass_below_critical_eigenfunction_eq_zero hLaw h hF hEigen hMass
   · apply odd_maass_critical_eigenfunction_eq_zero hLaw hF ?_ hMass
     intro x y hy

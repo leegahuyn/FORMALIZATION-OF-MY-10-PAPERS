@@ -57,6 +57,7 @@ def productMap : invariants A B t ⊗[A] invariants A B s →ₗ[A] invariants A
 
 variable [Module.FaithfullyFlat A B]
 variable (ht : IsCocycle A B t) (hs : IsCocycle A B s)
+include ht hs
 
 /-- This multiplication map is an isomorphism of descended modules, as
 can be checked after the genuinely faithfully flat extension. -/
@@ -70,8 +71,8 @@ def productEquiv :
     (TensorProduct.assoc A B L N).symm.trans
       ((TensorProduct.congr eL (LinearEquiv.refl A N)).trans eN)
   let e := (extensionEquiv A B (t * s) (mul_isCocycle A B t s ht hs)).restrictScalars A
-  let g := productMap A B t s
-  let f := g.lTensor B
+  let g : L ⊗[A] N →ₗ[A] invariants A B (t * s) := productMap A B t s
+  let f : B ⊗[A] (L ⊗[A] N) →ₗ[A] B ⊗[A] invariants A B (t * s) := g.lTensor B
   have hMap : e.toLinearMap.comp f = d.toLinearMap := by
     apply TensorProduct.ext'
     intro b z
@@ -89,8 +90,9 @@ def productEquiv :
       exact (LinearMap.congr_fun hMap z).trans (e.apply_symm_apply (d z)).symm
     rw [h]
     exact e.symm.bijective.comp d.bijective
-  exact LinearEquiv.ofBijective g
-    (of_lTensor_bijective A B g hf)
+  have hg : Function.Bijective g :=
+    of_lTensor_bijective A B (M := L ⊗[A] N) (N := invariants A B (t * s)) g hf
+  exact LinearEquiv.ofBijective g hg
 
 theorem picardClass_mul :
     picardClass A B (t * s) (mul_isCocycle A B t s ht hs) =

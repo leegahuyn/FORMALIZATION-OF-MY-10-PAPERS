@@ -68,8 +68,9 @@ theorem rawSection_ι (T : Stage A B) :
     (rawSectionCocone (B := B) I).ι.app T =
       (η I).app (((E (A := A) (B := B)).functor.obj T).left) ≫
         (raw (X (A := A)) I).map (chartArrow T).op := by
+  let U := ((E (A := A) (B := B)).functor.obj T).left
   change I.obj.map (𝟙 (op (etaleObject T))) ≫
-      ((η I).app _ ≫ (raw (X (A := A)) I).map (chartArrow T).op) = _
+      ((η I).app U ≫ (raw (X (A := A)) I).map (chartArrow T).op) = _
   rw [CategoryTheory.Functor.map_id, Category.id_comp]
 
 set_option maxHeartbeats 4000000 in

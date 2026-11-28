@@ -75,8 +75,10 @@ def inclusionIsKernel :
   refine KernelFork.IsLimit.ofι' _ _ (fun {W} a ha ↦ ?_)
   have hw : (a ≫ e.inv) ≫ F.map (δ X ℓ) = 0 := by
     apply (cancel_mono e.hom).mp
-    rw [Category.assoc, difference_comparison, ← Category.assoc,
-      e.inv_hom_id_assoc, ha, zero_comp]
+    have he : (a ≫ e.inv) ≫ (comparison X ℓ F).hom = a := by
+      change (a ≫ e.inv) ≫ e.hom = a
+      rw [Category.assoc, e.inv_hom_id, Category.comp_id]
+    rw [Category.assoc, difference_comparison, ← Category.assoc, he, ha, zero_comp]
   let q := h.lift (KernelFork.ofι _ hw)
   have hq : q ≫ F.map (ι X ℓ) = a ≫ e.inv :=
     h.fac (KernelFork.ofι _ hw) WalkingParallelPair.zero
