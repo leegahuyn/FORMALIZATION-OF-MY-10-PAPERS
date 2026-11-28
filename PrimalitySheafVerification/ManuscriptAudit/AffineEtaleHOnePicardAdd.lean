@@ -10,7 +10,7 @@ namespace ManuscriptAudit.AffineEtaleHOnePicardAdd
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
 open TensorProduct AffineEtaleTensorOverlap KummerUnitsSheaf
 open AffineEtaleUnitCocycle SheafSectionDifference SheafH1Descent
-open AffineEtaleHOneToPicard AffineEtalePicardClass AffineEtalePicardRefinement
+open AffineEtaleHOneToPicard AffineEtalePicardClass AffineEtalePicardRefinement AffineEtalePicardSameCover
 open AffineEtaleFaithfullyFlatRepresentatives FaithfullyFlatCocyclePicard
 open FaithfullyFlatCocycleProduct TwistedTensorEqualizer
 
@@ -53,9 +53,10 @@ private theorem transition_add :
   let c := Additive.ofMul (transition R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy'))
   let f := I.obj.map (firstProjection R B).op
   let g := I.obj.map (secondProjection R B).op
-  have ha : ι.hom.app (op D) a = f y - g y := difference_spec ..
-  have hb : ι.hom.app (op D) b = f y' - g y' := difference_spec ..
-  have hc : ι.hom.app (op D) c = f (y + y') - g (y + y') := difference_spec ..
+  have ha : ι.hom.app (op D) a = f y - g y := transition_image R B ι x y hy
+  have hb : ι.hom.app (op D) b = f y' - g y' := transition_image R B ι x' y' hy'
+  have hc : ι.hom.app (op D) c = f (y + y') - g (y + y') :=
+    transition_image R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy')
   have he : c = a + b := by
     apply section_injective ι D
     change (ι.hom.app (op D)).hom c = (ι.hom.app (op D)).hom (a + b)

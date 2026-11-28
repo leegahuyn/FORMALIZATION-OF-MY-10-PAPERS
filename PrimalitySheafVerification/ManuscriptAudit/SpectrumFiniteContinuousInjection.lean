@@ -23,6 +23,7 @@ theorem pullback_injective (φ : S →+* R) (hφ : Function.Injective φ)
     apply hφ
     apply basicOpen_injOn_isIdempotentElem ((he.idem a).map φ) ((hd.idem a).map φ)
     apply TopologicalSpace.Opens.ext
+    apply Set.ext
     intro x
     change PrimeSpectrum.comap φ x ∈ (basicOpen (e a) : Set (PrimeSpectrum S)) ↔
       PrimeSpectrum.comap φ x ∈ (basicOpen (d a) : Set (PrimeSpectrum S))

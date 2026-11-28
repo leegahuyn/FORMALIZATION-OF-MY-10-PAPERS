@@ -24,11 +24,11 @@ universe u v w
 variable {C : Type u} [Category.{v} C] [HasFiniteLimits C]
   {U T : C} (f : U ⟶ T) (hT : IsTerminal T)
 
-private def tupleMap {W : C} (n : ℕ) (a : Fin (n + 1) → W ⟶ U) : W ⟶ N f n :=
+private def tupleMap {W : C} (n : ℕ) (a : Fin (n + 1) → (W ⟶ U)) : W ⟶ N f n :=
   WidePullback.lift (hT.from W) a (fun i ↦ hT.hom_ext _ _)
 
 private theorem tupleMap_natural {W V : C} (r : V ⟶ W) (n : ℕ)
-    (a : Fin (n + 1) → W ⟶ U) :
+    (a : Fin (n + 1) → (W ⟶ U)) :
     r ≫ tupleMap f hT n a = tupleMap f hT n (fun i ↦ r ≫ a i) := by
   apply WidePullback.hom_ext
   · intro i
@@ -36,7 +36,7 @@ private theorem tupleMap_natural {W V : C} (r : V ⟶ W) (n : ℕ)
   · exact hT.hom_ext _ _
 
 private theorem tupleMap_face {W : C} (n : ℕ) (i : Fin (n+2))
-    (a : Fin (n+2) → W ⟶ U) :
+    (a : Fin (n+2) → (W ⟶ U)) :
     tupleMap f hT (n+1) a ≫ face f n i =
       tupleMap f hT n (fun j ↦ a ((SimplexCategory.δ i).toOrderHom j)) := by
   apply WidePullback.hom_ext
@@ -62,6 +62,7 @@ private theorem restrict_restrict {A B D : C} (a : A ⟶ B) (b : B ⟶ D)
     I.obj.map a.op (I.obj.map b.op z) = I.obj.map (a ≫ b).op z := by
   rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
 
+include hT in
 set_option maxHeartbeats 2200000 in
 /-- Positive degree-one Čech exactness of the native injective coefficients. -/
 theorem exactAt_one : (Cech f I.obj).ExactAt 1 := by
@@ -95,7 +96,7 @@ theorem exactAt_one : (Cech f I.obj).ExactAt 1 := by
     simpa only [c, restrict_restrict, t, tupleMap_face, h₀, h₁, h₂] using h
   obtain ⟨b, hb⟩ :=
     InjectiveLiftedYonedaCech.exists_coboundary J U I (fun {_} a d ↦ c a d) hNat hC
-  have hTuple : (![vertex f 1 0, vertex f 1 1] : Fin 2 → N f 1 ⟶ U) = vertex f 1 := by
+  have hTuple : (![vertex f 1 0, vertex f 1 1] : Fin 2 → (N f 1 ⟶ U)) = vertex f 1 := by
     funext i
     fin_cases i <;> rfl
   have he := hb (vertex f 1 0) (vertex f 1 1)

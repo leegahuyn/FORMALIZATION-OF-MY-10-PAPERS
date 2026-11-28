@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleUnitCocycle
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtalePicardSameCover
 import PrimalitySheafVerification.ManuscriptAudit.FaithfullyFlatCocycleRefinement
 import PrimalitySheafVerification.ManuscriptAudit.KummerAffineCohomology
 
@@ -9,6 +10,7 @@ namespace ManuscriptAudit.AffineEtalePicardRefinement
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite TensorProduct
 open AffineEtaleTensorOverlap KummerUnitsSheaf SheafSectionDifference AffineEtaleUnitCocycle
+open AffineEtalePicardSameCover
 open FaithfullyFlatCocycleRefinement
 
 attribute [local instance] doubleEtale tripleEtale
@@ -67,7 +69,8 @@ variable (hy : (cokernel.π ι).hom.app (op (U R B)) y =
 theorem refine_lifts :
     (cokernel.π ι).hom.app (op (V R C)) (I.obj.map (ofAlgHom f).op y) =
       (cokernel ι).obj.map (coverArrow R C).op x := by
-  rw [NatTrans.naturality_apply, hy, restrictMap_comp]
+  rw [NatTrans.naturality_apply, hy,
+    restrictMap_comp (F := (cokernel ι).obj) R (coverArrow R B) (ofAlgHom f) x]
   have hT : IsTerminal (baseObject R) :=
     KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)
   rw [hT.hom_ext (ofAlgHom f ≫ coverArrow R B) (coverArrow R C)]
@@ -83,10 +86,10 @@ theorem transition_refine :
   let t' := transition R C ι x y' (refine_lifts R B C f ι x y hy)
   have hB : ι.hom.app (op (D R B)) (Additive.ofMul t) =
       I.obj.map (firstProjection R B).op y - I.obj.map (secondProjection R B).op y :=
-    difference_spec ..
+    transition_image R B ι x y hy
   have hC : ι.hom.app (op (E R C)) (Additive.ofMul t') =
       I.obj.map (firstProjection R C).op y' - I.obj.map (secondProjection R C).op y' :=
-    difference_spec ..
+    transition_image R C ι x y' (refine_lifts R B C f ι x y hy)
   have h : (G R).obj.map s.op (Additive.ofMul t) = Additive.ofMul t' := by
     apply section_injective ι (E R C)
     rw [NatTrans.naturality_apply, hB, hC]
@@ -96,7 +99,10 @@ theorem transition_refine :
       I.obj.map s.op (I.obj.map (secondProjection R B).op y) =
       I.obj.map (firstProjection R C).op (I.obj.map (ofAlgHom f).op y) -
       I.obj.map (secondProjection R C).op (I.obj.map (ofAlgHom f).op y)
-    rw [restrictMap_comp, restrictMap_comp, restrictMap_comp, restrictMap_comp,
+    rw [restrictMap_comp (F := I.obj) R (firstProjection R B) s y,
+      restrictMap_comp (F := I.obj) R (secondProjection R B) s y,
+      restrictMap_comp (F := I.obj) R (ofAlgHom f) (firstProjection R C) y,
+      restrictMap_comp (F := I.obj) R (ofAlgHom f) (secondProjection R C) y,
       firstSquare R B C f, secondSquare R B C f]
   exact congrArg Additive.toMul h
 

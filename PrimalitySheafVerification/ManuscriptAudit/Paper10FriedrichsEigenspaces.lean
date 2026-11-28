@@ -26,7 +26,7 @@ theorem eigenspace_reciprocity (hJ : DenseRange J) (value : 𝕜) (hValue : valu
   apply Submodule.ext
   intro x
   change (x, value • x) ∈ (realization J).graph ↔ _
-  rw [eigenvector_reciprocity J hJ value hValue x, mem_eigenspace_iff]
+  rw [eigenvector_reciprocity J hJ value hValue x, mem_eigenspace_iff] <;> rfl
 
 theorem zero_eigenspace (hJ : DenseRange J) : operatorEigenspace J 0 = ⊥ := by
   apply le_antisymm _ bot_le
@@ -61,7 +61,7 @@ theorem eigenspaces_dense (hJ : DenseRange J) (hK : IsCompactOperator J) :
         apply le_antisymm _ bot_le
         intro x hx
         have hx₀ : x ∈ B.ker := by
-          change B x = 0
+          change B.toLinearMap x = 0
           simpa only [zero_smul] using (mem_eigenspace_iff.mp hx)
         rwa [show B.ker = ⊥ from resolvent_ker J hJ] at hx₀
       rw [hZero]

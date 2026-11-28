@@ -35,7 +35,10 @@ private def productSplit (e : ∀ i, B i ⊗[R] M ≃ₗ[B i] B i) :
         (LinearEquiv.piCongrRight fun i =>
           (TensorProduct.comm R M (B i)).trans ((e i).restrictScalars R)))
   have hTmul (c : C) (m : M) (i : I) : r (c ⊗ₜ[R] m) i = e i (c i ⊗ₜ[R] m) := by
-    simp [r, TensorProduct.piRight_apply]
+    change (((TensorProduct.comm R M (B i)).trans ((e i).restrictScalars R)))
+      (TensorProduct.piRight R R M B (m ⊗ₜ[R] c) i) = _
+    rw [TensorProduct.piRight_apply R R M B (m ⊗ₜ[R] c),
+      TensorProduct.piRightHom_tmul R R M B m c] <;> rfl
   refine { r.toEquiv with map_add' := r.map_add, map_smul' := ?_ }
   intro c z
   change r (c • z) = c • r z
@@ -74,8 +77,13 @@ theorem exists_splitCover [Module.Invertible R M] : Nonempty (SplitCover R M) :=
     let ee := (Module.Invertible.free_iff_linearEquiv.mp (hFree i i.property)).some
     ((IsLocalizedModule.isBaseChange (Submonoid.powers (i : R)) (B i)
       (LocalizedModule.mkLinearMap _ M)).equiv).trans ee
-  exact ⟨{ ring := ∀ i, B i, commRing := inferInstance, algebra := inferInstance, etale := hEt,
-    faithfullyFlat := hFF, trivialization := productSplit R M B e }⟩
+  exact ⟨{
+    ring := ∀ i, B i
+    commRing := inferInstance
+    algebra := inferInstance
+    etale := hEt
+    faithfullyFlat := hFF
+    trivialization := productSplit R M B e }⟩
 
 end
 

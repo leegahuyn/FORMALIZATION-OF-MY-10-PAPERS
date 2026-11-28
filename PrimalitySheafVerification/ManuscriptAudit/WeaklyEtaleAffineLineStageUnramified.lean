@@ -48,7 +48,9 @@ one, using exactly the actual reduced fibre of the dominating chart. -/
 theorem isUnramifiedAt (g : C →ₐ[Polynomial K] B)
     (p : Ideal (Polynomial K)) [p.IsPrime] (q : Ideal C) [q.IsPrime] [q.LiesOver p]
     (r : Ideal B) [r.IsPrime] (hqr : q = r.comap g.toRingHom)
-    [IsDiscreteValuationRing (Localization.AtPrime q)]
+    [IsDomain (Localization.AtPrime q)] [IsDiscreteValuationRing (Localization.AtPrime q)]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q]
     (t : Polynomial K) (ht : Prime t) (hp : p = Ideal.span ({t} : Set (Polynomial K)))
     (hSep : Algebra.IsSeparable p.ResidueField q.ResidueField) :
     Algebra.IsUnramifiedAt (Polynomial K) q := by

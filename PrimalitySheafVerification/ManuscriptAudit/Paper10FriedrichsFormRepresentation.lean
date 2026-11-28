@@ -21,7 +21,7 @@ variable (J : D →L[ℝ] H) (hJ : DenseRange J) (c : ℝ)
 variable (q v : D → ℝ)
 variable (hNorm : ∀ u, ‖u‖ ^ 2 = q u + v u + c * ‖J u‖ ^ 2)
 
-include hNorm in
+include hJ hNorm in
 /-- The actual partial operator gives precisely the form's diagonal on its domain. -/
 theorem form_value {x y : H} (hxy : (x,y) ∈ (unshifted J c).graph) :
     ∃ u : D, J u = x ∧ ⟪y,x⟫ = q u + v u := by
@@ -34,7 +34,7 @@ theorem form_value {x y : H} (hxy : (x,y) ∈ (unshifted J c).graph) :
   rw [hu] at hn
   exact ⟨u, hu, by linarith only [he, hn]⟩
 
-include hNorm in
+include hJ hNorm in
 /-- The relative perturbation's lower bound holds on the actual operator graph. -/
 theorem graph_lower_bound (m a b : ℝ) (ha : a < 1)
     (hq : ∀ u, -m * ‖J u‖ ^ 2 ≤ q u) (hv : ∀ u, |v u| ≤ a*q u+b*‖J u‖^2)

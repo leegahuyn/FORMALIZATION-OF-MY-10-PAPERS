@@ -29,6 +29,7 @@ theorem exists_idempotent_fibers [TopologicalSpace A] [DiscreteTopology A]
     apply basicOpen_injOn_isIdempotentElem (he a |>.mul (he b)) IsIdempotentElem.zero
     rw [basicOpen_mul, basicOpen_zero]
     apply TopologicalSpace.Opens.ext
+    apply Set.ext
     intro x
     change x ∈ (basicOpen (e a) : Set (PrimeSpectrum R)) ∧
       x ∈ (basicOpen (e b) : Set (PrimeSpectrum R)) ↔ False
@@ -52,6 +53,7 @@ theorem exists_idempotent_fibers [TopologicalSpace A] [DiscreteTopology A]
 
 variable (e : A → R) (he : CompleteOrthogonalIdempotents e)
 
+include he in
 /-- Exactly one of these idempotents avoids each literal prime ideal. -/
 theorem existsUnique_label (x : PrimeSpectrum R) :
     ∃! a, x ∈ (basicOpen (e a) : Set (PrimeSpectrum R)) := by
@@ -98,7 +100,7 @@ theorem label_continuous [TopologicalSpace A] : Continuous (label e he) := by
       obtain ⟨a, ha⟩ := Set.mem_iUnion.mp h
       exact (label_eq_of_mem e he x ha).symm ▸ a.property
   rw [hs]
-  exact isOpen_iUnion fun a => (basicOpen (e a.val)).isOpen
+  exact isOpen_iUnion fun a => (basicOpen (e a.val)).2
 
 end
 end ManuscriptAudit.SpectrumFiniteIdempotentPartition

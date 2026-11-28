@@ -38,7 +38,7 @@ theorem finite_large_labels (T : H →L[𝕜] H) (hT : IsCompactOperator T)
     change ‖T (v i.val)‖ = _
     rw [hEigen, norm_smul, hOrtho.1, mul_one]
   apply (sq_le_sq₀ hε.le dist_nonneg).mp
-  rw [dist_eq_norm, norm_sub_sq, hInner, map_zero, mul_zero, sub_zero]
+  rw [dist_eq_norm, norm_sub_sq (𝕜 := 𝕜), hInner, map_zero, mul_zero, sub_zero]
   have hi : ε ≤ ‖w i‖ := hNi.symm ▸ i.property
   exact ((sq_le_sq₀ hε.le (norm_nonneg _)).mpr hi).trans
     (le_add_of_nonneg_right (sq_nonneg _))

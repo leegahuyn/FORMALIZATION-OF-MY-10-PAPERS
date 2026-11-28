@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAffineStoneGlobalLifts
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleOpenCover
 
@@ -33,7 +34,10 @@ set_option maxHeartbeats 1600000 in
 private theorem affine_sections_surjective (U : X.ProEt) [IsAffine U.left] :
     Function.Surjective (((G i).map (cokernel.π m)).hom.app (op U)) := by
   let T := (baseChange i).obj U
-  letI : IsAffine T.left := inferInstanceAs (IsAffine (pullback U.hom i : Scheme.{0}))
+  letI : IsAffineHom i := inferInstance
+  letI : IsAffine T.left :=
+    show IsAffine (pullback U.hom i : Scheme.{0}) from
+      isAffine_of_isAffineHom (pullback.fst U.hom i)
   intro x
   exact ProetaleAffineStoneGlobalLifts.every_affine_lift ℓ m T x
 

@@ -24,9 +24,11 @@ theorem exists_etale_away (q : Ideal D) [q.IsPrime] [Algebra.IsUnramifiedAt A q]
   let f := a * g
   refine ⟨f, ‹q.IsPrime›.mul_notMem ha hg, ⟨a, mul_comm a g⟩, ?_⟩
   have hq : (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum D)) ⊆
-      Algebra.unramifiedLocus A D :=
-    (PrimeSpectrum.basicOpen_mul_le_left a g).trans
-      (Algebra.basicOpen_subset_unramifiedLocus_iff.mpr hu)
+      Algebra.unramifiedLocus A D := by
+    intro p hp
+    apply (Algebra.basicOpen_subset_unramifiedLocus_iff.mpr hu)
+    exact (PrimeSpectrum.mem_basicOpen a p).mpr (fun hpa ↦
+      (PrimeSpectrum.mem_basicOpen f p).mp hp (p.asIdeal.mul_mem_right g hpa))
   letI : Algebra.FormallyUnramified A (Localization.Away f) :=
     Algebra.basicOpen_subset_unramifiedLocus_iff.mp hq
   exact Algebra.Etale.of_formallyUnramified_of_flat

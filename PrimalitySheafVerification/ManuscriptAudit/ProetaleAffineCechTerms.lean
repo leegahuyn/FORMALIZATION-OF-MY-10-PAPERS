@@ -3,6 +3,7 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Sites.Proetale
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Connected
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import PrimalitySheafVerification.ManuscriptAudit.CechNerveLowDegrees
 
 /-! Every term of the actual native Čech nerve of an affine-to-affine
@@ -40,8 +41,8 @@ theorem isAffine_term (n : ℕ) : IsAffine (N f n).left := by
       map_id := fun j ↦ InducedCategory.hom_ext (D.map_id j)
       map_comp := fun g k ↦ InducedCategory.hom_ext (D.map_comp g k) }
   have e : E ⋙ AffineScheme.forgetToScheme = D := rfl
-  let a := PreservesLimit.iso F P
-  let b := (PreservesLimit.iso AffineScheme.forgetToScheme E).trans (HasLimit.isoOfNatIso (eqToIso e))
+  let a := preservesLimitIso F P
+  let b := (preservesLimitIso AffineScheme.forgetToScheme E).trans (HasLimit.isoOfNatIso (eqToIso e))
   letI : IsAffine (AffineScheme.forgetToScheme.obj (limit E)) := isAffine_affineScheme _
   exact IsAffine.of_isIso (a.hom ≫ b.inv)
 

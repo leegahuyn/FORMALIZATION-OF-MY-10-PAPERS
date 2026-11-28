@@ -56,7 +56,9 @@ private theorem homogeneousEquation_eval :
   have hX : chartValues W 0 = m (Polynomial.C Polynomial.X) := by simp [chartValues, m]
   have hY : chartValues W 1 = m Y := by simp [chartValues, m]
   have hC (a : K) : algebraMap K W.CoordinateRing a = m (Polynomial.C (Polynomial.C a)) := rfl
-  have he : m W.polynomial = 0 := AdjoinRoot.mk_self W.polynomial
+  have he : m W.polynomial = 0 := by
+    change AdjoinRoot.mk W.polynomial W.polynomial = 0
+    exact AdjoinRoot.mk_self
   simp only [WeierstrassCurve.Affine.polynomial, map_add, map_mul, map_sub, map_pow] at he
   simp only [homogeneousEquation, homogeneousBracket, xCoord, yCoord, zCoord,
     map_add, map_mul, map_sub, map_pow, MvPolynomial.aeval_C, MvPolynomial.aeval_X,

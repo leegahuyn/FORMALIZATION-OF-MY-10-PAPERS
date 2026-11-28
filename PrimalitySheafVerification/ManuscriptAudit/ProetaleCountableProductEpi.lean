@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Sites.EpiMono
+import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import PrimalitySheafVerification.ManuscriptAudit.AbelianCountableProductShortExact
 import PrimalitySheafVerification.ManuscriptAudit.AddCommGrpImageFactorization
@@ -51,7 +52,8 @@ private theorem coordinates_apply (F : ℕ → C X) (W : X.ProEt)
       (limit.isLimit _) (AddCommGrpCat.HasLimit.productLimitCone G).isLimit (Discrete.mk n)) z
   rw [he]
   have hi : i.hom ≫ Pi.π G n = (ev W).map (Pi.π F n) := by
-    rw [i, PreservesProduct.iso_hom, piComparison_comp_π]
+    change (PreservesProduct.iso (ev W) F).hom ≫ Pi.π G n = _
+    rw [PreservesProduct.iso_hom, piComparison_comp_π]
   exact CategoryTheory.congr_fun hi x
 
 private theorem coordinates_restrict (F : ℕ → C X) {W T : X.ProEt} (f : W ⟶ T)
@@ -95,6 +97,8 @@ theorem product_locallySurjective {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n)
 
 theorem product_epi {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n) (h : ∀ n, Epi (q n)) :
     Epi (mapProduct q) := by
+  letI : EssentiallySmall.{1} X.ProEt := inferInstance
+  letI := Sheaf.isGrothendieckAbelian_of_essentiallySmall (Scheme.ProEt.topology X) A
   letI : ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization A :=
     AddCommGrpImageFactorization.functorialSurjectiveInjectiveFactorization
   have h' (n : ℕ) : Sheaf.IsLocallySurjective (q n) :=

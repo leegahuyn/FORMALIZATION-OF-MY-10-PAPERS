@@ -26,8 +26,12 @@ theorem inverse_isCocycle (ht : IsCocycle A B t) : IsCocycle A B t⁻¹ := by
   let h := Units.map (face01 A B).toMonoidHom
   have he : f t = g t * h t := Units.ext ht
   have hn : f t⁻¹ = g t⁻¹ * h t⁻¹ := by
-    simp only [map_inv, he, mul_inv_rev]
-    exact mul_comm _ _
+    calc
+      f t⁻¹ = (f t)⁻¹ := map_inv f t
+      _ = (g t * h t)⁻¹ := congrArg Inv.inv he
+      _ = (h t)⁻¹ * (g t)⁻¹ := mul_inv_rev _ _
+      _ = (g t)⁻¹ * (h t)⁻¹ := mul_comm (h t)⁻¹ (g t)⁻¹
+      _ = g t⁻¹ * h t⁻¹ := congrArg₂ (· * ·) (map_inv g t).symm (map_inv h t).symm
   exact congrArg Units.val hn
 
 private theorem product_mem (x : invariants A B t) (y : invariants A B t⁻¹) :
@@ -103,7 +107,7 @@ theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A
     rw [he]
     exact r.symm.bijective.comp e.bijective
   change Function.Bijective ((pairing A B t).lTensor B) at hf
-  exact (Module.FaithfullyFlat.lTensor_bijective_iff_bijective A B (pairing A B t)).1 hf
+  simpa only [Module.FaithfullyFlat.lTensor_bijective_iff_bijective] using hf
 
 /-- A genuine faithfully flat unit cocycle determines an invertible module. -/
 theorem invariants_invertible (ht : IsCocycle A B t) :

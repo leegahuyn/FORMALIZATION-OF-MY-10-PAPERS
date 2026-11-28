@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Tactic.Abel
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtalePicardSameCover
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleTensorTriple
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleUnitCocycle
 import PrimalitySheafVerification.ManuscriptAudit.InjectiveCechOne
@@ -10,7 +11,7 @@ namespace ManuscriptAudit.AffineEtaleCocycleRepresentative
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
 open TensorProduct AffineEtaleTensorOverlap AffineEtaleTensorTriple KummerUnitsSheaf
-open AffineEtaleUnitCocycle SheafSectionDifference UnitCocycleTensor
+open AffineEtaleUnitCocycle AffineEtalePicardSameCover SheafSectionDifference UnitCocycleTensor
 
 noncomputable section
 
@@ -61,7 +62,8 @@ theorem exists_representative_of_cocycle (t : (B ⊗[R] B)ˣ)
       I.obj.map g.op (c a b) = c (g ≫ a) (g ≫ b) := by
     change I.obj.map g.op (ι.hom.app (op W) ((G R).obj.map (pair R B a b).op δ)) =
       ι.hom.app (op V) ((G R).obj.map (pair R B (g ≫ a) (g ≫ b)).op δ)
-    rw [← NatTrans.naturality_apply ι.hom, restrictMap_comp, pair_comp]
+    rw [← NatTrans.naturality_apply ι.hom,
+      restrictMap_comp (F := (G R).obj) R (pair R B a b) g δ, pair_comp]
   have hCoc {W : (X R).AffineEtale} (a b d : W ⟶ U R B) :
       c b d - c a d + c a b = 0 := by
     let s := triple R B a b d
@@ -72,7 +74,9 @@ theorem exists_representative_of_cocycle (t : (B ⊗[R] B)ˣ)
     change ι.hom.app (op W) ((G R).obj.map s.op ((G R).obj.map (projection23 R B).op δ)) -
       ι.hom.app (op W) ((G R).obj.map s.op ((G R).obj.map (projection13 R B).op δ)) +
       ι.hom.app (op W) ((G R).obj.map s.op ((G R).obj.map (projection12 R B).op δ)) = 0 at hh
-    rw [restrictMap_comp, restrictMap_comp, restrictMap_comp] at hh
+    rw [restrictMap_comp (F := (G R).obj) R (projection23 R B) s δ,
+      restrictMap_comp (F := (G R).obj) R (projection13 R B) s δ,
+      restrictMap_comp (F := (G R).obj) R (projection12 R B) s δ] at hh
     simpa only [s, triple_23, triple_13, triple_12] using hh
   obtain ⟨z, hz⟩ := InjectiveCechOne.exists_coboundary (J R) (U R B) I c hNat hCoc
   let y := -z
@@ -111,11 +115,14 @@ theorem exists_representative_of_cocycle (t : (B ⊗[R] B)ˣ)
     have hh := hdif (firstProjection R B) (secondProjection R B)
     change ι.hom.app (op (D R B))
       ((G R).obj.map (pair R B (firstProjection R B) (secondProjection R B)).op δ) = _ at hh
-    rw [hPair] at hh
-    simpa only [op_id, Functor.map_id, ConcreteCategory.id_apply] using hh
+    have hId : (G R).obj.map ((𝟙 (D R B)).op) δ = δ := by
+      change (G R).obj.map (𝟙 (op (D R B))) δ = δ
+      rw [Functor.map_id] <;> rfl
+    rw [hPair, hId] at hh
+    exact hh
   have hOverlap : Additive.ofMul (transition R B ι x y hx.symm) = δ := by
     apply section_injective ι (D R B)
-    exact (difference_spec ..).trans hImage.symm
+    exact (transition_image R B ι x y hx.symm).trans hImage.symm
   exact congrArg Additive.toMul hOverlap
 
 end

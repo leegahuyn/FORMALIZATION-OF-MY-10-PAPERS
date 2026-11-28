@@ -31,6 +31,7 @@ theorem exists_quotient (f : D →+* T) [IsLocalHom f] {a b : D} {z : T}
       rw [hc, ← hu, mul_assoc, Units.mul_inv, mul_one]
   obtain ⟨q, hq⟩ := hd
   refine ⟨q, hq.symm, hb.left ?_⟩
+  change f b * f q = f b * z
   rw [← map_mul, ← hq, h]
 
 end ManuscriptAudit.ValuationLocalDivision

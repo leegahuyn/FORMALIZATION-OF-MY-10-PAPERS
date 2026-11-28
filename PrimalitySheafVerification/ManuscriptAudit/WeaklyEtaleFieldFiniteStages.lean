@@ -45,7 +45,7 @@ theorem isIntegral (b : B) : IsIntegral K b := by
   letI : WeaklyEtale (structureMap (E K) (T K B)) := geometricFiber_weaklyEtale K B
   have hb : IsIntegral (E K) (i b) :=
     WeaklyEtaleClosedFieldEvaluation.isIntegral (E K) (T K B) (i b)
-  have hb' : IsAlgebraic K (i b) := IsIntegral.trans_isAlgebraic hb
+  have hb' : IsAlgebraic K (i b) := IsIntegral.trans_isAlgebraic K hb
   exact (isIntegral_algHom_iff i hi).mp hb'.isIntegral
 
 private theorem finite_reduced_over_closed (k D : Type u) [Field k] [IsAlgClosed k]
@@ -76,7 +76,7 @@ theorem adjoin_finite_etale (s : Set B) (hs : s.Finite) :
   let f : S →ₐ[K] T K B := Algebra.TensorProduct.map (AlgHom.id K (E K)) j
   have hf : Function.Injective f := by
     have h : f.toLinearMap = j.toLinearMap.lTensor (E K) := by
-      apply TensorProduct.ext
+      apply TensorProduct.ext'
       intro a b
       rfl
     change Function.Injective f.toLinearMap

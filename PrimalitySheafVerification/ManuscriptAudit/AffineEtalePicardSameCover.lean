@@ -28,6 +28,16 @@ private theorem restrictMap_comp {U V W : (Spec (CommRingCat.of R)).AffineEtale}
     I.obj.map s.op (I.obj.map r.op t) = I.obj.map (s ≫ r).op t := by
   rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
 
+/-- The actual image of the transition in the representative sheaf is the
+difference of the two restrictions. -/
+theorem transition_image :
+    ι.hom.app (op (ofAlgebra R (B ⊗[R] B))) (Additive.ofMul (transition R B ι x y hy)) =
+      I.obj.map (firstProjection R B).op y - I.obj.map (secondProjection R B).op y :=
+  difference_spec ι (ofAlgebra R (B ⊗[R] B))
+    (I.obj.map (firstProjection R B).op y) (I.obj.map (secondProjection R B).op y)
+    (SheafCoboundaryLift.same_image_on_overlap ι (coverArrow R B) (firstProjection R B)
+      (secondProjection R B) (double_isPullback R B).w x y hy)
+
 /-- Two local lifts on the same cover whose cokernel sections differ by a
 global lifted section have transition units differing by a change of basis. -/
 theorem transition_changeUnit_sameCover
@@ -76,8 +86,8 @@ theorem transition_changeUnit_sameCover
       change ι.hom.app (op D) u - ι.hom.app (op D) u' =
         ι.hom.app (op D) ((G R).obj.map p.op a) - ι.hom.app (op D) ((G R).obj.map q.op a)
       rw [hRestrict, hRestrict, hComm]
-      have hu : ι.hom.app (op D) u = I.obj.map p.op y - I.obj.map q.op y := difference_spec ..
-      have hu' : ι.hom.app (op D) u' = I.obj.map p.op y' - I.obj.map q.op y' := difference_spec ..
+      have hu : ι.hom.app (op D) u = I.obj.map p.op y - I.obj.map q.op y := transition_image R B ι x y hy
+      have hu' : ι.hom.app (op D) u' = I.obj.map p.op y' - I.obj.map q.op y' := transition_image R B ι x' y' hy'
       rw [hu, hu']
       abel
     exact (m.map_sub u u').trans (hInner.trans (m.map_sub ap aq).symm)
@@ -104,7 +114,8 @@ end ManuscriptAudit.AffineEtalePicardSameCover
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.AffineEtalePicardSameCover.transition_changeUnit_sameCover] do
+  for name in [``ManuscriptAudit.AffineEtalePicardSameCover.transition_image,
+      ``ManuscriptAudit.AffineEtalePicardSameCover.transition_changeUnit_sameCover] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n
     unless bad.isEmpty do
