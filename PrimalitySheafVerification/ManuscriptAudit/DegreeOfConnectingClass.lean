@@ -36,9 +36,9 @@ theorem descendedDegree_leftInverse (b : ℤ →+ H) (z : D)
     rw [← hb, descendedDegree_connecting, hd]
   change r n = n
   calc
-    r n = r (n • (1 : ℤ)) := by rw [zsmul_eq_mul, mul_one]
+    r n = r (n • (1 : ℤ)) := by rw [Int.zsmul_eq_mul, mul_one]
     _ = n • r 1 := map_zsmul r n 1
-    _ = n := by rw [h1, zsmul_eq_mul, mul_one]
+    _ = n := by rw [h1, Int.zsmul_eq_mul, mul_one]
 
 end
 

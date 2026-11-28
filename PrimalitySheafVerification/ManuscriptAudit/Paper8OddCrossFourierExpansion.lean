@@ -80,9 +80,9 @@ theorem odd_cross_fourier_expansion (s : ℂ) (hs : 1 < s.re) {y : ℝ} (hy : 0 
     calc
       _ = ∑' p : ℤ × CrossRow (D + 1), J ⟨D, swap p⟩ :=
         (swap.tsum_eq (fun p => J ⟨D, p⟩)).symm
-      _ = ∑' n : ℤ, ∑ A : CrossRow (D + 1), J ⟨D, A, n⟩ := by
+      _ = ∑' n : ℤ, ∑ A : CrossRow (D + 1), J ⟨D, swap (n, A)⟩ := by
         rw [hSwapped.tsum_prod]
-        simp only [swap, Equiv.prodComm_apply, tsum_fintype]
+        simp only [tsum_fintype]
       _ = _ := by
         have h := (hasSum_oddCross_modulus_fourier hOdd s (by linarith) hy).tsum_eq
         simp only [intervalIntegral.integral_of_le zero_le_one] at h

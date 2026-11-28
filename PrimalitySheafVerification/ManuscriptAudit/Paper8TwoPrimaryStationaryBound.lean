@@ -30,6 +30,7 @@ private theorem card_reduceLow_preimage {n d : ℕ} [NeZero n] [NeZero d] (S : F
       have h : (reduceLowDigit z : ZMod n) = v.2 := by rw [← he]; exact hLow v
       simpa only [h] using hz
     · rintro ⟨v, hv, rfl⟩
+      change (reduceLowDigit (e v) : ZMod n) ∈ S
       rw [hLow]
       exact (Finset.mem_product.mp hv).2
   rw [hE, Finset.card_map, Finset.product_eq_sprod, Finset.card_product, Finset.card_univ, ZMod.card]
@@ -70,11 +71,14 @@ theorem norm_weighted_kloosterman_two_primary (r : ℕ) {d : ℕ} [NeZero d]
   have hBound := norm_weighted_kloosterman_sum_stationary_count (dvd_mul_left n d) w hw a b ha
   change ‖weightedKloostermanUnitSum w a b‖ ≤ (n : ℝ) *
     ((Finset.univ.filter (fun z : ZMod m => (μ (z.val : ZMod M)) ^ 2 = t)).card : ℝ) at hBound
-  rw [hP, Nat.cast_mul] at hBound
-  apply hBound.trans
+  rw [hP] at hBound
+  have hBound' : ‖weightedKloostermanUnitSum w a b‖ ≤ (n : ℝ) * ((d : ℝ) * (S.card : ℝ)) := by
+    simpa only [Nat.cast_mul] using hBound
+  have hCountR : (S.card : ℝ) ≤ 4 := by exact_mod_cast hCount
+  apply hBound'.trans
   calc
     _ ≤ (n : ℝ) * ((d : ℝ) * 4) :=
-      mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left (by exact_mod_cast hCount)
+      mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left hCountR
         (Nat.cast_nonneg _)) (Nat.cast_nonneg _)
     _ = _ := by change _ = 4 * (d : ℝ) * (n : ℝ); ring
 

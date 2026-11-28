@@ -33,7 +33,11 @@ theorem gcd_eq_prod (hm : m ≠ 0) (hn : n ≠ 0) :
         intro p _ h
         have hz : (Nat.gcd m n).factorization p = 0 := Finsupp.notMem_support_iff.mp h
         rw [hz, pow_zero]
-  simpa [localModulus, Nat.factorization_gcd hm hn, inf_eq_min] using hp
+  calc
+    Nat.gcd m n = ∏ p ∈ n.primeFactors, p ^ min (m.factorization p) (n.factorization p) := by
+      simpa only [Nat.factorization_gcd hm hn, Finsupp.inf_apply] using hp
+    _ = ∏ p : n.primeFactors, localModulus m n p :=
+      (Finset.prod_coe_sort _ _).symm
 
 theorem gcd_prime_power (hm : m ≠ 0) {p : ℕ} (hp : p.Prime) (k : ℕ) :
     Nat.gcd m (p ^ k) = p ^ min (m.factorization p) k := by
@@ -44,8 +48,8 @@ theorem gcd_prime_power (hm : m ≠ 0) {p : ℕ} (hp : p.Prime) (k : ℕ) :
   ext q
   by_cases hq : q = p
   · subst q
-    simp [inf_eq_min]
-  · simp [Finsupp.single_apply, hq, Ne.symm hq, inf_eq_min]
+    simp
+  · simp [Finsupp.single_apply, hq, Ne.symm hq]
 
 theorem gcd_prime_power_valuation (hm : m ≠ 0) {p : ℕ} (hp : p.Prime) (k : ℕ) :
     Nat.gcd m (p ^ k) = p ^ min (padicValNat p m) k := by
@@ -60,7 +64,7 @@ theorem localModulus_pairwise :
 
 /-- The entire common modulus, including its zero-exponent local
 factors, is the literal native CRT product. -/
-def residueEquivPrimePowers (hm : m ≠ 0) (hn : n ≠ 0) :
+noncomputable def residueEquivPrimePowers (hm : m ≠ 0) (hn : n ≠ 0) :
     ZMod (Nat.gcd m n) ≃+* (∀ p : n.primeFactors, ZMod (localModulus m n p)) :=
   (ZMod.ringEquivCongr (gcd_eq_prod m n hm hn)).trans
     (ZMod.prodEquivPi (localModulus m n) (localModulus_pairwise m n))

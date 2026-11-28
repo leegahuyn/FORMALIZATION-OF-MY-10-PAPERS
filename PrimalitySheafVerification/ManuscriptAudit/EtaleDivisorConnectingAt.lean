@@ -20,6 +20,7 @@ variable (U : X.Etale) (hI : Subsingleton (I.H' 1 U))
 
 private abbrev J := (freeEtaleRepresentable X).obj U
 
+include hI in
 theorem connecting_surjective : Function.Surjective (connectingAt i U) := by
   have hS : (ShortComplex.cokernelSequence i).ShortExact := by
     refine ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) ?_ ?_
@@ -32,11 +33,12 @@ theorem connecting_surjective : Function.Surjective (connectingAt i U) := by
   have h := Ext.covariant_sequence_exact₁' (J U) hS 0 1 rfl
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   obtain ⟨z, hz⟩ := (h x).1 hx
-  refine ⟨equivZero (cokernel i) U z, ?_⟩
-  change (hS.extClass.postcomp (J U) (zero_add 1))
-    ((equivZero (cokernel i) U).symm (equivZero (cokernel i) U z)) = x
-  rw [AddEquiv.symm_apply_apply]
-  exact hz
+  let e := equivZero (cokernel i) U
+  let c := hS.extClass.postcomp (J U) (zero_add 1)
+  have hq : c z = x := hz
+  refine ⟨e z, ?_⟩
+  change c (e.symm (e z)) = x
+  exact (congrArg c (e.symm_apply_apply z)).trans hq
 
 variable {H : Type v} [AddCommGroup H]
 variable (b : (cokernel i).obj.obj (op U) →+ H) (hb : Function.Surjective b)

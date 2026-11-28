@@ -107,8 +107,8 @@ private theorem productMap_bijective : Function.Bijective (productMap A B t s) :
   let q : TensorDomain A B t s →ₗ[A] TensorCodomain A B t s := productMap A B t s
   have hq : Function.Bijective (q.lTensor B) := tensorProductMap_bijective A B t s ht hs
   change Function.Bijective q
-  with_reducible
-    exact of_lTensor_bijective A B q hq
+  exact @of_lTensor_bijective A B _ _ _ _ (TensorDomain A B t s) (TensorCodomain A B t s)
+    inferInstance inferInstance inferInstance inferInstance q hq
 
 /-- This multiplication map is an isomorphism of descended modules, as
 can be checked after the genuinely faithfully flat extension. -/

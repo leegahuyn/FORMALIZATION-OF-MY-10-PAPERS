@@ -59,7 +59,7 @@ theorem scaled_boundaryLaplace_tendsto_zero (B : ℝ → ℂ) (hB : Measurable B
     have hScale : Tendsto (fun ε : ℝ => ε⁻¹ * t) (𝓝[>] 0) atTop :=
       tendsto_inv_nhdsGT_zero.atTop_mul_const ht'
     have hTailNorm : Tendsto (fun ε : ℝ => ‖B (ε⁻¹ * t)‖ * Real.exp (-t)) (𝓝[>] 0) (𝓝 0) := by
-      simpa only [norm_zero, zero_mul] using (hTail.comp hScale).norm.mul_const (Real.exp (-t))
+      simpa only [Function.comp_apply, norm_zero, zero_mul] using (hTail.comp hScale).norm.mul_const (Real.exp (-t))
     apply Metric.tendsto_nhds.2
     intro δ hδ
     filter_upwards [hε, (Metric.tendsto_nhds.1 hTailNorm) δ hδ] with ε he hδ'
@@ -90,7 +90,7 @@ theorem off_real_scaled_boundaryLaplace_tendsto_zero (B : ℝ → ℂ) (hB : Mea
   let G (t : ℝ) := B t - L
   have hG : Measurable G := hB.sub measurable_const
   have hBoundG (t : ℝ) (ht : 0 < t) : ‖G t‖ ≤ C + ‖L‖ :=
-    (norm_sub_le _ _).trans (add_le_add_right (hBound t ht) _)
+    (norm_sub_le _ _).trans (add_le_add (hBound t ht) le_rfl)
   have hTailG : Tendsto G atTop (𝓝 0) := by simpa only [G, sub_self] using hTail.sub_const L
   have hLimit := scaled_boundaryLaplace_tendsto_zero G hG hBoundG hTailG τ
   have ht0 : vertical 0 τ ≠ 0 := by

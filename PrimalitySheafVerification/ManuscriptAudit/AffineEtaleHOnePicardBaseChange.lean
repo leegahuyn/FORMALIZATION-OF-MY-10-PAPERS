@@ -60,7 +60,8 @@ theorem toPicard_restrict (h : Sheaf.H (G A) 1) :
   have hh : connectingSection (rI A S i)
       (KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of S)) x' =
       restrictHOne A S h := (restrictHOne_connecting A S i x).symm.trans (congrArg _ hx)
-  rw [toPicard_of_representative A i _ c hx, toPicard_of_representative S (rI A S i) _ c' hh]
+  rw [toPicard_of_representative A i x h c hx,
+    toPicard_of_representative S (rI A S i) x' (restrictHOne A S h) c' hh]
   change picardClassOfLift S (Cover A B S) (rI A S i) x' y' hy' =
     CommRing.Pic.mapAlgebra A S (picardClassOfLift A B i x y hy)
   symm

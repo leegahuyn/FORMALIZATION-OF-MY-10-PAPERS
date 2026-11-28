@@ -54,12 +54,12 @@ private theorem homology_smul_zero (M N : C) {p : ℕ}
   let H := HomologicalComplex.homologyFunctor C c n
   have hH : (p : ℤ) • 𝟙 (H.obj K) = 0 := by
     simpa only [H.map_zsmul, H.map_id, H.map_zero] using congrArg H.map hK
-  let e := P.isoLeftDerivedObj F n
+  change (p : ℤ) • 𝟙 ((F.leftDerived n).obj N) = 0
+  let e : (F.leftDerived n).obj N ≅ H.obj K := P.isoLeftDerivedObj F n
   have he := congrArg (fun a : H.obj K ⟶ H.obj K ↦ e.hom ≫ a ≫ e.inv) hH
   have hs : e.hom ≫ ((p : ℤ) • 𝟙 (H.obj K)) ≫ e.inv =
-      (p : ℤ) • 𝟙 (((Tor C n).obj M).obj N) := by
-    rw [← Category.assoc, Preadditive.comp_zsmul, Category.comp_id,
-      Preadditive.zsmul_comp, e.hom_inv_id]
+      (p : ℤ) • 𝟙 ((F.leftDerived n).obj N) := by
+    rw [Preadditive.zsmul_comp, Category.id_comp, Preadditive.comp_zsmul, e.hom_inv_id]
   exact hs.symm.trans (he.trans (by rw [zero_comp, comp_zero]))
 
 private theorem derived_map_scalar_id (F : C ⥤ C) [F.Additive] (N : C)
@@ -71,13 +71,13 @@ private theorem derived_map_scalar_id (F : C ⥤ C) [F.Additive] (N : C)
     rw [S.map_zsmul, S.map_id, Preadditive.zsmul_comp, Preadditive.comp_zsmul,
       Category.id_comp, Category.comp_id]
   let L := F.mapHomologicalComplex c ⋙ HomologicalComplex.homologyFunctor C c n
-  let e := P.isoLeftDerivedObj F n
+  let e : (F.leftDerived n).obj N ≅ L.obj P.complex := P.isoLeftDerivedObj F n
   calc
     _ = e.hom ≫ L.map (a • 𝟙 P.complex) ≫ e.inv :=
       F.leftDerived_map_eq n (a • 𝟙 N) (a • 𝟙 P.complex) w
     _ = _ := by
-      rw [L.map_zsmul, L.map_id, ← Category.assoc, Preadditive.comp_zsmul,
-        Category.comp_id, Preadditive.zsmul_comp, e.hom_inv_id]
+      rw [L.map_zsmul, L.map_id, Preadditive.zsmul_comp, Category.id_comp,
+        Preadditive.comp_zsmul, e.hom_inv_id]
 
 /-- This is the genuine Tor object for every choice of derived degree. -/
 theorem isZero_Tor_of_coprime (M N : C) {p l : ℕ} (hc : p.Coprime l)

@@ -38,6 +38,7 @@ abbrev S (X : Scheme.{0}) (d : ℕ) := (sequence X d).map (sheafEquivalence X).f
 private abbrev Y (j : Spec (CommRingCat.of R) ⟶ X) [IsOpenImmersion j] :=
   liftedObject (openObject j)
 
+include k in
 private theorem shortExact : (S X d).ShortExact :=
   (sequence_shortExact k d).map_of_exact (sheafEquivalence X).functor
 
@@ -99,7 +100,10 @@ variable {T : Type} [CommRing T] (r : CommRingCat.of R ⟶ CommRingCat.of T)
 
 /-- The actual chart arrow, before taking its coordinate restriction. -/
 def chartArrow : openObject (Spec.map r ≫ j) ⟶ openObject j :=
-  MorphismProperty.Over.homMk (Spec.map r) (by simp only [openObject, Category.id_comp])
+  MorphismProperty.Over.homMk (Spec.map r) (by
+    change Spec.map r ≫ (𝟙 (Spec (CommRingCat.of R)) ≫ j) =
+      𝟙 (Spec (CommRingCat.of T)) ≫ (Spec.map r ≫ j)
+    simp only [Category.id_comp])
 
 set_option maxHeartbeats 5200000 in
 /-- The native cohomology restriction is induced by the literal ring unit map. -/
@@ -124,7 +128,9 @@ theorem boundary_natural :
   rw [AddEquiv.apply_symm_apply]
   have h := specUnits_naturality r ((𝟙 (Spec (CommRingCat.of R))) ≫ j) (e.symm u)
   have h' : e' ((S X d).X₃.obj.map a.op (e.symm u)) = (ringUnits.map r) (e (e.symm u)) := by
-    simpa only [e, e', coordinateUnits, chartArrow, Category.id_comp] using h
+    first
+    | exact h
+    | simpa only [e, e', coordinateUnits, chartArrow, Category.id_comp] using h
   simpa only [AddEquiv.apply_symm_apply] using h'.symm
 
 end

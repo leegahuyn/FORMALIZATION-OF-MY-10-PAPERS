@@ -39,8 +39,8 @@ private theorem sectionHom_map (R : Type) [CommRing R]
     {F G : C R} (f : F ⟶ G) (x : F.obj.obj (op (baseObject R))) :
     sectionHom R G (f.hom.app (op (baseObject R)) x) = sectionHom R F x ≫ f := by
   apply (Ext.mk₀_bijective (constantInteger R) G).injective
-  rw [mk₀_sectionHom, ← Sheaf.H.equiv₀_symm_naturality, Sheaf.H.map_apply,
-    ← Ext.mk₀_comp_mk₀, mk₀_sectionHom]
+  rw [mk₀_sectionHom, ← Ext.mk₀_comp_mk₀, mk₀_sectionHom]
+  exact (Sheaf.H.equiv₀_symm_naturality (terminal R) f x).symm
 
 private def generator (R : Type) [CommRing R] :
     (constantInteger R).obj.obj (op (baseObject R)) :=

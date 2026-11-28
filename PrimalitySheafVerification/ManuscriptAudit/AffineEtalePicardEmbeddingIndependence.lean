@@ -115,13 +115,19 @@ theorem toPicard_independent [Injective I] [Injective J] (h : Sheaf.H (G A) 1) :
     have he := congrArg (fun g : G A ⟶ J =>
       g.hom.app (op D) (Additive.ofMul (transition A B i x y c.lifts))) hf
     change f.hom.app (op D) (i.hom.app (op D) _) = k.hom.app (op D) _ at he
-    rw [← he, transition_image, transition_image]
-    change (f.hom.app (op D)).hom (_ - _) = _
-    rw [map_sub]
-    change f.hom.app (op D) (I.obj.map (firstProjection A B).op y) -
-      f.hom.app (op D) (I.obj.map (secondProjection A B).op y) = _
-    rw [NatTrans.naturality_apply f.hom (firstProjection A B).op y,
-      NatTrans.naturality_apply f.hom (secondProjection A B).op y]
+    let i₁ := I.obj.map (firstProjection A B).op y
+    let i₂ := I.obj.map (secondProjection A B).op y
+    let j₁ := J.obj.map (firstProjection A B).op y'
+    let j₂ := J.obj.map (secondProjection A B).op y'
+    let g := (f.hom.app (op D)).hom
+    have hI : i.hom.app (op D) (Additive.ofMul (transition A B i x y c.lifts)) = i₁ - i₂ :=
+      transition_image A B i x y c.lifts
+    have hJ : k.hom.app (op D) (Additive.ofMul (transition A B k x' y' hy')) = j₁ - j₂ :=
+      transition_image A B k x' y' hy'
+    have h₁ : g i₁ = j₁ := NatTrans.naturality_apply f.hom (firstProjection A B).op y
+    have h₂ : g i₂ = j₂ := NatTrans.naturality_apply f.hom (secondProjection A B).op y
+    exact he.symm.trans ((congrArg g hI).trans
+      ((map_sub g i₁ i₂).trans ((congrArg₂ (· - ·) h₁ h₂).trans hJ.symm)))
   unfold picardClassOfLift
   apply class_congr A B
   exact ht

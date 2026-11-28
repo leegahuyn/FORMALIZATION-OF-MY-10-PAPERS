@@ -32,7 +32,7 @@ theorem crossInvertedHeight_one_large_modulus_le {D : ℕ} (hD : 2 ≤ D) (u : �
   rw [one_pow]
   exact one_div_le_one_div_of_le (by norm_num) hDen
 
-private theorem first_phase_ne_zero : crossRealKernel 0 1 2 0 ≠ 0 := by
+theorem crossFirstPhase_ne_zero : crossRealKernel 0 1 2 0 ≠ 0 := by
   have hW : complexPoint 0 1 ≠ 0 := by
     intro h
     have hi := congrArg Complex.im h
@@ -54,6 +54,30 @@ private theorem first_height_support {d : ℝ} (hd : 0 < d) (u : ℝ) :
     constructor <;> intro h <;> linarith
   rw [h, sq_lt_sq, abs_of_pos hd, abs_lt] <;> rfl
 
+theorem rotated_interval_integral_positive (K : ℝ → ℂ) (hK : Continuous K) (z : ℂ)
+    {d : ℝ} (hd : 0 < d) (hLo : ∀ u ∈ Ioo (-d) d, (1 / 2 : ℝ) ≤ (z * K u).re) :
+    0 < (z * ∫ u in Ioo (-d) d, K u).re := by
+  let S := Ioo (-d) d
+  let P (u : ℝ) := z * K u
+  have hP : Continuous P := continuous_const.mul hK
+  have hPI : IntegrableOn P S :=
+    (hP.continuousOn.integrableOn_Icc (μ := (volume : Measure ℝ))).mono_set Ioo_subset_Icc_self
+  have hPR : IntegrableOn (fun u => (P u).re) S :=
+    (Complex.continuous_re.comp hP).continuousOn.integrableOn_Icc.mono_set Ioo_subset_Icc_self
+  have hIntegralLo : (∫ _ : ℝ in S, (1 / 2 : ℝ)) ≤ ∫ u in S, (P u).re := by
+    apply integral_mono_of_nonneg (Eventually.of_forall (fun _ => by norm_num)) hPR
+    filter_upwards [ae_restrict_mem (show MeasurableSet S from measurableSet_Ioo)] with u hu
+    exact hLo u hu
+  have hPos : 0 < ∫ u in S, (P u).re := by
+    apply lt_of_lt_of_le ?_ hIntegralLo
+    rw [setIntegral_const, Real.volume_real_Ioo_of_le (by linarith : -d ≤ d), smul_eq_mul]
+    positivity
+  have hRe := integral_re hPI
+  change (∫ u in S, (P u).re) = (∫ u in S, z * K u).re at hRe
+  rw [integral_const_mul] at hRe
+  rw [← hRe]
+  exact hPos
+
 theorem exists_crossHeightCutoff_first_modulus_nonzero :
     ∃ q : ℝ, 1 / 16 < q ∧ q < 1 / 4 ∧
       (∀ (D : ℕ), 2 ≤ D → ∀ u : ℝ, crossHeightCutoffKernel q 1 (2 * (D : ℝ)) u = 0) ∧
@@ -62,7 +86,7 @@ theorem exists_crossHeightCutoff_first_modulus_nonzero :
   let P (u : ℝ) := (K 0)⁻¹ * K u
   have hK : Continuous K := crossRealKernel_continuous 0 (by norm_num) (by norm_num)
   have hP : Continuous P := continuous_const.mul hK
-  have hP₀ : P 0 = 1 := inv_mul_cancel₀ first_phase_ne_zero
+  have hP₀ : P 0 = 1 := inv_mul_cancel₀ crossFirstPhase_ne_zero
   have hOpen : IsOpen {u : ℝ | (1 / 2 : ℝ) < (P u).re} :=
     isOpen_lt continuous_const (Complex.continuous_re.comp hP)
   have hMem : (0 : ℝ) ∈ {u : ℝ | (1 / 2 : ℝ) < (P u).re} := by
@@ -91,32 +115,16 @@ theorem exists_crossHeightCutoff_first_modulus_nonzero :
     · exact (if_pos ((first_height_support hd u).mpr hu)).trans (Set.indicator_of_mem hu K).symm
     · exact (if_neg (fun h => hu ((first_height_support hd u).mp h))).trans
         (Set.indicator_of_notMem hu K).symm
-  have hPI : IntegrableOn P S :=
-    (hP.continuousOn.integrableOn_Icc (μ := (volume : Measure ℝ))).mono_set Ioo_subset_Icc_self
-  have hPK : IntegrableOn (fun u => (P u).re) S := by
-    exact (Complex.continuous_re.comp hP).continuousOn.integrableOn_Icc.mono_set Ioo_subset_Icc_self
   have hLo (u : ℝ) (hu : u ∈ S) : (1 / 2 : ℝ) ≤ (P u).re := by
     have ha : |u| < d := abs_lt.mpr hu
     have hb : u ∈ Metric.ball 0 δ := by
       simpa only [Metric.mem_ball, Real.dist_eq, sub_zero] using ha.trans_le hdδ
     exact (show (1 / 2 : ℝ) < (P u).re from hBall hb).le
-  have hIntegralLo : (∫ _ : ℝ in S, (1 / 2 : ℝ)) ≤ ∫ u in S, (P u).re := by
-    apply integral_mono_of_nonneg (Eventually.of_forall (fun _ => by norm_num)) hPK
-    filter_upwards [ae_restrict_mem (show MeasurableSet S from measurableSet_Ioo)] with u hu
-    exact hLo u hu
-  have hIntegralPos : 0 < ∫ u in S, (P u).re := by
-    apply lt_of_lt_of_le ?_ hIntegralLo
-    rw [setIntegral_const, Real.volume_real_Ioo_of_le (by linarith : -d ≤ d), smul_eq_mul]
-    positivity
+  have hRot := rotated_interval_integral_positive K hK ((K 0)⁻¹) hd hLo
   rw [hInd, integral_indicator (show MeasurableSet S from measurableSet_Ioo)]
   intro hZero
-  have hPZero : (∫ u in S, P u) = 0 := by
-    change (∫ u in S, (K 0)⁻¹ * K u) = _
-    rw [integral_const_mul, hZero, mul_zero]
-  have hRe := integral_re hPI
-  change (∫ u in S, (P u).re) = (∫ u in S, P u).re at hRe
-  rw [hPZero, Complex.zero_re] at hRe
-  exact hIntegralPos.ne' hRe
+  rw [hZero, mul_zero, Complex.zero_re] at hRot
+  exact (lt_irrefl _) hRot
 
 end
 end ManuscriptAudit.Paper8OddCrossLocalizedKernel

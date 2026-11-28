@@ -95,10 +95,14 @@ theorem boundary_natural (n : ℕ) (x : Sheaf.H (unitSheaf X) 0) :
   rw [← Sheaf.H.map_comp_apply, ← model_natural (K := K) (X := X) l n, Sheaf.H.map_comp_apply,
     unitBoundary_transition k l n]
 
+set_option maxHeartbeats 4800000 in
+include k in
 /-- Surjectivity uses the literal residue transitions in the native site. -/
 theorem step_surjective (hUnits : Subsingleton (Sheaf.H (unitSheaf X) 1)) (n : ℕ) :
     Function.Surjective (nativeStep X l 1 n) := by
-  let e := cohomologyIso (modelIso (K := K) (X := X) l n) 1
+  let e : Sheaf.H ((F (X := X)).obj (coefficientGroup K (l ^ n))) 1 ≃+
+      Sheaf.H (finiteCoefficient X l n) 1 :=
+    cohomologyIso (modelIso (K := K) (X := X) l n) 1
   have h : Function.Surjective (residueBoundary k l n) :=
     e.surjective.comp (unitBoundary_surjective k (l ^ n) hUnits)
   intro x

@@ -59,7 +59,8 @@ def torOneEquivKernel (A : C) (n : ℕ) (hn : n ≠ 0) :
     map_smul' := fun a x ↦ Subtype.ext (e.map_smul a x.val) }
   have hD : ((Tor C 1).obj A).obj (residues n) ≅ S.homology :=
     (resolution n hn).isoLeftDerivedObj T 1
-  exact hD ≪≫ (S.isoHomologyπ hf).symm ≪≫ S.moduleCatCyclesIso ≪≫ hIso.toModuleIso
+  letI : IsIso S.homologyπ := S.isIso_homologyπ hf
+  exact hD ≪≫ (asIso S.homologyπ).symm ≪≫ S.moduleCatCyclesIso ≪≫ hIso.toModuleIso
 
 end
 end ManuscriptAudit.IntCyclicDerivedTor

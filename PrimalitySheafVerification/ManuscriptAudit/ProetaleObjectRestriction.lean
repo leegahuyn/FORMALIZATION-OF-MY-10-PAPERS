@@ -15,6 +15,9 @@ open ProetaleBaseChange (baseChange directImage)
 universe u v w
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 variable {U X : Scheme.{u}} (j : U ⟶ X) [WeaklyEtale j]
 
 theorem postcompose_preservesPullbacks : PreservesLimitsOfShape WalkingCospan (proetalePostcompose j) := by
@@ -41,8 +44,11 @@ def restriction : Sheaf (Scheme.ProEt.topology X) A ⥤ Sheaf (Scheme.ProEt.topo
 
 def restrictionAdjunction : restriction j A ⊣ directImage j A := by
   letI := postcompose_isContinuous j
-  letI : MorphismProperty.IsMultiplicative (@WeaklyEtale.{u}) :=
-    inferInstance
+  letI : MorphismProperty.IsStableUnderComposition (@WeaklyEtale.{u}) :=
+    ⟨fun a b ha hb ↦ by
+      letI : WeaklyEtale a := ha
+      letI : WeaklyEtale b := hb
+      exact inferInstance⟩
   let a : proetalePostcompose j ⊣ baseChange j :=
     MorphismProperty.Over.mapPullbackAdj (T := Scheme.{u})
       (P := @WeaklyEtale.{u}) (Q := ⊤) j (show WeaklyEtale j from inferInstance) trivial

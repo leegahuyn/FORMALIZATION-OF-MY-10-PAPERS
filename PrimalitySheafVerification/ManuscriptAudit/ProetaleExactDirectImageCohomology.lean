@@ -63,9 +63,11 @@ def cohomologyEquiv (T : C X) (n : ℕ) :
   exact e.trans k
 
 /-- Apply the actual comparison to a continuous coefficient system. -/
-def continuousEquiv (M : Type u) [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
-    (n : ℕ) : Sheaf.H (functionsOver M f) n ≃+ Sheaf.H (functions M X) n :=
-  cohomologyEquiv f (functions M X) n
+def continuousEquiv {U V : Scheme.{0}} (g : U ⟶ V)
+    [(directImage g AddCommGrpCat.{1}).PreservesEpimorphisms]
+    (M : Type) [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+    (n : ℕ) : Sheaf.H (functionsOver M g) n ≃+ Sheaf.H (functions M U) n :=
+  cohomologyEquiv g (functions M U) n
 
 end
 end ManuscriptAudit.ProetaleExactDirectImageCohomology

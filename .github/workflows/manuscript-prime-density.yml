@@ -1,0 +1,67 @@
+name: Manuscript prime density
+on:
+  push:
+    branches: [codex/overleaf-bundle-formalization]
+    paths:
+      - '.github/workflows/manuscript-prime-density.yml'
+      - 'PrimalitySheafVerification/ManuscriptAudit/FiniteSupportCountingLimit.lean'
+      - 'PrimalitySheafVerification/ManuscriptAudit/RecentMathlib/Paper4ProgressionDensity.lean'
+permissions:
+  contents: read
+jobs:
+  upstream:
+    name: Prime density on frozen recent upstream Mathlib
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: leanprover-community/mathlib4
+          ref: 4e3e35e1776720305136144319b8f5a7b9501796
+          path: mathlib-prime-density
+          persist-credentials: false
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          lint: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          lake-package-directory: mathlib-prime-density
+      - name: Retrieve the exact upstream module cache
+        working-directory: mathlib-prime-density
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake exe cache get Mathlib.NumberTheory.LSeries.WeakPNT Mathlib.Tactic.Linarith Mathlib.Tactic.Ring \
+            2>&1 | tee "${RUNNER_TEMP}/manuscript-prime-density-cache.log"
+      - name: Check prime density and its transitive axioms
+        working-directory: mathlib-prime-density
+        shell: bash
+        run: |
+          set -euo pipefail
+          path=PrimalitySheafVerification/ManuscriptAudit
+          compiled="${RUNNER_TEMP}/manuscript-prime-density"
+          mkdir -p "$compiled/$path/RecentMathlib"
+          lean_path="$(lake env printenv LEAN_PATH)"
+          export LEAN_PATH="$compiled:$lean_path"
+          log="${RUNNER_TEMP}/manuscript-prime-density-lean.log"
+          lean --root="$GITHUB_WORKSPACE" -o "$compiled/$path/FiniteSupportCountingLimit.olean" \
+            "$GITHUB_WORKSPACE/$path/FiniteSupportCountingLimit.lean" 2>&1 | tee "$log"
+          lean --root="$GITHUB_WORKSPACE" -o "$compiled/$path/RecentMathlib/Paper4ProgressionDensity.olean" \
+            "$GITHUB_WORKSPACE/$path/RecentMathlib/Paper4ProgressionDensity.lean" 2>&1 | tee -a "$log"
+      - name: Keep the prime-density proof logs and checked objects on GitHub
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: manuscript-prime-density-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/manuscript-prime-density-cache.log
+            ${{ runner.temp }}/manuscript-prime-density-lean.log
+            ${{ runner.temp }}/manuscript-prime-density
+          if-no-files-found: warn
+          retention-days: 30

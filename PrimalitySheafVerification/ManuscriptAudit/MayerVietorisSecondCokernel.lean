@@ -15,7 +15,8 @@ set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  [HasSheafify J AddCommGrpCat.{v}] [HasExt.{v} (Sheaf J AddCommGrpCat.{v})]
+  [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
+  [HasExt.{v} (Sheaf J AddCommGrpCat.{v})]
   (S : J.MayerVietorisSquare) (F : Sheaf J AddCommGrpCat.{v}) (n : ℕ)
 
 private abbrev first := ((F.cohomologyPresheaf n).map S.f₁₂.op).hom

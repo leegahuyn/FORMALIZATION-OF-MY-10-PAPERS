@@ -72,9 +72,10 @@ private abbrev ints := (constantSheaf X.smallEtaleTopology C).obj (AddCommGrpCat
 
 variable {X}
 variable {K : Type} [Field K] (k : X ⟶ Spec (CommRingCat.of K))
-variable (d : ℕ) (hpos : 0 < d) [NeZero (d : K)]
+variable (d : ℕ) (hpos : 0 < d) [hdK : NeZero (d : K)]
 variable (hu : Function.Surjective (fun u : (Γ(X, ⊤))ˣ => u ^ d))
 
+include hu in
 private theorem degreeZero_power_surjective : Function.Surjective (Sheaf.H.map (S X d).g 0) := by
   let e := (((Sheaf.functorH X.smallEtaleTopology 0).mapIso
     (KummerRelativeFull.unitsIso (X := X) d)).addCommGroupIsoToAddEquiv).symm.trans
@@ -86,6 +87,7 @@ private theorem degreeZero_power_surjective : Function.Surjective (Sheaf.H.map (
   change Additive.ofMul (a ^ d) = e u
   rw [ha, ofMul_toMul]
 
+include k hpos hdK in
 private theorem inclusion_exact :
     Function.Exact (Sheaf.H.map (S X d).f 1) (Sheaf.H.map (S X d).g 1) := by
   have h := Ext.covariant_sequence_exact₂' (ints X)
@@ -93,6 +95,7 @@ private theorem inclusion_exact :
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   exact h
 
+include k hpos hdK hu in
 private theorem inclusion_injective :
     Function.Injective (Sheaf.H.map (S X d).f 1) := by
   let hS := KummerRelativeFull.sequence_shortExact k d hpos
@@ -110,6 +113,7 @@ private theorem inclusion_injective :
   obtain ⟨z, hz⟩ := (hι (x - y)).1 hzero
   exact sub_eq_zero.mp (hz.symm.trans ((hδ z).2 (degreeZero_power_surjective d hu z)))
 
+include k hpos hdK hu in
 /-- Finite cohomology of the actual full root kernel gives precisely
 the torsion subgroup inside the true unit cohomology group. -/
 def kernelHOneEquiv : Sheaf.H (S X d).X₁ 1 ≃+ killedBy (Sheaf.H (U X) 1) d := by

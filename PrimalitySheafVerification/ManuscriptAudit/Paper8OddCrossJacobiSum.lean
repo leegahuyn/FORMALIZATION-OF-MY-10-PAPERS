@@ -81,8 +81,8 @@ private theorem reference_entry_jacobi {k : ℕ} [NeZero k] (hk : k % 2 = 1) (h3
     push_cast
     rw [hX, hA]
   have hTerm := dedekind_odd_coprime_six_summand hh hk h3 hC u v a huv hInv
-  rw [hDed, hChar, hPhase, mul_assoc] at hTerm
-  exact hTerm
+  rw [hDed, hChar, hPhase] at hTerm
+  simpa only [mul_assoc, x] using hTerm
 
 theorem referenceZeroSum_eq_jacobi_unit_sum {k : ℕ} [NeZero k] (hk : k % 2 = 1)
     (h3 : ¬ (3 : ℕ) ∣ k) (u v : ℤ) (huv : 24 * u + (k : ℤ) * v = 1) :

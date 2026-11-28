@@ -15,7 +15,7 @@ variable (X : Scheme.{u})
 
 private def baseChangeIso : baseChange (𝟙 X) ≅ 𝟭 X.ProEt := by
   refine NatIso.ofComponents (fun U ↦ ?_) ?_
-  · let f := pullback.fst U.hom (𝟙 X)
+  · let f : pullback U.hom (𝟙 X) ⟶ U.left := pullback.fst U.hom (𝟙 X)
     let g : U.left ⟶ pullback U.hom (𝟙 X) :=
       pullback.lift (𝟙 U.left) U.hom (by simp)
     have hgf : g ≫ f = 𝟙 U.left := pullback.lift_fst _ _ _
@@ -27,7 +27,8 @@ private def baseChangeIso : baseChange (𝟙 X) ≅ 𝟭 X.ProEt := by
         hom_inv_id := by
           apply pullback.hom_ext
           · change (f ≫ g) ≫ f = _
-            rw [Category.assoc, hgf, Category.comp_id, Category.id_comp]
+            rw [Category.assoc, hgf]
+            exact (Category.comp_id f).trans (Category.id_comp f).symm
           · rw [Category.assoc]
             change f ≫ g ≫ pullback.snd U.hom (𝟙 X) = _
             rw [show g ≫ pullback.snd U.hom (𝟙 X) = U.hom from pullback.lift_snd _ _ _,
@@ -40,7 +41,9 @@ private def baseChangeIso : baseChange (𝟙 X) ≅ 𝟭 X.ProEt := by
     apply MorphismProperty.Over.Hom.ext
     change ((baseChange (𝟙 X)).map h).left ≫ pullback.fst V.hom (𝟙 X) =
       pullback.fst U.hom (𝟙 X) ≫ h.left
-    simp only [baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
+    change pullback.lift (pullback.fst U.hom (𝟙 X) ≫ h.left)
+        (pullback.snd U.hom (𝟙 X)) _ ≫ pullback.fst V.hom (𝟙 X) = _
+    exact pullback.lift_fst _ _ _
 
 private abbrev A := AddCommGrpCat.{v}
 private abbrev C := Sheaf (Scheme.ProEt.topology X) A.{v}

@@ -21,10 +21,13 @@ theorem regular_iff (xs : List R) :
   rw [isRegular_iff, isRegular_iff]
   refine and_congr (Paper7RegularSequenceBaseChange.faithfullyFlat_weak_iff R S xs) ?_
   let I := Ideal.ofList xs
-  have e := TensorProduct.tensorQuotMapSMulEquivTensorQuot S M I
+  have e := TensorProduct.tensorQuotMapSMulEquivTensorQuot (R := R) (S := S) (M := M) I
+  have hTensor : Nontrivial (S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M)))) ↔
+      Nontrivial (M ⧸ (I • (⊤ : Submodule R M))) :=
+    Module.FaithfullyFlat.nontrivial_tensorProduct_iff_right R S
   have h : Nontrivial ((S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M))) ↔
       Nontrivial (M ⧸ (I • (⊤ : Submodule R M))) :=
-    e.toEquiv.nontrivial_congr.trans (Module.FaithfullyFlat.nontrivial_tensorProduct_iff_right R S)
+    e.toEquiv.nontrivial_congr.trans hTensor
   simpa only [I, Ideal.map_ofList, Submodule.Quotient.nontrivial_iff, ne_comm] using h
 
 end ManuscriptAudit.Paper7FaithfullyFlatRegularSequence

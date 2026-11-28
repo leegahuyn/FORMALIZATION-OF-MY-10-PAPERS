@@ -24,7 +24,7 @@ private abbrev B := Γ(projectiveScheme W, ⊤)
 def restriction : B W ⟶ A W :=
   (WeierstrassProjectiveClosure.affineOpen W).appTop ≫ (Scheme.ΓSpecIso (A W)).hom
 
-private theorem restriction_injective : Function.Injective (restriction W).hom := by
+theorem restriction_injective : Function.Injective (restriction W).hom := by
   letI : QuasiCompact (inPlane W) := quasiCompact_of_compactSpace _
   have hj : Function.Injective (WeierstrassProjectiveClosure.affineOpen W).appTop := by
     let j := WeierstrassProjectiveClosure.affineOpen W

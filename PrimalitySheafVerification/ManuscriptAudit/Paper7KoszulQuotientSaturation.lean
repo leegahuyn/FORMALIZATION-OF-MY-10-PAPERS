@@ -19,7 +19,8 @@ def homologyIsoKernel (a : R) :
     (rankOne R a).homology ≅
       ModuleCat.of R (LinearMap.ker (a • (LinearMap.id : R →ₗ[R] R))) := by
   let K := rankOne R a
-  exact (K.isoHomologyπ rfl).symm ≪≫ K.moduleCatCyclesIso
+  letI : IsIso K.homologyπ := K.isIso_homologyπ rfl
+  exact (asIso K.homologyπ).symm ≪≫ K.moduleCatCyclesIso
 
 theorem exact_iff_regular (a : R) :
     (rankOne R a).Exact ↔ IsSMulRegular R a := by
