@@ -85,12 +85,12 @@ theorem native_distance_squared_le (n : ℕ) :
     have ht1 : t ≤ 1 := (sub_le_self _ (mul_nonneg p0 q0)).trans p1
     change t^2 ≤ 1
     nlinarith [mul_nonneg ht0 (sub_nonneg.mpr ht1)]
-  have hC := intervalIntegral.integral_mono_on hB (hc.intervalIntegrable a 6)
-    (continuous_const.intervalIntegrable a 6) (fun y _ ↦ hBound y)
+  have hC := intervalIntegral.integral_mono_on hB (hc.intervalIntegrable (μ := volume) a 6)
+    ((continuous_const : Continuous (fun _ : ℝ ↦ (1 : ℝ))).intervalIntegrable (μ := volume) a 6) (fun y _ ↦ hBound y)
   rw [intervalIntegral.integral_const] at hC
   norm_num at hC
   have hSplit := intervalIntegral.integral_add_adjacent_intervals
-    (hc.intervalIntegrable 4 a) (hc.intervalIntegrable a 6)
+    (hc.intervalIntegrable (μ := volume) 4 a) (hc.intervalIntegrable (μ := volume) a 6)
   rw [hZ, zero_add] at hSplit
   rw [nativeDistanceSquared, ← hSplit]
   dsimp only [a] at hC

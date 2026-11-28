@@ -16,6 +16,9 @@ open scoped ContDiff Interval
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 private def flux (f : ScalarField) (x y : ℝ) : ℝ :=
   Real.sin (Real.pi * x) * deriv v y * f x y
 
@@ -70,13 +73,13 @@ private theorem integral_horizontal (f : ScalarField)
     (hx : Continuous (Function.uncurry (partialX f)))
     (hPeriod : ∀ y, f 2 y = f 0 y) (y : ℝ) :
     (∫ x : ℝ in 0..2, horizontal f x y) = -(∫ x : ℝ in 0..2, flux f x y) := by
-  have hc : Continuous (fun x ↦ (Real.sin (Real.pi*x) * deriv v y) : ℝ) :=
+  have hc : Continuous (fun x : ℝ ↦ Real.sin (Real.pi*x) * deriv v y) :=
     (Real.continuous_sin.comp (continuous_const.mul continuous_id)).mul continuous_const
   have hd : Continuous (fun x ↦ partialX f x y) := hx.comp (continuous_id.prodMk continuous_const)
   have h := intervalIntegral.integral_mul_deriv_eq_deriv_mul
     (a := (0 : ℝ)) (b := (2 : ℝ))
     (fun x _ ↦ residual_dx x y) (fun x _ ↦ (hX x y).hasDerivAt)
-    (hc.intervalIntegrable _ _) (hd.intervalIntegrable _ _)
+    (hc.intervalIntegrable (μ := volume) _ _) (hd.intervalIntegrable (μ := volume) _ _)
   have hb : (residual 2 y).1 = (residual 0 y).1 := by
     have hR := (periodic 0 y 1).2.1
     norm_num at hR
@@ -97,7 +100,7 @@ private theorem integral_vertical (f : ScalarField)
   have h := intervalIntegral.integral_mul_deriv_eq_deriv_mul
     (a := (4 : ℝ)) (b := (6 : ℝ))
     (fun y _ ↦ residual_dy x y) (fun y _ ↦ (hY x y).hasDerivAt)
-    (hc.intervalIntegrable _ _) (hd.intervalIntegrable _ _)
+    (hc.intervalIntegrable (μ := volume) _ _) (hd.intervalIntegrable (μ := volume) _ _)
   have hb : (residual x 4).2 = 0 :=
     congrArg Prod.snd (zero_below_cusp_band x 4 (by norm_num)).2.1
   change (∫ y : ℝ in 4..6, vertical f x y) =

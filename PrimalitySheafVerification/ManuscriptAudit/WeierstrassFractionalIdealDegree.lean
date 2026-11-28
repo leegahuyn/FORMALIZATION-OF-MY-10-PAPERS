@@ -58,6 +58,7 @@ theorem signed_degree_eq {I : Fractional W} (hI : I ≠ 0)
     change ((p W b * J : Ideal (A W)) : Fractional W) =
       ((p W a * L : Ideal (A W)) : Fractional W)
     rw [coeIdeal_mul, coeIdeal_mul, coeIdeal_span_singleton, coeIdeal_span_singleton, hJ, hL]
+    change s W b * (s W a * I) = s W a * (s W b * I)
     ac_rfl
   have hd := congrArg (degree W) hc
   rw [degree_mul W (span_ne_zero W hb) (num_ne_zero W hI ha hJ),

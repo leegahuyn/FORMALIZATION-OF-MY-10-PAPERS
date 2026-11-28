@@ -64,6 +64,8 @@ theorem exists_representative (s : (raw (X (A := A)) I).obj
     (op (ProetaleAffineTensor.object A B))) :
     ∃ (T : Stage A B) (x : (sectionDiagram (B := B) I).obj T),
       (rawSectionCocone (B := B) I).ι.app T x = s := by
+  letI : PreservesFilteredColimitsOfSize.{u, u + 1} (CategoryTheory.forget G.{u}) :=
+    preservesFilteredColimitsOfSize_of_univLE.{u + 1, u + 1} _
   let h := isColimitOfPreserves (CategoryTheory.forget G.{u}) (isColimit_rawSectionCocone (B := B) I)
   exact Types.jointly_surjective_of_isColimit h s
 
@@ -75,6 +77,8 @@ theorem exists_equal_representatives (T U : Stage A B)
     (h : (rawSectionCocone (B := B) I).ι.app T x = (rawSectionCocone (B := B) I).ι.app U y) :
     ∃ (W : Stage A B) (f : T ⟶ W) (g : U ⟶ W),
       (sectionDiagram (B := B) I).map f x = (sectionDiagram (B := B) I).map g y := by
+  letI : PreservesFilteredColimitsOfSize.{u, u + 1} (CategoryTheory.forget G.{u}) :=
+    preservesFilteredColimitsOfSize_of_univLE.{u + 1, u + 1} _
   let hC := isColimitOfPreserves (CategoryTheory.forget G.{u}) (isColimit_rawSectionCocone (B := B) I)
   exact (Types.FilteredColimit.isColimit_eq_iff _ hC).mp h
 

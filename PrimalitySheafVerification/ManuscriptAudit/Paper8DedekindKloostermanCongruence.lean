@@ -19,9 +19,17 @@ private theorem six_square_moment (k : ℕ) :
     simp only [Fin.val_castSucc, Fin.val_last, Nat.cast_succ]
     linear_combination ih
 
-theorem dedekind_integer_phase_congruence {h k : ℕ} (hk : 0 < k) (hC : h.Coprime k) :
-    ∃ N : ℤ, (N : ℚ) = 12 * (k : ℚ) * dedekindSum (h : ℤ) k ∧
-      (N : ZMod k) = (h : ZMod k) + (((ZMod.unitOfCoprime h hC)⁻¹ : (ZMod k)ˣ) : ZMod k) := by
+def dedekindPhaseNumerator (h k : ℕ) : ℤ :=
+  2 * (h : ℤ) * (((k : ℤ) - 1) * (2 * (k : ℤ) - 1)) -
+    12 * (∑ j : Fin k, (j.val : ℤ) * ((((h * j.val) / k : ℕ) : ℤ))) -
+    3 * (k : ℤ) * ((k : ℤ) - 1)
+
+theorem dedekind_phase_numerator_spec {h k : ℕ} (hk : 0 < k) (hC : h.Coprime k) :
+    ((dedekindPhaseNumerator h k : ℤ) : ℚ) = 12 * (k : ℚ) * dedekindSum (h : ℤ) k ∧
+      ((dedekindPhaseNumerator h k : ℤ) : ZMod k) =
+        (h : ZMod k) + (((ZMod.unitOfCoprime h hC)⁻¹ : (ZMod k)ˣ) : ZMod k) ∧
+      ((3 : ℕ) ∣ k → (3 * (k : ℤ)) ∣ (h : ℤ) * dedekindPhaseNumerator h k - (1 + (h : ℤ) ^ 2)) ∧
+      (¬ (3 : ℕ) ∣ k → (3 : ℤ) ∣ dedekindPhaseNumerator h k) := by
   let e := residuePerm h k hk hC
   let jv (j : Fin k) : ℤ := j.val
   let r (j : Fin k) : ℤ := (e j).val
@@ -109,19 +117,52 @@ theorem dedekind_integer_phase_congruence {h k : ℕ} (hk : 0 < k) (hC : h.Copri
     apply Finset.sum_congr rfl
     intro j _
     unfold fraction jv r
+    simp only [Int.cast_natCast] 
     ring
   have hKPq := congrArg (fun n : ℤ => (n : ℚ)) hKP
   push_cast at hKPq
   have hPF : (P : ℚ) = (12 * (S : ℚ)) / (k : ℚ) :=
     (eq_div_iff hKQ).2 (by simpa only [mul_comm] using hKPq)
-  refine ⟨N, ?_, hZ⟩
-  rw [dedekindSum_eq_fraction_product hk hC]
-  change (N : ℚ) = 12 * (k : ℚ) * ((∑ j : Fin k, fraction j * fraction (e j)) - ((k : ℚ) - 1) / 4)
-  rw [hSq]
-  unfold N
-  push_cast
-  rw [hPF]
-  field_simp [hKQ] <;> ring
+  have hRat : (N : ℚ) = 12 * (k : ℚ) * dedekindSum (h : ℤ) k := by
+    rw [dedekindSum_eq_fraction_product hk hC]
+    change (N : ℚ) = 12 * (k : ℚ) * ((∑ j : Fin k, fraction j * fraction (e j)) - ((k : ℚ) - 1) / 4)
+    rw [hSq]
+    unfold N
+    push_cast
+    rw [hPF]
+    field_simp [hKQ] <;> ring
+  have hFact : (h : ℤ) * N - (1 + (h : ℤ) ^ 2) =
+      (k : ℤ) * ((1 + (h : ℤ) ^ 2) * (2 * (k : ℤ) - 3) - 6 * R -
+        3 * (h : ℤ) * ((k : ℤ) - 1)) := by
+    unfold N
+    dsimp only [L] at hCong
+    linear_combination hCong
+  have hThree (hk3 : (3 : ℕ) ∣ k) : (3 * (k : ℤ)) ∣ (h : ℤ) * N - (1 + (h : ℤ) ^ 2) := by
+    obtain ⟨m, hm⟩ := hk3
+    have hz : (k : ℤ) = 3 * (m : ℤ) := by exact_mod_cast hm
+    refine ⟨(1 + (h : ℤ) ^ 2) * (2 * (m : ℤ) - 1) - 2 * R - (h : ℤ) * ((k : ℤ) - 1), ?_⟩
+    rw [hFact]
+    linear_combination (2 * (k : ℤ) * (1 + (h : ℤ) ^ 2)) * hz
+  have hnThree (hk3 : ¬ (3 : ℕ) ∣ k) : (3 : ℤ) ∣ N := by
+    have hEq : (k : ℤ) * N = 12 * S - 3 * (k : ℤ) ^ 2 * ((k : ℤ) - 1) := by
+      unfold N
+      linear_combination hKP
+    have he := congrArg (fun z : ℤ => (z : ZMod 3)) hEq
+    change (((k : ℤ) * N : ℤ) : ZMod 3) =
+      ((12 * S - 3 * (k : ℤ) ^ 2 * ((k : ℤ) - 1) : ℤ) : ZMod 3) at he
+    push_cast at he
+    have he0 : (k : ZMod 3) * (N : ZMod 3) = 0 := by
+      simpa only [show (12 : ZMod 3) = 0 by decide, show (3 : ZMod 3) = 0 by decide,
+        zero_mul, sub_zero] using he
+    have hk0 : (k : ZMod 3) ≠ 0 := fun h0 => hk3 ((ZMod.natCast_eq_zero_iff k 3).1 h0)
+    exact (ZMod.intCast_zmod_eq_zero_iff_dvd N 3).1 ((mul_eq_zero.mp he0).resolve_left hk0)
+  exact ⟨hRat, hZ, hThree, hnThree⟩
+
+theorem dedekind_integer_phase_congruence {h k : ℕ} (hk : 0 < k) (hC : h.Coprime k) :
+    ∃ N : ℤ, (N : ℚ) = 12 * (k : ℚ) * dedekindSum (h : ℤ) k ∧
+      (N : ZMod k) = (h : ZMod k) + (((ZMod.unitOfCoprime h hC)⁻¹ : (ZMod k)ˣ) : ZMod k) := by
+  obtain ⟨hv, hm, _, _⟩ := dedekind_phase_numerator_spec hk hC
+  exact ⟨_, hv, hm⟩
 
 end
 end ManuscriptAudit.Paper8DedekindKloostermanCongruence

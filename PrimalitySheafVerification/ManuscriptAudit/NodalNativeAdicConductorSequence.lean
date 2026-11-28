@@ -83,8 +83,10 @@ theorem shortExact : (sequence K h2 ℤ_[ℓ]).ShortExact := by
       (fun n ↦ (hR n).epi_g)
   letI : Epi P.g := hP
   letI : Epi D.τ₁ := ProetaleAdicResidueKernelMap.native_difference_epi (X K) ℓ
-  letI : Epi (sequence K h2 ℤ_[ℓ]).g :=
-    ShortExactKernelEpi.epi_right D j (product_shortExact (R K h2 ℓ) hR hP).exact k₂ k₃
+  letI : Epi (ProetaleTwoBranchKernel.difference (normalizationMap K) (projectiveOrigin K)
+      (plus K h2) (minus K h2) (plus_over K h2) (minus_over K h2) ℤ_[ℓ]) :=
+    (show Epi (sequence K h2 ℤ_[ℓ]).g from
+      ShortExactKernelEpi.epi_right D j (product_shortExact (R K h2 ℓ) hR hP).exact k₂ k₃)
   letI := normalizationMap_integral K
   letI := properNormalization_surjective K h2
   exact ProetaleTwoBranchKernel.sequence_shortExact _ _ _ _ _ _ _

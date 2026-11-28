@@ -93,7 +93,10 @@ theorem transition_refine :
     transition_image R C ι x y' (refine_lifts R B C f ι x y hy)
   have h : (G R).obj.map s.op (Additive.ofMul t) = Additive.ofMul t' := by
     apply section_injective ι (E R C)
-    rw [NatTrans.naturality_apply ι.hom s.op (Additive.ofMul t), hB, hC]
+    have hNatural : ι.hom.app (op (E R C)) ((G R).obj.map s.op (Additive.ofMul t)) =
+        I.obj.map s.op (ι.hom.app (op (D R B)) (Additive.ofMul t)) :=
+      NatTrans.naturality_apply ι.hom s.op (Additive.ofMul t)
+    rw [hNatural, hB, hC]
     change (I.obj.map s.op).hom (_ - _) = _
     rw [map_sub]
     change I.obj.map s.op (I.obj.map (firstProjection R B).op y) -

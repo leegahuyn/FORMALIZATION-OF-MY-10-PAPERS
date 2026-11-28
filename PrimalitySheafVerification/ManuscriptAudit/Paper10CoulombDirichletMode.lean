@@ -13,6 +13,9 @@ open scoped ContDiff Topology
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 /-- This switch vanishes below height five and is identically one above 11/2. -/
 def cutoff (y : ℝ) : ℝ := Real.smoothTransition (2 * (y - 5))
 
@@ -21,7 +24,10 @@ private def s (y : ℝ) : ℝ := (Real.exp (t y) - Real.exp (-t y)) / (2 * Real.
 private def c (y : ℝ) : ℝ := (Real.exp (t y) + Real.exp (-t y)) / 2
 
 private theorem t_deriv (y : ℝ) : HasDerivAt t Real.pi y := by
-  simpa only [t, mul_one] using ((hasDerivAt_id y).sub_const 6).const_mul Real.pi
+  have h : HasDerivAt (fun z : ℝ ↦ Real.pi * (z-6)) (Real.pi*1) y :=
+    ((hasDerivAt_id y).sub_const 6).const_mul Real.pi
+  rw [mul_one] at h
+  exact h
 
 private theorem s_deriv (y : ℝ) : HasDerivAt s (c y) y := by
   have hp := (Real.hasDerivAt_exp (t y)).comp y (t_deriv y)
@@ -74,8 +80,10 @@ def inputForm : OneForm := fun x y ↦
 
 theorem gradient_eq_partials (x y : ℝ) :
     gradient x y = (partialX potential x y, partialY potential x y) := by
-  have hx := ((Real.hasDerivAt_sin (Real.pi * x)).comp x
-    ((hasDerivAt_id x).const_mul Real.pi)).mul_const (u y)
+  have hx : HasDerivAt (fun z : ℝ ↦ Real.sin (Real.pi * z) * u y)
+      (Real.cos (Real.pi*x) * (Real.pi*1) * u y) x :=
+    ((Real.hasDerivAt_sin (Real.pi * x)).comp x
+      ((hasDerivAt_id x).const_mul Real.pi)).mul_const (u y)
   have hy := ((u_smooth.differentiable (by simp) y).hasDerivAt).const_mul (Real.sin (Real.pi * x))
   apply Prod.ext
   · change Real.cos (Real.pi * x) * (Real.pi * u y) =
@@ -86,10 +94,15 @@ theorem gradient_eq_partials (x y : ℝ) :
   · exact hy.deriv.symm
 
 theorem residual_coclosed (x y : ℝ) : codifferential residual x y = 0 := by
-  have hx := (((Real.hasDerivAt_cos (Real.pi * x)).comp x
-    ((hasDerivAt_id x).const_mul Real.pi)).mul_const (deriv v y / Real.pi)).neg
-  have hy := (((v_smooth.differentiable (by simp) y).hasDerivAt).const_mul
-    (Real.sin (Real.pi * x))).neg
+  have hx : HasDerivAt
+      (fun z : ℝ ↦ -(Real.cos (Real.pi*z) * (deriv v y / Real.pi)))
+      (-(-Real.sin (Real.pi*x) * (Real.pi*1) * (deriv v y / Real.pi))) x :=
+    (((Real.hasDerivAt_cos (Real.pi * x)).comp x
+      ((hasDerivAt_id x).const_mul Real.pi)).mul_const (deriv v y / Real.pi)).neg
+  have hy : HasDerivAt (fun z : ℝ ↦ -(Real.sin (Real.pi*x) * v z))
+      (-(Real.sin (Real.pi*x) * deriv v y)) y :=
+    (((v_smooth.differentiable (by simp) y).hasDerivAt).const_mul
+      (Real.sin (Real.pi * x))).neg
   rw [codifferential_eq_coordinateDivergence]
   change -(y^2 * (deriv (fun z ↦ -(Real.cos (Real.pi * z) * (deriv v y / Real.pi))) x +
     deriv (fun z ↦ -(Real.sin (Real.pi * x) * v z)) y)) = 0

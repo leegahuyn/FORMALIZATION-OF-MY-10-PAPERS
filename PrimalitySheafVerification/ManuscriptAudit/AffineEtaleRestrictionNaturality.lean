@@ -39,7 +39,12 @@ theorem restrictionPresheafIso_natural
     exact congrArg (fun g : (E (X := X)).inverse.obj ((E (X := X)).functor.obj I) ⟶ J =>
       g.hom.app (op V)) n
   change a.app _ ≫ (B.map e ≫ k) = (A.map e ≫ i) ≫ f.hom.app (op V)
-  rw [← Category.assoc, ← ha, Category.assoc, hi, ← Category.assoc]
+  calc
+    _ = (a.app _ ≫ B.map e) ≫ k := (Category.assoc _ _ _).symm
+    _ = (A.map e ≫ a.app _) ≫ k := congrArg (fun g => g ≫ k) ha.symm
+    _ = A.map e ≫ (a.app _ ≫ k) := Category.assoc _ _ _
+    _ = A.map e ≫ (i ≫ f.hom.app (op V)) := congrArg (fun g => A.map e ≫ g) hi
+    _ = _ := (Category.assoc _ _ _).symm
 
 
 /-- Pulling back a section commutes with each actual morphism of sheaves. -/

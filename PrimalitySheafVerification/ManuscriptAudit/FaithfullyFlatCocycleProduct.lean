@@ -59,6 +59,7 @@ variable [Module.FaithfullyFlat A B]
 variable (ht : IsCocycle A B t) (hs : IsCocycle A B s)
 include ht hs
 
+set_option maxHeartbeats 1400000 in
 /-- This multiplication map is an isomorphism of descended modules, as
 can be checked after the genuinely faithfully flat extension. -/
 def productEquiv :

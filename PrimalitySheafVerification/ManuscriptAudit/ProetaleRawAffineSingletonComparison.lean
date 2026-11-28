@@ -125,7 +125,7 @@ theorem surjective_app [Presheaf.IsLocallyInjective (J (S := S)) η]
     (isSheaf_iff_isSheaf_of_type (J (S := S)) _).mp
       (Presheaf.isSheaf_comp_of_isSheaf _ _ (CategoryTheory.forget G.{u}) F.property)
   have hD : Presieve.IsSheafFor F₀ (Presieve.singleton f) :=
-    (Presieve.isSheafFor_iff_generate _).mpr (hF.isSheafFor _ (descent_covers V a hw hc))
+    hF.isSheafFor (Presieve.singleton f) (descent_covers V a hw hc)
   refine ⟨y, hD.isSeparatedFor.ext ?_⟩
   rintro Z _ ⟨rfl⟩
   exact hEq

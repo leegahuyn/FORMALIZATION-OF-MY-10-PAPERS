@@ -27,8 +27,8 @@ private abbrev P := ProetaleAffineTensor.spectrum (∀ i, B i)
 /-- The actual geometric coproduct map is given by the ring projections. -/
 def comparison : (∐ X B) ⟶ P B := Sigma.desc (FiniteProductSpectrumOpen.projection B)
 
-private theorem point_component (x : (∐ X B)) :
-    ∃ (i : ι) (y : X B i), Sigma.ι (X B) i y = x := by
+private theorem point_component (x : ↥(Limits.sigmaObj (X B))) :
+    ∃ (i : ι) (y : ↥(X B i)), Sigma.ι (X B) i y = x := by
   let O := sigmaOpenCover (X B)
   obtain ⟨y, hy⟩ := O.covers x
   exact ⟨O.idx x, y, hy⟩
@@ -51,8 +51,8 @@ theorem comparison_isIso : IsIso (comparison B) := by
       rw [PrimeSpectrum.sigmaToPiHomeo_apply, PrimeSpectrum.sigmaToPi_apply,
         PrimeSpectrum.sigmaToPiHomeo_apply, PrimeSpectrum.sigmaToPi_apply]
       exact h
-    have hΣ := (PrimeSpectrum.sigmaToPiHomeo B).injective h'
-    exact congrArg (fun z : Σ i, PrimeSpectrum (B i) ↦ Sigma.ι (X B) z.1 z.2) hΣ
+    have hSigma := (PrimeSpectrum.sigmaToPiHomeo B).injective h'
+    exact congrArg (fun z : Σ i, PrimeSpectrum (B i) ↦ Sigma.ι (X B) z.1 z.2) hSigma
   have hSurj : Surjective (comparison B) := ⟨fun p ↦ by
     obtain ⟨i, x, hx⟩ := FiniteProductSpectrumOpen.exists_component B p
     refine ⟨Sigma.ι (X B) i x, ?_⟩
@@ -92,6 +92,7 @@ theorem product_weaklyEtale : WeaklyEtale (structureMap A (∀ i, B i)) := by
   letI : IsIso (comparison B) := comparison_isIso B
   let j := asIso (comparison B)
   have hf : j.inv ≫ h = structureMap A (∀ i, B i) := by
+    change j.inv ≫ coproductStructure (A := A) B = _
     rw [← comparison_structure (A := A) B]
     change j.inv ≫ j.hom ≫ structureMap A (∀ i, B i) = _
     exact j.inv_hom_id_assoc _

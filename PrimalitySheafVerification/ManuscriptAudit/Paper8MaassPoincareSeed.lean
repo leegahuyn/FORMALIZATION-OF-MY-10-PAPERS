@@ -26,16 +26,20 @@ theorem poincareSeed_eq_exponential (s : ℂ) (μ x y : ℝ) :
 
 private theorem hasDerivAt_seedAtom (μ : ℝ) (w : ℂ) :
     HasDerivAt (seedAtom μ) ((frequency μ * Complex.I) * seedAtom μ w) w := by
-  have h := (Complex.hasDerivAt_exp ((frequency μ * Complex.I) * w)).comp w
-    ((hasDerivAt_id w).const_mul (frequency μ * Complex.I))
-  simpa only [seedAtom, Function.comp, id_eq, mul_one, mul_comm] using h
+  let K := frequency μ * Complex.I
+  have hLin : HasDerivAt (fun z : ℂ => K * z) K w := by
+    simpa only [id_eq, mul_one, one_mul] using (hasDerivAt_id w).const_mul K
+  have h := (Complex.hasDerivAt_exp (K * w)).comp w hLin
+  change HasDerivAt (seedAtom μ) (seedAtom μ w * K) w at h
+  change HasDerivAt (seedAtom μ) (K * seedAtom μ w) w
+  rwa [mul_comm]
 
 private theorem hasDerivAt_yPower (s : ℂ) {y : ℝ} (hy : 0 < y) :
     HasDerivAt (fun t : ℝ => (t : ℂ) ^ s) (s * (y : ℂ) ^ (s - 1)) y := by
   by_cases h : s = 0
   · subst s
     simpa only [Complex.cpow_zero, zero_mul] using (hasDerivAt_const y (1 : ℂ))
-  · exact Complex.hasDerivAt_ofReal_cpow_const hy.ne' h
+  · exact hasDerivAt_ofReal_cpow_const hy.ne' h
 
 private theorem height_shift (s : ℂ) {y : ℝ} (hy : 0 < y) :
     (y : ℂ) * (y : ℂ) ^ (s - 1) = (y : ℂ) ^ s := by

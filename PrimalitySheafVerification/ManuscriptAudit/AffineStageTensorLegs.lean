@@ -45,7 +45,7 @@ variable [HasBinaryCoproduct (U (R := R) S) (U (R := R) T)]
 /-- The ring's left inclusion identifies with the actual coproduct leg. -/
 theorem inl_tensorIso_hom :
     (tensorCofan (R := base (R := R)) S T).inl ≫ (tensorIso (R := base (R := R)) S T).hom =
-      coprod.inl := by
+      colimit.ι (pair (U (R := R) S) (U (R := R) T)) ⟨WalkingPair.left⟩ := by
   change (tensorCofan (R := base (R := R)) S T).ι.app ⟨WalkingPair.left⟩ ≫
     (tensorIso (R := base (R := R)) S T).hom = _
   exact (tensorIsColimit (R := base (R := R)) S T).comp_coconePointUniqueUpToIso_hom
@@ -54,7 +54,7 @@ theorem inl_tensorIso_hom :
 /-- The ring's right inclusion identifies with the actual coproduct leg. -/
 theorem inr_tensorIso_hom :
     (tensorCofan (R := base (R := R)) S T).inr ≫ (tensorIso (R := base (R := R)) S T).hom =
-      coprod.inr := by
+      colimit.ι (pair (U (R := R) S) (U (R := R) T)) ⟨WalkingPair.right⟩ := by
   change (tensorCofan (R := base (R := R)) S T).ι.app ⟨WalkingPair.right⟩ ≫
     (tensorIso (R := base (R := R)) S T).hom = _
   exact (tensorIsColimit (R := base (R := R)) S T).comp_coconePointUniqueUpToIso_hom

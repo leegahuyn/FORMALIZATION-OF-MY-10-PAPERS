@@ -87,9 +87,12 @@ theorem odd_shifted_cutoff_energy_le_tail {δ : ℝ} {F G : ℂ → ℂ}
     have hRe : (∫ z in S, (Q z).re) = (∫ z in S, Q z).re := integral_re hQ
     rw [hRe, hZero, Complex.zero_re]
   have hRInt : (∫ z in S, R z) = (∫ z in S, A z) - δ * (∫ z in S, B z) := by
-    unfold R
-    rw [integral_sub (hQr.add hA) (hB.const_mul δ), integral_add hQr hA, hZeroRe, zero_add,
-      integral_const_mul]
+    have hSub : (∫ z in S, R z) =
+        (∫ z in S, (Q z).re + A z) - ∫ z in S, δ * B z :=
+      integral_sub (hQr.add hA) (hB.const_mul δ)
+    have hAdd : (∫ z in S, (Q z).re + A z) =
+        (∫ z in S, (Q z).re) + ∫ z in S, A z := integral_add hQr hA
+    rw [hSub, hAdd, hZeroRe, zero_add, integral_const_mul]
   have hWInt : (∫ z in S, W z) = ((∫ z in S, A z) + C ^ 2 * (∫ z in S, P z)) / 2 := by
     unfold W
     rw [integral_div, integral_add hA (hP.const_mul (C ^ 2)), integral_const_mul]

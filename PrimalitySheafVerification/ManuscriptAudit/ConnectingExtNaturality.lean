@@ -26,10 +26,21 @@ theorem map_connecting {S : ShortComplex C} {T : ShortComplex D}
       (Ext.mk₀ (z ≫ R.map x ≫ φ.τ₃)).comp hT.extClass (zero_add 1) := by
   rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀, Ext.mapExactFunctor_extClass]
   let h := hS.map_of_exact R
-  have e := Ext.comp_assoc_of_third_deg_zero (Ext.mk₀ (R.map x)) h.extClass
-    (Ext.mk₀ φ.τ₁) (zero_add 1)
-  rw [e, h.extClass_naturality hT φ]
-  simp only [Ext.mk₀_comp_mk₀_assoc]
+  let a := Ext.mk₀ (R.map x)
+  let b := Ext.mk₀ φ.τ₁
+  let c := Ext.mk₀ φ.τ₃
+  let p := Ext.mk₀ z
+  change p.comp ((a.comp h.extClass (zero_add 1)).comp b (add_zero 1)) (zero_add 1) = _
+  calc
+    _ = p.comp (a.comp (h.extClass.comp b (add_zero 1)) (zero_add 1)) (zero_add 1) :=
+      congrArg (fun q => p.comp q (zero_add 1))
+        (Ext.comp_assoc_of_third_deg_zero a h.extClass b (zero_add 1))
+    _ = p.comp (a.comp (c.comp hT.extClass (zero_add 1)) (zero_add 1)) (zero_add 1) :=
+      congrArg (fun q => p.comp (a.comp q (zero_add 1)) (zero_add 1)) (h.extClass_naturality hT φ)
+    _ = _ := by
+      change (Ext.mk₀ z).comp ((Ext.mk₀ (R.map x)).comp
+        ((Ext.mk₀ φ.τ₃).comp hT.extClass (zero_add 1)) (zero_add 1)) (zero_add 1) = _
+      simp only [Ext.mk₀_comp_mk₀_assoc]
 
 end ManuscriptAudit.ConnectingExtNaturality
 

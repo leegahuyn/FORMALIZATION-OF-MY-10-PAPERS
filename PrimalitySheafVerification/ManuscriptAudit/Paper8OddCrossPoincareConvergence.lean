@@ -20,9 +20,9 @@ noncomputable section
 
 abbrev CrossIndex := Σ D : ℕ, CrossRow (D + 1) × ℤ
 
-private abbrev MajorantIndex := Σ D : ℕ, ZMod (D + 1) × ℤ
+private abbrev MajorantIndex := Σ D : ℕ, Fin (D + 1) × ℤ
 
-private def rowIndex {D : ℕ} (hD : 0 < D) (A : CrossRow D) : ZMod D :=
+private def rowIndex {D : ℕ} (hD : 0 < D) (A : CrossRow D) : Fin D :=
   (rowsEquiv hD ((crossRowsEquiv hD (crossRow_odd A)).symm A)).1
 
 private theorem rowIndex_injective {D : ℕ} (hD : 0 < D) :
@@ -70,18 +70,18 @@ private theorem crossMajorant_summable {σ : ℝ} (hσ : 1 < σ) :
   let b := shiftMajorant σ
   have hb : Summable b := shiftMajorant_summable hσ
   have hProd (D : ℕ) : Summable
-      (fun p : ZMod (D + 1) × ℤ => ((D : ℝ) + 1) ^ (-2 * σ) * b p.2) :=
+      (fun p : Fin (D + 1) × ℤ => ((D : ℝ) + 1) ^ (-2 * σ) * b p.2) :=
     (summable_prod_of_nonneg (fun _ => by
       dsimp only [b, shiftMajorant]
       positivity)).2 ⟨fun _ => hb.mul_left _, by
-        exact summable_of_finite⟩
-  have hReduce (D : ℕ) : (∑' p : ZMod (D + 1) × ℤ,
+        exact Summable.of_finite⟩
+  have hReduce (D : ℕ) : (∑' p : Fin (D + 1) × ℤ,
       ((D : ℝ) + 1) ^ (-2 * σ) * b p.2) =
       (∑' n, b n) * ((D : ℝ) + 1) ^ (1 - 2 * σ) := by
     have hD : 0 < (D : ℝ) + 1 := by positivity
     rw [(hProd D).tsum_prod]
     simp only [tsum_mul_left, tsum_fintype, Finset.sum_const, Finset.card_univ,
-      ZMod.card, nsmul_eq_mul, Nat.cast_add, Nat.cast_one]
+      Fintype.card_fin, nsmul_eq_mul, Nat.cast_add, Nat.cast_one]
     rw [show (1 - 2 * σ : ℝ) = 1 + (-2 * σ) by ring, Real.rpow_add hD, Real.rpow_one]
     ring
   have hs : Summable (fun D : ℕ => ((D : ℝ) + 1) ^ (1 - 2 * σ)) :=

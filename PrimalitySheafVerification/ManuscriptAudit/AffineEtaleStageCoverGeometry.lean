@@ -48,18 +48,15 @@ surjective structural map of the affine base-change algebra. -/
 theorem tensor_surjective
     (h : Function.Surjective (pullback.fst (structureMap R S) (structureMap R T))) :
     Function.Surjective (structureMap S (S ⊗[R] T)) := by
-  let e := AlgebraicGeometry.Scheme.pullbackSpecIso R S T
-  have hf : e.inv ≫ pullback.fst (structureMap R S) (structureMap R T) =
-      structureMap S (S ⊗[R] T) :=
-    AlgebraicGeometry.Scheme.pullbackSpecIso_inv_fst' R S T
+  let P := ProetaleAffineTensor.specTensor_isPullback R S T
+  have hf : P.isoPullback.hom ≫ pullback.fst (structureMap R S) (structureMap R T) =
+      structureMap S (S ⊗[R] T) := P.isoPullback_hom_fst
+  have hi : P.isoPullback.inv ≫ structureMap S (S ⊗[R] T) =
+      pullback.fst (structureMap R S) (structureMap R T) := by
+    rw [← hf, P.isoPullback.inv_hom_id_assoc]
   intro x
   obtain ⟨p, hp⟩ := h x
-  refine ⟨e.hom p, ?_⟩
-  rw [← hf, Scheme.Hom.comp_apply]
-  have he := congrArg (fun m : pullback (structureMap R S) (structureMap R T) ⟶
-    pullback (structureMap R S) (structureMap R T) ↦ m p) e.hom_inv_id
-  change e.inv (e.hom p) = p at he
-  rwa [he]
+  exact ⟨P.isoPullback.inv p, by simpa only [← Scheme.Hom.comp_apply, hi] using hp⟩
 
 end
 end ManuscriptAudit.AffineEtaleStageCoverGeometry

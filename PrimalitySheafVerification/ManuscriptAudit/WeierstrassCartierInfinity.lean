@@ -62,14 +62,17 @@ private theorem origin_not_in_Z_chart (p : linePoint (K := K)) :
   rw [origin_z]
   exact p.asIdeal.zero_mem
 
+set_option maxHeartbeats 2200000 in
 private theorem inPlane_atInfinity (p : linePoint (K := K)) :
     (inPlane W).imageι (atInfinity W p) =
       WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) := by
   change (WeierstrassProperInfinityChart.chartOpen W ≫ (inPlane W).imageι)
       (originToChart W p) = _
-  exact congrArg (fun f : WeierstrassInfinityChartImmersion.chartScheme W ⟶
-    CuspYChartAlgebra.plane K => f (originToChart W p))
-    (WeierstrassProperInfinityChart.chartOpen_inPlane W)
+  let f := WeierstrassProperInfinityChart.chartOpen W ≫ (inPlane W).imageι
+  let g := WeierstrassInfinityChartImmersion.inPlane W
+  have h : f = g := WeierstrassProperInfinityChart.chartOpen_inPlane W
+  have hBase : f.base = g.base := congrArg Scheme.Hom.base h
+  exact congrArg (fun k => k (originToChart W p)) hBase
 
 set_option maxHeartbeats 1000000 in
 theorem atInfinity_outside_affine (p : linePoint (K := K)) :

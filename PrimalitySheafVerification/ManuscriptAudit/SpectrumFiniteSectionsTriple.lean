@@ -38,7 +38,8 @@ private theorem transport {D C : Type*} [CommRing D] [CommRing C] [Algebra R D] 
     rw [hr]
   exact congrArg g h
 
-set_option maxHeartbeats 1400000 in
+set_option maxHeartbeats 2500000 in
+set_option backward.isDefEq.respectTransparency true in
 /-- Injectivity of the literal triple stage maps identifies the factorization with
 a function on the actual coordinate ring of that stage. -/
 theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
@@ -47,12 +48,17 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     (f : PrimeSpectrum T → A) (hF : Continuous f) :
     ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
       ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x := by
-  obtain ⟨n, g, hg, hFac⟩ := factor_triple_image U hMono hCover f hF
+  obtain ⟨n, g, hg, hFac⟩ := SpectrumFiniteSectionsTripleImages.factor_triple_image U hMono hCover f hF
   let D := (U n ⊗[R] U n) ⊗[R] U n
   let j : D →ₐ[R] T := FlatTensorStageInjections.stageTriple U n
   have hJ : Function.Injective j := hInj n
-  obtain ⟨φ, hφ, hEq⟩ := transport j hJ g hg
-  exact ⟨n, φ, hφ, fun x ↦ (hEq x).trans (hFac x)⟩
+  have hJRange : Continuous (g : PrimeSpectrum j.range → A) := hg
+  obtain ⟨φ, hφ, hEq⟩ := transport (R := R) (D := D) (C := T) j hJ g hJRange
+  refine ⟨n, φ, hφ, ?_⟩
+  intro x
+  calc
+    _ = g (comap j.range.val.toRingHom x) := hEq x
+    _ = f x := hFac x
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsTriple

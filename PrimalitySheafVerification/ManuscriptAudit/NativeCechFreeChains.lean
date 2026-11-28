@@ -104,11 +104,11 @@ private theorem cone_identity (W : C) (n : ℕ) :
       (-1 : ℤ) ^ (i : ℕ) • FreeAbelianGroup.of (ULift.up (prepend f n (a ≫ face f n i))) := by
     rw [map_zsmul, cone_of]
   simp only [h]
+  have hSign (i : Fin (n + 2)) : (-1 : ℤ) ^ (i.succ : ℕ) = -((-1 : ℤ) ^ (i : ℕ)) := by
+    rw [Fin.val_succ, pow_succ, mul_neg, mul_one]
   rw [Fin.sum_univ_succ]
-  simp only [Fin.val_zero, pow_zero, one_zsmul, prepend_face_zero,
-    Fin.val_succ, pow_succ, mul_neg, mul_one, neg_smul, prepend_face_succ,
-    ← Finset.sum_neg_distrib]
-  abel
+  simp only [Fin.val_zero, pow_zero, one_zsmul, prepend_face_zero, hSign, neg_zsmul,
+    prepend_face_succ, ← Finset.sum_neg_distrib, neg_add_cancel, add_zero]
 
 /-- A cycle in any positive degree of the actual free Čech nerve
 is the boundary of its objectwise prepended chain. -/
