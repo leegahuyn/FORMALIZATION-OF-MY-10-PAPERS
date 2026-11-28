@@ -25,7 +25,7 @@ theorem maximalIdeal_eq_span_of_reduced_image (s : S)
     have he : s = (u : S) := by simpa only [h, pow_zero, mul_one] using hu
     exact hs (he.symm ▸ u.isUnit)
   have hπB : f π ∈ IsLocalRing.maximalIdeal B :=
-    IsLocalRing.map_nonunit f π hπ.not_isUnit
+    fun h ↦ hπ.not_isUnit ((isUnit_map_iff f π).mp h)
   let u' : Bˣ := Units.map f.toMonoidHom u
   have hf : f s = (f π)^n * (u' : B) := by
     rw [hu, map_mul, map_pow]

@@ -179,7 +179,11 @@ theorem exists_coboundary (U : C) (I : Sheaf J A.{v,w}) [Injective I]
       m.hom (of (ULift.up (𝟙 U)))) (bPresheaf.naturality r.op)
     change (bPresheaf.app (op W)).hom
         (FreeAbelianGroup.map (pre r.op) (of (ULift.up (𝟙 U)))) = I.obj.map r.op b at h
-    simpa only [pre, map_of_apply, Category.comp_id] using h.symm
+    have hp : pre r.op (ULift.up (𝟙 U)) = ULift.up r := by
+      change ULift.up (r ≫ 𝟙 U) = ULift.up r
+      rw [Category.comp_id]
+    rw [map_of_apply, hp] at h
+    exact h.symm
   have h := congrArg (fun m : pairs.{u,v,w} U ⟶ I.obj ↦
     (m.app (op W)).hom (of (ULift.up a, ULift.up e))) hfac
   let bMap : FreeAbelianGroup (H.{u,v,w} U (op W)) →+ I.obj.obj (op W) :=

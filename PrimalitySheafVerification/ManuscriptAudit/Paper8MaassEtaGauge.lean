@@ -63,6 +63,7 @@ theorem gaugeRatio_transform {F : ℂ → ℂ} (hLaw : OddMaassLaw F)
         (negativePhase a z / (starRingEnd ℂ) (positivePhase a z)) * gaugeRatio F z := by
       unfold gaugeRatio
       rw [hLaw g z, etaGauge_transform]
+      dsimp only [a] at h ⊢
       field_simp [etaGauge_ne_zero z, h] <;> ring
     _ = _ := by rw [negativePhase_div_conj_positivePhase]
 

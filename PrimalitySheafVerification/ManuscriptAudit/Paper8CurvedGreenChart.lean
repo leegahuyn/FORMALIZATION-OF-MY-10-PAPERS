@@ -24,13 +24,13 @@ def pullbackT (J : ℂ → ℂ) (lower : ℝ → ℝ) (Y x t : ℝ) : ℂ :=
   Complex.I * ((Y - lower x : ℝ) : ℂ) * J (point lower Y x t)
 
 def rateX (J : ℂ → ℂ) (lower : ℝ → ℝ) (Y x t : ℝ) : ℂ :=
-  -Complex.I * (deriv lower x : ℂ) * J (point lower Y x t) +
+  -Complex.I * ((deriv lower x : ℝ) : ℂ) * J (point lower Y x t) +
     Complex.I * ((Y - lower x : ℝ) : ℂ) *
       (fderiv ℝ J (point lower Y x t) 1 +
         (slope lower x t : ℂ) * fderiv ℝ J (point lower Y x t) Complex.I)
 
 def rateT (J : ℂ → ℂ) (lower : ℝ → ℝ) (Y x t : ℝ) : ℂ :=
-  -Complex.I * (deriv lower x : ℂ) * J (point lower Y x t) +
+  -Complex.I * ((deriv lower x : ℝ) : ℂ) * J (point lower Y x t) +
     (1 + Complex.I * (slope lower x t : ℂ)) *
       (((Y - lower x : ℝ) : ℂ) * fderiv ℝ J (point lower Y x t) Complex.I)
 
@@ -41,11 +41,16 @@ private theorem height_hasDerivAt_x {lower : ℝ → ℝ} {Y x t : ℝ}
   have hD : deriv lower x + t * (-deriv lower x) = slope lower x t := by
     unfold slope
     ring
-  simpa only [height, hD] using h
+  have hFun : (fun u => height lower Y u t) = lower + (fun u => t * (Y - lower u)) := by
+    funext u
+    rfl
+  rw [hFun, ← hD]
+  exact h
 
 private theorem height_hasDerivAt_t (lower : ℝ → ℝ) (Y x t : ℝ) :
     HasDerivAt (height lower Y x) (Y - lower x) t := by
-  simpa only [height, id_eq, one_mul] using
+  change HasDerivAt (fun u : ℝ => lower x + u * (Y - lower x)) (Y - lower x) t
+  simpa only [id_eq, one_mul] using
     ((hasDerivAt_id t).mul_const (Y - lower x)).const_add (lower x)
 
 private theorem point_hasDerivAt_x {lower : ℝ → ℝ} {Y x t : ℝ}
@@ -63,7 +68,7 @@ theorem pullbackT_hasDerivAt_x {J : ℂ → ℂ} {lower : ℝ → ℝ} {Y x t : 
     (hLower : DifferentiableAt ℝ lower x) (hJ : DifferentiableAt ℝ J (point lower Y x t)) :
     HasDerivAt (fun u => pullbackT J lower Y u t) (rateX J lower Y x t) x := by
   have hFactor : HasDerivAt (fun u : ℝ => Complex.I * ((Y - lower u : ℝ) : ℂ))
-      (-Complex.I * (deriv lower x : ℂ)) x := by
+      (-Complex.I * ((deriv lower x : ℝ) : ℂ)) x := by
     simpa only [Complex.ofReal_neg, mul_neg, neg_mul] using
       ((hLower.hasDerivAt.const_sub Y).ofReal_comp).const_mul Complex.I
   have hJComp := hJ.hasFDerivAt.comp_hasDerivAt x (point_hasDerivAt_x hLower)
@@ -87,7 +92,7 @@ theorem pullbackX_hasDerivAt_t {J : ℂ → ℂ} {lower : ℝ → ℝ} {Y x t : 
     (hJ : DifferentiableAt ℝ J (point lower Y x t)) :
     HasDerivAt (pullbackX J lower Y x) (rateT J lower Y x t) t := by
   have hFactor : HasDerivAt (fun u : ℝ => (1 : ℂ) + Complex.I * (slope lower x u : ℂ))
-      (-Complex.I * (deriv lower x : ℂ)) t := by
+      (-Complex.I * ((deriv lower x : ℝ) : ℂ)) t := by
     have h := (((((hasDerivAt_id t).const_sub 1).mul_const (deriv lower x)).ofReal_comp).const_mul
       Complex.I).const_add 1
     simpa only [slope, id_eq, neg_one_mul, Complex.ofReal_neg, mul_neg, neg_mul] using h

@@ -60,7 +60,7 @@ private theorem integralClass_is_point (I : Ideal (R W)) (u : (FI W)ˣ)
     exact hIM
   have hInt : (v : FI W) ≤ 1 := calc
     (v : FI W) = (↑(m⁻¹) : FI W) * (u : FI W) := rfl
-    _ ≤ (↑(m⁻¹) : FI W) * (m : FI W) := mul_left_mono hLe
+    _ ≤ (↑(m⁻¹) : FI W) * (m : FI W) := mul_right_mono hLe
     _ = 1 := by rw [← Units.val_mul, inv_mul_cancel] <;> rfl
   obtain ⟨J, hJ⟩ := le_one_iff_exists_coeIdeal.mp hInt
   have hIJmul : I = M * J := by

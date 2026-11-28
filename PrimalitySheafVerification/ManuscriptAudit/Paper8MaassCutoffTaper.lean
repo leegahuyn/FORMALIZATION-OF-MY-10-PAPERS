@@ -68,6 +68,11 @@ private theorem taper_deriv (Y t : ℝ) :
     simpa only [id_eq] using (hasDerivAt_id t).div_const Y
   simpa only [taper, Function.comp_def, div_eq_mul_inv, one_mul] using (h.comp t hDiv).deriv
 
+theorem taper_deriv_zero_below {Y t : ℝ} (hY : 0 < Y) (ht : t < Y) :
+    deriv (taper Y) t = 0 := by
+  have hLt : t / Y < 1 := (div_lt_iff₀ hY).2 (by simpa only [one_mul] using ht)
+  rw [taper_deriv, baseTaper_deriv_zero (Or.inl hLt), zero_div]
+
 theorem height_deriv_taper_uniform :
     ∃ C : ℝ, 0 ≤ C ∧ ∀ Y > 0, ∀ t : ℝ, |t * deriv (taper Y) t| ≤ C := by
   obtain ⟨C, hC, hBound⟩ := baseTaper_deriv_bounded

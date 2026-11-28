@@ -28,10 +28,14 @@ theorem unshifted_graph_iff (x y : H) :
   rw [LinearPMap.mem_graph_iff, LinearPMap.mem_graph_iff]
   constructor
   · rintro ⟨t, ht, hy⟩
+    change (t : H) = x at ht
     refine ⟨t, ht, ?_⟩
     change (realization J) t - c • (t : H) = y at hy
+    change (realization J) t = y + c • x
     rw [← ht, ← hy, sub_add_cancel]
   · rintro ⟨t, ht, hy⟩
+    change (t : H) = x at ht
+    change (realization J) t = y + c • x at hy
     refine ⟨t, ht, ?_⟩
     change (realization J) t - c • (t : H) = y
     rw [hy, ht, add_sub_cancel_right]

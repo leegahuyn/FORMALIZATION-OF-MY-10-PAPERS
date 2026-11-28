@@ -81,9 +81,12 @@ theorem arcHeight_hasDerivAt {x : ℝ} (hx : |x| ≤ 1 / 2) :
   have hL : 0 ≤ x + 1 / 2 := by linarith [(abs_le.mp hx).1]
   have hR : 0 ≤ 1 / 2 - x := sub_nonneg.mpr (abs_le.mp hx).2
   have hPos : 0 < 1 - x ^ 2 := by nlinarith [mul_nonneg hL hR]
+  have hPow : HasDerivAt (fun u : ℝ => u ^ 2) (2 * x) x := by
+    simpa [id_eq] using (hasDerivAt_id x).pow (2 : ℕ)
   have hQuad : HasDerivAt (fun u : ℝ => 1 - u ^ 2) (-2 * x) x := by
-    have h := ((hasDerivAt_id x).pow 2).const_sub 1
-    convert h using 1 <;> norm_num [id_eq] <;> ring
+    have hD : -(2 * x) = -2 * x := neg_mul _ _
+    rw [← hD]
+    exact hPow.const_sub 1
   have h := (Real.hasDerivAt_sqrt hPos.ne').comp x hQuad
   change HasDerivAt arcHeight ((1 / (2 * arcHeight x)) * (-2 * x)) x at h
   have hE : (1 / (2 * arcHeight x)) * (-2 * x) = -x / arcHeight x := by
@@ -92,7 +95,7 @@ theorem arcHeight_hasDerivAt {x : ℝ} (hx : |x| ≤ 1 / 2) :
   exact h
 
 theorem arcTangent_eq_derivative {x : ℝ} (hx : |x| ≤ 1 / 2) :
-    arcTangent x = 1 + Complex.I * (deriv arcHeight x : ℂ) := by
+    arcTangent x = 1 + Complex.I * ((deriv arcHeight x : ℝ) : ℂ) := by
   let h : ℂ := (arcHeight x : ℂ)
   have hn : h ≠ 0 := Complex.ofReal_ne_zero.mpr (arcHeight_pos hx).ne'
   have hi : -Complex.I * (h * Complex.I) = h := by

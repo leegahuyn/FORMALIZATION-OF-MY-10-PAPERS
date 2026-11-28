@@ -1,7 +1,9 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import PrimalitySheafVerification.ManuscriptAudit.AbelianCountableProductShortExact
+import PrimalitySheafVerification.ManuscriptAudit.AddCommGrpImageFactorization
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleCountableAffineRefinement
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleFiniteQuasiCompactCover
 
@@ -93,10 +95,12 @@ theorem product_locallySurjective {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n)
 
 theorem product_epi {I Q : ℕ → C X} (q : ∀ n, I n ⟶ Q n) (h : ∀ n, Epi (q n)) :
     Epi (mapProduct q) := by
+  letI : ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization A :=
+    AddCommGrpImageFactorization.functorialSurjectiveInjectiveFactorization
   have h' (n : ℕ) : Sheaf.IsLocallySurjective (q n) :=
     (Sheaf.isLocallySurjective_iff_epi' A (q n)).mpr (h n)
-  letI := product_locallySurjective q h'
-  infer_instance
+  letI : Sheaf.IsLocallySurjective (mapProduct q) := product_locallySurjective q h'
+  exact Sheaf.epi_of_isLocallySurjective (mapProduct q)
 
 end
 end ManuscriptAudit.ProetaleCountableProductEpi

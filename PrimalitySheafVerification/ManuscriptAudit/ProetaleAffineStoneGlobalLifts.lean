@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Sites.EpiMono
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAffineSingletonLift
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAffineStoneCech
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleContinuousDirectImageMaps
@@ -34,8 +35,11 @@ variable {T V : (Z (K := K)).ProEt} (f : V ⟶ T)
 
 private theorem pair_structure :
     l f.left ≫ V.hom = r f.left ≫ V.hom := by
-  rw [← f.w, ← Category.assoc, ← Category.assoc]
-  exact congrArg (· ≫ T.hom) (pullback.condition (f := f.left) (g := f.left))
+  have hw := f.w
+  change f.left ≫ T.hom = V.hom ≫ 𝟙 _ at hw
+  rw [Category.comp_id] at hw
+  simpa only [Category.assoc, hw] using
+    congrArg (· ≫ T.hom) (pullback.condition (f := f.left) (g := f.left))
 
 private theorem triple_structure :
     d₁₂ f.left ≫ (l f.left ≫ V.hom) =
@@ -52,7 +56,10 @@ private theorem from_singleton (hf : Covers (J (K := K)) f) (hs : Surjective f.l
     (x : (cokernel m).obj.obj (op T)) (y : I.obj.obj (op V))
     (hy : (cokernel.π m).hom.app (op V) y = (cokernel m).obj.map f.op x) :
     ∃ z : I.obj.obj (op T), (cokernel.π m).hom.app (op T) z = x := by
-  let p := f.left
+  let p : V.left ⟶ T.left := f.left
+  let c : T.left ⟶ Spec (CommRingCat.of K) := T.hom
+  letI : WeaklyEtale c := T.prop
+  letI : WeaklyEtale p := inferInstanceAs (WeaklyEtale f.left)
   let P : (Z (K := K)).ProEt := Scheme.ProEt.mk (l p ≫ V.hom)
   let e₀ : P ⟶ V := MorphismProperty.Over.homMk (l p) rfl
   let e₁ : P ⟶ V := MorphismProperty.Over.homMk (r p) (pair_structure f).symm
@@ -72,7 +79,8 @@ private theorem from_singleton (hf : Covers (J (K := K)) f) (hs : Surjective f.l
   have hc (z : ↥(E p)) : b' (d₁₂ p z) - b' (d₀₂ p z) + b' (d₀₁ p z) = 0 :=
     congrArg (fun v : (F (K := K) ℓ).obj.obj (op Q) ↦ (show C(↥(E p), ℤ_[ℓ]) from v.down) z)
       hC
-  obtain ⟨a, ha⟩ := ProetaleAffineStoneCech.exists_adic_primitive T.hom p ℓ hs b' hc
+  obtain ⟨a, ha⟩ := ProetaleAffineStoneCech.exists_adic_primitive
+    (X := T.left) (Y := V.left) c p ℓ hs b' hc
   let a' : (F (K := K) ℓ).obj.obj (op V) := ⟨a⟩
   apply SheafExplicitCechHOne.exists_global_lift m f e₀ e₁ hP hf x y hy a'
   rw [← hb]

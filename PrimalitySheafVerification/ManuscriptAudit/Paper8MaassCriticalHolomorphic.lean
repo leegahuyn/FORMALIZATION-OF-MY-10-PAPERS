@@ -35,19 +35,19 @@ private theorem point_vertical (x y : ℝ) :
   simpa only [complexPoint, one_mul] using
     ((realEmbedding_derivative y).mul_const Complex.I).const_add (x : ℂ)
 
-private theorem profile_horizontal {f : ℂ → ℂ} {x y : ℝ}
+theorem profile_horizontal {f : ℂ → ℂ} {x y : ℝ}
     (h : DifferentiableAt ℝ f (complexPoint x y)) :
     HasDerivAt (fun t => realProfile f t y) (partialX (realProfile f) x y) x := by
   have hd := h.hasFDerivAt.comp_hasDerivAt x (point_horizontal x y)
   exact hd.differentiableAt.hasDerivAt
 
-private theorem profile_vertical {f : ℂ → ℂ} {x y : ℝ}
+theorem profile_vertical {f : ℂ → ℂ} {x y : ℝ}
     (h : DifferentiableAt ℝ f (complexPoint x y)) :
     HasDerivAt (realProfile f x) (partialY (realProfile f) x y) y := by
   have hd := h.hasFDerivAt.comp_hasDerivAt y (point_vertical x y)
   exact hd.differentiableAt.hasDerivAt
 
-private theorem differentiableAt_complex_of_coordinates {f : ℂ → ℂ} {x y : ℝ}
+theorem differentiableAt_complex_of_coordinates {f : ℂ → ℂ} {x y : ℝ}
     (h : DifferentiableAt ℝ f (complexPoint x y))
     (hCR : partialY (realProfile f) x y = Complex.I * partialX (realProfile f) x y) :
     DifferentiableAt ℂ f (complexPoint x y) := by

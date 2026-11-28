@@ -40,7 +40,7 @@ private theorem hyperbolic_integral_to_complex {D : ℍ → ℝ≥0∞} (hD : Me
   rw [Measure.restrict_restrict' measurableEmbedding_coe.measurableSet_range,
     inter_eq_self_of_subset_left (image_subset_range _ _)] at hPush
   have hDensity : Measurable
-      (fun z : ℍ => (↑((1 / (⟨z.im, z.im_pos.le⟩ : ℝ≥0)) ^ 2) : ℝ≥0∞)) := by
+      (fun z : ℍ => (↑((1 / (⟨z.im, z.im_pos.le⟩ : ℝ≥0)) ^ 2 : ℝ≥0) : ℝ≥0∞)) := by
     have hC : Continuous (fun z : ℍ => (⟨z.im, z.im_pos.le⟩ : ℝ≥0)) :=
       UpperHalfPlane.continuous_im.subtype_mk _
     fun_prop

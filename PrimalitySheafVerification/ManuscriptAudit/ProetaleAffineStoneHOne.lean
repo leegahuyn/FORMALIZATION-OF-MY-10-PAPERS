@@ -49,6 +49,7 @@ private theorem specCover :
   exact Scheme.Hom.singleton_mem_propQCPrecoverage
     (inferInstanceAs (WeaklyEtale (structureMap A B)))
 
+include c in
 set_option maxHeartbeats 2000000 in
 private theorem lift_from_spec {I : C (A := A)} (i : F (A := A) (M := M) ⟶ I) [Mono i]
     (x : (cokernel i).obj.obj (op (terminal (spectrum A))))
@@ -78,6 +79,7 @@ private theorem lift_from_spec {I : C (A := A)} (i : F (A := A) (M := M) ⟶ I) 
   apply ContinuousMap.ext
   exact ha
 
+include c in
 set_option maxHeartbeats 2000000 in
 /-- The actual continuous finite-coefficient sheaf has zero native H¹
 on this entire affine weakly étale spectrum. -/
