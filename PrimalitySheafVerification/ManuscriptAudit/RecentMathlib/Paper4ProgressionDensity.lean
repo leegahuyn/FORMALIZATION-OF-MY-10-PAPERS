@@ -94,7 +94,8 @@ private theorem exceptional_subset {g d : ℕ} (hg : g ≠ 0) (hd : d ≠ 0) (x 
   intro p hp
   obtain ⟨hp, hDiv⟩ := Finset.mem_filter.mp hp
   have hPrime := (Finset.mem_filter.mp hp).2
-  simpa only [Finset.mem_union, Nat.mem_primeFactors, hPrime, true_and, hg, hd, and_true] using hDiv
+  exact Finset.mem_union.mpr (hDiv.imp (fun h ↦ hPrime.mem_primeFactors h hg)
+    (fun h ↦ hPrime.mem_primeFactors h hd))
 
 private theorem exceptional_over_divergent {g d : ℕ} (hg : g ≠ 0) (hd : d ≠ 0)
     (D : ℝ → ℝ) (hD : Tendsto D atTop atTop) :
@@ -123,6 +124,8 @@ theorem exceptional_relative_prime_density {g d : ℕ} (hg : g ≠ 0) (hd : d �
   filter_upwards [eventually_gt_atTop (1 : ℝ)] with x hx
   have hScale : x / Real.log x ≠ 0 :=
     div_ne_zero (zero_lt_one.trans hx).ne' (Real.log_pos hx).ne'
+  change (((exceptionalPrimeCutoff g d x).card : ℝ) / (x / Real.log x)) /
+    ((((primeCutoff x) \ ∅).card : ℝ) / (x / Real.log x)) = _
   rw [Finset.sdiff_empty, div_div_div_cancel_right₀ hScale]
 
 /-- Exact progression density after imposing the gcd and discriminant prime conditions. -/
