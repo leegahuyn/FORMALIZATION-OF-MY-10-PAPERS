@@ -39,9 +39,9 @@ private theorem exists_lift (b : B) : ∃ (X : Stage A B) (x : X.carrier), X.toC
   obtain ⟨x, hx⟩ := h (ULift.up ())
   exact ⟨Stage.of A B g, x, hx⟩
 
+include hApprox in
 /-- Equal chart values of two stage elements become equal at a
 common actual étale stage. -/
-include hApprox in
 theorem exists_equal_stage (X Y : Stage A B) (x : X.carrier) (y : Y.carrier)
     (h : X.toChart x = Y.toChart y) :
     ∃ (Z : Stage A B) (f : X ⟶ Z) (g : Y ⟶ Z), hom f x = hom g y := by

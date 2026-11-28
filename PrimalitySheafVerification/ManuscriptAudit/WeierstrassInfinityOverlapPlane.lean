@@ -44,10 +44,10 @@ def evalYZ : YZChartRing (K := K) →+* ZOverlap W :=
   fractionEvaluation K (evalZ W).toRingHom (yz (K := K)) (zInv W) (evalYZ_mul_inv W)
 
 def zToYZ : standardZChartRing K →+* YZChartRing (K := K) :=
-  awayMap (grading K) (X_mem_one K 2) (show yz (K := K) = z K * y K from mul_comm _ _)
+  awayMap (grading K) (X_mem_one K 1) (show yz (K := K) = z K * y K from mul_comm _ _)
 
 def yToYZ : YChartRing K →+* YZChartRing (K := K) :=
-  awayMap (grading K) (X_mem_one K 1) (show yz (K := K) = y K * z K from rfl)
+  awayMap (grading K) (X_mem_one K 2) (show yz (K := K) = y K * z K from rfl)
 
 private theorem affine_eval_localized_mk (n : ℕ) (p : PlaneRing K)
     (hp : p ∈ grading K (n • 1)) :
@@ -84,6 +84,7 @@ private theorem scaled_eval (n : ℕ) (p : PlaneRing K) (hp : p ∈ grading K n)
   change _ = ((toZChart W).comp (MvPolynomial.aeval (WeierstrassInfinityChartImmersion.values W))) p
   rw [MvPolynomial.comp_aeval]
 
+set_option maxHeartbeats 1000000 in
 theorem evalYZ_on_z :
     (evalYZ W).comp (zToYZ (K := K)) =
       (localizeAffine W).toRingHom.comp (WeierstrassProjectiveClosure.chartEvaluation W) := by
@@ -100,6 +101,7 @@ theorem evalYZ_on_z :
   change evalZ W (p * y K ^ n) * zInv W ^ n = evalZ W p
   rw [map_mul, map_pow, evalZ_y, mul_assoc, ← mul_pow, zy_mul_zInv, one_pow, mul_one]
 
+set_option maxHeartbeats 1000000 in
 theorem evalYZ_on_y :
     (evalYZ W).comp (yToYZ (K := K)) =
       (toZChart W).toRingHom.comp (WeierstrassInfinityChartImmersion.chartEvaluation W) := by

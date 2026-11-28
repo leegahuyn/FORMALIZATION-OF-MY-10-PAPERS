@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+import Mathlib.Algebra.DirectSum.Module
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.PicardGroup
@@ -29,7 +30,7 @@ theorem invertible_ideal_rational_fiber {R : Type u} [CommRing R] [Algebra K R]
     (Module.Invertible.free_iff_linearEquiv (R := F) (M := V)).mp inferInstance
   let eR : (I ⧸ (P • (⊤ : Submodule R I))) ≃ₗ[R] F :=
     (TensorProduct.quotTensorEquivQuotSMul I P).symm.trans (h.some.restrictScalars R)
-  exact (((eR.restrictScalars K).trans e.toLinearEquiv).finrank_eq).trans Module.finrank_self
+  exact (((eR.restrictScalars K).trans e.toLinearEquiv).finrank_eq).trans (Module.finrank_self K)
 
 /-- Multiplying an invertible ideal by a rational maximal ideal increases
 the ground-field dimension of the quotient by exactly one. -/
@@ -53,11 +54,11 @@ theorem quotient_degree_mul_rational {R : Type u} [CommRing R] [Algebra K R]
     · rintro ⟨x, rfl⟩
       change f (Q.mkQ x.val) = 0
       rw [show f (Q.mkQ x.val) = I.mkQ x.val from rfl]
-      exact Submodule.Quotient.mk_eq_zero.mpr x.property
+      exact (Submodule.Quotient.mk_eq_zero I).mpr x.property
     · intro ha
       obtain ⟨x, rfl⟩ := Q.mkQ_surjective a
       have hx : I.mkQ x = 0 := ha
-      exact ⟨⟨x, Submodule.Quotient.mk_eq_zero.mp hx⟩, rfl⟩
+      exact ⟨⟨x, (Submodule.Quotient.mk_eq_zero I).mp hx⟩, rfl⟩
   let eKer : (I ⧸ (P • (⊤ : Submodule R I))) ≃ₗ[R] f.ker := by
     rw [← hgKer]
     exact g.quotKerEquivRange.trans (LinearEquiv.ofEq _ _ hExact)
@@ -84,7 +85,10 @@ theorem nonzero_quotient_finite (I : Ideal W.CoordinateRing) (hI : I ≠ ⊥) :
   let e := Ideal.quotientEquivDirectSum K b hI
   letI (i : Fin 2) : Module.Finite K (K[X] ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set K[X])) :=
     PowerBasis.finite (AdjoinRoot.powerBasis (I.smithCoeffs_ne_zero b hI i))
-  exact Module.Finite.of_surjective e.symm.toLinearMap e.symm.surjective
+  let M (i : Fin 2) := K[X] ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set K[X])
+  let e' := DirectSum.linearEquivFunOnFintype K (Fin 2) M
+  let E := e.trans e'
+  exact Module.Finite.of_surjective E.symm.toLinearMap E.symm.surjective
 
 end
 

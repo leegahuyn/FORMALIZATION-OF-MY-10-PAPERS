@@ -13,41 +13,50 @@ open ProetaleAdicReductionAllDegrees
 
 noncomputable section
 
-set_option synthInstance.maxHeartbeats 160000
+section Quotient
+
+variable {G H : Type*} [AddCommGroup G] [AddCommGroup H]
+  (d : G →+ G) (c : G →+ H) (h : c.ker = d.range)
+
+private def quotientInclusion : (G ⧸ d.range) →+ H :=
+  QuotientAddGroup.lift _ c h.symm.le
+
+private theorem quotientInclusion_injective :
+    Function.Injective (quotientInclusion d c h) :=
+  (QuotientAddGroup.injective_lift_iff _ c _).2 h.symm
+
+private theorem quotientInclusion_range : (quotientInclusion d c h).range = c.range := by
+  ext a
+  constructor
+  · rintro ⟨v, hv⟩
+    obtain ⟨u, rfl⟩ := QuotientAddGroup.mk'_surjective d.range v
+    exact ⟨u, hv⟩
+  · rintro ⟨u, hu⟩
+    exact ⟨QuotientAddGroup.mk' d.range u, hu⟩
+
+end Quotient
+
 set_option maxHeartbeats 1000000
-set_option maxRecDepth 4000
-set_option backward.defeqAttrib.useBackward true
-set_option backward.isDefEq.respectTransparency false
 
 variable (X : Scheme.{0}) (ℓ : ℕ) [Fact ℓ.Prime] (d : ℕ)
 
 abbrev firstDerivedLimit := Tuples X ℓ d ⧸ (differenceTuples X ℓ d).range
 
-/-- The genuine connecting map descends to the actual countable cokernel. -/
-def inclusion : firstDerivedLimit X ℓ d →+ X.EllAdicCohomology ℓ (d+2) :=
-  QuotientAddGroup.lift _ (connecting X ℓ d) ((connecting_kernel X ℓ d).symm.le)
+/-- The genuine connecting map on the actual quotient of product coordinates. -/
+abbrev inclusion :=
+  quotientInclusion (differenceTuples X ℓ d) (connecting X ℓ d) (connecting_kernel X ℓ d)
 
-theorem inclusion_injective : Function.Injective (inclusion X ℓ d) :=
-  (QuotientAddGroup.injective_lift_iff _ (connecting X ℓ d) _).2 (connecting_kernel X ℓ d).symm
-
-theorem inclusion_range :
-    (inclusion X ℓ d).range = (reductionMap X ℓ (d+2)).ker := by
-  rw [← connecting_range X ℓ d]
-  ext a
-  constructor
-  · rintro ⟨v, hv⟩
-    obtain ⟨u, rfl⟩ := QuotientAddGroup.mk'_surjective (differenceTuples X ℓ d).range v
-    exact ⟨u, hv⟩
-  · rintro ⟨u, hu⟩
-    exact ⟨QuotientAddGroup.mk' (differenceTuples X ℓ d).range u, hu⟩
-
-/-- The native reduction sits in an actual short exact sequence with the countable
-cokernel of the preceding positive-degree tower. -/
+/-- The native reduction forms a short exact sequence with the quotient of the
+preceding positive-degree product by the consecutive difference. -/
 theorem exact_sequence :
     Function.Injective (inclusion X ℓ d) ∧
     (inclusion X ℓ d).range = (reductionMap X ℓ (d+2)).ker ∧
-    Function.Surjective (reductionMap X ℓ (d+2)) :=
-  ⟨inclusion_injective X ℓ d, inclusion_range X ℓ d,
+    Function.Surjective (reductionMap X ℓ (d+2)) := by
+  let D := differenceTuples X ℓ d
+  let c := connecting X ℓ d
+  let h := connecting_kernel X ℓ d
+  exact ⟨quotientInclusion_injective D c h,
+    (quotientInclusion_range D c h).trans (connecting_range X ℓ d),
     ProetaleAdicMilnorPositive.reduction_surjective X ℓ (d+1)⟩
 
 end

@@ -131,7 +131,7 @@ private theorem pairing_injective (ht : IsCocycle A B t) :
     (tensorPairing_bijective A B t ht).1 (by
       rw [tensorPairing_tmul, tensorPairing_tmul, h])
   have hz : (1 : B) ⊗ₜ[A] (x - y) = 0 := by
-    rw [TensorProduct.tmul_sub, he, sub_self]
+    exact (TensorProduct.tmul_sub (R := A) (1 : B) x y).trans (sub_eq_zero.mpr he)
   exact sub_eq_zero.mp ((Module.FaithfullyFlat.one_tmul_eq_zero_iff
     (R := A) (M := PairingDomain A B t) (A := B) (m := x - y)).mp hz)
 

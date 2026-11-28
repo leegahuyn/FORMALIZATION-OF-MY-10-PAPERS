@@ -30,54 +30,66 @@ def tensorCofan : BinaryCofan (U (R := R) S) (U (R := R) T) :=
     (includeLeft : S →ₐ[R] S ⊗[R] T).toUnder
     (includeRight : T →ₐ[R] S ⊗[R] T).toUnder
 
-private def algebraDesc (s : BinaryCofan (U (R := R) S) (U (R := R) T)) :
-    S ⊗[R] T →ₐ[R] s.pt :=
-  lift (CommRingCat.toAlgHom s.inl) (CommRingCat.toAlgHom s.inr)
-    (fun _ _ ↦ Commute.all _ _)
+private abbrev rL : CommRingCat.of S ⟶ CommRingCat.of (S ⊗[R] T) :=
+  CommRingCat.ofHom (includeLeftRingHom : S →+* S ⊗[R] T)
 
-private def underDesc (s : BinaryCofan (U (R := R) S) (U (R := R) T)) : (tensorCofan (R := R) S T).pt ⟶ s.pt :=
-  Under.homMk (CommRingCat.ofHom (algebraDesc (R := R) S T s).toRingHom) (by
-    apply CommRingCat.hom_ext
-    exact RingHom.ext fun r ↦ (algebraDesc (R := R) S T s).commutes r)
+private abbrev rR : CommRingCat.of T ⟶ CommRingCat.of (S ⊗[R] T) :=
+  CommRingCat.ofHom ((includeRight : T →ₐ[R] S ⊗[R] T).toRingHom)
 
-set_option maxHeartbeats 2500000 in
+private theorem isPushout :
+    IsPushout (U (R := R) S).hom (U (R := R) T).hom (rL (R := R) S T) (rR (R := R) S T) :=
+  CommRingCat.isPushout_tensorProduct R S T
+
+private def ringDesc (s : BinaryCofan (U (R := R) S) (U (R := R) T)) :
+    CommRingCat.of (S ⊗[R] T) ⟶ s.pt.right :=
+  (isPushout (R := R) S T).desc s.inl.right s.inr.right
+    ((Under.w s.inl).trans (Under.w s.inr).symm)
+
+private theorem ringDesc_left (s : BinaryCofan (U (R := R) S) (U (R := R) T)) :
+    rL (R := R) S T ≫ ringDesc (R := R) S T s = s.inl.right :=
+  (isPushout (R := R) S T).inl_desc _ _ _
+
+private theorem ringDesc_right (s : BinaryCofan (U (R := R) S) (U (R := R) T)) :
+    rR (R := R) S T ≫ ringDesc (R := R) S T s = s.inr.right :=
+  (isPushout (R := R) S T).inr_desc _ _ _
+
+private def underDesc (s : BinaryCofan (U (R := R) S) (U (R := R) T)) :
+    (tensorCofan (R := R) S T).pt ⟶ s.pt :=
+  Under.homMk (ringDesc (R := R) S T s) (by
+    have hl : (U (R := R) S).hom ≫ rL (R := R) S T = (tensorCofan (R := R) S T).pt.hom :=
+      Under.w (tensorCofan (R := R) S T).inl
+    calc
+      _ = ((U (R := R) S).hom ≫ rL (R := R) S T) ≫ ringDesc (R := R) S T s :=
+        congrArg (fun m ↦ m ≫ ringDesc (R := R) S T s) hl.symm
+      _ = (U (R := R) S).hom ≫ s.inl.right := by
+        rw [Category.assoc, ringDesc_left]
+      _ = _ := Under.w s.inl)
+
+set_option maxHeartbeats 3500000 in
 /-- The actual tensor product is the coproduct in algebras over R. -/
 def tensorIsColimit : IsColimit (tensorCofan (R := R) S T) :=
   BinaryCofan.isColimitMk (underDesc (R := R) S T)
     (fun s ↦ by
-      apply CommRingCat.mkUnder_ext (R := R)
-      intro x
-      change (algebraDesc (R := R) S T s) (includeLeft x) = CommRingCat.toAlgHom s.inl x
-      exact DFunLike.congr_fun (lift_comp_includeLeft _ _ _) x)
+      apply (Under.forget R).map_injective
+      exact ringDesc_left (R := R) S T s)
     (fun s ↦ by
-      apply CommRingCat.mkUnder_ext (R := R)
-      intro x
-      change (algebraDesc (R := R) S T s) (includeRight x) = CommRingCat.toAlgHom s.inr x
-      exact DFunLike.congr_fun (lift_comp_includeRight' _ _ _) x)
+      apply (Under.forget R).map_injective
+      exact ringDesc_right (R := R) S T s)
     (fun s m hL hR ↦ by
-      have hm : CommRingCat.toAlgHom m = algebraDesc (R := R) S T s := by
-        apply Algebra.TensorProduct.ext
-        · ext x
-          change m.right (includeLeft x) = (algebraDesc (R := R) S T s) (includeLeft x)
-          calc
-            _ = s.inl.right x := congrArg (fun f ↦ f.right x) hL
-            _ = _ := (DFunLike.congr_fun (lift_comp_includeLeft _ _ _) x).symm
-        · ext x
-          change m.right (includeRight x) = (algebraDesc (R := R) S T s) (includeRight x)
-          calc
-            _ = s.inr.right x := congrArg (fun f ↦ f.right x) hR
-            _ = _ := (DFunLike.congr_fun (lift_comp_includeRight' _ _ _) x).symm
-      apply CommRingCat.mkUnder_ext (R := R)
-      intro x
-      exact DFunLike.congr_fun hm x)
+      apply (Under.forget R).map_injective
+      change m.right = ringDesc (R := R) S T s
+      apply (isPushout (R := R) S T).hom_ext
+      · have h : rL (R := R) S T ≫ m.right = s.inl.right :=
+          congrArg (Under.forget R).map hL
+        exact h.trans (ringDesc_left (R := R) S T s).symm
+      · have h : rR (R := R) S T ≫ m.right = s.inr.right :=
+          congrArg (Under.forget R).map hR
+        exact h.trans (ringDesc_right (R := R) S T s).symm)
 
 /-- The canonical coproduct in algebras is isomorphic to the actual tensor. -/
-def tensorIso [HasBinaryCoproduct (U (R := R) S) (U (R := R) T)] : (tensorCofan (R := R) S T).pt ≅ U (R := R) S ⨿ U (R := R) T :=
-  (tensorIsColimit (R := R) S T).coconePointUniqueUpToIso (BinaryCofan.isColimitMk
-    (fun s ↦ coprod.desc s.inl s.inr) (fun s ↦ coprod.inl_desc _ _)
-    (fun s ↦ coprod.inr_desc _ _) (fun s m hm₁ hm₂ ↦
-      coprod.hom_ext (hm₁.trans (coprod.inl_desc _ _).symm)
-        (hm₂.trans (coprod.inr_desc _ _).symm)))
+def tensorIso [HasBinaryCoproduct (U (R := R) S) (U (R := R) T)] :
+    (tensorCofan (R := R) S T).pt ≅ U (R := R) S ⨿ U (R := R) T :=
+  (tensorIsColimit (R := R) S T).coconePointUniqueUpToIso (colimit.isColimit _)
 
 end
 end ManuscriptAudit.AffineStageTensorCoproduct

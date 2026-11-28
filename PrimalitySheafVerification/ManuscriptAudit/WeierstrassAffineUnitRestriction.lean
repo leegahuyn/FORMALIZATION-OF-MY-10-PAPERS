@@ -44,7 +44,7 @@ theorem global_to_affine_surjective :
     ((unitEquivZero U (((F W).cohomologyPresheaf 0).map (openArrow (affineOpen W)).op x)).toMul :
       Γ(U.left, ⊤)) = ((E c).toMul : W.CoordinateRing)
   have hSec : (sectionIso eU).hom = (Scheme.ΓSpecIso (A W)).hom := by
-    change (𝟙 (Spec (A W))).appTop ≫ (Scheme.ΓSpecIso (A W)).hom = _
+    change Scheme.Hom.appTop (𝟙 (Spec (A W))) ≫ (Scheme.ΓSpecIso (A W)).hom = _
     rw [Scheme.Hom.id_appTop, Category.id_comp]
   rw [hSec, unitEquivZero_natural]
   have he : unitEquivZero T x = Additive.ofMul v := e.apply_symm_apply _

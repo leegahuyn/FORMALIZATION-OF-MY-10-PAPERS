@@ -70,7 +70,7 @@ theorem exists_stage (g : model K L →ₐ[R K] B) (hg : Function.Injective g)
     apply (hU q).mpr
     constructor
     · have h₁ : (1 : D) ∉ q.asIdeal :=
-        fun h ↦ q.isPrime.ne_top (Ideal.eq_top_iff_one.mpr h)
+        fun h ↦ q.isPrime.ne_top ((q.asIdeal.eq_top_iff_one).mpr h)
       obtain ⟨s, hs, _, hEt⟩ :=
         FlatUnramifiedEtaleNeighborhood.exists_etale_away A D q.asIdeal 1 h₁
       exact (Algebra.basicOpen_subset_etaleLocus_iff_etale.mpr hEt)

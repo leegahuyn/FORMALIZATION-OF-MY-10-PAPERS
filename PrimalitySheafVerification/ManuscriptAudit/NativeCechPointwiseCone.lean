@@ -77,10 +77,13 @@ theorem prepend_face_zero (n : ℕ) (a : W ⟶ N f n) :
     prepend f n a ≫ face f n 0 = a := by
   apply WidePullback.hom_ext
   · intro i
+    change Fin (n + 1) at i
+    change (prepend f n a ≫ face f n 0) ≫ vertex f n i = a ≫ vertex f n i
     rw [Category.assoc, face_vertex]
     change prepend f n a ≫ vertex f (n + 1) i.succ = a ≫ vertex f n i
     exact prepend_vertex_succ f n a i
-  · rw [Category.assoc, face_base, prepend_base]
+  · change (prepend f n a ≫ face f n 0) ≫ base f n = a ≫ base f n
+    rw [Category.assoc, face_base, prepend_base]
 
 set_option maxHeartbeats 2600000 in
 /-- Removing any later vertex commutes with prepending the anchor
@@ -90,17 +93,24 @@ theorem prepend_face_succ (n : ℕ) (i : Fin (n + 2)) (a : W ⟶ N f (n + 1)) :
       prepend f n (a ≫ face f n i) := by
   apply WidePullback.hom_ext
   · intro k
+    change Fin (n + 2) at k
     refine Fin.cases ?_ (fun j ↦ ?_) k
-    · rw [Category.assoc, face_vertex]
+    · change (prepend f (n + 1) a ≫ face f (n + 1) i.succ) ≫ vertex f (n + 1) 0 =
+        prepend f n (a ≫ face f n i) ≫ vertex f (n + 1) 0
+      rw [Category.assoc, face_vertex]
       change prepend f (n + 1) a ≫ vertex f (n + 2) (i.succ.succAbove 0) =
         prepend f n (a ≫ face f n i) ≫ vertex f (n + 1) 0
       rw [Fin.succ_succAbove_zero, prepend_vertex_zero, prepend_vertex_zero, anchor_face]
-    · rw [Category.assoc, face_vertex]
+    · change (prepend f (n + 1) a ≫ face f (n + 1) i.succ) ≫ vertex f (n + 1) j.succ =
+        prepend f n (a ≫ face f n i) ≫ vertex f (n + 1) j.succ
+      rw [Category.assoc, face_vertex]
       change prepend f (n + 1) a ≫ vertex f (n + 2) (i.succ.succAbove j.succ) =
         prepend f n (a ≫ face f n i) ≫ vertex f (n + 1) j.succ
       rw [Fin.succ_succAbove_succ, prepend_vertex_succ, prepend_vertex_succ,
         Category.assoc, face_vertex] <;> rfl
-  · rw [Category.assoc, face_base, prepend_base, prepend_base, Category.assoc, face_base]
+  · change (prepend f (n + 1) a ≫ face f (n + 1) i.succ) ≫ base f (n + 1) =
+      prepend f n (a ≫ face f n i) ≫ base f (n + 1)
+    rw [Category.assoc, face_base, prepend_base, prepend_base, Category.assoc, face_base]
 
 end
 end ManuscriptAudit.NativeCechPointwiseCone

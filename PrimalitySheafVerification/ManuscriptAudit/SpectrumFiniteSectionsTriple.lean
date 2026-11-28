@@ -45,25 +45,11 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     (f : PrimeSpectrum T → A) (hF : Continuous f) :
     ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
       ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x := by
-  obtain ⟨n, g, hg, h⟩ := factor_triple_image U hMono hCover f hF
-  let j := FlatTensorStageInjections.stageTriple U n
-  let e : ((U n ⊗[R] U n) ⊗[R] U n) ≃ₐ[R] images U n :=
-    AlgEquiv.ofInjective j (hInj n)
-  let r : images U n →+* ((U n ⊗[R] U n) ⊗[R] U n) := e.toRingEquiv.symm.toRingHom
-  have hr (y : images U n) : j (r y) = y.val :=
-    congrArg Subtype.val (e.apply_symm_apply y)
-  let φ : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) ≃ₜ PrimeSpectrum (images U n) :=
-    PrimeSpectrum.homeomorphOfRingEquiv e.toRingEquiv
-  refine ⟨n, g ∘ φ, hg.comp φ.continuous, ?_⟩
-  intro x
-  have hx : comap r (comap j.toRingHom x) = comap (images U n).val.toRingHom x := by
-    apply PrimeSpectrum.ext
-    ext a
-    change j (r a) ∈ x.asIdeal ↔ a.val ∈ x.asIdeal
-    rw [hr]
-  change g (comap r (comap j.toRingHom x)) = f x
-  rw [hx]
-  exact h x
+  exact SpectrumFiniteSectionsInStageImages.factor_of_injective_stage_maps
+    (fun n ↦ (U n ⊗[R] U n) ⊗[R] U n)
+    (FlatTensorStageInjections.stageTriple U) hInj
+    (TensorTripleIncreasingUnion.range_mono U hMono)
+    (TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover) f hF
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsTriple

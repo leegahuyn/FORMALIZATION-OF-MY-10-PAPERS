@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic

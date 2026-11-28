@@ -64,8 +64,9 @@ def comparison : Stage A B ⥤ Index (A := A) (B := B) where
     apply CostructuredArrow.hom_ext _ _
     apply Quiver.Hom.unop_inj
     apply (Scheme.AffineEtale.Spec (X (A := A))).map_injective
-    change (Scheme.AffineEtale.Spec (X (A := A))).map (affineMap (𝟙 T)) = _
-    rw [affineMap_spec, Functor.map_id]
+    change (Scheme.AffineEtale.Spec (X (A := A))).map (affineMap (𝟙 T)) =
+      (Scheme.AffineEtale.Spec (X (A := A))).map (𝟙 (affineObject T))
+    rw [affineMap_spec, CategoryTheory.Functor.map_id]
     apply MorphismProperty.Over.Hom.ext
     exact Spec.map_id _
   map_comp f g := by
@@ -76,7 +77,9 @@ def comparison : Stage A B ⥤ Index (A := A) (B := B) where
       (Scheme.AffineEtale.Spec (X (A := A))).map (affineMap g ≫ affineMap f)
     rw [affineMap_spec, Functor.map_comp, affineMap_spec, affineMap_spec]
     apply MorphismProperty.Over.Hom.ext
-    exact Spec.map_comp _ _
+    change Spec.map (CommRingCat.ofHom ((hom g).comp (hom f)).toRingHom) =
+      specMap A (hom g) ≫ specMap A (hom f)
+    rw [← Spec.map_comp] <;> rfl
 
 set_option maxHeartbeats 2700000 in
 instance : (comparison (A := A) (B := B)).Faithful where
@@ -149,6 +152,8 @@ instance : (comparison (A := A) (B := B)).EssSurj where
       change chartArrow T ≫ (inclusion (X (A := A))).map (S.map j.hom) = f
       rwa [hj]
     exact ⟨T, ⟨(CostructuredArrow.isoMk e' h).symm⟩⟩
+
+instance : (comparison (A := A) (B := B)).IsEquivalence where
 
 /-- The literal affine étale stage diagram is the actual geometric
 pointwise Kan extension comma category. -/

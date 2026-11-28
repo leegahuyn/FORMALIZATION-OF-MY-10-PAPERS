@@ -39,12 +39,14 @@ theorem matrixMoebius_im (g : SL(2, ℝ)) (z : ℍ) (hc : g 1 0 ≠ 0) :
   have hNorm : Complex.normSq ((g 1 0 : ℂ) * (z : ℂ) + (g 1 1 : ℂ)) =
       g 1 0 ^ 2 * ((z.re + g 1 1 / g 1 0) ^ 2 + z.im ^ 2) := by
     simp only [Complex.normSq_apply, Complex.add_re, Complex.mul_re, Complex.add_im,
-      Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, zero_mul, add_zero, sub_zero]
+      Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, zero_mul, add_zero, sub_zero,
+      UpperHalfPlane.coe_re, UpperHalfPlane.coe_im]
     field_simp [hc] <;> ring
   change ((g • z : ℍ) : ℂ).im = _
   rw [hAct, matrixMoebius, Complex.div_im, hNorm]
   simp only [Complex.add_im, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, zero_mul,
-    add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div]
+    add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div,
+    UpperHalfPlane.coe_re, UpperHalfPlane.coe_im]
   congr 1
   linear_combination z.im * hDet
 
@@ -87,8 +89,7 @@ private theorem translated_quad_le (x y a : ℝ) (hy : 0 < y)
     linarith
   have hSq : (|(n : ℝ)| + 1) ^ 2 ≤ (|u| + B) ^ 2 := by
     gcongr
-    dsimp only [B]
-    linarith
+    linarith [show B = |x| + 2 from rfl]
   have hSquare : (|u| + B) ^ 2 ≤ 2 * u ^ 2 + 2 * B ^ 2 := by
     nlinarith [sq_nonneg (|u| - B), sq_abs u]
   have hY : K * y ^ 2 = 2 * y ^ 2 + 2 * B ^ 2 := by

@@ -77,7 +77,9 @@ theorem mapAlgebra_bijective (p : R) (hp : Prime p) :
   have h : (Pic.mapAlgebra R S : Pic R → Pic S) = E := by
     funext x
     have hx := equivPic_map (Submonoid.powers p) S hM ((ClassGroup.equivPic R).symm x)
-    simpa only [MulEquiv.apply_symm_apply] using hx
+    simpa only [E, MulEquiv.trans_apply, DedekindPrimeLocalization.classEquiv,
+      MulEquiv.ofBijective_apply, DedekindPrimeLocalization.classMap,
+      MulEquiv.apply_symm_apply] using hx
   rw [h]
   exact E.bijective
 

@@ -80,27 +80,29 @@ theorem isDedekindDomain_of_maximal_units
     (hMax : ∀ M : Ideal R, M.IsMaximal → IsUnit (M : FI (R := R) (K := K))) :
     IsDedekindDomain R := by
   let F := FI (R := R) (K := K)
-  apply isDedekindDomain_iff_isDedekindDomainInv.mpr
-  apply (isDedekindDomainInv_iff (K := K)).mpr
-  intro I hI
-  have hDen : algebraMap R K I.den ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.property
-  let a : (F)ˣ := toPrincipalIdeal R K (Units.mk0 (algebraMap R K I.den) hDen)
-  have h : (a : F) * I = (I.num : F) := by
-    rw [show (a : F) = spanSingleton R⁰ (algebraMap R K I.den) from coe_toPrincipalIdeal _]
-    exact den_mul_self_eq_num' R⁰ K I
-  have hn : I.num ≠ ⊥ := by
-    intro hz
-    have hZero : (a : F) * I = 0 := by simpa [hz] using h
-    apply hI
-    calc
-      I = (↑(a⁻¹) : F) * ((a : F) * I) := by rw [← mul_assoc, Units.inv_mul, one_mul]
-      _ = 0 := by rw [hZero, mul_zero]
-  have hu := integral_unit hMax I.num hn
-  apply (FractionalIdeal.mul_inv_cancel_iff_isUnit K).mpr
-  rw [← h] at hu
-  have hv : IsUnit ((↑(a⁻¹) : F) * ((a : F) * I)) := (a⁻¹).isUnit.mul hu
-  simpa only [← mul_assoc, Units.inv_mul, one_mul] using hv
+  have hInv : ∀ I : F, I ≠ ⊥ → I * I⁻¹ = 1 := by
+    intro I hI
+    have hDen : algebraMap R K I.den ≠ 0 :=
+      IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.property
+    let a : (F)ˣ := toPrincipalIdeal R K (Units.mk0 (algebraMap R K I.den) hDen)
+    have h : (a : F) * I = (I.num : F) := by
+      rw [show (a : F) = spanSingleton R⁰ (algebraMap R K I.den) from coe_toPrincipalIdeal _]
+      exact den_mul_self_eq_num' R⁰ K I
+    have hn : I.num ≠ ⊥ := by
+      intro hz
+      have hZero : (a : F) * I = 0 := by simpa [hz] using h
+      apply hI
+      calc
+        I = (↑(a⁻¹) : F) * ((a : F) * I) := by rw [← mul_assoc, Units.inv_mul, one_mul]
+        _ = 0 := by rw [hZero, mul_zero]
+    have hu := integral_unit hMax I.num hn
+    apply (FractionalIdeal.mul_inv_cancel_iff_isUnit K).mpr
+    rw [← h] at hu
+    have hv : IsUnit ((↑(a⁻¹) : F) * ((a : F) * I)) := (a⁻¹).isUnit.mul hu
+    simpa only [← mul_assoc, Units.inv_mul, one_mul] using hv
+  first
+  | exact (isDedekindDomain_iff_mul_inv_cancel (A := R) (K := K)).mpr hInv
+  | exact isDedekindDomain_iff_isDedekindDomainInv.mpr ((isDedekindDomainInv_iff (K := K)).mpr hInv)
 
 end
 

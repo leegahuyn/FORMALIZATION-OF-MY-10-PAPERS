@@ -43,8 +43,9 @@ private def leftCocone (s : Cocone (diagram F G)) : Cocone F where
         intro i j f
         change F.map f ≫ (coprod.inl ≫ s.ι.app j) = (coprod.inl ≫ s.ι.app i) ≫ 𝟙 s.pt
         have h := congrArg (fun m ↦ coprod.inl ≫ m) (s.w f)
-        rw [Category.comp_id]
-        simpa only [diagram, Category.assoc, coprod.inl_map_assoc] using h }
+        have h' : F.map f ≫ (coprod.inl ≫ s.ι.app j) = coprod.inl ≫ s.ι.app i := by
+          simpa only [diagram, Category.assoc, coprod.inl_map_assoc] using h
+        exact h'.trans (Category.comp_id _).symm }
 
 private def rightCocone (s : Cocone (diagram F G)) : Cocone G where
   pt := s.pt
@@ -54,8 +55,9 @@ private def rightCocone (s : Cocone (diagram F G)) : Cocone G where
         intro i j f
         change G.map f ≫ (coprod.inr ≫ s.ι.app j) = (coprod.inr ≫ s.ι.app i) ≫ 𝟙 s.pt
         have h := congrArg (fun m ↦ coprod.inr ≫ m) (s.w f)
-        rw [Category.comp_id]
-        simpa only [diagram, Category.assoc, coprod.inr_map_assoc] using h }
+        have h' : G.map f ≫ (coprod.inr ≫ s.ι.app j) = coprod.inr ≫ s.ι.app i := by
+          simpa only [diagram, Category.assoc, coprod.inr_map_assoc] using h
+        exact h'.trans (Category.comp_id _).symm }
 
 set_option maxHeartbeats 2400000 in
 /-- The coproduct of the two colimits is the colimit of the actual

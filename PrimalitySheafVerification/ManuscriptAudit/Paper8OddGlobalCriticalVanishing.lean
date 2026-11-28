@@ -45,7 +45,9 @@ private theorem levelFourOpenCells_isOpen : IsOpen (cosetCells Γ₄ ModularGrou
       exact ⟨g⁻¹ • z, hz, smul_inv_smul g z⟩
   change IsOpen (translate g ModularGroup.fdo)
   rw [h]
-  exact ModularGroup.isOpen_fdo.preimage (continuous_const_smul (g⁻¹ : GL (Fin 2) ℝ))
+  apply ModularGroup.isOpen_fdo.preimage
+  change Continuous (fun z : ℍ => Matrix.SpecialLinearGroup.mapGL ℝ (g⁻¹) • z)
+  exact continuous_const_smul _
 
 private theorem actualVolume_isOpenPosMeasure : (volume : Measure ℍ).IsOpenPosMeasure := by
   let μ : Measure ℍ := (volume : Measure ℂ).comap UpperHalfPlane.coe
@@ -57,9 +59,9 @@ private theorem actualVolume_isOpenPosMeasure : (volume : Measure ℍ).IsOpenPos
       measurable_coe_nnreal_real_iff.mp UpperHalfPlane.continuous_im.measurable
     exact ((measurable_const.div hIm).pow_const 2).coe_nnreal_ennreal
   have hD (z : ℍ) : D z ≠ 0 := by
-    have hIm : (NNReal.mk z.im z.im_pos.le : ℝ≥0) ≠ 0 := by
-      exact_mod_cast z.im_ne_zero
-    simp [D, hIm]
+    have hIm : (NNReal.mk z.im z.im_pos.le : ℝ≥0) ≠ 0 := fun h =>
+      z.im_ne_zero (congrArg (fun x : ℝ≥0 => (x : ℝ)) h)
+    exact ENNReal.coe_ne_zero.mpr (pow_ne_zero 2 (div_ne_zero one_ne_zero hIm))
   have hVol : (volume : Measure ℍ) = μ.withDensity D := UpperHalfPlane.volume_def
   apply Measure.AbsolutelyContinuous.isOpenPosMeasure (μ := μ)
   rw [hVol]
@@ -101,10 +103,10 @@ theorem raisingField_ae_zero_on_cells {G : ℂ → ℂ}
         linarith) hGc
     have hInt : Integrable ((U n).indicator Q) μ :=
       hInt'.mono' ((hQ.indicator (hU n)).aestronglyMeasurable) (Eventually.of_forall (fun z => by
-        have h : 0 ≤ (U n).indicator Q z := indicator_nonneg (fun _ => sq_nonneg _) _
+        have h : 0 ≤ (U n).indicator Q z := indicator_nonneg (fun _ _ => sq_nonneg _) _
         simpa only [Real.norm_eq_abs, abs_of_nonneg h] using hPoint n n le_rfl z))
     have hNN : 0 ≤ᵐ[μ] (U n).indicator Q :=
-      Eventually.of_forall (fun z => indicator_nonneg (fun _ => sq_nonneg _) _)
+      Eventually.of_forall (fun z => indicator_nonneg (fun _ _ => sq_nonneg _) _)
     have hLe : (∫ z, (U n).indicator Q z ∂μ) ≤ 0 := by
       apply le_of_tendsto hLim
       filter_upwards [eventually_ge_atTop n] with m hm
