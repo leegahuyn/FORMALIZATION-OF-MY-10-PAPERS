@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.ClassGroup.Basic
+import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-! A Noetherian domain whose maximal ideals are invertible is Dedekind. -/
@@ -79,7 +80,8 @@ theorem isDedekindDomain_of_maximal_units
     (hMax : ∀ M : Ideal R, M.IsMaximal → IsUnit (M : FI (R := R) (K := K))) :
     IsDedekindDomain R := by
   let F := FI (R := R) (K := K)
-  apply (isDedekindDomain_iff_mul_inv_cancel (K := K)).mpr
+  apply isDedekindDomain_iff_isDedekindDomainInv.mpr
+  apply (isDedekindDomainInv_iff (K := K)).mpr
   intro I hI
   have hDen : algebraMap R K I.den ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.property

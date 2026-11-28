@@ -26,7 +26,7 @@ private abbrev X := spectrum A
 private abbrev G := AddCommGrpCat.{u + 1}
 
 private instance (T : Stage A B) : Etale (structureMap A T.carrier) :=
-  (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
+  (HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
     ((RingHom.etale_algebraMap).mpr inferInstance)
 
 /-- The genuine small étale object corresponding to a stage. -/
@@ -94,7 +94,10 @@ def sectionCocone : Cocone (sectionDiagram (B := B) I) := by
   change I.obj.map (etaleMap f).op ≫
       (η.app (op (etaleObject U)) ≫ F.obj.map (chartArrow U).op) =
     (η.app (op (etaleObject T)) ≫ F.obj.map (chartArrow T).op) ≫ 𝟙 _
-  rw [Category.comp_id, ← Category.assoc, η.naturality, Category.assoc]
+  have hη := η.naturality (etaleMap f).op
+  change I.obj.map (etaleMap f).op ≫ η.app (op (etaleObject U)) =
+    η.app (op (etaleObject T)) ≫ F.obj.map (L.map (etaleMap f)).op at hη
+  rw [Category.comp_id, ← Category.assoc, hη, Category.assoc]
   change η.app (op (etaleObject T)) ≫
       (F.obj.map (L.map (etaleMap f)).op ≫ F.obj.map (chartArrow U).op) =
     η.app (op (etaleObject T)) ≫ F.obj.map (chartArrow T).op

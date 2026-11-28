@@ -46,8 +46,8 @@ private theorem homSections_precompose {U V : X.Etale} (f : U ⟶ V)
   let a := adj X
   change yonedaEquiv ((a.homEquiv (yoneda.obj U) F) (_ ≫ h)) =
     F.obj.map f.op (yonedaEquiv ((a.homEquiv (yoneda.obj V) F) h))
-  rw [a.homEquiv_naturality_left (yoneda.map f)]
-  exact (yonedaEquiv_naturality _ f).symm
+  have hA := a.homEquiv_naturality_left (yoneda.map f) h
+  exact (congrArg (fun g => yonedaEquiv g) hA).trans (yonedaEquiv_naturality _ f).symm
 
 private def generator (U : X.Etale) :
     ((freeEtaleRepresentable X).obj U).obj.obj (op U) :=
@@ -56,7 +56,7 @@ private def generator (U : X.Etale) :
 private theorem homSections_apply (U : X.Etale) (F : Sheaf X.smallEtaleTopology A.{u})
     (f : (freeEtaleRepresentable X).obj U ⟶ F) :
     homSections U F f = f.hom.app (op U) (generator U) := by
-  simpa only [Category.id_comp] using homSections_postcompose U (𝟙 _) f
+  simpa only [Category.id_comp, generator] using homSections_postcompose U (𝟙 _) f
 
 /-- The zero-degree native Ext definition evaluates the sheaf at the object. -/
 def equivZero (F : Sheaf X.smallEtaleTopology A.{u}) (U : X.Etale) :
@@ -78,10 +78,8 @@ theorem equivZero_natural (F : Sheaf X.smallEtaleTopology A.{u}) {U V : X.Etale}
       (freeEtaleRepresentable X).map f ≫ Ext.addEquiv₀ x := by
     apply (Ext.mk₀_bijective _ _).injective
     rw [Ext.mk₀_addEquiv₀_apply, ← Ext.mk₀_comp_mk₀, Ext.mk₀_addEquiv₀_apply] <;> rfl
-  change homSections U F (Ext.addEquiv₀ ((F.cohomologyPresheaf 0).map f.op x)) =
-    F.obj.map f.op (homSections V F (Ext.addEquiv₀ x))
-  rw [h]
-  exact homSections_precompose f _
+  have h' := congrArg (homSections U F) h
+  exact h'.trans (homSections_precompose f (Ext.addEquiv₀ x))
 
 /-- At a small étale object the actual units give the zero-degree cohomology value. -/
 def unitEquivZero {X : Scheme.{0}} (U : X.Etale) :

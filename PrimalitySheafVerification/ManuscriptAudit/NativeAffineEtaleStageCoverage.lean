@@ -41,7 +41,7 @@ theorem exists_stage (U : (spectrum A).Etale) [IsAffine U.left]
     change Etale (e.inv ≫ U.hom)
     infer_instance
   letI : Algebra.Etale A C := RingHom.etale_algebraMap.mp
-    ((HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A C))).mp hEt)
+    ((HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A C))).mp hEt)
   let w := f.left ≫ e.hom
   let ψ : C ⟶ CommRingCat.of B := Spec.preimage w
   have hψ : Spec.map ψ = w := Spec.map_preimage w

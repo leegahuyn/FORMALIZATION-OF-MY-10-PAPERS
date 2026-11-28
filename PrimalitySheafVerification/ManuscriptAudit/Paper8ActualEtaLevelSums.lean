@@ -37,9 +37,9 @@ def actualLevelSum (N : ℕ) {D : ℕ} (hD : 0 < D) : ℂ := by
 theorem actualLevelSum_eq (N : ℕ) {D : ℕ} (hD : 0 < D) :
     actualLevelSum N hD = levelSum N hD := by
   classical
+  letI := actualNormalizedFintype hD
   unfold actualLevelSum levelSum
-  refine Fintype.sum_equiv (Equiv.refl (NormalizedRow D)) _ _ (fun A => ?_)
-  simp only [Equiv.refl_apply, actualZeroModeEntry_eq hD]
+  exact Finset.sum_congr rfl (fun A _ => by rw [actualZeroModeEntry_eq hD])
 
 theorem actualLevelSum_eq_reference (N : ℕ) {D : ℕ} (hD : 0 < D) :
     actualLevelSum N hD = if N ∣ D then etaPhase * referenceZeroSum D else 0 := by

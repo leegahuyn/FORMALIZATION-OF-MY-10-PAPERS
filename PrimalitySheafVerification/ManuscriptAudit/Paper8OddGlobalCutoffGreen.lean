@@ -107,8 +107,10 @@ theorem integral_oddCutoffFlux_zero {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ} (
     (cutoffFlux_contDiffOn hY hF hG hAdj)
     (cutoffFlux_zero_above (by linarith) F G)
     (cutoffFlux_slash Y hLaw (fun _ hw => contDiffOn_to_differentiableAt hF hw) hRaise)
-  change ((-1 : SL(2, ℤ)) 1 0) % (4 : ℤ) = 0
-  norm_num [Matrix.neg_apply, Matrix.one_apply]
+  change ((((-1 : SL(2, ℤ)).1 1 0 : ℤ) : ZMod 4) = 0)
+  have hz : (-1 : SL(2, ℤ)).1 1 0 = 0 := by
+    simp [Matrix.SpecialLinearGroup.coe_neg, Matrix.neg_apply, Matrix.one_apply]
+  rw [hz, Int.cast_zero]
 
 def cutoffEnergy (Y : ℝ) (G : ℂ → ℂ) (z : ℍ) : ℝ := (modularCutoff Y z * ‖G z‖) ^ 2
 
@@ -148,7 +150,10 @@ theorem integral_odd_cutoff_energy {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ} (h
   have hChi : Continuous (modularCutoff Y) := by
     have h := (modularCutoff_real_smooth hY).continuousOn.comp_continuous UpperHalfPlane.continuous_coe
       (fun z => z.im_pos)
-    simpa only [ofComplex_coe] using h
+    have hEq : (fun w : ℂ => modularCutoff Y (ofComplex w)) ∘
+        ((↑) : ℍ → ℂ) = modularCutoff Y :=
+      funext fun z => congrArg (modularCutoff Y) (ofComplex_coe z)
+    rwa [hEq] at h
   have hGc : Continuous (fun z : ℍ => G z) := by
     have h : ContinuousOn G {w : ℂ | 0 < w.im} :=
       (show DifferentiableOn ℝ G {w : ℂ | 0 < w.im} from
@@ -164,10 +169,13 @@ theorem integral_odd_cutoff_energy {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ} (h
       (cutoffFlux_zero_above (by linarith) F G)
   have hInt : (∫ z in S, weightedCurl J z) = 0 := integral_oddCutoffFlux_zero hY hLaw hF hG hRaise hAdj
   calc
-    _ = ((↑(∫ z in S, A z) : ℂ)).re := by simp
+    _ = ((↑(∫ z in S, A z) : ℂ)).re := (Complex.ofReal_re _).symm
     _ = (∫ z in S, (A z : ℂ)).re := by rw [integral_complex_ofReal]
     _ = (∫ z in S, weightedCurl J z + (A z : ℂ)).re := by rw [integral_add hCurl hAc, hInt, zero_add]
-    _ = _ := congrArg Complex.re (integral_congr_ae (Eventually.of_forall (fun z => by rw [hPoint]; ring)))
+    _ = _ := congrArg Complex.re (integral_congr_ae (Eventually.of_forall (fun z => by
+      change weightedCurl J z + (A z : ℂ) = E z
+      rw [hPoint]
+      ring)))
 
 end
 end ManuscriptAudit.Paper8OddGlobalCutoffGreen

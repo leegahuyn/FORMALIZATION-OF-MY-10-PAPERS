@@ -11,6 +11,9 @@ open CategoryTheory CategoryTheory.Limits
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 variable {J C : Type*} [Category* J] [Category* C] [HasBinaryCoproducts C]
 variable {F G : J ⥤ C}
 
@@ -38,6 +41,7 @@ private def leftCocone (s : Cocone (diagram F G)) : Cocone F where
     { app := fun j ↦ coprod.inl ≫ s.ι.app j
       naturality := by
         intro i j f
+        change F.map f ≫ (coprod.inl ≫ s.ι.app j) = (coprod.inl ≫ s.ι.app i) ≫ 𝟙 s.pt
         have h := congrArg (fun m ↦ coprod.inl ≫ m) (s.w f)
         simpa only [diagram, Category.assoc, coprod.inl_map_assoc, Category.comp_id] using h }
 
@@ -47,6 +51,7 @@ private def rightCocone (s : Cocone (diagram F G)) : Cocone G where
     { app := fun j ↦ coprod.inr ≫ s.ι.app j
       naturality := by
         intro i j f
+        change G.map f ≫ (coprod.inr ≫ s.ι.app j) = (coprod.inr ≫ s.ι.app i) ≫ 𝟙 s.pt
         have h := congrArg (fun m ↦ coprod.inr ≫ m) (s.w f)
         simpa only [diagram, Category.assoc, coprod.inr_map_assoc, Category.comp_id] using h }
 
@@ -64,14 +69,15 @@ def isColimit {cF : Cocone F} {cG : Cocone G} (hF : IsColimit cF) (hG : IsColimi
     · simpa only [cocone, Category.assoc, coprod.inr_map_assoc, coprod.inr_desc, rightCocone]
         using hG.fac (rightCocone s) j
   uniq s m hm := by
+    change cF.pt ⨿ cG.pt ⟶ s.pt at m
     apply coprod.hom_ext
-    · rw [coprod.inl_desc]
+    · simp only [cocone, coprod.inl_desc]
       apply hF.hom_ext
       intro j
       rw [hF.fac]
       have h := congrArg (fun k ↦ coprod.inl ≫ k) (hm j)
       simpa only [cocone, Category.assoc, coprod.inl_map_assoc, leftCocone] using h
-    · rw [coprod.inr_desc]
+    · simp only [cocone, coprod.inr_desc]
       apply hG.hom_ext
       intro j
       rw [hG.fac]

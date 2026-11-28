@@ -9,6 +9,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaLevelZeroMode
 namespace ManuscriptAudit.Paper8OddCrossDoubleCosets
 
 open Matrix Paper8EtaDedekindTranslation Paper8OddCrossCuspNormalization Paper8EtaCuspWidths
+open Paper8OddCrossCuspPhase
 open Paper8EtaLevelZeroMode (translation_mem_level)
 open scoped MatrixGroups
 
@@ -58,16 +59,16 @@ def normalizeCrossRow {D : ℕ} (hD : 0 < D) (g : SL(2, ℤ)) (hC : g 1 0 = (D :
   let n : ℤ := -(g 1 1 / (4 * c))
   have hc : 0 < c := by dsimp only [c]; exact_mod_cast hD
   have hc4 : 0 < 4 * c := by positivity
-  obtain ⟨ha, hc', hd⟩ := crossShift_entries g m n
+  have hE := crossShift_entries g m n
   have hA : crossShift g m n 0 0 = g 0 0 % c := by
-    rw [ha, hC, Int.emod_def]
+    rw [hE.1, hC, Int.emod_def]
     dsimp only [m, c]
     ring
   have hB : crossShift g m n 1 1 = g 1 1 % (4 * c) := by
-    rw [hd, hC, Int.emod_def]
+    rw [hE.2.2, hC, Int.emod_def]
     dsimp only [n, c]
     ring
-  refine ⟨crossShift g m n, hc'.trans hC, ?_, ?_, ?_, ?_, crossShift_atLevel hLevel m n⟩
+  refine ⟨crossShift g m n, hE.2.1.trans hC, ?_, ?_, ?_, ?_, crossShift_atLevel hLevel m n⟩
   · rw [hA]
     exact Int.emod_nonneg _ hc.ne'
   · rw [hA]
@@ -76,6 +77,19 @@ def normalizeCrossRow {D : ℕ} (hD : 0 < D) (g : SL(2, ℤ)) (hC : g 1 0 = (D :
     exact Int.emod_nonneg _ hc4.ne'
   · rw [hB]
     exact Int.emod_lt_of_pos _ hc4
+
+theorem normalizeCrossRow_matrix {D : ℕ} (hD : 0 < D) (g : SL(2, ℤ)) (hC : g 1 0 = (D : ℤ))
+    (hLevel : g * ModularGroup.S⁻¹ ∈ CongruenceSubgroup.Gamma0 4) :
+    (normalizeCrossRow hD g hC hLevel).matrix =
+      crossShift g (-(g 0 0 / (D : ℤ))) (-(g 1 1 / (4 * (D : ℤ)))) := rfl
+
+theorem crossEntry_crossShift {D : ℕ} (hD : 0 < D) (g : SL(2, ℤ)) (hC : g 1 0 = (D : ℤ)) (m n : ℤ) :
+    crossEntry D (crossShift g m n 0 0) (crossShift g m n 1 1) =
+      crossEntry D (g 0 0) (g 1 1) := by
+  have hE := crossShift_entries g m n
+  rw [hE.1, hE.2.2, hC, translated_crossEntry_eq hD]
+  simpa only [mul_zero, add_zero] using
+    (translated_crossEntry_eq hD (g 0 0) (g 1 1) 0).symm
 
 theorem normalizedCross_shift_unique {D : ℕ} (hD : 0 < D) (A B : CrossRow D) (m n : ℤ)
     (h : crossShift A.matrix m n = B.matrix) : m = 0 ∧ n = 0 ∧ A = B := by
@@ -119,6 +133,7 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [
       ``ManuscriptAudit.Paper8OddCrossDoubleCosets.normalizeCrossRow,
+      ``ManuscriptAudit.Paper8OddCrossDoubleCosets.crossEntry_crossShift,
       ``ManuscriptAudit.Paper8OddCrossDoubleCosets.normalizedCross_shift_unique] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x

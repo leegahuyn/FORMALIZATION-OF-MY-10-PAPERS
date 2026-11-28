@@ -36,7 +36,7 @@ theorem exists_refinement
       ∃ (q : C →ₐ[A] Q) (l : Q →ₐ[A] B), l.comp q = k ∧ ∀ i, q (z i) = 0 := by
   classical
   letI : Etale (structureMap A C) :=
-    (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A C))).mpr
+    (HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A C))).mpr
       ((RingHom.etale_algebraMap).mpr inferInstance)
   letI : WeaklyEtale (structureMap A C) := inferInstance
   let J := commonAnnihilator z

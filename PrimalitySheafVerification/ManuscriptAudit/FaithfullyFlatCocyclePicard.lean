@@ -121,47 +121,23 @@ private theorem tensorPairing_bijective (ht : IsCocycle A B t) :
   rw [he]
   exact r.symm.bijective.comp e.bijective
 
-private theorem pairing_injective_of_tensor
-    (hf : Function.Injective (tensorPairing A B t)) : Function.Injective (pairing A B t) := by
-  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
-  let before : Unit →ₗ[A] PairingDomain A B t := 0
-  have hTensor : Function.Exact (before.lTensor B) (g.lTensor B) := by
-    change Function.Exact ((0 : Unit →ₗ[A] PairingDomain A B t).lTensor B) (tensorPairing A B t)
-    rw [LinearMap.lTensor_zero]
-    intro z
-    constructor
-    · intro hz
-      exact ⟨0, (hf (hz.trans (map_zero (tensorPairing A B t)).symm)).symm⟩
-    · rintro ⟨y, rfl⟩
-      simp
-  have hBase : Function.Exact before g :=
-    Module.FaithfullyFlat.lTensor_reflects_exact A B before g hTensor
-  intro x y hxy
-  change g x = g y at hxy
-  have hz : g (x - y) = 0 := by rw [map_sub, hxy, sub_self]
-  obtain ⟨z, hz'⟩ := (hBase (x - y)).mp hz
-  exact sub_eq_zero.mp (hz'.symm.trans (show before z = 0 by rfl))
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+private theorem reflect_tensor_bijective (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] [Module.FaithfullyFlat R S] {M N : Type u}
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) :
+    Function.Bijective (f.lTensor S) → Function.Bijective f :=
+  (Module.FaithfullyFlat.lTensor_bijective_iff_bijective R S f).mp
 
-private theorem pairing_surjective_of_tensor
-    (hf : Function.Surjective (tensorPairing A B t)) : Function.Surjective (pairing A B t) := by
-  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
-  let after : A →ₗ[A] Unit := 0
-  have hTensor : Function.Exact (g.lTensor B) (after.lTensor B) := by
-    change Function.Exact (tensorPairing A B t) ((0 : A →ₗ[A] Unit).lTensor B)
-    rw [LinearMap.lTensor_zero]
-    intro z
-    constructor
-    · intro _
-      exact hf z
-    · intro _
-      rfl
-  have hBase : Function.Exact g after :=
-    Module.FaithfullyFlat.lTensor_reflects_exact A B g after hTensor
-  exact fun y => (hBase y).mp (show after y = 0 by rfl)
-
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 600000 in
 theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
-  have h := tensorPairing_bijective A B t ht
-  exact ⟨pairing_injective_of_tensor A B t h.1, pairing_surjective_of_tensor A B t h.2⟩
+  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
+  have h : Function.Bijective (g.lTensor B) := by
+    change Function.Bijective (tensorPairing A B t)
+    exact tensorPairing_bijective A B t ht
+  exact reflect_tensor_bijective (M := PairingDomain A B t) (N := A) A B g h
 
 /-- A genuine faithfully flat unit cocycle determines an invertible module. -/
 theorem invariants_invertible (ht : IsCocycle A B t) :

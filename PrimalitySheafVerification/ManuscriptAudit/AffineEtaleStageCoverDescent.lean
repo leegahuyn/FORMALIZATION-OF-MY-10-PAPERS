@@ -35,7 +35,7 @@ theorem exists_surjective_refinement (hApprox : FiniteTupleApproximation A B)
         Function.Surjective (pullback.fst (specMap A q) (structureMap C E)) := by
   classical
   let f := structureMap C E
-  letI : Etale f := (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap C E))).mpr
+  letI : Etale f := (HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap C E))).mpr
     ((RingHom.etale_algebraMap).mpr inferInstance)
   let Z : Set (PrimeSpectrum C) := (Set.range f)ᶜ
   have hZ : IsClosed Z := by

@@ -38,13 +38,13 @@ private theorem difference_comp_projection (n : ℕ) :
   rw [← (lift X).map_comp, ProetaleAdicProductKernel.difference_π,
     (lift X).map_sub, (lift X).map_comp]
 
-private theorem inclusion_comp_projection (n : ℕ) :
+theorem inclusion_comp_projection (n : ℕ) :
     (Q X ℓ).f ≫ projection X ℓ n = r X ℓ n := by
   change (lift X).map (ProetaleAdicProductKernel.inclusion X ℓ) ≫
       (lift X).map (Pi.π (residueSheaf X ℓ) n) = _
   rw [← (lift X).map_comp, ProetaleAdicProductKernel.inclusion_π]
 
-private theorem coordinate_difference (z : Sheaf.H (Q X ℓ).X₂ (d+1)) (n : ℕ) :
+theorem coordinate_difference (z : Sheaf.H (Q X ℓ).X₂ (d+1)) (n : ℕ) :
     coordinates X ℓ d (Sheaf.H.map (Q X ℓ).g (d+1) z) n =
       coordinates X ℓ d z n - nativeStep X ℓ (d+1) n (coordinates X ℓ d z (n+1)) := by
   let p := projection X ℓ n

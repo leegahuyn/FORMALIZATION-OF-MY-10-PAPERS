@@ -42,7 +42,8 @@ private theorem restriction_injective : Function.Injective (restriction W).hom :
       j.app U ((projectiveScheme W).presheaf.map i.op 0)
     simp only [map_zero]
     rw [← ConcreteCategory.comp_apply, j.naturality]
-    simp [hs]
+    change (j.app ⊤).hom s = 0 at hs
+    rw [hs, map_zero]
   exact (Scheme.ΓSpecIso (A W)).commRingCatIsoToRingEquiv.injective.comp hj
 
 /-- Constants in the actual global functions of the projective scheme. -/

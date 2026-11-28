@@ -63,12 +63,12 @@ theorem complexCurl_flux_full {F G : ℂ → ℂ} {x y : ℝ} (hy : 0 < y)
   have hC0 : C a ≠ 0 := by rw [hA]; exact mul_ne_zero hQ hEta0
   have hDY : D * Y = Q := by
     have h := height_power_shift hy 1
-    simpa only [show (1 / 4 : ℝ) - (1 : ℕ) = -(3 / 4 : ℝ) by norm_num, Nat.cast_one,
-      pow_one, D, Y, Q] using h
+    rw [show (1 / 4 : ℝ) - ((1 : ℕ) : ℝ) = -(3 / 4 : ℝ) by norm_num] at h
+    simpa only [pow_one, D, Y, Q] using h
   have hEY : E * Y ^ 2 = Q := by
     have h := height_power_shift hy 2
-    simpa only [show (1 / 4 : ℝ) - (2 : ℕ) = -(7 / 4 : ℝ) by norm_num, Nat.cast_ofNat,
-      E, Y, Q] using h
+    rw [show (1 / 4 : ℝ) - ((2 : ℕ) : ℝ) = -(7 / 4 : ℝ) by norm_num] at h
+    simpa only [E, Y, Q] using h
   have hGformula : G w = 2 * Complex.I * Y * a * d :=
     hRaise.trans (raising_eq_gauge_derivativeZ x y hy hF)
   have hConjG : C (G w) = -(2 * Complex.I * Y * C a * C d) := by
@@ -85,6 +85,8 @@ theorem complexCurl_flux_full {F G : ℂ → ℂ} {x y : ℝ} (hy : 0 < y)
       simpa only [C, Complex.ofReal_pow] using Complex.conj_mul' (G w)
     simp only [Complex.ofReal_div, Complex.ofReal_pow]
     rw [← hNorm, hConjG]
+    change 2 * Complex.I * C d * (C a / Y * G w) =
+      -(-(2 * Complex.I * Y * C a * C d) * G w / Y ^ 2)
     field_simp [hY] <;> ring
   have hAdj : C (B w) * complexCurl H w = C (F w) * K / Y ^ 2 := by
     have hFactor : (ModularForm.eta w * E) / C a = 1 / Y ^ 2 := by

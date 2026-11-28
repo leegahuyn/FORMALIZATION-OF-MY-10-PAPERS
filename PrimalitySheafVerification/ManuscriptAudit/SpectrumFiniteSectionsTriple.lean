@@ -11,12 +11,15 @@ open scoped TensorProduct
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 variable {R B A : Type*} [CommRing R] [CommRing B] [Algebra R B]
   [Fintype A] [TopologicalSpace A] [DiscreteTopology A]
 
 local notation "T" => ((B ⊗[R] B) ⊗[R] B)
 
-def images (U : ℕ → Subalgebra R B) : ℕ → Subalgebra R T :=
+abbrev images (U : ℕ → Subalgebra R B) : ℕ → Subalgebra R T :=
   fun n => (FlatTensorStageInjections.stageTriple U n).range
 
 set_option maxHeartbeats 550000 in
@@ -49,7 +52,8 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
   let r : images U n →+* ((U n ⊗[R] U n) ⊗[R] U n) := e.symm.toRingHom
   have hr (y : images U n) : j (r y) = y.val :=
     congrArg Subtype.val (e.apply_symm_apply y)
-  have hcont : Continuous (comap r) := PrimeSpectrum.continuous_comap r
+  have hcont : Continuous (comap r) :=
+    PrimeSpectrum.continuous_comap (R := ↥(images U n)) (S := (U n ⊗[R] U n) ⊗[R] U n) r
   refine ⟨n, g ∘ comap r, hg.comp hcont, ?_⟩
   intro x
   have hx : comap r (comap j.toRingHom x) = comap (images U n).val.toRingHom x := by

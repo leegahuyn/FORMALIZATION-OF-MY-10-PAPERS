@@ -34,7 +34,7 @@ theorem level_smul_val (d n : ℕ) (a : ℤ_[ℓ]) (x : Level X ℓ d n) :
   calc
     _ = ((PadicInt.toZModPow n a).val : ZMod (ℓ^n)) • x :=
       congrArg (fun r : ZMod (ℓ^n) => r • x) (ZMod.natCast_zmod_val _).symm
-    _ = _ := Nat.cast_smul_eq_nsmul _ _
+    _ = _ := Nat.cast_smul_eq_nsmul (ZMod (ℓ^n)) (PadicInt.toZModPow n a).val x
 
 /-- The actual finite transition maps commute with the adic scalar actions. -/
 theorem step_smul (d n : ℕ) (r : ℤ_[ℓ]) (x : Level X ℓ d (n+1)) :

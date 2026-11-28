@@ -49,10 +49,12 @@ theorem count_comparison (Q V M : D → ℝ) (a b E : ℝ) (ha₀ : 0 ≤ a) (ha
     have hV := (neg_le_abs (V u)).trans (bound u)
     have hP := hW u hu
     have hQ : (1-a) * Q u < (E+b) * M u := by nlinarith only [hV, hP]
-    apply (mul_lt_mul_left₀ hm).mp
-    calc
-      _ < (E+b) * M u := hQ
-      _ = _ := by field_simp [hm.ne'] <;> ring
+    by_contra hNot
+    have hReverse : (E+b) * M u ≤ (1-a) * Q u := by
+      calc
+        _ = (1-a) * (((E+b)/(1-a)) * M u) := by field_simp [hm.ne'] <;> ring
+        _ ≤ _ := mul_le_mul_of_nonneg_left (le_of_not_gt hNot) hm.le
+    exact (not_le_of_gt hQ) hReverse
 
 end ManuscriptAudit.Paper10RelativeRayleighCount
 

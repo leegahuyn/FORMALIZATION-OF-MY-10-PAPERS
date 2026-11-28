@@ -75,7 +75,8 @@ theorem analyticCrossEntry_eq {D : ℕ} (hD : 0 < D) (A : CrossRow D) (z : ℍ) 
 
 @[instance_reducible] def analyticCrossFintype {D : ℕ} (hD : 0 < D) (hOdd : Odd D) :
     Fintype (CrossRow D) :=
-  Fintype.ofEquiv (ReducedResidue D) ((rowsEquiv hD).symm.trans (crossRowsEquiv hD hOdd))
+  letI := Fintype.ofEquiv (ReducedResidue D) (rowsEquiv hD).symm
+  Fintype.ofEquiv (NormalizedRow D) (crossRowsEquiv hD hOdd)
 
 theorem crossSum_eq_analytic {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (z : ℍ) :
     letI := analyticCrossFintype hD hOdd
@@ -83,8 +84,7 @@ theorem crossSum_eq_analytic {D : ℕ} (hD : 0 < D) (hOdd : Odd D) (z : ℍ) :
   letI := analyticCrossFintype hD hOdd
   unfold crossSum
   rw [dif_pos hOdd]
-  refine Fintype.sum_equiv (Equiv.refl (CrossRow D)) _ _ (fun A => ?_)
-  exact (analyticCrossEntry_eq hD A z).symm
+  exact Finset.sum_congr rfl (fun A _ => (analyticCrossEntry_eq hD A z).symm)
 
 end
 end ManuscriptAudit.Paper8OddCrossCuspActualMultiplier

@@ -31,7 +31,7 @@ abbrev affineInclusion : (X (A := A)).AffineEtale ⥤ (X (A := A)).ProEt :=
   Scheme.AffineEtale.Spec (X (A := A)) ⋙ inclusion (X (A := A))
 
 private instance (T : Stage A B) : Etale (structureMap A T.carrier) :=
-  (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
+  (HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
     ((RingHom.etale_algebraMap).mpr inferInstance)
 
 private abbrev affineObject (T : Stage A B) : (X (A := A)).AffineEtale :=
@@ -154,6 +154,19 @@ instance : (comparison (A := A) (B := B)).EssSurj where
 pointwise Kan extension comma category. -/
 def equivalence : Stage A B ≌ Index (A := A) (B := B) :=
   (comparison (A := A) (B := B)).asEquivalence
+
+/-- The geometric comma equivalence preserves the stage targets on the
+actual small étale site. -/
+def etaleDiagramIso :
+    (comparison (A := A) (B := B)) ⋙
+      CostructuredArrow.proj (affineInclusion (A := A)).op
+        (op (ProetaleAffineTensor.object A B)) ⋙ (Scheme.AffineEtale.Spec (X (A := A))).op ≅
+      NativeAffineEtaleStageSections.etaleDiagram (A := A) (B := B) :=
+  NatIso.ofComponents (fun T ↦ Iso.refl (op (etaleObject T))) (by
+    intro T U f
+    change ((Scheme.AffineEtale.Spec (X (A := A))).map (affineMap f)).op ≫ 𝟙 _ =
+      𝟙 _ ≫ (etaleMap f).op
+    rw [Category.comp_id, Category.id_comp, affineMap_spec])
 
 end
 end ManuscriptAudit.NativeAffineEtaleStageComma

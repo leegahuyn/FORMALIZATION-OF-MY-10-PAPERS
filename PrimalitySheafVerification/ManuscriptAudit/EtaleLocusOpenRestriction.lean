@@ -57,7 +57,7 @@ theorem etale (U : (ProetaleAffineTensor.spectrum D).Opens)
         ProetaleAffineTensor.specMap_structureMap A (IsScalarTower.toAlgHom A D L)
       change Etale (j ≫ U.ι ≫ structureMap A D)
       rw [← Category.assoc, hj, he]
-      exact (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A L))).mpr
+      exact (HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A L))).mpr
         ((RingHom.etale_algebraMap).mpr hEt)
   choose V j hJ hCov hEt using hh
   let O : U.toScheme.OpenCover :=

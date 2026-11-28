@@ -42,15 +42,17 @@ def idealTensorEquiv (I : Ideal R) :
 /-- The genuine Picard and class-group arrows commute with their canonical
 comparison isomorphisms for a localization of Dedekind domains. -/
 theorem equivPic_map (hM : M ≤ R⁰) (c : ClassGroup R) :
+    letI : Module.IsTorsionFree R S := Module.isTorsionFree_iff_algebraMap_injective.mpr (IsLocalization.injective S hM)
     Pic.mapAlgebra R S (ClassGroup.equivPic R c) =
-      ClassGroup.equivPic S (ClassGroup.map (algebraMap R S) (IsLocalization.injective S hM) c) := by
+      ClassGroup.equivPic S (ClassGroup.extendedHom R S c) := by
+  letI : Module.IsTorsionFree R S := Module.isTorsionFree_iff_algebraMap_injective.mpr (IsLocalization.injective S hM)
   obtain ⟨I, rfl⟩ := ClassGroup.mk0_surjective c
   let J : (Ideal S)⁰ := ⟨I.val.map (algebraMap R S),
     mem_nonZeroDivisors_iff_ne_zero.mpr
       ((Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective S hM)).not.mpr
         (mem_nonZeroDivisors_iff_ne_zero.mp I.property))⟩
-  have h : ClassGroup.map (algebraMap R S) (IsLocalization.injective S hM) (ClassGroup.mk0 I) =
-      ClassGroup.mk0 J := ClassGroup.map_mk0 _ _ _
+  have h : ClassGroup.extendedHom R S (ClassGroup.mk0 I) =
+      ClassGroup.mk0 J := ClassGroup.extendedHom_mk0 R S I
   rw [h]
   apply Pic.ext_iff.mpr
   let P := ClassGroup.equivPic R (ClassGroup.mk0 I)

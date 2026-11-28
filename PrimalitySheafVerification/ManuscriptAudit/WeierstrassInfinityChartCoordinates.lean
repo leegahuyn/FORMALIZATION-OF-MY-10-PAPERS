@@ -34,18 +34,26 @@ def infinityEquation (u v : L) : L :=
 
 theorem eval_affineEquation (x y : L) :
     W.polynomial.eval₂ (Polynomial.aeval (R := K) x).toRingHom y = affineEquation W x y := by
+  let f := (Polynomial.aeval (R := K) x).toRingHom
+  have hX : f X = x := Polynomial.aeval_X x
+  have hC (a : K) : f (C a) = algebraMap K L a := Polynomial.aeval_C _ _
+  change W.polynomial.eval₂ f y = affineEquation W x y
   simp only [WeierstrassCurve.Affine.polynomial, affineEquation, Polynomial.eval₂_add,
     Polynomial.eval₂_sub, Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_C,
-    Polynomial.eval₂_X, AlgHom.coe_toRingHom, map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
+    Polynomial.eval₂_X, map_add, map_mul, map_pow, hC, hX]
   ring
 
 theorem eval_infinityEquation (u v : L) :
     (WeierstrassInfinityChartAlgebra.equation W).eval₂ (Polynomial.aeval (R := K) u).toRingHom v =
       infinityEquation W u v := by
+  let f := (Polynomial.aeval (R := K) u).toRingHom
+  have hX : f X = u := Polynomial.aeval_X u
+  have hC (a : K) : f (C a) = algebraMap K L a := Polynomial.aeval_C _ _
+  change (WeierstrassInfinityChartAlgebra.equation W).eval₂ f v = infinityEquation W u v
   simp only [WeierstrassInfinityChartAlgebra.equation, WeierstrassInfinityChartAlgebra.bracketPolynomial,
     infinityEquation, Polynomial.eval₂_one, Polynomial.eval₂_add, Polynomial.eval₂_sub,
     Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_C, Polynomial.eval₂_X,
-    AlgHom.coe_toRingHom, map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
+    map_add, map_mul, map_pow, hC, hX]
   ring
 
 private theorem affine_constant (a : K) :

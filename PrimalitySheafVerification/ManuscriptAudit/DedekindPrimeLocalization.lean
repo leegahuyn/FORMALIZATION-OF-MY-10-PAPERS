@@ -97,10 +97,10 @@ theorem classMap_injective : Function.Injective (classMap p) := by
   have hq₀ : q ≠ ⊥ := fun h => hp.ne_zero (Ideal.span_singleton_eq_bot.mp h)
   have hqI : q.IsPrime := (Ideal.span_singleton_prime hp.ne_zero).mpr hp
   have hq : Prime q := (Ideal.isPrime_iff_bot_or_prime.mp hqI).resolve_left hq₀
-  have hMq : q.IsMaximal := Ring.DimensionLEOne.maximalOfPrime q hq₀ hqI
+  have hMq : q.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hq₀ hqI
   have hI : I.val ≠ ⊥ := mem_nonZeroDivisors_iff_ne_zero.mp I.property
   have hF : FiniteMultiplicity q I.val := finiteMultiplicity_of_emultiplicity_eq_natCast
-    (emultiplicity_eq_count_normalizedFactors hq.irreducible hI)
+    (UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors hq.irreducible hI)
   obtain ⟨J, hIJ, hNDvd⟩ := hF.exists_eq_pow_mul_and_not_dvd
   let k := multiplicity q I.val
   have hJ : J ≠ ⊥ := by

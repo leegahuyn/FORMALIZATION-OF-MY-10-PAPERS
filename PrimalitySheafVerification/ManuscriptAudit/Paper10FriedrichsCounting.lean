@@ -104,7 +104,7 @@ theorem variational_count (hK : IsCompactOperator J)
       rw [Real.norm_eq_abs, abs_of_pos h]
       exact i.property.le.trans (le_max_right _ _)⟩
   letI : Finite Low := Finite.of_injective j
-    (fun i k h => Subtype.ext (congrArg Subtype.val h))
+    (fun i k h => Subtype.ext (congrArg (fun v : {i : Paper10FriedrichsEigenbasis.EigenIndex J // ‖i.1‖ ≤ M} => v.val) h))
   letI : Fintype Low := Fintype.ofFinite Low
   have hCard : Module.finrank ℝ (Low → ℝ) = Nat.card Low := by
     rw [Module.finrank_fintype_fun_eq_card, Nat.card_eq_fintype_card]

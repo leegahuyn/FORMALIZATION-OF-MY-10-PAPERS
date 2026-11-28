@@ -72,7 +72,7 @@ theorem exists_stage (g : D →ₐ[A] B) (U : (spectrum D).Opens) (hAff : IsAffi
     infer_instance
   have hEtRing : Algebra.Etale A C :=
     RingHom.etale_algebraMap.mp
-      ((HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A C))).mp hEtScheme)
+      ((HasRingHomProperty.Spec_iff (P := @Etale) (φ := CommRingCat.ofHom (algebraMap A C))).mp hEtScheme)
   refine ⟨C, inferInstance, inferInstance, hEtRing, k, fun i ↦ ?_⟩
   have hD : algebraMap D C (algebraMap A D (a i)) ∣ algebraMap D C (d i) := by
     apply dvd_of_forall_atPrime
