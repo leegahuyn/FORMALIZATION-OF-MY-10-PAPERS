@@ -17,16 +17,16 @@ variable {𝕜 D H : Type*} [RCLike 𝕜]
 
 variable (J : D →L[𝕜] H)
 
-def operatorEigenspace (λ : 𝕜) : Submodule 𝕜 H :=
-  (realization J).graph.comap ((LinearMap.id : H →ₗ[𝕜] H).prod (λ • LinearMap.id))
+def operatorEigenspace (value : 𝕜) : Submodule 𝕜 H :=
+  (realization J).graph.comap ((LinearMap.id : H →ₗ[𝕜] H).prod (value • LinearMap.id))
 
 /-- The actual operator eigenspace agrees with the corresponding bounded resolvent eigenspace. -/
-theorem eigenspace_reciprocity (hJ : DenseRange J) (λ : 𝕜) (hλ : λ ≠ 0) :
-    operatorEigenspace J λ = eigenspace (resolvent J).toLinearMap λ⁻¹ := by
+theorem eigenspace_reciprocity (hJ : DenseRange J) (value : 𝕜) (hValue : value ≠ 0) :
+    operatorEigenspace J value = eigenspace (resolvent J).toLinearMap value⁻¹ := by
   apply Submodule.ext
   intro x
-  change (x, λ • x) ∈ (realization J).graph ↔ _
-  rw [eigenvector_reciprocity J hJ λ hλ x, mem_eigenspace_iff]
+  change (x, value • x) ∈ (realization J).graph ↔ _
+  rw [eigenvector_reciprocity J hJ value hValue x, mem_eigenspace_iff]
 
 theorem zero_eigenspace (hJ : DenseRange J) : operatorEigenspace J 0 = ⊥ := by
   apply le_antisymm _ bot_le
@@ -36,23 +36,23 @@ theorem zero_eigenspace (hJ : DenseRange J) : operatorEigenspace J 0 = ⊥ := by
   simpa only [zero_smul, map_zero, Submodule.mem_bot] using e.symm
 
 /-- Each eigenspace has finite dimension with the actual multiplicity space. -/
-theorem finite_multiplicity (hJ : DenseRange J) (hK : IsCompactOperator J) (λ : 𝕜) :
-    FiniteDimensional 𝕜 (operatorEigenspace J λ) := by
-  by_cases hλ : λ = 0
-  · rw [hλ, zero_eigenspace J hJ]
+theorem finite_multiplicity (hJ : DenseRange J) (hK : IsCompactOperator J) (value : 𝕜) :
+    FiniteDimensional 𝕜 (operatorEigenspace J value) := by
+  by_cases hValue : value = 0
+  · rw [hValue, zero_eigenspace J hJ]
     infer_instance
-  · rw [eigenspace_reciprocity J hJ λ hλ]
+  · rw [eigenspace_reciprocity J hJ value hValue]
     exact ContinuousLinearMap.finite_dimensional_eigenspace (compact_resolvent J hK) _
-      (inv_ne_zero hλ)
+      (inv_ne_zero hValue)
 
 /-- The span of all true eigenvectors of the actual partial operator is dense. -/
 theorem eigenspaces_dense (hJ : DenseRange J) (hK : IsCompactOperator J) :
-    (⨆ λ, operatorEigenspace J λ).topologicalClosure = ⊤ := by
+    (⨆ value, operatorEigenspace J value).topologicalClosure = ⊤ := by
   let B := resolvent J
   have hB : B.IsSymmetric := resolvent_symmetric J
   have hComplete := ContinuousLinearMap.orthogonalComplement_iSup_eigenspaces_eq_bot
     (compact_resolvent J hK) hB
-  have hLe : (⨆ μ, eigenspace B.toLinearMap μ) ≤ ⨆ λ, operatorEigenspace J λ := by
+  have hLe : (⨆ μ, eigenspace B.toLinearMap μ) ≤ ⨆ value, operatorEigenspace J value := by
     apply iSup_le
     intro μ
     by_cases hμ : μ = 0

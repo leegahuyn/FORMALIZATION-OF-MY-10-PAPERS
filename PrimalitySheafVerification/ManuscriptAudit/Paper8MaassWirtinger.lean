@@ -86,7 +86,8 @@ theorem fractionalLinear_hasDerivAt (g : SL(2, ℤ)) (z : ℍ) :
     simpa only [id_eq, mul_one] using
       ((hasDerivAt_id (z : ℂ)).const_mul (g 0 0 : ℂ)).add_const (g 0 1 : ℂ)
   have hDen : HasDerivAt (denominator g) (g 1 0 : ℂ) z := by
-    simpa only [denominator, id_eq, mul_one] using
+    change HasDerivAt (fun w : ℂ => (g 1 0 : ℂ) * w + (g 1 1 : ℂ)) (g 1 0 : ℂ) z
+    simpa only [id_eq, mul_one] using
       ((hasDerivAt_id (z : ℂ)).const_mul (g 1 0 : ℂ)).add_const (g 1 1 : ℂ)
   have h := hNum.div hDen (denominator_ne_zero g z)
   have hDInt : g 0 0 * g 1 1 - g 0 1 * g 1 0 = 1 := by

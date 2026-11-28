@@ -82,7 +82,8 @@ def refinementEquiv : invariants A B t ≃ₗ[A] invariants A C (pull A B C f t)
     exact mul_comm _ _
   have hk : Function.Bijective k := by
     have h : k = e.symm.toLinearMap.comp d.toLinearMap := by
-      ext z
+      apply LinearMap.ext
+      intro z
       apply e.injective
       exact (LinearMap.congr_fun hMap z).trans (e.apply_symm_apply (d z)).symm
     rw [h]

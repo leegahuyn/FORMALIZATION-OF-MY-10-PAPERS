@@ -36,9 +36,15 @@ private theorem denominator_nonzerodivisor : denominators K B ≤ B⁰ := by
   rintro z ⟨a, ha, rfl⟩
   have h : IsSMulRegular B a := Module.Flat.isSMulRegular_of_nonZeroDivisors ha
   have hm : Function.Injective (fun b : B ↦ algebraMap (R K) B a * b) := by
-    simpa only [Algebra.smul_def] using h
+    intro b c e
+    apply h
+    simpa only [Algebra.smul_def] using e
   apply isRegular_iff_mem_nonZeroDivisors.mp
   exact ⟨hm, fun _ _ e ↦ hm (by simpa only [mul_comm] using e)⟩
+
+/-- The genuine scalar localization embeds its actual weakly étale chart. -/
+theorem genericMap_injective : Function.Injective (algebraMap B (genericRing K B)) :=
+  IsLocalization.injective (genericRing K B) (denominator_nonzerodivisor K B)
 
 set_option maxHeartbeats 1000000 in
 /-- Every element of the literal generic localization integral over the
@@ -47,8 +53,7 @@ theorem exists_of_integral (x : genericRing K B) (hx : IsIntegral B x) :
     ∃ b : B, algebraMap B (genericRing K B) b = x := by
   let L := genericRing K B
   let S := denominators K B
-  have hB : Function.Injective (algebraMap B L) :=
-    IsLocalization.injective L (denominator_nonzerodivisor K B)
+  have hB : Function.Injective (algebraMap B L) := genericMap_injective K B
   have hUnit (a : R K) (ha : a ≠ 0) :
       IsUnit (algebraMap B L (algebraMap (R K) B a)) :=
     IsLocalization.map_units L
@@ -66,10 +71,11 @@ end ManuscriptAudit.WeaklyEtaleAffineLineGenericIntegral
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.WeaklyEtaleAffineLineGenericIntegral.exists_of_integral
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.WeaklyEtaleAffineLineGenericIntegral.genericMap_injective,
+      ``ManuscriptAudit.WeaklyEtaleAffineLineGenericIntegral.exists_of_integral] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

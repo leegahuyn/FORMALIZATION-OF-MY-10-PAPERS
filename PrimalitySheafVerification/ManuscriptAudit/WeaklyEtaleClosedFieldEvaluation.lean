@@ -9,7 +9,7 @@ closed field has finitely many values on its actual affine spectrum. -/
 namespace ManuscriptAudit.WeaklyEtaleClosedFieldEvaluation
 
 open AlgebraicGeometry CategoryTheory Polynomial
-open ProetaleAffineTensor (structureMap)
+open ProetaleAffineTensor (spectrum structureMap)
 open WeaklyEtaleAlgebraicallyClosed (rationalSectionThrough)
 
 noncomputable section
@@ -22,8 +22,7 @@ universe u
 variable (K B : Type u) [Field K] [IsAlgClosed K] [CommRing B] [Algebra K B]
   [WeaklyEtale (structureMap K B)]
 
-private def atPoint (p : PrimeSpectrum B) :
-    ProetaleAffineTensor.spectrum K ⟶ ProetaleAffineTensor.spectrum B :=
+private def atPoint (p : PrimeSpectrum B) : spectrum K ⟶ spectrum B :=
   Classical.choose (rationalSectionThrough K (structureMap K B) p)
 
 private abbrev value (p : PrimeSpectrum B) : CommRingCat.of B ⟶ CommRingCat.of K :=
@@ -63,7 +62,7 @@ private theorem finite_cover_values (b : B) :
     change b - algebraMap K B ((value K B p).hom b) ∉ p.asIdeal → False
     intro h
     apply h
-    rw [mem_asIdeal_iff_value_zero, map_sub, value_scalar, sub_self]
+    rw [mem_asIdeal_iff_value_zero K B, map_sub, value_scalar K B, sub_self]
   obtain ⟨T, hT⟩ := isCompact_univ.elim_finite_subcover V hV hU
   refine ⟨T, fun p ↦ ?_⟩
   obtain ⟨a, ha⟩ := Set.mem_iUnion.mp (hT (Set.mem_univ p))
@@ -94,7 +93,7 @@ theorem isIntegral (b : B) : IsIntegral K b := by
     obtain ⟨Q, hQ⟩ := hd
     rw [hQ, map_mul, aeval_sub, aeval_X, aeval_C]
     exact p.asIdeal.mul_mem_right (aeval b Q) hpa
-  obtain ⟨n, hn⟩ := Ideal.mem_radical.mp hnil
+  obtain ⟨n, hn⟩ := Ideal.mem_radical_iff.mp hnil
   exact IsReduced.eq_zero _ ⟨n, Ideal.mem_bot.mp hn⟩
 
 end

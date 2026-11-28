@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Sites.Proetale
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Connected
 import PrimalitySheafVerification.ManuscriptAudit.CechNerveLowDegrees

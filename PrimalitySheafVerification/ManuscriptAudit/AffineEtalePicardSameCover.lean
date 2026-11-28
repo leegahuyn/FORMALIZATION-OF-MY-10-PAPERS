@@ -65,19 +65,22 @@ theorem transition_changeUnit_sameCover
     change (I.obj.map g.op).hom (y - (y' + I.obj.map f.op z)) = _
     rw [map_sub, map_add, restrictMap_comp]
   have hComm : p ≫ f = q ≫ f := (double_isPullback R B).w
-  let u := Additive.ofMul (transition R B ι x y hy)
-  let u' := Additive.ofMul (transition R B ι x' y' hy')
+  let u : Additive (B ⊗[R] B)ˣ := Additive.ofMul (transition R B ι x y hy)
+  let u' : Additive (B ⊗[R] B)ˣ := Additive.ofMul (transition R B ι x' y' hy')
   have hDiff : u - u' = (G R).obj.map p.op a - (G R).obj.map q.op a := by
     apply section_injective ι D
-    change (ι.hom.app (op D)).hom (_ - _) = (ι.hom.app (op D)).hom (_ - _)
-    rw [map_sub, map_sub]
-    change ι.hom.app (op D) u - ι.hom.app (op D) u' =
-      ι.hom.app (op D) ((G R).obj.map p.op a) - ι.hom.app (op D) ((G R).obj.map q.op a)
-    rw [hRestrict, hRestrict, hComm]
-    have hu : ι.hom.app (op D) u = I.obj.map p.op y - I.obj.map q.op y := difference_spec ..
-    have hu' : ι.hom.app (op D) u' = I.obj.map p.op y' - I.obj.map q.op y' := difference_spec ..
-    rw [hu, hu']
-    abel
+    let m : Additive (B ⊗[R] B)ˣ →+ I.obj.obj (op D) := (ι.hom.app (op D)).hom
+    let ap : Additive (B ⊗[R] B)ˣ := (G R).obj.map p.op a
+    let aq : Additive (B ⊗[R] B)ˣ := (G R).obj.map q.op a
+    have hInner : m u - m u' = m ap - m aq := by
+      change ι.hom.app (op D) u - ι.hom.app (op D) u' =
+        ι.hom.app (op D) ((G R).obj.map p.op a) - ι.hom.app (op D) ((G R).obj.map q.op a)
+      rw [hRestrict, hRestrict, hComm]
+      have hu : ι.hom.app (op D) u = I.obj.map p.op y - I.obj.map q.op y := difference_spec ..
+      have hu' : ι.hom.app (op D) u' = I.obj.map p.op y' - I.obj.map q.op y' := difference_spec ..
+      rw [hu, hu']
+      abel
+    exact (m.map_sub u u').trans (hInner.trans (m.map_sub ap aq).symm)
   let l := Units.map (Algebra.TensorProduct.includeLeft : B →ₐ[R] B ⊗[R] B).toMonoidHom
   let r := Units.map (Algebra.TensorProduct.includeRight : B →ₐ[R] B ⊗[R] B).toMonoidHom
   have hU : u.toMul / u'.toMul = l a.toMul / r a.toMul := congrArg Additive.toMul hDiff

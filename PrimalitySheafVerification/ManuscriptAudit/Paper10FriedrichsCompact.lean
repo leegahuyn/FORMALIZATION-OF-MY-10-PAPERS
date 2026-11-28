@@ -24,16 +24,16 @@ theorem compact_resolvent (hJ : IsCompactOperator J) : IsCompactOperator (resolv
 
 /-- A nonzero spectral label for the actual partial operator corresponds
 to the reciprocal eigenvalue of its canonical bounded inverse. -/
-theorem eigenvector_reciprocity (hJ : DenseRange J) (λ : 𝕜) (hλ : λ ≠ 0) (x : H) :
-    (x, λ • x) ∈ (realization J).graph ↔ (resolvent J) x = λ⁻¹ • x := by
+theorem eigenvector_reciprocity (hJ : DenseRange J) (value : 𝕜) (hValue : value ≠ 0) (x : H) :
+    (x, value • x) ∈ (realization J).graph ↔ (resolvent J) x = value⁻¹ • x := by
   rw [realization_graph_iff J hJ, map_smul]
   constructor
   · intro h
     calc
-      _ = λ⁻¹ • (λ • (resolvent J) x) := by rw [smul_smul, inv_mul_cancel₀ hλ, one_smul]
-      _ = _ := congrArg (fun y : H => λ⁻¹ • y) h
+      _ = value⁻¹ • (value • (resolvent J) x) := by rw [smul_smul, inv_mul_cancel₀ hValue, one_smul]
+      _ = _ := congrArg (fun y : H => value⁻¹ • y) h
   · intro h
-    rw [h, smul_smul, mul_inv_cancel₀ hλ, one_smul]
+    rw [h, smul_smul, mul_inv_cancel₀ hValue, one_smul]
 
 end
 end ManuscriptAudit.Paper10FriedrichsCompact

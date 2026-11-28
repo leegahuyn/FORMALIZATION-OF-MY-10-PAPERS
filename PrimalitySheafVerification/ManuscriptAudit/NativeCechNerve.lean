@@ -12,7 +12,7 @@ on the actual chosen site and its literal pullback nerve. -/
 
 namespace ManuscriptAudit.NativeCechNerve
 
-open CategoryTheory CategoryTheory.Limits Opposite
+open AlgebraicTopology CategoryTheory CategoryTheory.Limits Opposite
 open InjectiveCechPullback CechNerveLowDegrees
 open SingletonCoverRefinement (Covers)
 open scoped Simplicial
@@ -140,7 +140,7 @@ theorem exists_global_lift (hf : Covers J f) (h : (Cech f D.obj).ExactAt 1)
     (x : (cokernel i).obj.obj (op T)) (y : I.obj.obj (op U))
     (hy : (cokernel.π i).hom.app (op U) y = (cokernel i).obj.map f.op x) :
     ∃ z : I.obj.obj (op T), (cokernel.π i).hom.app (op T) z = x := by
-  obtain ⟨b, hb, hc⟩ := SheafCechDifference.exists_cocycle_of_local_lift i f x y hy
+  obtain ⟨b, hb, hc⟩ := SheafCechCokernel.exists_cocycle_of_local_lift i f x y hy
   obtain ⟨a, ha⟩ := exists_boundary f D.obj h b hc
   apply SheafExplicitCechHOne.exists_global_lift i f (first f) (second f)
     (IsPullback.of_hasPullback f f) hf x y hy a

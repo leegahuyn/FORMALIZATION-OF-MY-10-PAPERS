@@ -28,7 +28,7 @@ theorem complexGaugeRatio_coe (F : ℂ → ℂ) (z : ℍ) :
     complexGaugeRatio F z = gaugeRatio F z := by
   simp only [complexGaugeRatio, gaugeRatio, complexGauge_coe]
 
-private theorem complexGauge_differentiableAt (z : ℍ) : DifferentiableAt ℝ complexGauge z := by
+theorem complexGauge_differentiableAt (z : ℍ) : DifferentiableAt ℝ complexGauge z := by
   have hHeight : DifferentiableAt ℝ (fun t : ℝ => ((t ^ (1 / 4 : ℝ) : ℝ) : ℂ)) z.im :=
     (Real.hasDerivAt_rpow_const (p := (1 / 4 : ℝ)) (Or.inl z.im_ne_zero)).ofReal_comp.differentiableAt
   have hI : DifferentiableAt ℝ (fun w : ℂ => w.im) z := Complex.imCLM.differentiableAt

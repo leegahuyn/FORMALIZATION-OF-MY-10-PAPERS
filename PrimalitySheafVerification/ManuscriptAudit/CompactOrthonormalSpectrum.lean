@@ -18,13 +18,13 @@ variable {𝕜 H I : Type*} [RCLike 𝕜]
 /-- Compactness bounds the total number of normalized eigenvectors whose
 eigenvalues have norm at least the specified positive threshold. -/
 theorem finite_large_labels (T : H →L[𝕜] H) (hT : IsCompactOperator T)
-    (v : I → H) (hOrtho : Orthonormal 𝕜 v) (λ : I → 𝕜)
-    (hEigen : ∀ i, T (v i) = λ i • v i) (ε : ℝ) (hε : 0 < ε) :
-    Finite {i : I // ε ≤ ‖λ i‖} := by
+    (v : I → H) (hOrtho : Orthonormal 𝕜 v) (value : I → 𝕜)
+    (hEigen : ∀ i, T (v i) = value i • v i) (ε : ℝ) (hε : 0 < ε) :
+    Finite {i : I // ε ≤ ‖value i‖} := by
   obtain ⟨K, hK, hImage⟩ :=
     IsCompactOperator.image_closedBall_subset_compact (f := T.toLinearMap) hT 1
-  let w (i : {i : I // ε ≤ ‖λ i‖}) := T (v i.val)
-  have hmem (i : {i : I // ε ≤ ‖λ i‖}) : w i ∈ K := by
+  let w (i : {i : I // ε ≤ ‖value i‖}) := T (v i.val)
+  have hmem (i : {i : I // ε ≤ ‖value i‖}) : w i ∈ K := by
     apply hImage
     refine ⟨v i.val, ?_, rfl⟩
     exact Metric.mem_closedBall.mpr (by rw [dist_zero_right, hOrtho.1])
@@ -34,7 +34,7 @@ theorem finite_large_labels (T : H →L[𝕜] H) (hT : IsCompactOperator T)
   have hInner : ⟪w i, w j⟫_𝕜 = 0 := by
     change ⟪T (v i.val), T (v j.val)⟫_𝕜 = 0
     simp only [hEigen, inner_smul_left, inner_smul_right, hOrtho.2 hij', mul_zero]
-  have hNi : ‖w i‖ = ‖λ i.val‖ := by
+  have hNi : ‖w i‖ = ‖value i.val‖ := by
     change ‖T (v i.val)‖ = _
     rw [hEigen, norm_smul, hOrtho.1, mul_one]
   apply (sq_le_sq₀ hε.le dist_nonneg).mp

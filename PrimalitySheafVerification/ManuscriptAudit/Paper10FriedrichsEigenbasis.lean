@@ -19,23 +19,23 @@ variable {𝕜 D H : Type*} [RCLike 𝕜]
 variable (J : D →L[𝕜] H)
 
 theorem different_eigenspaces_orthogonal (hJ : DenseRange J)
-    {λ μ : 𝕜} (h : λ ≠ μ) {x y : H}
-    (hx : x ∈ operatorEigenspace J λ) (hy : y ∈ operatorEigenspace J μ) :
+    {value μ : 𝕜} (h : value ≠ μ) {x y : H}
+    (hx : x ∈ operatorEigenspace J value) (hy : y ∈ operatorEigenspace J μ) :
     ⟪x, y⟫_𝕜 = 0 := by
-  by_cases hλ : λ = 0
-  · subst λ
+  by_cases hValue : value = 0
+  · subst value
     have hx₀ : x = 0 := by rwa [zero_eigenspace J hJ, Submodule.mem_bot] at hx
     rw [hx₀, inner_zero_left]
   by_cases hμ : μ = 0
   · subst μ
     have hy₀ : y = 0 := by rwa [zero_eigenspace J hJ, Submodule.mem_bot] at hy
     rw [hy₀, inner_zero_right]
-  rw [eigenspace_reciprocity J hJ λ hλ] at hx
+  rw [eigenspace_reciprocity J hJ value hValue] at hx
   rw [eigenspace_reciprocity J hJ μ hμ] at hy
   have hB : (resolvent J).toLinearMap.IsSymmetric := resolvent_symmetric J
   exact hB.orthogonalFamily_eigenspaces (fun e => h (inv_injective e)) ⟨x, hx⟩ ⟨y, hy⟩
 
-abbrev EigenIndex := Σ λ : 𝕜, Fin (Module.finrank 𝕜 (operatorEigenspace J λ))
+abbrev EigenIndex := Σ value : 𝕜, Fin (Module.finrank 𝕜 (operatorEigenspace J value))
 
 /-- There is an orthonormal Hilbert basis on the true graph, with the
 finite-dimensional multiplicity of each eigenvalue built into its indices. -/
@@ -43,32 +43,32 @@ theorem exists_eigenbasis (hJ : DenseRange J) (hK : IsCompactOperator J) :
     ∃ b : HilbertBasis (EigenIndex J) 𝕜 H,
       ∀ i, (b i, i.1 • b i) ∈ (realization J).graph := by
   classical
-  letI (λ : 𝕜) := finite_multiplicity J hJ hK λ
-  let b (λ : 𝕜) := stdOrthonormalBasis 𝕜 (operatorEigenspace J λ)
+  letI (value : 𝕜) := finite_multiplicity J hJ hK value
+  let b (value : 𝕜) := stdOrthonormalBasis 𝕜 (operatorEigenspace J value)
   let v (i : EigenIndex J) : H := (b i.1 i.2).val
   have hOrtho : Orthonormal 𝕜 v := by
     constructor
-    · rintro ⟨λ, i⟩
-      exact (b λ).orthonormal.1 i
-    · rintro ⟨λ, i⟩ ⟨μ, j⟩ h
-      by_cases h' : λ = μ
+    · rintro ⟨value, i⟩
+      exact (b value).orthonormal.1 i
+    · rintro ⟨value, i⟩ ⟨μ, j⟩ h
+      by_cases h' : value = μ
       · subst μ
-        apply (b λ).orthonormal.2
+        apply (b value).orthonormal.2
         intro e
         exact h (by cases e; rfl)
-      · exact different_eigenspaces_orthogonal J hJ h' (b λ i).property (b μ j).property
-  have hSub (λ : 𝕜) : operatorEigenspace J λ ≤ Submodule.span 𝕜 (Set.range v) := by
+      · exact different_eigenspaces_orthogonal J hJ h' (b value i).property (b μ j).property
+  have hSub (value : 𝕜) : operatorEigenspace J value ≤ Submodule.span 𝕜 (Set.range v) := by
     intro x hx
-    let y : operatorEigenspace J λ := ⟨x, hx⟩
-    have hy : y ∈ Submodule.span 𝕜 (Set.range (b λ)) := by
-      rw [show Submodule.span 𝕜 (Set.range (b λ)) = ⊤ from (b λ).toBasis.span_eq]
+    let y : operatorEigenspace J value := ⟨x, hx⟩
+    have hy : y ∈ Submodule.span 𝕜 (Set.range (b value)) := by
+      rw [show Submodule.span 𝕜 (Set.range (b value)) = ⊤ from (b value).toBasis.span_eq]
       exact Submodule.mem_top
-    have hmap : (Submodule.span 𝕜 (Set.range (b λ))).map (operatorEigenspace J λ).subtype ≤
+    have hmap : (Submodule.span 𝕜 (Set.range (b value))).map (operatorEigenspace J value).subtype ≤
         Submodule.span 𝕜 (Set.range v) := by
       rw [Submodule.map_span]
       apply Submodule.span_mono
       rintro _ ⟨_, ⟨i, rfl⟩, rfl⟩
-      exact ⟨⟨λ, i⟩, rfl⟩
+      exact ⟨⟨value, i⟩, rfl⟩
     exact hmap ⟨y, hy, rfl⟩
   have hTotal : ⊤ ≤ (Submodule.span 𝕜 (Set.range v)).topologicalClosure := by
     rw [← eigenspaces_dense J hJ hK]

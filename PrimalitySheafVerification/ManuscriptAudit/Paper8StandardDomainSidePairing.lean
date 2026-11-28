@@ -35,16 +35,16 @@ def arcPoint (x : ℝ) : ℍ := ofComplex (complexPoint x (arcHeight x))
 
 def arcTangent (x : ℝ) : ℂ := ((-Complex.I) / (arcHeight x : ℂ)) * (arcPoint x : ℂ)
 
-private theorem arcHeight_neg (x : ℝ) : arcHeight (-x) = arcHeight x := by
+theorem arcHeight_neg (x : ℝ) : arcHeight (-x) = arcHeight x := by
   simp [arcHeight]
 
-private theorem arcHeight_pos {x : ℝ} (hx : |x| ≤ 1 / 2) : 0 < arcHeight x := by
+theorem arcHeight_pos {x : ℝ} (hx : |x| ≤ 1 / 2) : 0 < arcHeight x := by
   have hL : 0 ≤ x + 1 / 2 := by linarith [(abs_le.mp hx).1]
   have hR : 0 ≤ 1 / 2 - x := sub_nonneg.mpr (abs_le.mp hx).2
   apply Real.sqrt_pos.2
   nlinarith [mul_nonneg hL hR]
 
-private theorem arcPoint_coe {x : ℝ} (hx : |x| ≤ 1 / 2) :
+theorem arcPoint_coe {x : ℝ} (hx : |x| ≤ 1 / 2) :
     (arcPoint x : ℂ) = complexPoint x (arcHeight x) := by
   have hIm : 0 < (complexPoint x (arcHeight x)).im := by
     rw [complexPoint_im]
@@ -75,6 +75,34 @@ theorem arcPoint_S {x : ℝ} (hx : |x| ≤ 1 / 2) :
   apply UpperHalfPlane.ext
   rw [UpperHalfPlane.modular_S_smul, arcPoint_neg_coe hx]
   simp [inv_neg]
+
+theorem arcHeight_hasDerivAt {x : ℝ} (hx : |x| ≤ 1 / 2) :
+    HasDerivAt arcHeight (-x / arcHeight x) x := by
+  have hL : 0 ≤ x + 1 / 2 := by linarith [(abs_le.mp hx).1]
+  have hR : 0 ≤ 1 / 2 - x := sub_nonneg.mpr (abs_le.mp hx).2
+  have hPos : 0 < 1 - x ^ 2 := by nlinarith [mul_nonneg hL hR]
+  have hQuad : HasDerivAt (fun u : ℝ => 1 - u ^ 2) (-2 * x) x := by
+    have h := ((hasDerivAt_id x).pow 2).const_sub 1
+    convert h using 1 <;> norm_num [id_eq] <;> ring
+  have h := (Real.hasDerivAt_sqrt hPos.ne').comp x hQuad
+  change HasDerivAt arcHeight ((1 / (2 * arcHeight x)) * (-2 * x)) x at h
+  have hE : (1 / (2 * arcHeight x)) * (-2 * x) = -x / arcHeight x := by
+    field_simp [(arcHeight_pos hx).ne'] <;> ring
+  rw [hE] at h
+  exact h
+
+theorem arcTangent_eq_derivative {x : ℝ} (hx : |x| ≤ 1 / 2) :
+    arcTangent x = 1 + Complex.I * (deriv arcHeight x : ℂ) := by
+  let h : ℂ := (arcHeight x : ℂ)
+  have hn : h ≠ 0 := Complex.ofReal_ne_zero.mpr (arcHeight_pos hx).ne'
+  have hi : -Complex.I * (h * Complex.I) = h := by
+    linear_combination (-h) * Complex.I_sq
+  rw [arcTangent, arcPoint_coe hx, (arcHeight_hasDerivAt hx).deriv]
+  simp only [complexPoint, Complex.ofReal_neg, Complex.ofReal_div]
+  change (-Complex.I / h) * ((x : ℂ) + h * Complex.I) = 1 + Complex.I * (-(x : ℂ) / h)
+  calc
+    _ = ((-Complex.I) * (x : ℂ) + (-Complex.I) * (h * Complex.I)) / h := by ring
+    _ = _ := by rw [hi]; field_simp [hn] <;> ring
 
 def arcCurrent (f : ℍ → ℂ) (x : ℝ) : ℂ := arcTangent x * f (arcPoint x)
 
@@ -122,6 +150,8 @@ run_cmd do
       ``ManuscriptAudit.Paper8StandardDomainSidePairing.weightTwo_T_invariant,
       ``ManuscriptAudit.Paper8StandardDomainSidePairing.weightTwo_S_transform,
       ``ManuscriptAudit.Paper8StandardDomainSidePairing.arcPoint_S,
+      ``ManuscriptAudit.Paper8StandardDomainSidePairing.arcHeight_hasDerivAt,
+      ``ManuscriptAudit.Paper8StandardDomainSidePairing.arcTangent_eq_derivative,
       ``ManuscriptAudit.Paper8StandardDomainSidePairing.arcCurrent_odd,
       ``ManuscriptAudit.Paper8StandardDomainSidePairing.arcCurrent_integral_zero] do
     let ax ← collectAxioms name

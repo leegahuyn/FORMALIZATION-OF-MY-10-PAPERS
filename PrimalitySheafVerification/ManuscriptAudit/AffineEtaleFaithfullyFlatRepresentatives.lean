@@ -58,8 +58,6 @@ theorem exists_faithfullyFlatAffineLift (i : G R ⟶ I)
   let U := baseObject R
   have hT : IsTerminal U :=
     KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)
-  apply SheafH1Descent.H1_subsingleton_of_global_lifts i hT
-  intro x
   letI : Sheaf.IsLocallySurjective q :=
     (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{0} q).mpr inferInstance
   obtain ⟨n, V, f, hf, hcover⟩ := AffineEtaleLiftingCover.finite_indexed_jointly_surjective_lifts q x

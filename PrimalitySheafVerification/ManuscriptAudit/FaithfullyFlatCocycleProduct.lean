@@ -81,7 +81,8 @@ def productEquiv :
     | add x y hx hy => simp only [TensorProduct.tmul_add, map_add, hx, hy]
   have hf : Function.Bijective f := by
     have h : f = e.symm.toLinearMap.comp d.toLinearMap := by
-      ext z
+      apply LinearMap.ext
+      intro z
       apply e.injective
       exact (LinearMap.congr_fun hMap z).trans (e.apply_symm_apply (d z)).symm
     rw [h]
