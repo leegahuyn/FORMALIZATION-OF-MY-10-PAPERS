@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-import PrimalitySheafVerification.ManuscriptAudit.EtalePresheafHOneRepresentatives
+import PrimalitySheafVerification.ManuscriptAudit.EtalePresheafHOneTransport
 import PrimalitySheafVerification.ManuscriptAudit.SheafH1ConnectingExact
 
 /-! Native degree-one comparison between evaluating ambient étale
@@ -11,7 +11,8 @@ Both sides are compared on sections of the same restricted cokernel. -/
 namespace ManuscriptAudit.OpenEtaleHOneByRepresentatives
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian CategoryTheory.Limits Opposite
-open OpenEtaleExtension EtalePresheafHOneRepresentatives SheafH1Descent SheafH1ConnectingExact
+open OpenEtaleExtension EtalePresheafHOneRepresentatives EtalePresheafHOneTransport
+open SheafH1Descent SheafH1ConnectingExact
 
 noncomputable section
 
@@ -106,34 +107,33 @@ private theorem same_kernel :
 
 variable [Injective I]
 
+private def openRepresentatives :
+    (Q i).obj.obj (op (O j)) →+ Sheaf.H ((R j).obj F) 1 :=
+  (openConnecting j i).comp (cokernelSectionEquiv j i).toAddMonoidHom
+
+private theorem openRepresentatives_surjective : Function.Surjective (openRepresentatives j i) := by
+  change Function.Surjective (openConnecting j i ∘ cokernelSectionEquiv j i)
+  apply Function.Surjective.comp ?_ (cokernelSectionEquiv j i).surjective
+  intro a
+  obtain ⟨s, hs⟩ := connectingSection_surjective (i' j i) (terminal (U := U)) a
+  exact ⟨s, (openConnecting_apply j i s).trans hs⟩
+
+private theorem openRepresentatives_zero (x : (Q i).obj.obj (op (O j))) :
+    connectingAt i (O j) x = 0 ↔ openRepresentatives j i x = 0 := by
+  change x ∈ (connectingAt i (O j)).ker ↔ x ∈ (openRepresentatives j i).ker
+  rw [same_kernel j i] <;> rfl
+
 /-- A native comparison for degree one with an explicit formula on genuine
 cokernel-section representatives. -/
-def degreeOneEquiv : F.H' 1 (O j) ≃+ Sheaf.H ((R j).obj F) 1 := by
-  let q := connectingAt i (O j)
-  let r := (openConnecting j i).comp (cokernelSectionEquiv j i).toAddMonoidHom
-  have hq : Function.Surjective q := connectingAt_surjective i (O j)
-  have hr : Function.Surjective r := by
-    change Function.Surjective
-      (openConnecting j i ∘ (cokernelSectionEquiv j i))
-    apply Function.Surjective.comp ?_ (cokernelSectionEquiv j i).surjective
-    intro a
-    obtain ⟨s, hs⟩ := connectingSection_surjective (i' j i) (terminal (U := U)) a
-    exact ⟨s, (openConnecting_apply j i s).trans hs⟩
-  exact (QuotientAddGroup.quotientKerEquivOfSurjective q hq).symm.trans
-    ((QuotientAddGroup.quotientAddEquivOfEq (same_kernel j i)).trans
-      (QuotientAddGroup.quotientKerEquivOfSurjective r hr))
+def degreeOneEquiv : F.H' 1 (O j) ≃+ Sheaf.H ((R j).obj F) 1 :=
+  transport i (O j) (openRepresentatives j i) (openRepresentatives_surjective j i)
+    (openRepresentatives_zero j i)
 
 theorem degreeOneEquiv_connecting (x : (Q i).obj.obj (op (O j))) :
     degreeOneEquiv j i (connectingAt i (O j) x) =
-      connectingSection (i' j i) (terminal (U := U)) (cokernelSectionEquiv j i x) := by
-  unfold degreeOneEquiv
-  let q := connectingAt i (O j)
-  let r := (openConnecting j i).comp (cokernelSectionEquiv j i).toAddMonoidHom
-  let e := QuotientAddGroup.quotientKerEquivOfSurjective q (connectingAt_surjective i (O j))
-  have h : q x = e (QuotientAddGroup.mk x) := rfl
-  rw [h]
-  simp only [AddEquiv.trans_apply, AddEquiv.symm_apply_apply, QuotientAddGroup.quotientAddEquivOfEq_mk]
-  exact openConnecting_apply j i (cokernelSectionEquiv j i x)
+      connectingSection (i' j i) (terminal (U := U)) (cokernelSectionEquiv j i x) :=
+  (transport_connecting i (O j) (openRepresentatives j i) (openRepresentatives_surjective j i)
+    (openRepresentatives_zero j i) x).trans (openConnecting_apply j i _)
 
 end
 

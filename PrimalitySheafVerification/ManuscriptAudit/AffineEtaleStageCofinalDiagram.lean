@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Filtered.Final
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageFinitePresentationContinuity
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleStageAlgebraColimit
 
 /-! A filtered diagram of affine étale rings with the actual chart as
 its colimit is final among all genuine affine étale stages of that chart. -/
@@ -29,8 +30,10 @@ private abbrev U (R : Type u) [CommRing R] [Algebra A R] :=
 variable (hE : ∀ j, Etale (Spec.map (D.obj j).hom))
 
 private def stage (j : J) : Stage A (B c) := by
-  letI : Algebra.Etale A (D.obj j) := (RingHom.etale_algebraMap).mp
-    ((HasRingHomProperty.Spec_iff (P := @Etale) (φ := (D.obj j).hom)).mp (hE j))
+  letI : Algebra A (D.obj j).right := (D.obj j).hom.hom.toAlgebra
+  have h : (algebraMap A (D.obj j).right).Etale :=
+    (HasRingHomProperty.Spec_iff (P := @Etale) (φ := (D.obj j).hom)).mp (hE j)
+  letI : Algebra.Etale A (D.obj j).right := (RingHom.etale_algebraMap).mp h
   exact Stage.of A (B c) (CommRingCat.toAlgHom (c.ι.app j))
 
 /-- The chosen diagram gives actual étale stages of the chart ring. -/

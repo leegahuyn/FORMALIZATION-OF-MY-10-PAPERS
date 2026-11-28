@@ -18,6 +18,7 @@ variable [IsDedekindDomain A] [IsDomain B] [Algebra A B] [Algebra.Etale A B]
 
 /-- The true affine coordinate ring of an integral étale chart over a
 Dedekind domain is a Dedekind domain without any global PID assumption. -/
+include ‹IsDedekindDomain A› ‹Algebra.Etale A B› in
 theorem isDedekindDomain : IsDedekindDomain B := by
   letI hNoeth : IsNoetherianRing B := Algebra.FiniteType.isNoetherianRing A B
   have hDvr : IsDedekindDomainDvr B := by

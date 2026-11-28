@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Data.ZMod.QuotientRing
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import PrimalitySheafVerification.ManuscriptAudit.Paper7KoszulCRTBaseChange
 
@@ -52,12 +53,11 @@ theorem tensor_boundary_zero :
   induction z with
   | zero => simp
   | tmul a b =>
-      let e := AlgebraTensorModule.rid R S S
-      apply e.injective
-      rw [LinearMap.lTensor_tmul, AlgebraTensorModule.rid_tmul, map_zero]
-      change algebraMap R S ((5 : R) * b) * a = 0
-      change reduction ((5 : R) * b) * a = 0
-      rw [map_mul, reduction_parameter, zero_mul, zero_mul]
+      rw [LinearMap.lTensor_tmul]
+      change a ⊗ₜ[R] ((5 : R) • b) = 0
+      rw [← TensorProduct.smul_tmul]
+      change (reduction 5 * a) ⊗ₜ[R] b = 0
+      rw [reduction_parameter, zero_mul, TensorProduct.zero_tmul]
   | add a b ha hb => rw [map_add, ha, hb, add_zero]
 
 /-- The actual degree-one homology after CRT is the entire residue module. -/
@@ -66,7 +66,10 @@ def after_homology_iso :
   let K := rankOne S (reduction 5)
   have hG : K.g = 0 := by
     change ModuleCat.ofHom (reduction 5 • (LinearMap.id : S →ₗ[S] S)) = 0
-    rw [reduction_parameter, zero_smul] <;> rfl
+    rw [reduction_parameter]
+    have hz : (0 : S) • (LinearMap.id : S →ₗ[S] S) = 0 := zero_smul _ _
+    rw [hz]
+    rfl
   exact (ShortComplex.HomologyData.ofZeros K rfl hG).left.homologyIso
 
 end

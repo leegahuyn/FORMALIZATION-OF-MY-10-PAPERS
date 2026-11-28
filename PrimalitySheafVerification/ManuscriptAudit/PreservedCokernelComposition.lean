@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-! Compatibility of the canonical cokernel comparisons under composition
@@ -34,6 +35,17 @@ theorem cokernelComparisons_compose :
     G.map (PreservesCokernel.iso F f).hom ≫ (PreservesCokernel.iso G (F.map f)).hom ≫
       (inducedCokernelIso F G H e f).hom =
     (e.app (cokernel f)).hom ≫ (PreservesCokernel.iso H f).hom := by
+  let k : G.obj (F.obj (cokernel f)) ≅ cokernel (G.map (F.map f)) :=
+    G.mapIso (PreservesCokernel.iso F f) ≪≫ PreservesCokernel.iso G (F.map f)
+  have hk : G.map (F.map (cokernel.π f)) ≫ k.hom = cokernel.π (G.map (F.map f)) := by
+    change _ ≫ G.map (PreservesCokernel.iso F f).hom ≫ (PreservesCokernel.iso G (F.map f)).hom = _
+    rw [← Category.assoc, ← Functor.map_comp, PreservesCokernel.π_iso_hom, PreservesCokernel.π_iso_hom]
+  have hk' : cokernel.π (G.map (F.map f)) ≫ k.inv = G.map (F.map (cokernel.π f)) := by
+    apply (cancel_mono k.hom).mp
+    rw [Category.assoc, k.inv_hom_id, Category.comp_id, hk]
+  letI : Epi (G.map (F.map (cokernel.π f))) := by
+    rw [← hk']
+    infer_instance
   apply (cancel_epi (G.map (F.map (cokernel.π f)))).mp
   calc
     _ = G.map (F.map (cokernel.π f) ≫ (PreservesCokernel.iso F f).hom) ≫

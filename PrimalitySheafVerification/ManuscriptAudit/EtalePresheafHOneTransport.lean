@@ -19,27 +19,30 @@ variable {X : Scheme.{u}}
 variable {F I : Sheaf X.smallEtaleTopology AddCommGrpCat.{u}} (i : F ⟶ I) [Mono i] [Injective I]
 variable (U : X.Etale) {H : Type v} [AddCommGroup H]
 variable (b : (cokernel i).obj.obj (op U) →+ H) (hb : Function.Surjective b)
-variable (hk : ∀ x, connectingAt i U x = 0 ↔ b x = 0)
 
-private theorem same_kernel : (connectingAt i U).ker = b.ker := by
+private theorem same_kernel (hk : ∀ x, connectingAt i U x = 0 ↔ b x = 0) : (connectingAt i U).ker = b.ker := by
   ext x
   exact hk x
 
 /-- A surjective comparison of actual ambient representatives that
 preserves their vanishing induces the actual cohomology comparison. -/
-def transport : F.H' 1 U ≃+ H :=
+def transport (hk : ∀ x, connectingAt i U x = 0 ↔ b x = 0) : F.H' 1 U ≃+ H :=
   (QuotientAddGroup.quotientKerEquivOfSurjective (connectingAt i U) (connectingAt_surjective i U)).symm.trans
     ((QuotientAddGroup.quotientAddEquivOfEq (same_kernel i U b hk)).trans
       (QuotientAddGroup.quotientKerEquivOfSurjective b hb))
 
 /-- The comparison evaluates on the exact chosen ambient representative. -/
-theorem transport_connecting (x : (cokernel i).obj.obj (op U)) :
+theorem transport_connecting (hk : ∀ x, connectingAt i U x = 0 ↔ b x = 0)
+    (x : (cokernel i).obj.obj (op U)) :
     transport i U b hb hk (connectingAt i U x) = b x := by
   let e := QuotientAddGroup.quotientKerEquivOfSurjective (connectingAt i U) (connectingAt_surjective i U)
+  let k := QuotientAddGroup.quotientAddEquivOfEq (same_kernel i U b hk)
+  let g := QuotientAddGroup.quotientKerEquivOfSurjective b hb
   have he : connectingAt i U x = e (QuotientAddGroup.mk x) := rfl
-  unfold transport
-  rw [he]
-  simp only [AddEquiv.trans_apply, AddEquiv.symm_apply_apply, QuotientAddGroup.quotientAddEquivOfEq_mk] <;> rfl
+  change g (k (e.symm (connectingAt i U x))) = b x
+  rw [he, AddEquiv.symm_apply_apply]
+  unfold k
+  rw [QuotientAddGroup.quotientAddEquivOfEq_mk] <;> rfl
 
 end
 

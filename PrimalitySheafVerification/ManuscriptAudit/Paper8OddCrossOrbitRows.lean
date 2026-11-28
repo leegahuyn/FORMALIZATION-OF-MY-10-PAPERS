@@ -17,7 +17,7 @@ noncomputable section
 private theorem crossShift_crossShift (g : SL(2, ℤ)) (m n p q : ℤ) :
     crossShift (crossShift g m n) p q = crossShift g (p + m) (n + q) := by
   unfold crossShift
-  rw [show 4 * (n + q) = 4 * n + 4 * q by ring, _root_.zpow_add, zpow_add]
+  rw [show 4 * (n + q) = 4 * n + 4 * q by ring, _root_.zpow_add ModularGroup.T p m, _root_.zpow_add ModularGroup.T (4 * n) (4 * q)]
   simp only [mul_assoc]
 
 theorem every_positive_cross_matrix (g : SL(2, ℤ)) (hPos : 0 < g 1 0)

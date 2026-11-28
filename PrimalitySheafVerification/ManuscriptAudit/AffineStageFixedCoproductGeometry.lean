@@ -36,7 +36,7 @@ theorem isPullback_cover (B E : Under R) :
       (Spec.map B.hom) (Spec.map E.hom) := by
   let hI := Under.mkIdInitial (X := R)
   have h : IsPushout (hI.to B) (hI.to E) (left B E) (right B E) :=
-    IsPushout.of_is_coproduct' (colimit.isColimit _) hI
+    IsPushout.of_is_coproduct (c := colimit.cocone (pair B E)) (colimit.isColimit _) hI
   have g := h.map (Under.forget R)
   change IsPushout (hI.to B).right (hI.to E).right (left B E).right (right B E).right at g
   rw [Under.mkIdInitial_to_right, Under.mkIdInitial_to_right] at g

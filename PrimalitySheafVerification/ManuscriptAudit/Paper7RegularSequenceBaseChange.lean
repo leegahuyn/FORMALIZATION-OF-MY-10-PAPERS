@@ -9,7 +9,7 @@ and a faithfully flat extension also detects them. -/
 
 namespace ManuscriptAudit.Paper7RegularSequenceBaseChange
 
-open RingTheory.Sequence Submodule
+open RingTheory.Sequence Submodule QuotSMulTop TensorProduct
 open scoped TensorProduct
 
 noncomputable section
@@ -58,8 +58,8 @@ theorem detects_weak [Module.FaithfullyFlat R S] (xs : List R) :
       intro M _ _ h
       obtain ⟨hReg, hTail⟩ := (isWeaklyRegular_cons_iff (S ⊗[R] M) x xs).mp h
       have hx : IsSMulRegular M x := by
-        apply (Module.FaithfullyFlat.lTensor_injective_iff_injective R S).mp
-          (f := DistribSMul.toLinearMap R M x)
+        apply (Module.FaithfullyFlat.lTensor_injective_iff_injective R S
+          (DistribSMul.toLinearMap R M x)).mp
         rw [LinearMap.lTensor_smul_action]
         exact hReg
       let e := tensorQuotSMulTopEquivQuotSMulTop x S M

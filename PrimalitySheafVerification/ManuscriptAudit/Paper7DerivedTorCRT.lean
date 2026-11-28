@@ -2,6 +2,8 @@ import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Products
+import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 
@@ -29,10 +31,10 @@ def crtLinear : (R ⧸ ⨅ j, I j) ≃ₗ[R] (∀ j, R ⧸ I j) where
       Ideal.Quotient.mk (I j) r * Ideal.Quotient.mk (I j) a
     exact map_mul _ _ _
 
-abbrev component (j : J) := ModuleCat.of R (R ⧸ I j)
+abbrev component (j : J) : ModuleCat.{u} R := ModuleCat.of R (R ⧸ I j)
 
 def quotientIsoProduct :
-    ModuleCat.of R (R ⧸ ⨅ j, I j) ≅ ∏ᶜ (component I) :=
+    (ModuleCat.of R (R ⧸ ⨅ j, I j) : ModuleCat.{u} R) ≅ ∏ᶜ (component I) :=
   (crtLinear I hI).toModuleIso ≪≫ (ModuleCat.piIsoPi (component I)).symm
 
 /-- This is literally Mathlib's left-derived tensor product, evaluated at

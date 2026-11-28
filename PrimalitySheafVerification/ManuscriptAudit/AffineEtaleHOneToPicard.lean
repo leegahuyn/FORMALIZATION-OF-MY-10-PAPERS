@@ -57,8 +57,8 @@ theorem picardClassOfLift_same_cover (y' : I.obj.obj (op (ofAlgebra R B)))
       (cokernel ι).obj.map (coverArrow R B).op x')
     (hx : connectingSection ι (terminal R) x = connectingSection ι (terminal R) x') :
     picardClassOfLift R B ι x y hy = picardClassOfLift R B ι x' y' hy' := by
-  have hz : connectingSection ι (terminal R) (x - x') = 0 := by
-    rw [connectingSection_sub, hx, sub_self]
+  have hz : connectingSection ι (terminal R) (x - x') = 0 :=
+    (connectingSection_sub ι (terminal R) x x').trans (sub_eq_zero.mpr hx)
   obtain ⟨z, hz⟩ := (connectingSection_eq_zero_iff ι (terminal R) (x - x')).1 hz
   obtain ⟨v, hv⟩ := transition_changeUnit_sameCover R B ι x y hy x' y' hy' z hz
   unfold picardClassOfLift

@@ -103,7 +103,15 @@ theorem restrictLift_transition :
       Additive.ofMul (pulledUnit A B S (transition A B i x y hy)) := hUnit
   apply (Additive.ofMul (α := (Double S (Cover A B S))ˣ)).injective
   apply section_injective (i' A S i) D
-  rw [transition_image, ← hUnits]
+  have hTransition : (i' A S i).hom.app (op D)
+      (Additive.ofMul (transition S (Cover A B S) (i' A S i)
+        (restrictGlobal A S i x) (restrictLift A B S y)
+        (restrictLift_spec A B S i x y hy))) =
+      ((R A S).obj I).obj.map (firstProjection S (Cover A B S)).op (restrictLift A B S y) -
+        ((R A S).obj I).obj.map (secondProjection S (Cover A B S)).op (restrictLift A B S y) :=
+    transition_image S (Cover A B S) (i' A S i)
+      (restrictGlobal A S i x) (restrictLift A B S y) (restrictLift_spec A B S i x y hy)
+  rw [hTransition, ← hUnits]
   have hm := restrictSection_sheafMap (j A S) i q
   have ht := congrArg (fun f => f.hom v) hm
   simp only [ConcreteCategory.comp_apply] at ht

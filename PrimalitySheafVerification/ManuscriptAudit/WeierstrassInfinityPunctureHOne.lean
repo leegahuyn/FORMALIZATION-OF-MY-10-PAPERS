@@ -3,7 +3,7 @@ import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleHOnePicard
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleHOnePicardBaseChange
 import PrimalitySheafVerification.ManuscriptAudit.DedekindPicardLocalization
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityDedekind
-import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityOpenCover
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityPuncture
 
 /-! Restricting actual affine unit cohomology from the infinity chart
 to its native puncture is an isomorphism, since the deleted prime is principal. -/

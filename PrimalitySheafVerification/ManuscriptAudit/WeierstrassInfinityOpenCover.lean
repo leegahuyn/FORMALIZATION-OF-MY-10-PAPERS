@@ -22,10 +22,39 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 variable {K : Type u} [Field K] (W : WeierstrassCurve.Affine K)
 
-attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
+attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt MvPolynomial.gradedAlgebra
 
 local instance : IsOpenImmersion (neighborhoodOpen W) := neighborhoodOpen_isOpenImmersion W
 
+private theorem chart_preimage_affine :
+    (WeierstrassProperInfinityChart.chartOpen W) ⁻¹ᵁ (affineOpen W).opensRange =
+      PrimeSpectrum.basicOpen (WeierstrassInfinityChartAlgebra.z W) := by
+  rw [affineOpen_range_z, ← Scheme.Hom.comp_preimage,
+    WeierstrassProperInfinityChart.chartOpen_inPlane, WeierstrassInfinityChartImmersion.inPlane_preimage_z]
+
+private theorem bracket_nonmem_of_z_mem
+    (q : PrimeSpectrum (Ring W))
+    (hz : WeierstrassInfinityChartAlgebra.z W ∈ q.asIdeal) : bracket W ∉ q.asIdeal := by
+  have hx : WeierstrassInfinityChartAlgebra.x W ∈ q.asIdeal := by
+    apply q.isPrime.mem_of_pow_mem 3
+    rw [← relation]
+    exact q.asIdeal.mul_mem_right _ hz
+  have hSpan : Ideal.span ({WeierstrassInfinityChartAlgebra.x W,
+      WeierstrassInfinityChartAlgebra.z W} : Set (Ring W)) ≤ q.asIdeal := by
+    rw [Ideal.span_le, Set.insert_subset_iff, Set.singleton_subset_iff]
+    exact ⟨hx, hz⟩
+  have hd : bracket W - 1 ∈ Ideal.span ({WeierstrassInfinityChartAlgebra.x W,
+      WeierstrassInfinityChartAlgebra.z W} : Set (Ring W)) := by
+    rw [← WeierstrassInfinityOriginIdeal.origin_ker]
+    change origin W (bracket W - 1) = 0
+    rw [map_sub, origin_bracket, map_one, sub_self]
+  intro hb
+  have hOne : (1 : Ring W) ∈ q.asIdeal := by
+    simpa only [sub_sub_cancel] using q.asIdeal.sub_mem hb (hSpan hd)
+  exact q.isPrime.ne_top ((Ideal.eq_top_iff_one q.asIdeal).mpr hOne)
+
+/-- The actual affine curve and Cartier neighborhood cover its projective
+closure. The cover follows from the homogeneous coordinates of boundary points. -/
 theorem cover :
     Set.range (neighborhoodOpen W) ∪ Set.range (affineOpen W) = Set.univ := by
   apply Set.eq_univ_of_forall
@@ -33,20 +62,29 @@ theorem cover :
   by_cases h : x ∈ Set.range (affineOpen W)
   · exact Or.inr h
   · left
-    have h' : x ∈ Set.range (atInfinity W) := by
-      rw [range_atInfinity]
-      exact h
-    obtain ⟨p, hp⟩ := h'
-    refine ⟨originToNeighborhood W p, ?_⟩
-    change (originToNeighborhood W ≫ neighborhoodOpen W) p = x
-    rw [originToNeighborhood_fac]
-    exact hp
-
-abbrev Puncture := Localization.Away (localX W)
-
-def punctureToNeighborhood :
-    Spec (CommRingCat.of (Puncture W)) ⟶ neighborhoodScheme W :=
-  Spec.map (CommRingCat.ofHom (algebraMap (Neighborhood W) (Puncture W)))
+    have hY : x ∈ WeierstrassProperInfinityChart.yOpen W := by
+      change (inPlane W).imageι x ∈ Proj.basicOpen (CuspYChartAlgebra.grading K) (CuspYChartAlgebra.y K)
+      exact (Proj.mem_basicOpen _ _ _).mpr
+        (WeierstrassProjectiveBoundary.boundary_plane_coordinates W x h).2.2
+    rw [← WeierstrassProperInfinityChart.chartOpen_range] at hY
+    obtain ⟨q, hq⟩ := hY
+    let q₀ : PrimeSpectrum (Ring W) := q
+    have hz : WeierstrassInfinityChartAlgebra.z W ∈ q₀.asIdeal := by
+      by_contra hn
+      have hp : q ∈ (WeierstrassProperInfinityChart.chartOpen W) ⁻¹ᵁ (affineOpen W).opensRange := by
+        rw [chart_preimage_affine]
+        exact hn
+      apply h
+      change WeierstrassProperInfinityChart.chartOpen W q ∈ Set.range (affineOpen W) at hp
+      rwa [hq] at hp
+    letI : IsOpenImmersion (neighborhoodToChart W) := IsOpenImmersion.of_isLocalization (bracket W)
+    have hN : q ∈ (neighborhoodToChart W).opensRange := by
+      unfold neighborhoodToChart
+      rw [Scheme.Hom.opensRange_localizationAway]
+      exact bracket_nonmem_of_z_mem W q₀ hz
+    obtain ⟨u, hu⟩ := hN
+    refine ⟨u, ?_⟩
+    rw [neighborhoodOpen, Scheme.Hom.comp_apply, hu, hq]
 
 private theorem overlap_range :
     Set.range (pullback.fst (neighborhoodOpen W) (affineOpen W)) =

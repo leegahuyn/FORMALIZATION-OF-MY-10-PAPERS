@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
-import PrimalitySheafVerification.ManuscriptAudit.WeierstrassCartierInfinity
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityNeighborhood
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProjectiveBoundary
 
 /-! Near the unique rational boundary, the original affine chart is the
 puncture where the regular prime parameter X/Y is invertible. -/
@@ -96,6 +97,26 @@ theorem localX_prime : Prime (localX W) := by
 end
 
 end ManuscriptAudit.WeierstrassInfinityPuncture
+
+namespace ManuscriptAudit.WeierstrassInfinityOpenCover
+
+open AlgebraicGeometry CategoryTheory
+open WeierstrassInfinityChartAlgebra WeierstrassCartierInfinity
+
+universe u
+noncomputable section
+
+variable {K : Type u} [Field K] (W : WeierstrassCurve.Affine K)
+
+abbrev Puncture := Localization.Away (localX W)
+
+def punctureToNeighborhood :
+    Spec (CommRingCat.of (Puncture W)) ⟶ neighborhoodScheme W :=
+  Spec.map (CommRingCat.ofHom (algebraMap (Neighborhood W) (Puncture W)))
+
+end
+
+end ManuscriptAudit.WeierstrassInfinityOpenCover
 
 open Lean Elab Command in
 run_cmd do

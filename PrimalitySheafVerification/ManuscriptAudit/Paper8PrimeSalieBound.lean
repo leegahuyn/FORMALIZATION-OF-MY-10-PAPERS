@@ -33,17 +33,21 @@ theorem primeSalie_root_identity {p : ℕ} [Fact p.Prime] (hp : p ≠ 2)
     exact mul_ne_zero h2 h2
   have hc : c ≠ 0 := mul_ne_zero (neg_ne_zero.mpr h4) hb
   have hZero : (∑ x : ZMod p, ψ x) = 0 := by
-    simpa only [mul_one, if_neg one_ne_zero] using AddChar.sum_mulShift (1 : ZMod p) hψ
+    simpa only [mul_one, if_neg one_ne_zero, Nat.cast_zero] using AddChar.sum_mulShift (1 : ZMod p) hψ
   have hCharZero : χ 0 = 0 := by simp [χ, primeQuadraticChar_apply]
   have hRoot :
       (∑ t : ZMod p, ∑ x : ZMod p, ψ (t * (x ^ 2 - β)) * ψ x) =
         (p : ℂ) * primeSalieRootSum ψ a b := by
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.sum_mul, mul_comm _ (_ - β)]
-    simp_rw [AddChar.sum_mulShift _ hψ, sub_eq_zero, ZMod.card, ite_mul, zero_mul]
     unfold primeSalieRootSum
-    rw [Finset.sum_filter, Finset.mul_sum]
-    exact Finset.sum_congr rfl (fun x _ => by split_ifs <;> simp)
+    rw [Finset.sum_comm, Finset.sum_filter, Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro x _
+    rw [← Finset.sum_mul, AddChar.sum_mulShift (x ^ 2 - β) hψ, ZMod.card]
+    by_cases hx : x ^ 2 = β
+    · simp [hx, β]
+    · have hn : x ^ 2 - β ≠ 0 := sub_ne_zero.mpr hx
+      have hn' : x ^ 2 ≠ 4 * a * b := hx
+      simp only [if_neg hn, if_neg hn', Nat.cast_zero, zero_mul, mul_zero]
   have hArrange (t x : ZMod p) :
       ψ (t * (x ^ 2 - β)) * ψ x = ψ (-(β * t)) * ψ (t * x ^ 2 + x) := by
     rw [← AddChar.map_add_eq_mul, ← AddChar.map_add_eq_mul]
@@ -60,7 +64,8 @@ theorem primeSalie_root_identity {p : ℕ} [Fact p.Prime] (hp : p ≠ 2)
         unfold β c
         field_simp [h4, hb, ht] <;> ring
       have hχ : χ t = χ c * χ (c * t) := by
-        rw [map_mul, ← mul_assoc, ← pow_two, primeQuadraticChar_sq hc, one_mul]
+        have hSq : χ c ^ 2 = 1 := primeQuadraticChar_sq hc
+        rw [map_mul χ c t, ← mul_assoc, ← pow_two, hSq, one_mul]
       rw [hX, hχ]
       unfold S
       calc

@@ -85,7 +85,8 @@ private theorem eval_fromElement (X : C) (P : Cᵒᵖ ⥤ G.{v,w}) (x : P.obj (o
     (FreeAbelianGroup.of (ULift.up (𝟙 X))) = x
   rw [FreeAbelianGroup.lift_apply_of]
   change P.map (𝟙 X).op x = x
-  rw [op_id, Functor.map_id] <;> rfl
+  have h : P.map (𝟙 (op X)) = 𝟙 (P.obj (op X)) := CategoryTheory.Functor.map_id P _
+  rw [op_id, h] <;> rfl
 
 private theorem eval_precompose {X Y : C} (g : X ⟶ Y) {P : Cᵒᵖ ⥤ G.{v,w}}
     (m : (freeYoneda.{u,v,w}).obj Y ⟶ P) :
@@ -112,7 +113,7 @@ private theorem eval_boundary (P : Cᵒᵖ ⥤ G.{v,w}) (n : ℕ)
       (Cech f P).d n (n + 1) (eval.{u,v,w} (N f n) P m) := by
   rw [boundary_formula, Preadditive.sum_comp, differential]
   simp only [Preadditive.zsmul_comp, map_sum, map_zsmul, eval_precompose]
-  change _ = evaluateHom (eval.{u,v,w} (N f n) P m) (∑ i, _)
+  change _ = evaluateHom.{v,w} (eval.{u,v,w} (N f n) P m) (∑ i, _)
   rw [map_sum]
   apply Finset.sum_congr rfl
   intro i _

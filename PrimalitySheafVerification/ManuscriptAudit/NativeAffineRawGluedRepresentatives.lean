@@ -32,11 +32,13 @@ private abbrev U (C : Type u) [CommRing C] [Algebra A C] :=
   CommRingCat.mkUnder (R (A := A)) C
 
 /-- An étale ring object with an actual chart map supplies a stable stage. -/
-def stageOf {C : Type u} [CommRing C] [Algebra A C]
+abbrev stageOf {C : Type u} [CommRing C] [Algebra A C]
     (M : Under (R (A := A))) [Etale (Spec.map M.hom)] (f : M ⟶ U (A := A) C) : Stage A C := by
-  letI : Algebra.Etale A M := (RingHom.etale_algebraMap).mp
-    ((HasRingHomProperty.Spec_iff (P := @Etale) (φ := M.hom)).mp
-      (inferInstanceAs (Etale (Spec.map M.hom))))
+  letI : Algebra A M.right := M.hom.hom.toAlgebra
+  have h : (algebraMap A M.right).Etale :=
+    (HasRingHomProperty.Spec_iff (P := @Etale) (φ := M.hom)).mp
+      (inferInstanceAs (Etale (Spec.map M.hom)))
+  letI : Algebra.Etale A M.right := (RingHom.etale_algebraMap).mp h
   exact Stage.of A C (CommRingCat.toAlgHom f)
 
 /-- The étale object of the stage is the literal spectrum over the base. -/

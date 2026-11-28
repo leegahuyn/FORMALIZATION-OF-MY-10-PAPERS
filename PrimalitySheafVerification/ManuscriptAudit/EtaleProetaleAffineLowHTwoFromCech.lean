@@ -62,8 +62,13 @@ private theorem comparison_boundary {S : ShortComplex (C X)} (hS : S.ShortExact)
     comparison X S.X₁ (n+1) (x.comp hS.extClass rfl) =
       (comparison X S.X₃ n x).comp
         (((hS.map_of_exact (lift X)).map_of_exact (inverseImage X)).extClass) rfl := by
-  simp only [comparison, AddMonoidHom.comp_apply, EtaleCoefficientCohomologyMap.comparison_boundary,
-    pullback_boundary]
+  change pullback X ((lift X).obj S.X₁) (n+1)
+      (EtaleCoefficientCohomologyMap.comparison X S.X₁ (n+1) (x.comp hS.extClass rfl)) =
+    (pullback X ((lift X).obj S.X₃) n (EtaleCoefficientCohomologyMap.comparison X S.X₃ n x)).comp
+      (((hS.map_of_exact (lift X)).map_of_exact (inverseImage X)).extClass) rfl
+  rw [EtaleCoefficientCohomologyMap.comparison_boundary]
+  exact pullback_boundary X (hS.map_of_exact (lift X)) n
+    (EtaleCoefficientCohomologyMap.comparison X S.X₃ n x)
 
 set_option maxHeartbeats 4000000 in
 private theorem comparison_succ_surjective (n : ℕ)

@@ -7,6 +7,7 @@ two-term projective resolution, with explicit native differentials. -/
 namespace ManuscriptAudit.TwoTermProjectiveResolution
 
 open CategoryTheory CategoryTheory.Limits
+open scoped ZeroObject
 
 noncomputable section
 
@@ -32,12 +33,12 @@ def complex (f : A ⟶ B) : ChainComplex C ℕ :=
     cases n <;> simp [boundary])
 
 theorem d_one_zero (f : A ⟶ B) : (complex f).d 1 0 = f := by
-  change (ChainComplex.of (stages A B) (boundary f) _).d (0+1) 0 = _
-  rw [ChainComplex.of_d] <;> rfl
+  change ChainComplex.of.d (stages A B) (boundary f) (0 + 1) 0 = f
+  exact ChainComplex.of_d (stages A B) (boundary f) 0
 
 theorem d_two_one (f : A ⟶ B) : (complex f).d 2 1 = 0 := by
-  change (ChainComplex.of (stages A B) (boundary f) _).d (1+1) 1 = _
-  rw [ChainComplex.of_d] <;> rfl
+  change ChainComplex.of.d (stages A B) (boundary f) (1 + 1) 1 = 0
+  exact ChainComplex.of_d (stages A B) (boundary f) 1
 
 private theorem exact_succ (f : A ⟶ B) [Mono f] (n : ℕ) :
     (complex f).ExactAt (n+1) := by
@@ -56,6 +57,14 @@ private theorem exact_succ (f : A ⟶ B) [Mono f] (n : ℕ) :
       change IsZero (0 : C)
       exact isZero_zero C
 
+private def augmentation (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0) :
+    complex f ⟶ (ChainComplex.single₀ C).obj X :=
+  (ChainComplex.toSingle₀Equiv _ _).symm ⟨q, by rw [d_one_zero, w]⟩
+
+private theorem augmentation_f_zero (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0) :
+    (augmentation f q w).f 0 = q :=
+  ChainComplex.toSingle₀Equiv_symm_apply_f_zero q _
+
 /-- The literal two-term complex resolves the actual degree-zero quotient. -/
 def resolution (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0)
     [Projective A] [Projective B] [Mono f] [Epi q]
@@ -69,13 +78,14 @@ def resolution (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0)
       infer_instance
     · change Projective (0 : C)
       infer_instance
-  π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨q, by rw [d_one_zero, w]⟩
+  π := augmentation f q w
   quasiIso := ⟨fun n ↦ by
     cases n with
     | zero =>
         rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
-        · change (ShortComplex.mk ((complex f).d 1 0) q _).Exact ∧ Epi q
-          rw [d_one_zero f]
+        · change (ShortComplex.mk ((complex f).d 1 0) ((augmentation f q w).f 0) _).Exact ∧
+            Epi ((augmentation f q w).f 0)
+          rw [augmentation_f_zero, d_one_zero]
           exact ⟨h, inferInstance⟩
         all_goals rfl
     | succ n =>

@@ -81,8 +81,18 @@ theorem exists_matching_representatives
   let l := left (A := A) (B := B) (D := D)
   let r := right (A := A) (B := B) (D := D)
   have hPB := isPullback (A := A) (B := B) (D := D)
+  let e := hPB.isoPullback
+  let a := pullback.fst (k (A := A) (B := B) (D := D)) (k (A := A) (B := B) (D := D))
+  let b := pullback.snd (k (A := A) (B := B) (D := D)) (k (A := A) (B := B) (D := D))
+  have hl₀ : e.hom ≫ a = chartMap l := hPB.isoPullback_hom_fst
+  have hr₀ : e.hom ≫ b = chartMap r := hPB.isoPullback_hom_snd
   have hm : (P I).map (chartMap l).op x = (P I).map (chartMap r).op x := by
-    rw [← hPB.isoPullback_hom_fst, ← hPB.isoPullback_hom_snd, ← map_map, ← map_map, hx]
+    calc
+      _ = (P I).map (e.hom ≫ a).op x := congrArg (fun t ↦ (P I).map t.op x) hl₀.symm
+      _ = (P I).map e.hom.op ((P I).map a.op x) := (map_map I e.hom a x).symm
+      _ = (P I).map e.hom.op ((P I).map b.op x) := congrArg ((P I).map e.hom.op) hx
+      _ = (P I).map (e.hom ≫ b).op x := map_map I e.hom b x
+      _ = _ := congrArg (fun t ↦ (P I).map t.op x) hr₀
   obtain ⟨M, z, hz⟩ := exists_representative I x
   have hl := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom (rawSection_map I l M)) z
   have hr := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom (rawSection_map I r M)) z

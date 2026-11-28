@@ -81,11 +81,33 @@ theorem stdAddChar_high_digit {n m : ℕ} [NeZero n] [NeZero m] (z : ZMod (n * m
       push_cast
       rw [reduceHighDigit_apply, ZMod.natCast_zmod_val]
 
+theorem stdAddChar_high_digit_nat {n m : ℕ} [NeZero n] [NeZero m]
+    (z : ZMod (n * m)) (d : ℕ) :
+    ZMod.stdAddChar ((m : ZMod (n * m)) * z * (d : ZMod (n * m))) =
+      ZMod.stdAddChar (reduceHighDigit z * (d : ZMod n)) := by
+  let a : ZMod n := d
+  have hVal : a.val = d % n := ZMod.val_natCast n d
+  have hD := congrArg (fun t : ℕ => (t : ZMod (n * m))) (Nat.mod_add_div d n)
+  push_cast at hD
+  have hKill : (m : ZMod (n * m)) * (n : ZMod (n * m)) = 0 := by
+    rw [mul_comm, ← Nat.cast_mul, ZMod.natCast_self]
+  have hEq : (m : ZMod (n * m)) * z * (d : ZMod (n * m)) =
+      (m : ZMod (n * m)) * z * (a.val : ZMod (n * m)) := by
+    rw [hVal]
+    conv_lhs => rw [← hD, mul_add]
+    have hZero : (m : ZMod (n * m)) * z * ((n : ZMod (n * m)) * ((d / n : ℕ) : ZMod (n * m))) = 0 := by
+      calc
+        _ = ((m : ZMod (n * m)) * (n : ZMod (n * m))) * (z * ((d / n : ℕ) : ZMod (n * m))) := by ring
+        _ = _ := by rw [hKill, zero_mul]
+    rw [hZero, add_zero]
+  rw [hEq, stdAddChar_high_digit] <;> rfl
+
 theorem sum_stdAddChar_high_digit {n m : ℕ} [NeZero n] [NeZero m] (z : ZMod (n * m)) :
     (∑ a : ZMod n, ZMod.stdAddChar ((m : ZMod (n * m)) * z * (a.val : ZMod (n * m)))) =
       if reduceHighDigit z = 0 then (n : ℂ) else 0 := by
   simp_rw [stdAddChar_high_digit, mul_comm (reduceHighDigit z)]
   rw [AddChar.sum_mulShift _ (ZMod.isPrimitive_stdAddChar n), ZMod.card]
+  split_ifs <;> simp
 
 end
 end ManuscriptAudit.Paper8ZModDigitOrthogonality

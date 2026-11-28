@@ -34,6 +34,7 @@ private theorem normalizedNegativeRoot_scale {r : ℝ} (hr : 0 < r) {w : ℂ} (h
     rw [← hReal, sqrt_eq_exp (mul_ne_zero hrC hw), sqrt_eq_exp hrC, sqrt_eq_exp hw,
       Complex.log_ofReal_mul hr hw, ← Complex.exp_add]
     congr 1
+    rw [Complex.ofReal_log hr.le]
     ring
   unfold normalizedNegativeRoot
   rw [hMul, norm_mul, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hr, Real.sqrt_mul hr.le]
@@ -152,8 +153,14 @@ theorem oddCrossFourierTerm_row_kernel {D : ℕ} (A : CrossRow (D + 1)) (s : ℂ
       rw [hExp]
       unfold crossRealKernel
       change _ = crossEntry _ _ _ * ((starRingEnd ℂ) (normalizedNegativeRoot w) * _ * _)
-      rw [← hGeom, ← hCoeff, ← hHt]
-      ring
+      rw [← hGeom, ← hHt]
+      calc
+        _ = (actualCrossPhase z ⟨D, A, 0⟩ *
+              exponentialPhase (scaledCrossDiagonal (D + 1) (A.matrix 0 0) (A.matrix 1 1) : ℂ)) *
+            ((((g • z : ℍ).im : ℂ) ^ s) *
+              exponentialPhase (-(oddInfinityFrequency : ℂ) / ((c : ℂ) ^ 2 * w) -
+                (oddZeroFrequency : ℂ) * (u : ℂ))) := by ring
+        _ = _ := by rw [hCoeff]; ring
 
 end
 end ManuscriptAudit.Paper8OddCrossPoincareRowKernel

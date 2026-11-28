@@ -104,9 +104,11 @@ theorem restrict_injective (hApprox : FiniteTupleApproximation A B)
     DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom (rawSection_map I k W)) c
   have hEq : repr I d s = repr I d z := by rw [← h₁, ← h₁, hs, hz, he]
   obtain ⟨N, p, q, h⟩ := exists_equal_representatives I d d s z hEq
+  have hp₀ : N.toChart.comp (hom p) = k.comp W.toChart := p.property
+  have hq₀ : N.toChart.comp (hom q) = k.comp W.toChart := q.property
   obtain ⟨Z, hZR, hZA, hZE, l, g, hZ, V, hVR, hVA, hVE, e, j, hSurj, hp, hq⟩ :=
-    AffineEtaleStageSeparatedRefinement.exists_cover_refinement hApprox W.toChart (hom p) (hom q)
-      N.toChart k p.property q.property hCov
+    AffineEtaleStageSeparatedRefinement.exists_cover_refinement (C := W.carrier) (N := N.carrier)
+      hApprox W.toChart (hom p) (hom q) N.toChart k hp₀ hq₀ hCov
   letI : CommRing Z := hZR
   letI : Algebra A Z := hZA
   letI : Algebra.Etale A Z := hZE

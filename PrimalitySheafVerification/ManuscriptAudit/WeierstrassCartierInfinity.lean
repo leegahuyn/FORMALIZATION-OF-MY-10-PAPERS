@@ -1,7 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProperInfinityChart
-import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityOriginIdeal
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityPuncture
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProjectiveInfinity
 
 /-! The unique boundary of the actual proper Weierstrass curve is a rational
@@ -43,44 +43,22 @@ private theorem origin_surjective : Function.Surjective (origin W) := by
 private instance originToChart_isClosedImmersion : IsClosedImmersion (originToChart W) :=
   IsClosedImmersion.spec_of_surjective _ (origin_surjective W)
 
-private theorem affine_in_Z_chart (x : affineScheme W) :
-    (inPlane W).imageι (affineOpen W x) ∈ Proj.basicOpen (grading K) (CuspYChartAlgebra.z K) := by
-  change ((affineOpen W) ≫ (inPlane W).imageι) x ∈ _
-  rw [affineOpen, Scheme.Hom.toImage_imageι]
-  unfold inPlane
-  change affineZChartι K (Spec.map (CommRingCat.ofHom (chartEvaluation W)) x) ∈ _
-  rw [← Proj.opensRange_awayι (grading K) (CuspYChartAlgebra.z K) (X_mem_one K 2) (by decide)]
-  exact ⟨_, rfl⟩
+private theorem origin_preimage_affine :
+    (atInfinity W) ⁻¹ᵁ (affineOpen W).opensRange = ⊥ := by
+  have hZ : (WeierstrassProperInfinityChart.chartOpen W) ⁻¹ᵁ (affineOpen W).opensRange =
+      PrimeSpectrum.basicOpen (z W) := by
+    rw [WeierstrassInfinityPuncture.affineOpen_range_z, ← Scheme.Hom.comp_preimage,
+      WeierstrassProperInfinityChart.chartOpen_inPlane, WeierstrassInfinityChartImmersion.inPlane_preimage_z]
+  rw [atInfinity, Scheme.Hom.comp_preimage, hZ, originToChart, SpecMap_preimage_basicOpen]
+  change PrimeSpectrum.basicOpen (origin W (z W)) = ⊥
+  rw [origin_z, PrimeSpectrum.basicOpen_zero]
 
-private theorem origin_not_in_Z_chart (p : linePoint (K := K)) :
-    originToChart W p ∉ (WeierstrassInfinityChartImmersion.inPlane W) ⁻¹ᵁ
-      Proj.basicOpen (grading K) (CuspYChartAlgebra.z K) := by
-  rw [WeierstrassInfinityChartImmersion.inPlane_preimage_z]
-  change ¬ (z W ∉ (PrimeSpectrum.comap (origin W).toRingHom p).asIdeal)
-  apply not_not.mpr
-  change origin W (z W) ∈ p.asIdeal
-  rw [origin_z]
-  exact p.asIdeal.zero_mem
-
-private theorem comp_apply_congr {A B C : Scheme.{u}} (f : A ⟶ B) (g : B ⟶ C)
-    {h : A ⟶ C} (e : f ≫ g = h) (a : A) : g (f a) = h a :=
-  (Scheme.Hom.comp_apply f g a).symm.trans (congrArg (fun k : A ⟶ C => k a) e)
-
-set_option maxHeartbeats 1200000 in
-private theorem inPlane_atInfinity (p : linePoint (K := K)) :
-    (inPlane W).imageι (atInfinity W p) =
-      WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) :=
-  comp_apply_congr (WeierstrassProperInfinityChart.chartOpen W) (inPlane W).imageι
-    (WeierstrassProperInfinityChart.chartOpen_inPlane W) (originToChart W p)
-
-set_option maxHeartbeats 1000000 in
 theorem atInfinity_outside_affine (p : linePoint (K := K)) :
     atInfinity W p ∉ Set.range (affineOpen W) := by
-  rintro ⟨x, hx⟩
-  have h := affine_in_Z_chart W x
-  have he := congrArg (fun z : projectiveScheme W => (inPlane W).imageι z) hx
-  rw [he, inPlane_atInfinity] at h
-  exact origin_not_in_Z_chart W p h
+  intro hp
+  have h : p ∈ (atInfinity W) ⁻¹ᵁ (affineOpen W).opensRange := hp
+  rw [origin_preimage_affine] at h
+  exact h
 
 theorem range_atInfinity : Set.range (atInfinity W) = (Set.range (affineOpen W))ᶜ := by
   obtain ⟨q, -, hq⟩ := WeierstrassProjectiveInfinity.existsUnique_boundary W
@@ -100,23 +78,6 @@ theorem atInfinity_isClosedImmersion : IsClosedImmersion (atInfinity W) := by
   rw [range_atInfinity]
   exact (affineOpen W).isOpenEmbedding.isOpen_range.isClosed_compl
 
-abbrev neighborhoodScheme := Spec (CommRingCat.of (Neighborhood W))
-
-def neighborhoodToChart : neighborhoodScheme W ⟶ WeierstrassInfinityChartImmersion.chartScheme W :=
-  Spec.map (CommRingCat.ofHom (algebraMap (Ring W) (Neighborhood W)))
-
-/-- Open neighborhood of the actual infinity point on which its ideal is principal. -/
-def neighborhoodOpen : neighborhoodScheme W ⟶ projectiveScheme W :=
-  neighborhoodToChart W ≫ WeierstrassProperInfinityChart.chartOpen W
-
-theorem neighborhoodOpen_isOpenImmersion : IsOpenImmersion (neighborhoodOpen W) := by
-  letI : IsOpenImmersion (neighborhoodToChart W) := IsOpenImmersion.of_isLocalization (bracket W)
-  unfold neighborhoodOpen
-  infer_instance
-
-def originToNeighborhood : linePoint (K := K) ⟶ neighborhoodScheme W :=
-  Spec.map (CommRingCat.ofHom (localOrigin W).toRingHom)
-
 theorem originToNeighborhood_fac : originToNeighborhood W ≫ neighborhoodOpen W = atInfinity W := by
   unfold originToNeighborhood neighborhoodOpen neighborhoodToChart atInfinity originToChart
   rw [← Category.assoc, ← Spec.map_comp]
@@ -127,13 +88,6 @@ theorem originToNeighborhood_fac : originToNeighborhood W ≫ neighborhoodOpen W
     exact localOrigin_map W
   rw [h]
 
-/-- The ideal of the actual closed point on its open neighborhood is generated
-by the regular function X/Y, hence gives an effective Cartier parameter. -/
-theorem cartier_parameter :
-    RingHom.ker (localOrigin W).toRingHom =
-        Ideal.span ({localX W} : Set (Neighborhood W)) ∧
-      localX W ∈ (Neighborhood W)⁰ :=
-  ⟨localOrigin_ker W, WeierstrassInfinityChartRegular.localX_regular W⟩
 
 end
 

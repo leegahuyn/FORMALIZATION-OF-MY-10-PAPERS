@@ -54,7 +54,8 @@ theorem toRight_surjective (h : Function.Surjective (fromLeft S F)) :
 the kernel of restriction to the right chart is the actual boundary image. -/
 theorem toRight_ker (h : Function.Injective (fromLeft S F)) :
     (toRight S F).ker = ((S.δ F 0 1 rfl).hom).range := by
-  have he := ((S.sequence_exact F 0 1 rfl).exact' 2 3 4).ab_range_eq_ker
+  have he : ((S.δ F 0 1 rfl).hom).range = (S.toBiprod F 1).hom.ker :=
+    ((S.sequence_exact F 0 1 rfl).exact' 2 3 4).ab_range_eq_ker
   rw [he]
   ext x
   change toRight S F x = 0 ↔ S.toBiprod F 1 x = 0

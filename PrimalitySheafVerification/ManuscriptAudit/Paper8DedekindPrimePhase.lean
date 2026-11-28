@@ -20,15 +20,15 @@ theorem phase_mod_eight_floor {h k : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 1) :
   have ha : (h : ℤ) - 1 = 2 * a := by
     have hn : h = 2 * (h / 2) + 1 := by omega
     have hz := congrArg (fun n : ℕ => (n : ℤ)) hn
-    push_cast at hz
+    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one] at hz
     dsimp only [a]
-    linarith
+    linear_combination hz
   have hb : (k : ℤ) - 1 = 2 * b := by
     have hn : k = 2 * (k / 2) + 1 := by omega
     have hz := congrArg (fun n : ℕ => (n : ℤ)) hn
-    push_cast at hz
+    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one] at hz
     dsimp only [b]
-    linarith
+    linear_combination hz
   have hQ : (Q : ℤ) = ∑ j : Fin k, (j.val : ℤ) * ((((h * j.val) / k : ℕ)) : ℤ) := by
     unfold Q dedekindFloorWeight
     push_cast <;> rfl

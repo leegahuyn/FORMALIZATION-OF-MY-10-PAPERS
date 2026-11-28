@@ -79,6 +79,47 @@ theorem valuation_affine_quotient_degree (f : W.CoordinateRing) (hf : f ≠ 0) :
       rw [← exp_add, neg_add_cancel, exp_zero, mul_one]
     _ = exp (d : ℤ) := by rw [← mul_assoc, ← hv, one_mul]
 
+
+private def affineToInfinityFractionField : W.CoordinateRing →+* F W :=
+  (punctureToLocalFractionField W).comp (affineToPuncture W).toRingHom
+
+private theorem affineToInfinityFractionField_injective :
+    Function.Injective (affineToInfinityFractionField W) := by
+  apply (injective_iff_map_eq_zero _).mpr
+  intro f hf
+  by_contra h
+  have hv := valuation_affine_quotient_degree W f h
+  change (infinityPrime W).valuation (F W) (affineToInfinityFractionField W f) = _ at hv
+  rw [hf, map_zero] at hv
+  exact exp_ne_zero hv.symm
+
+/-- The map of the genuine affine function field into the infinity chart's
+fraction field follows from their actual coordinate identification. -/
+def functionFieldMap : W.FunctionField →+* F W :=
+  IsFractionRing.lift (affineToInfinityFractionField_injective W)
+
+/-- The genuine infinity valuation on the native Weierstrass function field. -/
+def functionFieldValuation : Valuation W.FunctionField ℤᵐ⁰ :=
+  ((infinityPrime W).valuation (F W)).comap (functionFieldMap W)
+
+private theorem valuation_affine_function (f : W.CoordinateRing) :
+    functionFieldValuation W (algebraMap W.CoordinateRing W.FunctionField f) =
+      punctureValuation W (affineToPuncture W f) := by
+  change (infinityPrime W).valuation (F W)
+    (functionFieldMap W (algebraMap W.CoordinateRing W.FunctionField f)) = _
+  rw [functionFieldMap, IsFractionRing.lift_algebraMap] <;> rfl
+
+/-- The infinity valuation of a rational function is computed from the
+degrees of the numerator and denominator's actual affine zero schemes. -/
+theorem valuation_functionField_ratio (f g : W.CoordinateRing) (hf : f ≠ 0) (hg : g ≠ 0) :
+    functionFieldValuation W
+        (algebraMap W.CoordinateRing W.FunctionField f /
+          algebraMap W.CoordinateRing W.FunctionField g) =
+      exp ((Module.finrank K (W.CoordinateRing ⧸ Ideal.span ({f} : Set W.CoordinateRing)) : ℤ) -
+          Module.finrank K (W.CoordinateRing ⧸ Ideal.span ({g} : Set W.CoordinateRing))) := by
+  rw [Valuation.map_div, valuation_affine_function, valuation_affine_function,
+    valuation_affine_quotient_degree W f hf, valuation_affine_quotient_degree W g hg, exp_sub]
+
 end
 
 end ManuscriptAudit.WeierstrassInfinityAdicOrder
@@ -89,7 +130,8 @@ run_cmd do
   for name in [``ManuscriptAudit.WeierstrassInfinityAdicOrder.infinityPrime,
       ``ManuscriptAudit.WeierstrassInfinityAdicOrder.valuation_parameter,
       ``ManuscriptAudit.WeierstrassInfinityAdicOrder.valuation_nonzero_residue,
-      ``ManuscriptAudit.WeierstrassInfinityAdicOrder.valuation_affine_quotient_degree] do
+      ``ManuscriptAudit.WeierstrassInfinityAdicOrder.valuation_affine_quotient_degree,
+      ``ManuscriptAudit.WeierstrassInfinityAdicOrder.valuation_functionField_ratio] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n
     unless bad.isEmpty do

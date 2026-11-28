@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityChartCoordinates
-import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityOpenCover
+import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityPuncture
 
 /-! The original affine coordinates on the Cartier puncture have precisely
 the denominators u² and u³, where u=X/Y and the bracket is a unit. -/

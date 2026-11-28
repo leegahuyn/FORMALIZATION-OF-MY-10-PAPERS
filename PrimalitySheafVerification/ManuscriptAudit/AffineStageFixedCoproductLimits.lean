@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
-import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Connected
 import PrimalitySheafVerification.ManuscriptAudit.DiagonalCoproductColimit
 
 /-! Refining the base of a fixed cover and the fixed cover's self-intersection
@@ -16,27 +17,12 @@ set_option backward.isDefEq.respectTransparency false
 
 variable {J C : Type*} [Category* J] [Category* C] [HasBinaryCoproducts C]
 
-private def constantCocone (E : C) : Cocone ((Functor.const J).obj E) where
-  pt := E
-  ι := { app := fun _ ↦ 𝟙 E }
+private abbrev constantCocone (E : C) := constCocone J E
 
 private def constantIsColimit [IsFiltered J] (E : C) :
-    IsColimit (constantCocone (J := J) E) where
-  desc s := s.ι.app (Classical.choice IsFiltered.nonempty)
-  fac s j := by
-    let i : J := Classical.choice IsFiltered.nonempty
-    change (𝟙 E) ≫ (s.ι.app i : E ⟶ s.pt) = s.ι.app j
-    have hi := s.w (IsFiltered.leftToMax i j)
-    have hj := s.w (IsFiltered.rightToMax i j)
-    change 𝟙 E ≫ s.ι.app _ = s.ι.app i at hi
-    change 𝟙 E ≫ s.ι.app _ = s.ι.app j at hj
-    rw [Category.id_comp] at hi hj
-    exact (Category.id_comp (s.ι.app i : E ⟶ s.pt)).trans (hi.symm.trans hj)
-  uniq s m hm := by
-    let i : J := Classical.choice IsFiltered.nonempty
-    have h := hm i
-    change 𝟙 E ≫ m = s.ι.app i at h
-    simpa only [Category.id_comp] using h
+    IsColimit (constantCocone (J := J) E) := by
+  letI : IsConnected J := IsFiltered.isConnected J
+  exact isColimitConstCocone J E
 
 /-- Attach the fixed cover ring on the right of each refining base ring. -/
 abbrev diagram (F : J ⥤ C) (E : C) :=

@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 /-! The two stationary branches at odd prime powers and exact nilpotent inversion formulas. -/
 
@@ -30,18 +31,21 @@ theorem prime_pow_sq_eq_one_iff {p r : ℕ} (hPrime : p.Prime) (hp : p ≠ 2)
     let x := u.val + k
     have hx : 0 < x := by unfold x; omega
     have hX : (x : ZMod k) = u := by unfold x; rw [Nat.cast_add, ZMod.natCast_zmod_val, ZMod.natCast_self, add_zero]
+    have hMinus : ((x - 1 : ℕ) : ZMod k) = u - 1 := by
+      rw [Nat.cast_sub (show 1 ≤ x from hx), Nat.cast_one, hX]
+    have hPlus : ((x + 1 : ℕ) : ZMod k) = u + 1 := by
+      rw [Nat.cast_add x 1, Nat.cast_one, hX]
     have hD : k ∣ (x - 1) * (x + 1) := by
       apply (ZMod.natCast_eq_zero_iff _ k).1
-      rw [Nat.cast_mul, Nat.cast_sub hx, Nat.cast_add, Nat.cast_one, hX,
-        show (u - 1) * (u + 1) = u ^ 2 - 1 by ring, h, sub_self]
+      rw [Nat.cast_mul, hMinus, hPlus, show (u - 1) * (u + 1) = u ^ 2 - 1 by ring, h, sub_self]
     rcases prime_pow_dvd_sub_or_add hPrime hp hx hD with hL | hR
     · left
       have he := (ZMod.natCast_eq_zero_iff (x - 1) k).2 hL
-      rw [Nat.cast_sub hx, Nat.cast_one, hX] at he
+      rw [hMinus] at he
       exact sub_eq_zero.mp he
     · right
       have he := (ZMod.natCast_eq_zero_iff (x + 1) k).2 hR
-      rw [Nat.cast_add, Nat.cast_one, hX] at he
+      rw [hPlus] at he
       linear_combination he
   · rintro (rfl | rfl) <;> ring
 
