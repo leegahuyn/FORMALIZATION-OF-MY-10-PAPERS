@@ -105,7 +105,10 @@ theorem cutoff_real_smooth (φ : ℝ → ℝ) {n : ℕ∞ω} (hφSmooth : ContDi
   have hDen : ContDiffAt ℝ n (denominator g) w := by unfold denominator; fun_prop
   have hFrac : ContDiffAt ℝ n (fractionalLinear g) w := by
     unfold fractionalLinear
-    simpa only [div_eq_mul_inv] using hNum.mul (hDen.inv (denominator_ne_zero g z))
+    simp only [div_eq_mul_inv]
+    change ContDiffAt ℝ n
+      ((fun v : ℂ => (g 0 0 : ℂ) * v + (g 0 1 : ℂ)) * (denominator g)⁻¹) w
+    exact hNum.mul (hDen.inv (denominator_ne_zero g z))
   have hIm : ContDiffAt ℝ n (fun v : ℂ => v.im) (fractionalLinear g w) :=
     Complex.imCLM.contDiff.contDiffAt
   have hSmooth : ContDiffAt ℝ n (fun v : ℂ => φ (fractionalLinear g v).im) w :=

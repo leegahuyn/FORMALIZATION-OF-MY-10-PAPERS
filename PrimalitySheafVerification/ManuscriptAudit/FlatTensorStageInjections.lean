@@ -34,7 +34,7 @@ variable (U : ℕ → Subalgebra R B)
 /-- The actual double-product tensor ring embeds into the limiting double product. -/
 theorem stageTensor_injective (n : ℕ) [Module.Flat R B] [Module.Flat R (U n)] :
     Function.Injective (stageTensor U n) :=
-  map_injective (U n).val (U n).val (U n).val_injective (U n).val_injective
+  map_injective (U n).val (U n).val (fun _ _ h => Subtype.ext h) (fun _ _ h => Subtype.ext h)
 
 /-- The actual triple-product ring map, with explicit associativity convention. -/
 def stageTriple (n : ℕ) : ((U n ⊗[R] U n) ⊗[R] U n) →ₐ[R] ((B ⊗[R] B) ⊗[R] B) :=
@@ -43,7 +43,7 @@ def stageTriple (n : ℕ) : ((U n ⊗[R] U n) ⊗[R] U n) →ₐ[R] ((B ⊗[R] B
 /-- The actual triple-product tensor ring also embeds under the indicated flatness. -/
 theorem stageTriple_injective (n : ℕ) [Module.Flat R B] [Module.Flat R (U n)]
     [Module.Flat R (B ⊗[R] B)] : Function.Injective (stageTriple U n) :=
-  map_injective (stageTensor U n) (U n).val (stageTensor_injective U n) (U n).val_injective
+  map_injective (stageTensor U n) (U n).val (stageTensor_injective U n) (fun _ _ h => Subtype.ext h)
 
 end
 end ManuscriptAudit.FlatTensorStageInjections

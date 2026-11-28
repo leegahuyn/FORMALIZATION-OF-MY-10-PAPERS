@@ -8,9 +8,11 @@ namespace ManuscriptAudit.FaithfullyFlatCocyclePicard
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 open FaithfullyFlatTensorEqualizer
 
+universe u
+
 noncomputable section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B]
 variable (s t : (Double A B)ˣ) (v : Bˣ)
 
 private def mulUnit : B →ₗ[A] B where

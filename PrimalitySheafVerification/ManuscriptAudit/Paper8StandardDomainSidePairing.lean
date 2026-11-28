@@ -81,11 +81,11 @@ theorem arcHeight_hasDerivAt {x : ℝ} (hx : |x| ≤ 1 / 2) :
   have hL : 0 ≤ x + 1 / 2 := by linarith [(abs_le.mp hx).1]
   have hR : 0 ≤ 1 / 2 - x := sub_nonneg.mpr (abs_le.mp hx).2
   have hPos : 0 < 1 - x ^ 2 := by nlinarith [mul_nonneg hL hR]
-  have hPow : HasDerivAt (fun u : ℝ => u ^ 2) (2 * x) x := by
+  have hPow : HasDerivAt ((id : ℝ → ℝ) ^ (2 : ℕ)) (2 * x) x := by
     simpa [id_eq] using (hasDerivAt_id x).pow (2 : ℕ)
   have hQuad : HasDerivAt (fun u : ℝ => 1 - u ^ 2) (-2 * x) x := by
-    have hD : -(2 * x) = -2 * x := neg_mul _ _
-    rw [← hD]
+    rw [neg_mul]
+    change HasDerivAt (fun u : ℝ => 1 - ((id : ℝ → ℝ) ^ (2 : ℕ)) u) (-(2 * x)) x
     exact hPow.const_sub 1
   have h := (Real.hasDerivAt_sqrt hPos.ne').comp x hQuad
   change HasDerivAt arcHeight ((1 / (2 * arcHeight x)) * (-2 * x)) x at h

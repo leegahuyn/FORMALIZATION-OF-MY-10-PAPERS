@@ -31,10 +31,11 @@ variable {I : Sheaf (Scheme.ProEt.topology (Z (K := K))) A}
 variable (m : F (K := K) ℓ ⟶ I) [Mono m]
 
 set_option maxHeartbeats 1600000 in
-private theorem affine_sections_surjective (U : X.ProEt) [IsAffine U.left] :
+private theorem affine_sections_surjective (U : X.ProEt) [hU : IsAffine U.left] :
     Function.Surjective (((G i).map (cokernel.π m)).hom.app (op U)) := by
   let T := (baseChange i).obj U
   letI : IsAffineHom i := inferInstance
+  letI : IsAffine ((𝟭 Scheme).obj U.left) := hU
   letI : IsAffine T.left :=
     show IsAffine (pullback U.hom i : Scheme.{0}) from
       isAffine_of_isAffineHom (pullback.fst U.hom i)

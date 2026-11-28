@@ -8,9 +8,11 @@ namespace ManuscriptAudit.FaithfullyFlatCocycleRefinement
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 open FaithfullyFlatCocyclePicard
 
+universe u
+
 noncomputable section
 
-variable (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
+variable (A B C : Type u) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
 variable (f : B →ₐ[A] C)
 
 private abbrev doubleMap : Double A B →ₐ[A] Double A C := Algebra.TensorProduct.map f f

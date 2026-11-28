@@ -17,7 +17,6 @@ private theorem sheafPower_comp (R : CommRingCat.{0}) (d m : ℕ) :
     sheafPower (Spec R) m ≫ sheafPower (Spec R) d = sheafPower (Spec R) (d * m) := by
   simp only [sheafPower_eq_nsmul_id, Preadditive.nsmul_comp, Preadditive.comp_nsmul,
     Category.id_comp, smul_smul]
-  exact congrArg (fun n : ℕ => n • 𝟙 (unitSheaf (Spec R))) (mul_comm m d)
 
 /-- The actual power map from the Kummer kernel of dm to the kernel of d. -/
 def rootsTransition (R : CommRingCat.{0}) (d m : ℕ) :

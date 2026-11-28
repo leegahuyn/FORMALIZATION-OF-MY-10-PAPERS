@@ -64,7 +64,7 @@ theorem isUnramifiedAt (g : C →ₐ[Polynomial K] B)
     rw [hp]
     exact Ideal.subset_span (by simp)
   have hq : algebraMap A C t ∈ q := by
-    change t ∈ q.comap (algebraMap A C)
+    change t ∈ q.under (Polynomial K)
     rwa [← q.over_def p]
   have hs : s ∈ IsLocalRing.maximalIdeal S := by
     rw [← Localization.AtPrime.map_eq_maximalIdeal]

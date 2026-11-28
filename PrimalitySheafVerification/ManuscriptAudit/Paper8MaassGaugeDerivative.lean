@@ -39,7 +39,13 @@ theorem complexGauge_differentiableAt (z : ℍ) : DifferentiableAt ℝ complexGa
 theorem complexGaugeRatio_differentiableAt {F : ℂ → ℂ} (z : ℍ)
     (hF : DifferentiableAt ℝ F z) : DifferentiableAt ℝ (complexGaugeRatio F) z := by
   have hG : complexGauge z ≠ 0 := by rw [complexGauge_coe]; exact etaGauge_ne_zero z
-  exact hF.div (complexGauge_differentiableAt z) hG
+  have hInvC : DifferentiableAt ℂ (fun v : ℂ => v⁻¹) (complexGauge z) :=
+    (hasDerivAt_inv hG).differentiableAt
+  have hInv : DifferentiableAt ℝ ((fun v : ℂ => v⁻¹) ∘ complexGauge) z :=
+    (hInvC.restrictScalars ℝ).comp (z : ℂ) (complexGauge_differentiableAt z)
+  unfold complexGaugeRatio
+  simp only [div_eq_mul_inv]
+  exact hF.mul hInv
 
 theorem gauge_derivativeZ_transform {F : ℂ → ℂ} (hLaw : OddMaassLaw F)
     (hF : ∀ w : ℂ, 0 < w.im → DifferentiableAt ℝ F w)

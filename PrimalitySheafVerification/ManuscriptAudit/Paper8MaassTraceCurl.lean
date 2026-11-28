@@ -59,8 +59,9 @@ theorem weightedCurl_slashComplex (J : ℂ → ℂ) (g : SL(2, ℤ)) (z : ℍ)
   have hJ' : DifferentiableAt ℝ J (fractionalLinear g z) := by rw [fractionalLinear_eq]; exact hJ
   have hD : DifferentiableAt ℂ (denominator g) z := by unfold denominator; fun_prop
   have hI := (hD.pow 2).inv (pow_ne_zero 2 (denominator_ne_zero g z))
+  have hInv : DifferentiableAt ℂ (fun w : ℂ => (denominator g w ^ 2)⁻¹) z := hI
   unfold weightedCurl slashComplex
-  rw [complexCurl_pullback_holomorphic hJ' (fractionalLinear_hasDerivAt g z).differentiableAt hI,
+  rw [complexCurl_pullback_holomorphic hJ' (fractionalLinear_hasDerivAt g z).differentiableAt hInv,
     (fractionalLinear_hasDerivAt g z).deriv, fractionalLinear_eq]
   rw [← mul_assoc, ← mul_assoc, weightedCurl_factor]
 

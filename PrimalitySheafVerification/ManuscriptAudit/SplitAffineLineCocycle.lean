@@ -13,15 +13,17 @@ namespace ManuscriptAudit.SplitAffineLineCocycle
 
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 
+universe u
+
 noncomputable section
 
-variable (A B M : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B M : Type u) [CommRing A] [CommRing B] [Algebra A B]
 variable [AddCommGroup M] [Module A M]
 variable (e : B ⊗[A] M ≃ₗ[B] B)
 
 section Extension
 
-variable {C : Type*} [CommRing C] [Algebra A C]
+variable {C : Type u} [CommRing C] [Algebra A C]
 
 /-- Extend the actual chosen trivialization along a map of cover algebras. -/
 def extend (f : B →ₐ[A] C) : C ⊗[A] M ≃ₗ[C] C := by
@@ -69,7 +71,7 @@ private theorem transition_apply (m : M) :
   rw [extend_tmul, extend_tmul, one_mul, one_mul, mul_comm] at h
   exact h
 
-private theorem transition_extend {C : Type*} [CommRing C] [Algebra A C]
+private theorem transition_extend {C : Type u} [CommRing C] [Algebra A C]
     (f : Double A B →ₐ[A] C) (z : C ⊗[A] M) :
     extend A B M e (f.comp (second A B)) z =
       f (transitionUnit A B M e : Double A B) * extend A B M e (f.comp (first A B)) z := by

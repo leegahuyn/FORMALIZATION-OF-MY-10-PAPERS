@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Abelian
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import PrimalitySheafVerification.ManuscriptAudit.AbelianCountableProductShortExact
 import PrimalitySheafVerification.ManuscriptAudit.AddCommGrpImageFactorization

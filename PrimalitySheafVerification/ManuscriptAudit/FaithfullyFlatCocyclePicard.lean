@@ -15,9 +15,11 @@ namespace ManuscriptAudit.FaithfullyFlatCocyclePicard
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 open FaithfullyFlatTensorEqualizer
 
+universe u
+
 noncomputable section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
+variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
 variable (t : (Double A B)ˣ)
 
 theorem inverse_isCocycle (ht : IsCocycle A B t) : IsCocycle A B t⁻¹ := by

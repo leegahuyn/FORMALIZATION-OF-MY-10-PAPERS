@@ -9,9 +9,11 @@ namespace ManuscriptAudit.FaithfullyFlatCocycleProduct
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 open FaithfullyFlatCocyclePicard
 
+universe u
+
 noncomputable section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B]
 variable (t s : (Double A B)ˣ)
 
 theorem mul_isCocycle (ht : IsCocycle A B t) (hs : IsCocycle A B s) :

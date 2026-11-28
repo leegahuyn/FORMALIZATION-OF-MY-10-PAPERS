@@ -74,6 +74,8 @@ theorem exists_etale_stage (g : D →ₐ[A] B) (q : Ideal D) [q.IsPrime]
     IsLocalization.Away.isUnit_of_dvd b hEdiv
   have hEq : algebraMap B P (g (a i)) = algebraMap B P (g (e i) * z i) := by
     apply htP.isRegular.left
+    change algebraMap B P (t i) * algebraMap B P (g (a i)) =
+      algebraMap B P (t i) * algebraMap B P (g (e i) * z i)
     rw [← map_mul, ← map_mul, hRel i]
   let y := (↑hS.unit⁻¹ : S) * algebraMap D S (a i)
   have hy : algebraMap D S (e i) * y = algebraMap D S (a i) := by
@@ -83,8 +85,9 @@ theorem exists_etale_stage (g : D →ₐ[A] B) (q : Ideal D) [q.IsPrime]
         rw [← mul_assoc, hS.unit_spec]
       _ = _ := by rw [Units.mul_inv, one_mul]
   refine ⟨y, heP.isRegular.left ?_⟩
+  change algebraMap B P (g (e i)) * j y = algebraMap B P (g (e i)) * algebraMap B P (z i)
   calc
-    _ = j (algebraMap D S (e i) * y) := by rw [map_mul, hj]
+    _ = j (algebraMap D S (e i) * y) := by rw [map_mul j (algebraMap D S (e i)) y, hj (e i)]
     _ = algebraMap B P (g (a i)) := by rw [hy, hj]
     _ = _ := hEq.trans (map_mul _ _ _)
 

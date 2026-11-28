@@ -7,9 +7,11 @@ namespace ManuscriptAudit.FaithfullyFlatCocyclePicard
 
 open TensorProduct TwistedTensorEqualizer FlatTwistedDescentLine
 
+universe u
+
 noncomputable section
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
+variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
 variable (t : (Double A B)ˣ) (ht : IsCocycle A B t)
 
 /-- The actual affine Picard class of the invertible module descended from t. -/

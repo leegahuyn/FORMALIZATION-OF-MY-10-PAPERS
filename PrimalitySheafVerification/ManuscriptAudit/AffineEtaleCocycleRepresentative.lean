@@ -117,7 +117,10 @@ theorem exists_representative_of_cocycle (t : (B ⊗[R] B)ˣ)
       ((G R).obj.map (pair R B (firstProjection R B) (secondProjection R B)).op δ) = _ at hh
     have hId : (G R).obj.map ((𝟙 (D R B)).op) δ = δ := by
       change (G R).obj.map (𝟙 (op (D R B))) δ = δ
-      rw [Functor.map_id] <;> rfl
+      let S := (G R).obj.obj (op (D R B))
+      have e : (G R).obj.map (𝟙 (op (D R B))) = 𝟙 S :=
+        (G R).obj.map_id (op (D R B))
+      exact congrArg (fun f : S ⟶ S => f δ) e
     rw [hPair, hId] at hh
     exact hh
   have hOverlap : Additive.ofMul (transition R B ι x y hx.symm) = δ := by

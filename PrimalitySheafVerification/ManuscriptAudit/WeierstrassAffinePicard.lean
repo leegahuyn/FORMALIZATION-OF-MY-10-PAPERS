@@ -71,7 +71,7 @@ private theorem integralClass_is_point (I : Ideal (R W)) (u : (FI W)ˣ)
       _ = (↑(m * v) : FI W) := congrArg Units.val hmv.symm
       _ = (m : FI W) * (v : FI W) := rfl
       _ = (M : FI W) * (J : FI W) := congrArg₂ (· * ·) hm hJ.symm
-      _ = _ := coeIdeal_mul.symm
+      _ = _ := (coeIdeal_mul (S := (R W)⁰) (P := F W) M J).symm
   have hIJ : I ≤ J := by
     rw [hIJmul]
     exact Ideal.mul_le_left
@@ -88,7 +88,7 @@ private theorem integralClass_is_point (I : Ideal (R W)) (u : (FI W)ˣ)
     calc
       _ = (m : FI W) := hm.symm
       _ = 1 := congrArg Units.val hmOne
-      _ = _ := coeIdeal_top.symm)
+      _ = _ := rfl)
   obtain ⟨P, hP⟩ := ih J hStrict v hJ.symm
   refine ⟨Point.some x y hn + P, ?_⟩
   rw [map_add, Point.toClass_some, hP]

@@ -41,7 +41,7 @@ theorem graph_lower_bound (m a b : ℝ) (ha : a < 1)
     {x y : H} (hxy : (x,y) ∈ (unshifted J c).graph) :
     -((1-a)*m+b) * ‖x‖ ^ 2 ≤ ⟪y,x⟫ := by
   obtain ⟨u, hu, he⟩ := form_value J hJ c q v hNorm hxy
-  rw [← hu, he]
+  rw [he, ← hu]
   exact Paper10RelativeFormBounds.semibounded q v (fun u => ‖J u‖^2) m a b ha hq hv u
 
 end

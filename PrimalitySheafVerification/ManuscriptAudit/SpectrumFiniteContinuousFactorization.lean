@@ -28,7 +28,7 @@ theorem factor (U : ℕ → Subalgebra K R) (hMono : Monotone U)
   have hEq : (U N).val.toRingHom ∘ e' = e := rfl
   have he' : CompleteOrthogonalIdempotents e' :=
     (CompleteOrthogonalIdempotents.map_injective_iff (U N).val.toRingHom
-      (U N).val_injective).mp (hEq.symm ▸ he)
+      (fun _ _ h => Subtype.ext h)).mp (hEq.symm ▸ he)
   refine ⟨N, label e' he', label_continuous e' he', fun x => ?_⟩
   apply label_eq_of_mem e' he'
   change x ∈ (basicOpen (e (f x)) : Set (PrimeSpectrum R))

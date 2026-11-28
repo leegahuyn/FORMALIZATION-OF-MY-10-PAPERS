@@ -98,7 +98,9 @@ theorem label_continuous [TopologicalSpace A] : Continuous (label e he) := by
       exact ⟨⟨label e he x, hx⟩, label_mem e he x⟩
     · intro h
       obtain ⟨a, ha⟩ := Set.mem_iUnion.mp h
-      exact (label_eq_of_mem e he x ha).symm ▸ a.property
+      change label e he x ∈ s
+      rw [label_eq_of_mem e he x ha]
+      exact a.property
   rw [hs]
   exact isOpen_iUnion fun a => (basicOpen (e a.val)).2
 

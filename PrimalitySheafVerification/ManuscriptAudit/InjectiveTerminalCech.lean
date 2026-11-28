@@ -41,6 +41,8 @@ private theorem tupleMap_face {W : C} (n : ℕ) (i : Fin (n+2))
       tupleMap f hT n (fun j ↦ a ((SimplexCategory.δ i).toOrderHom j)) := by
   apply WidePullback.hom_ext
   · intro j
+    change (tupleMap f hT (n + 1) a ≫ face f n i) ≫ vertex f n j =
+      tupleMap f hT n (fun k ↦ a ((SimplexCategory.δ i).toOrderHom k)) ≫ vertex f n j
     rw [Category.assoc, face_vertex]
     simp only [tupleMap, vertex, WidePullback.lift_π]
   · exact hT.hom_ext _ _
@@ -50,7 +52,7 @@ private theorem tupleMap_vertices (n : ℕ) :
   apply WidePullback.hom_ext
   · intro i
     rw [Category.id_comp]
-    simp only [tupleMap, vertex, WidePullback.lift_π]
+    simp only [tupleMap, vertex, WidePullback.lift_π] <;> rfl
   · exact hT.hom_ext _ _
 
 variable {J : GrothendieckTopology C}
@@ -68,6 +70,7 @@ set_option maxHeartbeats 2200000 in
 theorem exactAt_one : (Cech f I.obj).ExactAt 1 := by
   apply (cochainExactAt_succ_iff _ 0).mpr
   intro z hz
+  change I.obj.obj (op (N f 1)) at z
   let c {W : C} (a b : W ⟶ U) := I.obj.map (tupleMap f hT 1 ![a,b]).op z
   have hNat {W V : C} (r : V ⟶ W) (a b : W ⟶ U) :
       I.obj.map r.op (c a b) = c (r ≫ a) (r ≫ b) := by
@@ -93,7 +96,12 @@ theorem exactAt_one : (Cech f I.obj).ExactAt 1 := by
     change I.obj.map t.op (I.obj.map (face f 1 0).op z) -
       I.obj.map t.op (I.obj.map (face f 1 1).op z) +
       I.obj.map t.op (I.obj.map (face f 1 2).op z) = 0 at h
-    simpa only [c, restrict_restrict, t, tupleMap_face, h₀, h₁, h₂] using h
+    have hv (i : Fin 3) : I.obj.map t.op (I.obj.map (face f 1 i).op z) =
+        I.obj.map (tupleMap f hT 1 (fun k ↦ ![a,b,d] ((SimplexCategory.δ i).toOrderHom k))).op z := by
+      rw [restrict_restrict I]
+      exact congrArg (fun u : W ⟶ N f 1 ↦ I.obj.map u.op z) (tupleMap_face f hT 1 i ![a,b,d])
+    rw [hv 0, hv 1, hv 2, h₀, h₁, h₂] at h
+    exact h
   obtain ⟨b, hb⟩ :=
     InjectiveLiftedYonedaCech.exists_coboundary J U I (fun {_} a d ↦ c a d) hNat hC
   have hTuple : (![vertex f 1 0, vertex f 1 1] : Fin 2 → (N f 1 ⟶ U)) = vertex f 1 := by
@@ -101,7 +109,7 @@ theorem exactAt_one : (Cech f I.obj).ExactAt 1 := by
     fin_cases i <;> rfl
   have he := hb (vertex f 1 0) (vertex f 1 1)
   change I.obj.map (tupleMap f hT 1 ![vertex f 1 0, vertex f 1 1]).op z = _ at he
-  rw [hTuple, tupleMap_vertices, op_id, Functor.map_id] at he
+  rw [hTuple, tupleMap_vertices, op_id, CategoryTheory.Functor.map_id] at he
   let a := I.obj.map (zeroIso f).hom.op b
   refine ⟨a, ?_⟩
   rw [NativeCechNerve.d₀]

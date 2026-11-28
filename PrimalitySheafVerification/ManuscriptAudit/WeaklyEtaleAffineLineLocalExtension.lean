@@ -65,7 +65,9 @@ theorem exists_local_preimage (g : D →ₐ[Polynomial K] B)
   have he : f (algebraMap D S b) = f a' * algebraMap B T z := by
     rw [hfa, IsScalarTower.algebraMap_apply A B T]
     change Localization.localRingHom q r g.toRingHom hqr (algebraMap D S b) = _
-    rw [Localization.localRingHom_to_map, h, map_mul]
+    rw [Localization.localRingHom_to_map]
+    change algebraMap B T (g b) = algebraMap B T (algebraMap A B a) * algebraMap B T z
+    rw [h, map_mul]
   have hr : IsRegular (f a') := hfa.symm ▸ regular_scalar r a ha
   obtain ⟨d, _, hd⟩ := ValuationLocalDivision.exists_quotient f hr he
   exact ⟨d, hd⟩

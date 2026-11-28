@@ -95,7 +95,7 @@ theorem pullbackX_hasDerivAt_t {J : ℂ → ℂ} {lower : ℝ → ℝ} {Y x t : 
       (-Complex.I * ((deriv lower x : ℝ) : ℂ)) t := by
     have h := (((((hasDerivAt_id t).const_sub 1).mul_const (deriv lower x)).ofReal_comp).const_mul
       Complex.I).const_add 1
-    simpa only [slope, id_eq, neg_one_mul, Complex.ofReal_neg, mul_neg, neg_mul] using h
+    simpa only [slope, id_eq, neg_one_mul, Complex.ofReal_neg, mul_neg, neg_mul, one_mul] using h
   have hJComp := hJ.hasFDerivAt.comp_hasDerivAt t (point_hasDerivAt_t lower Y x t)
   let L := fderiv ℝ J (point lower Y x t)
   have hL : L (((Y - lower x : ℝ) : ℂ) * Complex.I) =

@@ -19,12 +19,16 @@ private theorem not_finite_coordinate : ¬ Module.Finite K W.CoordinateRing := b
   letI : Module.Finite K W.CoordinateRing := h
   let f : K[X] →ₗ[K] W.CoordinateRing :=
     (Algebra.linearMap K[X] W.CoordinateRing).restrictScalars K
-  have hInjective : Function.Injective f :=
-    FaithfulSMul.algebraMap_injective K[X] W.CoordinateRing
+  have hInjective : Function.Injective f := by
+    change Function.Injective (AdjoinRoot.of W.polynomial)
+    apply AdjoinRoot.of.injective_of_degree_ne_zero
+    rw [WeierstrassCurve.Affine.degree_polynomial]
+    decide
   letI : Module.Finite K K[X] := Module.Finite.of_injective f hInjective
   have hIntegral : IsIntegral K (Polynomial.X : K[X]) := Algebra.IsIntegral.isIntegral _
   obtain ⟨p, hp, hRoot⟩ := hIntegral
   have hZero : p = 0 := by
+    change Polynomial.aeval (Polynomial.X : K[X]) p = 0 at hRoot
     simpa only [Polynomial.aeval_X_left_apply] using hRoot
   exact hp.ne_zero hZero
 
@@ -35,7 +39,7 @@ theorem affine_not_proper :
   let f := Spec.map (CommRingCat.ofHom (algebraMap K W.CoordinateRing))
   have hf : IsFinite f := IsFinite.iff_isProper_and_isAffineHom.mpr ⟨h, inferInstance⟩
   have hRing : (algebraMap K W.CoordinateRing).Finite :=
-    (HasRingHomProperty.Spec_iff (P := @IsFinite)).mp hf
+    (IsFinite.SpecMap_iff (CommRingCat.ofHom (algebraMap K W.CoordinateRing))).mp hf
   exact not_finite_coordinate W (by simpa only [RingHom.finite_algebraMap] using hRing)
 
 /-- The actual proper closure has a boundary point outside the given affine immersion. -/

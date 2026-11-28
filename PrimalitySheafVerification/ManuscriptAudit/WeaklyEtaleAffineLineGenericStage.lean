@@ -50,8 +50,17 @@ abbrev inclusion : B →ₐ[R K] genericFibre K B := Algebra.TensorProduct.inclu
 private def genericEquiv : genericRing K B ≃ₐ[B] genericFibre K B :=
   IsLocalization.algEquiv (denominators K B) _ _
 
-theorem inclusion_injective : Function.Injective (inclusion K B) :=
-  (genericEquiv K B).injective.comp (genericMap_injective K B)
+private theorem genericEquiv_apply_algebraMap (b : B) :
+    genericEquiv K B (algebraMap B (genericRing K B) b) = inclusion K B b := by
+  rw [(genericEquiv K B).commutes, Algebra.TensorProduct.right_algebraMap_apply]
+  exact (Algebra.TensorProduct.includeRight_apply b).symm
+
+theorem inclusion_injective : Function.Injective (inclusion K B) := by
+  intro b d h
+  apply genericMap_injective K B
+  apply (genericEquiv K B).injective
+  rw [genericEquiv_apply_algebraMap K B b, genericEquiv_apply_algebraMap K B d]
+  exact h
 
 private theorem inclusion_of_integral (x : genericFibre K B) (hx : IsIntegral (R K) x) :
     x ∈ (inclusion K B).range := by
@@ -59,8 +68,10 @@ private theorem inclusion_of_integral (x : genericFibre K B) (hx : IsIntegral (R
   have h' : IsIntegral B (e.symm x) := (hx.tower_top (A := B)).map e.symm
   obtain ⟨b, hb⟩ := WeaklyEtaleAffineLineGenericIntegral.exists_of_integral K B (e.symm x) h'
   refine ⟨b, ?_⟩
-  change e (algebraMap B (genericRing K B) b) = x
-  rw [hb, e.apply_symm_apply]
+  change inclusion K B b = x
+  calc
+    _ = e (algebraMap B (genericRing K B) b) := (genericEquiv_apply_algebraMap K B b).symm
+    _ = _ := by rw [hb, e.apply_symm_apply]
 
 set_option maxHeartbeats 1800000 in
 /-- Any integral model inside the genuine generic fibre has a unique
