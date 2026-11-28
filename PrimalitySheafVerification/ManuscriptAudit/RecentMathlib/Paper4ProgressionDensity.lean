@@ -51,10 +51,16 @@ theorem relative_prime_density_after_finite_changes {a q : ℕ} [NeZero q]
     (h : a.Coprime q) (E F : Finset ℕ) :
     Tendsto (fun x : ℝ ↦ (((progressionCutoff a q x) \ E).card : ℝ) /
       (((primeCutoff x) \ F).card : ℝ)) atTop (𝓝 ((q.totient : ℝ)⁻¹)) := by
+  have hSame (x : ℝ) : progressionCutoff 1 1 x = primeCutoff x := by
+    ext p
+    have hMod : p ≡ 1 [MOD 1] := by
+      change p % 1 = 1 % 1
+      simp only [Nat.mod_one]
+    simp [progressionCutoff, primeCutoff, hMod]
   have hAll :
       Tendsto (fun x : ℝ ↦ (((primeCutoff x) \ F).card : ℝ) / (x / Real.log x))
         atTop (𝓝 (1 : ℝ)) := by
-    simpa [progressionCutoff, primeCutoff, Nat.ModEq] using
+    simpa only [hSame, Nat.totient_one, Nat.cast_one, inv_one] using
       (normalized_count_after_exceptions (q := 1) (a := 1) (Nat.coprime_one_left 1) F)
   have hRatio := (normalized_count_after_exceptions h E).div hAll one_ne_zero
   rw [div_one] at hRatio
