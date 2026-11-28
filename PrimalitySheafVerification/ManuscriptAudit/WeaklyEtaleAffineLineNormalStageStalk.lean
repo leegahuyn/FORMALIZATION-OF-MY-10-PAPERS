@@ -101,7 +101,7 @@ theorem local_properties (g : model K L →ₐ[R K] B) (r : Ideal B) [r.IsPrime]
           apply (RingHom.injective_iff_ker_eq_bot (algebraMap (R K) (C i))).mp
           have hL : Function.Injective (algebraMap (R K) (L i)) := by
             rw [IsScalarTower.algebraMap_eq (R K) (F K) (L i)]
-            exact (RingHom.injective _).comp (IsFractionRing.injective (R K) (F K))
+            exact (RingHom.injective (algebraMap (F K) (L i))).comp (IsFractionRing.injective (R K) (F K))
           intro x y hxy
           apply hL
           simpa only [IsScalarTower.algebraMap_apply (R K) (C i) (L i)] using

@@ -38,7 +38,9 @@ private theorem restriction_injective : Function.Injective (restriction W).hom :
     let U : (projectiveScheme W).Opens := (inPlane W).imageι ⁻¹ᵁ V
     let i : U ⟶ (⊤ : (projectiveScheme W).Opens) := homOfLE le_top
     refine ⟨U, le_top, hyV, (inPlane W).toImage_app_injective ⟨V, hV⟩ ?_⟩
-    change j.app U ((projectiveScheme W).presheaf.map i.op s) = 0
+    change j.app U ((projectiveScheme W).presheaf.map i.op s) =
+      j.app U ((projectiveScheme W).presheaf.map i.op 0)
+    simp only [map_zero]
     rw [← ConcreteCategory.comp_apply, j.naturality]
     simp [hs]
   exact (Scheme.ΓSpecIso (A W)).commRingCatIsoToRingEquiv.injective.comp hj

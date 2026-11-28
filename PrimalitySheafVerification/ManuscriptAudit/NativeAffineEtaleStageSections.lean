@@ -26,7 +26,7 @@ private abbrev X := spectrum A
 private abbrev G := AddCommGrpCat.{u + 1}
 
 private instance (T : Stage A B) : Etale (structureMap A T.carrier) :=
-  (Etale.SpecMap_iff (f := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
+  (HasRingHomProperty.Spec_iff (P := @Etale) (f := CommRingCat.ofHom (algebraMap A T.carrier))).mpr
     ((RingHom.etale_algebraMap).mpr inferInstance)
 
 /-- The genuine small étale object corresponding to a stage. -/

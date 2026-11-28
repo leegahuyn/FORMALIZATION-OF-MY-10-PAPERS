@@ -3,7 +3,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaMaassEigenfunction
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaPositiveLowerLeftMultiplier
 import PrimalitySheafVerification.ManuscriptAudit.Paper8OddCrossCuspRows
 
-/-! Native eta phase cocycles and the level-four odd cross-cusp multiplier. -/
+/-! Native eta phase cocycles and the level-four odd weight-minus-half multiplier. -/
 
 namespace ManuscriptAudit.Paper8EtaPhaseCocycle
 
@@ -23,9 +23,23 @@ theorem positivePhase_mul (g h : SL(2, ℤ)) (z : ℍ) :
     _ = _ := by
       rw [etaMaass_transform g, etaMaass_transform h, mul_assoc]
 
+private theorem denominator_mul (g h : SL(2, ℤ)) (z : ℍ) :
+    denominator (g * h) z = denominator g (h • z : ℍ) * denominator h z := by
+  rw [← fractionalLinear_eq h z]
+  unfold fractionalLinear
+  have hD := denominator_ne_zero h z
+  unfold denominator at hD ⊢
+  change (((g.1 * h.1) 1 0 : ℤ) : ℂ) * (z : ℂ) + (((g.1 * h.1) 1 1 : ℤ) : ℂ) =
+    ((g 1 0 : ℂ) * (((h 0 0 : ℂ) * (z : ℂ) + (h 0 1 : ℂ)) /
+      ((h 1 0 : ℂ) * (z : ℂ) + (h 1 1 : ℂ))) + (g 1 1 : ℂ)) *
+      ((h 1 0 : ℂ) * (z : ℂ) + (h 1 1 : ℂ))
+  simp only [Matrix.mul_apply, Fin.sum_univ_two, Int.cast_add, Int.cast_mul]
+  field_simp [hD] <;> ring
+
 theorem negativePhase_mul (g h : SL(2, ℤ)) (z : ℍ) :
     negativePhase (g * h) z = negativePhase g (h • z) * negativePhase h z := by
-  simp only [negativePhase, positivePhase_mul, map_mul]
+  simp only [negativePhase, positivePhase_mul, denominator_mul, norm_mul, Complex.ofReal_mul]
+  field_simp [denominator_ne_zero g (h • z), denominator_ne_zero h z] <;> ring
 
 def oddEtaPhase (g : CongruenceSubgroup.Gamma0 4) (z : ℍ) : ℂ :=
   (levelCharacter g : ℂ) * negativePhase (g : SL(2, ℤ)) z
@@ -50,11 +64,13 @@ theorem positivePhase_principal (g : SL(2, ℤ)) (hg : 0 < g 1 0) (z : ℍ) :
   rw [positivePhase, eta_principal_transform g hg]
   field_simp [hEta, hSqrt] <;> ring
 
+def negativeSquareRootPhase (g : SL(2, ℤ)) (z : ℍ) : ℂ :=
+  (Complex.sqrt (denominator g z) / (Real.sqrt ‖denominator g z‖ : ℂ)) *
+    ((‖denominator g z‖ : ℂ) / denominator g z)
+
 theorem negativePhase_principal (g : SL(2, ℤ)) (hg : 0 < g 1 0) (z : ℍ) :
-    negativePhase g z =
-      (starRingEnd ℂ) (principalEtaMultiplier g) *
-        (starRingEnd ℂ) (Complex.sqrt (denominator g z) / (Real.sqrt ‖denominator g z‖ : ℂ)) := by
-  simp only [negativePhase, positivePhase_principal g hg, map_mul]
+    negativePhase g z = principalEtaMultiplier g * negativeSquareRootPhase g z := by
+  simp only [negativePhase, positivePhase_principal g hg, negativeSquareRootPhase, mul_assoc]
 
 theorem oddEtaPhase_cross (g : CongruenceSubgroup.Gamma0 4) (z : ℍ) :
     oddEtaPhase g (ModularGroup.S • z) =

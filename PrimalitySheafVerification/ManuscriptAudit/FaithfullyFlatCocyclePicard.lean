@@ -123,21 +123,41 @@ private theorem tensorPairing_bijective (ht : IsCocycle A B t) :
 
 private theorem pairing_injective_of_tensor
     (hf : Function.Injective (tensorPairing A B t)) : Function.Injective (pairing A B t) := by
+  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
   let before : Unit →ₗ[A] PairingDomain A B t := 0
-  apply (LinearMap.exact_zero_iff_injective Unit (pairing A B t)).1
-  apply Module.FaithfullyFlat.lTensor_reflects_exact A B before (pairing A B t)
-  change Function.Exact ((0 : Unit →ₗ[A] PairingDomain A B t).lTensor B) (tensorPairing A B t)
-  rw [LinearMap.lTensor_zero]
-  exact (LinearMap.exact_zero_iff_injective (B ⊗[A] Unit) (tensorPairing A B t)).2 hf
+  have hTensor : Function.Exact (before.lTensor B) (g.lTensor B) := by
+    change Function.Exact ((0 : Unit →ₗ[A] PairingDomain A B t).lTensor B) (tensorPairing A B t)
+    rw [LinearMap.lTensor_zero]
+    intro z
+    constructor
+    · intro hz
+      exact ⟨0, (hf (hz.trans (map_zero (tensorPairing A B t)).symm)).symm⟩
+    · rintro ⟨y, rfl⟩
+      simp
+  have hBase : Function.Exact before g :=
+    Module.FaithfullyFlat.lTensor_reflects_exact A B before g hTensor
+  intro x y hxy
+  change g x = g y at hxy
+  have hz : g (x - y) = 0 := by rw [map_sub, hxy, sub_self]
+  obtain ⟨z, hz'⟩ := (hBase (x - y)).mp hz
+  exact sub_eq_zero.mp (hz'.symm.trans (show before z = 0 by rfl))
 
 private theorem pairing_surjective_of_tensor
     (hf : Function.Surjective (tensorPairing A B t)) : Function.Surjective (pairing A B t) := by
+  let g : PairingDomain A B t →ₗ[A] A := pairing A B t
   let after : A →ₗ[A] Unit := 0
-  apply (LinearMap.exact_zero_iff_surjective Unit (pairing A B t)).1
-  apply Module.FaithfullyFlat.lTensor_reflects_exact A B (pairing A B t) after
-  change Function.Exact (tensorPairing A B t) ((0 : A →ₗ[A] Unit).lTensor B)
-  rw [LinearMap.lTensor_zero]
-  exact (LinearMap.exact_zero_iff_surjective (B ⊗[A] Unit) (tensorPairing A B t)).2 hf
+  have hTensor : Function.Exact (g.lTensor B) (after.lTensor B) := by
+    change Function.Exact (tensorPairing A B t) ((0 : A →ₗ[A] Unit).lTensor B)
+    rw [LinearMap.lTensor_zero]
+    intro z
+    constructor
+    · intro _
+      exact hf z
+    · intro _
+      rfl
+  have hBase : Function.Exact g after :=
+    Module.FaithfullyFlat.lTensor_reflects_exact A B g after hTensor
+  exact fun y => (hBase y).mp (show after y = 0 by rfl)
 
 theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
   have h := tensorPairing_bijective A B t ht

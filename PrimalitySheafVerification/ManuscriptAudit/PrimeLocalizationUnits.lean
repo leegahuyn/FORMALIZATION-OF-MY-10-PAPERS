@@ -58,7 +58,7 @@ theorem exists_lift_mul_zpow (hp : Prime p) (s : (S p)ˣ) :
     s = (primeUnit p) ^ i * ((primeUnit p) ^ n * mapUnit p v)⁻¹ :=
       (eq_mul_inv_iff_mul_eq).2 (by simpa only [mul_assoc] using hs)
     _ = _ := by
-      rw [mul_inv_rev, map_inv, zpow_sub, zpow_natCast, zpow_natCast, div_eq_mul_inv]
+      rw [mul_inv_rev, map_inv, zpow_sub, zpow_natCast, zpow_natCast]
       ac_rfl
 
 private theorem power_eq_lift_only_zero (hp : Prime p) (v : Rˣ) (n : ℕ)
@@ -72,7 +72,7 @@ private theorem power_eq_lift_only_zero (hp : Prime p) (v : Rˣ) (n : ℕ)
       have hh := congrArg (fun w : (S p)ˣ => (w : S p)) h
       simpa only [Units.val_pow_eq_pow_val, primeUnit_val, mapUnit_val, map_pow] using hh
     have hd : p ∣ (v : R) := ⟨p ^ n, by rw [← hv, pow_succ']⟩
-    exact hp.not_isUnit (isUnit_iff_dvd_one.mpr (hd.trans (isUnit_iff_dvd_one.mp v.isUnit)))
+    exact hp.2.1 (isUnit_iff_dvd_one.mpr (hd.trans (isUnit_iff_dvd_one.mp v.isUnit)))
 
 private theorem zpower_eq_lift_only_zero (hp : Prime p) (v : Rˣ) (n : ℤ)
     (h : (primeUnit p) ^ n = mapUnit p v) : n = 0 := by
@@ -89,7 +89,7 @@ theorem exponent_unique (hp : Prime p) (u v : Rˣ) (a b : ℤ)
     (h : mapUnit p u * (primeUnit p) ^ a = mapUnit p v * (primeUnit p) ^ b) : a = b := by
   apply sub_eq_zero.mp
   apply zpower_eq_lift_only_zero p hp (u⁻¹ * v)
-  rw [zpow_sub, div_eq_mul_inv, map_mul, map_inv]
+  rw [zpow_sub, map_mul, map_inv]
   calc
     _ = (mapUnit p u)⁻¹ * (mapUnit p u * (primeUnit p) ^ a) * ((primeUnit p) ^ b)⁻¹ := by
       rw [← mul_assoc (mapUnit p u)⁻¹, inv_mul_cancel, one_mul]

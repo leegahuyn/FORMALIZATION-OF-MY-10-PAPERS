@@ -49,7 +49,7 @@ private theorem row_sum {h k : ℕ} (hh : 0 < h) (hk : 0 < k) (j : Fin k) :
   rw [hF]
   calc
     (∑ v ∈ Iic b, (v.val : ℚ)) =
-        ∑ u ∈ (Iic b).map Fin.valEmbedding, (u : ℚ) := by simpa only [Finset.sum_map]
+        ∑ u ∈ (Iic b).map Fin.valEmbedding, (u : ℚ) := by rw [Finset.sum_map] <;> rfl
     _ = ∑ u ∈ range (q + 1), (u : ℚ) := by
       rw [Fin.map_valEmbedding_Iic]
       have hI : Iic (b.val) = range (q + 1) := by

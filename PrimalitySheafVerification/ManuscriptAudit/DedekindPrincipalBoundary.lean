@@ -22,7 +22,7 @@ private theorem atPrime_dvr_of_principal (P : Ideal R) [P.IsPrime]
   have hM : (IsLocalRing.maximalIdeal L).IsPrincipal := by
     rw [← Localization.AtPrime.map_eq_maximalIdeal]
     exact hPrincipal.map_ringHom (algebraMap R L)
-  exact ((IsDiscreteValuationRing.TFAE L hNF).out 1 5).mpr hM
+  exact ((IsDiscreteValuationRing.TFAE L hNF).out 0 4).mpr hM
 
 private theorem atPrime_dvr_from_open {S : Type*} [CommRing S] [IsDedekindDomain S]
     [Algebra R S] (d : R) [IsLocalization.Away d S] (hd : d ≠ 0)
@@ -38,8 +38,6 @@ private theorem atPrime_dvr_from_open {S : Type*} [CommRing S] [IsDedekindDomain
       (powers_le_nonZeroDivisors_of_noZeroDivisors hd))).not.mpr hP
   let T := Localization.AtPrime J
   let L := Localization.AtPrime P
-  letI : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
-  letI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
   have hUnder : J.under R = P :=
     IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers d) S ‹_› hDisjoint
   letI : IsLocalization.AtPrime T P :=
@@ -51,7 +49,7 @@ private theorem atPrime_dvr_from_open {S : Type*} [CommRing S] [IsDedekindDomain
   letI : IsPrincipalIdealRing L := IsPrincipalIdealRing.of_surjective e e.surjective
   letI : IsNoetherianRing L := IsLocalization.isNoetherianRing P.primeCompl L inferInstance
   have hNF : ¬ IsField L := IsLocalization.AtPrime.not_isField R hP L
-  exact ((IsDiscreteValuationRing.TFAE L hNF).out 1 5).mpr inferInstance
+  exact ((IsDiscreteValuationRing.TFAE L hNF).out 0 4).mpr inferInstance
 
 /-- A Noetherian domain is Dedekind when a principal open is Dedekind
 and every prime omitted from the open has a principal ideal. -/
@@ -59,12 +57,13 @@ theorem of_open {S : Type*} [CommRing S] [IsDedekindDomain S] [Algebra R S]
     (d : R) [IsLocalization.Away d S] (hd : d ≠ 0)
     (hBoundary : ∀ P : Ideal R, P.IsPrime → d ∈ P → P.IsPrincipal) :
     IsDedekindDomain R := by
-  refine isDedekindDomain_iff_isDiscreteValuationRing_atPrime.mpr ⟨inferInstance, ?_⟩
-  intro P hP hPrime
-  letI : P.IsPrime := hPrime
-  by_cases hdP : d ∈ P
-  · exact atPrime_dvr_of_principal P hP (hBoundary P hPrime hdP)
-  · exact atPrime_dvr_from_open (S := S) d hd P hP hdP
+  letI : IsDedekindDomainDvr R where
+    is_dvr_at_nonzero_prime P hP hPrime := by
+      letI : P.IsPrime := hPrime
+      by_cases hdP : d ∈ P
+      · exact atPrime_dvr_of_principal P hP (hBoundary P hPrime hdP)
+      · exact atPrime_dvr_from_open (S := S) d hd P hP hdP
+  infer_instance
 
 end
 

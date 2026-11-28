@@ -25,6 +25,7 @@ variable (ℓ : ℕ) [Fact ℓ.Prime] [NeZero (ℓ : K)]
 local instance (d : ℕ) : TopologicalSpace (ZMod d) := ⊥
 local instance (d : ℕ) : DiscreteTopology (ZMod d) := ⟨rfl⟩
 
+include h2 in
 theorem residue_step_surjective (n : ℕ) :
     Function.Surjective (nativeStep (projectiveNode K) ℓ 1 n) := by
   intro u

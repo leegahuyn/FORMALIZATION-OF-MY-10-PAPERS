@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import PrimalitySheafVerification.ManuscriptAudit.CuspYChartAlgebra
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityChartAlgebra
 

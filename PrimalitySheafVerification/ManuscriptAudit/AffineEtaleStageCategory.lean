@@ -69,6 +69,8 @@ def chartCocone : Cocone (ringDiagram (A := A) (B := B)) where
     { app := fun X ↦ CommRingCat.ofHom X.toChart.toRingHom
       naturality := by
         intro X Y f
+        change CommRingCat.ofHom (hom f).toRingHom ≫ CommRingCat.ofHom Y.toChart.toRingHom =
+          CommRingCat.ofHom X.toChart.toRingHom ≫ 𝟙 (CommRingCat.of B)
         rw [Category.comp_id]
         exact CommRingCat.hom_ext (congrArg AlgHom.toRingHom f.property) }
 

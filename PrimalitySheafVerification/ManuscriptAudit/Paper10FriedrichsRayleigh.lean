@@ -25,7 +25,7 @@ private theorem norm_hasSum (x : H) :
   have hEq :
       (fun i => ⟪x,b i⟫ * ⟪b i,x⟫) = (fun i => (b.repr x i)^2) := by
     funext i
-    rw [real_inner_comm x (b i), b.repr_apply_apply, pow_two]
+    rw [real_inner_comm (b i) x, b.repr_apply_apply, pow_two]
   rw [hEq, real_inner_self_eq_norm_sq] at h
   exact h
 
@@ -41,7 +41,7 @@ theorem form_energy_hasSum (u : D) :
     funext i
     have hc : ⟪d i,u⟫ = Real.sqrt (e i) * b.repr (J u) i :=
       (d.repr_apply_apply u i).symm.trans (hd u i)
-    rw [real_inner_comm u (d i), hc, ← pow_two, mul_pow,
+    rw [real_inner_comm (d i) u, hc, ← pow_two, mul_pow,
       Real.sq_sqrt (positive_label J hJ b e he i).le]
   rw [hEq, real_inner_self_eq_norm_sq] at h
   exact h

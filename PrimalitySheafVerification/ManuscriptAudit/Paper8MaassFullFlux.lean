@@ -45,7 +45,7 @@ theorem complexCurl_flux_full {F G : ℂ → ℂ} {x y : ℝ} (hy : 0 < y)
   have hbC : DifferentiableAt ℝ (fun q => C (B q)) w :=
     Complex.differentiable_conj.differentiableAt.comp w hb
   have hHeight : DifferentiableAt ℝ (fun q : ℂ => ((q.im ^ (-(3 / 4 : ℝ)) : ℝ) : ℂ)) w :=
-    ((Real.hasDerivAt_rpow_const (p := -(3 / 4 : ℝ)) (Or.inl hPos.ne')).ofReal_comp.differentiableAt.comp
+    (Real.hasDerivAt_rpow_const (p := -(3 / 4 : ℝ)) (Or.inl hPos.ne')).ofReal_comp.differentiableAt.comp
       w Complex.imCLM.differentiableAt
   have hEta := ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hPos
   have hH : DifferentiableAt ℝ H w := (hEta.restrictScalars ℝ).mul (hHeight.mul hG)

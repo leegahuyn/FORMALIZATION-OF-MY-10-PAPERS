@@ -55,12 +55,12 @@ private theorem localized_infinity_relation : infinityEquation W (yx W) (yz W) =
     ← IsScalarTower.algebraMap_apply] using h
 
 private theorem toZ_relation : (WeierstrassInfinityChartAlgebra.equation W).eval₂
-    (Polynomial.aeval (zx W * zInv W)) (zInv W) = 0 := by
+    (Polynomial.aeval (R := K) (zx W * zInv W)).toRingHom (zInv W) = 0 := by
   rw [eval_infinityEquation]
   exact affine_to_infinity W _ _ _ (localized_affine_relation W) (zy_mul_zInv W)
 
 private theorem toY_relation : W.polynomial.eval₂
-    (Polynomial.aeval (yx W * yInv W)) (yInv W) = 0 := by
+    (Polynomial.aeval (R := K) (yx W * yInv W)).toRingHom (yInv W) = 0 := by
   rw [eval_affineEquation]
   exact infinity_to_affine W _ _ _ (localized_infinity_relation W) (yz_mul_yInv W)
 

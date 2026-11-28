@@ -5,7 +5,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8CrossCuspScalingWidths
 import PrimalitySheafVerification.ManuscriptAudit.Paper8ActualEtaTranslation
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaLevelZeroMode
 
-/-! Actual Floquet phases of conjugate eta automorphy at infinity and the level-four zero cusp. -/
+/-! Actual Floquet phases of the odd eta automorphy at infinity and the level-four zero cusp. -/
 
 namespace ManuscriptAudit.Paper8OddCuspFloquetPhase
 
@@ -19,19 +19,15 @@ noncomputable section
 
 theorem negativePhase_T_pow (m : ℤ) (z : ℍ) :
     negativePhase (ModularGroup.T ^ m) z =
-      Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I * (m : ℂ) / 24)) := by
+      Complex.exp (2 * (Real.pi : ℂ) * Complex.I * (m : ℂ) / 24) := by
   have hZ : ((ModularGroup.T ^ m • z : ℍ) : ℂ) = (z : ℂ) + (m : ℂ) := by
     rw [UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
     push_cast
     ring
   have hD : denominator (ModularGroup.T ^ m) z = 1 := by
     simp [denominator, ModularGroup.coe_T_zpow]
-  unfold negativePhase positivePhase
-  rw [hZ, hD, norm_one, Real.sqrt_one, Complex.ofReal_one, mul_one, eta_add_integer,
-    mul_div_cancel_right₀ _ (ModularForm.eta_ne_zero z.im_pos), ← Complex.exp_conj]
-  congr 1
-  simp only [map_div₀, map_mul, map_ofNat, map_intCast, Complex.conj_ofReal, Complex.conj_I]
-  ring
+  simp only [negativePhase, positivePhase, hZ, hD, norm_one, Real.sqrt_one, Complex.ofReal_one,
+    mul_one, div_one, eta_add_integer, mul_div_cancel_right₀ _ (ModularForm.eta_ne_zero z.im_pos)]
 
 private theorem negativePhase_ne_zero (g : SL(2, ℤ)) (z : ℍ) : negativePhase g z ≠ 0 := by
   intro h
@@ -72,7 +68,7 @@ theorem cuspOddProfile_shift {F : ℂ → ℂ} (hF : OddMaassLaw F)
 
 theorem cuspZero_levelFour_floquet {F : ℂ → ℂ} (hF : OddMaassLaw F) (z : ℍ) :
     cuspOddProfile F ModularGroup.S (ModularGroup.T ^ (4 : ℤ) • z) =
-      Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I / 6)) *
+      Complex.exp (2 * (Real.pi : ℂ) * Complex.I / 6) *
         cuspOddProfile F ModularGroup.S z := by
   have hm : ModularGroup.S * ModularGroup.T ^ (4 : ℤ) * ModularGroup.S⁻¹ ∈
       CongruenceSubgroup.Gamma0 4 := conjugatedTranslation_level 4 ModularGroup.S
@@ -84,7 +80,7 @@ theorem cuspZero_levelFour_floquet {F : ℂ → ℂ} (hF : OddMaassLaw F) (z : �
   ring
 
 theorem oddInfinity_floquet {F : ℂ → ℂ} (hF : OddMaassLaw F) (z : ℍ) :
-    F (ModularGroup.T • z : ℍ) = Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I / 24)) * F z := by
+    F (ModularGroup.T • z : ℍ) = Complex.exp (2 * (Real.pi : ℂ) * Complex.I / 24) * F z := by
   let g : CongruenceSubgroup.Gamma0 4 :=
     ⟨ModularGroup.T, Paper8EtaLevelZeroMode.translation_mem_level 4⟩
   have hC : levelCharacter g = 1 := by
@@ -94,7 +90,7 @@ theorem oddInfinity_floquet {F : ℂ → ℂ} (hF : OddMaassLaw F) (z : ℍ) :
     rw [hT, Int.cast_one]
     decide
   have hP : negativePhase ModularGroup.T z =
-      Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I / 24)) := by
+      Complex.exp (2 * (Real.pi : ℂ) * Complex.I / 24) := by
     simpa only [zpow_one, Int.cast_one, mul_one] using negativePhase_T_pow 1 z
   simpa only [show (g : SL(2, ℤ)) = ModularGroup.T from rfl, hC, Int.cast_one, one_mul, hP]
     using hF g z
@@ -104,7 +100,7 @@ def normalizedZeroProfile (F : ℂ → ℂ) (x y : ℝ) : ℂ :=
 
 theorem normalizedZeroProfile_floquet {F : ℂ → ℂ} (hF : OddMaassLaw F) (x y : ℝ) (hy : 0 < y) :
     normalizedZeroProfile F (x + 1) y =
-      Complex.exp (-(2 * (Real.pi : ℂ) * Complex.I / 6)) * normalizedZeroProfile F x y := by
+      Complex.exp (2 * (Real.pi : ℂ) * Complex.I / 6) * normalizedZeroProfile F x y := by
   let w := MaassLaplacian.complexPoint (4 * x) (4 * y)
   let v := MaassLaplacian.complexPoint (4 * (x + 1)) (4 * y)
   have hw : 0 < w.im := by unfold w; rw [MaassLaplacian.complexPoint_im]; positivity

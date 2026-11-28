@@ -33,7 +33,7 @@ theorem norm_fluxCurrent (F G : ℂ → ℂ) (z : ℍ) :
     exact h
   simp only [fluxCurrent, complexGaugeRatio, complexGauge, adjointPartner, UpperHalfPlane.coe_im,
     Complex.norm_conj, norm_mul, norm_div, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hA,
-    abs_of_pos hB, hScale]
+    abs_of_pos hB, hScale, abs_of_pos z.im_pos]
   field_simp [z.im_pos.ne', hEta, hA.ne'] <;> ring
 
 theorem cutoffError_zero_below {Y : ℝ} (hY : 2 < Y) (F G : ℂ → ℂ) (z : ℍ)
@@ -91,7 +91,8 @@ theorem cutoffFlux_curl {Y : ℝ} (hY : 2 < Y) {F G : ℂ → ℂ}
       -((‖raising (realProfile F) x y‖ ^ 2 / y ^ 2 : ℝ) : ℂ) :=
     fluxCurl_eq_negative_energy hF hG hRaise hAdj x y hy
   change complexCurl (fun v => complexCutoff Y v ^ 2 * fluxCurrent F G v) w = _
-  rw [complexCurl_mul (hChi.pow 2) hJ, hC2, hKick]
+  have hChiSq : DifferentiableAt ℝ (fun v => complexCutoff Y v ^ 2) w := hChi.pow 2
+  rw [complexCurl_mul hChiSq hJ, hC2, hKick]
   change _ = -complexCutoff Y w ^ 2 * ((‖raising (realProfile F) x y‖ ^ 2 / y ^ 2 : ℝ) : ℂ) +
     cutoffError Y F G w
   unfold cutoffError

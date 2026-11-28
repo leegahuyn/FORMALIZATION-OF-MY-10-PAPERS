@@ -42,7 +42,7 @@ private theorem const_x_prime : Prime (C (X : K[X]) : K[X][Y]) := by
     have he := h.map e.toRingHom
     change IsUnit (e (C (X : K[X]))) at he
     rw [hX] at he
-    exact hy.not_isUnit he
+    exact hy.2.1 he
   · intro a b h
     have he := map_dvd e.toRingHom h
     change e (C (X : K[X])) ∣ e (a * b) at he
@@ -68,7 +68,7 @@ private theorem const_x_not_dvd : ¬ (C (X : K[X]) : K[X][Y]) ∣ equation W := 
   have hc := congrArg (fun p : K[X] => p.coeff (0 + 1)) hmap
   change (X * (1 + C W.a₃ * X - C W.a₆ * X ^ 2)).coeff (0 + 1) = (0 : K[X]).coeff (0 + 1) at hc
   rw [Polynomial.coeff_X_mul, Polynomial.coeff_zero_eq_eval_zero] at hc
-  exact one_ne_zero (by simpa using hc)
+  exact (one_ne_zero : (1 : K) ≠ 0) (by simpa using hc)
 
 private theorem y_not_dvd : ¬ (Y : K[X][Y]) ∣ equation W := by
   intro h

@@ -28,12 +28,13 @@ theorem complexCurl_adjointPartner {G : ℂ → ℂ} {x y : ℝ} (hy : 0 < y)
       using (Real.hasDerivAt_rpow_const (p := -(3 / 4 : ℝ)) (Or.inl hy.ne')).ofReal_comp
   have hD := hHeight.hasFDerivAt.comp w Complex.imCLM.hasFDerivAt
   have hA : DifferentiableAt ℝ A w := hD.differentiableAt
+  have hDA : fderiv ℝ A w = _ := hD.fderiv
   have hX : fderiv ℝ A w 1 = 0 := by
-    rw [hD.fderiv]
+    rw [hDA]
     change (0 : ℝ) • (-(3 / 4 : ℂ) * b) = 0
     exact zero_smul _ _
   have hY : fderiv ℝ A w Complex.I = -(3 / 4 : ℂ) * b := by
-    rw [hD.fderiv]
+    rw [hDA]
     change (1 : ℝ) • (-(3 / 4 : ℂ) * b) = _
     exact one_smul _ _
   have hPointX : HasDerivAt (fun t => complexPoint t y) 1 x := by
@@ -67,7 +68,7 @@ theorem complexCurl_eta_adjointPartner {G : ℂ → ℂ} {x y : ℝ} (hy : 0 < y
   have hw : 0 < w.im := by rw [show w.im = y from complexPoint_im x y]; exact hy
   have hEta := ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet hw
   have hHeight : DifferentiableAt ℝ (fun q : ℂ => ((q.im ^ (-(3 / 4 : ℝ)) : ℝ) : ℂ)) w :=
-    ((Real.hasDerivAt_rpow_const (p := -(3 / 4 : ℝ)) (Or.inl hw.ne')).ofReal_comp.differentiableAt.comp
+    (Real.hasDerivAt_rpow_const (p := -(3 / 4 : ℝ)) (Or.inl hw.ne')).ofReal_comp.differentiableAt.comp
       w Complex.imCLM.differentiableAt
   have hPart : DifferentiableAt ℝ (adjointPartner G) w := hHeight.mul hG
   rw [complexCurl_mul (hEta.restrictScalars ℝ) hPart, complexCurl_holomorphic hEta,

@@ -11,7 +11,7 @@ open FiniteIndexWeightZeroCosets Paper8EtaCosetMass Paper8EtaPeterssonMass
 open Paper8ActualEtaSquaredModularity Paper8MaassWirtinger Paper8MaassCurlCalculus
 open Paper8MaassTraceCurl Paper8WeightTwoCosetTrace Paper8StandardDomainCurrentGreen
 open Paper8GlobalWeightTwoGreen Paper8StandardGreenRegularity Paper8ModularHeightCutoff
-open scoped MatrixGroups ModularForm Topology
+open scoped MatrixGroups ModularForm Topology ContDiff
 
 noncomputable section
 
@@ -141,8 +141,9 @@ theorem integrableOn_cusp_support {E : Type*} [NormedAddCommGroup E] [NormedSpac
       exact mem_iUnion.mpr ⟨q, u, ⟨hu, hU.trans hMax⟩, rfl⟩
   · apply MeasurableSet.iUnion
     intro q
-    exact (measurableEmbedding_const_smul (cellRepresentative H q : GL (Fin 2) ℝ)).
-      measurableSet_image.mpr ModularGroup.isClosed_fd.measurableSet
+    have hE : MeasurableEmbedding (fun z : ℍ => cellRepresentative H q • z) :=
+      measurableEmbedding_const_smul (cellRepresentative H q : GL (Fin 2) ℝ)
+    exact hE.measurableSet_image.mpr ModularGroup.isClosed_fd.measurableSet
 
 theorem integrableOn_weightedCurl (H : Subgroup SL(2, ℤ)) [H.FiniteIndex] (J : ℂ → ℂ) {B : ℝ}
     (hJ : ContDiffOn ℝ 1 J {w : ℂ | 0 < w.im})

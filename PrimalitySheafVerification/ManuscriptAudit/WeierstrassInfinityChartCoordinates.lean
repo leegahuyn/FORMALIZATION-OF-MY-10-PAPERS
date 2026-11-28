@@ -33,19 +33,19 @@ def infinityEquation (u v : L) : L :=
       algebraMap K L W.a₆ * v ^ 3)
 
 theorem eval_affineEquation (x y : L) :
-    W.polynomial.eval₂ (Polynomial.aeval x) y = affineEquation W x y := by
+    W.polynomial.eval₂ (Polynomial.aeval (R := K) x).toRingHom y = affineEquation W x y := by
   simp only [WeierstrassCurve.Affine.polynomial, affineEquation, Polynomial.eval₂_add,
     Polynomial.eval₂_sub, Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_C,
-    Polynomial.eval₂_X, map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
+    Polynomial.eval₂_X, AlgHom.coe_toRingHom, map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
   ring
 
 theorem eval_infinityEquation (u v : L) :
-    (WeierstrassInfinityChartAlgebra.equation W).eval₂ (Polynomial.aeval u) v =
+    (WeierstrassInfinityChartAlgebra.equation W).eval₂ (Polynomial.aeval (R := K) u).toRingHom v =
       infinityEquation W u v := by
   simp only [WeierstrassInfinityChartAlgebra.equation, WeierstrassInfinityChartAlgebra.bracketPolynomial,
     infinityEquation, Polynomial.eval₂_one, Polynomial.eval₂_add, Polynomial.eval₂_sub,
     Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_C, Polynomial.eval₂_X,
-    map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
+    AlgHom.coe_toRingHom, map_add, map_mul, map_pow, Polynomial.aeval_C, Polynomial.aeval_X]
   ring
 
 private theorem affine_constant (a : K) :
@@ -65,8 +65,11 @@ theorem infinity_relation :
     infinityEquation W (WeierstrassInfinityChartAlgebra.x W) (WeierstrassInfinityChartAlgebra.z W) = 0 := by
   have h : AdjoinRoot.mk (WeierstrassInfinityChartAlgebra.equation W)
       (WeierstrassInfinityChartAlgebra.equation W) = 0 := AdjoinRoot.mk_self
-  simp only [WeierstrassInfinityChartAlgebra.equation, WeierstrassInfinityChartAlgebra.bracketPolynomial,
-    map_add, map_sub, map_mul, map_pow, map_one] at h
+  change AdjoinRoot.mk (WeierstrassInfinityChartAlgebra.equation W)
+    (Y * WeierstrassInfinityChartAlgebra.bracketPolynomial W - (C X) ^ 3) = 0 at h
+  rw [map_sub, map_mul, map_pow] at h
+  unfold WeierstrassInfinityChartAlgebra.bracketPolynomial at h
+  simp only [map_add, map_sub, map_mul, map_pow, map_one] at h
   simp only [infinityEquation, WeierstrassInfinityChartAlgebra.x, WeierstrassInfinityChartAlgebra.z,
     infinity_constant]
   linear_combination h

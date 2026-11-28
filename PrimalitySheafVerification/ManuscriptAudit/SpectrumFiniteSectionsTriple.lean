@@ -46,10 +46,11 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
   let j := FlatTensorStageInjections.stageTriple U n
   let e : ((U n ⊗[R] U n) ⊗[R] U n) ≃ₐ[R] images U n :=
     AlgEquiv.ofInjective j (hInj n)
-  let r := e.symm.toRingHom
+  let r : images U n →+* ((U n ⊗[R] U n) ⊗[R] U n) := e.symm.toRingHom
   have hr (y : images U n) : j (r y) = y.val :=
     congrArg Subtype.val (e.apply_symm_apply y)
-  refine ⟨n, g ∘ comap r, hg.comp (continuous_comap r), ?_⟩
+  have hcont : Continuous (comap r) := PrimeSpectrum.continuous_comap r
+  refine ⟨n, g ∘ comap r, hg.comp hcont, ?_⟩
   intro x
   have hx : comap r (comap j.toRingHom x) = comap (images U n).val.toRingHom x := by
     apply PrimeSpectrum.ext

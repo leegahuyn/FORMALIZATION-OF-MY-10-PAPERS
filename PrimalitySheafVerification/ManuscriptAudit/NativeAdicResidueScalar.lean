@@ -102,11 +102,16 @@ theorem residue_cohomology_annihilated (d n : ℕ)
     apply ULift.ext
     apply ContinuousMap.ext
     intro t
-    change (((ℓ ^ n) • (a.down : C(U.unop.left, ZMod (ℓ ^ n)))) t) = 0
-    rw [ContinuousMap.nsmul_apply, nsmul_eq_mul, ZMod.natCast_self, zero_mul]
+    let f : C(U.unop.left, ZMod (ℓ ^ n)) := a.down
+    change (((ℓ ^ n) • f : C(U.unop.left, ZMod (ℓ ^ n))) t) =
+      (0 : C(U.unop.left, ZMod (ℓ ^ n))) t
+    rw [ContinuousMap.nsmul_apply, ContinuousMap.zero_apply, nsmul_eq_mul, ZMod.natCast_self, zero_mul]
   calc
     _ = Sheaf.H.map ((ℓ ^ n) • 𝟙 F) d x := (H_map_nsmul_id X F d (ℓ ^ n) x).symm
-    _ = _ := by rw [hSheaf]; simp
+    _ = _ := by
+      rw [hSheaf]
+      change x.comp (Ext.mk₀ (0 : F ⟶ F)) (add_zero d) = 0
+      rw [Ext.mk₀_zero, Ext.comp_zero]
 
 
 end
