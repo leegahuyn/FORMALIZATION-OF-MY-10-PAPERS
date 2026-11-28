@@ -91,7 +91,7 @@ def refinementEquiv : invariants A B t ≃ₗ[A] invariants A C (pull A B C f t)
     rw [h]
     exact e.symm.bijective.comp d.bijective
   exact LinearEquiv.ofBijective g
-    ((Module.FaithfullyFlat.lTensor_bijective_iff_bijective A C g).1 hk)
+    (of_lTensor_bijective A C g hk)
 
 /-- The genuine descended Picard class is independent of a faithfully flat refinement. -/
 theorem picardClass_eq_pull :

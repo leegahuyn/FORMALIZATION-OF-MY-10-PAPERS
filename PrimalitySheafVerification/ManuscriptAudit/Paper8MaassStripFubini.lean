@@ -46,7 +46,14 @@ private theorem hyperbolic_integral_to_complex {D : ℍ → ℝ≥0∞} (hD : Me
     fun_prop
   rw [UpperHalfPlane.volume_def, setLIntegral_withDensity_eq_setLIntegral_mul μ hDensity hD hS, ← hPush]
   refine setLIntegral_congr_fun hS (fun z _ => ?_)
-  simp [f, heightDensity, Real.nnnorm_of_nonneg z.im_pos.le]
+  change
+    (↑((1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2) : ℝ≥0∞) * D z =
+      heightDensity (z : ℂ) * D (ofComplex (z : ℂ))
+  have hZ : ofComplex (z : ℂ) = z := by
+    rw [ofComplex_apply_of_im_pos z.im_pos]
+  have hNorm : ‖(z : ℂ).im‖₊ = NNReal.mk z.im z.im_pos.le :=
+    Real.nnnorm_of_nonneg z.im_pos.le
+  rw [hZ, heightDensity, hNorm]
 
 private def stripCoordinates (w : ℝ) : Set (ℝ × ℝ) := Icc 0 w ×ˢ Ici 1
 

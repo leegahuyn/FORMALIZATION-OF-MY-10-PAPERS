@@ -58,12 +58,13 @@ theorem exists_selfAdjoint (ι : D →ₗ[ℝ] H) (hι : Function.Injective ι) 
       rw [mul_pow, show s^2 = 1-a from Real.sq_sqrt (sub_nonneg.mpr ha.le)]
       exact hN u
     have hd := (sq_le_sq₀ (mul_nonneg hs.le (norm_nonneg _)) (norm_nonneg _)).mp hs'
-    have h := (le_div_iff₀ hs).mpr (by simpa only [mul_comm] using hd)
-    simpa only [div_eq_mul_inv, one_mul, mul_comm] using h)
+    calc
+      ‖ι u‖ ≤ ‖u‖ / s := (le_div_iff₀ hs).mpr (by rwa [mul_comm])
+      _ = (1/s) * ‖u‖ := by rw [div_eq_mul_inv, one_div, mul_comm])
   have hJ : DenseRange J := hDense
   refine ⟨unshifted J c, unshifted_selfAdjoint J c hJ, ?_, ?_⟩
   · intro x y
-    rw [unshifted_graph_iff, realization_form_iff J hJ]
+    rw [unshifted_graph_iff J c x y, realization_form_iff J hJ x (y+c • x)]
     change (∃ u : D, ι u = x ∧ ∀ w, ⟪u,w⟫ = ⟪y+c • x,ι w⟫) ↔ _
     constructor
     · rintro ⟨u, hu, h⟩

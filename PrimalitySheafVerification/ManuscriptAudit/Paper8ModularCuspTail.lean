@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
 import Mathlib.MeasureTheory.Measure.WithDensity
 import PrimalitySheafVerification.ManuscriptAudit.Paper8ModularHeightCutoff
 
@@ -9,13 +10,16 @@ namespace ManuscriptAudit.Paper8ModularCuspTail
 open Set Filter MeasureTheory UpperHalfPlane Paper8ModularHeightCutoff
 open scoped MatrixGroups ENNReal Topology
 
-private theorem isOpen_height_above (Y : ℝ) : IsOpen {z : ℍ | Y < maximumHeight z} := by
+set_option maxHeartbeats 1200000 in
+theorem isOpen_height_above (Y : ℝ) : IsOpen {z : ℍ | Y < maximumHeight z} := by
   have hSet : {z : ℍ | Y < maximumHeight z} =
       ⋃ g : SL(2, ℤ), {z : ℍ | Y < (g • z).im} := by
     ext z
     constructor
     · intro hz
-      exact mem_iUnion.mpr ⟨Classical.choose (ModularGroup.exists_max_im z), hz⟩
+      let g := Classical.choose (ModularGroup.exists_max_im z)
+      change Y < (g • z).im at hz
+      exact mem_iUnion.mpr ⟨g, hz⟩
     · intro hz
       obtain ⟨g, hg⟩ := mem_iUnion.mp hz
       exact hg.trans_le (im_smul_le_maximumHeight z g)

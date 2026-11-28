@@ -29,7 +29,7 @@ theorem raising_complexGauge (x y : ℝ) (hy : 0 < y) :
   let d := deriv ModularForm.eta (complexPoint x y)
   have hη : HasDerivAt ModularForm.eta d (complexPoint x y) :=
     (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet
-      (by simpa only [complexPoint_im] using hy)).hasDerivAt
+      (by change 0 < (complexPoint x y).im; rwa [complexPoint_im])).hasDerivAt
   have hEtaX := Complex.conjCLE.toContinuousLinearMap.hasFDerivAt.comp_hasDerivAt x
     (horizontal_derivative hη)
   have hEtaY : HasDerivAt (fun t : ℝ => (starRingEnd ℂ) (ModularForm.eta (complexPoint x t)))
@@ -81,8 +81,9 @@ theorem raising_eq_gauge_derivativeZ {F : ℂ → ℂ} (x y : ℝ) (hy : 0 < y)
     unfold partialX
     exact congrArg (fun f : ℝ → ℂ => deriv f x) (funext fun u => hEq u y hy)
   have hY : partialY (realProfile F) x y = partialY G x y := by
-    have hLocal : realProfile F x =ᶠ[𝓝 y] G x :=
-      (Ioi_mem_nhds hy).mono (fun t ht => hEq x t ht)
+    have hLocal : realProfile F x =ᶠ[𝓝 y] G x := by
+      filter_upwards [Ioi_mem_nhds hy] with t ht
+      exact hEq x t ht
     exact hLocal.deriv_eq
   have hA : DifferentiableAt ℝ complexGauge z := complexGauge_differentiableAt z
   have hB : DifferentiableAt ℝ (complexGaugeRatio F) z := complexGaugeRatio_differentiableAt z hF
@@ -98,7 +99,9 @@ theorem raising_eq_gauge_derivativeZ {F : ℂ → ℂ} (x y : ℝ) (hy : 0 < y)
   rw [derivativeZ_eq_partials hB]
   unfold raisingDerivative
   change complexGauge (complexPoint x y) *
-      (Complex.I * (y : ℂ) * partialX B x y + (y : ℂ) * partialY B x y) = _
+      (Complex.I * (y : ℂ) * partialX B x y + (y : ℂ) * partialY B x y) =
+        2 * Complex.I * (y : ℂ) * complexGauge (complexPoint x y) *
+          ((partialX B x y - Complex.I * partialY B x y) / 2)
   linear_combination ((y : ℂ) * complexGauge (complexPoint x y) * partialY B x y) * Complex.I_sq
 
 end

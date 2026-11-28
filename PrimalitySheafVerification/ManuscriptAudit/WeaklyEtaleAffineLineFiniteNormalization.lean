@@ -69,7 +69,7 @@ theorem exists_model_map (e : E ≃ₐ[F K] (∀ i, L i))
   let h := j.comp (modelInclusion K L)
   letI : Module.Finite (R K) (model K L) := model_finite K L
   obtain ⟨g, hg, _⟩ := WeaklyEtaleAffineLineGenericStage.existsUnique_integral_lift
-    K B (fun x ↦ IsIntegral.of_finite x) h
+    K B (fun x ↦ IsIntegral.of_finite (R K) x) h
   have hgi : Function.Injective g := by
     intro x y hxy
     have hx : h x = h y := by
@@ -77,7 +77,7 @@ theorem exists_model_map (e : E ≃ₐ[F K] (∀ i, L i))
     exact (hf.comp (e.symm.injective.comp (modelInclusion_injective K L))) hx
   refine ⟨g, hgi, hg, fun x ↦ ?_⟩
   obtain ⟨a, ha⟩ := IsIntegral.exists_multiple_integral_of_isLocalization (R K)⁰ x
-    (IsIntegral.of_finite x)
+    (IsIntegral.of_finite (F K) x)
   have hCoord (i : ι) : IsIntegral (R K) (e (a • x) i) :=
     ha.map ((Pi.evalAlgHom (F K) L i).comp e.toAlgHom)
   let d : model K L := fun i ↦ ⟨e (a • x) i, (mem_integralClosure_iff).mpr (hCoord i)⟩

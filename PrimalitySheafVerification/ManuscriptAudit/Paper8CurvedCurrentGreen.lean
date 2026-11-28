@@ -27,6 +27,7 @@ theorem green_identity {a b Y : ℝ} (hab : a ≤ b) (J : ℂ → ℂ) (lower : 
     (pullbackX J lower Y) (pullbackT J lower Y) (rateX J lower Y) (rateT J lower Y) hX hT
     (fun x hx t ht => pullbackT_hasDerivAt_x (hLower x hx) (hJ x hx t ht))
     (fun x hx t ht => pullbackX_hasDerivAt_t (hJ x hx t ht))
+  change box a b 0 1 ((rateX J lower Y).uncurry - (rateT J lower Y).uncurry) = _ at hBox
   rw [box_columns hab (zero_le_one : (0 : ℝ) ≤ 1) (hX.sub hT)] at hBox
   rw [← hBox]
   apply intervalIntegral.integral_congr

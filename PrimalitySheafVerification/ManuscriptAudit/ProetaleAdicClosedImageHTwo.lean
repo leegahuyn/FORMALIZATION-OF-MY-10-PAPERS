@@ -51,19 +51,19 @@ theorem HTwo_subsingleton : Subsingleton (Sheaf.H (functionsOver ℤ_[ℓ] i) 2)
     ShortComplex.ShortExact.mk' hSe
       (inferInstanceAs (Mono ((G i).map m))) (map_cokernel_epi i ℓ m)
   letI : Injective ((G i).obj I) := Injective.injective_of_adjoint (adjunction i) I
-  letI : Subsingleton (Sheaf.H ((G i).obj I) 2) :=
+  have hMid : Subsingleton (Sheaf.H ((G i).obj I) 2) :=
     Ext.subsingleton_of_injective (integers X) ((G i).obj I) 1
   letI : Subsingleton (Sheaf.H (cokernel m) 1) :=
     ProetaleAlgebraicallyClosedCohomology.H_succ_subsingleton K (cokernel m) 0
-  letI : Subsingleton (Sheaf.H ((G i).obj (cokernel m)) 1) :=
+  have hQuot : Subsingleton (Sheaf.H ((G i).obj (cokernel m)) 1) :=
     ProetaleDirectImageHOne.directImage_HOne_subsingleton i (cokernel m)
   apply subsingleton_of_forall_eq 0
   intro x
   let W := S.map (G i)
-  have hx : x.comp (Ext.mk₀ W.f) (add_zero 2) = 0 := Subsingleton.elim _ _
+  have hx : x.comp (Ext.mk₀ W.f) (add_zero 2) = 0 := hMid.elim _ _
   obtain ⟨y, hy⟩ := Ext.covariant_sequence_exact₁ (integers X) hShort x hx
     (show 1 + 1 = 2 by rfl)
-  have hy₀ : y = 0 := Subsingleton.elim _ _
+  have hy₀ : y = 0 := hQuot.elim _ _
   rw [hy₀, Ext.zero_comp] at hy
   exact hy.symm
 

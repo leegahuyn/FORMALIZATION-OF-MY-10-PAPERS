@@ -14,13 +14,12 @@ open scoped NNReal ENNReal Interval
 
 noncomputable section
 
-private def heightDensity (z : ℍ) : ℝ≥0 := ((1 / (⟨z.im, z.im_pos.le⟩ : ℝ≥0)) ^ 2 : ℝ≥0)
+private def heightDensity (z : ℍ) : ℝ≥0 := (1 / NNReal.mk z.im z.im_pos.le : ℝ≥0) ^ 2
 
 private theorem heightDensity_measurable : Measurable heightDensity := by
-  have hC : Continuous (fun z : ℍ => (⟨z.im, z.im_pos.le⟩ : ℝ≥0)) :=
-    UpperHalfPlane.continuous_im.subtype_mk _
-  unfold heightDensity
-  fun_prop
+  have hC : Measurable (fun z : ℍ => (NNReal.mk z.im z.im_pos.le : ℝ≥0)) :=
+    measurable_coe_nnreal_real_iff.mp UpperHalfPlane.continuous_im.measurable
+  exact (measurable_const.div hC).pow_const 2
 
 theorem integral_weightedCurl_to_complex (J : ℂ → ℂ) {S : Set ℍ} (hS : MeasurableSet S) :
     (∫ z in S, weightedCurl J z) =
@@ -99,7 +98,11 @@ private theorem coordinate_region (Y : ℝ) :
       rw [hSq]
       have h := (Real.sqrt_le_left hPos.le).mp hp.2.1
       linarith
-    exact ⟨z, ⟨⟨hNorm, hRe.symm ▸ abs_le.mpr hp.1⟩, hI.symm ▸ hp.2.2⟩, rfl⟩
+    have hY : z.im ≤ Y := by
+      change (e p).im ≤ Y
+      rw [hI]
+      exact hp.2.2
+    exact ⟨z, ⟨⟨hNorm, hRe.symm ▸ abs_le.mpr hp.1⟩, hY⟩, rfl⟩
 
 theorem integral_truncated_weightedCurl (J : ℂ → ℂ) {Y : ℝ} (hY : 1 ≤ Y)
     (hC : ContinuousOn (complexCurl J) (((↑) : ℍ → ℂ) '' ModularGroup.truncatedFundamentalDomain Y)) :
@@ -117,6 +120,8 @@ theorem integral_truncated_weightedCurl (J : ℂ → ℂ) {Y : ℝ} (hY : 1 ≤ 
     unfold complexPoint
     fun_prop
   have hMap : MapsTo e R (((↑) : ℍ → ℂ) '' S) := by
+    change MapsTo Complex.measurableEquivRealProd.symm (region Y)
+      (((↑) : ℍ → ℂ) '' ModularGroup.truncatedFundamentalDomain Y)
     rw [← coordinate_region Y]
     exact mapsTo_preimage _ _
   have hComp := (Complex.volume_preserving_equiv_real_prod.symm.restrict_preimage_emb
@@ -154,11 +159,14 @@ theorem integral_truncated_weightedCurl (J : ℂ → ℂ) {Y : ℝ} (hY : 1 ≤ 
           apply Eventually.of_forall
           intro y
           exact indicator_of_notMem (fun h => hx h.1) _
-        _ = _ := integral_zero
+        _ = _ := integral_zero ℝ ℂ
   rw [hIcc, intervalIntegral.integral_of_le (by norm_num : (-(1 / 2) : ℝ) ≤ 1 / 2),
     ← integral_Icc_eq_integral_Ioc]
   refine setIntegral_congr_fun hX (fun x hx => ?_)
-  have hL : arcHeight x ≤ Y := (Real.sqrt_le_one.2 (by nlinarith [sq_nonneg x])).trans hY
+  have hArc : arcHeight x ≤ 1 := by
+    unfold arcHeight
+    exact Real.sqrt_le_one.2 (by nlinarith [sq_nonneg x])
+  have hL : arcHeight x ≤ Y := hArc.trans hY
   rw [intervalIntegral.integral_of_le hL, ← integral_Icc_eq_integral_Ioc]
   simp only [f, e, coordinate_complex]
 

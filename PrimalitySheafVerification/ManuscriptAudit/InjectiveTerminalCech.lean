@@ -27,6 +27,11 @@ variable {C : Type u} [Category.{v} C] [HasFiniteLimits C]
 private def tupleMap {W : C} (n : ℕ) (a : Fin (n + 1) → (W ⟶ U)) : W ⟶ N f n :=
   WidePullback.lift (hT.from W) a (fun i ↦ hT.hom_ext _ _)
 
+private theorem tupleMap_vertex {W : C} (n : ℕ) (a : Fin (n + 1) → (W ⟶ U))
+    (i : Fin (n + 1)) : tupleMap f hT n a ≫ vertex f n i = a i :=
+  WidePullback.lift_π (arrows := fun _ : Fin (n + 1) ↦ f)
+    (hT.from W) a (fun _ ↦ hT.hom_ext _ _) i
+
 private theorem tupleMap_natural {W V : C} (r : V ⟶ W) (n : ℕ)
     (a : Fin (n + 1) → (W ⟶ U)) :
     r ≫ tupleMap f hT n a = tupleMap f hT n (fun i ↦ r ≫ a i) := by
@@ -44,7 +49,8 @@ private theorem tupleMap_face {W : C} (n : ℕ) (i : Fin (n+2))
     change (tupleMap f hT (n + 1) a ≫ face f n i) ≫ vertex f n j =
       tupleMap f hT n (fun k ↦ a ((SimplexCategory.δ i).toOrderHom k)) ≫ vertex f n j
     rw [Category.assoc, face_vertex]
-    simp only [tupleMap, vertex, WidePullback.lift_π]
+    exact (tupleMap_vertex f hT (n + 1) a _).trans
+      (tupleMap_vertex f hT n (fun k ↦ a ((SimplexCategory.δ i).toOrderHom k)) j).symm
   · exact hT.hom_ext _ _
 
 private theorem tupleMap_vertices (n : ℕ) :

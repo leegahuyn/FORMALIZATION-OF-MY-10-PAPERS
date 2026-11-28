@@ -26,12 +26,14 @@ theorem baseTaper_eq_zero {t : ℝ} (ht : 2 ≤ t) : baseTaper t = 0 := by
 
 private theorem baseTaper_deriv_zero {t : ℝ} (ht : t < 1 ∨ 2 < t) : deriv baseTaper t = 0 := by
   rcases ht with h | h
-  · have hEq : baseTaper =ᶠ[𝓝 t] (fun _ : ℝ => (1 : ℝ)) :=
-      (Iio_mem_nhds h).mono (fun _ hs => baseTaper_eq_one hs.le)
+  · have hEq : baseTaper =ᶠ[𝓝 t] (fun _ : ℝ => (1 : ℝ)) := by
+      filter_upwards [Iio_mem_nhds h] with u hu
+      exact baseTaper_eq_one (le_of_lt hu)
     rw [hEq.deriv_eq]
     simp
-  · have hEq : baseTaper =ᶠ[𝓝 t] (fun _ : ℝ => (0 : ℝ)) :=
-      (Ioi_mem_nhds h).mono (fun _ hs => baseTaper_eq_zero hs.le)
+  · have hEq : baseTaper =ᶠ[𝓝 t] (fun _ : ℝ => (0 : ℝ)) := by
+      filter_upwards [Ioi_mem_nhds h] with u hu
+      exact baseTaper_eq_zero (le_of_lt hu)
     rw [hEq.deriv_eq]
     simp
 
@@ -66,7 +68,8 @@ private theorem taper_deriv (Y t : ℝ) :
   have h := (baseTaper_smooth.differentiable (by norm_num) (t / Y)).hasDerivAt
   have hDiv : HasDerivAt (fun u : ℝ => u / Y) (1 / Y) t := by
     simpa only [id_eq] using (hasDerivAt_id t).div_const Y
-  simpa only [taper, Function.comp_def, div_eq_mul_inv, one_mul] using (h.comp t hDiv).deriv
+  change deriv (fun u : ℝ => baseTaper (u / Y)) t = _
+  simpa only [Function.comp_def, one_div, div_eq_mul_inv] using (h.comp t hDiv).deriv
 
 theorem taper_deriv_zero_below {Y t : ℝ} (hY : 0 < Y) (ht : t < Y) :
     deriv (taper Y) t = 0 := by

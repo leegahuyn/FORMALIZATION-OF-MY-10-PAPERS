@@ -68,12 +68,19 @@ theorem reduction_injective (K : Type) [Field K] [IsAlgClosed K]
     change (lift (X K)).map (inclusion (X K) ℓ) ≫
        (lift (X K)).map (Pi.π (residueSheaf (X K) ℓ) n) = _
     rw [← (lift (X K)).map_comp, inclusion_π]
+  let a' : (sequence (X K) ℓ).X₁.H 2 := a
+  let b' : (sequence (X K) ℓ).X₁.H 2 := b
+  have hcomp (z : (sequence (X K) ℓ).X₁.H 2) :
+      Sheaf.H.map ((lift (X K)).map (Pi.π (residueSheaf (X K) ℓ) n)) 2
+          (Sheaf.H.map (sequence (X K) ℓ).f 2 z) =
+        Sheaf.H.map ((lift (X K)).map (residueReduction (X K) ℓ n)) 2 z := by
+    rw [← Sheaf.H.map_comp_apply, hn]
   change Sheaf.H.map ((lift (X K)).map (Pi.π (residueSheaf (X K) ℓ) n)) 2
-      (Sheaf.H.map (sequence (X K) ℓ).f 2 a) =
+      (Sheaf.H.map (sequence (X K) ℓ).f 2 a') =
     Sheaf.H.map ((lift (X K)).map (Pi.π (residueSheaf (X K) ℓ) n)) 2
-      (Sheaf.H.map (sequence (X K) ℓ).f 2 b)
-  simp only [← Sheaf.H.map_comp_apply, hn]
-  exact congrArg (fun z : nativeCompatible (X K) ℓ 2 => z.val n) hab
+      (Sheaf.H.map (sequence (X K) ℓ).f 2 b')
+  exact (hcomp a').trans
+    ((congrArg (fun z : nativeCompatible (X K) ℓ 2 => z.val n) hab).trans (hcomp b').symm)
 
 end
 end ManuscriptAudit.CuspNativeAdicHTwoReductionDetection

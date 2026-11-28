@@ -34,7 +34,9 @@ private theorem oddGaugeCharacter_conj_mul (g : CongruenceSubgroup.Gamma0 4) :
   have hx : c x * x = 1 := by
     simp only [c, x, map_intCast, ← pow_two, levelCharacter_sq]
   have hy : c y * y = 1 := by
-    simp only [c, y, conjugate_squaredMultiplier_eq_inv, inv_mul_cancel₀, squaredMultiplier_ne_zero]
+    change (starRingEnd ℂ) (squaredMultiplier (g : SL(2, ℤ))) * squaredMultiplier (g : SL(2, ℤ)) = 1
+    rw [conjugate_squaredMultiplier_eq_inv]
+    exact inv_mul_cancel₀ (squaredMultiplier_ne_zero _)
   change c (x * y) * (x * y) = 1
   calc
     _ = (c x * x) * (c y * y) := by rw [map_mul]; ring
@@ -55,7 +57,9 @@ theorem currentCoefficient_pullback_eq {F : ℂ → ℂ} (hLaw : OddMaassLaw F)
         (fractionalLinear_hasDerivAt a z).deriv, complexGaugeRatio_coe, gaugeRatio_transform hLaw,
         ← complexGaugeRatio_coe]
       simp only [c, a, map_mul]
-      field_simp [denominator_ne_zero a z] <;> ring
+      have hn : denominator (g : SL(2, ℤ)) (z : ℂ) ≠ 0 :=
+        denominator_ne_zero (g : SL(2, ℤ)) z
+      field_simp [hn] <;> ring
     _ = _ := by rw [hc, one_mul]
 
 end

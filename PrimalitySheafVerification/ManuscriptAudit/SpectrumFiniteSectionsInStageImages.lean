@@ -13,6 +13,8 @@ open scoped TensorProduct
 
 noncomputable section
 
+set_option maxHeartbeats 2000000
+
 variable {R B A : Type*} [CommRing R] [CommRing B] [Algebra R B]
   [Fintype A] [TopologicalSpace A] [DiscreteTopology A]
 
@@ -48,6 +50,8 @@ theorem factor_of_injective_stage_maps
 variable (U : ℕ → Subalgebra R B) (hMono : Monotone U)
   (hCover : ∀ b : B, ∃ n, b ∈ U n)
   (hFlat : ∀ n, Module.Flat R (U n)) [Module.Flat R B]
+
+include hMono hCover hFlat
 
 /-- Every actual finite coefficient section on the double product descends. -/
 theorem factor_double (f : PrimeSpectrum (B ⊗[R] B) → A) (hF : Continuous f) :

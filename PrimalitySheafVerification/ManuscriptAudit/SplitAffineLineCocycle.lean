@@ -146,7 +146,7 @@ def invariantsEquiv : M ≃ₗ[A] invariants A B (transitionUnit A B M e) := by
     rw [hLift]
     exact E.symm.bijective.comp u.bijective
   exact LinearEquiv.ofBijective f
-    ((Module.FaithfullyFlat.lTensor_bijective_iff_bijective A B f).1 hBij)
+    (FaithfullyFlatCocyclePicard.of_lTensor_bijective A B f hBij)
 
 end
 
