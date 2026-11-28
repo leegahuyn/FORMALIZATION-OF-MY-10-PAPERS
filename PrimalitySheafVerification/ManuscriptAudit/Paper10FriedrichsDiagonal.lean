@@ -2,8 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.Paper10FriedrichsEigenbasis
 import PrimalitySheafVerification.ManuscriptAudit.Paper10FriedrichsShift
 
-/-! Diagonalization of the actual real unbounded operator, including its
-domain, rather than just its action on individual eigenvectors. -/
+/-! Diagonalization of the actual real unbounded operator, including its domain in Hilbert coordinates. -/
 
 namespace ManuscriptAudit.Paper10FriedrichsDiagonal
 
@@ -19,6 +18,8 @@ variable {D H I : Type*}
 variable (J : D →L[ℝ] H) (hJ : DenseRange J)
 variable (b : HilbertBasis I ℝ H) (e : I → ℝ)
 variable (he : ∀ i, (b i, e i • b i) ∈ (realization J).graph)
+
+include hJ he
 
 theorem label_ne_zero (i : I) : e i ≠ 0 := by
   intro h
@@ -47,7 +48,8 @@ theorem graph_iff_repr (x y : H) :
     rw [hi, ← mul_assoc, mul_inv_cancel₀ (label_ne_zero J hJ b e he i), one_mul]
   · intro h
     apply b.repr.injective
-    ext i
+    apply lp.ext
+    funext i
     rw [repr_resolvent J hJ b e he, h, ← mul_assoc,
       inv_mul_cancel₀ (label_ne_zero J hJ b e he i), one_mul]
 
@@ -76,7 +78,7 @@ theorem unshifted_graph_iff_repr (c : ℝ) (x y : H) :
 weighted spectral coefficients. -/
 theorem unshifted_domain_iff_memℓp (c : ℝ) (x : H) :
     x ∈ (unshifted J c).domain ↔ Memℓp (fun i => (e i - c) * b.repr x i) 2 := by
-  change (∃ y, (x, y) ∈ (unshifted J c).graph) ↔ _
+  rw [LinearPMap.mem_domain_iff]
   constructor
   · rintro ⟨y, hy⟩
     have h := (unshifted_graph_iff_repr J hJ b e he c x y).mp hy

@@ -52,6 +52,8 @@ private theorem partner_mul_height (F : ℂ → ℂ) (z : ℍ) :
     rw [← Real.rpow_add z.im_pos, neg_add_cancel, Real.rpow_zero]
   unfold partnerOnUpper holomorphicPartner conjugate quarterHeight
   rw [starRingEnd_self_apply]
+  change (((z.im ^ (-(1 / 4 : ℝ))) : ℝ) : ℂ) * F z *
+    ((z.im ^ (1 / 4 : ℝ) : ℝ) : ℂ) = F z
   calc
     _ = (((z.im ^ (-(1 / 4 : ℝ)) : ℝ) : ℂ) *
         ((z.im ^ (1 / 4 : ℝ) : ℝ) : ℂ)) * F z := by ring
@@ -72,7 +74,8 @@ theorem gammaZero_positive_lowering_eq_const_mul_eta {N : ℕ} (hN : 0 < N) (hN2
     Complex.differentiable_conj.differentiableAt.comp z (hF z hz)
   have hGRaise (x y : ℝ) (hy : 0 < y) : raising (realProfile G) x y = 0 := by
     have hFxy := hF (complexPoint x y) (by simpa only [complexPoint_im] using hy)
-    rw [G, raising_conjugate hFxy, hKernel x y hy, map_zero]
+    change raising (realProfile (conjugate F)) x y = 0
+    rw [raising_conjugate hFxy, hKernel x y hy, map_zero]
   have hHol : MDiff f := partnerOnUpper_holomorphic hGDiff hGRaise
   have hAgree (g : SL(2, ℤ)) (hg : g ∈ CongruenceSubgroup.Gamma0 N) (z : ℍ) :
       f (g • z) * ModularForm.eta z = f z * ModularForm.eta (g • z : ℍ) := by
@@ -95,7 +98,12 @@ theorem gammaZero_positive_lowering_eq_const_mul_eta {N : ℕ} (hN : 0 < N) (hN2
     rw [hNorm, hNorm, hLaw g hg z, norm_mul, positivePhase_norm, one_mul]
   have hMassG : (∫⁻ z in cosetCells (CongruenceSubgroup.Gamma0 N) ModularGroup.fd,
       normSquareDensity G z) < ⊤ := by
-    simpa only [normSquareDensity, hNorm] using hMass
+    have hD : (fun z : ℍ => normSquareDensity G z) = fun z : ℍ => normSquareDensity F z := by
+      funext z
+      unfold normSquareDensity
+      rw [hNorm z]
+    rw [hD]
+    exact hMass
   have hStrip (g : SL(2, ℤ)) : IntegrableOn
       (HolomorphicStripEnergy.weightedEnergy (Paper8EtaNormalizedCuspTranslate.cuspTranslate f g)
         (N : ℝ)) (Ioi 1) :=

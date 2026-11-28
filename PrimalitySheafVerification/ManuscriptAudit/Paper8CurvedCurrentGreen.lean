@@ -44,6 +44,8 @@ theorem green_identity {a b Y : ℝ} (hab : a ≤ b) (J : ℂ → ℂ) (lower : 
       rw [← intervalIntegral.integral_const_mul]
       apply intervalIntegral.integral_congr
       intro t _
+      change ((Y - lower x : ℝ) : ℂ) * curl J x ((Y - lower x) * t + lower x) =
+        rateX J lower Y x t - rateT J lower Y x t
       rw [rates_sub]
       have hHeight : height lower Y x t = (Y - lower x) * t + lower x := by
         unfold height

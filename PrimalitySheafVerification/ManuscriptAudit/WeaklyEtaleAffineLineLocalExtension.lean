@@ -42,13 +42,15 @@ private theorem regular_scalar (r : Ideal B) [r.IsPrime] (a : Polynomial K) (ha 
 /-- A section realized as a fraction of elements at a normal finite
 stage is already regular in the actual valuation stalk of that stage
 at every image point of the weakly étale chart. -/
-theorem exists_local_preimage (g : D →ₐ[Polynomial K] B)
+theorem exists_local_preimage_with_quotient (g : D →ₐ[Polynomial K] B)
     (r : Ideal B) [r.IsPrime] (q : Ideal D) [q.IsPrime]
     (hqr : q = r.comap g.toRingHom)
     [IsDomain (Localization.AtPrime q)] [ValuationRing (Localization.AtPrime q)]
     (a : Polynomial K) (ha : a ≠ 0) (b : D) (z : B)
     (h : g b = algebraMap (Polynomial K) B a * z) :
     ∃ d : Localization.AtPrime q,
+      algebraMap (Polynomial K) (Localization.AtPrime q) a * d =
+          algebraMap D (Localization.AtPrime q) b ∧
       Localization.localRingHom q r g.toRingHom hqr d = algebraMap B (Localization.AtPrime r) z := by
   let A := Polynomial K
   let S := Localization.AtPrime q
@@ -69,7 +71,18 @@ theorem exists_local_preimage (g : D →ₐ[Polynomial K] B)
     change algebraMap B T (g b) = algebraMap B T (algebraMap A B a) * algebraMap B T z
     rw [h, map_mul]
   have hr : IsRegular (f a') := hfa.symm ▸ regular_scalar r a ha
-  obtain ⟨d, _, hd⟩ := ValuationLocalDivision.exists_quotient f hr he
+  exact ValuationLocalDivision.exists_quotient f hr he
+
+/-- The exact local quotient maps to the original chart section. -/
+theorem exists_local_preimage (g : D →ₐ[Polynomial K] B)
+    (r : Ideal B) [r.IsPrime] (q : Ideal D) [q.IsPrime]
+    (hqr : q = r.comap g.toRingHom)
+    [IsDomain (Localization.AtPrime q)] [ValuationRing (Localization.AtPrime q)]
+    (a : Polynomial K) (ha : a ≠ 0) (b : D) (z : B)
+    (h : g b = algebraMap (Polynomial K) B a * z) :
+    ∃ d : Localization.AtPrime q,
+      Localization.localRingHom q r g.toRingHom hqr d = algebraMap B (Localization.AtPrime r) z := by
+  obtain ⟨d, _, hd⟩ := exists_local_preimage_with_quotient g r q hqr a ha b z h
   exact ⟨d, hd⟩
 
 end
@@ -77,10 +90,11 @@ end ManuscriptAudit.WeaklyEtaleAffineLineLocalExtension
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.WeaklyEtaleAffineLineLocalExtension.exists_local_preimage
-  let dependencies ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.WeaklyEtaleAffineLineLocalExtension.exists_local_preimage_with_quotient,
+      ``ManuscriptAudit.WeaklyEtaleAffineLineLocalExtension.exists_local_preimage] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

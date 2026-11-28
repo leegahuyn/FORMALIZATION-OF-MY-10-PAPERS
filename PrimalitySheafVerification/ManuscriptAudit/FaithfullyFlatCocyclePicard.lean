@@ -20,23 +20,6 @@ universe u
 noncomputable section
 
 
-/-- Reflect bijectivity by reflecting the two exact sequences with a zero end. -/
-theorem of_lTensor_bijective (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-    [Module.FaithfullyFlat A B] {M : Type*} [AddCommGroup M] [Module A M]
-    {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] N)
-    (h : Function.Bijective (f.lTensor B)) : Function.Bijective f := by
-  constructor
-  · have hTensor : Function.Exact ((0 : Unit →ₗ[A] M).lTensor B) (f.lTensor B) := by
-      rw [LinearMap.lTensor_zero]
-      exact (LinearMap.exact_zero_iff_injective (B ⊗[A] Unit) (f.lTensor B)).2 h.1
-    exact (LinearMap.exact_zero_iff_injective Unit f).1
-      (Module.FaithfullyFlat.lTensor_reflects_exact A B (0 : Unit →ₗ[A] M) f hTensor)
-  · have hTensor : Function.Exact (f.lTensor B) ((0 : N →ₗ[A] Unit).lTensor B) := by
-      rw [LinearMap.lTensor_zero]
-      exact (LinearMap.exact_zero_iff_surjective (B ⊗[A] Unit) (f.lTensor B)).2 h.2
-    exact (LinearMap.exact_zero_iff_surjective Unit f).1
-      (Module.FaithfullyFlat.lTensor_reflects_exact A B f (0 : N →ₗ[A] Unit) hTensor)
-
 variable (A B : Type u) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]
 variable (t : (Double A B)ˣ)
 
@@ -126,8 +109,19 @@ theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A
       exact (LinearMap.congr_fun hMap z).trans (r.apply_symm_apply (e z)).symm
     rw [he]
     exact r.symm.bijective.comp e.bijective
-  change Function.Bijective ((pairing A B t).lTensor B) at hf
-  exact of_lTensor_bijective A B (pairing A B t) hf
+  let g := pairing A B t
+  let before : Unit →ₗ[A] (L ⊗[A] N) := 0
+  let after : A →ₗ[A] Unit := 0
+  have hinj : Function.Exact (before.lTensor B) (g.lTensor B) := by
+    simpa only [before, LinearMap.lTensor_zero] using
+      (LinearMap.exact_zero_iff_injective (B ⊗[A] Unit) f).2 hf.1
+  have hsurj : Function.Exact (g.lTensor B) (after.lTensor B) := by
+    simpa only [after, LinearMap.lTensor_zero] using
+      (LinearMap.exact_zero_iff_surjective (B ⊗[A] Unit) f).2 hf.2
+  exact ⟨(LinearMap.exact_zero_iff_injective Unit g).1
+      (Module.FaithfullyFlat.lTensor_reflects_exact A B before g hinj),
+    (LinearMap.exact_zero_iff_surjective Unit g).1
+      (Module.FaithfullyFlat.lTensor_reflects_exact A B g after hsurj)⟩
 
 /-- A genuine faithfully flat unit cocycle determines an invertible module. -/
 theorem invariants_invertible (ht : IsCocycle A B t) :

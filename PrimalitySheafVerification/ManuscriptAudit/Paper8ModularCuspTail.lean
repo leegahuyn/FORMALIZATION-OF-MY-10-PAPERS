@@ -41,7 +41,9 @@ theorem lintegral_cusp_tail_tendsto_zero {S : Set ℍ} (hS : MeasurableSet S) {D
     simpa only [ν, withDensity_apply D MeasurableSet.univ, Measure.restrict_univ] using hMass
   have hAnti : Antitone T := by
     intro M N hMN z hz
-    exact lt_of_le_of_lt (by exact_mod_cast hMN) hz
+    have hMN' : (M : ℝ) ≤ (N : ℝ) := by exact_mod_cast hMN
+    change (N : ℝ) < maximumHeight z at hz
+    exact hMN'.trans_lt hz
   have hEmpty : (⋂ N : ℕ, T N) = ∅ := by
     apply eq_empty_iff_forall_notMem.mpr
     intro z hz
@@ -53,8 +55,8 @@ theorem lintegral_cusp_tail_tendsto_zero {S : Set ℍ} (hS : MeasurableSet S) {D
     (fun N => (hT N).nullMeasurableSet) hAnti hFin
   rw [hEmpty, measure_empty] at h
   refine h.congr (fun N => ?_)
-  change ν (T N) = ∫⁻ z in S ∩ T N, D z
-  rw [ν, withDensity_apply D (hT N), Measure.restrict_restrict' hS, inter_comm (T N) S]
+  change (((volume : Measure ℍ).restrict S).withDensity D) (T N) = ∫⁻ z in S ∩ T N, D z
+  rw [withDensity_apply D (hT N), Measure.restrict_restrict' hS, inter_comm (T N) S]
 
 end ManuscriptAudit.Paper8ModularCuspTail
 

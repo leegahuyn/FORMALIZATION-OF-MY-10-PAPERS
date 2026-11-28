@@ -1,7 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.SpectrumFiniteContinuousFactorization
 import PrimalitySheafVerification.ManuscriptAudit.FlatTensorStageInjections
-import PrimalitySheafVerification.ManuscriptAudit.TensorTripleIncreasingUnion
 
 /-! Finite coefficient functions descend to actual affine double and triple
 tensor rings, by first applying stage descent to their subalgebra images. -/
@@ -65,18 +64,6 @@ theorem factor_double (f : PrimeSpectrum (B ⊗[R] B) → A) (hF : Continuous f)
     (TensorSquareIncreasingUnion.range_mono U hMono)
     (TensorSquareIncreasingUnion.exists_tensor_stage U hMono hCover) f hF
 
-/-- Every actual finite coefficient section on the triple product descends. -/
-theorem factor_triple [Module.Flat R (B ⊗[R] B)]
-    (f : PrimeSpectrum ((B ⊗[R] B) ⊗[R] B) → A) (hF : Continuous f) :
-    ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
-      ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x :=
-  factor_of_injective_stage_maps (fun n => (U n ⊗[R] U n) ⊗[R] U n)
-    (FlatTensorStageInjections.stageTriple U)
-    (fun n => by
-      letI := hFlat n
-      exact FlatTensorStageInjections.stageTriple_injective U n)
-    (TensorTripleIncreasingUnion.range_mono U hMono)
-    (TensorTripleIncreasingUnion.exists_triple_stage U hMono hCover) f hF
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsInStageImages
@@ -85,8 +72,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.SpectrumFiniteSectionsInStageImages.factor_of_injective_stage_maps,
-      ``ManuscriptAudit.SpectrumFiniteSectionsInStageImages.factor_double,
-      ``ManuscriptAudit.SpectrumFiniteSectionsInStageImages.factor_triple] do
+      ``ManuscriptAudit.SpectrumFiniteSectionsInStageImages.factor_double] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

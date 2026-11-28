@@ -80,7 +80,7 @@ theorem exists_model_map (e : E ≃ₐ[F K] (∀ i, L i))
     (IsIntegral.of_finite (F K) x)
   have hCoord (i : ι) : IsIntegral (R K) (e (a • x) i) :=
     ha.map ((Pi.evalAlgHom (F K) L i).comp e.toAlgHom)
-  let d : model K L := fun i ↦ ⟨e (a • x) i, (mem_integralClosure_iff).mpr (hCoord i)⟩
+  let d : model K L := fun i ↦ ⟨e (a • x) i, (mem_integralClosure_iff (R K) (L i)).mpr (hCoord i)⟩
   refine ⟨a, d, ?_⟩
   change ((inclusion K B).comp g) d = _
   rw [hg]

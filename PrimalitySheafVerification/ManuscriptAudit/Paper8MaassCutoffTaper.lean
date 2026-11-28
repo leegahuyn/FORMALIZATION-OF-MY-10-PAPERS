@@ -69,7 +69,7 @@ private theorem taper_deriv (Y t : ℝ) :
   have hDiv : HasDerivAt (fun u : ℝ => u / Y) (1 / Y) t := by
     simpa only [id_eq] using (hasDerivAt_id t).div_const Y
   change deriv (fun u : ℝ => baseTaper (u / Y)) t = _
-  simpa only [Function.comp_def, one_div, div_eq_mul_inv] using (h.comp t hDiv).deriv
+  simpa only [Function.comp_def, one_div, div_eq_mul_inv, one_mul] using (h.comp t hDiv).deriv
 
 theorem taper_deriv_zero_below {Y t : ℝ} (hY : 0 < Y) (ht : t < Y) :
     deriv (taper Y) t = 0 := by
