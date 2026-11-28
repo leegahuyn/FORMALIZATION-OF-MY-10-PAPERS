@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineGeometricDivisorFullExact
 import PrimalitySheafVerification.ManuscriptAudit.OpenEtaleGenericUnitQuotient
+import PrimalitySheafVerification.ManuscriptAudit.EtaleTwoOpenHOne
 
 /-! The actual generic-unit quotient evaluated on a factoring affine
 open yields its genuine finite height-one divisor cycle. -/

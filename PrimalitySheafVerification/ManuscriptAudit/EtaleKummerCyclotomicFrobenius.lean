@@ -35,7 +35,7 @@ theorem coherent_frobenius_scalar (n m : ℕ) (a : ZMod (l ^ n)) :
       (fromExponent K l n (Multiplicative.ofAdd a)) =
     fromExponent K l n (Multiplicative.ofAdd (((Fintype.card k) ^ m) • a)) := by
   rw [roots_frobenius_pow]
-  exact ((fromExponent K l n).map_pow (Multiplicative.ofAdd a) ((Fintype.card k) ^ m)).symm
+  exact (map_pow (fromExponent K l n) (Multiplicative.ofAdd a) ((Fintype.card k) ^ m)).symm
 
 end
 

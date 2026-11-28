@@ -83,9 +83,10 @@ theorem exists_glue_of_model (hApprox : FiniteTupleApproximation A B) (d : B →
   let p := (L T).map (overlapLeft V (Q T E))
   let q := (L T).map (overlapRight V (Q T E))
   letI : Etale (Spec.map ((L T).obj V).hom) := baseEtale T j
-  have hE : Etale (Spec.map (Q T E).hom) :=
-    (HasRingHomProperty.Spec_iff (P := @Etale) (φ := (Q T E).hom)).mpr
-      ((RingHom.etale_algebraMap).mpr inferInstance)
+  have hE : Etale (Spec.map (Q T E).hom) := by
+    apply (HasRingHomProperty.Spec_iff (P := @Etale) (φ := (Q T E).hom)).mpr
+    change (algebraMap T.carrier E).Etale
+    exact RingHom.etale_algebraMap.mpr (inferInstanceAs (Algebra.Etale T.carrier E))
   letI : Etale (Spec.map f.right) := etale_cover V (Q T E) hE
   letI : Etale (Spec.map ((L T).obj (V ⨿ Q T E)).hom) := by
     rw [← Under.w f, Spec.map_comp]
@@ -97,8 +98,8 @@ theorem exists_glue_of_model (hApprox : FiniteTupleApproximation A B) (d : B →
     rw [← Under.w p, Spec.map_comp]
     infer_instance
   obtain ⟨t, ht⟩ := NativeEtaleUnderRingGluing.exists_glue I f p q a b v w hp hq hPB hJ z hz
-  let ai := (L T).map ((C T).ι.app j) ≫ s
-  let gi := (Mdl T E).ι.app j ≫ g
+  let ai : (L T).obj V ⟶ U (A := A) B := (L T).map ((C T).ι.app j) ≫ s
+  let gi : (L T).obj (V ⨿ Q T E) ⟶ U (A := A) D := (Mdl T E).ι.app j ≫ g
   have hc : f ≫ (Mdl T E).ι.app j =
       (L T).map ((C T).ι.app j) ≫ (L T).map (left (C T).pt (Q T E)) := by
     change (L T).map (left V (Q T E)) ≫ (L T).map (coprod.map ((C T).ι.app j) (𝟙 _)) =
@@ -108,7 +109,8 @@ theorem exists_glue_of_model (hApprox : FiniteTupleApproximation A B) (d : B →
   have he : f ≫ gi = ai ≫ d.toUnder := by
     change f ≫ (Mdl T E).ι.app j ≫ g = ((L T).map ((C T).ι.app j) ≫ s) ≫ d.toUnder
     rw [← Category.assoc, hc, Category.assoc, hg, Category.assoc]
-  obtain ⟨r, hr⟩ := NativeAffineRawGluedRepresentatives.exists_raw_preimage I d ai gi f v he z t ht
+  obtain ⟨r, hr⟩ := NativeAffineRawGluedRepresentatives.exists_raw_preimage I d
+    (T := (L T).obj V) (V := (L T).obj (V ⨿ Q T E)) (M := M) ai gi f v he z t ht
   have hvg : v ≫ gi = x ≫ g := by
     change v ≫ (Mdl T E).ι.app j ≫ g = x ≫ g
     rw [← Category.assoc, hv]

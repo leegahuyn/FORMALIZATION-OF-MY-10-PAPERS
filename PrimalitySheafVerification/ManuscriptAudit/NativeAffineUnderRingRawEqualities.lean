@@ -9,7 +9,7 @@ namespace ManuscriptAudit.NativeAffineUnderRingRawEqualities
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Opposite
 open AffineEtaleStageCategory (Stage hom)
-open AffineEtaleStageTensorLegs (algebraHom)
+open AffineStageTensorLegs (algebraHom)
 open NativeAffineEtaleStageSections (sectionDiagram)
 open NativeAffineEtaleRawSections (rawSectionCocone)
 open NativeAffineEtaleRawStageElements (stageAfterMap exists_representative exists_equal_representatives)
@@ -46,7 +46,7 @@ variable {J : Type*} [Category* J] [IsFiltered J] [EssentiallySmall.{u} J]
   (hT : ∀ j, WeaklyEtale (Spec.map (D.obj j).hom)) {c : Cocone D}
   [hC : WeaklyEtale (Spec.map c.pt.hom)]
 
-private abbrev leg (j : J) : D.obj j ⟶ c.pt := c.ι.app j
+private abbrev leg (c : Cocone D) (j : J) : D.obj j ⟶ c.pt := c.ι.app j
 
 set_option maxHeartbeats 10500000 in
 /-- A raw equality at the actual colimit is witnessed at one later

@@ -50,6 +50,7 @@ private theorem product_leg_scheme (i : Fin n) :
   rw [← h, Category.assoc, IsIso.hom_inv_id_assoc, Sigma.ι_mapIso_hom]
   rfl
 
+set_option maxHeartbeats 4300000 in
 private theorem product_over :
     (productSchemeIso V).hom ≫ (coproduct V).hom = structureMap A (∀ i, B V i) := by
   let f := NativeProetaleAffineProductCoproduct.comparison (B V)
@@ -64,7 +65,11 @@ private theorem product_over :
       (coproduct V).hom = (chartMap (Pi.evalAlgHom A (B V) i)).left ≫
         structureMap A (∀ i, B V i) := by
     rw [product_leg_scheme, Category.assoc, MorphismProperty.Over.w (injection V i),
-      MorphismProperty.Over.w (chartIso (V i)).hom, MorphismProperty.Over.w]
+      MorphismProperty.Over.w (chartIso (V i)).hom]
+    have hw : (chartMap (Pi.evalAlgHom A (B V) i)).left ≫ (object A (∀ i, B V i)).hom =
+        (object A (B V i)).hom :=
+      MorphismProperty.Over.w (chartMap (Pi.evalAlgHom A (B V) i))
+    exact hw.symm
   exact (congrArg (fun q ↦ (q ≫ (productSchemeIso V).hom) ≫ (coproduct V).hom) h).trans
     (hπ.trans (congrArg (fun q ↦ q ≫ structureMap A (∀ i, B V i)) h.symm))
 

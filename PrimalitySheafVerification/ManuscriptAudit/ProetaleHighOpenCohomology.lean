@@ -24,14 +24,6 @@ private abbrev A := AddCommGrpCat.{1}
 private abbrev C (X : Scheme.{0}) := Sheaf (Scheme.ProEt.topology X) A
 private abbrev D (X : Scheme.{0}) := Sheaf (topology X) A
 
-private theorem highGrothendieck (X : Scheme.{0}) : IsGrothendieckAbelian.{1} (D X) :=
-  Sheaf.isGrothendieckAbelian_of_essentiallySmall (topology X) A
-
-attribute [local instance] highGrothendieck
-
-instance highHasExt (X : Scheme.{0}) : HasExt.{1} (D X) :=
-  IsGrothendieckAbelian.hasExt (D X)
-
 variable {X : Scheme.{0}}
 
 abbrev coefficient (F : C X) := (sheafEquivalence X).functor.obj F

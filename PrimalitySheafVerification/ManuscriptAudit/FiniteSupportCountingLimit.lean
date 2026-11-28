@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Real.Basic
 import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -26,7 +27,8 @@ theorem counting_difference_bounds (A E : Finset α) :
       (A.card : ℝ) - ((A \ E).card : ℝ) ≤ (E.card : ℝ) := by
   rw [card_difference_eq]
   refine ⟨Nat.cast_nonneg _, ?_⟩
-  exact_mod_cast Finset.card_le_card (Finset.inter_subset_right (s := A) (t := E))
+  have hSubset : A ∩ E ⊆ E := Finset.inter_subset_right
+  exact_mod_cast Finset.card_le_card hSubset
 
 /-- This works for real or integer cutoffs and for any normalization tending to infinity. -/
 theorem correction_tendsto_zero (A : ι → Finset α) (E : Finset α) (l : Filter ι)

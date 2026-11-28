@@ -111,7 +111,7 @@ private theorem restrictionConstant_section :
       ((restrictSection (j A S) (cokernel i) b).hom x)) = _
   rw [sectionHom_map, hp, sectionHom_map, Category.assoc]
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 2500000 in
 /-- Actual derived restriction takes a true connecting representative to
 the connecting representative of the genuinely restricted global section. -/
 theorem restrictHOne_connecting :

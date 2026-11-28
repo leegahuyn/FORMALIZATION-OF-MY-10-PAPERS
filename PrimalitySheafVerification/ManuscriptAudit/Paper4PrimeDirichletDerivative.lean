@@ -33,6 +33,10 @@ private theorem abscissa_le : abscissaOfAbsConv (complexCoeff a) ≤ 1 := by
   unfold countCoeff
   split_ifs <;> norm_num
 
+theorem primeTerm_summable {s : ℝ} (hs : 1 < s) :
+    Summable (fun n ↦ countCoeff a n / (n : ℝ) ^ s) :=
+  summable_real_of_abscissaOfAbsConv_lt ((abscissa_le a).trans_lt (by exact_mod_cast hs))
+
 theorem series_eq_tsum {s : ℝ} (hs : 1 < s) :
     primeDirichletSeries a s = ∑' n, countCoeff a n / (n : ℝ) ^ s :=
   real_part_eq_tsum (countCoeff_zero a) s

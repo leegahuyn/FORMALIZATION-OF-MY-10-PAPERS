@@ -35,13 +35,13 @@ theorem coordinate_constant (a : K) :
   change CoordinateRing.map W e.toRingHom (CoordinateRing.mk W (C (C a))) =
     CoordinateRing.mk (W' W e) (C (C (e a)))
   rw [CoordinateRing.map_mk]
-  simp only [Polynomial.map_C, Polynomial.mapRingHom_apply]
+  simp only [Polynomial.map_C, Polynomial.coe_mapRingHom]
 
 private theorem coordinate_variables (i : Fin 3) :
     Φ W e (chartValues W i) = chartValues (W' W e) i := by
   fin_cases i <;>
     simp [chartValues, Φ, ← RingEquiv.coe_toRingHom, coordinateEquiv_toRingHom,
-      CoordinateRing.map_mk, Polynomial.map_C, Polynomial.mapRingHom_apply]
+      CoordinateRing.map_mk, Polynomial.map_C, Polynomial.coe_mapRingHom]
 
 private abbrev ev {F : Type u} [Field F] (V : WeierstrassCurve.Affine F) :=
   (MvPolynomial.aeval (chartValues V)).toRingHom

@@ -29,7 +29,7 @@ theorem connecting_surjective : Function.Surjective (connectingAt i U) := by
     · change Epi (cokernel.π i)
       infer_instance
   intro x
-  have hx : x.comp (Ext.mk₀ i) (add_zero 1) = 0 := hI.allEq _ _
+  have hx : x.comp (Ext.mk₀ i) (add_zero 1) = 0 := @Subsingleton.elim _ hI _ _
   have h := Ext.covariant_sequence_exact₁' (J U) hS 0 1 rfl
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   obtain ⟨z, hz⟩ := (h x).1 hx

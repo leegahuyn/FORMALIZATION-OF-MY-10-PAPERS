@@ -54,10 +54,16 @@ theorem class_mk0_map (I : (Ideal A)⁰) :
   apply (ClassGroup.equiv (R := B) (L (B := B))).injective
   simp only [ClassGroup.mulEquiv, MulEquiv.trans_apply, MulEquiv.apply_symm_apply,
     ClassGroup.equiv_mk0, QuotientGroup.congr_mk']
-  congr 1
-  apply Units.ext
-  simpa only [Units.coe_mapEquiv, RingEquiv.coe_toMulEquiv, FractionalIdeal.coe_mk0]
-    using map_fractional_coeIdeal e I.val
+  let f := Units.mapEquiv
+    (FractionalIdeal.ringEquivOfRingEquiv (F (A := A)) (L (B := B)) e).toMulEquiv
+  let q := QuotientGroup.mk' (toPrincipalIdeal B (L (B := B))).range
+  have h : f (FractionalIdeal.mk0 (F (A := A)) I) =
+      FractionalIdeal.mk0 (L (B := B)) (mapNonzero e I) := by
+    apply Units.ext
+    exact map_fractional_coeIdeal e I.val
+  change q (f (FractionalIdeal.mk0 (F (A := A)) I)) =
+    q (FractionalIdeal.mk0 (L (B := B)) (mapNonzero e I))
+  exact congrArg q h
 
 end
 

@@ -39,9 +39,15 @@ local instance : Algebra (N W) W.FunctionField := neighborhoodFractionAlgebra W
 local instance : IsDedekindDomain (N W) := WeierstrassInfinityDedekind.neighborhood_isDedekindDomain W
 local instance : IsOpenImmersion (neighborhoodOpen W) := neighborhoodOpen_isOpenImmersion W
 
+set_option maxRecDepth 3000 in
+set_option maxHeartbeats 1200000 in
 theorem neighborhood_isFractionRing : IsFractionRing (N W) W.FunctionField := by
   let e : FractionRing (N W) ≃ₐ[N W] W.FunctionField :=
-    { (functionFieldEquiv W).symm with commutes' := fun _ => rfl }
+    { toRingEquiv := (functionFieldEquiv W).symm
+      commutes' := fun x => by
+        change (functionFieldEquiv W).symm (algebraMap (N W) (FractionRing (N W)) x) =
+          (functionFieldEquiv W).symm (algebraMap (N W) (FractionRing (N W)) x)
+        rfl }
   exact IsFractionRing.of_algEquiv e
 
 local instance : IsFractionRing (N W) W.FunctionField := neighborhood_isFractionRing W
@@ -51,14 +57,21 @@ def regularToGeneric : fullCoordinateUnitSheaf (X W) ⟶
     WeierstrassProjectiveGenericUnits.genericUnitImage W :=
   GenericEtaleUnitSections.pullbackToDirectImage (genericPoint W)
 
+private theorem mono_of_genericFactor {Y U Z : Scheme.{0}} (j : U ⟶ Z) [IsOpenImmersion j]
+    (g : Y ⟶ U) (f : Y ⟶ Z) (hf : f = g ≫ j)
+    [Mono (GenericEtaleUnitSections.pullbackToDirectImage g)] :
+    Mono ((OpenEtaleExtension.restriction j AddCommGrpCat.{0}).map
+      (GenericEtaleUnitSections.pullbackToDirectImage f)) := by
+  subst f
+  exact mono_restriction j g
+
 theorem regularToGeneric_mono : Mono (regularToGeneric W) := by
   apply TwoOpenEtaleMono.mono_of_restrictions (neighborhoodOpen W) (affineOpen W)
     (regularToGeneric W) (cover W)
-  · unfold regularToGeneric
-    rw [genericPoint_factors_infinity W]
-    letI : Mono (GenericEtaleUnitSections.pullbackToDirectImage (genericToNeighborhood W)) :=
+  · letI : Mono (GenericEtaleUnitSections.pullbackToDirectImage (genericToNeighborhood W)) :=
       GenericEtaleUnitSections.genericPointUnitsHom_mono (N W) W.FunctionField
-    exact mono_restriction (neighborhoodOpen W) (genericToNeighborhood W)
+    exact mono_of_genericFactor (neighborhoodOpen W) (genericToNeighborhood W) (genericPoint W)
+      (genericPoint_factors_infinity W)
   · letI : Mono (GenericEtaleUnitSections.pullbackToDirectImage (genericToAffine W)) :=
       GenericEtaleUnitSections.genericPointUnitsHom_mono W.CoordinateRing W.FunctionField
     exact mono_restriction (affineOpen W) (genericToAffine W)

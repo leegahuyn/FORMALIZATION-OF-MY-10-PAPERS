@@ -102,8 +102,9 @@ the ring maps into the same chart ring. -/
 theorem final (hc : IsColimit c) : (stageFunctor c hE).Final where
   out T := by
     let F := stageFunctor c hE
+    letI : Algebra A T.carrier := T.algebra
     let P := U (A := A) T.carrier
-    let v := T.toChart.toUnder
+    let v : P ⟶ c.pt := T.toChart.toUnder
     have hP : P.hom.hom.FinitePresentation := finite T
     let hFilt : IsFiltered (StructuredArrow T F) := {
       nonempty := by

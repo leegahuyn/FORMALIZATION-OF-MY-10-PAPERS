@@ -29,13 +29,13 @@ variable (F : Sheaf Y.smallEtaleTopology AddCommGrpCat.{0})
 private abbrev E (R : Type) [CommRing R] := Scheme.AffineEtale.sheafEquiv (X R) AddCommGrpCat.{0}
 private abbrev H := (restriction j AddCommGrpCat.{0}).obj F
 private abbrev counitRestriction :=
-  (restriction (i A S) AddCommGrpCat.{0}).map ((E A).counitIso.hom.app (H j F))
+  (restriction (i A S) AddCommGrpCat.{0}).map ((E A).counitIso.hom.app (H A j F))
 private abbrev compRestriction := (restrictionCompIso (i A S) j).hom.app F
 
 private theorem nestedRestrictionIso_app :
     (nestedRestrictionIso (i A S) j).hom.app F =
       (E S).inverse.map (counitRestriction A S j F ≫ compRestriction A S j F) := by
-  simp [nestedRestrictionIso, Functor.map_comp]
+  simp [nestedRestrictionIso, Functor.map_comp, counitRestriction, compRestriction]
 
 /-- The affine section comparison intertwines actual restriction to the
 nested open with actual ambient restriction on the étale site. -/
@@ -48,9 +48,9 @@ theorem affineSectionEquiv_nested (x : F.obj.obj (op (Scheme.Etale.mk j))) :
   let t := op (identityObject (X S))
   change (compRestriction A S j F).hom.app t
     ((counitRestriction A S j F).hom.app t
-      ((restrictSection (i A S) ((E A).inverse.obj (H j F)) (baseMap A S)).hom
+      ((restrictSection (i A S) ((E A).inverse.obj (H A j F)) (baseMap A S)).hom
         (sectionEquiv j F x))) = _
-  rw [affineSection_counit A S (H j F)]
+  rw [affineSection_counit A S (H A j F)]
   exact sectionEquiv_nested (i A S) j F x
 
 end

@@ -20,9 +20,7 @@ theorem crossSum_one : crossSum (by decide : 0 < (1 : ℕ)) = 1 := by
   rw [crossSum_eq, hRef, mul_one] <;> norm_num [chiFour]
 
 theorem crossRaw_zero : crossRaw 0 = 1 := by
-  unfold crossRaw
-  change crossSum (by decide : 0 < (1 : ℕ)) / (1 : ℂ) = 1
-  rw [crossSum_one, div_one]
+  rw [crossRaw, crossSum_one] <;> norm_num
 
 end
 end ManuscriptAudit.Paper8OddCrossFirstCoefficient

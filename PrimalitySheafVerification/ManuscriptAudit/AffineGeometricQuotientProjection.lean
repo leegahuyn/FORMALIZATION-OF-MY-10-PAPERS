@@ -33,16 +33,17 @@ private theorem map_counit_inv (M : Sheaf (X A).smallEtaleTopology AddCommGrpCat
     (E A).inverse.map ((E A).counitIso.inv.app M) =
       (E A).unitIso.hom.app ((E A).inverse.obj M) := by
   apply (cancel_mono ((E A).unitIso.inv.app ((E A).inverse.obj M))).mp
-  rw [(E A).inverse_counitInv_comp, (E A).unitIso_hom_inv_id_app]
+  exact ((E A).inverse_counitInv_comp M).trans
+    ((E A).unitIso_hom_inv_id_app ((E A).inverse.obj M)).symm
 
 private theorem divisorHom_on_basis :
     (E A).inverse.map (divisorHom K A F) ≫ (restrictionIso K A).hom =
       affineDivisorHom K A F := by
   let d := affineDivisorHom K A F
   let M := genericUnitImage A F
-  change (E A).inverse.map (((E A).counitIso.app M).inv ≫ (E A).functor.map d) ≫
+  change (E A).inverse.map ((E A).counitIso.inv.app M ≫ (E A).functor.map d) ≫
     (E A).unitIso.inv.app (affineDivisorSheaf K A) = d
-  rw [Functor.map_comp, Category.assoc, map_counit_inv]
+  rw [Functor.map_comp, Category.assoc, map_counit_inv A M]
   have h := (E A).unitIso.inv.naturality d
   change (E A).inverse.map ((E A).functor.map d) ≫
       (E A).unitIso.inv.app (affineDivisorSheaf K A) =
@@ -56,10 +57,15 @@ theorem affine_quotient_projection :
         ((E A).inverse.mapIso (genericPointUnitQuotientIsoDivisor K A F) ≪≫
           restrictionIso K A).hom =
       affineDivisorHom K A F := by
-  rw [Iso.trans_hom, ← Category.assoc]
-  change _ ≫ (restrictionIso K A).hom = _
-  rw [← Functor.map_comp, full_quotient_projection]
-  exact divisorHom_on_basis K A F
+  let f := cokernel.π (genericPointUnitsHom A F)
+  let g := (genericPointUnitQuotientIsoDivisor K A F).hom
+  let h := (restrictionIso K A).hom
+  change (E A).inverse.map f ≫ (E A).inverse.map g ≫ h = _
+  calc
+    _ = (E A).inverse.map (f ≫ g) ≫ h := by rw [Functor.map_comp, Category.assoc]
+    _ = (E A).inverse.map (divisorHom K A F) ≫ h :=
+      congrArg (fun a => (E A).inverse.map a ≫ h) (full_quotient_projection K A F)
+    _ = _ := divisorHom_on_basis K A F
 
 end
 

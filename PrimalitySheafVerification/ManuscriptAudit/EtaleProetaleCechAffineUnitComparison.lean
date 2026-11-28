@@ -52,13 +52,18 @@ set_option maxHeartbeats 6000000 in
 def isoComplex : Cech f I.obj ≅ Cech (L.map f) (P I) := by
   let M := (Arrow.mk f).cechNerve
   let D := (Arrow.mk (L.map f)).cechNerve
-  let u : M.rightOp ⋙ I.obj ⟶ M.rightOp ⋙ (L.op ⋙ P I) := whiskerLeft M.rightOp (η I)
+  let u : M.rightOp ⋙ I.obj ⟶ M.rightOp ⋙ (L.op ⋙ P I) := Functor.whiskerLeft M.rightOp (η I)
   letI (a : SimplexCategory) : IsIso (u.app a) := by
     let V := M.obj (op a)
     letI : IsAffine V.left := hAff a.len
-    have h := NativeAffineEtaleUnitBijective.unit_at_affine I hRaw V
+    have h : Function.Bijective ((u.app a).hom) := by
+      change Function.Bijective ((η I).app (op V))
+      exact NativeAffineEtaleUnitBijective.unit_at_affine I hRaw V
     let j := (AddEquiv.ofBijective ((u.app a).hom) h).toAddCommGrpIso
-    exact inferInstanceAs (IsIso j.hom)
+    have hj : j.hom = u.app a := AddCommGrpCat.hom_ext rfl
+    rw [← hj]
+    infer_instance
+  letI : IsIso u := NatIso.isIso_of_isIso_app u
   let e : M ⋙ L ≅ D := CechNervePreservesFiniteLimits.comparison L f
   let j : M.rightOp ⋙ I.obj ≅ D.rightOp ⋙ P I :=
     (asIso u).trans ((Functor.associator M.rightOp L.op (P I)).symm.trans
@@ -70,7 +75,7 @@ def isoComplex : Cech f I.obj ≅ Cech (L.map f) (P I) := by
 actual inverse image on any arrow between these affine étale charts. -/
 theorem exactAt_of_exactAt (n : ℕ) (h : (Cech f I.obj).ExactAt n) :
     (Cech (L.map f) (P I)).ExactAt n :=
-  (HomologicalComplex.exactAt_iff_of_quasiIsoAt (isoComplex I f hAff hRaw).hom n).mp h
+  (exactAt_iff_of_quasiIsoAt (isoComplex I f hAff hRaw).hom n).mp h
 
 end
 end ManuscriptAudit.EtaleProetaleCechAffineUnitComparison

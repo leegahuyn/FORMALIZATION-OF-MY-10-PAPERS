@@ -35,14 +35,15 @@ theorem principalDivisor_apply (x : Additive Fˣ) :
   have hsb : (Ideal.span ({b} : Set R)) ≠ 0 := by rwa [Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
   have hm : spanSingleton R⁰ (i b) * spanSingleton R⁰ f = spanSingleton R⁰ (i a) := by
     rw [spanSingleton_mul_spanSingleton, ← he, mul_comm (i b), div_mul_cancel₀ (i a) hb']
-  have hc := count_mul F v
-    (spanSingleton_ne_zero_iff.mpr hb') (spanSingleton_ne_zero_iff.mpr x.toMul.ne_zero)
+  have hf : f ≠ 0 := x.toMul.ne_zero
+  have hc := count_mul F v (I := spanSingleton R⁰ (i b)) (I' := spanSingleton R⁰ f)
+    (spanSingleton_ne_zero_iff.mpr hb') (spanSingleton_ne_zero_iff.mpr hf)
   rw [hm, ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, count_coe F v hsa, count_coe F v hsb] at hc
   change count F v (spanSingleton R⁰ f) = -log (v.valuation F f)
-  rw [← he, Valuation.map_div, HeightOneSpectrum.valuation_of_algebraMap,
-    HeightOneSpectrum.valuation_of_algebraMap, v.intValuation_if_neg ha, v.intValuation_if_neg hb0,
-    ← exp_sub, log_exp]
-  rw [he]
+  conv_rhs =>
+    rw [← he, Valuation.map_div, HeightOneSpectrum.valuation_of_algebraMap,
+      HeightOneSpectrum.valuation_of_algebraMap, v.intValuation_if_neg ha, v.intValuation_if_neg hb0,
+      ← exp_sub, log_exp]
   omega
 
 end

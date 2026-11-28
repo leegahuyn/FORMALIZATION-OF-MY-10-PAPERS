@@ -45,16 +45,17 @@ theorem normalized_count_after_exceptions {a q : ℕ} [NeZero q] (h : a.Coprime 
   exact FiniteSupportCountingLimit.remove_finite_support
     (progressionCutoff a q) E atTop _ ratioNormalizer_tendsto _ hProgression
 
-/-- The actual proportion among all primes tends to the inverse totient,
-and gives the same answer after deleting any finite exceptional support. -/
-theorem relative_prime_density_after_exceptions {a q : ℕ} [NeZero q] (h : a.Coprime q)
-    (E : Finset ℕ) :
-    Tendsto (fun x : ℝ ↦ (((progressionCutoff a q x) \ E).card : ℝ) / (primeCutoff x).card)
-      atTop (𝓝 ((q.totient : ℝ)⁻¹)) := by
-  have hAll : Tendsto (fun x : ℝ ↦ ((primeCutoff x).card : ℝ) / (x / Real.log x))
-      atTop (𝓝 (1 : ℝ)) := by
+/-- The proportion among primes has the same limit after fixed finite
+deletions from both the progression count and the total count. -/
+theorem relative_prime_density_after_finite_changes {a q : ℕ} [NeZero q]
+    (h : a.Coprime q) (E F : Finset ℕ) :
+    Tendsto (fun x : ℝ ↦ (((progressionCutoff a q x) \ E).card : ℝ) /
+      (((primeCutoff x) \ F).card : ℝ)) atTop (𝓝 ((q.totient : ℝ)⁻¹)) := by
+  have hAll :
+      Tendsto (fun x : ℝ ↦ (((primeCutoff x) \ F).card : ℝ) / (x / Real.log x))
+        atTop (𝓝 (1 : ℝ)) := by
     simpa [progressionCutoff, primeCutoff, Nat.ModEq] using
-      (normalized_count_after_exceptions (q := 1) (a := 1) (Nat.coprime_one_left 1) ∅)
+      (normalized_count_after_exceptions (q := 1) (a := 1) (Nat.coprime_one_left 1) F)
   have hRatio := (normalized_count_after_exceptions h E).div hAll one_ne_zero
   rw [div_one] at hRatio
   apply hRatio.congr'
@@ -63,12 +64,20 @@ theorem relative_prime_density_after_exceptions {a q : ℕ} [NeZero q] (h : a.Co
     div_ne_zero (zero_lt_one.trans hx).ne' (Real.log_pos hx).ne'
   exact div_div_div_cancel_right₀ hd _ _
 
+/-- The actual fraction among all primes after deleting the specified exceptions. -/
+theorem relative_prime_density_after_exceptions {a q : ℕ} [NeZero q] (h : a.Coprime q)
+    (E : Finset ℕ) :
+    Tendsto (fun x : ℝ ↦ (((progressionCutoff a q x) \ E).card : ℝ) / (primeCutoff x).card)
+      atTop (𝓝 ((q.totient : ℝ)⁻¹)) := by
+  simpa using relative_prime_density_after_finite_changes h E ∅
+
 end
 end ManuscriptAudit.Paper4ProgressionDensity
 
 open Lean Elab Command in
 run_cmd do
   for name in [``ManuscriptAudit.Paper4ProgressionDensity.normalized_count_after_exceptions,
+      ``ManuscriptAudit.Paper4ProgressionDensity.relative_prime_density_after_finite_changes,
       ``ManuscriptAudit.Paper4ProgressionDensity.relative_prime_density_after_exceptions] do
     let ax ← collectAxioms name
     let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]

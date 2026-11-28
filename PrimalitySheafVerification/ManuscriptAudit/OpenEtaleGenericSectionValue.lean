@@ -88,7 +88,7 @@ theorem genericValue_regular (hj : f = g ≫ j)
   let t : Y ⟶ pullback j f := (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv.left
   let r : pullback j f ⟶ U := pullback.fst j f
   have ht : t ≫ r = g := factoringProjection f j g hj h
-  have hop : r.op ≫ t.op = g.op := (op_comp t r).symm.trans (congrArg Quiver.Hom.op ht)
+  have hop : r.op ≫ t.op = g.op := by rw [← op_comp, ht]
   change H.map t.op (H.map r.op x) = H.map g.op x
   calc
     _ = (H.map r.op ≫ H.map t.op) x := rfl

@@ -71,6 +71,8 @@ def isColimit_degree {F : J ⥤ Arrow C} {c : Cocone F} (hc : IsColimit c) (n : 
     inferInstanceAs (PreservesColimitsOfShape J (Comma.snd (CosimplicialObject.const C)
       (𝟭 (CosimplicialObject C))))
   let V : CosimplicialObject C ⥤ C := (evaluation SimplexCategory C).obj ⦋n⦌
+  letI : PreservesColimitsOfShape J V :=
+    inferInstanceAs (PreservesColimitsOfShape J ((evaluation SimplexCategory C).obj ⦋n⦌))
   change IsColimit (V.mapCocone (D.mapCocone (E.mapCocone c)))
   exact isColimitOfPreserves V (isColimitOfPreserves D (isColimitOfPreserves E hc))
 

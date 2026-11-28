@@ -5,7 +5,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8OddCrossPoincareUnfold
 
 namespace ManuscriptAudit.Paper8OddCrossLocalizedKernel
 
-open MeasureTheory Set
+open Filter MeasureTheory Set
 open Paper8OddCrossPoincareUnfold Paper8OddCrossPoincareRowKernel
 open Paper8OddCrossPoincareKernel Paper8OddCrossPoincareHeight Paper8OddCrossCuspNormalization
 open Paper8OddCrossCuspPhase MaassLaplacian
@@ -71,7 +71,7 @@ theorem rotated_interval_integral_positive (K : ℝ → ℂ) (hK : Continuous K)
   have hPos : 0 < ∫ u in S, (P u).re := by
     apply lt_of_lt_of_le ?_ hIntegralLo
     rw [setIntegral_const, Real.volume_real_Ioo_of_le (by linarith : -d ≤ d), smul_eq_mul]
-    positivity
+    exact mul_pos (by linarith) (by norm_num)
   have hRe := integral_re hPI
   change (∫ u in S, (P u).re) = (∫ u in S, z * K u).re at hRe
   rw [integral_const_mul] at hRe

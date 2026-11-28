@@ -39,10 +39,13 @@ theorem map_smul_basis (p q : K[X]) :
     map_coefficient, map_coefficient, affineToPuncture_y, affineValue]
 
 private theorem even_weight (n : ℕ) : 2 • (n : WithBot ℕ) = ((2 * n : ℕ) : WithBot ℕ) := by
-  rw [← WithBot.coe_nsmul, nsmul_eq_mul]
+  change (2 : ℕ) • WithBot.some n = WithBot.some (2 * n)
+  simpa only [nsmul_eq_mul] using (WithBot.coe_nsmul n 2).symm
 
 private theorem odd_weight (n : ℕ) : 2 • (n : WithBot ℕ) + 3 = ((2 * n + 3 : ℕ) : WithBot ℕ) := by
-  rw [even_weight, show (3 : WithBot ℕ) = ((3 : ℕ) : WithBot ℕ) from rfl, ← WithBot.coe_add]
+  rw [even_weight]
+  change WithBot.some (2 * n) + WithBot.some 3 = WithBot.some (2 * n + 3)
+  exact (WithBot.coe_add (2 * n) 3).symm
 
 private theorem norm_natDegree_both (p q : K[X]) (hp : p ≠ 0) (hq : q ≠ 0) :
     (Algebra.norm K[X] (p • (1 : W.CoordinateRing) + q • CoordinateRing.mk W Y)).natDegree =
@@ -51,8 +54,14 @@ private theorem norm_natDegree_both (p q : K[X]) (hp : p ≠ 0) (hq : q ≠ 0) :
   rw [CoordinateRing.degree_norm_smul_basis, Polynomial.degree_eq_natDegree hp,
     Polynomial.degree_eq_natDegree hq, even_weight, odd_weight]
   rcases le_total (2 * p.natDegree) (2 * q.natDegree + 3) with h | h
-  · rw [max_eq_right h, max_eq_right (WithBot.coe_le_coe.mpr h)]
-  · rw [max_eq_left h, max_eq_left (WithBot.coe_le_coe.mpr h)]
+  · rw [max_eq_right h]
+    have h' : WithBot.some (2 * p.natDegree) ≤ WithBot.some (2 * q.natDegree + 3) :=
+      WithBot.coe_le_coe.mpr h
+    exact max_eq_right h'
+  · rw [max_eq_left h]
+    have h' : WithBot.some (2 * q.natDegree + 3) ≤ WithBot.some (2 * p.natDegree) :=
+      WithBot.coe_le_coe.mpr h
+    exact max_eq_left h'
 
 private theorem norm_natDegree_even (p : K[X]) (hp : p ≠ 0) :
     (Algebra.norm K[X] (p • (1 : W.CoordinateRing) + (0 : K[X]) • CoordinateRing.mk W Y)).natDegree =

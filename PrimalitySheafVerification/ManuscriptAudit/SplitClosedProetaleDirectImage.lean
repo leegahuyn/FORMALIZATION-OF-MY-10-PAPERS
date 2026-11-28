@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Abelian
 import PrimalitySheafVerification.ManuscriptAudit.SplitClosedProetaleLift
@@ -41,7 +42,9 @@ private theorem off_empty (U : T.ProEt) :
   refine ⟨fun y ↦ ?_⟩
   have hComp : ((baseChange i).map g).left ≫ pullback.fst U.hom i =
       pullback.fst V.hom i ≫ g.left := by
-    simp only [baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
+    change pullback.lift (pullback.fst V.hom i ≫ g.left) (pullback.snd V.hom i) _ ≫
+      pullback.fst U.hom i = _
+    exact pullback.lift_fst _ _ _
   have hp := congrArg (fun f : ((baseChange i).obj V).left ⟶ U.left ↦ f y) hComp
   have hy : g.left (pullback.fst V.hom i y) ∉ Set.range (pullback.fst U.hom i) :=
     (pullback.fst V.hom i y : W).property
@@ -50,6 +53,7 @@ private theorem off_empty (U : T.ProEt) :
 variable [IsAffine S]
 variable (r : T ⟶ S) (hir : i ≫ r = 𝟙 S)
 
+include hir in
 private theorem affine_image_cover {F G : C.{u,v} S}
     (α : F ⟶ G) [Sheaf.IsLocallySurjective α] (U : T.ProEt) [IsAffine U.left]
     (hQC : QuasiCompact (complement i U).ι)
@@ -61,33 +65,42 @@ private theorem affine_image_cover {F G : C.{u,v} S}
   letI : IsAffine V.left := hV
   let W := complement i U
   let R := Presheaf.imageSieve ((directImage i AddCommGrpCat.{v}).map α).hom s
-  let V' (a : Bool) : T.ProEt := if a then V else openObject U W
-  let f (a : Bool) : V' a ⟶ U := by
+  let I := ULift.{u} Bool
+  letI : Finite I := inferInstanceAs (Finite (ULift.{u} Bool))
+  let V' (a : I) : T.ProEt := if a.down then V else openObject U W
+  let f (a : I) : V' a ⟶ U := by
+    obtain ⟨a⟩ := a
     cases a
     · exact openArrow U W
     · exact g
-  have hFqc (a : Bool) : QuasiCompact (f a).left := by
+  have hFqc (a : I) : QuasiCompact (f a).left := by
+    obtain ⟨a⟩ := a
     cases a
     · exact hQC
     · exact inferInstanceAs (QuasiCompact g.left)
-  have hFull (x : U.left) : ∃ a, ∃ y : (V' a).left, (f a).left y = x := by
+  have hFull (x : U.left) : ∃ a : I, ∃ y : (V' a).left, (f a).left y = x := by
     by_cases h : x ∈ Set.range (pullback.fst U.hom i)
     · obtain ⟨y, hy⟩ := hCov h
-      exact ⟨true, y, hy⟩
-    · exact ⟨false, ⟨x, h⟩, rfl⟩
-  have hSections (a : Bool) : R (f a) := by
+      exact ⟨⟨true⟩, y, hy⟩
+    · exact ⟨⟨false⟩, ⟨x, h⟩, rfl⟩
+  have hSections (a : I) : R (f a) := by
+    obtain ⟨a⟩ := a
     cases a
     · letI : IsEmpty ((baseChange i).obj (openObject U W)).left := off_empty i U
-      letI := ProetaleAffineSingletonLift.sections_subsingleton_of_empty G
+      let hSub := ProetaleAffineSingletonLift.sections_subsingleton_of_empty G
         ((baseChange i).obj (openObject U W))
-      exact ⟨0, Subsingleton.elim _ _⟩
+      refine ⟨0, ?_⟩
+      change α.hom.app (op ((baseChange i).obj (openObject U W))) 0 =
+        G.obj.map ((baseChange i).map (openArrow U W)).op s
+      exact @Subsingleton.elim _ hSub _ _
     · exact ⟨b, hb⟩
   refine (Scheme.ProEt.topology T).superset_covering ?_
-    (ProetaleFiniteQuasiCompactCover.covering V' f hFqc hFull)
+    (ProetaleFiniteQuasiCompactCover.covering (T := U) (ι := I) V' f hFqc hFull)
   intro P a ha
   obtain ⟨j, t, rfl⟩ := (Sieve.mem_ofArrows_iff V' f a).mp ha
   exact R.downward_closed (hSections j) t
 
+include hir in
 /-- The native direct image is locally onto whenever the original sheaf
 map is locally onto and the closed support has quasi-compact complement. -/
 theorem map_locallySurjective
@@ -97,6 +110,7 @@ theorem map_locallySurjective
   imageSieve_mem {U} s := by
     apply ProetaleFiniteQuasiCompactCover.of_affine_pullbacks
     intro V hV g
+    letI : IsAffine V.left := hV
     let Q := (directImage i AddCommGrpCat.{v}).obj G
     let I := (directImage i AddCommGrpCat.{v}).obj F
     let β : I ⟶ Q := (directImage i AddCommGrpCat.{v}).map α
@@ -110,6 +124,7 @@ theorem map_locallySurjective
     rw [op_comp, Q.obj.map_comp, ConcreteCategory.comp_apply]
     exact hb
 
+include hir in
 theorem map_epi
     (hQC : ∀ (U : T.ProEt), IsAffine U.left → QuasiCompact (complement i U).ι)
     {F G : C.{u,v} S} (α : F ⟶ G) [Epi α] :

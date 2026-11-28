@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleStageAlgebraColimit
 import PrimalitySheafVerification.ManuscriptAudit.NativeAffineEtaleStageSmall
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageMatchingDescent
-import PrimalitySheafVerification.ManuscriptAudit.AffineStageTensorLegs
+import PrimalitySheafVerification.ManuscriptAudit.AffineRelativeTensorMatchTransport
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageTensorExtensionMaps
 
 /-! A finite stage witness for matching on an actual chart's
@@ -16,8 +16,9 @@ open AffineEtaleStageCategory (Stage hom)
 open AffineEtaleStageColimit (FiniteTupleApproximation)
 open AffineEtaleStageAlgebraColimit (algebraCocone algebraDiagram)
 open AffineStageTensorExtensionMaps (extend extendMap extend_comp postcomp_extend)
-open AffineStageTensorCoproduct (tensorCofan tensorIso)
+open AffineStageTensorCoproduct (tensorIso)
 open AffineStageTensorLegs (algebraHom inl_tensorIso_hom inr_tensorIso_hom)
+open AffineRelativeTensorMatchTransport (to_coproduct from_coproduct)
 open Algebra.TensorProduct
 open scoped TensorProduct
 
@@ -37,7 +38,7 @@ variable {A B D M N : Type u}
 private abbrev R := CommRingCat.of B
 private abbrev Q := CommRingCat.mkUnder (R (B := B)) (B ⊗[A] N)
 
-set_option maxHeartbeats 7000000 in
+set_option maxHeartbeats 3400000 in
 /-- A matching section's two actual stage maps to the limiting
 tensor square can be represented with the same exact identities
 on one genuine relative affine étale stage. -/
@@ -70,22 +71,14 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
     AlgHom.toUnder (R := R (B := B)) (extendMap (B := B) p)
   let r : D₀.obj i ⟶ Q (A := A) (B := B) (N := N) :=
     AlgHom.toUnder (R := R (B := B)) (extendMap (B := B) q)
-  have hL : l ≫ t = c.ι.app i ≫ coprod.inl := by
-    change (extendMap (B := B) p).toUnder ≫ ((extend (B := B) f).toUnder ≫ w.hom) =
-      (extend (B := B) v).toUnder ≫ coprod.inl
-    rw [← Category.assoc, ← AlgHom.toUnder_comp, hfpL, AlgHom.toUnder_comp, Category.assoc]
-    have h : (tensorCofan (R := R (B := B)) D D).inl ≫ w.hom =
-        (coprod.inl : CommRingCat.mkUnder (R (B := B)) D ⟶ _) :=
-      inl_tensorIso_hom (R := B) (S := D) (T := D)
-    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z) h
-  have hR : r ≫ t = c.ι.app i ≫ coprod.inr := by
-    change (extendMap (B := B) q).toUnder ≫ ((extend (B := B) f).toUnder ≫ w.hom) =
-      (extend (B := B) v).toUnder ≫ coprod.inr
-    rw [← Category.assoc, ← AlgHom.toUnder_comp, hfpR, AlgHom.toUnder_comp, Category.assoc]
-    have h : (tensorCofan (R := R (B := B)) D D).inr ≫ w.hom =
-        (coprod.inr : CommRingCat.mkUnder (R (B := B)) D ⟶ _) :=
-      inr_tensorIso_hom (R := B) (S := D) (T := D)
-    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z) h
+  have hL : l ≫ t = c.ι.app i ≫ coprod.inl :=
+    to_coproduct (extendMap (B := B) p) (extend (B := B) f) (extend (B := B) v)
+      (includeLeft : D →ₐ[B] D ⊗[B] D) coprod.inl
+      (inl_tensorIso_hom (R := B) (S := D) (T := D)) hfpL
+  have hR : r ≫ t = c.ι.app i ≫ coprod.inr :=
+    to_coproduct (extendMap (B := B) q) (extend (B := B) f) (extend (B := B) v)
+      (includeRight : D →ₐ[B] D ⊗[B] D) coprod.inr
+      (inr_tensorIso_hom (R := B) (S := D) (T := D)) hfpR
   have hPi : (D₀.obj i).hom.hom.FinitePresentation := by
     change (algebraMap B (B ⊗[A] M)).FinitePresentation
     exact RingHom.finitePresentation_algebraMap.mpr inferInstance
@@ -96,35 +89,16 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
   obtain ⟨j, ij, g, _, hlj, hrj⟩ :=
     AffineStageMatchingDescent.exists_match_at_stage (D := D₀) (c := c) hc i hPi
       (Q (A := A) (B := B) (N := N)) hPq l r t hL hR
-  let z := tensorIso (R := R (B := B)) j.carrier j.carrier
+  let z : CommRingCat.mkUnder (R (B := B)) (j.carrier ⊗[B] j.carrier) ≅
+      D₀.obj j ⨿ D₀.obj j := tensorIso (R := R (B := B)) j.carrier j.carrier
   let e : B ⊗[A] N →ₐ[B] j.carrier ⊗[B] j.carrier := algebraHom (g ≫ z.inv)
   refine ⟨j, hom ij, e, ij.property, ?_, ?_⟩
-  · apply AlgHom.ext
-    intro x
-    have h := congrArg (fun h ↦ h ≫ z.inv) hlj
-    have hLegHom : (tensorCofan (R := R (B := B)) j.carrier j.carrier).inl ≫ z.hom =
-        (coprod.inl : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) :=
-      inl_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)
-    have hLeg : (coprod.inl : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) ≫ z.inv =
-        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inl := calc
-      _ = ((tensorCofan (R := R (B := B)) j.carrier j.carrier).inl ≫ z.hom) ≫ z.inv :=
-        congrArg (fun t ↦ t ≫ z.inv) hLegHom.symm
-      _ = _ := by simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
-    simp only [Category.assoc, hLeg] at h
-    exact congrArg (fun a ↦ a.right x) h
-  · apply AlgHom.ext
-    intro x
-    have h := congrArg (fun h ↦ h ≫ z.inv) hrj
-    have hLegHom : (tensorCofan (R := R (B := B)) j.carrier j.carrier).inr ≫ z.hom =
-        (coprod.inr : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) :=
-      inr_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)
-    have hLeg : (coprod.inr : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) ≫ z.inv =
-        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inr := calc
-      _ = ((tensorCofan (R := R (B := B)) j.carrier j.carrier).inr ≫ z.hom) ≫ z.inv :=
-        congrArg (fun t ↦ t ≫ z.inv) hLegHom.symm
-      _ = _ := by simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
-    simp only [Category.assoc, hLeg] at h
-    exact congrArg (fun a ↦ a.right x) h
+  · exact from_coproduct (extendMap (B := B) p) g (hom ij)
+      (includeLeft : j.carrier →ₐ[B] j.carrier ⊗[B] j.carrier) coprod.inl
+      (inl_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)) hlj
+  · exact from_coproduct (extendMap (B := B) q) g (hom ij)
+      (includeRight : j.carrier →ₐ[B] j.carrier ⊗[B] j.carrier) coprod.inr
+      (inr_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)) hrj
 
 end
 end ManuscriptAudit.AffineEtaleStageRelativeMatching

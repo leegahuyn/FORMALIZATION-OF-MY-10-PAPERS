@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import PrimalitySheafVerification.ManuscriptAudit.IntCyclicProjectiveResolution
@@ -39,28 +40,40 @@ def torOneEquivKernel (A : C) (n : ℕ) (hn : n ≠ 0) :
     change T.map ((resolution n hn).complex.d 1 0) = (n : ℤ) • 𝟙 (T.obj I)
     rw [resolution_d_one, multiplication, T.map_zsmul]
     exact congrArg (fun a : T.obj I ⟶ T.obj I ↦ (n : ℤ) • a) (T.map_id I)
-  let e : S.X₂ ≃ₗ[ℤ] A := (ρ_ A).toLinearEquiv
+  let eCat : S.X₂ ≅ A := ρ_ A
+  let e : S.X₂ ≃ₗ[ℤ] A := eCat.toLinearEquiv
   let D : A →ₗ[ℤ] A := (n : ℤ) • LinearMap.id
+  let d : A ⟶ A := ModuleCat.ofHom D
+  have hd : d = (n : ℤ) • 𝟙 A := by
+    apply ModuleCat.hom_ext
+    simp only [d, ModuleCat.hom_ofHom, ModuleCat.hom_zsmul, ModuleCat.hom_id, D]
+  have hComm : S.g ≫ eCat.hom = eCat.hom ≫ d := by
+    rw [hg, hd, Preadditive.zsmul_comp, Preadditive.comp_zsmul,
+      Category.id_comp, Category.comp_id]
   have hAct (x : S.X₂) : e (S.g x) = D (e x) := by
-    rw [hg]
-    change e ((n : ℤ) • x) = (n : ℤ) • e x
-    exact e.map_smul (n : ℤ) x
-  have hIso : LinearMap.ker S.g.hom ≃ₗ[ℤ] LinearMap.ker D := {
-    toFun := fun x ↦ ⟨e x.val, by
-      change D (e x.val) = 0
-      rw [← hAct, show S.g x.val = 0 from x.property, map_zero]⟩
-    invFun := fun y ↦ ⟨e.symm y.val, by
-      change S.g (e.symm y.val) = 0
+    exact congrArg (fun h : S.X₂ ⟶ A ↦ h x) hComm
+  have hKer : (LinearMap.ker S.g.hom).map e.toLinearMap = LinearMap.ker D := by
+    ext y
+    constructor
+    · rintro ⟨x, hx, rfl⟩
+      change D (e x) = 0
+      rw [← hAct, show S.g x = 0 from hx, map_zero]
+    · intro hy
+      refine ⟨e.symm y, ?_, e.apply_symm_apply y⟩
+      change S.g (e.symm y) = 0
       apply e.injective
-      rw [hAct, e.apply_symm_apply, show D y.val = 0 from y.property, map_zero]⟩
-    left_inv := fun x ↦ Subtype.ext (e.symm_apply_apply x.val)
-    right_inv := fun y ↦ Subtype.ext (e.apply_symm_apply y.val)
-    map_add' := fun x y ↦ Subtype.ext (e.map_add x.val y.val)
-    map_smul' := fun a x ↦ Subtype.ext (e.map_smul a x.val) }
-  have hD : ((Tor C 1).obj A).obj (residues n) ≅ S.homology :=
+      rw [hAct, e.apply_symm_apply, map_zero]
+      exact hy
+  let iKer := e.ofSubmodules (LinearMap.ker S.g.hom) (LinearMap.ker D) hKer
+  let iCycles : S.cycles ≅ ModuleCat.of ℤ (LinearMap.ker S.g.hom) :=
+    S.moduleCatCyclesIso
+  let iDerived : (T.leftDerived 1).obj (residues n) ≅ K.homology 1 :=
     (resolution n hn).isoLeftDerivedObj T 1
+  let iShort : K.homology 1 ≅ S.homology :=
+    K.homologyIsoSc' 2 1 0 (by simp) (by simp)
   letI : IsIso S.homologyπ := S.isIso_homologyπ hf
-  exact hD ≪≫ (asIso S.homologyπ).symm ≪≫ S.moduleCatCyclesIso ≪≫ hIso.toModuleIso
+  change (T.leftDerived 1).obj (residues n) ≅ ModuleCat.of ℤ (LinearMap.ker D)
+  exact iDerived ≪≫ iShort ≪≫ (asIso S.homologyπ).symm ≪≫ iCycles ≪≫ iKer.toModuleIso
 
 end
 end ManuscriptAudit.IntCyclicDerivedTor

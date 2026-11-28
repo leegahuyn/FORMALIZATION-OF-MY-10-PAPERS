@@ -42,10 +42,11 @@ theorem exists_cokernel_lift
       _ = (p i).hom.app (op S.X₁) (i.hom.app (op S.X₁) w) := congrArg _ ha
       _ = 0 := congrArg (fun g : F ⟶ Q i => g.hom.app (op S.X₁) w) (cokernel.condition i)
       _ = _ := (map_zero ((Q i).obj.map S.f₁₃.op).hom).symm
-  let z := h.glue ((p i).hom.app (op S.X₂) a) 0 hCompat
-  have h₁ : (Q i).obj.map S.f₂₄.op z = (p i).hom.app (op S.X₂) a :=
-    h.map_f₂₄_op_glue _ _ hCompat
-  have h₂ : (Q i).obj.map S.f₃₄.op z = 0 := h.map_f₃₄_op_glue _ _ hCompat
+  let z₂ : (Q i).obj.obj (op S.X₂) := (p i).hom.app (op S.X₂) a
+  let z₃ : (Q i).obj.obj (op S.X₃) := 0
+  let z : (Q i).obj.obj (op S.X₄) := h.glue z₂ z₃ hCompat
+  have h₁ : (Q i).obj.map S.f₂₄.op z = z₂ := h.map_f₂₄_op_glue z₂ z₃ hCompat
+  have h₂ : (Q i).obj.map S.f₃₄.op z = z₃ := h.map_f₃₄_op_glue z₂ z₃ hCompat
   refine ⟨z, h₁, h₂, connectingAt_eq_mv S i z a 0 w h₁.symm ?_ ?_⟩
   · exact (map_zero ((p i).hom.app (op S.X₃)).hom).trans h₂.symm
   · rw [map_zero, sub_zero]

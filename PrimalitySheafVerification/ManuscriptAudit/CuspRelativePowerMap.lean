@@ -9,7 +9,7 @@ namespace ManuscriptAudit.CuspRelativePowerMap
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 open CuspPunctured (CuspSubalgebra)
-open CuspProperCompactification (projectiveCusp affineCusp affineOpen)
+open CuspProperCompactification (projectiveCusp affineCusp affineOpen projectiveCuspToBase affineOpen_toBase)
 open CuspProperYChart (lineOpen affine_chart_cover)
 open CuspChartIntersection (laurentToAffineLine overlapIsoLaurent)
 open CuspChartIntersectionMaps (laurentToAffineCusp laurent_maps_commute
@@ -147,6 +147,57 @@ theorem line_projectiveMap :
     lineOpen K ≫ projectiveMap K m hm = lineMap K m ≫ lineOpen K :=
   (cover K).ι_glueMorphisms _ _ true
 
+private theorem preserves_field {R S : Type u} [CommRing R] [CommRing S]
+    [Algebra K R] [Algebra K S] (b : R →ₐ[K] S) :
+    Spec.map (CommRingCat.ofHom b.toRingHom) ≫ Spec.map (CommRingCat.ofHom (algebraMap K R)) =
+      Spec.map (CommRingCat.ofHom (algebraMap K S)) := by
+  rw [← Spec.map_comp]
+  apply congrArg Spec.map
+  apply CommRingCat.hom_ext
+  apply RingHom.ext
+  exact b.commutes
+
+private theorem line_restriction_injective {R : CommRingCat.{u}} :
+    Function.Injective (fun g : Y K ⟶ Spec R ↦ laurentToAffineLine K ≫ g) := by
+  let i := CommRingCat.ofHom (algebraMap (Polynomial K) (LaurentPolynomial K))
+  intro a b h
+  change Spec.map i ≫ a = Spec.map i ≫ b at h
+  have h' : Spec.map (Spec.preimage a ≫ i) = Spec.map (Spec.preimage b ≫ i) := by
+    simpa only [Spec.map_comp, Spec.map_preimage] using h
+  have hRing : Spec.preimage a = Spec.preimage b := by
+    apply CommRingCat.hom_ext
+    apply RingHom.ext
+    intro x
+    apply Polynomial.toLaurent_injective
+    exact congrArg (fun t : R ⟶ CommRingCat.of (LaurentPolynomial K) ↦ t x)
+      (Spec.map_injective h')
+  exact (Spec.map_preimage a).symm.trans
+    ((congrArg Spec.map hRing).trans (Spec.map_preimage b))
+
+theorem lineOpen_toBase :
+    lineOpen K ≫ projectiveCuspToBase K =
+      Spec.map (CommRingCat.ofHom (algebraMap K (Polynomial K))) := by
+  apply line_restriction_injective K
+  rw [← Category.assoc, ← laurent_maps_commute, Category.assoc, affineOpen_toBase,
+    affineLaurent_formula]
+  exact (preserves_field K ((inverseLaurent K).comp (CuspSubalgebra K).val)).trans
+    (preserves_field K (Polynomial.toLaurentAlg (R := K))).symm
+
+/-- The glued relative power fixes the structural map to the coefficient field. -/
+theorem projectiveMap_overField :
+    projectiveMap K m hm ≫ projectiveCuspToBase K = projectiveCuspToBase K := by
+  apply (cover K).hom_ext
+  intro i
+  cases i
+  · change affineOpen K ≫ (projectiveMap K m hm ≫ projectiveCuspToBase K) =
+      affineOpen K ≫ projectiveCuspToBase K
+    rw [← Category.assoc, affine_projectiveMap, Category.assoc, affineOpen_toBase]
+    exact preserves_field K (cuspPower K m hm)
+  · change lineOpen K ≫ (projectiveMap K m hm ≫ projectiveCuspToBase K) =
+      lineOpen K ≫ projectiveCuspToBase K
+    rw [← Category.assoc, line_projectiveMap, Category.assoc, lineOpen_toBase]
+    exact preserves_field K (Polynomial.expand K m)
+
 end
 end ManuscriptAudit.CuspRelativePowerMap
 
@@ -156,7 +207,8 @@ run_cmd do
   for n in [``ManuscriptAudit.CuspRelativePowerMap.line_overlap_commutes,
       ``ManuscriptAudit.CuspRelativePowerMap.affine_overlap_commutes,
       ``ManuscriptAudit.CuspRelativePowerMap.affine_projectiveMap,
-      ``ManuscriptAudit.CuspRelativePowerMap.line_projectiveMap] do
+      ``ManuscriptAudit.CuspRelativePowerMap.line_projectiveMap,
+      ``ManuscriptAudit.CuspRelativePowerMap.projectiveMap_overField] do
     let ax ← collectAxioms n
     unless ax.all (fun a ↦ allowed.contains a) do
       throwError m!"{n} depends on unexpected axioms {ax}"

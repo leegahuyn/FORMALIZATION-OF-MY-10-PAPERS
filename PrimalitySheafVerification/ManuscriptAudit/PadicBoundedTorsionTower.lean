@@ -26,7 +26,7 @@ private theorem step_smul (n : ℕ) (r : ZMod (l ^ (n + 1))) (a : A (n + 1)) :
     calc
       _ = (r.val : ZMod (l ^ (n + 1))) • a :=
         congrArg (fun q : ZMod (l ^ (n + 1)) => q • a) (ZMod.natCast_zmod_val r).symm
-      _ = _ := Nat.cast_smul_eq_nsmul _ _
+      _ = _ := Nat.cast_smul_eq_nsmul _ _ _
   have hR : PadicResidueSystems.reduction l (Nat.le_succ n) r = (r.val : ZMod (l ^ n)) := by
     calc
       _ = PadicResidueSystems.reduction l (Nat.le_succ n) (r.val : ZMod (l ^ (n + 1))) :=
