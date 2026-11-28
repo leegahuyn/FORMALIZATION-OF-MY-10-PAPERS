@@ -37,8 +37,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake exe cache get Mathlib.NumberTheory.LSeries.WeakPNT Mathlib.Tactic.Linarith Mathlib.Tactic.Ring \
-            2>&1 | tee "${RUNNER_TEMP}/manuscript-prime-density-cache.log"
+          source_root="$GITHUB_WORKSPACE/PrimalitySheafVerification/ManuscriptAudit"
+          mapfile -t imports < <(
+            awk '$1 == "import" && $2 ~ /^Mathlib\./ {print $2}' \
+              "$source_root/FiniteSupportCountingLimit.lean" \
+              "$source_root/RecentMathlib/Paper4ProgressionDensity.lean" | sort -u
+          )
+          lake exe cache get "${imports[@]}" 2>&1 | tee "${RUNNER_TEMP}/manuscript-prime-density-cache.log"
       - name: Check prime density and its transitive axioms
         working-directory: mathlib-prime-density
         shell: bash
