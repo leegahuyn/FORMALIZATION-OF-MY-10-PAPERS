@@ -64,10 +64,7 @@ theorem connectingAt_natural {U V : X.Etale} (f : U ⟶ V)
   have h0 : ((cokernel i).cohomologyPresheaf 0).map f.op y =
       (equivZero (cokernel i) U).symm ((cokernel i).obj.map f.op x) := by
     apply (equivZero (cokernel i) U).injective
-    rw [equivZero_natural, AddEquiv.apply_symm_apply]
-    change (cokernel i).obj.map f.op ((equivZero (cokernel i) V)
-      ((equivZero (cokernel i) V).symm x)) = _
-    rw [AddEquiv.apply_symm_apply]
+    simp only [equivZero_natural, y, AddEquiv.apply_symm_apply]
   change e.comp (y.comp δ (zero_add 1)) (zero_add 1) =
     ((equivZero (cokernel i) U).symm ((cokernel i).obj.map f.op x)).comp δ (zero_add 1)
   rw [← h0]
@@ -97,7 +94,12 @@ theorem equivZero_map_sheaf {A B : C (X := X)} (g : A ⟶ B) (U : X.Etale)
     (Ext.addEquiv₀ ((Ext.mk₀ g).postcomp (Q U) (add_zero 0) x))) =
     g.hom.app (op U)
       (yonedaEquiv (((freeSheafAdj (X := X)).homEquiv (yoneda.obj U) A) f))
-  rw [he, (freeSheafAdj (X := X)).homEquiv_naturality_right, yonedaEquiv_comp] <;> rfl
+  calc
+    _ = yonedaEquiv (((freeSheafAdj (X := X)).homEquiv (yoneda.obj U) B) (f ≫ g)) :=
+      congrArg (fun q : Q U ⟶ B =>
+        yonedaEquiv (((freeSheafAdj (X := X)).homEquiv (yoneda.obj U) B) q)) he
+    _ = _ := by
+      rw [(freeSheafAdj (X := X)).homEquiv_naturality_right, yonedaEquiv_comp] <;> rfl
 
 /-- At each actual étale object a connecting class is zero exactly when its
 cokernel section is the image of an actual section of the middle sheaf. -/

@@ -56,44 +56,62 @@ def productMap : invariants A B t ⊗[A] invariants A B s →ₗ[A] invariants A
       exact (invariants A B (t * s)).add_mem hx hy
 
 variable [Module.FaithfullyFlat A B]
+private abbrev TensorDomain := invariants A B t ⊗[A] invariants A B s
+private abbrev TensorCodomain := invariants A B (t * s)
+
+private def tensorProductMap :
+    B ⊗[A] TensorDomain A B t s →ₗ[A] B ⊗[A] TensorCodomain A B t s :=
+  (productMap A B t s).lTensor B
+
 variable (ht : IsCocycle A B t) (hs : IsCocycle A B s)
 include ht hs
 
-set_option maxHeartbeats 1400000 in
-/-- This multiplication map is an isomorphism of descended modules, as
-can be checked after the genuinely faithfully flat extension. -/
-def productEquiv :
-    invariants A B t ⊗[A] invariants A B s ≃ₗ[A] invariants A B (t * s) := by
+private def tensorDomainEquiv : B ⊗[A] TensorDomain A B t s ≃ₗ[A] B :=
   let L := invariants A B t
   let N := invariants A B s
   let eL := (extensionEquiv A B t ht).restrictScalars A
   let eN := (extensionEquiv A B s hs).restrictScalars A
-  let d : B ⊗[A] (L ⊗[A] N) ≃ₗ[A] B :=
-    (TensorProduct.assoc A B L N).symm.trans
-      ((TensorProduct.congr eL (LinearEquiv.refl A N)).trans eN)
-  let e := (extensionEquiv A B (t * s) (mul_isCocycle A B t s ht hs)).restrictScalars A
-  let g : L ⊗[A] N →ₗ[A] invariants A B (t * s) := productMap A B t s
-  let f : B ⊗[A] (L ⊗[A] N) →ₗ[A] B ⊗[A] invariants A B (t * s) := g.lTensor B
-  have hMap : e.toLinearMap.comp f = d.toLinearMap := by
-    apply TensorProduct.ext'
-    intro b z
-    induction z using TensorProduct.induction_on with
-    | zero => simp
-    | tmul x y =>
+  (TensorProduct.assoc A B L N).symm.trans
+    ((TensorProduct.congr eL (LinearEquiv.refl A N)).trans eN)
+
+private def tensorCodomainEquiv : B ⊗[A] TensorCodomain A B t s ≃ₗ[A] B :=
+  (extensionEquiv A B (t * s) (mul_isCocycle A B t s ht hs)).restrictScalars A
+
+set_option maxHeartbeats 800000 in
+private theorem tensorProductMap_formula :
+    (tensorCodomainEquiv A B t s ht hs).toLinearMap.comp (tensorProductMap A B t s) =
+      (tensorDomainEquiv A B t s ht hs).toLinearMap := by
+  apply TensorProduct.ext'
+  intro b z
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y =>
       change b * rawProduct A B t s (x ⊗ₜ[A] y) = (b * x.val) * y.val
       rw [rawProduct_tmul, mul_assoc]
-    | add x y hx hy => simp only [TensorProduct.tmul_add, map_add, hx, hy]
-  have hf : Function.Bijective f := by
-    have h : f = e.symm.toLinearMap.comp d.toLinearMap := by
-      apply LinearMap.ext
-      intro z
-      apply e.injective
-      exact (LinearMap.congr_fun hMap z).trans (e.apply_symm_apply (d z)).symm
-    rw [h]
-    exact e.symm.bijective.comp d.bijective
-  have hg : Function.Bijective g :=
-    of_lTensor_bijective A B (M := L ⊗[A] N) (N := invariants A B (t * s)) g hf
-  exact LinearEquiv.ofBijective g hg
+  | add x y hx hy => simp only [TensorProduct.tmul_add, map_add, hx, hy]
+
+private theorem tensorProductMap_bijective : Function.Bijective (tensorProductMap A B t s) := by
+  let e := tensorCodomainEquiv A B t s ht hs
+  let d := tensorDomainEquiv A B t s ht hs
+  have h : tensorProductMap A B t s = e.symm.toLinearMap.comp d.toLinearMap := by
+    apply LinearMap.ext
+    intro z
+    apply e.injective
+    exact (LinearMap.congr_fun (tensorProductMap_formula A B t s ht hs) z).trans
+      (e.apply_symm_apply (d z)).symm
+  rw [h]
+  exact e.symm.bijective.comp d.bijective
+
+set_option maxHeartbeats 800000 in
+private theorem productMap_bijective : Function.Bijective (productMap A B t s) := by
+  let f : TensorDomain A B t s →ₗ[A] TensorCodomain A B t s := productMap A B t s
+  have h : Function.Bijective (f.lTensor B) := tensorProductMap_bijective A B t s ht hs
+  exact of_lTensor_bijective A B f h
+
+/-- This multiplication map is an isomorphism of descended modules, as
+can be checked after the genuinely faithfully flat extension. -/
+def productEquiv : TensorDomain A B t s ≃ₗ[A] TensorCodomain A B t s :=
+  LinearEquiv.ofBijective (productMap A B t s) (productMap_bijective A B t s ht hs)
 
 theorem picardClass_mul :
     picardClass A B (t * s) (mul_isCocycle A B t s ht hs) =

@@ -27,7 +27,7 @@ private theorem condition (B E : C) :
   simp [left, right]
 
 private def desc {B E : C}
-    (s : PushoutCocone (coprod.inl : B ⟶ B ⨿ E) coprod.inl) :
+    (s : PushoutCocone (coprod.inl : B ⟶ B ⨿ E) (coprod.inl : B ⟶ B ⨿ E)) :
     B ⨿ (E ⨿ E) ⟶ s.pt :=
   coprod.desc (coprod.inl ≫ s.inl)
     (coprod.desc (coprod.inr ≫ s.inl) (coprod.inr ≫ s.inr))

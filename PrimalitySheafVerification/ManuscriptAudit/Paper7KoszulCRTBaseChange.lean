@@ -1,5 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
@@ -47,9 +49,9 @@ theorem reduction_parameter : reduction (5 : R) = 0 :=
   Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (by simp))
 
 /-- The degree 2, 1, 0 segment of the genuine one-parameter Koszul complex. -/
-def rankOne (A : Type*) [CommRing A] (s : A) : ShortComplex (ModuleCat A) :=
-  ShortComplex.mk (0 : (0 : ModuleCat A) ⟶ ModuleCat.of A A)
-    (ModuleCat.ofHom (s • (LinearMap.id : A →ₗ[A] A))) (zero_comp _)
+abbrev rankOne (A : Type*) [CommRing A] (s : A) : ShortComplex (ModuleCat A) :=
+  ShortComplex.mk (0 : ModuleCat.of A PUnit ⟶ ModuleCat.of A A)
+    (ModuleCat.ofHom (s • (LinearMap.id : A →ₗ[A] A))) (by simp)
 
 theorem regular_parameter : Function.Injective (fun x : R ↦ (5 : R) * x) := by
   letI : IsDomain R := IsLocalization.isDomain_of_local_atPrime inferInstance
@@ -59,6 +61,7 @@ theorem regular_parameter : Function.Injective (fun x : R ↦ (5 : R) * x) := by
 theorem before_exact : (rankOne R 5).Exact := by
   apply (ShortComplex.moduleCat_exact_iff (rankOne R 5)).mpr
   intro x hx
+  change R at x
   change (5 : R) * x = 0 at hx
   have h : (5 : R) * x = (5 : R) * 0 := by simpa using hx
   have hx0 := regular_parameter h

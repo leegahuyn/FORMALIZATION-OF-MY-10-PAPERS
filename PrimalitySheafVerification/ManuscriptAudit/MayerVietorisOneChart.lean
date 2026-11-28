@@ -13,10 +13,11 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-universe u v w w'
+universe u v w
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
-variable (S : J.MayerVietorisSquare) (F : Sheaf J AddCommGrpCat.{w})
+variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
+variable [HasExt.{w} (Sheaf J AddCommGrpCat.{v})]
+variable (S : J.MayerVietorisSquare) (F : Sheaf J AddCommGrpCat.{v})
 
 private abbrev fromLeft := ((F.cohomologyPresheaf 1).map S.f₁₂.op).hom
 private abbrev fromRight := ((F.cohomologyPresheaf 1).map S.f₁₃.op).hom
@@ -37,14 +38,17 @@ theorem toRight_surjective (h : Function.Surjective (fromLeft S F)) :
     change S.fromBiprod F 1 ((AddCommGrpCat.biprodIsoProd _ _).inv (x, y)) = 0
     rw [S.fromBiprod_biprodIsoProd_inv_apply]
     exact sub_eq_zero.mpr hx
-  have he := (S.sequence_exact F 0 1 rfl).exact' 3 4 5
-  rw [ShortComplex.ab_exact_iff_function_exact] at he
-  obtain ⟨a, ha⟩ := (he z).1 hz
-  refine ⟨a, ?_⟩
-  have hP := congrArg (fun b => (E.hom b).2) ha
-  change (E.hom (S.toBiprod F 1 a)).2 = (E.hom (E.inv (x, y))).2 at hP
-  simp only [S.toBiprod_apply, E, Iso.inv_hom_id_apply] at hP
-  exact hP
+  have he : (S.toBiprod F 1).hom.range = (S.fromBiprod F 1).hom.ker :=
+    ((S.sequence_exact F 0 1 rfl).exact' 3 4 5).ab_range_eq_ker
+  have hm : z ∈ (S.fromBiprod F 1).hom.ker := hz
+  rw [← he] at hm
+  obtain ⟨a, ha⟩ := hm
+  have hP : E.hom (S.toBiprod F 1 a) = (x, y) := by
+    have h := congrArg (fun b : ↑(F.H' 1 S.X₂ ⊞ F.H' 1 S.X₃) => E.hom b) ha
+    exact h.trans (E.inv_hom_id_apply _)
+  rw [S.toBiprod_apply] at hP
+  have hp : (toLeft S F a, toRight S F a) = (x, y) := (E.inv_hom_id_apply _).symm.trans hP
+  exact ⟨a, congrArg Prod.snd hp⟩
 
 /-- If restriction from the left chart to the overlap is injective,
 the kernel of restriction to the right chart is the actual boundary image. -/

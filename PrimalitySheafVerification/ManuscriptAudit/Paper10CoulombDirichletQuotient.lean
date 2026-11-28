@@ -18,7 +18,7 @@ noncomputable section
 private abbrev E := ℝ × ((ℝ × ℝ) × (ℝ × ℝ))
 
 private def values (z : ℍ) : E :=
-  (potential z.re z.im, residual z.re z.im, inputForm z.re z.im)
+  (potential z.re z.im, Paper10CoulombDirichletMode.residual z.re z.im, inputForm z.re z.im)
 
 private theorem same_on_high_orbit {z w : ℍ} (hz : 1 < z.im) (hw : 1 < w.im)
     (h : orbitPoint w = orbitPoint z) : values w = values z := by
@@ -28,14 +28,15 @@ private theorem same_on_high_orbit {z w : ℍ} (hz : 1 < z.im) (hw : 1 < w.im)
   have hy : w.im = z.im := by
     simpa [Complex.add_im, Complex.mul_im] using congrArg Complex.im hm
   obtain ⟨hφ, hb, ha⟩ := periodic z.re z.im m
-  change (potential w.re w.im, residual w.re w.im, inputForm w.re w.im) = _
+  change (potential w.re w.im, Paper10CoulombDirichletMode.residual w.re w.im, inputForm w.re w.im) = _
   rw [hx, hy, hφ, hb, ha]
   rfl
 
 /-- These are the scalar value and the two actual covector components in the
 width-two cusp coframe, extended by zero away from the high chart. -/
-def dataOnQuotient (q : OrbitQuotient) : E :=
-  if h : ∃ z : ℍ, 1 < z.im ∧ orbitPoint z = q then values (Classical.choose h) else 0
+def dataOnQuotient (q : OrbitQuotient) : E := by
+  classical
+  exact if h : ∃ z : ℍ, 1 < z.im ∧ orbitPoint z = q then values (Classical.choose h) else 0
 
 theorem values_on_high (z : ℍ) (hz : 1 < z.im) :
     dataOnQuotient (orbitPoint z) = values z := by
@@ -74,7 +75,7 @@ theorem prescribed_correction_coclosed (x y : ℝ) :
     codifferential (fun s t ↦ ((inputForm s t).1 - partialX potential s t,
       (inputForm s t).2 - partialY potential s t)) x y = 0 := by
   have h : (fun s t ↦ ((inputForm s t).1 - partialX potential s t,
-      (inputForm s t).2 - partialY potential s t)) = residual := by
+      (inputForm s t).2 - partialY potential s t)) = Paper10CoulombDirichletMode.residual := by
     funext s t
     exact correction_eq_residual s t
   rw [h]

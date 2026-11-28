@@ -108,7 +108,8 @@ private theorem cone_identity (W : C) (n : ℕ) :
     rw [Fin.val_succ, pow_succ, mul_neg, mul_one]
   rw [Fin.sum_univ_succ]
   simp only [Fin.val_zero, pow_zero, one_zsmul, prepend_face_zero, hSign, neg_zsmul,
-    prepend_face_succ, ← Finset.sum_neg_distrib, neg_add_cancel, add_zero]
+    prepend_face_succ]
+  rw [Finset.sum_neg_distrib, add_assoc, neg_add_cancel, add_zero]
 
 /-- A cycle in any positive degree of the actual free Čech nerve
 is the boundary of its objectwise prepended chain. -/

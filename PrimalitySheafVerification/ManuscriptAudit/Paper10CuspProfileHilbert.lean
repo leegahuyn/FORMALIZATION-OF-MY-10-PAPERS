@@ -30,6 +30,8 @@ theorem distance_squared (f g : ℝ → ℝ) (hf : Continuous f) (hg : Continuou
   apply integral_congr_ae
   filter_upwards [Lp.coeFn_sub (vector f hf) (vector g hg),
     (memLp f hf).coeFn_toLp, (memLp g hg).coeFn_toLp] with y h hF hG
+  change (vector f hf : ℝ → ℝ) y = f y at hF
+  change (vector g hg : ℝ → ℝ) y = g y at hG
   rw [h, Pi.sub_apply, hF, hG, real_inner_self_eq_norm_sq, Real.norm_eq_abs, sq_abs]
 
 /-- Continuous representatives of the same actual measured class have

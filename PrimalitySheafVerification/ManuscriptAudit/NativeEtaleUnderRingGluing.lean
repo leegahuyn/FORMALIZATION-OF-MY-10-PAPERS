@@ -29,6 +29,7 @@ abbrev obj (U : Under (R (A := A))) [Etale (Spec.map U.hom)] : (X (A := A)).Etal
 abbrev arrow {U V : Under (R (A := A))}
     [Etale (Spec.map U.hom)] [Etale (Spec.map V.hom)] (f : U ⟶ V) : obj V ⟶ obj U :=
   MorphismProperty.Over.homMk (Spec.map f.right) (by
+    change Spec.map f.right ≫ Spec.map U.hom = Spec.map V.hom
     rw [← Spec.map_comp, Under.w f])
 
 theorem arrow_comp {U V W : Under (R (A := A))}

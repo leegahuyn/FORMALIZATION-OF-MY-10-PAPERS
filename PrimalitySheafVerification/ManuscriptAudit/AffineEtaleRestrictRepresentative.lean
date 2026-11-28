@@ -52,6 +52,7 @@ variable (x : (cokernel i).obj.obj (op (baseObject A)))
 variable (y : I.obj.obj (op (ofAlgebra A B)))
 variable (hy : (cokernel.π i).hom.app (op (ofAlgebra A B)) y =
   (cokernel i).obj.map (coverArrow A B).op x)
+include hy
 
 /-- The restricted lift has the genuine restricted global class as image. -/
 theorem restrictLift_spec :

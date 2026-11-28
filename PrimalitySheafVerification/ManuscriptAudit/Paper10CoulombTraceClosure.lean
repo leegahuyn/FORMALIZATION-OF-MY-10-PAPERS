@@ -93,8 +93,9 @@ theorem native_distance_squared_le (n : ℕ) :
     (hc.intervalIntegrable (μ := volume) 4 a) (hc.intervalIntegrable (μ := volume) a 6)
   rw [hZ, zero_add] at hSplit
   rw [nativeDistanceSquared, ← hSplit]
-  dsimp only [a] at hC
-  linarith
+  calc
+    _ ≤ 2 * (6 - a) := mul_le_mul_of_nonneg_left hC (by norm_num)
+    _ = _ := by dsimp only [a]; ring
 
 /-- For arbitrarily small actual L² error there is a smooth, co-closed,
 zero-trace approximant to the smooth form with nonzero trace. -/

@@ -24,14 +24,14 @@ private def constantIsColimit [IsFiltered J] (E : C) :
     IsColimit (constantCocone (J := J) E) where
   desc s := s.ι.app (Classical.choice IsFiltered.nonempty)
   fac s j := by
-    rw [show (constantCocone (J := J) E).ι.app j = 𝟙 E from rfl, Category.id_comp]
     let i : J := Classical.choice IsFiltered.nonempty
+    change (𝟙 E) ≫ (s.ι.app i : E ⟶ s.pt) = s.ι.app j
     have hi := s.w (IsFiltered.leftToMax i j)
     have hj := s.w (IsFiltered.rightToMax i j)
     change 𝟙 E ≫ s.ι.app _ = s.ι.app i at hi
     change 𝟙 E ≫ s.ι.app _ = s.ι.app j at hj
     rw [Category.id_comp] at hi hj
-    exact hi.symm.trans hj
+    exact (Category.id_comp (s.ι.app i : E ⟶ s.pt)).trans (hi.symm.trans hj)
   uniq s m hm := by
     let i : J := Classical.choice IsFiltered.nonempty
     have h := hm i

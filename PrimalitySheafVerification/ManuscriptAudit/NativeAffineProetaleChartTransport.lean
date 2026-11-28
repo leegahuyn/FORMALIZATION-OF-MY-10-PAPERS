@@ -57,8 +57,11 @@ private theorem coordinateHom_compat (f : V ⟶ W) :
   rw [Spec.map_comp, coordinateHom, Spec.map_preimage]
   change ((chartIso V).hom.left ≫ f.left ≫ (chartIso W).inv.left) ≫
     structureMap A (coordinateRing W) = structureMap A (coordinateRing V)
-  rw [Category.assoc, Category.assoc, MorphismProperty.Over.w (chartIso W).inv,
-    MorphismProperty.Over.w f, MorphismProperty.Over.w (chartIso V).hom]
+  have hw : (chartIso W).inv.left ≫ structureMap A (coordinateRing W) = W.hom :=
+    MorphismProperty.Over.w (chartIso W).inv
+  have hv : (chartIso V).hom.left ≫ V.hom = structureMap A (coordinateRing V) :=
+    MorphismProperty.Over.w (chartIso V).hom
+  rw [Category.assoc, Category.assoc, hw, MorphismProperty.Over.w f, hv]
 
 /-- The algebra map underlying the affine chart presentation of an actual arrow. -/
 def chartAlgebraMap (f : V ⟶ W) : coordinateRing W →ₐ[A] coordinateRing V where

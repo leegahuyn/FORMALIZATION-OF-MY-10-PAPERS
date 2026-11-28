@@ -16,8 +16,8 @@ private theorem floor_complement {h k j : ℕ} (hh : 0 < h) (hk : 0 < k)
     (h * (k - j)) / k = h - ((h * j) / k + 1) := by
   have hJ : 0 < h * j := Nat.mul_pos hh hj0
   have hL : h * j - 1 < k * h := by
-    have h := Nat.mul_lt_mul_of_pos_left hjk hh
-    rw [Nat.mul_comm h k] at h
+    have hlt := Nat.mul_lt_mul_of_pos_left hjk hh
+    rw [Nat.mul_comm h k] at hlt
     omega
   have hRep : (h * j) % k + k * ((h * j) / k) = h * j := Nat.mod_add_div _ _
   have hPred : h * j - 1 = ((h * j) % k - 1) + k * ((h * j) / k) := by omega
@@ -50,10 +50,10 @@ theorem dedekindFloorWeight_parity {h k : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 1)
     let i : Fin k := ⟨j, hjk⟩
     let z : Fin k := ⟨0, hk0⟩
     have hR : (h * j) % k ≠ 0 := by
-      intro h
+      intro hzero
       have he : residuePerm h k hk0 hC i = residuePerm h k hk0 hC z := by
         apply Fin.ext
-        simp [residuePerm_val, i, z, h]
+        simp [residuePerm_val, i, z, hzero]
       have hj := congrArg Fin.val ((residuePerm h k hk0 hC).injective he)
       exact hj0.ne' hj
     have hDiv := floor_complement hh0 hk0 hj0 hjk hR
@@ -82,8 +82,8 @@ theorem dedekindFloorWeight_parity {h k : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 1)
   apply (ZMod.natCast_eq_natCast_iff' _ _ 2).1
   unfold dedekindFloorWeight halfFloorWeight
   push_cast
+  change (∑ j : Fin k, f j.val) = ∑ j ∈ range m, (((h * (j + 1)) / k : ℕ) : ZMod 2)
   rw [Fin.sum_univ_eq_sum_range]
-  change (∑ j ∈ range k, f j) = ∑ j ∈ range m, (((h * (j + 1)) / k : ℕ) : ZMod 2)
   rw [hSplit, hReflect, ← Finset.sum_add_distrib]
   apply Finset.sum_congr rfl
   intro j hj
@@ -101,7 +101,7 @@ theorem legendreSym_eq_weighted_floor {p h : ℕ} [Fact p.Prime] (hp : p ≠ 2)
   have hSum : (∑ j ∈ Ico 1 (p / 2).succ, j * h / p) = halfFloorWeight h p := by
     rw [Finset.sum_Ico_eq_sum_range]
     unfold halfFloorWeight
-    simp only [Nat.succ_eq_add_one, Nat.add_sub_cancel, Nat.mul_comm]
+    simp only [Nat.succ_eq_add_one, Nat.add_sub_cancel, Nat.mul_comm, Nat.add_comm 1]
   rw [hSum] at hE
   calc
     _ = (-1 : ℤ) ^ halfFloorWeight h p := hE

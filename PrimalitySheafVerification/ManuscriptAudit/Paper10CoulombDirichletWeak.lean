@@ -23,27 +23,30 @@ private def flux (f : ScalarField) (x y : ℝ) : ℝ :=
   Real.sin (Real.pi * x) * deriv v y * f x y
 
 private def horizontal (f : ScalarField) (x y : ℝ) : ℝ :=
-  (residual x y).1 * partialX f x y
+  (Paper10CoulombDirichletMode.residual x y).1 * partialX f x y
 
 private def vertical (f : ScalarField) (x y : ℝ) : ℝ :=
-  (residual x y).2 * partialY f x y
+  (Paper10CoulombDirichletMode.residual x y).2 * partialY f x y
 
 private theorem derivative_v_continuous : Continuous (deriv v) :=
   (show ContDiff ℝ ∞ (deriv v) from ContDiff.deriv' (by simpa using v_smooth)).continuous
 
 private theorem residual_dx (x y : ℝ) :
-    HasDerivAt (fun z ↦ (residual z y).1) (Real.sin (Real.pi*x) * deriv v y) x := by
+    HasDerivAt (fun z ↦ (Paper10CoulombDirichletMode.residual z y).1) (Real.sin (Real.pi*x) * deriv v y) x := by
   have h := (((Real.hasDerivAt_cos (Real.pi * x)).comp x
     ((hasDerivAt_id x).const_mul Real.pi)).mul_const (deriv v y / Real.pi)).neg
-  convert h using 1 <;> simp only [residual, id, mul_one] <;>
+  have hd : -(-Real.sin (Real.pi*x) * (Real.pi*1) * (deriv v y / Real.pi)) =
+      Real.sin (Real.pi*x) * deriv v y := by
     field_simp [Real.pi_ne_zero] <;> ring
+  rw [← hd]
+  exact h
 
 private theorem residual_dy (x y : ℝ) :
-    HasDerivAt (fun z ↦ (residual x z).2) (-(Real.sin (Real.pi*x) * deriv v y)) y :=
+    HasDerivAt (fun z ↦ (Paper10CoulombDirichletMode.residual x z).2) (-(Real.sin (Real.pi*x) * deriv v y)) y :=
   (((v_smooth.differentiable (by simp) y).hasDerivAt).const_mul (Real.sin (Real.pi * x))).neg
 
 private theorem residual_continuous :
-    Continuous (fun p : ℝ × ℝ ↦ residual p.1 p.2) := chart_smooth.2.1.continuous
+    Continuous (fun p : ℝ × ℝ ↦ Paper10CoulombDirichletMode.residual p.1 p.2) := chart_smooth.2.1.continuous
 
 private theorem flux_continuous (f : ScalarField) (hf : Continuous (Function.uncurry f)) :
     Continuous (Function.uncurry (flux f)) :=
@@ -80,12 +83,12 @@ private theorem integral_horizontal (f : ScalarField)
     (a := (0 : ℝ)) (b := (2 : ℝ))
     (fun x _ ↦ residual_dx x y) (fun x _ ↦ (hX x y).hasDerivAt)
     (hc.intervalIntegrable (μ := volume) _ _) (hd.intervalIntegrable (μ := volume) _ _)
-  have hb : (residual 2 y).1 = (residual 0 y).1 := by
+  have hb : (Paper10CoulombDirichletMode.residual 2 y).1 = (Paper10CoulombDirichletMode.residual 0 y).1 := by
     have hR := (periodic 0 y 1).2.1
     norm_num at hR
     exact congrArg Prod.fst hR
   change (∫ x : ℝ in 0..2, horizontal f x y) =
-    (residual 2 y).1 * f 2 y - (residual 0 y).1 * f 0 y - (∫ x : ℝ in 0..2, flux f x y) at h
+    (Paper10CoulombDirichletMode.residual 2 y).1 * f 2 y - (Paper10CoulombDirichletMode.residual 0 y).1 * f 0 y - (∫ x : ℝ in 0..2, flux f x y) at h
   rw [hb, hPeriod, sub_self, zero_sub] at h
   exact h
 
@@ -101,10 +104,10 @@ private theorem integral_vertical (f : ScalarField)
     (a := (4 : ℝ)) (b := (6 : ℝ))
     (fun y _ ↦ residual_dy x y) (fun y _ ↦ (hY x y).hasDerivAt)
     (hc.intervalIntegrable (μ := volume) _ _) (hd.intervalIntegrable (μ := volume) _ _)
-  have hb : (residual x 4).2 = 0 :=
+  have hb : (Paper10CoulombDirichletMode.residual x 4).2 = 0 :=
     congrArg Prod.snd (zero_below_cusp_band x 4 (by norm_num)).2.1
   change (∫ y : ℝ in 4..6, vertical f x y) =
-    (residual x 6).2 * f x 6 - (residual x 4).2 * f x 4 -
+    (Paper10CoulombDirichletMode.residual x 6).2 * f x 6 - (Paper10CoulombDirichletMode.residual x 4).2 * f x 4 -
       (∫ y : ℝ in 4..6, -(Real.sin (Real.pi*x) * deriv v y) * f x y) at h
   have hr : (fun y ↦ -(Real.sin (Real.pi*x) * deriv v y) * f x y) =
       (fun y ↦ -(flux f x y)) := by

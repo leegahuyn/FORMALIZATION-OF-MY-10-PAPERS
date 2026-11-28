@@ -46,7 +46,7 @@ theorem exists_cover_refinement
   let c : C →ₐ[A] Q := a₀.comp p
   letI : Algebra C Q := c.toRingHom.toAlgebra
   letI : IsScalarTower A C Q := IsScalarTower.of_algebraMap_eq (fun x ↦ (c.commutes x).symm)
-  letI : Algebra.Etale C Q := Algebra.Etale.of_restrictScalars (R := A)
+  letI : Algebra.Etale C Q := Algebra.Etale.of_restrictScalars A C Q
   have hC : k.comp t = b₀.comp c := by
     calc
       _ = r.comp p := hp.symm
@@ -62,11 +62,9 @@ theorem exists_cover_refinement
   letI : Algebra C T := a.toRingHom.toAlgebra
   letI : IsScalarTower A C T := IsScalarTower.of_algebraMap_eq (fun x ↦ (a.commutes x).symm)
   let V := T ⊗[C] Q
-  letI : Algebra A V := Algebra.compHom V (algebraMap A T)
-  letI : IsScalarTower A T V := IsScalarTower.of_algebraMap_eq' rfl
-  letI : IsScalarTower A C V := IsScalarTower.of_algebraMap_eq (fun x ↦ by
-    rw [IsScalarTower.algebraMap_apply A T V, IsScalarTower.algebraMap_apply A C T,
-      IsScalarTower.algebraMap_apply C T V])
+  letI : Algebra A V := inferInstanceAs (Algebra A (T ⊗[C] Q))
+  letI : IsScalarTower A T V := inferInstanceAs (IsScalarTower A T (T ⊗[C] Q))
+  letI : IsScalarTower A C V := inferInstanceAs (IsScalarTower A C (T ⊗[C] Q))
   letI : Algebra.Etale A V := Algebra.Etale.comp A T V
   let e : T →ₐ[A] V := IsScalarTower.toAlgHom A T V
   let j : Q →ₐ[C] V := Algebra.TensorProduct.includeRight

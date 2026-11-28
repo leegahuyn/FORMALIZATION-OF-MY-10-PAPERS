@@ -62,17 +62,16 @@ private theorem origin_not_in_Z_chart (p : linePoint (K := K)) :
   rw [origin_z]
   exact p.asIdeal.zero_mem
 
-set_option maxHeartbeats 2200000 in
+private theorem comp_apply_congr {A B C : Scheme.{u}} (f : A ⟶ B) (g : B ⟶ C)
+    {h : A ⟶ C} (e : f ≫ g = h) (a : A) : g (f a) = h a :=
+  (Scheme.Hom.comp_apply f g a).symm.trans (congrArg (fun k : A ⟶ C => k a) e)
+
+set_option maxHeartbeats 1200000 in
 private theorem inPlane_atInfinity (p : linePoint (K := K)) :
     (inPlane W).imageι (atInfinity W p) =
-      WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) := by
-  change (WeierstrassProperInfinityChart.chartOpen W ≫ (inPlane W).imageι)
-      (originToChart W p) = _
-  let f := WeierstrassProperInfinityChart.chartOpen W ≫ (inPlane W).imageι
-  let g := WeierstrassInfinityChartImmersion.inPlane W
-  have h : f = g := WeierstrassProperInfinityChart.chartOpen_inPlane W
-  have hBase : f.base = g.base := congrArg Scheme.Hom.base h
-  exact congrArg (fun k => k (originToChart W p)) hBase
+      WeierstrassInfinityChartImmersion.inPlane W (originToChart W p) :=
+  comp_apply_congr (WeierstrassProperInfinityChart.chartOpen W) (inPlane W).imageι
+    (WeierstrassProperInfinityChart.chartOpen_inPlane W) (originToChart W p)
 
 set_option maxHeartbeats 1000000 in
 theorem atInfinity_outside_affine (p : linePoint (K := K)) :

@@ -17,7 +17,7 @@ noncomputable section
 private theorem crossShift_crossShift (g : SL(2, ℤ)) (m n p q : ℤ) :
     crossShift (crossShift g m n) p q = crossShift g (p + m) (n + q) := by
   unfold crossShift
-  rw [show 4 * (n + q) = 4 * n + 4 * q by ring, zpow_add, zpow_add]
+  rw [show 4 * (n + q) = 4 * n + 4 * q by ring, _root_.zpow_add, zpow_add]
   simp only [mul_assoc]
 
 theorem every_positive_cross_matrix (g : SL(2, ℤ)) (hPos : 0 < g 1 0)
@@ -108,7 +108,7 @@ theorem actual_cross_rows_exhaust (g : CongruenceSubgroup.Gamma0 4) :
     have hRep' : (-1 : SL(2, ℤ)) * (g : SL(2, ℤ)) =
         ModularGroup.T ^ m * (crossGroupElement A : SL(2, ℤ)) * (rightCuspStabilizer n : SL(2, ℤ)) := hRep
     have hh := congrArg (fun M : SL(2, ℤ) => (-1 : SL(2, ℤ)) * M) hRep'
-    simpa only [← mul_assoc, central_square, one_mul] using hh
+    simpa only [if_pos trivial, ← mul_assoc, central_square, one_mul] using hh
   · obtain ⟨D, A, m, n, hRep⟩ := positive_group_cross_rep g h
     exact ⟨false, D, A, m, n, by simpa using hRep⟩
 

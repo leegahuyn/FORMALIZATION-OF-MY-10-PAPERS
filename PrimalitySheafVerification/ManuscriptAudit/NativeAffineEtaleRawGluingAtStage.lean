@@ -70,7 +70,8 @@ theorem raw_eq_of_cover_restriction (hCov : Function.Surjective (f k T U a).left
     change I.obj.map p.op (I.obj.map u.op x) = I.obj.map q.op (I.obj.map u.op x)
     rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
       ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp]
-    exact congrArg (fun g ↦ I.obj.map g.op x) pullback.condition
+    exact congrArg (fun g : pullback u u ⟶ etaleObject T ↦ I.obj.map g.op x)
+      (pullback.condition (f := u) (g := u))
   obtain ⟨w, _, hW⟩ := NativeEtaleSingletonSectionGluing.existsUnique_glue I u p q
     (IsPullback.of_hasPullback u u) hCov z hz
   have hxy : x = y := (hW x rfl).trans (hW y he.symm).symm

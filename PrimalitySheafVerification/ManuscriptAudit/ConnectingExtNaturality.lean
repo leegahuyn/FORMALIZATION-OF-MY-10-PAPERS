@@ -37,10 +37,10 @@ theorem map_connecting {S : ShortComplex C} {T : ShortComplex D}
         (Ext.comp_assoc_of_third_deg_zero a h.extClass b (zero_add 1))
     _ = p.comp (a.comp (c.comp hT.extClass (zero_add 1)) (zero_add 1)) (zero_add 1) :=
       congrArg (fun q => p.comp (a.comp q (zero_add 1)) (zero_add 1)) (h.extClass_naturality hT φ)
-    _ = _ := by
-      change (Ext.mk₀ z).comp ((Ext.mk₀ (R.map x)).comp
-        ((Ext.mk₀ φ.τ₃).comp hT.extClass (zero_add 1)) (zero_add 1)) (zero_add 1) = _
-      simp only [Ext.mk₀_comp_mk₀_assoc]
+    _ = p.comp ((Ext.mk₀ (R.map x ≫ φ.τ₃)).comp hT.extClass (zero_add 1)) (zero_add 1) :=
+      congrArg (fun q : Ext (R.obj Z) T.X₁ 1 => p.comp q (zero_add 1))
+        (Ext.mk₀_comp_mk₀_assoc (R.map x) φ.τ₃ hT.extClass)
+    _ = _ := Ext.mk₀_comp_mk₀_assoc z (R.map x ≫ φ.τ₃) hT.extClass
 
 end ManuscriptAudit.ConnectingExtNaturality
 

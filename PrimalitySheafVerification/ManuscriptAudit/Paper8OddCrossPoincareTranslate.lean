@@ -29,6 +29,7 @@ theorem translatePoint_coe (n : ℤ) (z : ℍ) :
 theorem translatePoint_re (n : ℤ) (z : ℍ) : (translatePoint n z).re = (n : ℝ) + z.re := by
   change ((translatePoint n z : ℍ) : ℂ).re = _
   rw [translatePoint_coe, Complex.add_re, Complex.intCast_re]
+  rfl
 
 theorem translatePoint_zero (z : ℍ) : translatePoint 0 z = z := by
   apply UpperHalfPlane.ext

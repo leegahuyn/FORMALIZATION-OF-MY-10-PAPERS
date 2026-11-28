@@ -23,9 +23,10 @@ theorem primeQuadraticChar_sq {p : ℕ} [Fact p.Prime] {t : ZMod p} (ht : t ≠ 
 
 theorem norm_primeAdditiveChar {p : ℕ} [Fact p.Prime] (ψ : AddChar (ZMod p) ℂ) (t : ZMod p) :
     ‖ψ t‖ = 1 := by
-  apply Complex.norm_eq_one_of_mem_rootsOfUnity
-  apply ψ.val_mem_rootsOfUnity
-  simpa only [ZMod.ringChar_zmod_n] using (Fact.out : p.Prime).pos
+  have hchar : 0 < ringChar (ZMod p) := by
+    simpa only [ZMod.ringChar_zmod_n] using (Fact.out : p.Prime).pos
+  have h := Complex.norm_eq_one_of_mem_rootsOfUnity (ψ.val_mem_rootsOfUnity t hchar)
+  simpa only [IsUnit.unit_spec] using h
 
 theorem norm_primeQuadraticChar {p : ℕ} [Fact p.Prime] {t : ZMod p} (ht : t ≠ 0) :
     ‖primeQuadraticChar p t‖ = 1 := by
@@ -45,7 +46,8 @@ theorem norm_gaussSum_prime {p : ℕ} [Fact p.Prime] (hp : p ≠ 2)
   change gaussSum χ ψ * (starRingEnd ℂ) (gaussSum χ ψ) = (p : ℂ) at hG
   rw [Complex.mul_conj'] at hG
   have hR := congrArg Complex.re hG
-  have hSq : ‖gaussSum χ ψ‖ ^ 2 = (p : ℝ) := by simpa only [Complex.ofReal_re, Complex.natCast_re] using hR
+  have hSq : ‖gaussSum χ ψ‖ ^ 2 = (p : ℝ) := by
+    simpa only [← Complex.ofReal_pow, Complex.ofReal_re, Complex.natCast_re] using hR
   rw [← hSq, Real.sqrt_sq (norm_nonneg _)]
 
 private theorem square_fiber_card {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) (y : ZMod p) :
@@ -66,7 +68,7 @@ theorem prime_quadratic_sum {p : ℕ} [Fact p.Prime] (hp : p ≠ 2)
   let χ := primeQuadraticChar p
   let e := Units.mk0 t ht
   have hZero : (∑ y : ZMod p, ψ (t * y)) = 0 := by
-    simpa only [mul_comm t, if_neg ht] using AddChar.sum_mulShift t hψ
+    simpa only [mul_comm t, if_neg ht, Nat.cast_zero] using AddChar.sum_mulShift t hψ
   have hShift : (∑ y : ZMod p, χ y * ψ (t * y)) = χ t * gaussSum χ ψ := by
     have h := gaussSum_mulShift χ ψ e
     change χ t * (∑ y : ZMod p, χ y * ψ (t * y)) = gaussSum χ ψ at h

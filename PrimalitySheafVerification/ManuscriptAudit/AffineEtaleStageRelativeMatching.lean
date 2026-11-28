@@ -32,7 +32,6 @@ variable {A B D M N : Type u}
   [CommRing A] [CommRing B] [CommRing D] [CommRing M] [CommRing N]
   [Algebra A B] [Algebra A D] [Algebra A M] [Algebra A N] [Algebra B D]
   [IsScalarTower A B D] [Algebra.Etale A M] [Algebra.Etale A N]
-  [Algebra A (D ⊗[B] D)] [IsScalarTower A B (D ⊗[B] D)]
   [WeaklyEtale (structureMap B D)]
 
 private abbrev R := CommRingCat.of B

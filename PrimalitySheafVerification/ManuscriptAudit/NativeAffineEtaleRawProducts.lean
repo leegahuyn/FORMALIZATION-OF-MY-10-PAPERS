@@ -77,6 +77,11 @@ private theorem exists_glue (x : ∀ i, S I (B i)) :
   exact (repr_natural I a z).symm.trans
     ((congrArg (incl I (T i)) hz').trans (hv i))
 
+private theorem restrict_restrict {U V W : (X (A := A)).Etale} (f : U ⟶ V) (g : V ⟶ W)
+    (x : I.obj.obj (op W)) :
+    I.obj.map f.op (I.obj.map g.op x) = I.obj.map (f ≫ g).op x := by
+  rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
+
 set_option maxHeartbeats 5500000 in
 private theorem eq_of_equal_restrictions {x y : S I (∀ i, B i)}
     (hxy : ∀ i, restrict B I i x = restrict B I i y) : x = y := by
@@ -100,12 +105,12 @@ private theorem eq_of_equal_restrictions {x y : S I (∀ i, B i)}
   let C (i : ι) := (V i).carrier
   have hs (i : ι) : I.obj.map (component (A := A) C i).op s = (F I (B i)).map (a i) v := by
     change I.obj.map (component (A := A) C i).op (I.obj.map (etaleMap p).op v) = _
-    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+    rw [restrict_restrict]
     exact DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
       (congrArg (fun g ↦ I.obj.map g.op) (component_assemble B V a i))) v
   have ht (i : ι) : I.obj.map (component (A := A) C i).op t = (F I (B i)).map (a i) v := by
     change I.obj.map (component (A := A) C i).op (I.obj.map (etaleMap q).op w) = _
-    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+    rw [restrict_restrict]
     exact (DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
       (congrArg (fun g ↦ I.obj.map g.op) (component_assemble B V b i))) w).trans (hab i).symm
   obtain ⟨z, _, hZ⟩ := existsUnique_sections I C
