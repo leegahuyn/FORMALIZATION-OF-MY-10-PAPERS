@@ -33,7 +33,8 @@ private theorem exists_descended {M : Type} [TopologicalSpace M] (a : C(Y,M))
     (ha : ∀ x y, p x = p y → a x = a y) :
     ∃ b : C(X,M), ∀ y, b (p y) = a y := by
   classical
-  choose s hs using hp
+  have hs₀ := hp
+  choose s hs using hs₀
   let b : X → M := fun x ↦ a (s x)
   have h (y : Y) : b (p y) = a y := ha (s (p y)) y (hs (p y))
   have hq : IsQuotientMap p := IsQuotientMap.of_surjective_continuous hp p.continuous

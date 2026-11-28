@@ -15,9 +15,9 @@ formula for the same multiplier.
 
 namespace ManuscriptAudit.Paper8EtaPositiveLowerLeftMultiplier
 
-open Set UpperHalfPlane
+open Set Filter UpperHalfPlane
 open Paper8ActualEtaSquaredModularity
-open scoped MatrixGroups Manifold
+open scoped MatrixGroups Manifold Topology
 
 noncomputable section
 
@@ -56,7 +56,11 @@ private theorem etaRootRatio_continuous (g : SL(2, ℤ)) (hg : 0 < g 1 0) :
       have hc : (0 : ℝ) < g 1 0 := by exact_mod_cast hg
       simpa [denominator, Complex.mul_im] using mul_pos hc z.im_pos
     change ContinuousAt (Complex.sqrt ∘ (fun w : ℍ => denominator g w)) z
-    exact (Complex.continuousAt_sqrt (Or.inr hPos.ne')).comp hD.continuousAt
+    have hRoot : Tendsto Complex.sqrt (𝓝 (denominator g z))
+        (𝓝 (Complex.sqrt (denominator g z))) := (Complex.continuousAt_sqrt (Or.inr hPos.ne')).tendsto
+    have hDAt : Tendsto (fun w : ℍ => denominator g w) (𝓝 z) (𝓝 (denominator g z)) :=
+      hD.continuousAt.tendsto
+    exact hRoot.comp hDAt
   exact (hEta.comp hAct).div (hSqrt.mul hEta) (fun z =>
     mul_ne_zero (complex_sqrt_ne_zero (denominator_ne_zero g z)) (ModularForm.eta_ne_zero z.im_pos))
 

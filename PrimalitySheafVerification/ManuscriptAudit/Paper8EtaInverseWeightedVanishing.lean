@@ -1,5 +1,4 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Tactic.FinCases
 import PrimalitySheafVerification.ManuscriptAudit.Paper8EtaInverseCuspVanishing
 import PrimalitySheafVerification.ManuscriptAudit.HolomorphicStripPointwise
 import PrimalitySheafVerification.ManuscriptAudit.Paper8OddCrossCuspRows
@@ -18,7 +17,7 @@ namespace ManuscriptAudit.Paper8EtaInverseWeightedVanishing
 open Set Filter Function MeasureTheory UpperHalfPlane
 open Paper8ActualEtaSquaredModularity Paper8EtaRatioCuspLimit
 open Paper8EtaNormalizedCuspTranslate Paper8EtaInverseMultiplier HolomorphicStripEnergy
-open Paper8OddCrossCuspRows (levelCharacter levelCharacter_apply chiFour)
+open Paper8OddCrossCuspRows (levelCharacter)
 open scoped MatrixGroups Manifold Topology
 
 theorem conjugate_squaredMultiplier_eq_inv (g : SL(2, ℤ)) :
@@ -41,13 +40,9 @@ theorem levelCharacter_sq (g : CongruenceSubgroup.Gamma0 4) :
     (levelCharacter g : ℂ) ^ 2 = 1 := by
   have hUnit : levelCharacter g * levelCharacter g⁻¹ = 1 := by
     rw [← map_mul, mul_inv_cancel, map_one]
-  have hn : levelCharacter g ≠ 0 := by
-    intro h
-    rw [h, zero_mul] at hUnit
-    exact zero_ne_one hUnit
-  rw [levelCharacter_apply] at hn ⊢
-  generalize (g.1 1 1 : ZMod 4) = x at hn ⊢
-  fin_cases x <;> norm_num [chiFour] at hn ⊢
+  rcases Int.eq_one_or_neg_one_of_mul_eq_one' hUnit with h | h
+  · norm_num [h.1]
+  · norm_num [h.1]
 
 theorem cuspTranslate_norm_sq_periodic {H : Subgroup SL(2, ℤ)} {f : ℍ → ℂ}
     (hF : InverseSquaredAutomorphy H f) (g : SL(2, ℤ)) {w : ℕ}

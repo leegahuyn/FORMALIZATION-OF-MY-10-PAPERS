@@ -49,12 +49,18 @@ private theorem pointPair_injective : Function.Injective (pointPair p) := by
     refine section_eq_of_point_eq_affine b _ _ ?_ ?_ ?_
     · simpa only [Category.assoc, k] using hsx
     · simpa only [Category.assoc, k] using hsy
-    · simpa only [Scheme.Hom.comp_apply, hx, hy] using hl
+    · change pullback.fst p p (sx (IsLocalRing.closedPoint K)) =
+        pullback.fst p p (sy (IsLocalRing.closedPoint K))
+      rw [hx, hy]
+      exact hl
   have h₂ : sx ≫ pullback.snd p p = sy ≫ pullback.snd p p := by
     refine section_eq_of_point_eq_affine b _ _ ?_ ?_ ?_
     · simpa only [Category.assoc, hk] using hsx
     · simpa only [Category.assoc, hk] using hsy
-    · simpa only [Scheme.Hom.comp_apply, hx, hy] using hr
+    · change pullback.snd p p (sx (IsLocalRing.closedPoint K)) =
+        pullback.snd p p (sy (IsLocalRing.closedPoint K))
+      rw [hx, hy]
+      exact hr
   have he : sx = sy := pullback.hom_ext h₁ h₂
   exact hx.symm.trans ((congrArg (fun t : Spec (CommRingCat.of K) ⟶
     (pullback p p : Scheme.{u}) ↦ t (IsLocalRing.closedPoint K)) he).trans hy)
@@ -71,9 +77,8 @@ variable [IsAffine X]
 
 /-- The homeomorphism sends a scheme pullback point to its two literal projections. -/
 def homeomorph : ↥(pullback p p : Scheme.{u}) ≃ₜ PairOver (fun y : ↥Y ↦ p y) := by
-  letI : TotallySeparatedSpace Y :=
-    WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine K (p ≫ c)
-  letI : T2Space ↥Y := inferInstance
+  letI : T2Space ↥Y :=
+    WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine K (p ≫ c)
   letI : CompactSpace ↥(pullback p p : Scheme.{u}) := inferInstance
   let e := Equiv.ofBijective (pointPair p) ⟨pointPair_injective c p, pointPair_surjective p⟩
   have hq : IsQuotientMap (pointPair p) :=

@@ -7,12 +7,12 @@ import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleUnitCocycle
 import PrimalitySheafVerification.ManuscriptAudit.KummerAffineCohomology
 
 /-!
-# Degree-one cohomology of affine étale units over a PID
+# Affine étale local representatives and degree-one unit cohomology
 
 A section of the cokernel of the injective embedding lifts on a
 finite affine étale family. The ring product gives one faithfully flat
-étale cover. Its lifted section is corrected by the actual unit
-cocycle on tensor overlaps, then descends to the base scheme.
+étale cover. Over a PID its lifted section can be corrected by the actual
+unit cocycle on tensor overlaps and then descends to the base scheme.
 -/
 
 namespace ManuscriptAudit.AffineEtaleProductDescent
@@ -24,29 +24,36 @@ noncomputable section
 
 attribute [local instance] KummerCohomologySequence.affineSiteHasExt
 
-variable (R : Type) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable (R : Type) [CommRing R]
 
 private abbrev X := Spec (CommRingCat.of R)
 private abbrev J := Scheme.AffineEtale.topology (X R)
 private abbrev G := coordinateUnitSheaf (X R)
 
+variable {I : Sheaf (J R) AddCommGrpCat.{0}}
+
+/-- One actual affine faithfully flat étale chart on which a global cokernel
+section lifts to the representative sheaf. -/
+structure FaithfullyFlatAffineLift (i : G R ⟶ I)
+    (x : (cokernel i).obj.obj (op (baseObject R))) where
+  coverRing : Type
+  [commRing : CommRing coverRing]
+  [algebra : Algebra R coverRing]
+  [etale : Algebra.Etale R coverRing]
+  [faithfullyFlat : Module.FaithfullyFlat R coverRing]
+  value : I.obj.obj (op (ofAlgebra R coverRing))
+  lifts : (cokernel.π i).hom.app (op (ofAlgebra R coverRing)) value =
+    (cokernel i).obj.map (coverArrow R coverRing).op x
+
 set_option maxHeartbeats 1200000 in
 set_option backward.isDefEq.respectTransparency false in
-/-- The actual unit sheaf on the small affine étale site of a PID has
-trivial first cohomology. -/
-theorem affineUnitH1_subsingleton :
-    Subsingleton (Sheaf.H (G R) 1) := by
-  let C := Sheaf (J R) AddCommGrpCat.{0}
-  letI : IsGrothendieckAbelian.{0} C :=
-    Scheme.isGrothendieckAbelian_sheaf_affineEtaleTopology (X R) AddCommGrpCat.{0}
-  letI : EnoughInjectives C := IsGrothendieckAbelian.enoughInjectives.{0} (C := C)
-  letI : HasExt.{0} C := KummerCohomologySequence.affineSiteHasExt (CommRingCat.of R)
+/-- A section of the cokernel has an actual lift on a single faithfully flat
+affine étale chart, obtained by taking the product of finitely many local charts. -/
+theorem exists_faithfullyFlatAffineLift (i : G R ⟶ I)
+    (x : (cokernel i).obj.obj (op (baseObject R))) :
+    Nonempty (FaithfullyFlatAffineLift R i x) := by
   letI : ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization AddCommGrpCat.{0} :=
     AddCommGrpImageFactorization.functorialSurjectiveInjectiveFactorization
-  let I : C := Injective.under (G R)
-  let i : G R ⟶ I := Injective.ι (G R)
-  letI : Injective I := inferInstance
-  letI : Mono i := inferInstance
   let Q := cokernel i
   let q : I ⟶ Q := cokernel.π i
   let U := baseObject R
@@ -117,7 +124,51 @@ theorem affineUnitH1_subsingleton :
       _ = Q.obj.map vc.op (Q.obj.map v.op x) := by
         rw [hArrow, op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
   obtain ⟨y, hy⟩ := AffineEtaleProductGluing.exists_lift_from_component_lifts A g q xW hComponents
-  exact AffineEtaleUnitCocycle.global_lift_from_faithfully_flat_affine_lift R B i x y hy
+  exact ⟨{
+    coverRing := B
+    commRing := inferInstance
+    algebra := inferInstance
+    etale := hEt
+    faithfullyFlat := hFaithful
+    value := y
+    lifts := hy }⟩
+
+/-- Each native first unit cohomology class has a finite faithfully flat
+affine representative. -/
+theorem exists_faithfullyFlatAffineRepresentative (i : G R ⟶ I) [Mono i] [Injective I]
+    (h : Sheaf.H (G R) 1) :
+    ∃ x : (cokernel i).obj.obj (op (baseObject R)),
+      SheafH1Descent.connectingSection i
+        (KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)) x = h ∧
+      Nonempty (FaithfullyFlatAffineLift R i x) := by
+  obtain ⟨x, hx⟩ := SheafH1Descent.connectingSection_surjective i
+    (KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R)) h
+  exact ⟨x, hx, exists_faithfullyFlatAffineLift R i x⟩
+
+set_option maxHeartbeats 1200000 in
+set_option backward.isDefEq.respectTransparency false in
+/-- The actual unit sheaf on the small affine étale site of a PID has
+trivial first cohomology. -/
+theorem affineUnitH1_subsingleton [IsDomain R] [IsPrincipalIdealRing R] :
+    Subsingleton (Sheaf.H (G R) 1) := by
+  let C := Sheaf (J R) AddCommGrpCat.{0}
+  letI : IsGrothendieckAbelian.{0} C :=
+    Scheme.isGrothendieckAbelian_sheaf_affineEtaleTopology (X R) AddCommGrpCat.{0}
+  letI : EnoughInjectives C := IsGrothendieckAbelian.enoughInjectives.{0} (C := C)
+  letI : HasExt.{0} C := KummerCohomologySequence.affineSiteHasExt (CommRingCat.of R)
+  let I : C := Injective.under (G R)
+  let i : G R ⟶ I := Injective.ι (G R)
+  letI : Injective I := inferInstance
+  letI : Mono i := inferInstance
+  apply SheafH1Descent.H1_subsingleton_of_global_lifts i
+    (KummerAffineCohomology.affineTerminal_isTerminal (CommRingCat.of R))
+  intro x
+  obtain ⟨c⟩ := exists_faithfullyFlatAffineLift R i x
+  letI := c.commRing
+  letI := c.algebra
+  letI := c.etale
+  letI := c.faithfullyFlat
+  exact AffineEtaleUnitCocycle.global_lift_from_faithfully_flat_affine_lift R c.coverRing i x c.value c.lifts
 
 end
 
@@ -126,9 +177,11 @@ end ManuscriptAudit.AffineEtaleProductDescent
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let name := ``ManuscriptAudit.AffineEtaleProductDescent.affineUnitH1_subsingleton
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.AffineEtaleProductDescent.exists_faithfullyFlatAffineLift,
+      ``ManuscriptAudit.AffineEtaleProductDescent.exists_faithfullyFlatAffineRepresentative,
+      ``ManuscriptAudit.AffineEtaleProductDescent.affineUnitH1_subsingleton] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

@@ -55,7 +55,10 @@ theorem maximalIdeal_is_point (I : Ideal W.CoordinateRing) (hI : I.IsMaximal) :
   have hMem (z : W.CoordinateRing) (hz : f z = 0) : z ∈ I := by
     apply Ideal.Quotient.eq_zero_iff_mem.mp
     apply e.symm.injective
-    simpa only [map_zero] using hz
+    calc
+      e.symm (Ideal.Quotient.mk I z) = f z := rfl
+      _ = 0 := hz
+      _ = e.symm 0 := (map_zero e.symm).symm
   let J := CoordinateRing.XYIdeal W x (C y)
   have hJle : J ≤ I := by
     change Ideal.span {CoordinateRing.XClass W x, CoordinateRing.YClass W (C y)} ≤ I
@@ -74,7 +77,13 @@ theorem maximalIdeal_is_point (I : Ideal W.CoordinateRing) (hI : I.IsMaximal) :
   have hJker : RingHom.ker fJ.toRingHom = J := by
     ext z
     change eJ (Ideal.Quotient.mk J z) = 0 ↔ z ∈ J
-    rw [← eJ.map_zero, eJ.injective.eq_iff, Ideal.Quotient.eq_zero_iff_mem]
+    constructor
+    · intro hz
+      apply Ideal.Quotient.eq_zero_iff_mem.mp
+      apply eJ.injective
+      exact hz.trans (map_zero eJ).symm
+    · intro hz
+      rw [Ideal.Quotient.eq_zero_iff_mem.mpr hz, map_zero]
   have hJmax : J.IsMaximal := by
     rw [← hJker]
     exact RingHom.ker_isMaximal_of_surjective fJ.toRingHom

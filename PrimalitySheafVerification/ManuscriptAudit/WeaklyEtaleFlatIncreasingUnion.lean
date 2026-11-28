@@ -72,6 +72,14 @@ private abbrev specMap (A : Type u) [CommRing A] [Algebra R A] :
 include hMono hCover in
 theorem weaklyEtale (hStage : ∀ n, WeaklyEtale (specMap (R := R) (U n))) :
     WeaklyEtale (specMap (R := R) B) := by
+  letI : MorphismProperty.RespectsIso (@Flat : MorphismProperty Scheme.{u}) :=
+    MorphismProperty.RespectsIso.mk _
+      (fun e f hf => by
+        letI : Flat f := hf
+        infer_instance)
+      (fun e f hf => by
+        letI : Flat f := hf
+        infer_instance)
   have hFlat : Module.Flat R B := by
     apply FlatIncreasingUnion.flat_of_exhaustion (fun n ↦ (U n).toSubmodule) hMono hCover
     intro n

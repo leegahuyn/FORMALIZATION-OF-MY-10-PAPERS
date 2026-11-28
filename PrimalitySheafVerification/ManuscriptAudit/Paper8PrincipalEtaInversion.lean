@@ -15,7 +15,7 @@ open scoped MatrixGroups
 theorem eta_S_transform (z : ℍ) :
     ModularForm.eta (ModularGroup.S • z : ℍ) =
       Complex.sqrt (-Complex.I * (z : ℂ)) * ModularForm.eta z := by
-  rw [Complex.sqrt_eq_exp (mul_ne_zero (neg_ne_zero.mpr Complex.I_ne_zero) z.ne_zero)]
+  rw [sqrt_eq_exp (mul_ne_zero (neg_ne_zero.mpr Complex.I_ne_zero) z.ne_zero)]
   exact Paper8ActualEtaInversion.eta_inversion z
 
 theorem positivePhase_S (z : ℍ) :

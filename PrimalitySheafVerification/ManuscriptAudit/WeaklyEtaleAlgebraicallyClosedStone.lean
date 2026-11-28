@@ -76,6 +76,18 @@ theorem totallySeparated_affine {T : Scheme.{u}} [IsAffine T]
     (e.hom.homeomorph.injective.ne h)
   exact ⟨e.hom ⁻¹' V, hV.preimage e.hom.continuous, hx, hy⟩
 
+/-- The actual affine point topology is Hausdorff. -/
+theorem t2Space_affine {T : Scheme.{u}} [IsAffine T]
+    (f : T ⟶ Spec (CommRingCat.of K)) [WeaklyEtale f] : T2Space T := by
+  constructor
+  intro x y h
+  obtain ⟨U, hU, hx, hy⟩ := totallySeparatedSpace_iff_exists_isClopen.mp
+    (totallySeparated_affine K f) h
+  refine ⟨U,Uᶜ,hU.isOpen,hU.isClosed.isOpen_compl,hx,hy,?_⟩
+  apply Set.disjoint_left.mpr
+  intro z hz hnz
+  exact hnz hz
+
 end
 end ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone
 
@@ -85,7 +97,8 @@ run_cmd do
   for name in [``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.isClopen_basicOpen,
       ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.clopen_basis,
       ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated,
-      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine] do
+      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine,
+      ``ManuscriptAudit.WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

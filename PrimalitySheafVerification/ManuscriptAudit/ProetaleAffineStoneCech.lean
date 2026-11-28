@@ -78,8 +78,8 @@ theorem exists_primitive (b : C(↥(D p), M))
     WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine K c
   letI : TotallySeparatedSpace Y :=
     WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine K (p ≫ c)
-  letI : T2Space ↥X := inferInstance
-  letI : T2Space ↥Y := inferInstance
+  letI : T2Space ↥X := WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine K c
+  letI : T2Space ↥Y := WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine K (p ≫ c)
   letI : TotallyDisconnectedSpace ↥X := inferInstance
   letI : TotallyDisconnectedSpace ↥Y := inferInstance
   let e := homeomorph c p
@@ -104,8 +104,8 @@ theorem exists_adic_primitive (ℓ : ℕ) [Fact ℓ.Prime] (hp : Surjective p)
     WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine K c
   letI : TotallySeparatedSpace Y :=
     WeaklyEtaleAlgebraicallyClosedStone.totallySeparated_affine K (p ≫ c)
-  letI : T2Space ↥X := inferInstance
-  letI : T2Space ↥Y := inferInstance
+  letI : T2Space ↥X := WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine K c
+  letI : T2Space ↥Y := WeaklyEtaleAlgebraicallyClosedStone.t2Space_affine K (p ≫ c)
   letI : TotallyDisconnectedSpace ↥X := inferInstance
   letI : TotallyDisconnectedSpace ↥Y := inferInstance
   let e := homeomorph c p

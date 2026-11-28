@@ -26,10 +26,13 @@ theorem lowering_weighted_eta (x y : ℝ) (hy : 0 < y) :
       using (Real.hasDerivAt_rpow_const (p := (1 / 4 : ℝ)) (Or.inl hy.ne')).ofReal_comp
   have hDy : partialY (weighted (1 / 4) ModularForm.eta) x y =
       (1 / 4 : ℂ) * B * E + A * (Complex.I * d) := by
-    have h := (hP.mul (vertical_derivative hη)).deriv
-    change deriv (fun t : ℝ => ((t ^ (1 / 4 : ℝ) : ℝ) : ℂ) *
-      ModularForm.eta (complexPoint x t)) y = _
-    simpa only [Pi.mul_apply, A, E] using h
+    have hFun : weighted (1 / 4) ModularForm.eta x =
+        (fun t : ℝ => ((t ^ (1 / 4 : ℝ) : ℝ) : ℂ)) *
+          (fun t : ℝ => ModularForm.eta (complexPoint x t)) := by
+      funext t
+      rfl
+    rw [partialY, hFun]
+    exact (hP.mul (vertical_derivative hη)).deriv
   have hShift : (y : ℂ) * B = A := by
     have h := Real.rpow_add hy 1 ((1 / 4 : ℝ) - 1)
     rw [show (1 : ℝ) + ((1 / 4 : ℝ) - 1) = 1 / 4 by ring, Real.rpow_one] at h

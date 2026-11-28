@@ -66,6 +66,7 @@ private theorem coefficient_interval (f : ℂ → ℂ) (m : ℕ) {R : ℝ} (hR :
         deriv Q θ * (Q θ ^ (-(m : ℤ) - 1) * f (Q θ))) =
     ∫ x in (0 : ℝ)..1, G (x * (2 * Real.pi))
   rw [hI, ← hScale]
+  generalize (∫ x in (0 : ℝ)..1, G (x * (2 * Real.pi))) = J
   push_cast at hp ⊢
   field_simp [hp, Complex.I_ne_zero] <;> ring
 
@@ -85,6 +86,7 @@ theorem floquetCoefficient_eq_pentagonal (m : ℕ) {y : ℝ} (hy : 0 < y) :
 theorem floquetCoefficient_at_pentagonal (k : ℤ) {y : ℝ} (hy : 0 < y) :
     floquetCoefficient (pentagonal k) y = (-1 : ℂ) ^ k.natAbs := by
   rw [floquetCoefficient_eq_pentagonal _ hy, PowerSeries.coeff_pentagonalSeries_pentagonal]
+  exact Int.coe_negOnePow ℂ k
 
 theorem floquetCoefficient_off_pentagonal {m : ℕ} {y : ℝ} (hy : 0 < y)
     (hm : m ∉ Set.range pentagonal) : floquetCoefficient m y = 0 := by

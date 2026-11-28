@@ -74,9 +74,7 @@ theorem projections_jointly_injective [EnoughInjectives C]
         rw [hNat, ← Ext.comp_assoc_of_second_deg_zero]
       rw [← eq, hy]
       exact hProj
-    have hExact := Ext.covariant_sequence_exact₃' B (hS n) 1 2 rfl
-    rw [ShortComplex.ab_exact_iff_function_exact] at hExact
-    obtain ⟨w, hw⟩ := (hExact y').1 hBoundary
+    obtain ⟨w, hw⟩ := Ext.covariant_sequence_exact₃ B (hS n) y' (show 1+1=2 by rfl) hBoundary
     have hW : w = 0 := Ext.eq_zero_of_injective (show Ext B (I n) 1 from w)
     rw [hW, Ext.zero_comp] at hw
     exact hw.symm

@@ -120,6 +120,7 @@ private theorem boundary_HOne_subsingleton : Subsingleton (Sheaf.H (boundary i�
     (Ext.addEquivBiprod (X := integers (X := X)) (Y₁ := F) (Y₂ := G) (n := 1))
   exact e.injective.subsingleton
 
+include hDisjoint in
 /-- The map from the true two-boundary support to ambient degree one is surjective. -/
 theorem projection_surjective :
     Function.Surjective (Sheaf.H.map (inclusion i₀ i₁ ℓ) 1) := by

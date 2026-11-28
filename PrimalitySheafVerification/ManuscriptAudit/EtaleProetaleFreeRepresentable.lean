@@ -149,7 +149,11 @@ theorem etaleSections_freeMap {U V : X.Etale} (f : U ⟶ V) {F : E X}
       ((a.homEquiv (highEtaleFree X U) F) (e.inverse.map (H.map y) ≫ g))) =
     F.obj.map f.op (yonedaEquiv ((b.homEquiv (etaleYoneda X V) (e.functor.obj F))
       ((a.homEquiv (highEtaleFree X V) F) g)))
-  rw [a.homEquiv_naturality_left, b.homEquiv_naturality_left, ← yonedaEquiv_naturality] <;> rfl
+  have h₁ := a.homEquiv_naturality_left (H.map y) g
+  change (a.homEquiv (highEtaleFree X U) F) (e.inverse.map (H.map y) ≫ g) =
+    H.map y ≫ (a.homEquiv (highEtaleFree X V) F) g at h₁
+  have h₂ := b.homEquiv_naturality_left y ((a.homEquiv (highEtaleFree X V) F) g)
+  rw [h₁, h₂, ← yonedaEquiv_naturality] <;> rfl
 
 /-- The actual sheafified Yoneda arrow in the raised pro-étale universe. -/
 def proFreeMap {U V : X.ProEt} (f : U ⟶ V) : nativeFree U ⟶ nativeFree V :=
@@ -172,7 +176,11 @@ theorem proSections_freeMap {U V : X.ProEt} (f : U ⟶ V) {F : P X}
       ((a.homEquiv (highProFree X U) F) (e.inverse.map (H.map y) ≫ g))) =
     F.obj.map f.op (yonedaEquiv ((b.homEquiv (proYoneda X V) (e.functor.obj F))
       ((a.homEquiv (highProFree X V) F) g)))
-  rw [a.homEquiv_naturality_left, b.homEquiv_naturality_left, ← yonedaEquiv_naturality] <;> rfl
+  have h₁ := a.homEquiv_naturality_left (H.map y) g
+  change (a.homEquiv (highProFree X U) F) (e.inverse.map (H.map y) ≫ g) =
+    H.map y ≫ (a.homEquiv (highProFree X V) F) g at h₁
+  have h₂ := b.homEquiv_naturality_left y ((a.homEquiv (highProFree X V) F) g)
+  rw [h₁, h₂, ← yonedaEquiv_naturality] <;> rfl
 
 end
 end ManuscriptAudit.EtaleProetaleFreeRepresentable
