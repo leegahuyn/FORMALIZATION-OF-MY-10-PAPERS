@@ -65,7 +65,7 @@ theorem roots_scalar (m : ℕ) (a : Sheaf.H ((C K).obj (M K d)) 1) :
   have hScalar : ProetaleKummerSchemePullback.kernelMap f d 1 (e a) = m • e a := by
     rw [← hz]
     exact kernelMap_scalar K d m z
-  exact h.symm.trans (hScalar.trans (map_nsmul e a m).symm)
+  exact h.symm.trans (hScalar.trans (map_nsmul e m a).symm)
 
 set_option maxHeartbeats 6200000 in
 /-- Pullback is multiplication by m on the actual Laurent H¹ with ZMod d coefficients. -/
@@ -78,7 +78,7 @@ theorem cyclic_scalar (m : ℕ) (a : Sheaf.H ((C K).obj (N d)) 1) :
   have h := constant_natural (overlapMap K m) i.hom 1 b
   change constant (overlapMap K m) (N d) 1 (e b) =
     e (constant (overlapMap K m) (M K d) 1 b) at h
-  exact h.trans ((congrArg e (roots_scalar K d m b)).trans (map_nsmul e b m))
+  exact h.trans ((congrArg e (roots_scalar K d m b)).trans (map_nsmul e m b))
 
 end
 end ManuscriptAudit.CuspLaurentNativeConstantPower

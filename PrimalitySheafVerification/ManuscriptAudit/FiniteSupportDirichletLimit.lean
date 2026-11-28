@@ -25,7 +25,8 @@ theorem normalizer_tendsto : Tendsto normalizer (𝓝[>] (1 : ℝ)) atTop := by
       simpa using (h.tendsto (1 : ℝ)).mono_left nhdsWithin_le_nhds
     · rw [Filter.tendsto_principal]
       filter_upwards [self_mem_nhdsWithin] with s hs
-      exact sub_pos.mpr hs
+      change 0 < s - (1 : ℝ)
+      exact sub_pos.mpr (Set.mem_Ioi.mp hs)
   have hInv : Tendsto (fun s : ℝ ↦ (s - 1)⁻¹) (𝓝[>] (1 : ℝ)) atTop :=
     tendsto_inv_nhdsGT_zero.comp hShift
   exact Real.tendsto_log_atTop.comp hInv

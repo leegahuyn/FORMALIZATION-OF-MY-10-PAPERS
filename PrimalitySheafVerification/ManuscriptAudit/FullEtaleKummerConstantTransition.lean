@@ -106,7 +106,9 @@ private abbrev comparisonArrow (n : ℕ) :=
 private abbrev rootLabel (n : ℕ) := comparisonArrow (X := X) (K := K) l n ≫
   (F X).map (label k (l ^ n))
 
-private theorem constantKernel_toUnits (n : ℕ) :
+/-- The native full Kummer first-term comparison followed by inclusion
+is the transported literal affine root label. -/
+theorem constantKernel_toUnits (n : ℕ) :
     (constantKernelIso k l n).hom ≫ (S X (l ^ n)).f =
       (E X).counitIso.inv.app ((constantSheaf (J X) C).obj (M l n)) ≫
         (E X).functor.map (rootLabel k l n) := by

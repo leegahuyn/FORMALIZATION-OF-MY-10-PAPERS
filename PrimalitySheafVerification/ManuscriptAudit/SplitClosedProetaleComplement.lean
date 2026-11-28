@@ -12,7 +12,7 @@ open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
 open SplitClosedProetaleDirectImage
 
 noncomputable section
-universe u v
+universe u
 
 variable {S T : Scheme.{u}} (i : S ⟶ T) [IsClosedImmersion i]
 
@@ -51,8 +51,8 @@ theorem baseComplement_quasiCompact [NoetherianSpace T] :
 /-- For a split closed immersion into a Noetherian topological space, the
 actual pro-étale direct image takes epimorphisms to epimorphisms. -/
 theorem map_epi [IsAffine S] [NoetherianSpace T] (r : T ⟶ S) (hir : i ≫ r = 𝟙 S)
-    {F G : Sheaf (Scheme.ProEt.topology S) AddCommGrpCat.{v}} (α : F ⟶ G) [Epi α] :
-    Epi ((ProetaleBaseChange.directImage i AddCommGrpCat.{v}).map α) :=
+    {F G : Sheaf (Scheme.ProEt.topology S) AddCommGrpCat.{u+1}} (α : F ⟶ G) [Epi α] :
+    Epi ((ProetaleBaseChange.directImage i AddCommGrpCat.{u+1}).map α) :=
   SplitClosedProetaleDirectImage.map_epi i r hir
     (fun U _ ↦ chart_quasiCompact i (baseComplement_quasiCompact i) U) α
 

@@ -93,6 +93,18 @@ def comparison :
   · exact edge_compat f e₂ e₄ S.f₂₄ T.f₂₄ h₂₄
   · exact edge_compat f e₃ e₄ S.f₃₄ T.f₃₄ h₃₄
 
+theorem comparison_inv_first :
+    (comparison f S T e₁ e₂ e₃ e₄ h₁₂ h₁₃ h₂₄ h₃₄).inv.τ₁ =
+      ((inverseImageIso f S.X₁) ≪≫ (free X).mapIso e₁).inv := by
+  change (vertexIso f S.X₁ T.X₁ e₁).inv ≫ 𝟙 _ = _
+  exact Category.comp_id _
+
+theorem comparison_inv_last :
+    (comparison f S T e₁ e₂ e₃ e₄ h₁₂ h₁₃ h₂₄ h₃₄).inv.τ₃ =
+      ((inverseImageIso f S.X₄) ≪≫ (free X).mapIso e₄).inv := by
+  change (vertexIso f S.X₄ T.X₄ e₄).inv ≫ 𝟙 _ = _
+  exact Category.comp_id _
+
 /-- The corresponding actual connecting map commutes with inverse image. -/
 theorem map_boundary (hS : (source S).ShortExact) (hT : (target T).ShortExact)
     (F : P Y) (n : ℕ) (x : Ext (source S).X₁ F n) :

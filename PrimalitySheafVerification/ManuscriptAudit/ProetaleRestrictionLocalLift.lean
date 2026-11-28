@@ -32,7 +32,7 @@ theorem covering_on_restriction {U : X.ProEt} {Z : Y.ProEt}
   let L := proetalePostcompose j
   let s' := G.obj.map p.op s
   let R : Sieve Z := Presheaf.imageSieve ((restriction j A.{v}).map α).hom s'
-  have hR : R ∈ Scheme.ProEt.topology Y Z := Presheaf.imageSieve_mem _ _
+  have hR : R ∈ Scheme.ProEt.topology Y Z := Presheaf.imageSieve_mem _ _ s'
   have hpush := (postcomposeCoverPreserving j).cover_preserve hR
   obtain ⟨ι, V, g, hg⟩ := Sieve.exists_eq_ofArrows R
   rw [hg, Sieve.functorPushforward_ofArrows] at hpush

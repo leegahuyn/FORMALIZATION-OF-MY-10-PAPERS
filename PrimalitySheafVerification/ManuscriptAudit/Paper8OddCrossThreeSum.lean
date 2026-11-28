@@ -46,7 +46,9 @@ theorem referenceZeroSum_eq_lifted_jacobi_sum {k : ℕ} [NeZero k] (hk : k % 2 =
   let M := 3 * k
   let f := @reduceLowDigit 3 k
   let E := exponentialPhase (((v * dedekindPhaseNumerator 1 k : ℤ) : ℂ) / 8)
-  have hM : M % 2 = 1 := by unfold M; simpa only [Nat.mul_mod, hk]
+  have hM : M % 2 = 1 := by
+    unfold M
+    rw [Nat.mul_mod, hk]
   let F (z : ZMod k) := Complex.exp ((Real.pi : ℂ) * Complex.I *
     ((dedekindSum (z.val : ℤ) k : ℝ) : ℂ))
   have hTerm (x : (ZMod M)ˣ) : F (f (x : ZMod M)) = E * (jacobiLiftWeight k x *
@@ -84,8 +86,8 @@ theorem referenceZeroSum_eq_lifted_jacobi_sum {k : ℕ} [NeZero k] (hk : k % 2 =
       push_cast
       rw [hX, hA]
     have hS := dedekind_odd_multiple_three_summand hh hk h3 hC u v a huv hInv
-    rw [hDed, hJ, hPh, mul_assoc] at hS
-    exact hS
+    rw [hDed, hJ, hPh] at hS
+    simpa only [F, E, z, f, jacobiLiftWeight, mul_assoc] using hS
   have hF : (∑ x : (ZMod M)ˣ, F (f (x : ZMod M))) = E * twistedSymmetricUnitSum (jacobiLiftWeight k) (u : ZMod M) := by
     unfold twistedSymmetricUnitSum
     rw [Finset.mul_sum]

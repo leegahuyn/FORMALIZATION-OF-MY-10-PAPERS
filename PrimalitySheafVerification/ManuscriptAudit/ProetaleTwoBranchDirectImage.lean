@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleDisjointPullbackSections
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Abelian
@@ -13,12 +14,11 @@ open OpenProetaleExtension (proetalePostcompose)
 open ProetaleContinuousDirectImageMaps (pullbackMap)
 
 noncomputable section
-universe v
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-private abbrev A := AddCommGrpCat.{v}
+private abbrev A := AddCommGrpCat.{1}
 
 variable {T Y : Scheme.{0}} (q : Y ⟶ T)
 variable {B : Bool → Scheme.{0}} (i : ∀ a, B a ⟶ Y)
@@ -38,22 +38,22 @@ private theorem leg_natural {V W : T.ProEt} (g : V ⟶ W) (a : Bool) :
   · simp only [pullbackMap, baseChange, MorphismProperty.Over.pullback_map_left,
       Category.assoc, pullback.lift_snd, pullback.lift_snd_assoc] <;> rfl
 
-private theorem restrict_restrict (F : Y.ProEtᵒᵖ ⥤ A.{v}) {U V W : Y.ProEt}
+private theorem restrict_restrict (F : Y.ProEtᵒᵖ ⥤ A) {U V W : Y.ProEt}
     (g : U ⟶ V) (h : V ⟶ W) (s : F.obj (op W)) :
     F.map g.op (F.map h.op s) = F.map (g ≫ h).op s := by
   rw [op_comp, F.map_comp, ConcreteCategory.comp_apply]
 
 private abbrev branchImage (a : Bool) :=
-  restriction (i a) A.{v} ⋙ directImage (i a ≫ q) A.{v}
+  restriction (i a) A ⋙ directImage (i a ≫ q) A
 
 include cover disjoint in
 set_option maxHeartbeats 2000000 in
 /-- If both actual branch images of a sheaf map are epimorphisms, then its full direct image is epi. -/
-theorem map_epi_of_branches {F G : Sheaf (Scheme.ProEt.topology Y) A.{v}} (α : F ⟶ G)
+theorem map_epi_of_branches {F G : Sheaf (Scheme.ProEt.topology Y) A} (α : F ⟶ G)
     (hBranch : ∀ a, Epi ((branchImage q i a).map α)) :
-    Epi ((directImage q A.{v}).map α) := by
+    Epi ((directImage q A).map α) := by
   classical
-  have hLocal : Sheaf.IsLocallySurjective ((directImage q A.{v}).map α) := by
+  have hLocal : Sheaf.IsLocallySurjective ((directImage q A).map α) := by
     constructor
     intro W s
     let β (a : Bool) := (branchImage q i a).map α
@@ -62,7 +62,7 @@ theorem map_epi_of_branches {F G : Sheaf (Scheme.ProEt.topology Y) A.{v}} (α : 
     have hR (a : Bool) : R a ∈ (Scheme.ProEt.topology T) W := by
       letI : Epi (β a) := hBranch a
       letI : Sheaf.IsLocallySurjective (β a) :=
-        (Sheaf.isLocallySurjective_iff_epi' A.{v} (β a)).mpr inferInstance
+        (Sheaf.isLocallySurjective_iff_epi' A (β a)).mpr inferInstance
       exact Presheaf.imageSieve_mem (Scheme.ProEt.topology T) (β a).hom (U := op W) (s' a)
     refine (Scheme.ProEt.topology T).superset_covering ?_
       ((Scheme.ProEt.topology T).intersection_covering (hR false) (hR true))

@@ -35,9 +35,9 @@ private theorem derivative_majorant {a C v t : ℝ} (ha : 0 < a) (hC : 0 ≤ C)
     ring
   calc
     _ = (C / a) * (Real.exp (-(2 * a) * t) * Real.exp (a * t)) := by
-      rw [div_eq_mul_inv, one_div]
+      simp only [div_eq_mul_inv, one_mul]
       ring
-    _ = _ := by rw [he]
+    _ ≤ _ := by rw [he]
 
 theorem differentiableOn_boundaryLaplace (B : ℝ → ℂ) (hB : Measurable B) {C : ℝ}
     (hBound : ∀ t > 0, ‖B t‖ ≤ C) :
@@ -83,9 +83,9 @@ theorem differentiableOn_boundaryLaplace (B : ℝ → ℂ) (hB : Measurable B) {
       (derivative_majorant ha hC hv ht')
   have hD : ∀ᵐ t ∂μ, ∀ v ∈ U, HasDerivAt (F · t) (F' v t) v := by
     refine Eventually.of_forall fun t v _ => ?_
-    have hL := (hasDerivAt_id v).neg.mul_const (t : ℂ)
+    have hL := (hasDerivAt_id' v).neg.mul_const (t : ℂ)
     have hExp := (Complex.hasDerivAt_exp (-v * (t : ℂ))).comp v hL
-    simpa only [F, F', Function.comp_def, id_eq, neg_one_mul] using hExp.const_mul (B t)
+    simpa only [F, F', Function.comp_def, Pi.neg_apply, id_eq, neg_one_mul] using hExp.const_mul (B t)
   have hDerivative := (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     hU (Eventually.of_forall hFm) hFi hF'm hBnd hMi hD).2
   exact hDerivative.differentiableAt.differentiableWithinAt

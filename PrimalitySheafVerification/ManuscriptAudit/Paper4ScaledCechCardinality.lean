@@ -83,7 +83,7 @@ def kernelEquiv (hm : 0 < m) (hn : 0 < n) :
 theorem card_cokernel (hm : 0 < m) (hn : 0 < n) :
     Nat.card (ZMod (L m n) ⧸ (difference m n).range) = 1 := by
   letI := paper4_lcmInclusionCokernel_subsingleton m n hm hn
-  let e : (ZMod (L m n) ⧸ (difference m n).range) ≃ PUnit :=
+  let e : (ZMod (L m n) ⧸ (difference m n).range) ≃ PUnit.{1} :=
     { toFun := fun _ ↦ PUnit.unit
       invFun := fun _ ↦ 0
       left_inv := fun _ ↦ Subsingleton.elim _ _

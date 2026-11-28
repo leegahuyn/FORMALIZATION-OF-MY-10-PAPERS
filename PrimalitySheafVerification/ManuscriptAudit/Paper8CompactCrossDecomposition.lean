@@ -33,7 +33,8 @@ def compactCrossDecomposition (T : H →L[ℂ] H)
   have hDense : (⨆ μ : Eigenvalues T.toLinearMap,
       eigenspace T.toLinearMap (μ : ℂ)).topologicalClosure = ⊤ :=
     Submodule.topologicalClosure_eq_top_iff.mpr hOrth
-  exact (IsHilbertSum.mkInternal hSymm.orthogonalFamily_eigenspaces' hDense.ge).linearIsometryEquiv
+  exact (IsHilbertSum.mkInternal (fun μ : Eigenvalues T.toLinearMap => eigenspace T.toLinearMap (μ : ℂ))
+    hSymm.orthogonalFamily_eigenspaces' hDense.ge).linearIsometryEquiv
 
 def compactCrossCoefficient (T : H →L[ℂ] H) (hT : IsCompactOperator T) (hSymm : T.IsSymmetric)
     (x y : H) (μ : Eigenvalues T.toLinearMap) : ℂ :=
@@ -43,7 +44,7 @@ theorem hasSum_compactCrossCoefficient (T : H →L[ℂ] H) (hT : IsCompactOperat
     (x y : H) :
     HasSum (compactCrossCoefficient T hT hSymm x y) ⟪x, y⟫_ℂ := by
   let e := compactCrossDecomposition T hT hSymm
-  have h := lp.hasSum_inner (e x) (e y)
+  have h := lp.hasSum_inner (𝕜 := ℂ) (e x) (e y)
   rw [e.inner_map_map] at h
   exact h
 

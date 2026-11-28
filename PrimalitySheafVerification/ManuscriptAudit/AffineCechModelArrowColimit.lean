@@ -27,6 +27,8 @@ def arrows : Under B ⥤ Arrow (Under A) where
   obj U := Arrow.mk ((Under.map k).map (left E U))
   map {U V} f := Arrow.homMk ((Under.map k).map f)
     ((Under.map k).map (coprod.map f (𝟙 E))) (by
+      change (Under.map k).map f ≫ (Under.map k).map (left E V) =
+        (Under.map k).map (left E U) ≫ (Under.map k).map (coprod.map f (𝟙 E))
       rw [← Functor.map_comp, ← Functor.map_comp]
       exact congrArg (Under.map k).map (coprod.inl_map f (𝟙 E)).symm)
   map_id U := by

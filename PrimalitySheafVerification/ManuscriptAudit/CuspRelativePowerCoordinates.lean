@@ -2,7 +2,6 @@ import Lean.Elab.Tactic.Omega
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.CuspDelta
 import PrimalitySheafVerification.ManuscriptAudit.CuspPunctured
-import PrimalitySheafVerification.ManuscriptAudit.LaurentUnitProductCoordinates
 
 /-! Relative power maps on the actual cusp coordinates and their
 Laurent overlap. The coefficient field is fixed. -/
@@ -10,7 +9,6 @@ Laurent overlap. The coefficient field is fixed. -/
 namespace ManuscriptAudit.CuspRelativePowerCoordinates
 
 open Polynomial LaurentPolynomial CuspPunctured
-open LaurentUnitProductCoordinates (unitCoordinates unitCoordinates_apply)
 
 noncomputable section
 
@@ -37,15 +35,18 @@ def cuspPower (m : ℕ) (hm : 2 ≤ m) : CuspSubalgebra K →ₐ[K] CuspSubalgeb
     exact (Polynomial.expand K m).commutes a
 
 private def exponentUnit : ℤ →+ Additive (LaurentPolynomial K)ˣ where
-  toFun n := unitCoordinates K (0, n)
-  map_zero' := (unitCoordinates K).map_zero
+  toFun n := Additive.ofMul (unitOfInvertible (LaurentPolynomial.T n : LaurentPolynomial K))
+  map_zero' := by
+    apply Additive.ext
+    apply Units.ext
+    exact LaurentPolynomial.T_zero
   map_add' n j := by
-    simpa only [Prod.mk_add_mk, zero_add] using
-      (unitCoordinates K).map_add (0, n) (0, j)
+    apply Additive.ext
+    apply Units.ext
+    exact LaurentPolynomial.T_add n j
 
 private theorem exponentUnit_coe (n : ℤ) :
-    ((exponentUnit K n).toMul : LaurentPolynomial K) = LaurentPolynomial.T n := by
-  simpa [exponentUnit] using unitCoordinates_apply K 0 n
+    ((exponentUnit K n).toMul : LaurentPolynomial K) = LaurentPolynomial.T n := rfl
 
 /-- Substitution of a power of the parameter in the actual Laurent ring. -/
 def laurentPower (m : ℕ) : LaurentPolynomial K →ₐ[K] LaurentPolynomial K where
@@ -58,7 +59,7 @@ def laurentPower (m : ℕ) : LaurentPolynomial K →ₐ[K] LaurentPolynomial K w
 theorem laurentPower_T (m : ℕ) (n : ℤ) :
     laurentPower K m (LaurentPolynomial.T n) = LaurentPolynomial.T (n * (m : ℤ)) := by
   have h := congrArg (fun z : Additive (LaurentPolynomial K)ˣ ↦
-    (z.toMul : LaurentPolynomial K)) ((exponentUnit K).map_zsmul (m : ℤ) n)
+    (z.toMul : LaurentPolynomial K)) ((exponentUnit K).map_zsmul n (m : ℤ))
   change (exponentUnit K (n • (m : ℤ))).toMul.val =
     (((exponentUnit K (m : ℤ)).toMul) ^ n).val at h
   calc
@@ -93,7 +94,7 @@ theorem inverseLaurent_commutes (m : ℕ) :
 absolute Frobenius on the polynomial normalization. -/
 theorem relative_absolute (p : ℕ) [Fact p.Prime] [CharP K p] (f : Polynomial K) :
     Polynomial.map (frobenius K p) (Polynomial.expand K p f) = f ^ p :=
-  Polynomial.map_frobenius_expand f
+  Polynomial.map_frobenius_expand (R := K) p f
 
 end
 end ManuscriptAudit.CuspRelativePowerCoordinates

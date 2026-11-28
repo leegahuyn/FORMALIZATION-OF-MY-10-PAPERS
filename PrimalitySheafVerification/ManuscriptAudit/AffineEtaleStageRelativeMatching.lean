@@ -38,7 +38,17 @@ variable {A B D M N : Type u}
 private abbrev R := CommRingCat.of B
 private abbrev Q := CommRingCat.mkUnder (R (B := B)) (B ⊗[A] N)
 
-set_option maxHeartbeats 3400000 in
+private abbrev RelativeWitness (v : M →ₐ[A] D) (p q : M →ₐ[A] N) : Prop :=
+  ∃ (T : Stage B D) (m : B ⊗[A] M →ₐ[B] T.carrier)
+    (r : B ⊗[A] N →ₐ[B] T.carrier ⊗[B] T.carrier),
+    T.toChart.comp m = extend (B := B) v ∧
+      r.comp (extendMap (B := B) p) =
+        (includeLeft : T.carrier →ₐ[B] T.carrier ⊗[B] T.carrier).comp m ∧
+      r.comp (extendMap (B := B) q) =
+        (includeRight : T.carrier →ₐ[B] T.carrier ⊗[B] T.carrier).comp m
+
+set_option linter.unusedSectionVars false in
+set_option maxHeartbeats 5800000 in
 /-- A matching section's two actual stage maps to the limiting
 tensor square can be represented with the same exact identities
 on one genuine relative affine étale stage. -/
@@ -46,11 +56,7 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
     (v : M →ₐ[A] D) (f : N →ₐ[A] D ⊗[B] D) (p q : M →ₐ[A] N)
     (hp : f.comp p = ((includeLeft : D →ₐ[B] D ⊗[B] D).restrictScalars A).comp v)
     (hq : f.comp q = ((includeRight : D →ₐ[B] D ⊗[B] D).restrictScalars A).comp v) :
-    ∃ (T : Stage B D) (m : B ⊗[A] M →ₐ[B] T.carrier)
-      (r : B ⊗[A] N →ₐ[B] T.carrier ⊗[B] T.carrier),
-      T.toChart.comp m = extend v ∧
-        r.comp (extendMap p) = (includeLeft : T.carrier →ₐ[B] _).comp m ∧
-        r.comp (extendMap q) = (includeRight : T.carrier →ₐ[B] _).comp m := by
+    RelativeWitness (B := B) v p q := by
   letI : EssentiallySmall.{u} (Stage B D) := NativeAffineEtaleStageSmall.essentiallySmall_stage
   let i : Stage B D := Stage.of B D (extend (B := B) v)
   let D₀ : Stage B D ⥤ Under (R (B := B)) := algebraDiagram

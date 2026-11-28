@@ -116,6 +116,8 @@ theorem hasSum_oddCrossHeightCutoff_row_fourier {D : ℕ} (A : CrossRow (D + 1))
   rw [← hTr]
   apply intervalIntegral.integral_congr
   intro x _
+  change oddCrossHeightCutoffFourierTerm q (pointAtHeight x hy) ⟨D, A, n⟩ =
+    a * K (x + (b + (n : ℝ)))
   rw [oddCrossHeightCutoffFourierTerm_kernel, pointAtHeight_re, pointAtHeight_im]
   change a * K ((n : ℝ) + x + b) = a * K (x + (b + (n : ℝ)))
   rw [show (n : ℝ) + x + b = x + (b + (n : ℝ)) by ring]

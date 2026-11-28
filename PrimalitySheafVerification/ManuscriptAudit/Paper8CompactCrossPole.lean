@@ -23,7 +23,8 @@ theorem compact_injective_cross_resolvent_has_pole {H : Type*}
   obtain ⟨μ, hCrossμ⟩ := exists_nonzero_compactCrossCoefficient T hT hSymm hCross
   have hμ : (μ : ℂ) ≠ 0 := by
     intro hZero
-    obtain ⟨v, hv, hv₀⟩ := μ.2.exists_hasEigenvector
+    have hE : HasEigenvalue T.toLinearMap (μ : ℂ) := μ.2
+    obtain ⟨v, hv, hv₀⟩ := hE.exists_hasEigenvector
     apply hv₀
     apply hInjective
     rw [map_zero, mem_eigenspace_iff.mp hv, hZero, zero_smul]

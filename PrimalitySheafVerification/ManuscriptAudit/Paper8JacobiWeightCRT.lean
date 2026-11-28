@@ -58,7 +58,7 @@ theorem jacobiUnitWeight_prime_power {p r : ℕ} [Fact p.Prime] (hd : p ∣ p ^ 
       _ = _ := map_natCast f _
   change (jacobiSym (((x : ZMod (p ^ r)).val : ℕ) : ℤ) (p ^ r) : ℂ) =
     primeQuadraticChar p (f (x : ZMod (p ^ r))) ^ r
-  rw [jacobiSym.pow_right, ← legendreSym.to_jacobiSym, Int.cast_pow, primeQuadraticChar_apply, legendreSym,
+  rw [jacobiSym.pow_right, ← jacobiSym.legendreSym.to_jacobiSym, Int.cast_pow, primeQuadraticChar_apply, legendreSym,
     Int.cast_natCast, hf]
 
 end

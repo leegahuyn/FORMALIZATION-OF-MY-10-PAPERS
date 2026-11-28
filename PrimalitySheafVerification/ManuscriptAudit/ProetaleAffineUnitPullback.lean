@@ -26,7 +26,7 @@ private abbrev A := AddCommGrpCat.{1}
 private abbrev M := AddCommGrpCat.of (ULift.{1} ℤ)
 private abbrev J (X : Scheme.{0}) := Scheme.ProEt.topology X
 
-private theorem terminal_restrict {X : Scheme.{0}} {T T' : X.ProEt}
+theorem terminal_restrict {X : Scheme.{0}} {T T' : X.ProEt}
     (hT : IsTerminal T) (hT' : IsTerminal T') (r : T' ⟶ T)
     (F : Sheaf (J X) A) (x : Sheaf.H F 0) :
     F.obj.map r.op (Sheaf.H.equiv₀ F hT x) = Sheaf.H.equiv₀ F hT' x := by

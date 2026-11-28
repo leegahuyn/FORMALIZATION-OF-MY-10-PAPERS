@@ -15,6 +15,8 @@ noncomputable section
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
+set_option maxRecDepth 3500
+set_option maxHeartbeats 900000
 
 variable {K : Type} [Field K] [IsAlgClosed K] (W : WeierstrassCurve.Affine K) [W.IsElliptic]
 
@@ -56,11 +58,12 @@ theorem genericPoint_factors_overlap :
 private theorem genericToPuncture_comm :
     Spec.map (CommRingCat.ofHom (punctureToField W)) ≫ punctureToNeighborhood W =
       genericToNeighborhood W := by
-  unfold punctureToNeighborhood genericToNeighborhood
-  rw [← Spec.map_comp]
-  congr 1
-  apply CommRingCat.hom_ext
-  exact RingHom.ext (punctureToField_base W)
+  let g := CommRingCat.ofHom (algebraMap (N W) (P W))
+  let f := CommRingCat.ofHom (punctureToField W)
+  let h := CommRingCat.ofHom (algebraMap (N W) (F W))
+  have hc : g ≫ f = h := CommRingCat.hom_ext (RingHom.ext (punctureToField_base W))
+  change Spec.map f ≫ Spec.map g = Spec.map h
+  rw [← Spec.map_comp, hc]
 
 /-- Under the literal affine overlap identification, the generic point
 is induced by its actual puncture ring map. -/

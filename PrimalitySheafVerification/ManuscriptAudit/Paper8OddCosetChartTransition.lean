@@ -61,8 +61,16 @@ theorem oddCosetChart_transform {F : ℂ → ℂ} (hF : OddMaassLaw F)
   simp only [negativePhase_mul] at hPhase
   have hRatio : (negativePhase a (g • z))⁻¹ * negativePhase (h : SL(2, ℤ)) (b • z) =
       negativePhase g z * (negativePhase b z)⁻¹ := by
-    field_simp [negativePhase_ne_zero a (g • z), negativePhase_ne_zero b z]
-    first | exact hPhase | exact hPhase.symm | linear_combination hPhase | linear_combination -hPhase
+    have ha := negativePhase_ne_zero a (g • z)
+    have hb := negativePhase_ne_zero b z
+    apply mul_right_cancel₀ hb
+    calc
+      _ = (negativePhase a (g • z))⁻¹ *
+          (negativePhase (h : SL(2, ℤ)) (b • z) * negativePhase b z) := by rw [mul_assoc]
+      _ = (negativePhase a (g • z))⁻¹ *
+          (negativePhase a (g • z) * negativePhase g z) := by rw [hPhase]
+      _ = negativePhase g z := by rw [← mul_assoc, inv_mul_cancel₀ ha, one_mul]
+      _ = _ := by rw [mul_assoc, inv_mul_cancel₀ hb, mul_one]
   change (negativePhase a (g • z))⁻¹ * F (a • (g • z) : ℍ) =
     (levelCharacter h : ℂ) * negativePhase g z * ((negativePhase b z)⁻¹ * F (b • z : ℍ))
   rw [hAct, hF h (b • z)]

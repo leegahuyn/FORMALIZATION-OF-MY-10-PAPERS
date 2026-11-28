@@ -38,16 +38,18 @@ theorem odd_cross_fourier_eq_zeta (s : ℂ) (hs : 1 < s.re) {y : ℝ} (hy : 0 < 
       integral_congr_ae (Eventually.of_forall (crossRealKernel_factor s hy hc'))
     change crossSum (Nat.succ_pos D) * (∫ u : ℝ, crossRealKernel s y c u) = _
     rw [hI, integral_const_mul, integral_add hL (crossRemainderKernel_integrable s hs' hy hc)]
-    unfold oddCrossRemainderTerm oddCrossZetaTerm L
-    fold c
+    change crossSum (Nat.succ_pos D) *
+        (crossModulusFactor s c * (L + ∫ u : ℝ, crossRemainderKernel s y c u)) =
+      (crossSum (Nat.succ_pos D) * crossModulusFactor s c) * L +
+        (crossSum (Nat.succ_pos D) * crossModulusFactor s c) *
+          (∫ u : ℝ, crossRemainderKernel s y c u)
     ring
   rw [odd_cross_fourier_expansion s hs hy, tsum_congr hTerm]
   have hZ : Summable (fun D : ℕ => oddCrossZetaTerm s D) :=
     (oddCrossZetaTerm_abs_summable s hs).of_norm
   have hR : Summable (fun D : ℕ => oddCrossRemainderTerm s y D) :=
     (oddCrossRemainderTerm_abs_summable s hs' hy).of_norm
-  rw [Summable.tsum_add (hZ.mul_right L) hR, tsum_mul_right]
-  rfl
+  rw [Summable.tsum_add (hZ.mul_right L) hR, tsum_mul_right] <;> rfl
 
 end
 end ManuscriptAudit.Paper8OddCrossZetaFourier

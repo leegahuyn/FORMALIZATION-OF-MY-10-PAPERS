@@ -126,8 +126,15 @@ theorem constant_cohomology (n : ℕ) (z : Sheaf.H (C (K := K) d Y) n) :
       (pullback f (kernel (power Y d)) n (Sheaf.H.map (constantKernelIso y d).hom n z)) =
     Sheaf.H.map (constantKernelIso x d).hom n
       (Sheaf.H.map ((constantInverseImageIso f).app (M (K := K) d)).hom n q)
-  rw [pullback_naturality, ← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply,
-    constantKernel_pullback d f x y h]
+  have hpb := pullback_naturality f (constantKernelIso y d).hom n z
+  refine (congrArg (fun a ↦ Sheaf.H.map (kernelPullback f d) n a) hpb).trans ?_
+  let g := (inverseImage f).map (constantKernelIso y d).hom
+  let a := kernelPullback f d
+  let b := ((constantInverseImageIso f).app (M (K := K) d)).hom
+  let j := (constantKernelIso x d).hom
+  exact (Sheaf.H.map_comp_apply (f := g) (n := n) a q).symm.trans
+    ((congrArg (fun t ↦ Sheaf.H.map t n q) (constantKernel_pullback d f x y h)).trans
+      (Sheaf.H.map_comp_apply (f := b) (n := n) j q))
 
 end
 end ManuscriptAudit.ProetaleKummerSchemeConstant

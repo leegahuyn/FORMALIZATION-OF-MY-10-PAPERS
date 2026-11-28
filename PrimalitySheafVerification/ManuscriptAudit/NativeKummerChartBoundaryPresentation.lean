@@ -93,7 +93,7 @@ theorem boundary_ker :
     simpa only [map_nsmul, AddEquiv.apply_symm_apply] using h
   · rintro ⟨w, hw'⟩
     refine ⟨e.symm w, ?_⟩
-    exact (hw _).trans ((map_nsmul e.symm w d).symm.trans (congrArg e.symm hw'))
+    exact (hw _).trans ((map_nsmul e.symm d w).symm.trans (congrArg e.symm hw'))
 
 variable {T : Type} [CommRing T] (r : CommRingCat.of R ⟶ CommRingCat.of T)
   [IsOpenImmersion (Spec.map r)]
@@ -128,9 +128,7 @@ theorem boundary_natural :
   rw [AddEquiv.apply_symm_apply]
   have h := specUnits_naturality r ((𝟙 (Spec (CommRingCat.of R))) ≫ j) (e.symm u)
   have h' : e' ((S X d).X₃.obj.map a.op (e.symm u)) = (ringUnits.map r) (e (e.symm u)) := by
-    first
-    | exact h
-    | simpa only [e, e', coordinateUnits, chartArrow, Category.id_comp] using h
+    exact h
   simpa only [AddEquiv.apply_symm_apply] using h'.symm
 
 end

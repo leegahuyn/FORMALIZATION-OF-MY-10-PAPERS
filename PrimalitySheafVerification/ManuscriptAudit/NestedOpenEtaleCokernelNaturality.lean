@@ -73,7 +73,9 @@ theorem cokernelSections_nested (x : (cokernel m).obj.obj (op (Scheme.Etale.mk j
   have hComp := congrArg (fun f : (R i).obj ((R j).obj (cokernel m)) ⟶
       cokernel ((R (i ≫ j)).map m) => f.hom.app t w)
     (cokernelComparisons_compose (R j) (R i) (R (i ≫ j)) (e i j) m)
-  simp only [Sheaf.comp_hom, NatTrans.comp_app, ConcreteCategory.comp_apply] at hComp
+  change k.hom.hom.app t
+      (q'.hom.hom.app t (((R i).map q.hom).hom.app t w)) =
+    q''.hom.hom.app t (((e i j).hom.app (cokernel m)).hom.app t w) at hComp
   change k.hom.hom.app t
       (q'.hom.hom.app t (restrictGlobal i _ (q.hom.hom.app (op (T U)) v))) =
     q''.hom.hom.app t (sectionEquiv (i ≫ j) (cokernel m)

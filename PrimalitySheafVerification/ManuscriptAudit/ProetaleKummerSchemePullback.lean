@@ -33,10 +33,12 @@ private def chartProjection : baseChange f ⋙ underlying X ⟶ underlying Y whe
       pullback.fst U.hom f ≫ g.left
     simp only [baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_fst]
 
+set_option maxHeartbeats 3800000 in
 /-- Maps of actual coordinate units via the projection from each base-changed chart. -/
-def unitsToDirectImage : unitSheaf Y ⟶ (directImage f A).obj (unitSheaf X) :=
-  ⟨Functor.whiskerRight (chartProjection f).op
-    (Scheme.Γ ⋙ ringUnits ⋙ AddCommGrpCat.uliftFunctor.{1})⟩
+def unitsToDirectImage : unitSheaf Y ⟶ (directImage f A).obj (unitSheaf X) := by
+  let χ := Functor.whiskerRight (chartProjection f).op
+    (Scheme.Γ ⋙ ringUnits ⋙ AddCommGrpCat.uliftFunctor.{1})
+  exact ⟨χ⟩
 
 /-- The native units inverse-image map is induced by pullback of ordinary units. -/
 def unitsPullback : (inverseImage f).obj (unitSheaf Y) ⟶ unitSheaf X :=
@@ -44,7 +46,9 @@ def unitsPullback : (inverseImage f).obj (unitSheaf Y) ⟶ unitSheaf X :=
 
 private theorem power_commutes (d : ℕ) :
     unitsPullback f ≫ power X d = (inverseImage f).map (power Y d) ≫ unitsPullback f := by
-  simp only [power, Functor.map_nsmul, Functor.map_id, Preadditive.comp_nsmul,
+  have hid : (inverseImage f).map (𝟙 (unitSheaf Y)) = 𝟙 ((inverseImage f).obj (unitSheaf Y)) :=
+    Functor.map_id (inverseImage f) (unitSheaf Y)
+  simp only [power, Functor.map_nsmul, hid, Preadditive.comp_nsmul,
     Preadditive.nsmul_comp, Category.id_comp, Category.comp_id]
 
 /-- The natural inverse-image map on the actual kernel of the power map. -/

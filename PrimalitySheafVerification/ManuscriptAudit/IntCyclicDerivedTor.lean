@@ -65,15 +65,15 @@ def torOneEquivKernel (A : C) (n : ℕ) (hn : n ≠ 0) :
       rw [hAct, e.apply_symm_apply, map_zero]
       exact hy
   let iKer := e.ofSubmodules (LinearMap.ker S.g.hom) (LinearMap.ker D) hKer
-  let iCycles : S.cycles ≅ ModuleCat.of ℤ (LinearMap.ker S.g.hom) :=
-    S.moduleCatCyclesIso
+  let iCycles := S.moduleCatCyclesIso
+  let iKernel := iKer.toModuleIso
   let iDerived : (T.leftDerived 1).obj (residues n) ≅ K.homology 1 :=
     (resolution n hn).isoLeftDerivedObj T 1
   let iShort : K.homology 1 ≅ S.homology :=
     K.homologyIsoSc' 2 1 0 (by simp) (by simp)
   letI : IsIso S.homologyπ := S.isIso_homologyπ hf
   change (T.leftDerived 1).obj (residues n) ≅ ModuleCat.of ℤ (LinearMap.ker D)
-  exact iDerived ≪≫ iShort ≪≫ (asIso S.homologyπ).symm ≪≫ iCycles ≪≫ iKer.toModuleIso
+  exact iDerived ≪≫ iShort ≪≫ (asIso S.homologyπ).symm ≪≫ iCycles ≪≫ iKernel
 
 end
 end ManuscriptAudit.IntCyclicDerivedTor

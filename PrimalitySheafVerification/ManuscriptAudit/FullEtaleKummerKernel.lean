@@ -85,7 +85,7 @@ private theorem degreeZero_power_surjective : Function.Surjective (Sheaf.H.map (
   refine ⟨e.symm (Additive.ofMul a), e.injective ?_⟩
   rw [cohomologyPower, map_nsmul, e.apply_symm_apply]
   change Additive.ofMul (a ^ d) = e u
-  rw [ha, ofMul_toMul]
+  exact congrArg Additive.ofMul (show a ^ d = (e u).toMul from ha)
 
 include k hpos hdK in
 private theorem inclusion_exact :
@@ -148,7 +148,8 @@ theorem kernelHOneEquiv_step (x : Sheaf.H (S X (d * m)).X₁ 1) :
   apply Subtype.ext
   change Sheaf.H.map (S X d).f 1 (Sheaf.H.map (rootsStep X d m) 1 x) =
     m • Sheaf.H.map (S X (d * m)).f 1 x
-  rw [← Sheaf.H.map_comp_apply, rootsStep_inclusion, Sheaf.H.map_comp_apply, cohomologyPower]
+  rw [← Sheaf.H.map_comp_apply, rootsStep_inclusion, Sheaf.H.map_comp_apply]
+  exact cohomologyPower X m 1 (Sheaf.H.map (S X (d * m)).f 1 x)
 
 end
 

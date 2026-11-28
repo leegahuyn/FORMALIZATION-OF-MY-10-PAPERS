@@ -27,8 +27,16 @@ theorem constant_natural (n : ℕ) (x : Sheaf.H ((C Y).obj M) n) :
   change Sheaf.H.map (e.app N).hom n (pullback f ((C Y).obj N) n
       (Sheaf.H.map ((C Y).map b) n x)) =
     Sheaf.H.map ((C X).map b) n (Sheaf.H.map (e.app M).hom n q)
-  rw [pullback_naturality, ← Sheaf.H.map_comp_apply, ← Sheaf.H.map_comp_apply]
-  exact congrArg (fun t ↦ Sheaf.H.map t n q) (e.hom.naturality b)
+  have hpb := pullback_naturality f ((C Y).map b) n x
+  refine (congrArg (fun c ↦ Sheaf.H.map (e.app N).hom n c) hpb).trans ?_
+  let g₁ := (inverseImage f).map ((C Y).map b)
+  let g₂ := (C X).map b
+  let e₁ := (e.app M).hom
+  let e₂ := (e.app N).hom
+  have h : g₁ ≫ e₂ = e₁ ≫ g₂ := e.hom.naturality b
+  exact (Sheaf.H.map_comp_apply (f := g₁) (n := n) e₂ q).symm.trans
+    ((congrArg (fun t ↦ Sheaf.H.map t n q) h).trans
+      (Sheaf.H.map_comp_apply (f := e₁) (n := n) g₂ q))
 
 end
 end ManuscriptAudit.ProetaleSchemeConstantNaturality

@@ -32,7 +32,7 @@ theorem restrictUnits_comp :
     (restrictionCompIso i j).inv.app (G X) ≫ (R i).map (u j) ≫ u i = u (i ≫ j) := by
   apply (sheafToPresheaf V.smallEtaleTopology A).map_injective
   apply NatTrans.ext
-  intro T
+  funext T
   let e : etalePostcompose (i ≫ j) ≅ etalePostcompose i ⋙ etalePostcompose j :=
     MorphismProperty.Over.mapComp (P := @AlgebraicGeometry.Etale) ⊤
       (show Etale i from inferInstance) (show Etale j from inferInstance)

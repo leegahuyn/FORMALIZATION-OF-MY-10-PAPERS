@@ -46,14 +46,14 @@ theorem coordinateEquiv_XClass (x : K) :
       CoordinateRing.XClass (W.map e.toRingHom) (e x) := by
   change CoordinateRing.map W e.toRingHom (CoordinateRing.XClass W x) = _
   simp only [CoordinateRing.XClass, CoordinateRing.map_mk, Polynomial.map_C,
-    Polynomial.coe_mapRingHom, Polynomial.map_sub, Polynomial.map_X]
+    Polynomial.coe_mapRingHom, Polynomial.map_sub, Polynomial.map_X] <;> rfl
 
 theorem coordinateEquiv_YClass (y : K) :
     coordinateEquiv W e (CoordinateRing.YClass W (C y)) =
       CoordinateRing.YClass (W.map e.toRingHom) (C (e y)) := by
   change CoordinateRing.map W e.toRingHom (CoordinateRing.YClass W (C y)) = _
   simp only [CoordinateRing.YClass, CoordinateRing.map_mk, Polynomial.map_sub,
-    Polynomial.map_X, Polynomial.map_C, Polynomial.coe_mapRingHom]
+    Polynomial.map_X, Polynomial.map_C, Polynomial.coe_mapRingHom] <;> rfl
 
 /-- The semilinear ring map sends the actual \((X-x,Y-y)\) ideal to the
 actual ideal of the corresponding semilinearly transported point. -/

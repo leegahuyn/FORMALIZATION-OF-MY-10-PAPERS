@@ -19,7 +19,9 @@ private theorem finite_of_separated_map_into_compact {I : Type*} (K : Set H) (hK
   classical
   obtain ⟨s, hs, hCover⟩ := Metric.totallyBounded_iff.1 hK.totallyBounded (ε / 3) (by positivity)
   have hHit (i : I) : ∃ y ∈ s, dist (f i) y < ε / 3 := by
-    simpa only [Set.mem_iUnion, Metric.mem_ball] using hCover (hf i)
+    obtain ⟨y, hy⟩ := Set.mem_iUnion.mp (hCover (hf i))
+    obtain ⟨hyS, hBall⟩ := Set.mem_iUnion.mp hy
+    exact ⟨y, hyS, Metric.mem_ball.mp hBall⟩
   choose y hy hyⱼ using hHit
   haveI : Finite s := hs
   refine Finite.of_injective (fun i : I => (⟨y i, hy i⟩ : s)) ?_
@@ -32,7 +34,8 @@ private theorem finite_of_separated_map_into_compact {I : Type*} (K : Set H) (hK
 
 private theorem exists_unit_eigenvector (T : H →L[ℂ] H) (μ : Eigenvalues T.toLinearMap) :
     ∃ v : H, v ∈ eigenspace T.toLinearMap (μ : ℂ) ∧ ‖v‖ = 1 := by
-  obtain ⟨v, hv, hV⟩ := μ.2.exists_hasEigenvector
+  have hμ : HasEigenvalue T.toLinearMap (μ : ℂ) := μ.2
+  obtain ⟨v, hv, hV⟩ := hμ.exists_hasEigenvector
   let w := (((‖v‖⁻¹ : ℝ) : ℂ) • v)
   refine ⟨w, Submodule.smul_mem _ _ hv, ?_⟩
   unfold w
@@ -61,7 +64,7 @@ theorem finite_compact_eigenvalues_outside_ball (T : H →L[ℂ] H)
     have hNe : (i.1 : ℂ) ≠ j.1 := fun h => hij (Subtype.ext (Subtype.ext h))
     have hS' : T.toLinearMap.IsSymmetric := hS
     have hOrtho : ⟪T (v i), T (v j)⟫_ℂ = 0 :=
-      hS'.orthogonalFamily_eigenspaces (i.1 : ℂ) (j.1 : ℂ) hNe ⟨_, hTVec i⟩ ⟨_, hTVec j⟩
+      hS'.orthogonalFamily_eigenspaces hNe ⟨_, hTVec i⟩ ⟨_, hTVec j⟩
     have hEq : ‖T (v i) - T (v j)‖ ^ 2 = ‖T (v i)‖ ^ 2 + ‖T (v j)‖ ^ 2 := by
       rw [norm_sub_sq (𝕜 := ℂ), hOrtho] <;> norm_num
     have hLe : ε ≤ ‖T (v i)‖ := by rw [hTNorm]; exact i.2
@@ -80,7 +83,8 @@ theorem compact_eigenvalue_isolated (T : H →L[ℂ] H) (hT : IsCompactOperator 
   let A : Set (Eigenvalues T.toLinearMap) := {ν | ε ≤ ‖(ν : ℂ)‖}
   have hf : A.Finite := finite_compact_eigenvalues_outside_ball T hT hS hε
   let B : Set ℂ := Subtype.val '' (A \ {μ})
-  have hB : B.Finite := (hf.diff {μ}).image Subtype.val
+  have hDiff : (A \ {μ}).Finite := hf.diff
+  have hB : B.Finite := hDiff.image Subtype.val
   have hNot : (μ : ℂ) ∈ Bᶜ := by
     rintro ⟨ν, hν, hEq⟩
     exact hν.2 (Set.mem_singleton_iff.mpr (Subtype.ext hEq))
@@ -93,7 +97,7 @@ theorem compact_eigenvalue_isolated (T : H →L[ℂ] H) (hT : IsCompactOperator 
       intro hLt
       have hBallMem : (ν : ℂ) ∈ Metric.ball (μ : ℂ) d := by
         simpa only [Metric.mem_ball, dist_eq_norm] using hLt
-      exact (hBall hBallMem) ⟨ν, ⟨hv, by simpa only [Set.mem_singleton_iff] using hNe⟩, rfl⟩
+      exact (hBall hBallMem) ⟨ν, ⟨hv, fun hm => hNe (Set.mem_singleton_iff.mp hm)⟩, rfl⟩
     exact (min_le_left _ _).trans hOutside
   · have hTri : ‖(μ : ℂ)‖ ≤ ‖(ν : ℂ)‖ + ‖(ν : ℂ) - (μ : ℂ)‖ := by
       have h := norm_sub_le (ν : ℂ) ((ν : ℂ) - (μ : ℂ))

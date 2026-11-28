@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.AlgebraicGeometry.PullbackCarrier
@@ -68,10 +69,10 @@ theorem locallySurjective_of_restriction
     exact (Scheme.ProEt.topology X).pullback_stable g hp
 
 include hj in
-theorem epi_of_restriction_epi {F G : C.{u,v} X} (α : F ⟶ G)
-    [Epi ((restriction j A.{v}).map α)] : Epi α := by
-  letI : Sheaf.IsLocallySurjective ((restriction j A.{v}).map α) :=
-    (Sheaf.isLocallySurjective_iff_epi' A.{v} _).mpr inferInstance
+theorem epi_of_restriction_epi {F G : C.{u,u+1} X} (α : F ⟶ G)
+    [Epi ((restriction j A.{u+1}).map α)] : Epi α := by
+  letI : Sheaf.IsLocallySurjective ((restriction j A.{u+1}).map α) :=
+    (Sheaf.isLocallySurjective_iff_epi' A.{u+1} _).mpr inferInstance
   letI := locallySurjective_of_restriction j hj α
   exact Sheaf.epi_of_isLocallySurjective α
 

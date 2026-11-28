@@ -14,15 +14,15 @@ noncomputable section
 theorem exists_simple_cross_resolvent_pole {H I Λ : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] (b : HilbertBasis I ℂ H)
     (label : I → Λ) (w : Λ → ℂ)
-    (hIso : ∀ λ : Λ, ∃ r > (0 : ℝ), ∀ μ, μ ≠ λ → r ≤ ‖w μ - w λ‖)
+    (hIso : ∀ γ : Λ, ∃ r > (0 : ℝ), ∀ μ, μ ≠ γ → r ≤ ‖w μ - w γ‖)
     {x y : H} (hxy : ⟪x, y⟫_ℂ ≠ 0) :
-    ∃ λ : Λ,
-      MeromorphicAt (cauchySpectralSeries w (crossSpectralBlock b label x y)) (w λ) ∧
-      meromorphicOrderAt (cauchySpectralSeries w (crossSpectralBlock b label x y)) (w λ) = (-1 : ℤ) := by
-  obtain ⟨λ, hλ⟩ := exists_nonzero_crossSpectralBlock b label hxy
-  obtain ⟨r, hr, hs⟩ := hIso λ
-  exact ⟨λ, cauchySpectralSeries_simple_pole w _ (summable_norm_crossSpectralBlock b label x y)
-    λ hλ hr hs⟩
+    ∃ γ : Λ,
+      MeromorphicAt (cauchySpectralSeries w (crossSpectralBlock b label x y)) (w γ) ∧
+      meromorphicOrderAt (cauchySpectralSeries w (crossSpectralBlock b label x y)) (w γ) = (-1 : ℤ) := by
+  obtain ⟨γ, hγ⟩ := exists_nonzero_crossSpectralBlock b label hxy
+  obtain ⟨r, hr, hs⟩ := hIso γ
+  exact ⟨γ, cauchySpectralSeries_simple_pole w _ (summable_norm_crossSpectralBlock b label x y)
+    γ hγ hr hs⟩
 
 end
 end ManuscriptAudit.Paper8SpectralCrossPole

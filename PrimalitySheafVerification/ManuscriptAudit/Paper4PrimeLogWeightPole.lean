@@ -39,7 +39,8 @@ private theorem nonprime_le_one {s : ℝ} (hs : 1 ≤ s) (n : ℕ) :
     split_ifs <;> simp [residueClass_nonneg]
 
 private theorem nonprime_summable_one : Summable (nonprimeWeight a 1) := by
-  simpa only [nonprimeWeight, Real.rpow_one] using summable_residueClass_non_primes_div a
+  change Summable (fun n : ℕ ↦ (if n.Prime then 0 else residueClass a n) / (n : ℝ) ^ (1 : ℝ))
+  simpa only [Real.rpow_one] using summable_residueClass_non_primes_div a
 
 private theorem nonprime_summable {s : ℝ} (hs : 1 ≤ s) : Summable (nonprimeWeight a s) :=
   (nonprime_summable_one a).of_nonneg_of_le (nonprime_nonneg a s) (nonprime_le_one a hs)

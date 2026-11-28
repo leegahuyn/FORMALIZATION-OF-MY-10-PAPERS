@@ -51,7 +51,7 @@ theorem ordered_cross_cutoff_forces_zero_abel_residue {L : ℂ}
     exact (Complex.continuous_exp.comp (continuous_const.mul (hw.add continuous_const).neg)).mul hw
   have hNorm : Tendsto (fun ε : ℝ => (2 : ℂ) ^ (-(w ε + 1)) * w ε) (𝓝[>] 0)
       (𝓝 ((2 : ℂ) ^ (-(w 0 + 1)) * w 0)) := hF.continuousAt.tendsto.mono_left nhdsWithin_le_nhds
-  simpa only [crossAbelShiftedZeta, w, mul_zero, mul_assoc, mul_left_comm, mul_comm] using hNorm.mul hT
+  simpa only [crossAbelShiftedZeta, w, mul_zero, zero_mul, mul_assoc, mul_left_comm, mul_comm] using hNorm.mul hT
 
 theorem no_ordered_cross_cutoff_limit_of_nonzero_abel_residue {τ : ℝ} (hτ : τ ≠ 0)
     {r : ℂ} (hr : r ≠ 0)

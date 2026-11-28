@@ -14,6 +14,7 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable (b : Basis (Fin 2) K V) (e : V ≃ₗ[K] V) (q : K)
 variable (hd : LinearMap.det e.toLinearMap = q) (hq : q ≠ 0)
 
+include b hd hq in
 /-- The determinant-scaled inverse in dimension two has the original
 trace and determinant. -/
 theorem trace_det :

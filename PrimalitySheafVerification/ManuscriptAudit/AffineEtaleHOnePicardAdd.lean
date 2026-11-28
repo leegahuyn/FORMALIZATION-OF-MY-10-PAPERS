@@ -16,6 +16,9 @@ open FaithfullyFlatCocycleProduct TwistedTensorEqualizer
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 attribute [local instance] doubleEtale tripleEtale KummerCohomologySequence.affineSiteHasExt
 
 variable (R : Type) [CommRing R]
@@ -36,6 +39,7 @@ variable (hy : (cokernel.π ι).hom.app (op (ofAlgebra R B)) y =
 variable (hy' : (cokernel.π ι).hom.app (op (ofAlgebra R B)) y' =
   (cokernel ι).obj.map (coverArrow R B).op x')
 
+include hy hy' in
 private theorem lift_add :
     (cokernel.π ι).hom.app (op (ofAlgebra R B)) (y + y') =
       (cokernel ι).obj.map (coverArrow R B).op (x + x') := by
@@ -48,9 +52,10 @@ private theorem transition_add :
     transition R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy') =
       transition R B ι x y hy * transition R B ι x' y' hy' := by
   let D := ofAlgebra R (B ⊗[R] B)
-  let a := Additive.ofMul (transition R B ι x y hy)
-  let b := Additive.ofMul (transition R B ι x' y' hy')
-  let c := Additive.ofMul (transition R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy'))
+  let a : (G R).obj.obj (op D) := Additive.ofMul (transition R B ι x y hy)
+  let b : (G R).obj.obj (op D) := Additive.ofMul (transition R B ι x' y' hy')
+  let c : (G R).obj.obj (op D) :=
+    Additive.ofMul (transition R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy'))
   let f := I.obj.map (firstProjection R B).op
   let g := I.obj.map (secondProjection R B).op
   have ha : ι.hom.app (op D) a = f y - g y := transition_image R B ι x y hy
@@ -59,14 +64,15 @@ private theorem transition_add :
     transition_image R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy')
   have he : c = a + b := by
     apply section_injective ι D
-    change (ι.hom.app (op D)).hom c = (ι.hom.app (op D)).hom (a + b)
-    rw [map_add]
-    change ι.hom.app (op D) c = ι.hom.app (op D) a + ι.hom.app (op D) b
-    rw [ha, hb, hc]
-    change f.hom (y + y') - g.hom (y + y') = _
-    rw [map_add, map_add]
-    abel
-  exact congrArg Additive.toMul he
+    calc
+      ι.hom.app (op D) c = f (y + y') - g (y + y') := hc
+      _ = (f y - g y) + (f y' - g y') := by
+        change f.hom (y + y') - g.hom (y + y') = _
+        rw [f.hom.map_add, g.hom.map_add]
+        abel
+      _ = ι.hom.app (op D) a + ι.hom.app (op D) b := congrArg₂ (· + ·) ha.symm hb.symm
+      _ = ι.hom.app (op D) (a + b) := ((ι.hom.app (op D)).hom.map_add a b).symm
+  exact congrArg (fun z : Additive (Double R B)ˣ => z.toMul) he
 
 variable [Module.FaithfullyFlat R B]
 

@@ -24,7 +24,7 @@ private abbrev liftedContinuous :=
   (sheafCompose (J X) AddCommGrpCat.uliftFunctor.{1}).obj (continuousCoefficients X M)
 private abbrev coefficient := AddCommGrpCat.of (ULift.{1} M)
 
-private def constantToContinuous :
+def constantToContinuous :
     (Functor.const X.ProEtᵒᵖ).obj (coefficient M) ⟶ (liftedContinuous X M).obj where
   app U := AddCommGrpCat.ofHom
     { toFun := fun a ↦ ⟨ContinuousMap.const U.unop.left a.down⟩
@@ -89,7 +89,7 @@ def constantIso :
   exact asIso (P.map (constantToContinuous X M)) ≪≫
     (sheafificationIso (liftedContinuous X M)).symm
 
-private theorem constantIso_unit :
+theorem constantIso_unit :
     toSheafify (J X) ((Functor.const X.ProEtᵒᵖ).obj (coefficient M)) ≫
       (constantIso X M).hom.hom = constantToContinuous X M := by
   let Q := liftedContinuous X M

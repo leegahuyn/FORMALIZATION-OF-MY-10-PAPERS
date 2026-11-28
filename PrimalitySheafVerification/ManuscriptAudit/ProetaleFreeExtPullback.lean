@@ -106,7 +106,7 @@ theorem map_boundary {S : ShortComplex (P Y)} {T : ShortComplex (P X)}
   change (p.comp (v.comp hL.extClass rfl) (zero_add (n + 1))).comp
     (Ext.mk₀ a.τ₁) (add_zero (n + 1)) = _
   simp only [Ext.comp_assoc_of_third_deg_zero]
-  rw [w, Ext.comp_assoc, Ext.comp_assoc_of_second_deg_zero]
+  rw [w, Ext.comp_assoc, Ext.comp_assoc_of_second_deg_zero] <;> simp
 
 end
 end ManuscriptAudit.ProetaleFreeExtPullback

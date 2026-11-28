@@ -64,12 +64,15 @@ theorem exists_glue (hApprox : FiniteTupleApproximation A B) (d : B →ₐ[A] D)
   letI : Algebra Q E := hEA
   letI : Algebra.Etale Q E := hEE
   let T := Stage.of A B q
+  letI : Algebra T.carrier E := hEA
+  letI : Algebra.Etale T.carrier E := hEE
   let j := baseIso T
   let i := coverIso T E e
   let U := baseLimit T
   let V := fixedRing T E
   let K := Under.map (baseArrow T)
-  let f := (IsScalarTower.toAlgHom A B F).toUnder
+  let f : CommRingCat.mkUnder (CommRingCat.of A) B ⟶
+      CommRingCat.mkUnder (CommRingCat.of A) F := (IsScalarTower.toAlgHom A B F).toUnder
   let f₀ := K.map (left U V)
   let p₀ := K.map (overlapLeft U V)
   let q₀ := K.map (overlapRight U V)

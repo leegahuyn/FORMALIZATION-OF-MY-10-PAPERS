@@ -71,6 +71,7 @@ def isoComplex : Cech f I.obj ≅ Cech (L.map f) (P I) := by
         (Functor.isoWhiskerRight (isoRightOp e) (P I))))
   exact (alternatingCofaceMapComplex G.{u}).mapIso j
 
+include hAff hRaw in
 /-- Exactness is carried from the actual étale Čech complex to the
 actual inverse image on any arrow between these affine étale charts. -/
 theorem exactAt_of_exactAt (n : ℕ) (h : (Cech f I.obj).ExactAt n) :

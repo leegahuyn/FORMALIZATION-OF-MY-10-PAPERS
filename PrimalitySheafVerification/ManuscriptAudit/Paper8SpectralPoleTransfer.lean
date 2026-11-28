@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.Meromorphic.Order
+import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Real.Sqrt
 
@@ -69,13 +70,13 @@ theorem spectral_pole_preserved_by_analytic_factor_and_remainder {F A B : ℂ �
   rw [hEq]
   exact hPole.trans_le hB.meromorphicOrderAt_nonneg
 
-theorem exists_shiftedMaassEnergy_of_real_above_eta_threshold {λ : ℝ} (hλ : (3 / 16 : ℝ) < λ) :
-    ∃ w : ℂ, shiftedMaassEnergy w = (λ : ℂ) ∧ 0 ≤ w.re ∧ w.re < 1 / 2 := by
-  by_cases h : λ ≤ 1 / 4
-  · have hArg : 0 ≤ 1 - 4 * λ := by linarith
-    let r := Real.sqrt (1 - 4 * λ)
+theorem exists_shiftedMaassEnergy_of_real_above_eta_threshold {energy : ℝ} (hEnergy : (3 / 16 : ℝ) < energy) :
+    ∃ w : ℂ, shiftedMaassEnergy w = (energy : ℂ) ∧ 0 ≤ w.re ∧ w.re < 1 / 2 := by
+  by_cases h : energy ≤ 1 / 4
+  · have hArg : 0 ≤ 1 - 4 * energy := by linarith
+    let r := Real.sqrt (1 - 4 * energy)
     have hr : 0 ≤ r := Real.sqrt_nonneg _
-    have hSq : r ^ 2 = 1 - 4 * λ := Real.sq_sqrt hArg
+    have hSq : r ^ 2 = 1 - 4 * energy := Real.sq_sqrt hArg
     refine ⟨(r : ℂ), ?_, ?_, ?_⟩
     · unfold shiftedMaassEnergy
       rw [← Complex.ofReal_pow, hSq]
@@ -84,9 +85,9 @@ theorem exists_shiftedMaassEnergy_of_real_above_eta_threshold {λ : ℝ} (hλ : 
     · rw [Complex.ofReal_re]
       have hS : r ^ 2 < (1 / 2 : ℝ) ^ 2 := by rw [hSq]; linarith
       simpa only [abs_of_nonneg hr, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 2)] using sq_lt_sq.mp hS
-  · have hArg : 0 ≤ 4 * λ - 1 := by linarith [lt_of_not_ge h]
-    let r := Real.sqrt (4 * λ - 1)
-    have hSq : r ^ 2 = 4 * λ - 1 := Real.sq_sqrt hArg
+  · have hArg : 0 ≤ 4 * energy - 1 := by linarith [lt_of_not_ge h]
+    let r := Real.sqrt (4 * energy - 1)
+    have hSq : r ^ 2 = 4 * energy - 1 := Real.sq_sqrt hArg
     refine ⟨(r : ℂ) * Complex.I, ?_, ?_, ?_⟩
     · unfold shiftedMaassEnergy
       rw [mul_pow, Complex.I_sq, ← Complex.ofReal_pow, hSq]

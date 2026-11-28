@@ -31,7 +31,7 @@ theorem fd_height_ge_coreMinimum {z : ℍ} (hz : z ∈ ModularGroup.fd) :
   have hx : z.re ^ 2 ≤ (1 / 2 : ℝ) ^ 2 :=
     sq_le_sq.mpr (by simpa using hz.2)
   have hn : Complex.normSq (z : ℂ) = z.re ^ 2 + z.im ^ 2 := by
-    rw [Complex.normSq_apply, pow_two, pow_two]
+    rw [Complex.normSq_apply, UpperHalfPlane.coe_re, UpperHalfPlane.coe_im, pow_two, pow_two]
   have hy : coreMinimumHeight ^ 2 ≤ z.im ^ 2 := by
     rw [coreMinimumHeight_sq]
     nlinarith [hz.1, hn]
@@ -54,12 +54,12 @@ private theorem modular_S_normSq (z : ℍ) : Complex.normSq (ModularGroup.S • 
 private theorem modular_S_real (z : ℍ) :
     (ModularGroup.S • z).re = -z.re / Complex.normSq (z : ℂ) := by
   change ((ModularGroup.S • z : ℍ) : ℂ).re = _
-  rw [modular_S_coe, Complex.neg_re, Complex.inv_re, neg_div]
+  rw [modular_S_coe, Complex.neg_re, Complex.inv_re, UpperHalfPlane.coe_re, neg_div]
 
 private theorem modular_S_imag (z : ℍ) :
     (ModularGroup.S • z).im = z.im / Complex.normSq (z : ℂ) := by
   change ((ModularGroup.S • z : ℍ) : ℂ).im = _
-  rw [modular_S_coe, Complex.neg_im, Complex.inv_im, neg_div, neg_neg]
+  rw [modular_S_coe, Complex.neg_im, Complex.inv_im, UpperHalfPlane.coe_im, neg_div, neg_neg]
 
 private theorem core_im_sq_lower {z : ℍ} (hz : coreMinimumHeight ≤ z.im) :
     (3 / 4 : ℝ) ≤ z.im ^ 2 := by
@@ -78,7 +78,7 @@ theorem modular_S_mem_fd_of_core_outside_circle {z : ℍ}
     have hY := core_im_sq_lower hy
     have hProd := mul_nonneg (sub_nonneg.mpr hx) (sub_nonneg.mpr (show |z.re| ≤ 3 / 2 by linarith))
     have hN : Complex.normSq (z : ℂ) = z.re ^ 2 + z.im ^ 2 := by
-      rw [Complex.normSq_apply, pow_two, pow_two]
+      rw [Complex.normSq_apply, UpperHalfPlane.coe_re, UpperHalfPlane.coe_im, pow_two, pow_two]
     nlinarith [sq_abs z.re]
 
 theorem modular_S_height_le_two_on_core {z : ℍ} (hy : coreMinimumHeight ≤ z.im) :
@@ -95,7 +95,7 @@ theorem modular_S_height_le_two_on_core {z : ℍ} (hy : coreMinimumHeight ≤ z.
   have hLow : z.im ≤ 2 * z.im ^ 2 := by
     nlinarith [mul_nonneg (sub_nonneg.mpr hHalf) z.im_pos.le]
   have hN : Complex.normSq (z : ℂ) = z.re ^ 2 + z.im ^ 2 := by
-    rw [Complex.normSq_apply, pow_two, pow_two]
+    rw [Complex.normSq_apply, UpperHalfPlane.coe_re, UpperHalfPlane.coe_im, pow_two, pow_two]
   nlinarith [sq_nonneg z.re]
 
 theorem modularCoreRectangle_cover (T : ℝ) {z : ℍ} (hz : z ∈ modularCoreRectangle T) :

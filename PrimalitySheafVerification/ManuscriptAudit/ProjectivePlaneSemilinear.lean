@@ -54,17 +54,27 @@ private theorem irrelevant_le_map (e : K ≃+* L) :
   rw [← hxy]
   exact Ideal.mem_map_of_mem _ (HomogeneousIdeal.mem_irrelevant_of_mem (grading K) hn hy)
 
+private theorem map_congr {f g : grading K →+*ᵍ grading L}
+    (hf : HomogeneousIdeal.irrelevant (grading L) ≤
+      (HomogeneousIdeal.irrelevant (grading K)).map f)
+    (hg : HomogeneousIdeal.irrelevant (grading L) ≤
+      (HomogeneousIdeal.irrelevant (grading K)).map g)
+    (h : f = g) : Proj.map f hf = Proj.map g hg := by
+  subst g
+  rfl
+
 /-- The genuine projective-plane scheme isomorphism induced by a field isomorphism. -/
 def planeIso (e : K ≃+* L) : plane L ≅ plane K where
   hom := Proj.map (coefficientMap e.toRingHom) (irrelevant_le_map e)
   inv := Proj.map (coefficientMap e.symm.toRingHom) (irrelevant_le_map e.symm)
   hom_inv_id := by
-    rw [← Proj.map_comp, coefficientMap_comp_inv, Proj.map_id]
+    rw [← Proj.map_comp]
+    exact (map_congr _ _ (coefficientMap_comp_inv e)).trans Proj.map_id
   inv_hom_id := by
     rw [← Proj.map_comp]
     have h := coefficientMap_comp_inv e.symm
     change (coefficientMap e.symm.toRingHom).comp (coefficientMap e.toRingHom) = _ at h
-    rw [h, Proj.map_id]
+    exact (map_congr _ _ h).trans Proj.map_id
 
 end
 

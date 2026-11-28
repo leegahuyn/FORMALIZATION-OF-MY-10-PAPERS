@@ -34,17 +34,20 @@ theorem cauchySpectralSeries_simple_pole {I : Type*} (w a : I → ℂ)
     linarith [hIso i hi]
   have hBound (i : I) (z : ℂ) (hz : z ∈ U) : ‖f i z‖ ≤ (r / 2)⁻¹ * ‖a i‖ := by
     by_cases hi : i = i₀
-    · rw [f, if_pos hi, norm_zero]
+    · unfold f
+      rw [if_pos hi, norm_zero]
       positivity
-    · rw [f, if_neg hi, norm_div]
+    · unfold f
+      rw [if_neg hi, norm_div]
       have h := div_le_div_of_nonneg_left (norm_nonneg (a i)) hr' (hRel i hi z hz)
       simpa only [div_eq_mul_inv, mul_comm] using h
   have hDiff (i : I) : DifferentiableOn ℂ (f i) U := by
     by_cases hi : i = i₀
     · simp only [f, if_pos hi]
-      exact differentiableOn_const
+      exact differentiableOn_const _
     · simp only [f, if_neg hi]
-      exact differentiableOn_const.div (differentiableOn_id.sub differentiableOn_const)
+      have hA : DifferentiableOn ℂ (fun _ : ℂ => a i) U := differentiableOn_const _
+      exact hA.div (differentiableOn_id.sub (differentiableOn_const _))
         (fun z hz => norm_pos_iff.mp (hr'.trans_le (hRel i hi z hz)))
   have hMajorant : Summable (fun i => (r / 2)⁻¹ * ‖a i‖) := hSum.mul_left _
   have hFD : DifferentiableOn ℂ F U :=
@@ -68,9 +71,13 @@ theorem cauchySpectralSeries_simple_pole {I : Type*} (w a : I → ℂ)
       · simp [f, hi]
     exact hFull.tsum_eq
   have hEq : ∀ᶠ z in 𝓝[≠] (w i₀), cauchySpectralSeries w a z = (z - w i₀) ^ (-1 : ℤ) • G z := by
-    filter_upwards [(Metric.ball_mem_nhds _ hr').filter_mono nhdsWithin_le_nhds,
+    have hU : ∀ᶠ z in 𝓝[≠] (w i₀), z ∈ U :=
+      eventually_nhdsWithin_of_eventually_nhds
+        (show ∀ᶠ z in 𝓝 (w i₀), z ∈ U from Metric.ball_mem_nhds _ hr')
+    filter_upwards [hU,
       (self_mem_nhdsWithin : ∀ᶠ z : ℂ in 𝓝[≠] (w i₀), z ≠ w i₀)] with z hz hn
-    rw [hSplit z hz, zpow_neg_one, smul_eq_mul, G]
+    rw [hSplit z hz, zpow_neg_one, smul_eq_mul]
+    dsimp only [G]
     field_simp [sub_ne_zero.mpr hn] <;> ring
   have hM : MeromorphicAt (cauchySpectralSeries w a) (w i₀) :=
     MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt.2 ⟨-1, G, hGA, hEq⟩

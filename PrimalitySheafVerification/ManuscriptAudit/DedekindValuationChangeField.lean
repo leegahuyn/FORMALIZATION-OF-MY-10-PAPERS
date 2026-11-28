@@ -14,6 +14,7 @@ variable (R F L : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R]
   [Field F] [Field L] [Algebra R F] [Algebra R L] [IsFractionRing R F] [IsFractionRing R L]
   (g : F →+* L) (hg : ∀ a : R, g (algebraMap R F a) = algebraMap R L a)
 
+include hg in
 /-- A base-preserving fraction-field homomorphism leaves each true
 height-one valuation unchanged. -/
 theorem valuation_map (v : HeightOneSpectrum R) (x : F) :
@@ -23,6 +24,7 @@ theorem valuation_map (v : HeightOneSpectrum R) (x : F) :
     HeightOneSpectrum.valuation_of_algebraMap, HeightOneSpectrum.valuation_of_algebraMap,
     HeightOneSpectrum.valuation_of_algebraMap, HeightOneSpectrum.valuation_of_algebraMap]
 
+include hg in
 /-- The actual principal-divisor cycle is unchanged on changing fraction fields. -/
 theorem principalDivisor_map (u : Additive Fˣ) :
     principalDivisor R L (Additive.ofMul (Units.map g.toMonoidHom u.toMul)) =
@@ -46,3 +48,4 @@ run_cmd do
     unless bad.isEmpty do
       throwError m!"{name} depends on unexpected axioms {bad}"
     logInfo m!"{name} uses {ax}"
+

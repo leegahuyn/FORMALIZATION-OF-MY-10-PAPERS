@@ -26,7 +26,7 @@ abbrev Site := P.Over ⊤ (Spec A)
 abbrev forget : Site (A := A) P ⥤ Scheme :=
   MorphismProperty.Over.forget P ⊤ (Spec A) ⋙ Over.forget (Spec A)
 
-abbrev chart (R : Under A) (h : P (Spec.map R.hom)) : Site P :=
+abbrev chart (R : Under A) (h : P (Spec.map R.hom)) : Site (A := A) P :=
   MorphismProperty.Over.mk _ (Spec.map R.hom) h
 
 abbrev map {U V : Under A} (m : U ⟶ V)
@@ -70,6 +70,7 @@ theorem schemeIso_over :
 
 variable [P.RespectsIso]
 
+include hL hR in
 /-- The genuine affine algebra nerve has the actual structural property
 in every degree, by its proved isomorphism over the original base. -/
 theorem property_degree : P (Spec.map (degree f n).hom) := by

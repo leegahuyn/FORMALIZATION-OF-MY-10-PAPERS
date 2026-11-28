@@ -40,7 +40,8 @@ theorem map_smul_basis (p q : K[X]) :
 
 private theorem even_weight (n : ℕ) : 2 • (n : WithBot ℕ) = ((2 * n : ℕ) : WithBot ℕ) := by
   change (2 : ℕ) • WithBot.some n = WithBot.some (2 * n)
-  simpa only [nsmul_eq_mul] using (WithBot.coe_nsmul n 2).symm
+  have h : (2 : ℕ) • n = 2 * n := (two_nsmul n).trans (two_mul n).symm
+  exact (WithBot.coe_nsmul n 2).symm.trans (congrArg WithBot.some h)
 
 private theorem odd_weight (n : ℕ) : 2 • (n : WithBot ℕ) + 3 = ((2 * n + 3 : ℕ) : WithBot ℕ) := by
   rw [even_weight]

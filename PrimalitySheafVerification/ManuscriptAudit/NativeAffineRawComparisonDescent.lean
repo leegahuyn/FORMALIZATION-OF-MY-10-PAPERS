@@ -49,7 +49,8 @@ theorem comparison_bijective
   letI : Presheaf.IsLocallyInjective j η := hW.isLocallyInjective
   letI : Presheaf.IsLocallySurjective j η := hW.isLocallySurjective
   let hP := NativeAffineRawCoproductTransport.affineCoproductSections I
-  let hS := NativeAffineRawSingletonSeparationTransport.affineSingletonSeparated I hApprox
+  let hS : ProetaleRawAffineSingletonComparison.AffineSingletonSeparated (raw (X (A := A)) I) :=
+    NativeAffineRawSingletonSeparationTransport.affineSingletonSeparated I hApprox
   exact ⟨ProetaleRawAffineSingletonComparison.injective_app η hP hS V,
     ProetaleRawAffineSingletonComparison.surjective_app η hP hS hGlue V⟩
 
@@ -64,6 +65,8 @@ theorem unit_terminal_surjective
   let X₀ := X (A := A)
   have hS : structureMap A A = 𝟙 X₀ := Spec.map_id _
   letI : WeaklyEtale (structureMap A A) := by rw [hS]; infer_instance
+  letI : IsAffine (ProetaleAffineTensor.object A A).left :=
+    inferInstanceAs (IsAffine (Spec (CommRingCat.of A)))
   let U := NativeAffineEtaleStageSections.etaleObject
     (NativeAffineEtaleTerminalStage.selfStage (A := A) (B := A))
   let T := Scheme.Etale.mk (𝟙 X₀)

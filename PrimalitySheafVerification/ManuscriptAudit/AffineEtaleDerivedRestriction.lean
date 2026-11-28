@@ -111,24 +111,45 @@ private theorem restrictionConstant_section :
       ((restrictSection (j A S) (cokernel i) b).hom x)) = _
   rw [sectionHom_map, hp, sectionHom_map, Category.assoc]
 
-set_option maxHeartbeats 2500000 in
+private theorem connectingSection_fromHom (B : Type) [CommRing B] {F I : C B}
+    (f : F ⟶ I) [Mono f] (s : (cokernel f).obj.obj (op (baseObject B))) :
+    connectingSection f (terminal B) s =
+      (Ext.mk₀ (sectionHom B (cokernel f) s)).comp (short_exact f).extClass (zero_add 1) := by
+  change ((Sheaf.H.equiv₀ (cokernel f) (terminal B)).symm s).comp
+    (short_exact f).extClass (zero_add 1) = _
+  exact congrArg (fun e : Ext (Z B) (cokernel f) 0 =>
+    e.comp (short_exact f).extClass (zero_add 1)) (mk₀_sectionHom B (cokernel f) s).symm
+
+private abbrev k := restrictedInjection (j A S) i
+private abbrev g := restrictedCokernelIso (j A S) i
+
+set_option maxHeartbeats 850000 in
+private theorem restrictHOne_connectingHom (s : Z A ⟶ cokernel i) :
+    restrictHOne A S ((Ext.mk₀ s).comp (short_exact i).extClass (zero_add 1)) =
+      (Ext.mk₀ (restrictionConstant A S ≫ (R A S).map s ≫ (g A S i).hom)).comp
+        (short_exact (k A S i)).extClass (zero_add 1) := by
+  exact ConnectingExtNaturality.map_connecting (C := C A) (D := C S) (R A S)
+    (S := seq i) (T := seq (k A S i)) (short_exact i) (short_exact (k A S i))
+    (restrictedSequenceComparison (j A S) i) (restrictionConstant A S) s
+
 /-- Actual derived restriction takes a true connecting representative to
 the connecting representative of the genuinely restricted global section. -/
 theorem restrictHOne_connecting :
     restrictHOne A S (connectingSection i (terminal A) x) =
       connectingSection (restrictedInjection (j A S) i) (terminal S) (restrictGlobal A S i x) := by
-  let k := restrictedInjection (j A S) i
-  let q := restrictedSequenceComparison (j A S) i
-  have h := ConnectingExtNaturality.map_connecting (R A S) (short_exact i) (short_exact k) q
-    (restrictionConstant A S) (sectionHom A (cokernel i) x)
-  change (Ext.mk₀ (restrictionConstant A S)).comp
-      ((((Ext.mk₀ (sectionHom A (cokernel i) x)).comp (short_exact i).extClass (zero_add 1)).
-        mapExactFunctor (R A S)).comp (Ext.mk₀ (restrictionUnitsIso (j A S)).hom)
-          (add_zero 1)) (zero_add 1) =
-    (Ext.mk₀ (restrictionConstant A S ≫ (R A S).map (sectionHom A (cokernel i) x) ≫
-      (restrictedCokernelIso (j A S) i).hom)).comp (short_exact k).extClass (zero_add 1) at h
-  rw [← restrictionConstant_section A S i x, mk₀_sectionHom, mk₀_sectionHom] at h
-  exact h
+  let s := sectionHom A (cokernel i) x
+  let t := sectionHom S (cokernel (k A S i)) (restrictGlobal A S i x)
+  let δ := (short_exact (k A S i)).extClass
+  have h : restrictionConstant A S ≫ (R A S).map s ≫ (g A S i).hom = t :=
+    (restrictionConstant_section A S i x).symm
+  calc
+    _ = restrictHOne A S ((Ext.mk₀ s).comp (short_exact i).extClass (zero_add 1)) :=
+      congrArg (restrictHOne A S) (connectingSection_fromHom A i x)
+    _ = (Ext.mk₀ (restrictionConstant A S ≫ (R A S).map s ≫ (g A S i).hom)).comp δ (zero_add 1) :=
+      restrictHOne_connectingHom A S i s
+    _ = (Ext.mk₀ t).comp δ (zero_add 1) :=
+      congrArg (fun f : Z S ⟶ cokernel (k A S i) => (Ext.mk₀ f).comp δ (zero_add 1)) h
+    _ = _ := (connectingSection_fromHom S (k A S i) (restrictGlobal A S i x)).symm
 
 end
 

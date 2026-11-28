@@ -78,6 +78,7 @@ private theorem leg_covering
   change Presieve.ofArrows _ _ ∈ Scheme.precoverage @Etale _
   refine (Scheme.ofArrows_mem_precoverage_iff @Etale).mpr ⟨
     leg_jointly_surjective q i cover W, fun a ↦ ?_⟩
+  change Etale (leg q i W a).left
   letI : IsOpenImmersion (leg q i W a).left := MorphismProperty.of_isPullback
     (P := @IsOpenImmersion) (leg_isPullback q i W a).flip inferInstance
   infer_instance

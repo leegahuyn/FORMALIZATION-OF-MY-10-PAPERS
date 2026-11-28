@@ -55,7 +55,7 @@ theorem equivZero_mapOfDirectImage {F : C Y} {G : C X}
     have h₁ : (aX.homEquiv M G) (k.inv ≫ v) = (c.homEquiv M G) v := by
       change (aX.homEquiv M G) ((aX.leftAdjointUniq c).hom.app M ≫ v) = _
       rw [aX.homEquiv_naturality_right, Adjunction.homEquiv_leftAdjointUniq_hom_app]
-      exact c.homEquiv_unit.symm
+      exact (c.homEquiv_unit M G v).symm
     have h₂ : (c.homEquiv M G) v = (aY.homEquiv M (R.obj G)) (b ≫ a) := by
       change (aY.homEquiv M (R.obj G)) ((adj.homEquiv (Z Y) G) (L.map b ≫ q)) = _
       rw [adj.homEquiv_naturality_left]

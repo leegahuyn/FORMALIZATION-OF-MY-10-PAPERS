@@ -64,7 +64,8 @@ theorem norm_twoPrimaryUnitSum_factored {M d r : ℕ} [NeZero M] [NeZero d]
     rw [sum_units_as_indicator (fun x : ZMod M =>
       twoPrimaryCharacter e n (ZMod.castHom hd (ZMod 8) x) * kloostermanPhase a b x)]
     unfold weightedKloostermanUnitSum weightedKloostermanUnitTerm w
-    simp only [hF, RingHom.comp_apply]
+    simp only [hF, RingHom.comp_apply] <;>
+      (apply Finset.sum_congr rfl; intro x _; by_cases hx : IsUnit x <;> simp [hx])
   rw [hSum]
   exact norm_weighted_kloosterman_two_primary r w (fun x => norm_twoPrimaryCharacter_le e n (g x)) a b ha hb
 

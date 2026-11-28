@@ -122,18 +122,22 @@ theorem exists_equal_stage (hc : IsColimit c) (i : J)
     simpa only [p₁, p₂, im, jm, CategoryTheory.Functor.map_comp, Category.assoc] using hmP
   have h₂' : V.toChart.toUnder ≫ D.map im = (hom q).toUnder ≫ w ≫ D.map jm := by
     simpa only [q₁, q₂, im, jm, CategoryTheory.Functor.map_comp, Category.assoc] using hmQ
-  let p' : stageAfterMap (chartRingHom (D.map im)) T ⟶ W := ⟨hom p, by
+  let pRing := hom p
+  let qRing := hom q
+  let p' : stageAfterMap (chartRingHom (D.map im)) T ⟶ W := ⟨pRing, by
     apply AlgHom.ext
     intro t
     exact congrArg (fun a : P ⟶ D.obj m ↦ a.right t) h₁'.symm⟩
-  let q' : stageAfterMap (chartRingHom (D.map im)) V ⟶ W := ⟨hom q, by
+  let q' : stageAfterMap (chartRingHom (D.map im)) V ⟶ W := ⟨qRing, by
     apply AlgHom.ext
     intro t
     exact congrArg (fun a : Q ⟶ D.obj m ↦ a.right t) h₂'.symm⟩
+  have hz' : (sectionDiagram (B := (D.obj m).right) I).map p' u =
+      (sectionDiagram (B := (D.obj m).right) I).map q' v := hz
   refine ⟨m, im, ?_⟩
   rw [← hu, ← hv, restrict_repr, restrict_repr]
   exact (repr_natural I p' u).symm.trans
-    ((congrArg (represent I W) hz).trans (repr_natural I q' v))
+    ((congrArg (represent I W) hz').trans (repr_natural I q' v))
 
 end
 end ManuscriptAudit.NativeAffineUnderRingRawEqualities

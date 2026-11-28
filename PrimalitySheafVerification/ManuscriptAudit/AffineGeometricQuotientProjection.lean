@@ -48,7 +48,8 @@ private theorem divisorHom_on_basis :
   change (E A).inverse.map ((E A).functor.map d) ≫
       (E A).unitIso.inv.app (affineDivisorSheaf K A) =
     (E A).unitIso.inv.app ((E A).inverse.obj M) ≫ d at h
-  rw [h, (E A).unitIso_hom_inv_id_app_assoc]
+  rw [h]
+  exact (E A).unitIso_hom_inv_id_app_assoc ((E A).inverse.obj M) d
 
 /-- After restricting to the native affine basis, the quotient comparison
 still takes the literal quotient projection to the actual divisor hom. -/

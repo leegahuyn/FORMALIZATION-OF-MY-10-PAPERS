@@ -127,10 +127,10 @@ theorem map_locallySurjective
 include hir in
 theorem map_epi
     (hQC : ∀ (U : T.ProEt), IsAffine U.left → QuasiCompact (complement i U).ι)
-    {F G : C.{u,v} S} (α : F ⟶ G) [Epi α] :
-    Epi ((directImage i AddCommGrpCat.{v}).map α) := by
+    {F G : C.{u,u+1} S} (α : F ⟶ G) [Epi α] :
+    Epi ((directImage i AddCommGrpCat.{u+1}).map α) := by
   letI : Sheaf.IsLocallySurjective α :=
-    (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{v} α).mpr inferInstance
+    (Sheaf.isLocallySurjective_iff_epi' AddCommGrpCat.{u+1} α).mpr inferInstance
   letI := map_locallySurjective i r hir hQC α
   exact Sheaf.epi_of_isLocallySurjective _
 
@@ -139,9 +139,10 @@ end ManuscriptAudit.SplitClosedProetaleDirectImage
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.SplitClosedProetaleDirectImage.map_epi
-  let ax ← collectAxioms name
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  unless ax.all (fun a ↦ allowed.contains a) do
-    throwError m!"{name} depends on unexpected axioms {ax}"
-  logInfo m!"{name} uses {ax}"
+  for name in [``ManuscriptAudit.SplitClosedProetaleDirectImage.map_locallySurjective,
+      ``ManuscriptAudit.SplitClosedProetaleDirectImage.map_epi] do
+    let ax ← collectAxioms name
+    unless ax.all (fun a ↦ allowed.contains a) do
+      throwError m!"{name} depends on unexpected axioms {ax}"
+    logInfo m!"{name} uses {ax}"

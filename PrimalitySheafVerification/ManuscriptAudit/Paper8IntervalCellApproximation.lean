@@ -29,7 +29,7 @@ private theorem interval_integral_sq_le (g : ℝ → ℝ) (hg : Continuous g) {a
         rw [intervalIntegral.integral_add (hB.sub (hA.const_mul _)) (continuous_const.intervalIntegrable _ _),
           intervalIntegral.integral_sub hB (hA.const_mul _), intervalIntegral.integral_const_mul,
           intervalIntegral.integral_const, smul_eq_mul]
-  have hNN := intervalIntegral.integral_nonneg hab.le (f := fun t => (g t - p) ^ 2)
+  have hNN := intervalIntegral.integral_nonneg (μ := (volume : Measure ℝ)) hab.le (f := fun t => (g t - p) ^ 2)
     (fun _ _ => sq_nonneg _)
   have hEq : B - 2 * p * A + L * p ^ 2 = B - A ^ 2 / L := by
     unfold p

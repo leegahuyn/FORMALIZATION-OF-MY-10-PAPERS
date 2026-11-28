@@ -23,6 +23,7 @@ private theorem ker_imageι {U V : Scheme.{u}} (q : U ⟶ V) :
     q.imageι.ker = q.ker :=
   q.ker.ker_subschemeι
 
+include h in
 private theorem lift_kernel :
     f.imageι.ker ≤ (g.imageι ≫ b.hom).ker := by
   have ht : f.ker = (g ≫ b.hom).ker :=
@@ -33,15 +34,20 @@ private theorem lift_kernel :
 private def liftToImage : g.image ⟶ f.image :=
   IsClosedImmersion.lift f.imageι (g.imageι ≫ b.hom) (lift_kernel f g a b h)
 
+set_option maxHeartbeats 900000 in
 private theorem liftToImage_fac :
     liftToImage f g a b h ≫ f.imageι = g.imageι ≫ b.hom :=
   IsClosedImmersion.lift_fac _ _ _
 
+include h in
 private theorem inverse_square :
     a.inv ≫ g = f ≫ b.inv := by
   apply (cancel_mono b.hom).mp
-  rw [Category.assoc, ← h, Iso.inv_hom_id_assoc, Category.assoc,
-    Iso.inv_hom_id, Category.comp_id]
+  calc
+    (a.inv ≫ g) ≫ b.hom = a.inv ≫ (g ≫ b.hom) := Category.assoc _ _ _
+    _ = a.inv ≫ a.hom ≫ f := congrArg (a.inv ≫ ·) h.symm
+    _ = f := Iso.inv_hom_id_assoc a f
+    _ = (f ≫ b.inv) ≫ b.hom := by rw [Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 /-- The commuting actual scheme isomorphisms restrict to their native schematic images. -/
 def imageIso : g.image ≅ f.image where
