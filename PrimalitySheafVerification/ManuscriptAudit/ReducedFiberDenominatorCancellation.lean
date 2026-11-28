@@ -57,7 +57,7 @@ theorem exists_of_integral_of_denominator
     algebraMap B L z = algebraMap B L (algebraMap R B d) * x →
       ∃ c : B, algebraMap B L c = x
   have h : P a := by
-    apply UniqueFactorizationMonoid.induction_on_prime a
+    refine UniqueFactorizationMonoid.induction_on_prime (P := P) a ?_ ?_ ?_
     · intro h0
       exact (h0 rfl).elim
     · intro d hd _ z hz

@@ -103,7 +103,7 @@ theorem realization_selfAdjoint (hJ : DenseRange J) :
 /-- Every datum is represented by the unique variational solution selected by the adjoint. -/
 theorem variational_solution (f : H) :
     ∃! u : D, ∀ v : D, ⟪u, v⟫_𝕜 = ⟪f, J v⟫_𝕜 := by
-  refine ⟨J.adjoint f, J.adjoint_inner_left · f, ?_⟩
+  refine ⟨J.adjoint f, fun v => J.adjoint_inner_left v f, ?_⟩
   intro u hu
   apply ext_inner_right 𝕜
   intro v

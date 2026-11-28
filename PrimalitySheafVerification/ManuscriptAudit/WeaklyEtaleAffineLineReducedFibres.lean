@@ -11,7 +11,7 @@ over the affine line over an algebraically closed field is reduced. -/
 namespace ManuscriptAudit.WeaklyEtaleAffineLineReducedFibres
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits Polynomial
-open ProetaleAffineTensor (spectrum structureMap specMap leftInclusion specTensor_isPullback)
+open ProetaleAffineTensor (structureMap specMap leftInclusion specTensor_isPullback)
 open scoped TensorProduct
 
 noncomputable section
@@ -22,7 +22,7 @@ set_option backward.isDefEq.respectTransparency false
 universe u
 
 theorem reduced_over_algebraicallyClosed {K B : Type u} [Field K] [IsAlgClosed K]
-    [CommRing B] (f : spectrum B ⟶ spectrum K) [WeaklyEtale f] : IsReduced B := by
+    [CommRing B] (f : ProetaleAffineTensor.spectrum B ⟶ ProetaleAffineTensor.spectrum K) [WeaklyEtale f] : IsReduced B := by
   apply isReduced_ofLocalizationMaximal
   intro J hJ
   letI : J.IsPrime := hJ.isPrime
@@ -59,11 +59,12 @@ theorem reduced_prime_fibre (p : R K) (hp : Prime p) :
   obtain ⟨a, ha⟩ := exists_point_ideal K hp
   let eF : F ≃ₐ[K] K :=
     (Ideal.quotientEquivAlgOfEq K ha).trans (quotientSpanXSubCAlgEquiv a)
-  letI : IsAlgClosed F := IsAlgClosed.of_ringEquiv F eF.symm.toRingEquiv
+  letI : IsAlgClosed F := IsAlgClosed.of_ringEquiv K F eF.symm.toRingEquiv
   let S := F ⊗[R K] B
-  let f : spectrum S ⟶ spectrum F := specMap (R K) (leftInclusion (R K) F B)
+  let f : ProetaleAffineTensor.spectrum S ⟶ ProetaleAffineTensor.spectrum F := specMap (R K) (leftInclusion (R K) F B)
+  have hf : WeaklyEtale (structureMap (R K) B) := inferInstance
   letI : WeaklyEtale f := MorphismProperty.of_isPullback (P := @WeaklyEtale)
-    (specTensor_isPullback (R K) F B).flip (inferInstanceAs (WeaklyEtale (structureMap (R K) B)))
+    (specTensor_isPullback (R K) F B).flip hf
   letI : IsReduced S := reduced_over_algebraicallyClosed f
   let e := Algebra.TensorProduct.quotIdealMapEquivQuotTensor B I
   have hI : I.map (algebraMap (R K) B) = Ideal.span ({algebraMap (R K) B p} : Set B) := by

@@ -21,7 +21,8 @@ theorem exact_algebraMap :
     apply TensorProduct.ext'
     intro b a
     change b ⊗ₜ[A] algebraMap A B a = (a • b) ⊗ₜ[A] (1 : B)
-    rw [Algebra.algebraMap_eq_smul_one, TensorProduct.tmul_smul, TensorProduct.smul_tmul]
+    rw [Algebra.algebraMap_eq_smul_one]
+    exact (TensorProduct.smul_tmul a b (1 : B)).symm
   have hD : (differential A B (1 : (Double A B)ˣ)).lTensor B =
       (face02 A B).toLinearMap - (face01 A B).toLinearMap := by
     apply TensorProduct.ext'
@@ -35,7 +36,9 @@ theorem exact_algebraMap :
   change face02 A B z - face01 A B z = 0 ↔
     ∃ w, first A B (TensorProduct.rid A B w) = z
   rw [sub_eq_zero]
-  have hCoc : IsCocycle A B (1 : (Double A B)ˣ) := by simp [IsCocycle]
+  have hCoc : IsCocycle A B (1 : (Double A B)ˣ) := by
+    change face02 A B (1 : Double A B) = face12 A B 1 * face01 A B 1
+    rw [map_one, map_one, map_one, mul_one]
   constructor
   · intro hz
     have hz' : z = first A B (multiplication A B z) := by

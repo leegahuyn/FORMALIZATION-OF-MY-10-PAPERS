@@ -44,7 +44,7 @@ theorem shifted_comparison (q v N : D → ℝ) (m a b : ℝ)
   · nlinarith only [h₁]
   · calc
       _ ≤ (1 + a) * Q + 2*b*N x := by dsimp [Q]; nlinarith only [h₂, hShift]
-      _ ≤ (1 + a) * Q + 2*b*Q := add_le_add_left hUpper _
+      _ ≤ (1 + a) * Q + 2*b*Q := by nlinarith only [hUpper]
       _ = _ := by dsimp [Q]; ring
 
 end ManuscriptAudit.Paper10RelativeFormBounds

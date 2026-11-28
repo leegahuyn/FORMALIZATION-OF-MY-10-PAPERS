@@ -89,7 +89,8 @@ def smoothEquiv :
   letI : QuasiCompact (smoothOpen K) := smoothOpen_quasiCompact K
   exact pairEquiv K ℓ (smoothOpen K) (o K) (z K) (boundary_disjoint K) (smoothOpen_range K)
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 2400000 in
+set_option maxRecDepth 8192 in
 theorem affineEquiv_inclusion (t : ℤ_[ℓ]) :
     (affineEquiv K ℓ (CuspNativeCompactAffineAdicHTwoLower.inclusion K ℓ t)).val =
       adicInclusion K ℓ t := by
@@ -101,14 +102,19 @@ theorem affineEquiv_inclusion (t : ℤ_[ℓ]) :
   let p := cohomologyIso (X := pullback (j K) (k K))
     (restrictionKernelIso (l K) (d₁ K ℓ) (singleZero K ℓ)) 1
   let w := (overlapEquiv K ℓ).symm t
-  change Sheaf.H.map (kernel.ι (d₁ K ℓ)) 2
-    (e (e.symm (connecting (j K) (k K) (l K) (fstLeg K) (sndLeg K) (overlap K) (cover K)
-      (kernel (d₁ K ℓ)) 1 (p.symm w)))) = adicInclusion K ℓ t
-  rw [e.apply_symm_apply]
-  exact ProetaleSupportMayerVietoris.connecting_ambient (l K) (d₁ K ℓ) (j K) (k K)
-    (fstLeg K) (sndLeg K) (overlap K) (cover K) (singleZero K ℓ) 1 w
+  let D := connecting (j K) (k K) (l K) (fstLeg K) (sndLeg K) (overlap K) (cover K)
+    (kernel (d₁ K ℓ)) 1
+  let m := Sheaf.H.map (kernel.ι (d₁ K ℓ)) 2
+  have h : CuspNativeCompactAffineAdicHTwoLower.inclusion K ℓ t = e.symm (D (p.symm w)) := rfl
+  change m (e (CuspNativeCompactAffineAdicHTwoLower.inclusion K ℓ t)) = adicInclusion K ℓ t
+  calc
+    _ = m (e (e.symm (D (p.symm w)))) := congrArg (fun x ↦ m (e x)) h
+    _ = m (D (p.symm w)) := congrArg m (e.apply_symm_apply _)
+    _ = _ := ProetaleSupportMayerVietoris.connecting_ambient (l K) (d₁ K ℓ) (j K) (k K)
+      (fstLeg K) (sndLeg K) (overlap K) (cover K) (singleZero K ℓ) 1 w
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 2400000 in
+set_option maxRecDepth 8192 in
 theorem smoothEquiv_inclusion (t : ℤ_[ℓ]) :
     (smoothEquiv K ℓ (CuspNativeCompactSmoothAdicHTwoLower.inclusion K ℓ t)).val =
       adicInclusion K ℓ t := by
@@ -121,12 +127,16 @@ theorem smoothEquiv_inclusion (t : ℤ_[ℓ]) :
   let p := cohomologyIso (X := pullback (j K) (k K))
     (restrictionKernelIso (l K) (d₂ K ℓ) (pairZero K ℓ)) 1
   let w := (overlapEquiv K ℓ).symm t
-  change Sheaf.H.map (kernel.ι (d₂ K ℓ)) 2
-    (e (e.symm (connecting (j K) (k K) (l K) (fstLeg K) (sndLeg K) (overlap K) (cover K)
-      (kernel (d₂ K ℓ)) 1 (p.symm w)))) = adicInclusion K ℓ t
-  rw [e.apply_symm_apply]
-  exact ProetaleSupportMayerVietoris.connecting_ambient (l K) (d₂ K ℓ) (j K) (k K)
-    (fstLeg K) (sndLeg K) (overlap K) (cover K) (pairZero K ℓ) 1 w
+  let D := connecting (j K) (k K) (l K) (fstLeg K) (sndLeg K) (overlap K) (cover K)
+    (kernel (d₂ K ℓ)) 1
+  let m := Sheaf.H.map (kernel.ι (d₂ K ℓ)) 2
+  have h : CuspNativeCompactSmoothAdicHTwoLower.inclusion K ℓ t = e.symm (D (p.symm w)) := rfl
+  change m (e (CuspNativeCompactSmoothAdicHTwoLower.inclusion K ℓ t)) = adicInclusion K ℓ t
+  calc
+    _ = m (e (e.symm (D (p.symm w)))) := congrArg (fun x ↦ m (e x)) h
+    _ = m (D (p.symm w)) := congrArg m (e.apply_symm_apply _)
+    _ = _ := ProetaleSupportMayerVietoris.connecting_ambient (l K) (d₂ K ℓ) (j K) (k K)
+      (fstLeg K) (sndLeg K) (overlap K) (cover K) (pairZero K ℓ) 1 w
 
 theorem compact_inclusions_surjective
     (h : Function.Surjective (adicInclusion K ℓ)) :
