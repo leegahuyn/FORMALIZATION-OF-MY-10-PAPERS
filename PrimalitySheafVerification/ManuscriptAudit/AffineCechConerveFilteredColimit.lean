@@ -36,7 +36,9 @@ def isColimit_of_sides {F : J ⥤ Arrow C} (c : Cocone F)
           (s.ι.app i).right := hR.fac _ i
       change (c.ι.app i).left ≫ _ = (c.ι.app i).left ≫ c.pt.hom ≫ _
       rw [← Category.assoc, hl]
-      rw [← Category.assoc, (c.ι.app i).w, Category.assoc, hr]
+      have hw : (c.ι.app i).left ≫ c.pt.hom =
+          (F.obj i).hom ≫ (c.ι.app i).right := (c.ι.app i).w
+      rw [← Category.assoc, hw, Category.assoc, hr]
       exact (s.ι.app i).w)
   fac s j := by
     apply Arrow.hom_ext
@@ -68,8 +70,9 @@ def isColimit_degree {F : J ⥤ Arrow C} {c : Cocone F} (hc : IsColimit c) (n : 
   letI : PreservesColimitsOfShape J D :=
     inferInstanceAs (PreservesColimitsOfShape J (Comma.snd (CosimplicialObject.const C)
       (𝟭 (CosimplicialObject C))))
-  change IsColimit (((E ⋙ D) ⋙ (evaluation SimplexCategory C).obj ⦋n⦌).mapCocone c)
-  exact isColimitOfPreserves _ (isColimitOfPreserves D (isColimitOfPreserves E hc))
+  let V : CosimplicialObject C ⥤ C := (evaluation SimplexCategory C).obj ⦋n⦌
+  change IsColimit (V.mapCocone (D.mapCocone (E.mapCocone c)))
+  exact isColimitOfPreserves V (isColimitOfPreserves D (isColimitOfPreserves E hc))
 
 end
 end ManuscriptAudit.AffineCechConerveFilteredColimit

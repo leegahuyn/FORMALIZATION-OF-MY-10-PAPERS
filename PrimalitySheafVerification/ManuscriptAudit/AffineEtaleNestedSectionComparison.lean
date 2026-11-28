@@ -22,7 +22,8 @@ private theorem inverse_map_counit {C D : Type*} [Category* C] [Category* D]
     (e : C ≌ D) (Y : D) :
     e.inverse.map (e.counitIso.hom.app Y) = e.unitIso.inv.app (e.inverse.obj Y) := by
   apply (cancel_epi (e.unitIso.hom.app (e.inverse.obj Y))).mp
-  rw [e.unit_inverse_comp, e.unitIso_hom_inv_id_app]
+  rw [e.unit_inverse_comp]
+  exact (e.unitIso.hom_inv_id_app (e.inverse.obj Y)).symm
 
 variable (A S : Type) [CommRing A] [CommRing S] [Algebra A S]
 

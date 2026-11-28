@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleUnitCohomology
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProjectiveGenericPoint
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityOpenCover
 import PrimalitySheafVerification.ManuscriptAudit.AffineOpenDirectImageHOne
@@ -53,7 +54,7 @@ private theorem factors_overlap :
 This uses native affine direct-image H¹ and the genuine two-open sequence. -/
 theorem genericUnitImage_HOne_subsingleton : Subsingleton (Sheaf.H (genericUnitImage W) 1) := by
   have hM : Subsingleton (Sheaf.H (M W) 1) :=
-    SmallEtaleUnitCohomology.unitHOne_subsingleton_of_pid W.FunctionField
+    KummerUnitsSheaf.unitHOne_subsingleton_of_pid W.FunctionField
   have hL : Subsingleton ((genericUnitImage W).H' 1 (Scheme.Etale.mk (j W))) := by
     unfold genericUnitImage
     rw [genericPoint_factors_infinity W]

@@ -31,6 +31,7 @@ private theorem change_snd {V U : T.ProEt} (g : V ⟶ U) :
     ((baseChange i).map g).left ≫ pullback.snd U.hom i = pullback.snd V.hom i := by
   simp only [baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_snd]
 
+include hir in
 /-- A single affine ambient refinement has lifts on the full part supported
 over the closed subscheme and covers each point on that support. -/
 theorem exists_on_support {F G : C.{u,v} S}
@@ -41,6 +42,7 @@ theorem exists_on_support {F G : C.{u,v} S}
       ∃ b : F.obj.obj (op ((baseChange i).obj V)),
         α.hom.app _ b = G.obj.map ((baseChange i).map g).op s := by
   letI : WeaklyEtale U.hom := U.prop
+  letI : IsAffine ((𝟭 Scheme.{u}).obj U.left) := inferInstanceAs (IsAffine U.left)
   letI : IsAffine ((baseChange i).obj U).left :=
     isAffine_of_isAffineHom (pullback.fst U.hom i)
   obtain ⟨W, k, hA, hW, hS, _, b, hb⟩ :=

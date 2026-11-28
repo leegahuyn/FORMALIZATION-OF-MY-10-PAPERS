@@ -22,8 +22,7 @@ theorem descendedDegree_connecting (z : D) :
     descendedDegree c hc d hk (c z) = d z := by
   have hz : c z = e c hc (QuotientAddGroup.mk z) := rfl
   change QuotientAddGroup.lift c.ker d hk ((e c hc).symm (c z)) = d z
-  rw [hz, AddEquiv.symm_apply_apply]
-  rfl
+  rw [hz, AddEquiv.symm_apply_apply] <;> rfl
 
 /-- A single genuine divisor of degree one above the generator proves
 that the degree is a retraction of the entire integer Cartier map. -/

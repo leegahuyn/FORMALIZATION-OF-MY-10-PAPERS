@@ -93,6 +93,7 @@ private theorem sections_range (h : Epi ((G f).map (quotientMap F))) :
     rw [ProetaleDirectImageHZero.natural]
     exact congrArg (Sheaf.H.map (quotientMap F) 0) (eI.apply_symm_apply a)
 
+set_option maxHeartbeats 4500000 in
 /-- When the first actual injective quotient remains epic under direct
 image, the two native degree-one groups are canonically equivalent via
 their global-section cokernels. -/
@@ -102,8 +103,11 @@ def hOneEquivOfImageEpi (h : Epi ((G f).map (quotientMap F))) :
     Injective.injective_of_adjoint (adjunction f) (Injective.under F)
   let e := ProetaleDirectImageHZero.equivalence f (quotient F)
   let eq := QuotientAddGroup.congr _ _ e (sections_range f F h)
-  exact (SheafCohomologyHOneCokernel.hOneEquiv _ (image_shortExact f F h)).symm.trans
-    (eq.trans (SheafCohomologyHOneCokernel.hOneEquiv _ (resolution_shortExact F)))
+  letI : Injective (resolution F).X₂ := inferInstanceAs (Injective (Injective.under F))
+  let source := SheafCohomologyHOneCokernel.hOneEquiv ((resolution F).map (G f))
+    (image_shortExact f F h)
+  let target := SheafCohomologyHOneCokernel.hOneEquiv (resolution F) (resolution_shortExact F)
+  exact source.symm.trans (eq.trans target)
 
 /-- Two native local lifting properties suffice for the actual
 degree-two isomorphism with cohomology on the source scheme. -/

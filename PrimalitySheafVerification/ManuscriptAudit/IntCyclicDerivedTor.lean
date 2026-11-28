@@ -23,6 +23,7 @@ private abbrev tensor (A : C) := (tensoringLeft C).obj A
 private abbrev imageComplex (A : C) (n : ℕ) (hn : n ≠ 0) :=
   ((tensor A).mapHomologicalComplex (ComplexShape.down ℕ)).obj (resolution n hn).complex
 
+set_option maxHeartbeats 3500000 in
 /-- Degree-one native Tor agrees with the kernel in the actual input module. -/
 def torOneEquivKernel (A : C) (n : ℕ) (hn : n ≠ 0) :
     ((Tor C 1).obj A).obj (residues n) ≅
@@ -34,14 +35,16 @@ def torOneEquivKernel (A : C) (n : ℕ) (hn : n ≠ 0) :
     change T.map ((resolution n hn).complex.d 2 1) = 0
     rw [resolution_d_two, T.map_zero]
   have hg : S.g = (n : ℤ) • 𝟙 S.X₂ := by
-    change T.map ((resolution n hn).complex.d 1 0) = _
-    rw [resolution_d_one, multiplication, T.map_zsmul, T.map_id]
+    let I := IntCyclicProjectiveResolution.integers
+    change T.map ((resolution n hn).complex.d 1 0) = (n : ℤ) • 𝟙 (T.obj I)
+    rw [resolution_d_one, multiplication, T.map_zsmul]
+    exact congrArg (fun a : T.obj I ⟶ T.obj I ↦ (n : ℤ) • a) (T.map_id I)
   let e : S.X₂ ≃ₗ[ℤ] A := (ρ_ A).toLinearEquiv
   let D : A →ₗ[ℤ] A := (n : ℤ) • LinearMap.id
   have hAct (x : S.X₂) : e (S.g x) = D (e x) := by
     rw [hg]
     change e ((n : ℤ) • x) = (n : ℤ) • e x
-    exact e.map_smul _ _
+    exact e.map_smul (n : ℤ) x
   have hIso : LinearMap.ker S.g.hom ≃ₗ[ℤ] LinearMap.ker D := {
     toFun := fun x ↦ ⟨e x.val, by
       change D (e x.val) = 0

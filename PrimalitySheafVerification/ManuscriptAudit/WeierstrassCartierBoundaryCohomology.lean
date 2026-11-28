@@ -41,11 +41,13 @@ private abbrev liftUnit := PrimeLocalizationUnits.mapUnit (s W)
 
 private def openUnits :
     (F W).H' 0 (square W).X₂ ≃+ Additive (Neighborhood W)ˣ :=
-  coordinateUnitEquiv (Iso.refl (neighborhoodScheme W))
+  coordinateUnitEquiv (X := projectiveScheme W) (U := (square W).X₂)
+    (R := CommRingCat.of (Neighborhood W)) (Iso.refl (neighborhoodScheme W))
 
 private def overlapUnits :
     (F W).H' 0 (square W).X₁ ≃+ Additive (Puncture W)ˣ :=
-  coordinateUnitEquiv (overlapIso W)
+  coordinateUnitEquiv (X := projectiveScheme W) (U := (square W).X₁)
+    (R := CommRingCat.of (Puncture W)) (overlapIso W)
 
 private abbrev firstRestriction :=
   ((F W).cohomologyPresheaf 0).map (square W).f₁₂.op
@@ -53,12 +55,13 @@ private abbrev firstRestriction :=
 private theorem firstRestriction_units (v : (F W).H' 0 (square W).X₂) :
     overlapUnits W (firstRestriction W v) =
       Additive.ofMul (liftUnit W (openUnits W v).toMul) := by
-  refine coordinateUnitEquiv_naturality (square W).f₁₂ (overlapIso W)
+  have h : (overlapIso W).inv ≫ (square W).f₁₂.left =
+      punctureToNeighborhood W ≫ 𝟙 (neighborhoodScheme W) := by
+    change (overlapIso W).inv ≫ pullback.fst (neighborhoodOpen W) (affineOpen W) = _
+    rw [Category.comp_id, ← overlapIso_fac, Iso.inv_hom_id_assoc]
+  exact coordinateUnitEquiv_naturality (square W).f₁₂ (overlapIso W)
     (Iso.refl (neighborhoodScheme W))
-    (CommRingCat.ofHom (algebraMap (Neighborhood W) (Puncture W))) ?_ v
-  change (overlapIso W).inv ≫ pullback.fst (neighborhoodOpen W) (affineOpen W) =
-    punctureToNeighborhood W ≫ 𝟙 (neighborhoodScheme W)
-  rw [Category.comp_id, ← overlapIso_fac, Iso.inv_hom_id_assoc]
+    (CommRingCat.ofHom (algebraMap (Neighborhood W) (Puncture W))) h v
 
 private def delta : (F W).H' 0 (square W).X₁ →+ (F W).H' 1 (square W).X₄ :=
   ((square W).δ (F W) 0 1 rfl).hom
@@ -107,9 +110,12 @@ theorem boundaryClass_injective : Function.Injective (boundaryClass W) := by
   change firstRestriction W v = (overlapUnits W).symm (Additive.ofMul (pUnit W ^ n)) at hv
   have he := firstRestriction_units W v
   rw [hv, (overlapUnits W).apply_symm_apply] at he
+  have hc : (pUnit W ^ n : (PrimeLocalizationUnits.S (s W))ˣ) =
+      liftUnit W (openUnits W v).toMul :=
+    congrArg (fun a : Additive (Puncture W)ˣ => a.toMul) he
   have hp : liftUnit W 1 * pUnit W ^ n =
       liftUnit W (openUnits W v).toMul * pUnit W ^ (0 : ℤ) := by
-    simpa only [map_one, one_mul, zpow_zero, mul_one] using congrArg Additive.toMul he
+    simpa only [map_one, one_mul, zpow_zero, mul_one] using hc
   exact PrimeLocalizationUnits.exponent_unique (s W) (localX_prime W) _ _ n 0 hp
 
 private theorem boundary_range : (boundaryClass W).range = (delta W).range := by

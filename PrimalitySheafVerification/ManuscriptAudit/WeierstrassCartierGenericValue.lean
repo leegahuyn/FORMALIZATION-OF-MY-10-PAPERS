@@ -49,7 +49,7 @@ def parameterUnit : Additive (F W)ˣ :=
 
 /-- The actual prime transition in the ambient degree-zero group on the overlap. -/
 def transitionClass : (U W).H' 0 (T W) :=
-  (coordinateUnitEquiv (overlapIso W)).symm (Additive.ofMul (p W))
+  (coordinateUnitEquiv (X := Y W) (U := T W) (R := CommRingCat.of (P W)) (overlapIso W)).symm (Additive.ofMul (p W))
 
 /-- The same transition in literal sections of the full coordinate-unit sheaf. -/
 def transitionSection : (U W).obj.obj (op (T W)) :=
@@ -105,7 +105,7 @@ private theorem transitionValue :
   have hQ : (sectionIso (overlapIso W)).hom.hom
       ((transitionSection W).toMul : Γ((T W).left, ⊤)) = ((p W : (P W)ˣ) : P W) :=
     congrArg (fun a : Additive (P W)ˣ => (a.toMul : P W))
-      ((coordinateUnitEquiv (overlapIso W)).apply_symm_apply (Additive.ofMul (p W)))
+      ((coordinateUnitEquiv (X := Y W) (U := T W) (R := CommRingCat.of (P W)) (overlapIso W)).apply_symm_apply (Additive.ofMul (p W)))
   refine hR.trans ?_
   apply Additive.ext
   apply Units.ext

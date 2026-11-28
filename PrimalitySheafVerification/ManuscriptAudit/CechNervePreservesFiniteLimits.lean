@@ -50,8 +50,13 @@ private theorem natural {m n : ℕ} (s : ⦋m⦌ ⟶ ⦋n⦌) :
       map_vertex]
   apply WidePullback.hom_ext
   · exact h
-  · rw [← WidePullback.π_arrow (fun _ : Fin (m + 1) ↦ F.map f) (0 : Fin (m + 1)),
-      ← Category.assoc, ← Category.assoc, h]
+  · have hb : vertex (F.map f) m 0 ≫ F.map f =
+        WidePullback.base (fun _ : Fin (m + 1) ↦ F.map f) :=
+      WidePullback.π_arrow (fun _ : Fin (m + 1) ↦ F.map f) 0
+    change _ ≫ WidePullback.base (fun _ : Fin (m + 1) ↦ F.map f) =
+      _ ≫ WidePullback.base (fun _ : Fin (m + 1) ↦ F.map f)
+    rw [← hb, ← Category.assoc, ← Category.assoc]
+    exact congrArg (fun g ↦ g ≫ F.map f) (h 0)
 
 /-- The comparison preserves all the actual simplicial restriction maps. -/
 def comparison : (Arrow.mk f).cechNerve ⋙ F ≅ (Arrow.mk (F.map f)).cechNerve :=

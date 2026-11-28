@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -28,7 +29,7 @@ def torOneIsoPrimePowers (m n : ℕ) (hm : 0 < m) (hn : 0 < n) :
       ⨁ factor m n := by
   let e := (residueEquivPrimePowers m n hm.ne' hn.ne').toAddEquiv
   let el : ZMod (Nat.gcd m n) ≃ₗ[ℤ] (∀ p : n.primeFactors, ZMod (localModulus m n p)) :=
-    { e with map_smul' := fun a x ↦ e.map_zsmul x a }
+    e.toIntLinearEquiv
   exact IntCyclicDerivedTorGcd.torOneIsoGcdResidues m n hm hn ≪≫
     el.toModuleIso ≪≫ (ModuleCat.piIsoPi (factor m n)).symm ≪≫
     (biproduct.isoProduct (factor m n)).symm
@@ -39,7 +40,7 @@ def torOneIsoPrimePower (m p k : ℕ) (hm : 0 < m) (hp : p.Prime) :
       ModuleCat.of ℤ (ZMod (p ^ min (padicValNat p m) k)) := by
   let e := (ZMod.ringEquivCongr (gcd_prime_power_valuation m hm.ne' hp k)).toAddEquiv
   let el : ZMod (Nat.gcd m (p ^ k)) ≃ₗ[ℤ] ZMod (p ^ min (padicValNat p m) k) :=
-    { e with map_smul' := fun a x ↦ e.map_zsmul x a }
+    e.toIntLinearEquiv
   exact IntCyclicDerivedTorGcd.torOneIsoGcdResidues m (p ^ k) hm (pow_pos hp.pos k) ≪≫
     el.toModuleIso
 

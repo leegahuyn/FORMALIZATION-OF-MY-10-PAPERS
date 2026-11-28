@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Data.ZMod.QuotientRing
 
@@ -15,7 +16,7 @@ def quotientResidueIso (n : ℕ) :
     ModuleCat.of ℤ (ℤ ⧸ Ideal.span ({(n : ℤ)} : Set ℤ)) ≅ ModuleCat.of ℤ (ZMod n) := by
   let e := (Int.quotientSpanNatEquivZMod n).toAddEquiv
   let el : (ℤ ⧸ Ideal.span ({(n : ℤ)} : Set ℤ)) ≃ₗ[ℤ] ZMod n :=
-    { e with map_smul' := fun a x ↦ e.map_zsmul x a }
+    e.toIntLinearEquiv
   exact el.toModuleIso
 
 end

@@ -44,7 +44,8 @@ local instance : IsDomain (Neighborhood W) :=
 private theorem boundary_one :
     (S W).δ (F W) 0 1 rfl (transitionClass W) = boundaryClass W 1 := by
   change _ = (S W).δ (F W) 0 1 rfl
-    ((coordinateUnitEquiv (overlapIso W)).symm
+    ((coordinateUnitEquiv (X := projectiveScheme W) (U := (S W).X₁)
+      (R := CommRingCat.of (Puncture W)) (overlapIso W)).symm
       (Additive.ofMul ((PrimeLocalizationUnits.primeUnit (localX W)) ^ (1 : ℤ))))
   rw [zpow_one]
   rfl

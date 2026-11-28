@@ -21,8 +21,12 @@ variable (U : X.Etale) (hI : Subsingleton (I.H' 1 U))
 private abbrev J := (freeEtaleRepresentable X).obj U
 
 theorem connecting_surjective : Function.Surjective (connectingAt i U) := by
-  have hS : (ShortComplex.cokernelSequence i).ShortExact :=
-    ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) inferInstance inferInstance
+  have hS : (ShortComplex.cokernelSequence i).ShortExact := by
+    refine ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) ?_ ?_
+    · change Mono i
+      infer_instance
+    · change Epi (cokernel.π i)
+      infer_instance
   intro x
   have hx : x.comp (Ext.mk₀ i) (add_zero 1) = 0 := hI.allEq _ _
   have h := Ext.covariant_sequence_exact₁' (J U) hS 0 1 rfl

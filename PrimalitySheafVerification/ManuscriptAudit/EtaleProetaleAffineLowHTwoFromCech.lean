@@ -71,7 +71,7 @@ private theorem comparison_boundary {S : ShortComplex (C X)} (hS : S.ShortExact)
     (EtaleCoefficientCohomologyMap.comparison X S.X₃ n x)
 
 set_option maxHeartbeats 4000000 in
-private theorem comparison_succ_surjective (n : ℕ)
+theorem comparison_succ_surjective (n : ℕ)
     (hPrevious : ∀ F : C X, Function.Surjective (comparison X F n))
     (hInj : ∀ I : C X, Injective I →
       Subsingleton (Sheaf.H ((liftedImage X).obj I) (n+1)))

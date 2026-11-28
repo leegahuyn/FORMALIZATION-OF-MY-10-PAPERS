@@ -67,7 +67,7 @@ theorem no_ordered_cross_limit_of_continuation_residue {P : ℂ → ℂ} {U : Se
     rw [hA hε]
   exact hr (tendsto_nhds_unique (hPole.congr' hEq) hLimit)
 
-private theorem radial_tendsto (c : ℂ) :
+theorem cross_right_radial_tendsto (c : ℂ) :
     Tendsto (fun ε : ℝ => (ε : ℂ) + c) (𝓝[>] 0) (𝓝[≠] c) := by
   have h : Continuous (fun ε : ℝ => (ε : ℂ) + c) := Complex.continuous_ofReal.add continuous_const
   refine tendsto_nhdsWithin_iff.mpr ⟨?_, ?_⟩
@@ -82,7 +82,7 @@ theorem radial_simple_pole_has_nonzero_residue {P : ℂ → ℂ} {c : ℂ}
     ∃ r : ℂ, r ≠ 0 ∧ Tendsto (fun ε : ℝ => (ε : ℂ) * P ((ε : ℂ) + c)) (𝓝[>] 0) (𝓝 r) := by
   obtain ⟨g, hg, hg₀, hEq⟩ := (meromorphicOrderAt_eq_int_iff hP).1 hOrder
   refine ⟨g c, hg₀, ?_⟩
-  have hRad := radial_tendsto c
+  have hRad := cross_right_radial_tendsto c
   refine (hg.continuousAt.tendsto.comp (hRad.mono_right nhdsWithin_le_nhds)).congr' ?_
   filter_upwards [hRad.eventually hEq, (self_mem_nhdsWithin : ∀ᶠ ε : ℝ in 𝓝[>] 0, 0 < ε)] with ε he hε
   change P ((ε : ℂ) + c) = ((ε : ℂ) + c - c) ^ (-1 : ℤ) • g ((ε : ℂ) + c) at he

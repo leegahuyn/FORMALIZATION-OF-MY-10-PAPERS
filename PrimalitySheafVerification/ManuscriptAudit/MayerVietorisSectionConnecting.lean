@@ -51,8 +51,12 @@ private theorem sectionHom_restrict {U V : X.Etale} (a : U ⟶ V) (F : C (X := X
 variable {F I : C (X := X)} (i : F ⟶ I) [Mono i]
 private abbrev Q := cokernel i
 private abbrev seq := ShortComplex.cokernelSequence i
-private theorem short_exact : (seq i).ShortExact :=
-  ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) inferInstance inferInstance
+private theorem short_exact : (seq i).ShortExact := by
+  refine ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) ?_ ?_
+  · change Mono i
+    infer_instance
+  · change Epi (cokernel.π i)
+    infer_instance
 
 variable (z : (Q i).obj.obj (op S.X₄)) (a : I.obj.obj (op S.X₂))
   (b : I.obj.obj (op S.X₃)) (w : F.obj.obj (op S.X₁))
@@ -80,6 +84,7 @@ private def comparison : S.shortComplex ⟶ seq i where
     · simp only [biprod.inr_desc_assoc]
       rw [← sectionHom_coeff, ← sectionHom_restrict, hb]
 
+include a b ha hb hw in
 /-- If the actual two sections lift the global cokernel section and
 differ by the genuine overlap section, their two connecting classes agree. -/
 theorem connectingAt_eq_mv :

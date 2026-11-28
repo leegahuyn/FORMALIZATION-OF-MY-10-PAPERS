@@ -51,10 +51,13 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
         r.comp (extendMap p) = (includeLeft : T.carrier →ₐ[B] _).comp m ∧
         r.comp (extendMap q) = (includeRight : T.carrier →ₐ[B] _).comp m := by
   letI : EssentiallySmall.{u} (Stage B D) := NativeAffineEtaleStageSmall.essentiallySmall_stage
-  let i := Stage.of B D (extend (B := B) v)
-  let c := algebraCocone (A := B) (B := D)
-  let w := tensorIso (R := R (B := B)) D D
-  let t := (extend (B := B) f).toUnder ≫ w.hom
+  let i : Stage B D := Stage.of B D (extend (B := B) v)
+  let D₀ : Stage B D ⥤ Under (R (B := B)) := algebraDiagram
+  let c : Cocone D₀ := algebraCocone
+  let w : CommRingCat.mkUnder (R (B := B)) (D ⊗[B] D) ≅ c.pt ⨿ c.pt :=
+    tensorIso (R := R (B := B)) D D
+  let t : Q (A := A) (B := B) (N := N) ⟶ c.pt ⨿ c.pt :=
+    AlgHom.toUnder (R := R (B := B)) (extend (B := B) f) ≫ w.hom
   have hfpL : (extend (B := B) f).comp (extendMap (B := B) p) =
       (includeLeft : D →ₐ[B] D ⊗[B] D).comp (extend v) :=
     (extend_comp p f).trans ((congrArg (extend (B := B)) hp).trans
@@ -63,8 +66,10 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
       (includeRight : D →ₐ[B] D ⊗[B] D).comp (extend v) :=
     (extend_comp q f).trans ((congrArg (extend (B := B)) hq).trans
       (postcomp_extend v includeRight).symm)
-  let l := (extendMap (B := B) p).toUnder
-  let r := (extendMap (B := B) q).toUnder
+  let l : D₀.obj i ⟶ Q (A := A) (B := B) (N := N) :=
+    AlgHom.toUnder (R := R (B := B)) (extendMap (B := B) p)
+  let r : D₀.obj i ⟶ Q (A := A) (B := B) (N := N) :=
+    AlgHom.toUnder (R := R (B := B)) (extendMap (B := B) q)
   have hL : l ≫ t = c.ι.app i ≫ coprod.inl := by
     change (extendMap (B := B) p).toUnder ≫ ((extend (B := B) f).toUnder ≫ w.hom) =
       (extend (B := B) v).toUnder ≫ coprod.inl
@@ -81,14 +86,16 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
         (coprod.inr : CommRingCat.mkUnder (R (B := B)) D ⟶ _) :=
       inr_tensorIso_hom (R := B) (S := D) (T := D)
     exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z) h
-  have hPi : ((algebraDiagram (A := B) (B := D)).obj i).hom.hom.FinitePresentation := by
+  have hPi : (D₀.obj i).hom.hom.FinitePresentation := by
     change (algebraMap B (B ⊗[A] M)).FinitePresentation
     exact RingHom.finitePresentation_algebraMap.mpr inferInstance
   have hPq : (Q (A := A) (B := B) (N := N)).hom.hom.FinitePresentation := by
     change (algebraMap B (B ⊗[A] N)).FinitePresentation
     exact RingHom.finitePresentation_algebraMap.mpr inferInstance
-  obtain ⟨j, ij, g, _, hlj, hrj⟩ := AffineStageMatchingDescent.exists_match_at_stage
-    (AffineEtaleStageAlgebraColimit.isColimit_algebra hApprox) i hPi _ hPq l r t hL hR
+  have hc : IsColimit c := AffineEtaleStageAlgebraColimit.isColimit_algebra hApprox
+  obtain ⟨j, ij, g, _, hlj, hrj⟩ :=
+    AffineStageMatchingDescent.exists_match_at_stage (D := D₀) (c := c) hc i hPi
+      (Q (A := A) (B := B) (N := N)) hPq l r t hL hR
   let z := tensorIso (R := R (B := B)) j.carrier j.carrier
   let e : B ⊗[A] N →ₐ[B] j.carrier ⊗[B] j.carrier := algebraHom (g ≫ z.inv)
   refine ⟨j, hom ij, e, ij.property, ?_, ?_⟩

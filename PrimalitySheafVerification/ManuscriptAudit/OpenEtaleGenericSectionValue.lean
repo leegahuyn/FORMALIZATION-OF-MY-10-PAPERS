@@ -64,11 +64,17 @@ private theorem factoringProjection
     (hj : f = g ≫ j)
     (h : IsTerminal ((B f).obj (Scheme.Etale.mk j))) :
     (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv.left ≫ pullback.fst j f = g := by
-  let t := (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv
-  have ht : t.left ≫ pullback.snd j f = 𝟙 Y := MorphismProperty.Over.w t
+  let s := (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv
+  let t : Y ⟶ pullback j f := s.left
+  have ht : t ≫ pullback.snd j f = 𝟙 Y := MorphismProperty.Over.w s
   apply (cancel_mono j).mp
-  rw [Category.assoc, pullback.condition, ← Category.assoc, ht, Category.id_comp]
-  exact hj
+  change (t ≫ pullback.fst j f) ≫ j = g ≫ j
+  calc
+    _ = t ≫ (pullback.fst j f ≫ j) := Category.assoc _ _ _
+    _ = t ≫ (pullback.snd j f ≫ f) := congrArg (t ≫ ·) pullback.condition
+    _ = (t ≫ pullback.snd j f) ≫ f := (Category.assoc _ _ _).symm
+    _ = f := (congrArg (· ≫ f) ht).trans (Category.id_comp f)
+    _ = _ := hj
 
 /-- The genuine regular-to-generic unit morphism on a factoring open
 is evaluated by the literal map from the generic scheme into that open. -/
@@ -79,9 +85,15 @@ theorem genericValue_regular (hj : f = g ≫ j)
       ((pullbackToDirectImage f).hom.app (op (Scheme.Etale.mk j)) x) =
       (ringUnits.map g.appTop) x := by
   let H := Scheme.Γ ⋙ ringUnits
-  let t := (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv.left
-  change H.map t.op (H.map (pullback.fst j f).op x) = H.map g.op x
-  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, factoringProjection f j g hj h]
+  let t : Y ⟶ pullback j f := (baseChangeTerminalIso f (Scheme.Etale.mk j) h).inv.left
+  let r : pullback j f ⟶ U := pullback.fst j f
+  have ht : t ≫ r = g := factoringProjection f j g hj h
+  have hop : r.op ≫ t.op = g.op := (op_comp t r).symm.trans (congrArg Quiver.Hom.op ht)
+  change H.map t.op (H.map r.op x) = H.map g.op x
+  calc
+    _ = (H.map r.op ≫ H.map t.op) x := rfl
+    _ = H.map (r.op ≫ t.op) x := congrArg (fun u => u x) (H.map_comp r.op t.op).symm
+    _ = _ := congrArg (fun u => H.map u x) hop
 
 end
 

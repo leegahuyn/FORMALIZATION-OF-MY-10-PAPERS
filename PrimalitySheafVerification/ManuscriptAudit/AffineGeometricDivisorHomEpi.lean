@@ -111,7 +111,7 @@ theorem affineDivisorHom_epi : Epi (affineDivisorHom K A F) := by
 
 /-- The actual divisor morphism on the full small étale site is epic. -/
 theorem divisorHom_epi : Epi (divisorHom K A F) := by
-  letI : Epi (affineDivisorHom K A F) := affineDivisorHom_epi K F
+  letI : Epi (affineDivisorHom K A F) := affineDivisorHom_epi K A F
   unfold divisorHom
   infer_instance
 

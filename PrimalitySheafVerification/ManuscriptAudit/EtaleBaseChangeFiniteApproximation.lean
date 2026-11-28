@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleStageColimit
 import PrimalitySheafVerification.ManuscriptAudit.WeaklyEtaleAffineLineGlobalStage
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageTensorExtensionMaps
 

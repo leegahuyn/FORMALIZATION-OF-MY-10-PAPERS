@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
 import PrimalitySheafVerification.ManuscriptAudit.IntegerGcdCyclicKernel
@@ -54,11 +55,15 @@ def cofactorMap (hm : 0 < m) : ZMod (Nat.gcd m n) →+ K m n :=
 theorem cofactorMap_bijective (hm : 0 < m) :
     Function.Bijective (cofactorMap m n hm) := by
   constructor
-  · unfold cofactorMap
-    apply ZMod.lift_injective.mpr
-    intro a ha
+  · intro x y hxy
+    apply sub_eq_zero.mp
+    have hZero : cofactorMap m n hm (x - y) = 0 := by rw [map_sub, hxy, sub_self]
+    obtain ⟨a, ha⟩ := ZMod.intCast_surjective (n := Nat.gcd m n) (x - y)
+    rw [← ha] at hZero ⊢
+    unfold cofactorMap at hZero
+    rw [ZMod.lift_coe] at hZero
     exact (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mpr
-      ((representative_eq_zero m n hm a).mp ha)
+      ((representative_eq_zero m n hm a).mp hZero)
   · intro x
     obtain ⟨a, ha⟩ := ZMod.intCast_surjective x.val
     have h : (n : ℤ) • x.val = 0 := x.property
@@ -72,7 +77,7 @@ theorem cofactorMap_bijective (hm : 0 < m) :
 noncomputable def gcdResiduesEquivKernel (hm : 0 < m) :
     ZMod (Nat.gcd m n) ≃ₗ[ℤ] K m n := by
   let e := AddEquiv.ofBijective (cofactorMap m n hm) (cofactorMap_bijective m n hm)
-  exact { e with map_smul' := fun a x ↦ e.map_zsmul x a }
+  exact e.toIntLinearEquiv
 
 end ManuscriptAudit.ZModGcdCyclicKernel
 

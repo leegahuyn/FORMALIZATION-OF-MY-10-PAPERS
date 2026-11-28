@@ -47,16 +47,20 @@ theorem chart_algebra_surjective {V W : (spectrum A).ProEt} [IsAffine V.left] [I
   obtain ⟨w, hw⟩ := hf (j.hom.left z)
   refine ⟨e.inv.left w, ?_⟩
   have h : j.hom.left (specMap A k (e.inv.left w)) = j.hom.left z := by
-    rw [← Scheme.Hom.comp_apply, hh, Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, he]
-    exact hw
+    have h₁ : j.hom.left (specMap A k (e.inv.left w)) =
+        f.left (e.hom.left (e.inv.left w)) :=
+      congrArg (fun t : (ProetaleAffineTensor.object A (coordinateRing V)).left ⟶ W.left ↦
+        t (e.inv.left w)) hh
+    have h₂ : e.hom.left (e.inv.left w) = w :=
+      congrArg (fun t : V.left ⟶ V.left ↦ t w) he
+    exact h₁.trans ((congrArg f.left h₂).trans hw)
   have hInv (x : (ProetaleAffineTensor.object A (coordinateRing W)).left) :
       j.inv.left (j.hom.left x) = x := by
-    rw [← Scheme.Hom.comp_apply]
     have h' : j.hom.left ≫ j.inv.left =
         𝟙 (ProetaleAffineTensor.object A (coordinateRing W)).left :=
       congrArg (fun x ↦ x.left) j.hom_inv_id
-    rw [h']
-    rfl
+    exact congrArg (fun t : (ProetaleAffineTensor.object A (coordinateRing W)).left ⟶
+      (ProetaleAffineTensor.object A (coordinateRing W)).left ↦ t x) h'
   exact (hInv _).symm.trans ((congrArg j.inv.left h).trans (hInv _))
 
 set_option maxHeartbeats 4800000 in
@@ -76,7 +80,7 @@ theorem affineSingletonSeparated
       (P I).map (chartMap k).op ((P I).map j.hom.op y) := by
     rw [map_map, map_map, chartIso_natural f, ← map_map, ← map_map, hxy]
   have he := NativeAffineEtaleRawSingletonSeparated.restrict_injective I
-    (hApprox (coordinateRing W) inferInstance) k (chart_algebra_surjective f hf) h
+    (hApprox (coordinateRing W) inferInstance) k (chart_algebra_surjective f hf.surj) h
   have hi (z : (P I).obj (op W)) :
       (P I).map j.inv.op ((P I).map j.hom.op z) = z := by
     rw [map_map, j.inv_hom_id]

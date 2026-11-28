@@ -35,8 +35,10 @@ variable (I : Sheaf (X (A := A)).smallEtaleTopology G.{u})
 
 private theorem repr_natural {B : Under (R (A := A))} [WeaklyEtale (Spec.map B.hom)]
     {T V : Stage A B.right} (e : T ⟶ V) (x : (sectionDiagram (B := B.right) I).obj T) :
-    represent I V ((sectionDiagram (B := B.right) I).map e x) = represent I T x :=
-  DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
+    represent I V ((sectionDiagram (B := B.right) I).map e x) = represent I T x := by
+  letI : WeaklyEtale (ProetaleAffineTensor.structureMap A B.right) :=
+    inferInstanceAs (WeaklyEtale (Spec.map B.hom))
+  exact DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
     ((rawSectionCocone (B := B.right) I).w e)) x
 
 variable {J : Type*} [Category* J] [IsFiltered J] [EssentiallySmall.{u} J]
@@ -63,16 +65,31 @@ theorem exists_equal_stage (hc : IsColimit c) (i : J)
   let k := chartRingHom (leg c i)
   let T' := stageAfterMap k T
   let V' := stageAfterMap k V
-  have hEq : represent I T' u = represent I V' v := by
-    rw [← restrict_repr, ← restrict_repr, hu, hv]
-    exact hxy
+  have hEq : represent I T' u = represent I V' v := calc
+    _ = restriction I (leg c i) (represent I T u) := (restrict_repr I (leg c i) T u).symm
+    _ = restriction I (leg c i) x := congrArg (restriction I (leg c i)) hu
+    _ = restriction I (leg c i) y := hxy
+    _ = restriction I (leg c i) (represent I V v) := congrArg (restriction I (leg c i)) hv.symm
+    _ = _ := restrict_repr I (leg c i) V v
   obtain ⟨N, p, q, hz⟩ := exists_equal_representatives I T' V' u v hEq
   let P := U (A := A) T.carrier
   let Q := U (A := A) V.carrier
   let E := U (A := A) N.carrier
-  have hP : P.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
-  have hQ : Q.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
-  have hE : E.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
+  have hP : P.hom.hom.FinitePresentation := by
+    letI : Algebra A T.carrier := T.algebra
+    letI : Algebra.Etale A T.carrier := T.isEtale
+    change (algebraMap A T.carrier).FinitePresentation
+    exact RingHom.finitePresentation_algebraMap.mpr inferInstance
+  have hQ : Q.hom.hom.FinitePresentation := by
+    letI : Algebra A V.carrier := V.algebra
+    letI : Algebra.Etale A V.carrier := V.isEtale
+    change (algebraMap A V.carrier).FinitePresentation
+    exact RingHom.finitePresentation_algebraMap.mpr inferInstance
+  have hE : E.hom.hom.FinitePresentation := by
+    letI : Algebra A N.carrier := N.algebra
+    letI : Algebra.Etale A N.carrier := N.isEtale
+    change (algebraMap A N.carrier).FinitePresentation
+    exact RingHom.finitePresentation_algebraMap.mpr inferInstance
   obtain ⟨j, w, hw⟩ := AffineStageFinitePresentationContinuity.exists_factorization E hc hE N.toChart.toUnder
   have hp : T.toChart.toUnder ≫ leg c i = (hom p).toUnder ≫ N.toChart.toUnder := by
     apply (Under.forget (R (A := A))).map_injective

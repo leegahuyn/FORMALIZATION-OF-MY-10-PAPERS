@@ -73,9 +73,12 @@ private abbrev terminalIsTerminal := MorphismProperty.Over.mkIdTerminal @Etale (
 
 private abbrev seq := ShortComplex.cokernelSequence (regularToGeneric W)
 
-private theorem short_exact : (seq W).ShortExact :=
-  ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact (regularToGeneric W))
-    inferInstance inferInstance
+private theorem short_exact : (seq W).ShortExact := by
+  refine ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact (regularToGeneric W)) ?_ ?_
+  · change Mono (regularToGeneric W)
+    infer_instance
+  · change Epi (cokernel.π (regularToGeneric W))
+    infer_instance
 
 /-- The actual connecting map from projective divisor sections to first
 small étale unit cohomology. -/

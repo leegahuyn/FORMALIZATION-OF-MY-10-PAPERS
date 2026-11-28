@@ -60,11 +60,13 @@ private theorem product_over :
   rw [← Category.assoc, ← Category.assoc]
   have h : Sigma.ι (fun j ↦ (W V j).left) i ≫ f =
       FiniteProductSpectrumOpen.projection (B V) i := Sigma.ι_desc _ _
-  rw [h]
-  change ((chartMap (Pi.evalAlgHom A (B V) i)).left ≫ (productSchemeIso V).hom) ≫
-    (coproduct V).hom = (chartMap (Pi.evalAlgHom A (B V) i)).left ≫ _
-  rw [product_leg_scheme, Category.assoc, MorphismProperty.Over.w (injection V i),
-    MorphismProperty.Over.w (chartIso (V i)).hom, MorphismProperty.Over.w]
+  have hπ : ((chartMap (Pi.evalAlgHom A (B V) i)).left ≫ (productSchemeIso V).hom) ≫
+      (coproduct V).hom = (chartMap (Pi.evalAlgHom A (B V) i)).left ≫
+        structureMap A (∀ i, B V i) := by
+    rw [product_leg_scheme, Category.assoc, MorphismProperty.Over.w (injection V i),
+      MorphismProperty.Over.w (chartIso (V i)).hom, MorphismProperty.Over.w]
+  exact (congrArg (fun q ↦ (q ≫ (productSchemeIso V).hom) ≫ (coproduct V).hom) h).trans
+    (hπ.trans (congrArg (fun q ↦ q ≫ structureMap A (∀ i, B V i)) h.symm))
 
 private def productIso : object A (∀ i, B V i) ≅ coproduct V :=
   MorphismProperty.Over.isoMk (productSchemeIso V) (product_over V)
@@ -122,7 +124,6 @@ theorem existsUnique_raw_sections (x : ∀ i, (P I).obj (op (V i))) :
     apply hUniq
     intro i
     rw [h i, hv]
-    rfl
 
 omit [∀ i, IsAffine (V i).left] in
 /-- Disjoint-union descent for the raw presheaf, as used by the actual

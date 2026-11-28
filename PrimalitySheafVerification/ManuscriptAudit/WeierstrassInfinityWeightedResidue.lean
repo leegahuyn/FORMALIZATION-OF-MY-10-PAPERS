@@ -66,11 +66,11 @@ theorem exact_weighted_leading_residue (p q : K[X]) (hp : p ≠ 0) (hq : q ≠ 0
   refine ⟨scaledValue W p q d, ?_, scaledValue_on_puncture W p q d (le_max_left _ _) (le_max_right _ _)⟩
   have hne : 2 * p.natDegree ≠ 2 * q.natDegree + 3 := by omega
   rcases lt_or_gt_of_ne hne with h | h
-  · change localOrigin W (scaledValue W p q d) ≠ 0
-    rw [d, max_eq_right h.le, odd_leading_residue W p q h]
+  · change localOrigin W (scaledValue W p q (max (2 * p.natDegree) (2 * q.natDegree + 3))) ≠ 0
+    rw [max_eq_right h.le, odd_leading_residue W p q h]
     exact leadingCoeff_ne_zero.mpr hq
-  · change localOrigin W (scaledValue W p q d) ≠ 0
-    rw [d, max_eq_left h.le, even_leading_residue W p q h]
+  · change localOrigin W (scaledValue W p q (max (2 * p.natDegree) (2 * q.natDegree + 3))) ≠ 0
+    rw [max_eq_left h.le, even_leading_residue W p q h]
     exact leadingCoeff_ne_zero.mpr hp
 
 end

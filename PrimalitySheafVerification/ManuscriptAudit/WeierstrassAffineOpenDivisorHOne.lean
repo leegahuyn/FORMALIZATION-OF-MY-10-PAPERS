@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import PrimalitySheafVerification.ManuscriptAudit.SmallEtaleUnitCohomology
 import PrimalitySheafVerification.ManuscriptAudit.AffineOpenQuotientCycleNaturality
 import PrimalitySheafVerification.ManuscriptAudit.DedekindCycleClass
 import PrimalitySheafVerification.ManuscriptAudit.EtaleDivisorConnectingAt
@@ -71,7 +72,7 @@ private theorem mapClass_exact (d : D W) :
 
 private theorem genericHOne_zero : Subsingleton ((G W).H' 1 (U W)) :=
   AffineOpenDirectImageHOne.HOne_subsingleton (genericToAffine W) (j W) _
-    (SmallEtaleUnitCohomology.unitHOne_subsingleton_of_pid (F W))
+    (KummerUnitsSheaf.unitHOne_subsingleton_of_pid (F W))
 
 /-- The actual first unit cohomology on the open right chart is the
 usual Dedekind class group of its affine coordinate ring. -/

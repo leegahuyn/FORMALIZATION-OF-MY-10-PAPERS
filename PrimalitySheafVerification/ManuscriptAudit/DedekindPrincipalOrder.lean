@@ -27,9 +27,10 @@ theorem principalDivisor_apply (x : Additive Fˣ) :
     apply x.toMul.ne_zero
     change f = 0
     rw [← he, hz, map_zero, zero_div]
+  have hb0 : b ≠ 0 := mem_nonZeroDivisors_iff_ne_zero.mp hb
   let i := algebraMap R F
   have ha' : i a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha
-  have hb' : i b ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr hb
+  have hb' : i b ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr hb0
   have hsa : (Ideal.span ({a} : Set R)) ≠ 0 := by rwa [Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
   have hsb : (Ideal.span ({b} : Set R)) ≠ 0 := by rwa [Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
   have hm : spanSingleton R⁰ (i b) * spanSingleton R⁰ f = spanSingleton R⁰ (i a) := by
@@ -39,7 +40,7 @@ theorem principalDivisor_apply (x : Additive Fˣ) :
   rw [hm, ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, count_coe F v hsa, count_coe F v hsb] at hc
   change count F v (spanSingleton R⁰ f) = -log (v.valuation F f)
   rw [← he, Valuation.map_div, HeightOneSpectrum.valuation_of_algebraMap,
-    HeightOneSpectrum.valuation_of_algebraMap, v.intValuation_if_neg ha, v.intValuation_if_neg hb,
+    HeightOneSpectrum.valuation_of_algebraMap, v.intValuation_if_neg ha, v.intValuation_if_neg hb0,
     ← exp_sub, log_exp]
   rw [he]
   omega

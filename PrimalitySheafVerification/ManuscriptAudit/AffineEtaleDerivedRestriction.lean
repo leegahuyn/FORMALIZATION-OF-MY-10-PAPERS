@@ -53,8 +53,8 @@ private theorem sectionHom_map (B : Type) [CommRing B]
     {F G : C B} (f : F ⟶ G) (x : F.obj.obj (op (baseObject B))) :
     sectionHom B G (f.hom.app (op (baseObject B)) x) = sectionHom B F x ≫ f := by
   apply (Ext.mk₀_bijective (Z B) G).injective
-  rw [mk₀_sectionHom, ← Sheaf.H.equiv₀_symm_naturality, Sheaf.H.map_apply,
-    ← Ext.mk₀_comp_mk₀, mk₀_sectionHom]
+  rw [mk₀_sectionHom, ← Ext.mk₀_comp_mk₀, mk₀_sectionHom]
+  exact (Sheaf.H.equiv₀_symm_naturality (terminal B) f x).symm
 
 private def generator (B : Type) [CommRing B] : (Z B).obj.obj (op (baseObject B)) :=
   Sheaf.H.equiv₀ (Z B) (terminal B) (Ext.mk₀ (𝟙 (Z B)))
@@ -111,6 +111,7 @@ private theorem restrictionConstant_section :
       ((restrictSection (j A S) (cokernel i) b).hom x)) = _
   rw [sectionHom_map, hp, sectionHom_map, Category.assoc]
 
+set_option maxHeartbeats 800000 in
 /-- Actual derived restriction takes a true connecting representative to
 the connecting representative of the genuinely restricted global section. -/
 theorem restrictHOne_connecting :

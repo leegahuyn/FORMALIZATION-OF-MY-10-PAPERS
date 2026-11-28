@@ -32,16 +32,17 @@ theorem ring_dimension_one : ringKrullDim R = 1 := by
   letI : IsDomain R := IsLocalization.isDomain_of_local_atPrime inferInstance
   let M : Submonoid ℤ := (Ideal.span ({(5 : ℤ)} : Set ℤ)).primeCompl
   letI : IsLocalization M R := inferInstance
-  letI : IsPrincipalIdealRing R where
-    principal J := by
-      let D := J.under ℤ
-      let x := Submodule.IsPrincipal.generator D
-      refine ⟨algebraMap ℤ R x, ?_⟩
-      calc
-        J = Ideal.map (algebraMap ℤ R) D := (IsLocalization.map_under M R J).symm
-        _ = Ideal.map (algebraMap ℤ R) (Ideal.span {x}) :=
-          congrArg (Ideal.map (algebraMap ℤ R)) (Ideal.span_singleton_generator D).symm
-        _ = Ideal.span {algebraMap ℤ R x} := by rw [Ideal.map_span, Set.image_singleton]
+  letI : IsPrincipalIdealRing R := by
+    constructor
+    intro J
+    let D := J.under ℤ
+    let x := Submodule.IsPrincipal.generator D
+    refine ⟨algebraMap ℤ R x, ?_⟩
+    calc
+      J = Ideal.map (algebraMap ℤ R) D := (IsLocalization.map_under M R J).symm
+      _ = Ideal.map (algebraMap ℤ R) (Ideal.span {x}) :=
+        congrArg (Ideal.map (algebraMap ℤ R)) (Ideal.span_singleton_generator D).symm
+      _ = Ideal.span {algebraMap ℤ R x} := by rw [Ideal.map_span, Set.image_singleton]
   exact IsPrincipalIdealRing.ringKrullDim_eq_one R ring_not_field
 
 theorem module_dimension_one : Module.supportDim R F = 1 := by

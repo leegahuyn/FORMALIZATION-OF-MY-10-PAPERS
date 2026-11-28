@@ -31,8 +31,12 @@ private abbrev J := (freeEtaleRepresentable (X W)).obj (terminal W)
 
 local instance : Mono (m W) := regularToGeneric_mono W
 
-private theorem short_exact : (seq W).ShortExact :=
-  ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact (m W)) inferInstance inferInstance
+private theorem short_exact : (seq W).ShortExact := by
+  refine ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact (m W)) ?_ ?_
+  · change Mono (m W)
+    infer_instance
+  · change Epi (cokernel.π (m W))
+    infer_instance
 
 /-- The native connecting map with the actual terminal-object cohomology target. -/
 abbrev connecting :
