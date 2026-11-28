@@ -29,9 +29,7 @@ local instance : IsDedekindDomain (N W) :=
 def infinityPrime : HeightOneSpectrum (N W) where
   asIdeal := Ideal.span {localX W}
   isPrime := (Ideal.span_singleton_prime (localX_prime W).ne_zero).mpr (localX_prime W)
-  ne_bot := by
-    rw [Ideal.span_singleton_eq_bot]
-    exact (localX_prime W).ne_zero
+  ne_bot := fun h => (localX_prime W).ne_zero (Ideal.span_singleton_eq_bot.mp h)
 
 def punctureToLocalFractionField : P W →+* F W :=
   IsLocalization.Away.lift (localX W) (g := algebraMap (N W) (F W))

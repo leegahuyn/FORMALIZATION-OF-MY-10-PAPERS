@@ -42,6 +42,8 @@ private theorem rep {X Y : C} (a : Ext X Y 1) :
 
 variable (G : D ⥤ E) [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
+attribute [local instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
+
 /-- The genuine exact-functor map in degree one respects actual composition. -/
 theorem map_comp_functor {X Y : C} (a : Ext X Y 1) :
     (a.mapExactFunctor F).mapExactFunctor G = a.mapExactFunctor (F ⋙ G) := by

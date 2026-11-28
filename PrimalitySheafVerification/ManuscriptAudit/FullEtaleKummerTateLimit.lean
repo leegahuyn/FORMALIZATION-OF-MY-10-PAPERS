@@ -69,6 +69,8 @@ theorem levelEquiv_step (n : ℕ) (x : Level X l (n + 1)) :
       transition l (UnitsHOne X) n (levelEquiv X l k hu (n + 1) x) := by
   letI : NeZero ((l ^ n : ℕ) : K) := ⟨coeff_ne_zero (K := K) l n⟩
   letI : NeZero ((l ^ (n + 1) : ℕ) : K) := ⟨coeff_ne_zero (K := K) l (n + 1)⟩
+  letI : NeZero ((l ^ n * l : ℕ) : K) :=
+    ⟨by rw [← pow_succ]; exact coeff_ne_zero (K := K) l (n + 1)⟩
   apply Subtype.ext
   have h := kernelHOneEquiv_step k (l ^ n) (pow_pos (Fact.out : l.Prime).pos n) (hu n)
     l (pow_pos (Fact.out : l.Prime).pos (n + 1)) (hu (n + 1)) x

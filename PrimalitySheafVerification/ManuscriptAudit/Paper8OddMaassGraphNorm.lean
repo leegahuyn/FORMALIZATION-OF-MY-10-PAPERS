@@ -40,6 +40,10 @@ private theorem lintegral_sq_norm_eq_ofReal_toLp_sq {F : ℍ → ℂ} (hF : MemL
   change L = ENNReal.ofReal (‖u‖ ^ 2)
   rw [hNorm, ENNReal.ofReal_toReal hFin]
 
+theorem lintegral_coe_Lp_sq_norm_eq (F : OddMaassL2) :
+    (∫⁻ z, ENNReal.ofReal (‖F z‖ ^ 2) ∂oddMaassMeasure) = ENNReal.ofReal (‖F‖ ^ 2) := by
+  simpa only [Lp.toLp_coeFn] using lintegral_sq_norm_eq_ofReal_toLp_sq (Lp.memLp F)
+
 theorem oddCoreEnergyGraph_norm_sq (f : OddSmoothCompactCore) :
     ‖oddCoreEnergyGraph f‖ ^ 2 =
       ‖oddCoreVector f‖ ^ 2 +

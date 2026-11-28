@@ -47,7 +47,8 @@ theorem detectionIndex_open_restriction_eq_iff (X : TopCat.{0}) {P : Set X}
   by_cases hPne : P.Nonempty
   · by_cases hU : ((U : Set X) ∩ P).Nonempty
     · simp [hPne, hMeet.mpr hU, hU]
-    · simp [hPne, hPne.ne_empty, fun h ↦ hU (hMeet.mp h), hU]
+    · have hPreimage : ¬ ((Subtype.val : U → X) ⁻¹' P).Nonempty := fun h ↦ hU (hMeet.mp h)
+      simp [hPne, hPne.ne_empty, hPreimage, hU]
   · have hE := Set.not_nonempty_iff_eq_empty.mp hPne
     simp [hE]
 

@@ -8,7 +8,7 @@ charts as soon as the base complement is quasi-compact. -/
 
 namespace ManuscriptAudit.SplitClosedProetaleComplement
 
-open AlgebraicGeometry CategoryTheory CategoryTheory.Limits
+open AlgebraicGeometry CategoryTheory CategoryTheory.Limits TopologicalSpace
 open SplitClosedProetaleDirectImage
 
 noncomputable section
@@ -40,7 +40,7 @@ theorem chart_quasiCompact (h : QuasiCompact (baseComplement i).ι) (U : T.ProEt
     QuasiCompact (complement i U).ι := by
   rw [complement_eq_preimage]
   exact MorphismProperty.of_isPullback (P := @QuasiCompact)
-    (isPullback_morphismRestrict U.hom (baseComplement i)).flip h
+    (isPullback_morphismRestrict U.hom (baseComplement i)) h
 
 theorem baseComplement_quasiCompact [NoetherianSpace T] :
     QuasiCompact (baseComplement i).ι := by

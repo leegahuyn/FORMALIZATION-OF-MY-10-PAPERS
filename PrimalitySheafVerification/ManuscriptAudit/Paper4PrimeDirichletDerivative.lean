@@ -22,7 +22,9 @@ abbrev complexCoeff (n : ℕ) : ℂ := countCoeff a n
 
 def primeDirichletSeries (s : ℝ) : ℝ := (LSeries (complexCoeff a) (s : ℂ)).re
 
-private theorem countCoeff_zero : countCoeff a 0 = 0 := by simp [countCoeff]
+private theorem countCoeff_zero : countCoeff a 0 = 0 := by
+  have h : ¬ Nat.Prime 0 := by decide
+  simp [countCoeff, h]
 
 private theorem abscissa_le : abscissaOfAbsConv (complexCoeff a) ≤ 1 := by
   apply (abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable (x := 1))

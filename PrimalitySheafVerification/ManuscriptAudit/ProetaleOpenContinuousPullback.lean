@@ -54,15 +54,17 @@ private theorem diagonal_restrict :
   apply ULift.ext
   apply ContinuousMap.ext
   intro t
-  change (((B f g i j H).hom.app (functions M X)).hom.app W
-    (((restriction j A).map (diagonal M f)).hom.app W ((restrictionFunctionsIso j M).inv.hom.app W a))).down t =
-    _
+  change (show C(↥(pullback W.unop.hom g : Scheme.{0}), M) from
+    (((B f g i j H).hom.app (functions M X)).hom.app W
+      (((restriction j A).map (diagonal M f)).hom.app W
+        ((restrictionFunctionsIso j M).inv.hom.app W a))).down) t = _
   have h := directImageRestrictionIso_hom_app_app H (functions M X) W.unop
   have hw : op W.unop = W := rfl
   rw [hw] at h
   rw [h]
-  change a.down ((((reindexIso H).hom.app W.unop).left ≫ pullback.fst (W.unop.hom ≫ j) f) t) =
-    a.down (pullback.fst W.unop.hom g t)
+  change (show C(↥W.unop.left, M) from a.down)
+      ((((reindexIso H).hom.app W.unop).left ≫ pullback.fst (W.unop.hom ≫ j) f) t) =
+    (show C(↥W.unop.left, M) from a.down) (pullback.fst W.unop.hom g t)
   rw [reindexIso_hom_fst H W.unop]
 
 /-- The actual map into the direct image of extension by zero, defined by adjunction. -/
@@ -98,16 +100,22 @@ theorem ambient_commutes :
     (a.homEquiv _ _) ((a.homEquiv _ _).symm k) ≫ w
   rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply]
   have hu : u ≫ (restriction i A).map z = h := by
-    change u ≫ (restriction i A).map ((b.homEquiv _ _).symm h) = _
-    rw [← b.homEquiv_unit, Equiv.apply_symm_apply]
+    change b.unit.app (functions M V) ≫
+      (restriction i A).map ((b.homEquiv (functions M V) (functions M X)).symm h) = h
+    exact (b.homEquiv_unit (functions M V) (functions M X)
+      ((b.homEquiv (functions M V) (functions M X)).symm h)).symm.trans
+        ((b.homEquiv (functions M V) (functions M X)).apply_symm_apply h)
   have hn : e.inv.app T ≫ R.map z = Q.map ((restriction i A).map z) ≫ e.inv.app (functions M X) :=
     (e.inv.naturality z).symm
   apply (cancel_mono (e.hom.app (functions M X))).mp
   calc
     _ = v ≫ Q.map u ≫ (e.inv.app T ≫ R.map z) ≫ e.hom.app (functions M X) := by simp only [Category.assoc]
     _ = v ≫ Q.map h := by
-      rw [hn, Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-      rw [← Functor.map_comp, hu]
+      rw [hn]
+      have he : e.inv.app (functions M X) ≫ e.hom.app (functions M X) = 𝟙 _ :=
+        (e.app (functions M X)).inv_hom_id
+      simp only [Category.assoc, he, Category.comp_id]
+      rw [← Q.map_comp, hu]
     _ = _ := (diagonal_restrict f g i j H M).symm.trans (Category.assoc _ _ _).symm
 
 /-- Pullback on actual continuous compact-support cohomology. -/

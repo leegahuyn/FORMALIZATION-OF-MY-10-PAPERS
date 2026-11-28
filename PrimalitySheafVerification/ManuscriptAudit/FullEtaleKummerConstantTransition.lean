@@ -54,10 +54,10 @@ local instance power_neZero (n : ℕ) : NeZero (l ^ n) :=
 local instance castPower_neZero (n : ℕ) : NeZero ((l ^ n : ℕ) : K) :=
   ⟨by rw [Nat.cast_pow]; exact pow_ne_zero n (NeZero.ne (l : K))⟩
 
-private abbrev M (n : ℕ) := coefficientGroup K (l ^ n)
+private abbrev M (F₀ : Type) [Field F₀] (p₀ n : ℕ) := coefficientGroup F₀ (p₀ ^ n)
 
 private def affineIso (n : ℕ) :
-    (constantSheaf (A X) C).obj (M l n) ≅ kernel (p X (l ^ n)) :=
+    (constantSheaf (A X) C).obj (M K l n) ≅ kernel (p X (l ^ n)) :=
   constantRootSheafIso (d := l ^ n) k ≪≫ sheafifiedRootsIsoKernel X (l ^ n)
 
 private theorem affineIso_hom_ι (n : ℕ) :
@@ -66,37 +66,40 @@ private theorem affineIso_hom_ι (n : ℕ) :
     (sheafifiedRootsIsoKernel X (l ^ n)).hom ≫ kernel.ι (p X (l ^ n)) = _
   rw [sheafifiedRoots_hom_ι, ← Functor.map_comp] <;> rfl
 
-private abbrev affineStep (n : ℕ) :=
-  (constantSheaf (A X) C).map (coefficientStep K l n)
+private abbrev affineStep {Z : Scheme.{0}} {F₀ : Type} [Field F₀] (p₀ n : ℕ) :
+    (constantSheaf (A Z) C).obj (M F₀ p₀ (n + 1)) ⟶
+      (constantSheaf (A Z) C).obj (M F₀ p₀ n) :=
+  (constantSheaf (A Z) C).map (coefficientStep F₀ p₀ n)
 
 private theorem affineStep_label (n : ℕ) :
-    affineStep (X := X) (K := K) l n ≫ (F X).map (label k (l ^ n)) =
+    affineStep (Z := X) (F₀ := K) l n ≫ (F X).map (label k (l ^ n)) =
       (F X).map (label k (l ^ (n + 1))) ≫ p X l := by
   change (F X).map ((Functor.const X.AffineEtaleᵒᵖ).map (coefficientStep K l n)) ≫
     (F X).map (label k (l ^ n)) = (F X).map (label k (l ^ (n + 1))) ≫ (F X).map (power X l)
   rw [← Functor.map_comp, ← Functor.map_comp, label_step l n k]
 
 private def constantComparison (n : ℕ) :
-    (constantSheaf (A X) C).obj (M l n) ≅
-      (E X).inverse.obj ((constantSheaf (J X) C).obj (M l n)) :=
+    (constantSheaf (A X) C).obj (M K l n) ≅
+      (E X).inverse.obj ((constantSheaf (J X) C).obj (M K l n)) :=
   let e := Functor.IsDenseSubsite.sheafEquivSheafificationCompatibility
     (A X) (J X) (Scheme.AffineEtale.Spec X) C
-  e.app ((Functor.const X.Etaleᵒᵖ).obj (M l n))
+  e.app ((Functor.const X.Etaleᵒᵖ).obj (M K l n))
 
 /-- Actual constant coefficient power step on the full small étale site. -/
-abbrev constantStep (n : ℕ) :=
+abbrev constantStep {X : Scheme.{0}} {K : Type} [Field K] (l n : ℕ) :
+    (constantSheaf (J X) C).obj (M K l (n + 1)) ⟶ (constantSheaf (J X) C).obj (M K l n) :=
   (constantSheaf (J X) C).map (coefficientStep K l n)
 
 private theorem constantComparison_naturality (n : ℕ) :
     (E X).inverse.map (constantStep (X := X) (K := K) l n) ≫ (constantComparison (X := X) (K := K) l n).inv =
-      (constantComparison (X := X) (K := K) l (n + 1)).inv ≫ affineStep (X := X) (K := K) l n := by
+      (constantComparison (X := X) (K := K) l (n + 1)).inv ≫ affineStep (Z := X) (F₀ := K) l n := by
   let e := Functor.IsDenseSubsite.sheafEquivSheafificationCompatibility
     (A X) (J X) (Scheme.AffineEtale.Spec X) C
   exact e.inv.naturality ((Functor.const X.Etaleᵒᵖ).map (coefficientStep K l n))
 
 /-- Natural comparison of the literal coefficients with the Kummer kernel. -/
 def constantKernelIso (n : ℕ) :
-    (constantSheaf (J X) C).obj (M l n) ≅ (S X (l ^ n)).X₁ :=
+    (constantSheaf (J X) C).obj (M K l n) ≅ (S X (l ^ n)).X₁ :=
   ((E X).counitIso.app _).symm ≪≫
     (E X).functor.mapIso ((constantComparison (X := X) (K := K) l n).symm ≪≫ affineIso k l n)
 
@@ -110,7 +113,7 @@ private abbrev rootLabel (n : ℕ) := comparisonArrow (X := X) (K := K) l n ≫
 is the transported literal affine root label. -/
 theorem constantKernel_toUnits (n : ℕ) :
     (constantKernelIso k l n).hom ≫ (S X (l ^ n)).f =
-      (E X).counitIso.inv.app ((constantSheaf (J X) C).obj (M l n)) ≫
+      (E X).counitIso.inv.app ((constantSheaf (J X) C).obj (M K l n)) ≫
         (E X).functor.map (rootLabel k l n) := by
   change (E X).counitIso.inv.app _ ≫ (E X).functor.map
       (comparisonArrow (X := X) (K := K) l n ≫ (affineIso k l n).hom) ≫

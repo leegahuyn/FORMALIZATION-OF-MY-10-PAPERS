@@ -76,12 +76,13 @@ private def overlapValue : (D W).obj.obj (op (T W)) ≃+ Additive (F W)ˣ :=
     (T W) (factoringOverlap W)).trans
     (ringUnits.mapIso (Scheme.ΓSpecIso (CommRingCat.of (F W)))).addCommGroupIsoToAddEquiv
 
+set_option maxHeartbeats 1800000 in
 private theorem overlapValue_restrict (a : (D W).obj.obj (op (Scheme.Etale.mk (j W)))) :
-    overlapValue W ((D W).obj.map (fstLeg (j W) (k W)).op a) = leftValue W a :=
-  congrArg ((ringUnits.mapIso (Scheme.ΓSpecIso
-    (CommRingCat.of (F W)))).addCommGroupIsoToAddEquiv)
-    (genericValue_natural (genericPoint W) (fullCoordinateUnitSheaf (genericScheme W))
-      (fstLeg (j W) (k W)) (factoringLeft W) (factoringOverlap W) a)
+    overlapValue W ((D W).obj.map (fstLeg (j W) (k W)).op a) = leftValue W a := by
+  unfold overlapValue leftValue
+  simp only [AddEquiv.trans_apply]
+  rw [genericValue_natural (genericPoint W) (fullCoordinateUnitSheaf (genericScheme W))
+    (fstLeg (j W) (k W)) (factoringLeft W) (factoringOverlap W) a]
 
 private theorem overlapGamma :
     (throughOverlap W).appTop ≫ (Scheme.ΓSpecIso (CommRingCat.of (F W))).hom =
@@ -102,15 +103,16 @@ private theorem transitionValue :
     (genericPoint_factors_overlap W) (factoringOverlap W) (transitionSection W)
   have hR := congrArg ((ringUnits.mapIso (Scheme.ΓSpecIso
     (CommRingCat.of (F W)))).addCommGroupIsoToAddEquiv) h
+  let w : Additive (Γ((T W).left, ⊤))ˣ := transitionSection W
   have hQ : (sectionIso (overlapIso W)).hom.hom
-      ((transitionSection W).toMul : Γ((T W).left, ⊤)) = ((p W : (P W)ˣ) : P W) :=
+      (w.toMul : Γ((T W).left, ⊤)) = ((p W : (P W)ˣ) : P W) :=
     congrArg (fun a : Additive (P W)ˣ => (a.toMul : P W))
       ((coordinateUnitEquiv (X := Y W) (U := T W) (R := CommRingCat.of (P W)) (overlapIso W)).apply_symm_apply (Additive.ofMul (p W)))
   refine hR.trans ?_
   apply Additive.ext
   apply Units.ext
   have hΓ := congrArg (fun f : Γ((T W).left, ⊤) ⟶ CommRingCat.of (F W) =>
-    f.hom ((transitionSection W).toMul : Γ((T W).left, ⊤))) (overlapGamma W)
+    f.hom (w.toMul : Γ((T W).left, ⊤))) (overlapGamma W)
   change _ = (punctureToField W) _ at hΓ
   rw [hQ, PrimeLocalizationUnits.primeUnit_val, punctureToField_base] at hΓ
   exact hΓ

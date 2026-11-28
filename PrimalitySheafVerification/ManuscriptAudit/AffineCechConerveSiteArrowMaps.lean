@@ -54,8 +54,11 @@ private theorem hom_ext_vertices {C : Type*} [Category* C] [HasFiniteLimits C]
     (h : ∀ i, p ≫ vertex a n i = q ≫ vertex a n i) : p = q := by
   apply WidePullback.hom_ext
   · exact h
-  · rw [← WidePullback.π_arrow (fun _ : Fin (n + 1) ↦ a) (0 : Fin (n+1)),
-      ← Category.assoc, ← Category.assoc, h]
+  · change p ≫ WidePullback.base (fun _ : Fin (n + 1) ↦ a) =
+      q ≫ WidePullback.base (fun _ : Fin (n + 1) ↦ a)
+    rw [← WidePullback.π_arrow (fun _ : Fin (n + 1) ↦ a) (0 : Fin (n + 1)),
+      ← Category.assoc, ← Category.assoc]
+    exact congrArg (fun u : W ⟶ U ↦ u ≫ a) (h 0)
 
 set_option maxHeartbeats 5400000 in
 /-- The section comparison retains the actual maps on every

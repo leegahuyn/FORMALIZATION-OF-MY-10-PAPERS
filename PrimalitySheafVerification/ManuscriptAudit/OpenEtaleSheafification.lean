@@ -86,12 +86,13 @@ theorem comparison_postcompose (F : X.Etaleᵒᵖ ⥤ A.{u})
       ((comparison j).hom.app F ≫ (R j).map (((s X).homEquiv F G).symm g)) =
     (precompose j).map g := by
   let f := ((s X).homEquiv F G).symm g
-  have hf : (s X).unit.app F ≫ f.hom = g := by
-    rw [← (s X).homEquiv_unit]
-    exact ((s X).homEquiv F G).apply_symm_apply g
-  rw [(s U).homEquiv_naturality_right, comparison_unit]
-  change (precompose j).map ((s X).unit.app F) ≫ (precompose j).map f.hom = _
-  rw [← Functor.map_comp, hf]
+  have hf : (s X).unit.app F ≫ (P X).map f = g :=
+    ((s X).homEquiv_unit (f := f)).symm.trans (((s X).homEquiv F G).apply_symm_apply g)
+  rw [(s U).homEquiv_naturality_right]
+  change (s U).homEquiv ((precompose j).obj F) ((R j).obj ((L X).obj F))
+      ((comparison j).hom.app F) ≫ (precompose j).map ((P X).map f) =
+    (precompose j).map g
+  rw [comparison_unit, ← Functor.map_comp, hf]
 
 end
 

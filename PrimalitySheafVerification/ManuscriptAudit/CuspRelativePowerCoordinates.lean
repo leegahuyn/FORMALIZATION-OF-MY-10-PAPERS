@@ -66,7 +66,7 @@ theorem laurentPower_T (m : ℕ) (n : ℤ) :
     _ = (((exponentUnit K (m : ℤ)).toMul) ^ n).val :=
       LaurentPolynomial.eval₂_T _ _ n
     _ = (exponentUnit K (n • (m : ℤ))).toMul.val := h.symm
-    _ = _ := by rw [exponentUnit_coe, zsmul_eq_mul]
+    _ = _ := by rw [exponentUnit_coe, zsmul_eq_mul] <;> simp
 
 /-- The power map commutes with the infinity chart's Laurent restriction. -/
 theorem toLaurent_commutes (m : ℕ) :

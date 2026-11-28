@@ -75,10 +75,11 @@ def oddCoreLinear : OddSmoothCompactCore →ₗ[ℂ] OddMaassL2 where
     apply Lp.ext
     filter_upwards [MemLp.coeFn_toLp (oddCore_memLp (c • f)), MemLp.coeFn_toLp (oddCore_memLp f),
       Lp.coeFn_smul c (oddCoreVector f)] with z h₁ h₂ h₃
+    change oddCoreVector (c • f) z = (((c • f : OddSmoothCompactCore) : ℂ → ℂ) z) at h₁
+    change oddCoreVector f z = (f : ℂ → ℂ) z at h₂
+    change (c • oddCoreVector f) z = c • oddCoreVector f z at h₃
     change oddCoreVector (c • f) z = (c • oddCoreVector f) z
-    rw [h₁, h₃]
-    change c • ((f : ℂ → ℂ) z) = c • oddCoreVector f z
-    rw [h₂]
+    rw [h₁, h₃, h₂] <;> rfl
 
 def oddMaassHilbertSubmodule : Submodule ℂ OddMaassL2 :=
   oddCoreLinear.range.topologicalClosure
@@ -96,6 +97,8 @@ theorem oddCoreVector_inner (f g : OddSmoothCompactCore) :
   change (∫ z, ⟪oddCoreVector f z, oddCoreVector g z⟫_ℂ ∂oddMaassMeasure) = _
   apply integral_congr_ae
   filter_upwards [MemLp.coeFn_toLp (oddCore_memLp f), MemLp.coeFn_toLp (oddCore_memLp g)] with z hf hg
+  change oddCoreVector f z = (f : ℂ → ℂ) z at hf
+  change oddCoreVector g z = (g : ℂ → ℂ) z at hg
   change ⟪oddCoreVector f z, oddCoreVector g z⟫_ℂ = _
   rw [hf, hg]
 

@@ -89,7 +89,9 @@ theorem exists_glue (hApprox : FiniteTupleApproximation A B) (d : B →ₐ[A] D)
     intro b₀
     obtain ⟨d₀, hd₀⟩ := hSurj b₀
     refine ⟨Spec.map i.hom.right (Spec.map r.toUnder.right d₀), ?_⟩
-    simpa only [← Scheme.Hom.comp_apply, h] using hd₀
+    change (Spec.map r.toUnder.right ≫ Spec.map i.hom.right ≫ Spec.map (left U V).right) d₀ = b₀
+    rw [h]
+    exact hd₀
   have hO : f₀ ≫ p₀ = f₀ ≫ q₀ := by
     rw [← Functor.map_comp, ← Functor.map_comp]
     exact congrArg K.map (AffineStageFixedCoproductSquare.isPushout U V).w
@@ -100,7 +102,10 @@ theorem exists_glue (hApprox : FiniteTupleApproximation A B) (d : B →ₐ[A] D)
   let g := i.hom ≫ r.toUnder
   have hg : f₀ ≫ g = j.hom ≫ d.toUnder := by
     rw [← Category.assoc, hLeg, Category.assoc]
-    exact congrArg (fun u ↦ j.hom ≫ u) (congrArg AlgHom.toUnder hr)
+    have hrd : f ≫ r.toUnder = d.toUnder := by
+      change (IsScalarTower.toAlgHom A B F).toUnder ≫ r.toUnder = d.toUnder
+      rw [← AlgHom.toUnder_comp, hr]
+    rw [hrd]
   have hL : a ≫ y = x ≫ p₀ := by
     change a ≫ w ≫ m = (v ≫ i.inv) ≫ p₀
     rw [← Category.assoc, h₁, Category.assoc, hm₁, Category.assoc]

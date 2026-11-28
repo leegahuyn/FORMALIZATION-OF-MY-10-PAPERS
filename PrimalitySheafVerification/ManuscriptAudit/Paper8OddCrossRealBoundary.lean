@@ -22,7 +22,7 @@ theorem norm_real_scaled_boundaryLaplace_le (B : ℝ → ℂ) {C ε : ℝ}
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     dsimp only [f, g]
     simp only [norm_mul, Complex.norm_exp, Complex.mul_re, Complex.neg_re, Complex.ofReal_re,
-      Complex.ofReal_im, neg_zero, zero_mul, sub_zero]
+      Complex.ofReal_im, zero_mul, mul_zero, sub_zero]
     exact mul_le_mul_of_nonneg_right (hBound t ht) (Real.exp_nonneg _)
   have hDom : ‖boundaryLaplace B (ε : ℂ)‖ ≤ ∫ t, g t ∂μ :=
     (norm_integral_le_integral_norm f).trans

@@ -28,7 +28,7 @@ theorem isCompactOperator_of_dense_core_cell_approx
     letI : FiniteDimensional ℂ K := hK
     let B := K.starProjection.comp J
     have hB : IsCompactOperator B :=
-      (isCompactOperator_of_locallyCompactSpace_rng (K.orthogonalProjectionOnto.comp J)).clm_comp K.subtypeL
+      (isCompactOperator_of_locallyCompactSpace_dom (K.orthogonalProjectionOnto.comp J)).clm_comp K.subtypeL
     let S : Set V := {v | ‖J v - B v‖ ≤ (ε / 2) * ‖v‖}
     have hS : IsClosed S := isClosed_le ((J.continuous.sub B.continuous).norm)
       (continuous_const.mul continuous_norm)

@@ -28,8 +28,9 @@ theorem logarithmicThreshold_le_iff (j : ℕ) (t : ℝ) :
     _ ↔ j + 1 ≤ ⌊Real.exp t⌋₊ := (Nat.le_floor_iff (Real.exp_nonneg t)).symm
     _ ↔ _ := Nat.succ_le_iff
 
-private theorem logarithmicThreshold_nonneg (j : ℕ) : 0 ≤ logarithmicThreshold j :=
-  Real.log_nonneg (by unfold logarithmicThreshold; positivity)
+private theorem logarithmicThreshold_nonneg (j : ℕ) : 0 ≤ logarithmicThreshold j := by
+  unfold logarithmicThreshold
+  exact Real.log_nonneg (by positivity)
 
 private theorem setIntegral_logarithmic_indicator {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (g : ℝ → E) (j : ℕ) :
@@ -56,7 +57,9 @@ theorem crossLaplaceTerm_integral {w : ℂ} (hw : 0 < w.re) (j : ℕ) :
   have hk : ((j + 1 : ℕ) : ℂ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero j
   have hlog : ((logarithmicThreshold j : ℝ) : ℂ) = Complex.log ((j + 1 : ℕ) : ℂ) :=
     Complex.ofReal_log (by positivity : 0 ≤ ((j + 1 : ℕ) : ℝ))
-  rw [crossLaplaceTerm, setIntegral_logarithmic_indicator, integral_const_mul,
+  change (∫ t in Ioi (0 : ℝ), (Ici (logarithmicThreshold j)).indicator
+    (fun u => crossRaw j * Complex.exp (-w * (u : ℂ))) t) = _
+  rw [setIntegral_logarithmic_indicator, integral_const_mul,
     integral_exp_mul_complex_Ioi hn, hlog, Complex.cpow_def_of_ne_zero hk, mul_comm (-w)]
   simp [div_eq_mul_inv]
 

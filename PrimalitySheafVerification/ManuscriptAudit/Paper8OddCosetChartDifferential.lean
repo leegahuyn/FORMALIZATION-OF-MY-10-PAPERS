@@ -28,7 +28,7 @@ theorem oddCore_fderiv_apply_continuous (f : OddSmoothCompactCore) :
   change fderivWithin ℝ (f : ℂ → ℂ) S (p.1 : ℂ) p.2 = fderiv ℝ (f : ℂ → ℂ) (p.1 : ℂ) p.2
   rw [fderivWithin_of_isOpen hS p.1.im_pos]
 
-private theorem phase_continuous (g : SL(2, ℤ)) : Continuous (negativePhase g) := by
+theorem negativePhase_continuous (g : SL(2, ℤ)) : Continuous (negativePhase g) := by
   apply continuous_iff_continuousAt.mpr
   intro z
   have h := (negativeEtaPhaseComplex_differentiableAt g z).continuousAt.comp
@@ -36,7 +36,7 @@ private theorem phase_continuous (g : SL(2, ℤ)) : Continuous (negativePhase g)
   simpa only [Function.comp_apply, negativeEtaPhaseComplex_coe] using h
 
 private theorem phase_inv_continuous (g : SL(2, ℤ)) : Continuous (fun z : ℍ => (negativePhase g z)⁻¹) := by
-  apply (phase_continuous g).inv₀
+  apply (negativePhase_continuous g).inv₀
   intro z hz
   have h := negativePhase_norm g z
   simp [hz] at h

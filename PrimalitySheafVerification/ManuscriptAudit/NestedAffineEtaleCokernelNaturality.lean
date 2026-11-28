@@ -54,9 +54,9 @@ def restrictedCokernelSection
   (PreservesCokernel.iso (R A S) ((L A j).map m)).hom.hom.app (op (baseObject S))
     ((restrictSection (i A S) (cokernel ((L A j).map m)) (baseMap A S)).hom x)
 
+set_option maxHeartbeats 800000 in
 /-- The actual ambient cokernel compared on the two affine bases sends the
 actual restriction of a representative to the same cokernel section. -/
-set_option maxHeartbeats 800000 in
 theorem affineCokernelSections_nested (x : (cokernel m).obj.obj (op (Scheme.Etale.mk j))) :
     (inducedCokernelIso (L A j) (R A S) (P A S j) (e A S j) m).hom.hom.app (op (baseObject S))
       (restrictedCokernelSection A S j m (affineCokernelSections j m x)) =

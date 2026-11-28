@@ -83,7 +83,7 @@ theorem norm_jacobi_sum_odd_prime_power {p r : ℕ} [Fact p.Prime]
   have hJ (x : (ZMod (k * m))ˣ) : jacobiUnitWeight (k * m) x = W (reduceLowDigit (x : ZMod (k * m))) := by
     rw [jacobi_weight_of_prime_power_eq hEq hd, hF] <;> rfl
   change ‖twistedSymmetricUnitSum (jacobiUnitWeight (k * m)) a‖ ≤ 2 * (k : ℝ) * Real.sqrt (p : ℝ)
-  rw [show jacobiUnitWeight (k * m) = fun x => W (reduceLowDigit (x : ZMod (k * m))) from funext hJ,
+  rw [show jacobiUnitWeight (k * m) = (fun x : (ZMod (k * m))ˣ => W (reduceLowDigit (x : ZMod (k * m)))) from funext hJ,
     ← weightedSymmetricUnitSum_eq_twisted W a]
   exact norm_weighted_symmetric_sum_odd_prime_power hp hr w (norm_primeQuadraticChar_power_le he) a ha
 

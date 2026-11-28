@@ -42,6 +42,7 @@ private theorem matrix_charpoly (A B C₀ : Matrix ι ι R)
   exact mul_left_cancel₀ hn (hp.trans (mul_comm _ _))
 
 variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
 
 /-- Integral characteristic polynomials coincide under an injective
 linear comparison if both modules have the same finite basis index. -/
@@ -49,10 +50,6 @@ theorem charpoly_eq (bM : Basis ι R M) (bN : Basis ι R N)
     (A : Module.End R M) (B : Module.End R N) (f : M →ₗ[R] N)
     (hf : Function.Injective f) (h : f.comp A = B.comp f) :
     A.charpoly = B.charpoly := by
-  letI := Module.Free.of_basis bM
-  letI := Module.Finite.of_basis bM
-  letI := Module.Free.of_basis bN
-  letI := Module.Finite.of_basis bN
   let e : N ≃ₗ[R] M := bN.equivFun.trans bM.equivFun.symm
   let g : Module.End R M := e.toLinearMap.comp f
   have hg : Function.Injective g := e.injective.comp hf
@@ -65,7 +62,7 @@ theorem charpoly_eq (bM : Basis ι R M) (bN : Basis ι R N)
     rw [e.symm_apply_apply]
     exact congrArg e (DFunLike.congr_fun h x)
   have hm := congrArg (LinearMap.toMatrix bM bM) h'
-  rw [LinearMap.toMatrix_comp, LinearMap.toMatrix_comp] at hm
+  rw [LinearMap.toMatrix_comp bM bM bM, LinearMap.toMatrix_comp bM bM bM] at hm
   have hmat := matrix_charpoly
     (LinearMap.toMatrix bM bM A) (LinearMap.toMatrix bM bM (e.conj B))
     (LinearMap.toMatrix bM bM g) hm

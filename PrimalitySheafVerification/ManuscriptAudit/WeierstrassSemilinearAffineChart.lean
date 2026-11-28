@@ -35,16 +35,23 @@ theorem coordinate_constant (a : K) :
   change CoordinateRing.map W e.toRingHom (CoordinateRing.mk W (C (C a))) =
     CoordinateRing.mk (W' W e) (C (C (e a)))
   rw [CoordinateRing.map_mk]
-  simp only [Polynomial.map_C, Polynomial.coe_mapRingHom]
+  simp only [Polynomial.map_C, Polynomial.coe_mapRingHom] <;> rfl
 
 private theorem coordinate_variables (i : Fin 3) :
     Φ W e (chartValues W i) = chartValues (W' W e) i := by
-  fin_cases i <;>
-    simp [chartValues, Φ, ← RingEquiv.coe_toRingHom, coordinateEquiv_toRingHom,
-      CoordinateRing.map_mk, Polynomial.map_C, Polynomial.coe_mapRingHom]
+  fin_cases i
+  · change CoordinateRing.map W e.toRingHom (CoordinateRing.mk W (C X)) =
+      CoordinateRing.mk (W' W e) (C X)
+    rw [CoordinateRing.map_mk, Polynomial.map_C, Polynomial.coe_mapRingHom, Polynomial.map_X]
+  · change CoordinateRing.map W e.toRingHom (CoordinateRing.mk W Y) =
+      CoordinateRing.mk (W' W e) Y
+    rw [CoordinateRing.map_mk, Polynomial.map_X]
+  · change Φ W e 1 = 1
+    exact map_one _
 
-private abbrev ev {F : Type u} [Field F] (V : WeierstrassCurve.Affine F) :=
-  (MvPolynomial.aeval (chartValues V)).toRingHom
+private abbrev ev {F : Type u} [Field F] (V : WeierstrassCurve.Affine F) :
+    MvPolynomial (Fin 3) F →+* V.CoordinateRing :=
+  (MvPolynomial.aeval (R := F) (chartValues V)).toRingHom
 
 private theorem evaluation_natural :
     (Φ W e).toRingHom.comp (ev W) =

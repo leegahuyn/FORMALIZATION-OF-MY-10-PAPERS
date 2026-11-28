@@ -17,9 +17,9 @@ theorem compact_injective_cross_resolvent_has_pole {H : Type*}
     (T : H →L[ℂ] H) (hT : IsCompactOperator T) (hSymm : T.IsSymmetric)
     (hInjective : Function.Injective T) {x y : H} (hCross : ⟪x, y⟫_ℂ ≠ 0) :
     ∃ μ : Eigenvalues T.toLinearMap,
-      MeromorphicAt (cauchySpectralSeries (fun ν => (ν : ℂ)) (compactCrossCoefficient T hT hSymm x y)) (μ : ℂ) ∧
+      MeromorphicAt (cauchySpectralSeries (fun ν : Eigenvalues T.toLinearMap => (ν : ℂ)) (compactCrossCoefficient T hT hSymm x y)) (μ : ℂ) ∧
       meromorphicOrderAt
-        (cauchySpectralSeries (fun ν => (ν : ℂ)) (compactCrossCoefficient T hT hSymm x y)) (μ : ℂ) = (-1 : ℤ) := by
+        (cauchySpectralSeries (fun ν : Eigenvalues T.toLinearMap => (ν : ℂ)) (compactCrossCoefficient T hT hSymm x y)) (μ : ℂ) = (-1 : ℤ) := by
   obtain ⟨μ, hCrossμ⟩ := exists_nonzero_compactCrossCoefficient T hT hSymm hCross
   have hμ : (μ : ℂ) ≠ 0 := by
     intro hZero
@@ -27,7 +27,9 @@ theorem compact_injective_cross_resolvent_has_pole {H : Type*}
     obtain ⟨v, hv, hv₀⟩ := hE.exists_hasEigenvector
     apply hv₀
     apply hInjective
-    rw [map_zero, mem_eigenspace_iff.mp hv, hZero, zero_smul]
+    have hEq := mem_eigenspace_iff.mp hv
+    change T v = (μ : ℂ) • v at hEq
+    rw [map_zero, hEq, hZero, zero_smul]
   obtain ⟨r, hr, hIso⟩ := compact_eigenvalue_isolated T hT hSymm μ hμ
   exact ⟨μ, cauchySpectralSeries_simple_pole (fun ν : Eigenvalues T.toLinearMap => (ν : ℂ)) _
     (summable_norm_compactCrossCoefficient T hT hSymm x y) μ hCrossμ hr hIso⟩

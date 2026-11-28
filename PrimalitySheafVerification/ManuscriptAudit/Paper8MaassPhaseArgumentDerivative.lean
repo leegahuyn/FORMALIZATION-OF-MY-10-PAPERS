@@ -1,7 +1,8 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.Calculus.Deriv.Star
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.RealDeriv
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-! Directional logarithmic derivative of the inverse complex argument factor. -/
 
@@ -27,14 +28,17 @@ theorem hasDerivAt_complex_norm_affine {d : ℂ} (e : ℂ) (hd : d ≠ 0) :
       (hasDerivAt_const (0 : ℝ) d.im).add ((hasDerivAt_id' (0 : ℝ)).mul_const e.im)
   have hSq : HasDerivAt (fun t : ℝ => ‖D t‖ ^ 2)
       (2 * (d.re * e.re + d.im * e.im)) 0 := by
-    convert (hR.pow 2).add (hI.pow 2) using 1
-    · funext t
+    have hF : (fun t : ℝ => ‖D t‖ ^ 2) =
+        (fun t : ℝ => (d.re + t * e.re) ^ 2 + (d.im + t * e.im) ^ 2) := by
+      funext t
       unfold D
       rw [Complex.sq_norm, Complex.normSq_apply]
       simp only [Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im, Complex.ofReal_re,
         Complex.ofReal_im, zero_mul, sub_zero, zero_add]
       ring
-    · norm_num <;> ring
+    rw [hF]
+    simpa only [Nat.cast_ofNat, Nat.reduceSub, pow_one, zero_mul, add_zero, mul_assoc, ← mul_add] using
+      (hR.pow 2).add (hI.pow 2)
   have hN : HasDerivAt (fun t : ℝ => Real.sqrt (‖D t‖ ^ 2))
       ((2 * (d.re * e.re + d.im * e.im)) / (2 * Real.sqrt (‖D 0‖ ^ 2))) 0 :=
     hSq.sqrt (by rw [hD₀]; exact (sq_pos_of_pos hDn).ne')

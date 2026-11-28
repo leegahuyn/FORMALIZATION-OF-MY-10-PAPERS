@@ -5,7 +5,7 @@ import PrimalitySheafVerification.ManuscriptAudit.AffineEtaleDerivedRestriction
 
 namespace ManuscriptAudit.AffineEtaleTerminalExt
 
-open AlgebraicGeometry CategoryTheory Opposite
+open AlgebraicGeometry CategoryTheory CategoryTheory.Abelian Opposite
 open AffineEtaleTensorOverlap AffineEtaleOpenRestriction AffineEtaleOpenBaseChange
 open AffineEtaleCechRestriction AffineEtaleRestrictionNaturality AffineEtaleDerivedRestriction
 

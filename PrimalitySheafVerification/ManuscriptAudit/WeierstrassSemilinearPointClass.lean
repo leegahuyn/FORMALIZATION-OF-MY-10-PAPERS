@@ -36,7 +36,7 @@ variable [IsDedekindDomain (W.map e.toRingHom).CoordinateRing]
 point agrees with applying the field map to its coordinates. -/
 theorem pointClass_some_natural {x y : K} (h : W.Nonsingular x y) :
     ClassGroup.mulEquiv (coordinateEquiv W e) (Point.toClass (Point.some x y h)).toMul =
-      (Point.toClass (Point.some (e x) (e y) (h.map e.toRingHom))).toMul := by
+      (Point.toClass (Point.some (e x) (e y) ((W.map_nonsingular (f := e.toRingHom) e.injective x y).mpr h))).toMul := by
   rw [classSome, classSome, class_mk0_map]
   apply congrArg (ClassGroup.mk0 : (Ideal (W.map e.toRingHom).CoordinateRing)⁰ → _)
   apply Subtype.ext

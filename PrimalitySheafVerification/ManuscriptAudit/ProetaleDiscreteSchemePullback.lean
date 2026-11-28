@@ -87,8 +87,10 @@ theorem coefficient_pullback :
       (constantToContinuous X M).app (op U) := by
     change (c.homEquiv (B M) (functions M X)) ((c.leftAdjointUniq bo).hom.app (B M) ≫
       (constantIso X M).hom) = _
-    rw [c.homEquiv_naturality_right, Adjunction.homEquiv_leftAdjointUniq_hom_app,
-      ← bo.homEquiv_unit, evaluate_constant M hU]
+    rw [c.homEquiv_naturality_right, Adjunction.homEquiv_leftAdjointUniq_hom_app]
+    change bo.unit.app (B M) ≫ ((sheafSections (J X) A).obj (op U)).map (constantIso X M).hom = _
+    exact (bo.homEquiv_unit (B M) (functions M X) (constantIso X M).hom).symm.trans
+      (evaluate_constant M hU)
   exact h₁.trans ((diagonal_label M f T).trans h₂.symm)
 
 set_option maxHeartbeats 6400000 in

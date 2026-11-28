@@ -81,14 +81,25 @@ private theorem cocycleClass_congr {t s : (Double R B)ˣ} (ht : IsCocycle R B t)
   subst s
   rfl
 
+private theorem literal_transition_isCocycle
+    (x : (cokernel ι).obj.obj (op (baseObject R))) (y : I.obj.obj (op (ofAlgebra R B)))
+    (hy : (cokernel.π ι).hom.app (op (ofAlgebra R B)) y =
+      (cokernel ι).obj.map (coverArrow R B).op x) :
+    IsCocycle R B (transition R B ι x y hy) := by
+  change face02 R B _ = face12 R B _ * face01 R B _
+  rw [face02_eq_pull13, face01_eq_pull12]
+  change pull13 R B _ = pull23 R B _ * pull12 R B _
+  rw [mul_comm]
+  exact (transition_cocycle R B ι x y hy).symm
+
 private theorem picardClassOfLift_add :
     picardClassOfLift R B ι (x + x') (y + y') (lift_add R ι B x x' y y' hy hy') =
       picardClassOfLift R B ι x y hy * picardClassOfLift R B ι x' y' hy' := by
   unfold picardClassOfLift
   let t := transition R B ι x y hy
   let s := transition R B ι x' y' hy'
-  let ht := transition_isCocycle R B ι x y hy
-  let hs := transition_isCocycle R B ι x' y' hy'
+  let ht := literal_transition_isCocycle R B ι x y hy
+  let hs := literal_transition_isCocycle R B ι x' y' hy'
   exact (cocycleClass_congr R B _ (mul_isCocycle R B t s ht hs)
     (transition_add R ι B x x' y y' hy hy')).trans (picardClass_mul R B t s ht hs)
 

@@ -7,7 +7,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8OddCrossLocalizedRows
 namespace ManuscriptAudit.Paper8OddCrossHeightWindowData
 
 open Paper8OddCrossLeadingPowers Paper8OddCrossLocalizedKernel Paper8OddCrossLocalizedRows
-open Paper8OddCrossPoincareRowKernel Paper8OddCrossPoincareKernel Paper8OddCrossCuspNormalization
+open Paper8OddCrossPoincareRowKernel Paper8OddCrossPoincareKernel Paper8OddCrossCuspNormalization Paper8OddCrossScaledRows
 open MaassLaplacian Set
 open scoped Topology
 
@@ -78,8 +78,10 @@ theorem crossInvertedHeight_two_cutoff_interval {q y : ℝ} (hq : 0 < q) (hy : 0
     (hRadius : 0 < y / (4 * q) - y ^ 2) (u : ℝ) :
     q < crossInvertedHeight y 2 u ↔
       u ∈ Ioo (-Real.sqrt (y / (4 * q) - y ^ 2)) (Real.sqrt (y / (4 * q) - y ^ 2)) := by
-  rw [crossInvertedHeight_two_cutoff_iff hq hy u, ← Real.sq_sqrt hRadius.le, sq_lt_sq,
-    abs_of_nonneg (Real.sqrt_nonneg _), abs_lt] <;> rfl
+  rw [crossInvertedHeight_two_cutoff_iff hq hy u]
+  calc
+    _ ↔ u ^ 2 < (Real.sqrt (y / (4 * q) - y ^ 2)) ^ 2 := by rw [Real.sq_sqrt hRadius.le]
+    _ ↔ _ := by rw [sq_lt_sq, abs_of_nonneg (Real.sqrt_nonneg _), abs_lt] <;> rfl
 
 end
 end ManuscriptAudit.Paper8OddCrossHeightWindowData

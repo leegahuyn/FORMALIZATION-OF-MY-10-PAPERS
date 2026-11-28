@@ -72,7 +72,7 @@ theorem norm_extraPrimeJacobiSum_prime_power {p e : ℕ} [Fact p.Prime] [NeZero 
         _ = f (((x : ZMod (p ^ e)).val : ℕ) : ZMod (p ^ e)) := by rw [ZMod.natCast_zmod_val]
         _ = _ := map_natCast f _
     unfold extraPrimeJacobiUnitWeight primeReducedUnitWeight w
-    rw [jacobiUnitWeight_prime_power hD, ← legendreSym.to_jacobiSym, legendreSym, Int.cast_natCast]
+    rw [jacobiUnitWeight_prime_power hD, ← jacobiSym.legendreSym.to_jacobiSym, legendreSym, Int.cast_natCast]
     simp only [primeQuadraticChar_apply, hC]
   rw [show extraPrimeJacobiUnitWeight p (p ^ e) = primeReducedUnitWeight hD w from funext hWeight]
   exact norm_prime_reduced_unit_sum hp he hD w hW a ha

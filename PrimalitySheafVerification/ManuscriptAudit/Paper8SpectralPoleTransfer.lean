@@ -21,9 +21,12 @@ theorem shiftedMaassEnergy_analyticAt (w : ℂ) : AnalyticAt ℂ shiftedMaassEne
 
 theorem shiftedMaassEnergy_deriv (w : ℂ) : deriv shiftedMaassEnergy w = -w / 2 := by
   have h : HasDerivAt shiftedMaassEnergy (-w / 2) w := by
-    unfold shiftedMaassEnergy
-    convert ((hasDerivAt_const w (1 : ℂ)).sub (hasDerivAt_pow 2 w)).div_const (4 : ℂ) using 1 <;>
-      norm_num <;> ring
+    have h' : HasDerivAt (fun t : ℂ => (1 - t ^ 2) / 4)
+        ((0 - (2 : ℂ) * w ^ (2 - 1)) / 4) w :=
+      ((hasDerivAt_const w (1 : ℂ)).sub (hasDerivAt_pow 2 w)).div_const (4 : ℂ)
+    have hD : (0 - (2 : ℂ) * w ^ (2 - 1)) / 4 = -w / 2 := by norm_num <;> ring
+    rw [hD] at h'
+    exact h'
   exact h.deriv
 
 private theorem shiftedMaassEnergy_order_at_zero :
@@ -53,7 +56,7 @@ theorem shiftedMaassEnergy_comp_simple_spectral_pole {F : ℂ → ℂ} {w : ℂ}
       simp
     rw [if_pos rfl, hM.meromorphicOrderAt_comp (shiftedMaassEnergy_analyticAt 0) hNC, hO,
       shiftedMaassEnergy_order_at_zero]
-    norm_num [ENat.map_coe]
+    norm_num [ENat.map_coe] <;> first | rfl | decide
   · have hD : deriv shiftedMaassEnergy w ≠ 0 := by
       rw [shiftedMaassEnergy_deriv]
       exact div_ne_zero (neg_ne_zero.mpr hw) (by norm_num)

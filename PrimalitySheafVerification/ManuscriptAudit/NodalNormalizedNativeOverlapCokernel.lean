@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.NativeKummerChartBoundaryPresentation
 import PrimalitySheafVerification.ManuscriptAudit.NodalNormalizedNativeCharts
 import PrimalitySheafVerification.ManuscriptAudit.NodalYChartUnitOrder
+import PrimalitySheafVerification.ManuscriptAudit.PrincipalOpenEtaleHTwo
 import PrimalitySheafVerification.ManuscriptAudit.AdditiveCokernelPresentation
 
 /-! On the actual normalization the Y overlap restriction in native

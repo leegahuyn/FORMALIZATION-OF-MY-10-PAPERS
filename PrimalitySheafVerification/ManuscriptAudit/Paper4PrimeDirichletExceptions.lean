@@ -38,7 +38,7 @@ private theorem inside_sum (s : ℝ) :
   apply Finset.sum_congr rfl
   intro n hn
   by_cases hp : n.Prime ∧ (n : ZMod q) = a
-  · simp [inside, term, hn, hp, countCoeff, Real.rpow_neg (Nat.cast_nonneg n)]
+  · simp [inside, term, hn, hp, countCoeff, one_div, Real.rpow_neg (Nat.cast_nonneg n)]
   · simp [inside, term, hn, hp, countCoeff]
 
 theorem afterExceptionsSeries_eq_sub {s : ℝ} (hs : 1 < s) :
@@ -60,7 +60,7 @@ theorem normalized_afterExceptionsSeries (ha : IsUnit a) :
       (𝓝 ((q.totient : ℝ)⁻¹)) := by
   apply (Paper4DirichletDensity.normalized_primeSeries_after_exceptions a ha E).congr'
   filter_upwards [self_mem_nhdsWithin] with s hs
-  rw [afterExceptionsSeries_eq_sub a E hs]
+  rw [afterExceptionsSeries_eq_sub a E (Set.mem_Ioi.mp hs)]
 
 /-- Literal modular-congruence formulation of the corrected density. -/
 theorem reduced_progression_density (r : ℕ) (hr : r.Coprime q) :

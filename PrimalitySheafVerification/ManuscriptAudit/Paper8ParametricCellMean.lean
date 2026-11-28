@@ -43,7 +43,7 @@ theorem continuous_intervalIntegral_param {F : ℝ → ℝ → E}
   obtain ⟨C, hC⟩ := exists_cell_local_bound hF a b y
   apply intervalIntegral.continuousAt_of_dominated_interval (μ := (volume : Measure ℝ))
     (bound := fun _ => C)
-  · exact Eventually.of_forall (fun t => (cell_slice_continuous hF t).measurable.aestronglyMeasurable)
+  · exact Eventually.of_forall (fun t => (cell_slice_continuous hF t).aestronglyMeasurable)
   · filter_upwards [Metric.ball_mem_nhds y (by norm_num : (0 : ℝ) < 1)] with t ht
     exact Eventually.of_forall (fun x hx => hC x
       (Ioc_subset_Icc_self (by simpa only [uIoc_of_le hab] using hx)) t ht)

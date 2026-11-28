@@ -31,7 +31,7 @@ theorem jacobi_sum_prime_eq_salie {p : ℕ} [Fact p.Prime] (a : ZMod p) :
     · rw [if_pos hx]
   have hJ (x : (ZMod p)ˣ) : jacobiUnitWeight p x = χ (x : ZMod p) := by
     unfold jacobiUnitWeight
-    rw [← legendreSym.to_jacobiSym, legendreSym, Int.cast_natCast, ZMod.natCast_zmod_val] <;> rfl
+    rw [← jacobiSym.legendreSym.to_jacobiSym, legendreSym, Int.cast_natCast, ZMod.natCast_zmod_val] <;> rfl
   unfold twistedSymmetricUnitSum primeSalieSum
   change _ = ∑ x : ZMod p, f x
   rw [hSum, Finset.sum_subtype (p := fun x : ZMod p => x ≠ 0) _ (by simp)]

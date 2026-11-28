@@ -23,15 +23,21 @@ theorem hyperbolic_connection_correction_cancel {d v : ℂ} {c y : ℝ}
   have hRe := congrArg Complex.re hEq
   have hR : ((2 * Complex.I * ((c * y : ℝ) : ℂ)) * (v / d)).re =
       -(2 * c * y * (v / d).im) := by
-    norm_num [Complex.mul_re, Complex.mul_im] <;> ring
+    have hRe₀ : (2 * Complex.I * ((c * y : ℝ) : ℂ)).re = 0 := by
+      norm_num [Complex.mul_re, Complex.mul_im]
+    have hIm₀ : (2 * Complex.I * ((c * y : ℝ) : ℂ)).im = 2 * c * y := by
+      norm_num [Complex.mul_re, Complex.mul_im] <;> ring
+    rw [Complex.mul_re, hRe₀, hIm₀, zero_mul, zero_sub]
   change v.re - (((starRingEnd ℂ) d / d) * v).re = _ at hRe
   rw [hR] at hRe
   have hC : (((c : ℂ) * v / d).im) = c * (v / d).im := by
     rw [mul_div_assoc]
     simp only [Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, zero_mul, add_zero]
   rw [hC]
-  field_simp [hy]
-  linarith only [hRe]
+  calc
+    _ = (2 * c * y * (v / d).im + (v.re - (((starRingEnd ℂ) d / d) * v).re)) / (4 * y) := by
+      field_simp [hy] <;> ring
+    _ = 0 := by rw [hRe]; ring
 
 private theorem complex_norm_sq (z : ℂ) : ‖z‖ ^ 2 = z.re ^ 2 + z.im ^ 2 := by
   rw [Complex.sq_norm, Complex.normSq_apply]

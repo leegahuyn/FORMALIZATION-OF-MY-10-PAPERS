@@ -120,8 +120,17 @@ theorem lintegral_hyperbolic_highStrip {D : ℍ → ℝ} (hD : Continuous D) (hD
     dsimp only [K, f]
     rw [hW, ofComplex_coordinate_eq (hT.trans hp.2), div_eq_inv_mul,
       ENNReal.ofReal_mul (inv_nonneg.mpr (sq_nonneg _))]
-  rw [hyperbolic_strip_to_complex (ENNReal.measurable_ofReal.comp hD.measurable), ← hPull, ← hEq,
-    Measure.volume_eq_prod, setLIntegral_prod_symm _ (ENNReal.measurable_ofReal.comp hK).aemeasurable]
+  have hD' : Measurable (fun z : ℍ => ENNReal.ofReal (D z)) :=
+    ENNReal.measurable_ofReal.comp hD.measurable
+  have hK' : Measurable (fun p : ℝ × ℝ => ENNReal.ofReal (K p)) :=
+    ENNReal.measurable_ofReal.comp hK
+  have hHyper : (∫⁻ z in highHorizontalStrip a b T, ENNReal.ofReal (D z)) =
+      ∫⁻ w : ℂ in ((↑) : ℍ → ℂ) '' highHorizontalStrip a b T, f w :=
+    hyperbolic_strip_to_complex hD' a b T
+  have hFub : (∫⁻ p in Icc a b ×ˢ Ici T, ENNReal.ofReal (K p) ∂((volume : Measure ℝ).prod volume)) =
+      ∫⁻ y in Ici T, ∫⁻ x in Icc a b, ENNReal.ofReal (K (x, y)) :=
+    setLIntegral_prod_symm (fun p => ENNReal.ofReal (K p)) hK'.aemeasurable
+  rw [hHyper, ← hPull, ← hEq, Measure.volume_eq_prod, hFub]
   refine setLIntegral_congr_fun measurableSet_Ici (fun y _ => ?_)
   have hCy : Continuous (fun x : ℝ => K (x, y)) :=
     (hD.comp (continuous_upperStripPoint.comp (continuous_id.prodMk continuous_const))).div_const _

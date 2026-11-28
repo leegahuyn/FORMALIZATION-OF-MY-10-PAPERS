@@ -55,7 +55,8 @@ theorem connectingSection_map (x : (cokernel m).obj.obj (op (T (X := X)))) :
     (Ext.mk₀ q).comp (sh m').extClass (zero_add 1) at hc
   have hx₀ : Sheaf.H.map q 0 z =
       (Sheaf.H.equiv₀ (cokernel m') (t (X := X))).symm (q.hom.app (op (T (X := X))) x) :=
-    Sheaf.H.equiv₀_symm_naturality (t (X := X)) q x
+    Sheaf.H.equiv₀_symm_naturality (J := X.smallEtaleTopology)
+      (F := cokernel m) (G := cokernel m') (T := T (X := X)) (t (X := X)) q x
   have hx : (Sheaf.H.equiv₀ (cokernel m') (t (X := X))).symm (q.hom.app (op (T (X := X))) x) =
       z.comp (Ext.mk₀ q) (add_zero 0) := hx₀.symm
   change (z.comp (sh m).extClass (zero_add 1)).comp (Ext.mk₀ a) (add_zero 1) =

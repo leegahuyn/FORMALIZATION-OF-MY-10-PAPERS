@@ -21,7 +21,7 @@ private theorem one_sub_pow_le (x : ℝ) (hx₀ : 0 ≤ x) (hx₁ : x ≤ 1) (n 
       calc
         1 - x ^ n * x = (1 - x) + x * (1 - x ^ n) := by ring
         _ ≤ (1 - x) + 1 * (1 - x ^ n) :=
-          add_le_add_left (mul_le_mul_of_nonneg_right hx₁ hNonneg) _
+          add_le_add_right (mul_le_mul_of_nonneg_right hx₁ hNonneg) _
         _ ≤ _ := by linarith only [ih]
 
 /-- Relative error of the actual \((A^p+p)^{1/p}-A\) versus the

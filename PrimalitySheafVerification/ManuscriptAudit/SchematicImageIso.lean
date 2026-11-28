@@ -56,11 +56,15 @@ def imageIso : g.image ≅ f.image where
   hom_inv_id := by
     apply (cancel_mono g.imageι).mp
     rw [Category.assoc, liftToImage_fac, Category.id_comp, ← Category.assoc,
-      liftToImage_fac, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+      liftToImage_fac, Category.assoc]
+    change g.imageι ≫ b.hom ≫ b.inv = g.imageι
+    rw [Iso.hom_inv_id, Category.comp_id]
   inv_hom_id := by
     apply (cancel_mono f.imageι).mp
     rw [Category.assoc, liftToImage_fac, Category.id_comp, ← Category.assoc,
-      liftToImage_fac, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+      liftToImage_fac, Category.assoc]
+    change f.imageι ≫ b.inv ≫ b.hom = f.imageι
+    rw [Iso.inv_hom_id, Category.comp_id]
 
 theorem imageIso_imageι :
     (imageIso f g a b h).hom ≫ f.imageι = g.imageι ≫ b.hom :=

@@ -36,7 +36,7 @@ private def chartProjection : baseChange f ⋙ underlying X ⟶ underlying Y whe
 set_option maxHeartbeats 3800000 in
 /-- Maps of actual coordinate units via the projection from each base-changed chart. -/
 def unitsToDirectImage : unitSheaf Y ⟶ (directImage f A).obj (unitSheaf X) := by
-  let χ := Functor.whiskerRight (chartProjection f).op
+  let χ := CategoryTheory.whiskerRight (chartProjection f).op
     (Scheme.Γ ⋙ ringUnits ⋙ AddCommGrpCat.uliftFunctor.{1})
   exact ⟨χ⟩
 
@@ -47,7 +47,7 @@ def unitsPullback : (inverseImage f).obj (unitSheaf Y) ⟶ unitSheaf X :=
 private theorem power_commutes (d : ℕ) :
     unitsPullback f ≫ power X d = (inverseImage f).map (power Y d) ≫ unitsPullback f := by
   have hid : (inverseImage f).map (𝟙 (unitSheaf Y)) = 𝟙 ((inverseImage f).obj (unitSheaf Y)) :=
-    Functor.map_id (inverseImage f) (unitSheaf Y)
+    CategoryTheory.Functor.map_id (inverseImage f) (unitSheaf Y)
   simp only [power, Functor.map_nsmul, hid, Preadditive.comp_nsmul,
     Preadditive.nsmul_comp, Category.id_comp, Category.comp_id]
 
