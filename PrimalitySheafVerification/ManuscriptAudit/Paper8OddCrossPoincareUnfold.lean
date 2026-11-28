@@ -138,6 +138,17 @@ theorem pointAtHeight_re (x : ℝ) {y : ℝ} (hy : 0 < y) :
   change (complexPoint x y).re = x
   simp [complexPoint, Complex.add_re, Complex.mul_re]
 
+theorem pointAtHeight_im (x : ℝ) {y : ℝ} (hy : 0 < y) :
+    (pointAtHeight x hy).im = y := by
+  change (complexPoint x y).im = y
+  exact complexPoint_im x y
+
+theorem translatePoint_pointAtHeight_im (n : ℤ) (x : ℝ) {y : ℝ} (hy : 0 < y) :
+    (translatePoint n (pointAtHeight x hy)).im = y := by
+  change ((translatePoint n (pointAtHeight x hy) : ℍ) : ℂ).im = y
+  rw [translatePoint_coe, Complex.add_im, Complex.intCast_im, zero_add]
+  exact pointAtHeight_im x hy
+
 theorem hasSum_oddCross_row_fourier {D : ℕ} (A : CrossRow (D + 1)) (s : ℂ)
     (hs : (1 / 2 : ℝ) < s.re) {y : ℝ} (hy : 0 < y) :
     HasSum (fun n : ℤ => ∫ x in (0 : ℝ)..(1 : ℝ), oddCrossFourierTerm s (pointAtHeight x hy) ⟨D, A, n⟩)
@@ -161,8 +172,7 @@ theorem hasSum_oddCross_row_fourier {D : ℕ} (A : CrossRow (D + 1)) (s : ℂ)
   change oddCrossFourierTerm s (pointAtHeight x hy) ⟨D, A, n⟩ = a * K (x + (b + (n : ℝ)))
   rw [oddCrossFourierTerm_translate A n s (pointAtHeight x hy), oddCrossFourierTerm_row_kernel,
     translatePoint_re, pointAtHeight_re]
-  have hIm : (translatePoint n (pointAtHeight x hy)).im = y := complexPoint_im _ _
-  rw [hIm]
+  rw [translatePoint_pointAtHeight_im]
   unfold K b c a
   rw [show x + (crossRowShift A + (n : ℝ)) = (n : ℝ) + x + crossRowShift A by ring]
 

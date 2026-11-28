@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import PrimalitySheafVerification.ManuscriptAudit.AffineGenericQuotientCycles
+import PrimalitySheafVerification.ManuscriptAudit.AffineOpenQuotientCycleNaturality
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProjectiveGenericQuotient
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassAffineCycleDegree
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityAdicOrder
@@ -11,9 +11,10 @@ quotient is its finite affine divisor degree plus the coefficient at infinity. -
 namespace ManuscriptAudit.WeierstrassProjectiveCycleDegree
 
 open AlgebraicGeometry CategoryTheory Opposite IsDedekindDomain
+open EtaleTwoOpenHOne
 open WeierstrassProjectiveClosure WeierstrassCartierInfinity WeierstrassInfinityChartAlgebra
 open WeierstrassProjectiveGenericPoint WeierstrassProjectiveGenericQuotient
-open WeierstrassInfinityAdicOrder WeierstrassAffineCycleDegree AffineGenericQuotientCycles
+open WeierstrassInfinityAdicOrder WeierstrassAffineCycleDegree AffineOpenQuotientCycleNaturality
 
 noncomputable section
 
@@ -39,12 +40,14 @@ local instance : Algebra.FiniteType K (N W) :=
 
 /-- The actual finite divisor cycle on the genuine affine chart. -/
 def affineCycle : P W →+ (HeightOneSpectrum W.CoordinateRing →₀ ℤ) :=
-  ambientSectionsToCycle K W.CoordinateRing W.FunctionField (affineOpen W) (genericPoint W) rfl
+  (openQuotientCycle K W.CoordinateRing W.FunctionField (affineOpen W) (genericPoint W)
+    rfl).toAddMonoidHom.comp ((quotient W).obj.map (openArrow (affineOpen W)).op).hom
 
 /-- The actual finite divisor cycle on the genuine infinity neighborhood. -/
 def neighborhoodCycle : P W →+ (HeightOneSpectrum (N W) →₀ ℤ) :=
-  ambientSectionsToCycle K (N W) W.FunctionField (neighborhoodOpen W) (genericPoint W)
-    (genericPoint_factors_infinity W)
+  (openQuotientCycle K (N W) W.FunctionField (neighborhoodOpen W) (genericPoint W)
+    (genericPoint_factors_infinity W)).toAddMonoidHom.comp
+    ((quotient W).obj.map (openArrow (neighborhoodOpen W)).op).hom
 
 /-- The genuine coefficient of the unique point at infinity. -/
 def infinityMultiplicity : (HeightOneSpectrum (N W) →₀ ℤ) →+ ℤ where

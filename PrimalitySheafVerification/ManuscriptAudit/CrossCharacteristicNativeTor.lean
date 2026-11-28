@@ -12,6 +12,7 @@ left-derived tensor in all degrees, including degree zero. -/
 namespace ManuscriptAudit.CrossCharacteristicNativeTor
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.MonoidalCategory
+open scoped ZeroObject
 
 noncomputable section
 
@@ -55,8 +56,11 @@ private theorem homology_smul_zero (M N : C) {p : ℕ}
     simpa only [H.map_zsmul, H.map_id, H.map_zero] using congrArg H.map hK
   let e := P.isoLeftDerivedObj F n
   have he := congrArg (fun a : H.obj K ⟶ H.obj K ↦ e.hom ≫ a ≫ e.inv) hH
-  simpa only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, Category.id_comp,
-    Iso.hom_inv_id, zero_comp, comp_zero] using he
+  have hs : e.hom ≫ ((p : ℤ) • 𝟙 (H.obj K)) ≫ e.inv =
+      (p : ℤ) • 𝟙 (((Tor C n).obj M).obj N) := by
+    rw [← Category.assoc, Preadditive.comp_zsmul, Category.comp_id,
+      Preadditive.zsmul_comp, e.hom_inv_id]
+  exact hs.symm.trans (he.trans (by rw [zero_comp, comp_zero]))
 
 private theorem derived_map_scalar_id (F : C ⥤ C) [F.Additive] (N : C)
     (n : ℕ) (a : ℤ) : (F.leftDerived n).map (a • 𝟙 N) =
@@ -72,8 +76,8 @@ private theorem derived_map_scalar_id (F : C ⥤ C) [F.Additive] (N : C)
     _ = e.hom ≫ L.map (a • 𝟙 P.complex) ≫ e.inv :=
       F.leftDerived_map_eq n (a • 𝟙 N) (a • 𝟙 P.complex) w
     _ = _ := by
-      rw [L.map_zsmul, L.map_id, Preadditive.zsmul_comp, Preadditive.comp_zsmul,
-        Category.id_comp, e.hom_inv_id]
+      rw [L.map_zsmul, L.map_id, ← Category.assoc, Preadditive.comp_zsmul,
+        Category.comp_id, Preadditive.zsmul_comp, e.hom_inv_id]
 
 /-- This is the genuine Tor object for every choice of derived degree. -/
 theorem isZero_Tor_of_coprime (M N : C) {p l : ℕ} (hc : p.Coprime l)

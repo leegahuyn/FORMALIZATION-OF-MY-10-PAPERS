@@ -40,6 +40,11 @@ theorem d_two_one (f : A ⟶ B) : (complex f).d 2 1 = 0 := by
   change ChainComplex.of.d (stages A B) (boundary f) (1 + 1) 1 = 0
   exact ChainComplex.of_d (stages A B) (boundary f) 1
 
+/-- Every native chain object in degree at least two is zero. -/
+theorem isZero_X_succ_succ (f : A ⟶ B) (k : ℕ) : IsZero ((complex f).X (k + 2)) := by
+  change IsZero (0 : C)
+  exact isZero_zero C
+
 private theorem exact_succ (f : A ⟶ B) [Mono f] (n : ℕ) :
     (complex f).ExactAt (n+1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n+1+1) (n+1) n (by simp) (by simp)]

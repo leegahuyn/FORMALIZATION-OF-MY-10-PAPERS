@@ -64,7 +64,9 @@ private theorem connecting_compare (f : I ⟶ J) (hf : i ≫ f = k)
   change ((Sheaf.H.equiv₀ (cokernel k) (terminal A)).symm
       (q.hom.app (op (baseObject A)) x)).comp _ (zero_add 1) =
     ((Sheaf.H.equiv₀ (cokernel i) (terminal A)).symm x).comp _ (zero_add 1)
-  rw [← Sheaf.H.equiv₀_symm_naturality, Sheaf.H.map_apply, he]
+  have e := (Sheaf.H.equiv₀_symm_naturality (terminal A) q x).symm
+  refine (congrArg (fun a => a.comp (short_exact A k).extClass (zero_add 1)) e).trans ?_
+  rw [Sheaf.H.map_apply, he]
   exact Ext.comp_assoc_of_second_deg_zero _ _ _ _
 
 
@@ -104,7 +106,7 @@ theorem toPicard_independent [Injective I] [Injective J] (h : Sheaf.H (G A) 1) :
       faithfullyFlat := inferInstance, value := y', lifts := hy' }
   have hx' : connectingSection k (terminal A) x' = h :=
     (connecting_compare A i k f hf x).trans hx
-  rw [toPicard_of_representative A i h c hx, toPicard_of_representative A k h c' hx']
+  rw [toPicard_of_representative A i x h c hx, toPicard_of_representative A k x' h c' hx']
   change picardClassOfLift A B i x y c.lifts = picardClassOfLift A B k x' y' hy'
   have ht : transition A B i x y c.lifts = transition A B k x' y' hy' := by
     apply (Additive.ofMul (α := (B ⊗[A] B)ˣ)).injective

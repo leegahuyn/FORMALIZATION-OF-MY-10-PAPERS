@@ -55,7 +55,7 @@ def transitionClass : (U W).H' 0 (T W) :=
 def transitionSection : (U W).obj.obj (op (T W)) :=
   equivZero (U W) (T W) (transitionClass W)
 
-private def factoringLeft : IsTerminal ((b W).obj (Scheme.Etale.mk (j W))) := by
+def factoringLeft : IsTerminal ((b W).obj (Scheme.Etale.mk (j W))) := by
   unfold b
   rw [genericPoint_factors_infinity W]
   exact factoringOpen_isTerminal (genericToNeighborhood W) (j W)

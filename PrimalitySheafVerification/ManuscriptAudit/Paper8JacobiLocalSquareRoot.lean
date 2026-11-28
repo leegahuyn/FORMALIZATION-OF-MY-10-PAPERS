@@ -44,11 +44,13 @@ private theorem local_prime_power {p n : ℕ} [Fact p.Prime] (hp : p ≠ 2) (hn 
   by_cases hE : n % 2 = 0
   · have he : n = r + r := by dsimp only [r]; omega
     have hN : p ^ n = p ^ r * p ^ r := by rw [← pow_add, ← he]
-    exact hN.symm ▸ local_even hp hr
+    rw [hN]
+    exact local_even (p := p) hp hr
   · have he : n = r + (1 + r) := by dsimp only [r]; omega
     have hN : p ^ n = p ^ r * (p * p ^ r) := by
       rw [he, pow_add, pow_add, pow_one]
-    exact hN.symm ▸ local_odd hp hr
+    rw [hN]
+    exact local_odd (p := p) hp hr
 
 theorem norm_jacobi_sum_prime_power {p n : ℕ} [Fact p.Prime] [NeZero (p ^ n)]
     (hp : p ≠ 2) (hn : 0 < n) (a : ZMod (p ^ n)) (ha : IsUnit a) :

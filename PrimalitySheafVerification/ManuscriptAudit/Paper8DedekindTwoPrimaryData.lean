@@ -22,7 +22,7 @@ theorem twoPrimaryCharacter_natCast (e n h : ℕ) :
 
 private theorem norm_quadratic_int_character_le {R : Type*} [CommMonoid R] {χ : MulChar R ℤ}
     (hQ : χ.IsQuadratic) (x : R) : ‖(χ x : ℂ)‖ ≤ 1 := by
-  rcases hQ x with h | h | h <;> rw [h] <;> norm_num
+  rcases hQ x with h | h | h <;> rw [h] <;> norm_num [Complex.norm_def, Complex.normSq_apply]
 
 theorem norm_twoPrimaryCharacter_le (e n : ℕ) (x : ZMod 8) :
     ‖twoPrimaryCharacter e n x‖ ≤ 1 := by
@@ -30,7 +30,7 @@ theorem norm_twoPrimaryCharacter_le (e n : ℕ) (x : ZMod 8) :
   have h4 := norm_quadratic_int_character_le ZMod.isQuadratic_χ₄ y
   have h8 := norm_quadratic_int_character_le ZMod.isQuadratic_χ₈ x
   unfold twoPrimaryCharacter
-  rw [norm_mul, norm_pow, norm_pow]
+  rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_pow]
   calc
     _ ≤ (1 : ℝ) ^ (n / 2 + 1) * (1 : ℝ) ^ e :=
       mul_le_mul (pow_le_pow_left₀ (norm_nonneg _) h4 _) (pow_le_pow_left₀ (norm_nonneg _) h8 _)
@@ -73,10 +73,10 @@ theorem even_kloosterman_coefficients_are_units (e : ℕ) {k : ℕ} (hk : k % 2 
   change IsUnit ((d : ZMod R) * (1 - (k : ZMod R))) ∧ IsUnit ((d : ZMod R) * ((k : ZMod R) ^ 2 + 1))
   constructor
   · apply (hUnit _).2
-    simp only [map_mul, map_intCast, map_sub, map_one, map_natCast, hd2, hk2, sub_zero, one_mul, one_ne_zero]
+    simp only [map_mul, map_intCast, map_sub, map_one, map_natCast, hd2, hk2, sub_zero, one_mul] <;> decide
   · apply (hUnit _).2
     simp only [map_mul, map_intCast, map_add, map_pow, map_one, map_natCast, hd2, hk2, zero_pow (by decide : 2 ≠ 0),
-      zero_add, one_mul, one_ne_zero]
+      zero_add, one_mul] <;> decide
 
 end
 end ManuscriptAudit.Paper8DedekindTwoPrimaryData

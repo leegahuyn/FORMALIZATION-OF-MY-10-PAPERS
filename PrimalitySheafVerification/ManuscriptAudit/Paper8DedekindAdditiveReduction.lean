@@ -15,9 +15,9 @@ theorem phase_numerator_congr_divisor {h k m : ℕ} (hk : 0 < k) (hC : h.Coprime
   let f := ZMod.castHom hd (ZMod m)
   let A := f ((H⁻¹ : (ZMod k)ˣ) : ZMod k)
   have hPos : (h : ZMod m) * A = 1 := by
-    have h := congrArg f H.mul_inv
-    change f ((h : ZMod k) * ((H⁻¹ : (ZMod k)ˣ) : ZMod k)) = f 1 at h
-    simpa only [map_mul, map_natCast, map_one] using h
+    have hEq := congrArg f H.mul_inv
+    change f ((h : ZMod k) * ((H⁻¹ : (ZMod k)ˣ) : ZMod k)) = f 1 at hEq
+    simpa only [map_mul, map_natCast, map_one] using hEq
   have hA : A = (a : ZMod m) := by
     calc
       _ = (a : ZMod m) * ((h : ZMod m) * A) := by rw [← mul_assoc, mul_comm (a : ZMod m), ha, one_mul]
@@ -66,7 +66,7 @@ theorem dedekind_phase_drop_three {h k : ℕ} [NeZero k] (h3 : ¬ (3 : ℕ) ∣ 
   unfold M
   push_cast
   rw [hA]
-  field_simp [hkC] <;> ring
+  field_simp [hkC] <;> simp only [Complex.ofReal_ratCast] <;> ring
 
 end ManuscriptAudit.Paper8DedekindAdditiveReduction
 

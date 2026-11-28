@@ -16,10 +16,26 @@ variable (X : Scheme.{u})
 private def baseChangeIso : baseChange (𝟙 X) ≅ 𝟭 X.ProEt := by
   refine NatIso.ofComponents (fun U ↦ ?_) ?_
   · let f := pullback.fst U.hom (𝟙 X)
-    letI : IsIso f := inferInstanceAs (IsIso (pullback.fst U.hom (𝟙 X)))
-    refine MorphismProperty.Over.isoMk (asIso f) ?_
+    let g : U.left ⟶ pullback U.hom (𝟙 X) :=
+      pullback.lift (𝟙 U.left) U.hom (by simp)
+    have hgf : g ≫ f = 𝟙 U.left := pullback.lift_fst _ _ _
+    have hf : f ≫ U.hom = pullback.snd U.hom (𝟙 X) := by
+      simpa only [f, Category.comp_id] using pullback.condition (f := U.hom) (g := 𝟙 X)
+    let e : pullback U.hom (𝟙 X) ≅ U.left :=
+      { hom := f
+        inv := g
+        hom_inv_id := by
+          apply pullback.hom_ext
+          · change (f ≫ g) ≫ f = _
+            rw [Category.assoc, hgf, Category.comp_id, Category.id_comp]
+          · rw [Category.assoc]
+            change f ≫ g ≫ pullback.snd U.hom (𝟙 X) = _
+            rw [show g ≫ pullback.snd U.hom (𝟙 X) = U.hom from pullback.lift_snd _ _ _,
+              hf, Category.id_comp]
+        inv_hom_id := hgf }
+    refine MorphismProperty.Over.isoMk e ?_
     change f ≫ U.hom = pullback.snd U.hom (𝟙 X)
-    simpa only [f, Category.comp_id] using pullback.condition (f := U.hom) (g := 𝟙 X)
+    exact hf
   · intro U V h
     apply MorphismProperty.Over.Hom.ext
     change ((baseChange (𝟙 X)).map h).left ≫ pullback.fst V.hom (𝟙 X) =

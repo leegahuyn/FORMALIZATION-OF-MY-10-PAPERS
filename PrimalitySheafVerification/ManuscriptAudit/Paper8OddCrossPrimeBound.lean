@@ -73,8 +73,8 @@ private theorem reference_entry_prime {p d : ℕ} [Fact p.Prime] (hp : p ≠ 2)
     congr 1
     push_cast
     rw [hCast, ha, mul_add, div_eq_mul_inv]
-  rw [hChar, hPhase, mul_assoc] at hTerm
-  exact hTerm
+  rw [hChar, hPhase] at hTerm
+  simpa only [mul_assoc] using hTerm
 
 private theorem referenceZeroSum_eq_primeSalie {p : ℕ} [Fact p.Prime] (hp : p ≠ 2)
     (hp3 : ¬ (3 : ℕ) ∣ p) {u v : ℤ} (huv : 24 * u + (p : ℤ) * v = 1) :
@@ -102,9 +102,9 @@ private theorem coprime_twentyFour_of_prime_ge_five {p : ℕ} [Fact p.Prime] (hP
   have h3 : ¬ p ∣ 3 := fun h => by
     have hp := Nat.le_of_dvd (by decide : 0 < 3) h
     omega
-  apply (hPrime.coprime_iff_not_dvd.2 ?_).symm
-  rw [show (24 : ℕ) = 3 * (2 * (2 * 2)) by norm_num]
-  simp [hPrime.dvd_mul, h2, h3]
+  apply Nat.Coprime.symm
+  rw [show (24 : ℕ) = 2 ^ 3 * 3 by decide, Nat.coprime_mul_iff_right]
+  exact ⟨(hPrime.coprime_iff_not_dvd.2 h2).pow_right 3, hPrime.coprime_iff_not_dvd.2 h3⟩
 
 private theorem norm_referenceZeroSum_prime {p : ℕ} [Fact p.Prime] (hP : 5 ≤ p) :
     ‖referenceZeroSum p‖ ≤ 2 * Real.sqrt (p : ℝ) := by

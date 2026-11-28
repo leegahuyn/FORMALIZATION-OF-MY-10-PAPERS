@@ -46,6 +46,10 @@ def resolution (n : ℕ) (hn : n ≠ 0) : ProjectiveResolution (residues n) := b
   exact TwoTermProjectiveResolution.resolution (multiplication n) (quotient n)
     (multiplication_quotient n) (presentation_exact n)
 
+theorem resolution_isZero_X_succ_succ (n : ℕ) (hn : n ≠ 0) (k : ℕ) :
+    IsZero ((resolution n hn).complex.X (k + 2)) :=
+  TwoTermProjectiveResolution.isZero_X_succ_succ (multiplication n) k
+
 theorem resolution_d_one (n : ℕ) (hn : n ≠ 0) :
     (resolution n hn).complex.d 1 0 = multiplication n :=
   TwoTermProjectiveResolution.d_one_zero _

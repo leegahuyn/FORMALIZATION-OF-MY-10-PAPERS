@@ -33,6 +33,19 @@ def genericValue (U : X.Etale) (h : IsTerminal ((B f).obj U)) :
     (D f M).obj.obj (op U) ≃+ M.obj.obj (op (T (Y := Y))) :=
   (M.obj.mapIso (baseChangeTerminalIso f U h).symm.op).addCommGroupIsoToAddEquiv
 
+/-- A map between terminal generic fibers transports their actual section
+values, even when the two ambient base changes come from different sites. -/
+theorem genericValue_transport {Z : Scheme.{0}} (g : Y ⟶ Z)
+    (U : X.Etale) (V : Z.Etale)
+    (hU : IsTerminal ((B f).obj U)) (hV : IsTerminal ((B g).obj V))
+    (r : (B g).obj V ⟶ (B f).obj U) (x : (D f M).obj.obj (op U)) :
+    genericValue g M V hV (M.obj.map r.op x) = genericValue f M U hU x := by
+  let u := (baseChangeTerminalIso f U hU).inv
+  let v := (baseChangeTerminalIso g V hV).inv
+  have h : v ≫ r = u := hU.hom_ext _ _
+  change M.obj.map v.op (M.obj.map r.op x) = M.obj.map u.op x
+  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, h]
+
 /-- Restricting an actual generic section preserves its literal value. -/
 theorem genericValue_natural {U V : X.Etale} (r : V ⟶ U)
     (hU : IsTerminal ((B f).obj U)) (hV : IsTerminal ((B f).obj V))
@@ -77,7 +90,8 @@ end ManuscriptAudit.OpenEtaleGenericSectionValue
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.OpenEtaleGenericSectionValue.genericValue_natural,
+  for name in [``ManuscriptAudit.OpenEtaleGenericSectionValue.genericValue_transport,
+      ``ManuscriptAudit.OpenEtaleGenericSectionValue.genericValue_natural,
       ``ManuscriptAudit.OpenEtaleGenericSectionValue.genericValue_regular] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n

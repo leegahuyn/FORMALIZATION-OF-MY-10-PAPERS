@@ -7,7 +7,7 @@ namespace ManuscriptAudit.Paper8OddCrossLeadingPowers
 
 open Paper8OddCrossZetaFactorization Paper8OddCrossPoincareRowKernel Paper8OddCrossPoincareKernel
 open Paper8OddCrossPoincareConvergence Paper8OddCrossPoincareHeight MaassLaplacian
-open Paper8OddCrossCuspNormalization
+open Paper8OddCrossCuspNormalization Paper8OddCrossCuspPhase Paper8OddCrossScaledRows
 
 noncomputable section
 
@@ -82,6 +82,7 @@ theorem crossLeadingKernel_principal_powers (s : ℂ) {y : ℝ} (hy : 0 < y) (u 
     push_cast
     have hAvg := log_norm_eq_average w
     linear_combination -2 * hAvg
+  unfold crossLeadingKernel
   change (starRingEnd ℂ) (normalizedNegativeRoot w) * (H : ℂ) ^ s *
       exponentialPhase (-(oddZeroFrequency : ℂ) * (u : ℂ)) =
     (y : ℂ) ^ s * w ^ (1 / 4 - s) * z ^ (-(1 / 4 : ℂ) - s) *

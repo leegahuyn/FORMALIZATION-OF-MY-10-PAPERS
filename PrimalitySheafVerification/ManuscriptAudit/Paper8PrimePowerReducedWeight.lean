@@ -77,11 +77,15 @@ theorem norm_prime_reduced_unit_sum {p e : ℕ} [Fact p.Prime] [NeZero (p ^ e)]
   by_cases hParity : e % 2 = 0
   · have hE : e = r + r := by unfold r; omega
     have hN : p ^ e = p ^ r * p ^ r := by rw [← pow_add, ← hE]
-    have hLoc : LocalBound p w (p ^ e) := hN.symm ▸ even_prime_reduced_bound hp hr w hw
+    have hLoc : LocalBound p w (p ^ e) := by
+      rw [hN]
+      exact even_prime_reduced_bound hp hr w hw
     exact hLoc hd a ha
   · have hE : e = r + (1 + r) := by unfold r; omega
     have hN : p ^ e = p ^ r * (p * p ^ r) := by rw [hE, pow_add, pow_add, pow_one]
-    have hLoc : LocalBound p w (p ^ e) := hN.symm ▸ odd_prime_reduced_bound hp hr w hw
+    have hLoc : LocalBound p w (p ^ e) := by
+      rw [hN]
+      exact odd_prime_reduced_bound hp hr w hw
     exact hLoc hd a ha
 
 end

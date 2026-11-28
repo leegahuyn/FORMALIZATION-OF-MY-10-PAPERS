@@ -159,7 +159,8 @@ theorem dedekind_odd_multiple_three_summand {h k : ℕ} (hh : h % 2 = 1) (hk : k
         (jacobiSym (h : ℤ) k : ℂ) *
         exponentialPhase (((u * ((h : ℤ) + a) : ℤ) : ℂ) / (3 * (k : ℂ))) := by
   have hk0 : 0 < k := by omega
-  have hM : (3 * k) % 2 = 1 := by simpa only [Nat.mul_mod, hk]
+  have hM : (3 * k) % 2 = 1 := by
+    rw [Nat.mul_mod, hk]
   have hBig : ((3 * k : ℕ) : ℤ) ∣ dedekindPhaseNumerator h k - ((h : ℤ) + a) := by
     apply (ZMod.intCast_zmod_eq_zero_iff_dvd _ (3 * k)).1
     push_cast

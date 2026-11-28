@@ -108,7 +108,7 @@ theorem card_two_power_square_one (r : ℕ) :
   have hCard : C.card ≤ 2 := (Finset.card_insert_le _ _).trans (by simp)
   change S.card ≤ 4
   apply (Finset.card_le_card hS).trans
-  rw [Finset.card_map, Finset.card_product, Finset.card_univ, ZMod.card]
+  rw [Finset.card_map, Finset.product_eq_sprod, Finset.card_product, Finset.card_univ, ZMod.card]
   omega
 
 theorem card_two_power_square_unit (r : ℕ) (a : ZMod (2 * 2 ^ r)) (ha : IsUnit a) :
@@ -124,8 +124,12 @@ theorem card_two_power_square_unit (r : ℕ) (a : ZMod (2 * 2 ^ r)) (ha : IsUnit
     let e : Equiv.Perm (ZMod M) :=
       { toFun := fun z => z * x⁻¹
         invFun := fun z => z * x
-        left_inv := fun z => by rw [mul_assoc, ZMod.inv_mul_of_unit x hU, mul_one]
-        right_inv := fun z => by rw [mul_assoc, ZMod.mul_inv_of_unit x hU, mul_one] }
+        left_inv := fun z => by
+          change (z * x⁻¹) * x = z
+          rw [mul_assoc, ZMod.inv_mul_of_unit x hU, mul_one]
+        right_inv := fun z => by
+          change (z * x) * x⁻¹ = z
+          rw [mul_assoc, ZMod.mul_inv_of_unit x hU, mul_one] }
     have hMap : S.map e.toEmbedding ⊆ T := by
       intro z hz
       obtain ⟨y, hy, rfl⟩ := Finset.mem_map.mp hz

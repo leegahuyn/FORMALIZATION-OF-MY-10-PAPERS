@@ -32,7 +32,7 @@ private def identityPostcomposeIso (T : Scheme.{0}) : postcompose (𝟙 T) ≅ �
       change f.left ≫ 𝟙 W.left = 𝟙 V.left ≫ f.left
       simp)
 
-private def factoringComparison : etaleBaseChange g ≅ postcompose j ⋙ etaleBaseChange (g ≫ j) :=
+def factoringComparison : etaleBaseChange g ≅ postcompose j ⋙ etaleBaseChange (g ≫ j) :=
   (Functor.rightUnitor _).symm ≪≫
     Functor.isoWhiskerLeft (etaleBaseChange g) (identityPostcomposeIso Y).symm ≪≫
     reindexIso (factoringPullback j g)

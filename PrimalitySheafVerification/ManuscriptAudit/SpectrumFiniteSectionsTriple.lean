@@ -38,8 +38,19 @@ private theorem transport {D C : Type*} [CommRing D] [CommRing C] [Algebra R D] 
     rw [hr]
   exact congrArg g h
 
-set_option maxHeartbeats 2500000 in
-set_option backward.isDefEq.respectTransparency true in
+private theorem lift_factorization {C : Type*} [CommRing C] [Algebra R C]
+    (D : ℕ → Type*) [∀ n, CommRing (D n)] [∀ n, Algebra R (D n)]
+    (j : ∀ n, D n →ₐ[R] C) (hInj : ∀ n, Function.Injective (j n))
+    (f : PrimeSpectrum C → A)
+    (hFac : ∃ (n : ℕ) (g : PrimeSpectrum (j n).range → A), Continuous g ∧
+      ∀ x, g (comap (j n).range.val.toRingHom x) = f x) :
+    ∃ (n : ℕ) (g : PrimeSpectrum (D n) → A), Continuous g ∧
+      ∀ x, g (comap (j n).toRingHom x) = f x := by
+  obtain ⟨n, g, hg, hEq⟩ := hFac
+  obtain ⟨φ, hφ, hφEq⟩ := transport (j n) (hInj n) g hg
+  exact ⟨n, φ, hφ, fun x ↦ (hφEq x).trans (hEq x)⟩
+
+set_option maxHeartbeats 3000000 in
 /-- Injectivity of the literal triple stage maps identifies the factorization with
 a function on the actual coordinate ring of that stage. -/
 theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
@@ -48,17 +59,14 @@ theorem factor_triple (U : ℕ → Subalgebra R B) (hMono : Monotone U)
     (f : PrimeSpectrum T → A) (hF : Continuous f) :
     ∃ (n : ℕ) (g : PrimeSpectrum ((U n ⊗[R] U n) ⊗[R] U n) → A), Continuous g ∧
       ∀ x, g (comap (FlatTensorStageInjections.stageTriple U n).toRingHom x) = f x := by
-  obtain ⟨n, g, hg, hFac⟩ := SpectrumFiniteSectionsTripleImages.factor_triple_image U hMono hCover f hF
-  let D := (U n ⊗[R] U n) ⊗[R] U n
-  let j : D →ₐ[R] T := FlatTensorStageInjections.stageTriple U n
-  have hJ : Function.Injective j := hInj n
-  have hJRange : Continuous (g : PrimeSpectrum j.range → A) := hg
-  obtain ⟨φ, hφ, hEq⟩ := transport (R := R) (D := D) (C := T) j hJ g hJRange
-  refine ⟨n, φ, hφ, ?_⟩
-  intro x
-  calc
-    _ = g (comap j.range.val.toRingHom x) := hEq x
-    _ = f x := hFac x
+  let D (n : ℕ) := (U n ⊗[R] U n) ⊗[R] U n
+  let j (n : ℕ) : D n →ₐ[R] T := FlatTensorStageInjections.stageTriple U n
+  letI (n : ℕ) : CommRing (D n) :=
+    inferInstanceAs (CommRing ((U n ⊗[R] U n) ⊗[R] U n))
+  letI (n : ℕ) : Algebra R (D n) :=
+    inferInstanceAs (Algebra R ((U n ⊗[R] U n) ⊗[R] U n))
+  exact lift_factorization (R := R) (C := T) D j hInj f
+    (SpectrumFiniteSectionsTripleImages.factor_triple_image U hMono hCover f hF)
 
 end
 end ManuscriptAudit.SpectrumFiniteSectionsTriple

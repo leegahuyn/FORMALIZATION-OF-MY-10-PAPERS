@@ -41,8 +41,11 @@ def restriction : Sheaf (Scheme.ProEt.topology X) A ⥤ Sheaf (Scheme.ProEt.topo
 
 def restrictionAdjunction : restriction j A ⊣ directImage j A := by
   letI := postcompose_isContinuous j
+  letI : MorphismProperty.IsMultiplicative (@WeaklyEtale.{u}) :=
+    inferInstance
   let a : proetalePostcompose j ⊣ baseChange j :=
-    MorphismProperty.Over.mapPullbackAdj @WeaklyEtale ⊤ j inferInstance trivial
+    MorphismProperty.Over.mapPullbackAdj (T := Scheme.{u})
+      (P := @WeaklyEtale.{u}) (Q := ⊤) j (show WeaklyEtale j from inferInstance) trivial
   exact a.sheafPushforwardContinuous (E := A) (Scheme.ProEt.topology U) (Scheme.ProEt.topology X)
 
 end

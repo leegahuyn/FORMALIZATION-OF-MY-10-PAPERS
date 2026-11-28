@@ -32,7 +32,7 @@ private theorem card_reduceLow_preimage {n d : ℕ} [NeZero n] [NeZero d] (S : F
     · rintro ⟨v, hv, rfl⟩
       rw [hLow]
       exact (Finset.mem_product.mp hv).2
-  rw [hE, Finset.card_map, Finset.card_product, Finset.card_univ, ZMod.card]
+  rw [hE, Finset.card_map, Finset.product_eq_sprod, Finset.card_product, Finset.card_univ, ZMod.card]
 
 theorem norm_weighted_kloosterman_two_primary (r : ℕ) {d : ℕ} [NeZero d]
     (w : ZMod (d * (2 * 2 ^ r)) → ℂ) (hw : ∀ z, ‖w z‖ ≤ 1)

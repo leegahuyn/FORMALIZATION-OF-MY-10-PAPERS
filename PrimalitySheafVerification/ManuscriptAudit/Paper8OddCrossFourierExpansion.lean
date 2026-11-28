@@ -30,9 +30,9 @@ private theorem row_fourier_continuous (s : ℂ) {y : ℝ} (hy : 0 < y) (i : Cro
   have hEq : (fun x : ℝ => oddCrossFourierTerm s (pointAtHeight x hy) ⟨D, A, n⟩) =
       (fun x : ℝ => a * crossRealKernel s y c ((n : ℝ) + x + b)) := by
     funext x
-    rw [oddCrossFourierTerm_translate, oddCrossFourierTerm_row_kernel, translatePoint_re, pointAtHeight_re]
-    have hIm : (translatePoint n (pointAtHeight x hy)).im = y := complexPoint_im _ _
-    rw [hIm]
+    change oddCrossFourierTerm s (pointAtHeight x hy) ⟨D, A, n⟩ = a * crossRealKernel s y c ((n : ℝ) + x + b)
+    rw [oddCrossFourierTerm_translate A n s (pointAtHeight x hy), oddCrossFourierTerm_row_kernel,
+      translatePoint_re, pointAtHeight_re, translatePoint_pointAtHeight_im]
   rwa [hEq]
 
 theorem odd_cross_fourier_expansion (s : ℂ) (hs : 1 < s.re) {y : ℝ} (hy : 0 < y) :
@@ -52,7 +52,7 @@ theorem odd_cross_fourier_expansion (s : ℂ) (hs : 1 < s.re) {y : ℝ} (hy : 0 
       have hre : |(pointAtHeight x hy).re| ≤ 1 := by
         rw [pointAtHeight_re, abs_of_nonneg hx0]
         exact hx1
-      have h := hBound (pointAtHeight x hy) (complexPoint_im x y) hre i
+      have h := hBound (pointAtHeight x hy) (pointAtHeight_im x hy) hre i
       unfold f oddCrossFourierTerm
       rw [norm_mul, exponentialPhase_real_norm, mul_one]
       exact h))

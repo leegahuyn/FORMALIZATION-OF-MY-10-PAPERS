@@ -1,6 +1,6 @@
 import Lean.Util.CollectAxioms
 import PrimalitySheafVerification.ManuscriptAudit.AffineLineEtaleHTwo
-import PrimalitySheafVerification.ManuscriptAudit.EtaleProetaleAffineLowHTwoFromCech
+import PrimalitySheafVerification.ManuscriptAudit.AffineNativeResidueHTwoFromCech
 
 /-! The actual affine-line finite-residue vanishing follows from
 the actual affine Čech comparison for small étale injectives. -/
@@ -40,21 +40,9 @@ theorem native_residue_HTwo_subsingleton
     (hTwo : ∀ I : C K, Injective I →
       ProetaleAffineCechHTwo.AffineExactAt (X K) ((liftedImage (X K)).obj I) 2) :
     Subsingleton (Sheaf.H ((ProetaleCoefficientUniverseLift.lift (X K)).obj
-      (ProetaleResidueSheaves.residueSheaf (X K) ℓ r)) 2) := by
-  let M := AddCommGrpCat.of (ZMod (ℓ^r))
-  let F := (constantSheaf (X K).smallEtaleTopology A).obj M
-  letI : Subsingleton (Sheaf.H F 2) := AffineLineEtaleHTwo.cyclic_HTwo_subsingleton K (ℓ^r)
-  have hSource : Subsingleton (Sheaf.H ((liftedImage (X K)).obj F) 2) :=
-    (EtaleProetaleAffineLowHTwoFromCech.comparison_HTwo_surjective (X K) hZero hOne hTwo F).subsingleton
-  let M' := (AddCommGrpCat.uliftFunctor.{1} : A ⥤ B).obj M
-  let i := (inverseImage (X K)).mapIso ((EtaleCoefficientUniverseLift.constantIso (X K)).app M) ≪≫
-    (constantInverseImageIso (X K)).app M' ≪≫
-    ProetaleDiscreteConstant.nativeResidueIso (X K) ℓ r
-  have hI : Function.Injective (Sheaf.H.map i.inv 2) := by
-    apply Function.LeftInverse.injective (g := Sheaf.H.map i.hom 2)
-    intro x
-    rw [← Sheaf.H.map_comp_apply, i.inv_hom_id, Sheaf.H.map_id_apply]
-  exact ⟨fun a b ↦ hI (hSource.elim (Sheaf.H.map i.inv 2 a) (Sheaf.H.map i.inv 2 b))⟩
+      (ProetaleResidueSheaves.residueSheaf (X K) ℓ r)) 2) := 
+  AffineNativeResidueHTwoFromCech.native_residue_HTwo_subsingleton (Polynomial K) ℓ r
+    (AffineLineEtaleHTwo.cyclic_HTwo_subsingleton K (ℓ ^ r)) hZero hOne hTwo
 
 end
 end ManuscriptAudit.AffineLineNativeResidueHTwoFromCech

@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Mathlib.Data.ZMod.QuotientRing
+import PrimalitySheafVerification.ManuscriptAudit.IntegerResidueModuleIso
 import PrimalitySheafVerification.ManuscriptAudit.IntCyclicDerivedTor
 import PrimalitySheafVerification.ManuscriptAudit.ZModGcdCyclicKernel
 
@@ -14,13 +14,6 @@ noncomputable section
 
 private abbrev C := ModuleCat.{0} ℤ
 
-private def quotientResidueIso (n : ℕ) :
-    residues n ≅ ModuleCat.of ℤ (ZMod n) := by
-  let e := (Int.quotientSpanNatEquivZMod n).toAddEquiv
-  let el : (ℤ ⧸ IntCyclicProjectiveResolution.ideal n) ≃ₗ[ℤ] ZMod n :=
-    { e with map_smul' := fun a x ↦ e.map_zsmul x a }
-  exact el.toModuleIso
-
 /-- Degree-one native derived Tor is the residue module of the gcd, with its
 actual integral module structure. The first positive modulus is ordered as
 the module argument and the second as the resolved argument. -/
@@ -29,7 +22,7 @@ def torOneIsoGcdResidues (m n : ℕ) (hm : 0 < m) (hn : 0 < n) :
       ModuleCat.of ℤ (ZMod (Nat.gcd m n)) := by
   let A := ModuleCat.of ℤ (ZMod m)
   let F := (Tor C 1).obj A
-  exact (F.mapIso (quotientResidueIso n)).symm ≪≫
+  exact (F.mapIso (IntegerResidueModuleIso.quotientResidueIso n)).symm ≪≫
     IntCyclicDerivedTor.torOneEquivKernel A n hn.ne' ≪≫
     (ZModGcdCyclicKernel.gcdResiduesEquivKernel m n hm).symm.toModuleIso
 

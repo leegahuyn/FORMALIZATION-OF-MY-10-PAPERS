@@ -35,6 +35,7 @@ theorem bijective (n : ℕ) (Y : D) : Function.Bijective (map adj X Y n) := by
   | succ n ih =>
     let i := Injective.ι Y
     let S := ShortComplex.cokernelSequence i
+    letI : Mono S.f := inferInstanceAs (Mono i)
     have hS : S.ShortExact :=
       ShortComplex.ShortExact.mk' (ShortComplex.cokernelSequence_exact i) inferInstance inferInstance
     let T := S.map G
@@ -63,7 +64,9 @@ theorem bijective (n : ℕ) (Y : D) : Function.Bijective (map adj X Y n) := by
       obtain ⟨z, hz⟩ := Ext.covariant_sequence_exact₁ (F.obj X) hS x (Ext.eq_zero_of_injective _) rfl
       obtain ⟨w, hw⟩ := (ih S.X₃).surjective z
       refine ⟨w.comp hT.extClass rfl, ?_⟩
-      rw [map_boundary adj X hS n w, hw, hz]
+      calc
+        _ = (map adj X S.X₃ n w).comp hS.extClass rfl := map_boundary adj X hS n w
+        _ = _ := (congrArg (fun u ↦ u.comp hS.extClass (show n + 1 = n + 1 from rfl)) hw).trans hz
 
 end
 end ManuscriptAudit.ExtExactAdjunctionBijective
