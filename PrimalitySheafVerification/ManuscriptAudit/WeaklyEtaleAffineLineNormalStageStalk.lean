@@ -59,11 +59,11 @@ theorem local_properties (g : model K L →ₐ[R K] B) (r : Ideal B) [r.IsPrime]
   let D := model K L
   let q := r.comap g.toRingHom
   let p := q.comap (algebraMap (R K) D)
-  letI : q.IsPrime := Ideal.IsPrime.comap g.toRingHom inferInstance
-  letI : p.IsPrime := Ideal.IsPrime.comap (algebraMap (R K) D) inferInstance
+  letI : q.IsPrime := Ideal.IsPrime.comap g.toRingHom
+  letI : p.IsPrime := Ideal.IsPrime.comap (algebraMap (R K) D)
   letI : q.LiesOver p := ⟨rfl⟩
-  let Q : PrimeSpectrum D := ⟨q, inferInstance⟩
-  let C (i : ι) := integralClosure (R K) (L i)
+  let C : ι → Type u := fun i ↦ integralClosure (R K) (L i)
+  let Q : PrimeSpectrum (∀ i, C i) := ⟨q, ‹q.IsPrime›⟩
   obtain ⟨i, P, hQ, ⟨e⟩⟩ := FiniteProductStageStalk.exists_component (R K) C Q
   let S := Localization.AtPrime P.asIdeal
   have hP : P.asIdeal.comap (algebraMap (R K) (C i)) = p := by

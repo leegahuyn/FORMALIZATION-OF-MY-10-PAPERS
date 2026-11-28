@@ -92,6 +92,44 @@ theorem exists_injective_low_coordinates (R : ℝ) (W : Submodule ℝ D)
   exact (not_lt_of_ge (rayleigh_ge_of_low_coordinates_zero J hJ hInj b e he R u hz))
     (hW u hne)
 
+/-- Every nonzero form-domain vector whose coordinates are supported strictly below
+the threshold has strict Rayleigh energy below the threshold. -/
+include hJ hInj he in
+theorem rayleigh_lt_of_high_coordinates_zero (R : ℝ) (u : D) (hu : u ≠ 0)
+    (hZero : ∀ i, R ≤ e i → b.repr (J u) i = 0) :
+    ‖u‖^2 < R * ‖J u‖^2 := by
+  classical
+  let coeff (i : I) := b.repr (J u) i
+  have hNonzero : ∃ i, coeff i ≠ 0 := by
+    by_contra h
+    push_neg at h
+    apply hu
+    apply hInj
+    rw [map_zero]
+    apply b.repr.injective
+    rw [map_zero]
+    apply lp.ext
+    funext i
+    exact h i
+  obtain ⟨i, hi⟩ := hNonzero
+  have hiR : e i < R := lt_of_not_ge (fun h => hi (hZero i h))
+  have hGap := ((norm_hasSum b (J u)).mul_left R).sub
+    (form_energy_hasSum J hJ hInj b e he u)
+  change HasSum (fun j => R * (coeff j)^2 - e j * (coeff j)^2)
+    (R * ‖J u‖^2 - ‖u‖^2) at hGap
+  have hPoint (j : I) : 0 ≤ R * (coeff j)^2 - e j * (coeff j)^2 := by
+    by_cases h : R ≤ e j
+    · have hz : coeff j = 0 := hZero j h
+      simp [hz]
+    · exact sub_nonneg.mpr (mul_le_mul_of_nonneg_right (le_of_not_ge h) (sq_nonneg _))
+  have hBound : R * (coeff i)^2 - e i * (coeff i)^2 ≤ R * ‖J u‖^2 - ‖u‖^2 := by
+    simpa only [Finset.sum_singleton] using sum_le_hasSum {i} (fun j _ => hPoint j) hGap
+  have hiPos : 0 < R * (coeff i)^2 - e i * (coeff i)^2 := by
+    rw [← sub_mul]
+    exact mul_pos (sub_pos.mpr hiR) (sq_pos_of_ne_zero hi)
+  exact sub_pos.mp (hiPos.trans_le hBound)
+
+
 end
 end ManuscriptAudit.Paper10FriedrichsRayleigh
 
@@ -100,7 +138,8 @@ run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.Paper10FriedrichsRayleigh.form_energy_hasSum,
       ``ManuscriptAudit.Paper10FriedrichsRayleigh.rayleigh_ge_of_low_coordinates_zero,
-      ``ManuscriptAudit.Paper10FriedrichsRayleigh.exists_injective_low_coordinates] do
+      ``ManuscriptAudit.Paper10FriedrichsRayleigh.exists_injective_low_coordinates,
+      ``ManuscriptAudit.Paper10FriedrichsRayleigh.rayleigh_lt_of_high_coordinates_zero] do
     let ax ← collectAxioms name
     let bad := ax.filter fun x => !allowed.contains x
     unless bad.isEmpty do

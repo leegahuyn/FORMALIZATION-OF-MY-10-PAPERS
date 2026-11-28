@@ -23,7 +23,8 @@ private theorem exists_power_numerator (I : Ideal A) (hI : I ≠ ⊥) {a : A} (h
     (ha₀ : a ≠ 0) (y : outsideAlgebra A K I) :
     ∃ (n : ℕ) (d : A), (y : K) * algebraMap A K a ^ n = algebraMap A K d := by
   let S := Localization.Away a
-  have h₀ : algebraMap A K a ≠ 0 := (IsFractionRing.injective A K).ne ha₀
+  have h₀ : algebraMap A K a ≠ 0 := by
+    simpa only [map_zero] using (IsFractionRing.injective A K).ne ha₀
   have hu : IsUnit ((Algebra.ofId A K) a) := IsUnit.mk0 _ h₀
   let j : S →ₐ[A] K := IsLocalization.Away.liftAlgHom a (f := Algebra.ofId A K) hu
   have hj (x : A) : j (algebraMap A S x) = algebraMap A K x :=
@@ -73,13 +74,14 @@ theorem isLocalization_away (I : Ideal A) (hI : I ≠ ⊥) {a : A} (ha : a ∈ I
       _ = _ := by rw [hx, ← map_pow, ← map_mul, hd', ← hk]
   · intro x y h
     have h' : algebraMap G Z (algebraMap A G x) = algebraMap G Z (algebraMap A G y) := by
-      simpa only [hk] using h
+      change algebraMap A Z x = algebraMap A Z y at h
+      exact (hk x).symm.trans (h.trans (hk y))
     obtain ⟨n, hn⟩ := IsLocalization.Away.exists_of_eq aG h'
     refine ⟨n, ?_⟩
     have hAG : Function.Injective (algebraMap A G) := fun _ _ e ↦
       (IsFractionRing.injective A K) (congrArg Subtype.val e)
     apply hAG
-    rw [map_mul, map_mul, map_pow, map_pow]
+    simp only [map_mul, map_pow]
     exact hn
 
 end

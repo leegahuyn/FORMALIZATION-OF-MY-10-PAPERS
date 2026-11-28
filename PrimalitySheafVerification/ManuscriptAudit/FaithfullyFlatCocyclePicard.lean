@@ -82,6 +82,7 @@ theorem pairing_tmul (x : invariants A B t) (y : invariants A B t⁻¹) :
   rw [LinearEquiv.apply_symm_apply]
   exact rawProduct_tmul A B t x y
 
+set_option maxHeartbeats 2000000 in
 theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
   let L := invariants A B t
   let N := invariants A B t⁻¹

@@ -66,14 +66,16 @@ theorem compact_perturbed
     obtain ⟨K, hCK, hN⟩ := hK
     obtain ⟨r, hr, hrK⟩ := Metric.mem_nhds_iff.mp hN
     refine ⟨K,r,hCK,hr,fun u hu => hrK ?_⟩
-    simpa only [Metric.mem_ball, dist_zero_right] using hu
+    simpa only [Metric.mem_ball, dist_zero_right, coreNorm] using hu
   letI := F.toNormedAddCommGroup
   refine ⟨K, hCK, Metric.mem_nhds_iff.mpr ⟨s*r, mul_pos hs hr, ?_⟩⟩
   intro u hu
   apply hSubset u
   have hBound : coreNorm F u < s*r := by
-    simpa only [Metric.mem_ball, dist_zero_right] using hu
-  exact (mul_lt_mul_left hs).mp ((hNorm u).trans_lt hBound)
+    simpa only [Metric.mem_ball, dist_zero_right, coreNorm] using hu
+  by_contra h
+  exact (not_le_of_gt ((hNorm u).trans_lt hBound))
+    (mul_le_mul_of_nonneg_left (le_of_not_gt h) hs.le)
 
 end
 end ManuscriptAudit.Paper10RelativeFormCompact

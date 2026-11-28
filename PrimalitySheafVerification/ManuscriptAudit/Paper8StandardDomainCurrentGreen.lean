@@ -21,7 +21,7 @@ private theorem left_to_right (y : ℝ) (hy : 0 < y) :
   have hr : 0 < (complexPoint (1 / 2) y).im := by rw [complexPoint_im]; exact hy
   rw [ofComplex_apply_of_im_pos hl, ofComplex_apply_of_im_pos hr]
   apply UpperHalfPlane.ext
-  rw [UpperHalfPlane.modular_T_smul]
+  rw [UpperHalfPlane.modular_T_smul, UpperHalfPlane.coe_vadd]
   unfold complexPoint
   push_cast
   ring
@@ -52,8 +52,7 @@ theorem integral_curl_zero (f : ℍ → ℂ) {Y : ℝ} (hY : 1 ≤ Y)
           have hArc1 : arcHeight (1 / 2) ≤ 1 := by unfold arcHeight; exact Real.sqrt_le_one.2 (by norm_num)
           exact add_pos_of_pos_of_nonneg hArc (mul_nonneg ht.1 (sub_nonneg.mpr (hArc1.trans hY)))
         have hHeight : height arcHeight Y (-(1 / 2)) t = y := by
-          unfold height y
-          rw [hLow]
+          simp only [height, y, hLow]
         have hPair := left_to_right y hyPos
         simp only [pullbackT, point, asComplexCurrent, hLow, hHeight]
         change Complex.I * ((Y - arcHeight (1 / 2) : ℝ) : ℂ) *
@@ -75,8 +74,10 @@ theorem integral_curl_zero (f : ℍ → ℂ) {Y : ℝ} (hY : 1 ≤ Y)
         have hP : pullbackX (asComplexCurrent f) arcHeight Y x 1 = 0 := by
           simp [pullbackX, point, hHeight, asComplexCurrent, hTop x hx]
         have hQ : pullbackX (asComplexCurrent f) arcHeight Y x 0 = arcCurrent f x := by
-          simp [pullbackX, point, height, slope, asComplexCurrent, arcCurrent, arcPoint,
+          simp [pullbackX, point, height, Paper8CurvedGreenChart.slope, asComplexCurrent, arcCurrent, arcPoint,
             arcTangent_eq_derivative hA]
+        change pullbackX (asComplexCurrent f) arcHeight Y x 1 -
+          pullbackX (asComplexCurrent f) arcHeight Y x 0 = -arcCurrent f x
         rw [hP, hQ, zero_sub]
       _ = -(∫ x in (-(1 / 2) : ℝ)..(1 / 2 : ℝ), arcCurrent f x) := intervalIntegral.integral_neg
       _ = _ := by rw [arcCurrent_integral_zero hS, neg_zero]

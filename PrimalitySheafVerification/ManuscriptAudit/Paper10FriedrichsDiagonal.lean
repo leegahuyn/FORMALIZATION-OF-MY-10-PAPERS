@@ -91,7 +91,6 @@ theorem unshifted_domain_iff_memℓp (c : ℝ) (x : H) :
     refine ⟨b.repr.symm w, (unshifted_graph_iff_repr J hJ b e he c x _).mpr ?_⟩
     intro i
     rw [b.repr.apply_symm_apply]
-    rfl
 
 end
 end ManuscriptAudit.Paper10FriedrichsDiagonal

@@ -12,6 +12,9 @@ open KummerUnitsSheaf KummerRelativeFull KummerCohomologyDegreeTwo
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true
+set_option backward.isDefEq.respectTransparency false
+
 attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 
 private abbrev J (X : Scheme.{0}) := X.smallEtaleTopology
@@ -22,16 +25,21 @@ private abbrev integerConstant (X : Scheme.{0}) :=
 /-- Actual degree-zero unit cohomology is the group of global scheme units. -/
 def degreeZeroUnitEquiv (X : Scheme.{0}) :
     Sheaf.H (fullCoordinateUnitSheaf X) 0 ≃+ Additive (Γ(X, ⊤))ˣ :=
-  Sheaf.H.equiv₀ (fullCoordinateUnitSheaf X) (MorphismProperty.Over.mkIdTerminal @Etale X)
+  by
+    let T := EtaleTwoOpenHOne.identityObject X
+    let hT : IsTerminal T := MorphismProperty.Over.mkIdTerminal @AlgebraicGeometry.Etale X
+    exact Sheaf.H.equiv₀ (fullCoordinateUnitSheaf X) hT
 
 private theorem cohomologyPower (X : Scheme.{0}) (d n : ℕ)
     (x : Sheaf.H (sequence X d).X₂ n) :
     Sheaf.H.map (sequence X d).g n x = d • x := by
   let F := Sheaf.functorH (J X) n
-  change (F.map (sequence X d).g).hom x = _
-  rw [power_nsmul, Functor.map_nsmul]
-  have hId : F.map (𝟙 (sequence X d).X₂) = 𝟙 (F.obj (sequence X d).X₂) :=
-    F.map_id (sequence X d).X₂
+  let T : Sheaf (J X) A := (sequence X d).X₂
+  let g : T ⟶ T := (sequence X d).g
+  have hg : g = d • 𝟙 T := power_nsmul (X := X) d
+  change (F.map g).hom x = _
+  rw [hg, Functor.map_nsmul]
+  have hId : F.map (𝟙 T) = 𝟙 (F.obj T) := F.map_id T
   rw [hId] <;> rfl
 
 private def killedByCongr {G H : Type} [AddCommGroup G] [AddCommGroup H]
@@ -59,7 +67,7 @@ def geometricRootsHOneEquiv (d : ℕ) [NeZero (d : K)]
   let S := sequence X d
   let hS := sequence_shortExact k d hpos
   let e₀ : Sheaf.H S.X₂ 0 ≃+ Additive (Γ(X, ⊤))ˣ :=
-    (((Sheaf.functorH (J X) 0).mapIso (unitsIso X d)).addCommGroupIsoToAddEquiv).symm.trans
+    (((Sheaf.functorH (J X) 0).mapIso (unitsIso (X := X) d)).addCommGroupIsoToAddEquiv).symm.trans
       (degreeZeroUnitEquiv X)
   have hSurj : Function.Surjective (Sheaf.H.map S.g 0) := by
     intro u
@@ -67,7 +75,8 @@ def geometricRootsHOneEquiv (d : ℕ) [NeZero (d : K)]
     refine ⟨e₀.symm (Additive.ofMul a), e₀.injective ?_⟩
     rw [cohomologyPower X d 0, map_nsmul, e₀.apply_symm_apply]
     change Additive.ofMul (a ^ d) = e₀ u
-    rw [ha, ofMul_toMul]
+    have ha' : a ^ d = (e₀ u).toMul := ha
+    rw [ha', ofMul_toMul]
   let i : Sheaf.H S.X₁ 1 →+ Sheaf.H S.X₂ 1 := Sheaf.H.map S.f 1
   let g : Sheaf.H S.X₂ 1 →+ Sheaf.H S.X₂ 1 := Sheaf.H.map S.g 1
   let δ := hS.extClass.postcomp (integerConstant X) (show 0 + 1 = 1 by rfl)
@@ -104,7 +113,7 @@ def geometricRootsHOneEquiv (d : ℕ) [NeZero (d : K)]
       obtain ⟨x, hx⟩ := (hExact y.val).1 hy
       exact ⟨x, Subtype.ext hx⟩
   let e₁ := ((Sheaf.functorH (J X) 1).mapIso (firstIso (d := d) k)).addCommGroupIsoToAddEquiv
-  let e₂ := ((Sheaf.functorH (J X) 1).mapIso (unitsIso X d)).addCommGroupIsoToAddEquiv
+  let e₂ := ((Sheaf.functorH (J X) 1).mapIso (unitsIso (X := X) d)).addCommGroupIsoToAddEquiv
   exact e₁.trans ((AddEquiv.ofBijective mapTorsion hBij).trans (killedByCongr e₂.symm d))
 
 end

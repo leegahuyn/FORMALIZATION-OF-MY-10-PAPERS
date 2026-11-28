@@ -49,10 +49,17 @@ theorem adicInclusion_map_mul (r a : ℤ_[ℓ]) :
 
 local instance : Module ℤ_[ℓ] ((X K).EllAdicCohomology ℓ 2) := adicModule (X K) ℓ 2
 
+set_option maxRecDepth 12000
+set_option maxHeartbeats 2200000
+
 /-- The exhibited native degree-two Laurent line is an adic linear inclusion. -/
 def adicLinearInclusion : ℤ_[ℓ] →ₗ[ℤ_[ℓ]] ((X K).EllAdicCohomology ℓ 2) where
   toAddHom := adicInclusion K ℓ
-  map_smul' := adicInclusion_map_mul K ℓ
+  map_smul' := by
+    intro r a
+    change adicInclusion K ℓ (r * a) =
+      Sheaf.H.map (scalarMap (X K) ℓ r) 2 (adicInclusion K ℓ a)
+    exact adicInclusion_map_mul K ℓ r a
 
 theorem adicLinearInclusion_injective : Function.Injective (adicLinearInclusion K ℓ) :=
   CuspNativeAdicHTwoLower.adicInclusion_injective K ℓ

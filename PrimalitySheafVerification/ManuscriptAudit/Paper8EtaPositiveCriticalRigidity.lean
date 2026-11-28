@@ -100,7 +100,7 @@ theorem gammaZero_positive_lowering_eq_const_mul_eta {N : ℕ} (hN : 0 < N) (hN2
       normSquareDensity G z) < ⊤ := by
     have hD : (fun z : ℍ => normSquareDensity G z) = fun z : ℍ => normSquareDensity F z := by
       funext z
-      unfold normSquareDensity
+      change ENNReal.ofReal (‖G (z : ℂ)‖ ^ 2) = ENNReal.ofReal (‖F (z : ℂ)‖ ^ 2)
       rw [hNorm z]
     rw [hD]
     exact hMass

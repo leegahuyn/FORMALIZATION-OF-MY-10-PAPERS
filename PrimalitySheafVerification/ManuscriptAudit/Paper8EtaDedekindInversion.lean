@@ -38,7 +38,7 @@ theorem principalEtaMultiplier_mul_S (g : SL(2, ℤ)) (hc : 0 < g 1 0) (hd : 0 <
   have hS : ModularGroup.S • z = z := by
     apply UpperHalfPlane.ext
     rw [UpperHalfPlane.modular_S_smul]
-    change -Complex.I⁻¹ = Complex.I
+    change (-Complex.I)⁻¹ = Complex.I
     simp [Complex.inv_I]
   have hW : denominator g z = w := by unfold denominator w z; ring
   have hSW : denominator (g * ModularGroup.S) z = Complex.I * w := by
@@ -65,7 +65,7 @@ theorem principalEtaMultiplier_mul_S (g : SL(2, ℤ)) (hc : 0 < g 1 0) (hd : 0 <
       principalEtaMultiplier g * (Complex.sqrt w * ModularForm.eta z) := by
     calc
       _ = ModularForm.eta (g • z : ℍ) := by rw [hES]; ring
-      _ = _ := by rw [hE]; ring
+      _ = _ := by rw [hE] <;> ring
   have hQ : Complex.sqrt w ≠ 0 := by
     rw [sqrt_eq_exp (hW ▸ denominator_ne_zero g z)]
     exact Complex.exp_ne_zero _

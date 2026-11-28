@@ -44,7 +44,7 @@ private theorem adjointGauge_eq_derivativeZ {F G : ℂ → ℂ} {x y : ℝ} (hy 
       change ‖complexGauge (z : ℂ)‖ ^ 2 = _
       rw [complexGauge_coe]
     simpa only [← Complex.ofReal_pow, hNorm] using Complex.mul_conj' a
-  rw [adjointPartner, complexPoint_im, hRaise, raising_eq_gauge_derivativeZ x y hy hF]
+  conv_lhs => rw [adjointPartner, complexPoint_im, hRaise, raising_eq_gauge_derivativeZ x y hy hF]
   change ModularForm.eta w * (B * (2 * Complex.I * (y : ℂ) * a * d)) = _
   calc
     _ = 2 * Complex.I * (a * ((B * (y : ℂ)) * ModularForm.eta w)) * d := by ring
@@ -94,7 +94,8 @@ theorem fluxCurl_eq_negative_energy {F G : ℂ → ℂ}
     simp only [norm_mul, norm_pow, Complex.norm_I, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hy,
       hTwo, mul_one, mul_pow, hA]
     field_simp [hy.ne'] <;> ring
-  rw [fluxCurrent, curl_conj_mul_holomorphic hB hH, hEnergy]
+  unfold fluxCurrent
+  rw [curl_conj_mul_holomorphic hB hH, hEnergy]
   change 2 * Complex.I * (starRingEnd ℂ) d * (ModularForm.eta w * adjointPartner G w) = _
   rw [hd]
   calc

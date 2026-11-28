@@ -22,7 +22,7 @@ theorem right_T_entries (g : SL(2, ℤ)) (m : ℤ) :
   rw [ModularGroup.coe_T_zpow]
   simp [Matrix.mul_apply, Fin.sum_univ_two, add_comm, mul_comm]
 
-def translationPhase (m : ℤ) : ℂ :=
+noncomputable def translationPhase (m : ℤ) : ℂ :=
   Complex.exp (2 * (Real.pi : ℂ) * Complex.I * (m : ℂ) / 24)
 
 theorem principalEtaMultiplier_mul_T (g : SL(2, ℤ)) (hg : 0 < g 1 0) (m : ℤ) :
@@ -32,7 +32,9 @@ theorem principalEtaMultiplier_mul_T (g : SL(2, ℤ)) (hg : 0 < g 1 0) (m : ℤ)
   have hT : 0 < (g * ModularGroup.T ^ m) 1 0 := by rwa [hc]
   let c : ℂ := g 1 0
   let z : ℂ := (-(g 1 1 : ℂ) + Complex.I) / c
-  have hc₀ : c ≠ 0 := by exact_mod_cast hg.ne'
+  have hc₀ : c ≠ 0 := by
+    change (g 1 0 : ℂ) ≠ 0
+    exact_mod_cast hg.ne'
   have hZ : (-((g 1 1 + g 1 0 * m : ℤ) : ℂ) + Complex.I) / c = z + ((-m : ℤ) : ℂ) := by
     push_cast
     dsimp only [z]
@@ -53,7 +55,7 @@ theorem principalEtaMultiplier_mul_T (g : SL(2, ℤ)) (hg : 0 < g 1 0) (m : ℤ)
   rw [hZ, eta_add_integer]
   change _ / (Complex.sqrt Complex.I * (translationPhase (-m) * ModularForm.eta z)) = _
   rw [hExp]
-  simp only [div_eq_mul_inv, mul_inv_rev, inv_inv]
+  simp only [div_eq_mul_inv, _root_.mul_inv_rev, inv_inv]
   ring
 
 theorem explicitEta_add_right {D : ℕ} (hD : 0 < D) (a d m : ℤ) :

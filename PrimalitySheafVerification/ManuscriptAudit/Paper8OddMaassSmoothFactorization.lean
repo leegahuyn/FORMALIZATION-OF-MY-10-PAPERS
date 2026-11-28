@@ -29,18 +29,23 @@ private theorem dirPart_fderiv {F : ℂ → ℂ} {w : ℂ}
     (hF : ContDiffAt ℝ 2 F w) (v : ℂ) :
     HasFDerivAt (fun q : ℂ => fderiv ℝ F q v)
       ((ContinuousLinearMap.apply ℝ ℂ v).comp (fderiv ℝ (fderiv ℝ F) w)) w := by
-  have hD : DifferentiableAt ℝ (fderiv ℝ F) w := hF.fderiv_right (by norm_num)
+  have hOne : ContDiffAt ℝ 1 (fderiv ℝ F) w := hF.fderiv_right (by norm_num)
+  have hD : DifferentiableAt ℝ (fderiv ℝ F) w := hOne.differentiableAt (le_refl 1)
   exact (ContinuousLinearMap.apply ℝ ℂ v).hasFDerivAt.comp w hD.hasFDerivAt
 
 private theorem profileDir_eq_partialX {F : ℂ → ℂ} {x y : ℝ}
     (hF : DifferentiableAt ℝ F (complexPoint x y)) :
-    partialX (realProfile F) x y = fderiv ℝ F (complexPoint x y) 1 :=
-  (profile_horizontal hF).deriv
+    partialX (realProfile F) x y = fderiv ℝ F (complexPoint x y) 1 := by
+  have hPoint : HasDerivAt (fun t => complexPoint t y) (1 : ℂ) x := by
+    simpa only [id_eq] using horizontal_derivative (hasDerivAt_id (complexPoint x y))
+  exact (hF.hasFDerivAt.comp_hasDerivAt x hPoint).deriv
 
 private theorem profileDir_eq_partialY {F : ℂ → ℂ} {x y : ℝ}
     (hF : DifferentiableAt ℝ F (complexPoint x y)) :
-    partialY (realProfile F) x y = fderiv ℝ F (complexPoint x y) Complex.I :=
-  (profile_vertical hF).deriv
+    partialY (realProfile F) x y = fderiv ℝ F (complexPoint x y) Complex.I := by
+  have hPoint : HasDerivAt (fun t => complexPoint x t) Complex.I y := by
+    simpa only [id_eq, mul_one] using vertical_derivative (hasDerivAt_id (complexPoint x y))
+  exact (hF.hasFDerivAt.comp_hasDerivAt y hPoint).deriv
 
 private theorem second_order_coordinates {F : ℂ → ℂ}
     (hF : ContDiffOn ℝ 2 F {w : ℂ | 0 < w.im}) (x y : ℝ) (hy : 0 < y) :

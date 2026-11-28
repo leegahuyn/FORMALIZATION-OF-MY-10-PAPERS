@@ -7,6 +7,7 @@ import PrimalitySheafVerification.ManuscriptAudit.WeierstrassProjectiveClosure
 namespace ManuscriptAudit.WeierstrassProjectiveUnits
 
 open AlgebraicGeometry CategoryTheory WeierstrassProjectiveClosure
+open CuspProperCompactification (projectivePlane)
 
 universe u
 
@@ -55,7 +56,7 @@ theorem scalarMap_restriction :
         (Scheme.ΓSpecIso (A W)).hom := by simp [scalarMap, restriction, Category.assoc]
     _ = CommRingCat.ofHom (algebraMap K W.CoordinateRing) := by
       rw [h, Scheme.ΓSpecIso_naturality]
-      simp
+      simp [F]
 
 private theorem scalar_restrict_value (a : K) :
     (restriction W).hom ((scalarMap W).hom a) = algebraMap K W.CoordinateRing a :=
@@ -90,6 +91,7 @@ theorem unit_power_surjective [IsAlgClosed K] (d : ℕ) (hd : 0 < d) :
     rw [h, zero_pow hd.ne'] at hb
     exact a.ne_zero hb.symm
   refine ⟨unitsEquiv W (Units.mk0 b hbn), ?_⟩
+  change (unitsEquiv W (Units.mk0 b hbn)) ^ d = unitsEquiv W a
   rw [← map_pow]
   apply congrArg (unitsEquiv W)
   exact Units.ext hb

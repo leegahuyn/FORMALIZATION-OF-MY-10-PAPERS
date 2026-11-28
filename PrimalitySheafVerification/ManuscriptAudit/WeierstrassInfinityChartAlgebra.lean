@@ -40,13 +40,16 @@ def bracket : Ring W := AdjoinRoot.mk (equation W) (bracketPolynomial W)
 /-- In the actual quotient, v h=u³. -/
 theorem relation : z W * bracket W = x W ^ 3 := by
   have hz : AdjoinRoot.mk (equation W) (equation W) = 0 := AdjoinRoot.mk_self
-  apply sub_eq_zero.mp
-  simpa only [equation, map_sub, map_pow, map_mul, x, z, bracket] using hz
+  let m := AdjoinRoot.mk (equation W)
+  change m (Y * bracketPolynomial W - (C X) ^ 3) = 0 at hz
+  rw [map_sub, map_mul, map_pow, sub_eq_zero] at hz
+  exact hz
 
 /-- The rational point with the genuine affine coordinates u=v=0. -/
 def origin : Ring W →ₐ[K] K :=
   AdjoinRoot.liftAlgHom (equation W) (Polynomial.aeval (0 : K)) 0 (by
-    simp [equation])
+    simp only [equation, eval₂_sub, eval₂_mul, eval₂_X, eval₂_pow, eval₂_C,
+      Polynomial.aeval_X, zero_mul, zero_pow (by decide : (3 : ℕ) ≠ 0), sub_self])
 
 theorem origin_x : origin W (x W) = 0 := by
   simp [origin, x]

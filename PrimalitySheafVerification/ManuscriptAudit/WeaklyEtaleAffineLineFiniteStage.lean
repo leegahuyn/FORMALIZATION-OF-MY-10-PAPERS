@@ -61,7 +61,7 @@ theorem exists_etale_neighborhood (r : Ideal B) [r.IsPrime]
   obtain ⟨g, hg, _, hDen⟩ :=
     WeaklyEtaleAffineLineFiniteNormalization.exists_model_map K B L e f hf
   let q := r.comap g.toRingHom
-  letI : q.IsPrime := Ideal.IsPrime.comap g.toRingHom inferInstance
+  letI : q.IsPrime := Ideal.IsPrime.comap g.toRingHom
   obtain ⟨hDomain, hVal, hUn⟩ :=
     WeaklyEtaleAffineLineNormalStageStalk.local_properties K B L g r
   letI : IsDomain (Localization.AtPrime q) := hDomain

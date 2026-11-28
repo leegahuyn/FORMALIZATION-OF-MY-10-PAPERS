@@ -84,7 +84,7 @@ theorem chartEvaluation_surjective : Function.Surjective (chartEvaluation W) := 
       refine ⟨a * b ^ n, ?_⟩
       rw [map_mul, map_pow, ha, hb, ← C_mul_X_pow_eq_monomial, map_mul, map_pow]
   intro r
-  obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective f r
+  obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective (g := f) r
   change ∃ a, chartEvaluation W a = m p
   induction p using Polynomial.induction_on' with
   | add p q hp hq =>
