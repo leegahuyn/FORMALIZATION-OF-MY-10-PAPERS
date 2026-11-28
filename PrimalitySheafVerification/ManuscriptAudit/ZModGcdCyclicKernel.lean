@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Isomorphisms
 import PrimalitySheafVerification.ManuscriptAudit.IntegerGcdCyclicKernel
 
 /-! The kernel of multiplication on native residues is a cyclic group

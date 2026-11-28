@@ -88,11 +88,10 @@ private theorem expPhase_legendre_shift {p h : ℕ} [Fact p.Prime] (hC : h.Copri
       linear_combination 12 * hm
     have hExp := expPhase_div_eq_of_dvd_sub (D := 24) (by decide) _ 12 h24
     norm_num only [Nat.cast_ofNat] at hExp
-    rw [hExp]
+    rw [show (6 * (1 - (-1)) : ℤ) = 12 by decide, hExp]
     unfold exponentialPhase
-    push_cast
-    rw [show 2 * (Real.pi : ℂ) * Complex.I * ((12 : ℂ) / 24) = (Real.pi : ℂ) * Complex.I by ring,
-      Complex.exp_pi_mul_I]
+    rw [show 2 * (Real.pi : ℂ) * Complex.I * ((1 : ℂ) / 2) = (Real.pi : ℂ) * Complex.I by ring,
+      Complex.exp_pi_mul_I] <;> norm_num
 
 theorem dedekind_prime_salie_summand {p h : ℕ} [Fact p.Prime] (hp : p ≠ 2)
     (hp3 : ¬ (3 : ℕ) ∣ p) (hh : h % 2 = 1) (hC : h.Coprime p)

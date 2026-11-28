@@ -24,11 +24,11 @@ set_option backward.isDefEq.respectTransparency false
 variable {A : Type} [CommRing A] {n : ℕ}
   (V : Fin n → (spectrum A).ProEt) [∀ i, IsAffine (V i).left]
 
-private abbrev B (i : Fin n) := coordinateRing (V i)
+private abbrev B (i : Fin n) : Type := ↑(coordinateRing (V i))
 private abbrev W (i : Fin n) := object A (B V i)
 
 local instance : WeaklyEtale (structureMap A (∀ i, B V i)) :=
-  NativeProetaleAffineProductCoproduct.product_weaklyEtale (B V)
+  NativeProetaleAffineProductCoproduct.product_weaklyEtale (A := A) (B V)
 
 private def piecesIso (i : Fin n) : (W V i).left ≅ (V i).left :=
   (Scheme.ProEt.forget (spectrum A) ⋙ Over.forget _).mapIso (chartIso (V i))
@@ -89,8 +89,7 @@ private theorem iso_restrict_injective {U W : (spectrum A).ProEt} (e : U ≅ W) 
   intro x y he
   have h (a : (P I).obj (op W)) :
       (P I).map e.inv.op ((P I).map e.hom.op a) = a := by
-    rw [map_map, e.inv_hom_id]
-    simp
+    rw [map_map, e.inv_hom_id, op_id, CategoryTheory.Functor.map_id] <;> rfl
   exact (h x).symm.trans ((congrArg ((P I).map e.inv.op) he).trans (h y))
 
 set_option maxHeartbeats 5100000 in
@@ -104,8 +103,8 @@ theorem existsUnique_raw_sections (x : ∀ i, (P I).obj (op (V i))) :
   obtain ⟨z, hz, hUniq⟩ := NativeAffineEtaleRawProducts.existsUnique_sections_raw (B V) I y
   let w := (P I).map j.inv.op z
   have hw : (P I).map j.hom.op w = z := by
-    rw [show w = (P I).map j.inv.op z from rfl, map_map, j.hom_inv_id]
-    simp
+    rw [show w = (P I).map j.inv.op z from rfl, map_map, j.hom_inv_id,
+      op_id, CategoryTheory.Functor.map_id] <;> rfl
   have h (i : Fin n) (v : (P I).obj (op (coproduct V))) :
       (P I).map (chartMap (Pi.evalAlgHom A (B V) i)).op ((P I).map j.hom.op v) =
         (P I).map (e i).hom.op ((P I).map (injection V i).op v) := by

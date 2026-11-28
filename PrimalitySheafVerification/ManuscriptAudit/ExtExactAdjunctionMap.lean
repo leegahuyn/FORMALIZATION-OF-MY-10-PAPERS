@@ -54,7 +54,9 @@ theorem map_naturality {U V : D} (f : U ⟶ V) (n : ℕ) (x : Ext X (G.obj U) n)
       (Ext.mk₀ f) (add_zero n)
   simp only [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀,
     Ext.comp_assoc_of_third_deg_zero, Ext.mk₀_comp_mk₀]
-  rw [adj.counit.naturality]
+  have h : F.map (G.map f) ≫ adj.counit.app V = adj.counit.app U ≫ f :=
+    adj.counit.naturality f
+  rw [h]
 
 variable [G.Additive] [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
@@ -79,7 +81,7 @@ theorem map_boundary {S : ShortComplex D} (hS : S.ShortExact) (n : ℕ)
       (Ext.mk₀ (adj.counit.app S.X₁)) (add_zero (n+1)) =
     ((x.mapExactFunctor F).comp (Ext.mk₀ (adj.counit.app S.X₃)) (add_zero n)).comp
       hS.extClass rfl
-  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass, Ext.comp_assoc, Ext.comp_assoc, h]
+  rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_extClass, Ext.comp_assoc, Ext.comp_assoc, h] <;> simp
 
 end
 end ManuscriptAudit.ExtExactAdjunctionMap

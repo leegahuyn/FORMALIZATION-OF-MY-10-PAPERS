@@ -158,7 +158,9 @@ theorem hasSum_oddCross_row_fourier {D : ℕ} (A : CrossRow (D + 1)) (s : ℂ)
   rw [← hTrans]
   apply intervalIntegral.integral_congr
   intro x _
-  rw [oddCrossFourierTerm_translate, oddCrossFourierTerm_row_kernel, translatePoint_re, pointAtHeight_re]
+  change oddCrossFourierTerm s (pointAtHeight x hy) ⟨D, A, n⟩ = a * K (x + (b + (n : ℝ)))
+  rw [oddCrossFourierTerm_translate A n s (pointAtHeight x hy), oddCrossFourierTerm_row_kernel,
+    translatePoint_re, pointAtHeight_re]
   have hIm : (translatePoint n (pointAtHeight x hy)).im = y := complexPoint_im _ _
   rw [hIm]
   unfold K b c a

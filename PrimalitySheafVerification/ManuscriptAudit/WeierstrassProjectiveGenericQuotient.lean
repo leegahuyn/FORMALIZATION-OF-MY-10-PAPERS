@@ -41,7 +41,7 @@ local instance : IsOpenImmersion (neighborhoodOpen W) := neighborhoodOpen_isOpen
 
 theorem neighborhood_isFractionRing : IsFractionRing (N W) W.FunctionField := by
   let e : FractionRing (N W) ≃ₐ[N W] W.FunctionField :=
-    AlgEquiv.ofCommutes (functionFieldEquiv W).symm (fun _ => rfl)
+    { (functionFieldEquiv W).symm with commutes' := fun _ => rfl }
   exact IsFractionRing.of_algEquiv e
 
 local instance : IsFractionRing (N W) W.FunctionField := neighborhood_isFractionRing W
@@ -93,8 +93,9 @@ theorem divisorConnecting_surjective : Function.Surjective (divisorConnecting W)
   rw [ShortComplex.ab_exact_iff_function_exact] at h
   obtain ⟨z, hz⟩ := (h c).1 hc
   refine ⟨Sheaf.H.equiv₀ (quotient W) (terminalIsTerminal W) z, ?_⟩
-  change (Sheaf.H.equiv₀ (quotient W) (terminalIsTerminal W)).symm
-    (Sheaf.H.equiv₀ (quotient W) (terminalIsTerminal W) z) |>.comp (short_exact W).extClass (zero_add 1) = c
+  change ((Sheaf.H.equiv₀ (quotient W) (terminalIsTerminal W)).symm
+    (Sheaf.H.equiv₀ (quotient W) (terminalIsTerminal W) z)).comp
+      (short_exact W).extClass (zero_add 1) = c
   rw [AddEquiv.symm_apply_apply]
   exact hz
 

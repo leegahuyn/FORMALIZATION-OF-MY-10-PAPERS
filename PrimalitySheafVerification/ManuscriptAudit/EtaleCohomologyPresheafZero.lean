@@ -81,6 +81,18 @@ theorem equivZero_natural (F : Sheaf X.smallEtaleTopology A.{u}) {U V : X.Etale}
   have h' := congrArg (homSections U F) h
   exact h'.trans (homSections_precompose f (Ext.addEquiv₀ x))
 
+/-- The degree-zero comparison also intertwines each actual sheaf map. -/
+theorem equivZero_coeff {F G : Sheaf X.smallEtaleTopology A.{u}}
+    (g : F ⟶ G) (U : X.Etale) (x : F.H' 0 U) :
+    equivZero G U (x.comp (Ext.mk₀ g) (add_zero 0)) =
+      g.hom.app (op U) (equivZero F U x) := by
+  have h : Ext.addEquiv₀ (x.comp (Ext.mk₀ g) (add_zero 0)) =
+      Ext.addEquiv₀ x ≫ g := by
+    apply (Ext.mk₀_bijective _ _).injective
+    rw [Ext.mk₀_addEquiv₀_apply, ← Ext.mk₀_comp_mk₀, Ext.mk₀_addEquiv₀_apply]
+  exact (congrArg (homSections U G) h).trans
+    (homSections_postcompose U (Ext.addEquiv₀ x) g)
+
 /-- At a small étale object the actual units give the zero-degree cohomology value. -/
 def unitEquivZero {X : Scheme.{0}} (U : X.Etale) :
     (KummerUnitsSheaf.fullCoordinateUnitSheaf X).H' 0 U ≃+ Additive (Γ(U.left, ⊤))ˣ :=
@@ -100,7 +112,8 @@ end ManuscriptAudit.EtaleCohomologyPresheafZero
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.EtaleCohomologyPresheafZero.equivZero,
+  for name in [``ManuscriptAudit.EtaleCohomologyPresheafZero.equivZero_coeff,
+      ``ManuscriptAudit.EtaleCohomologyPresheafZero.equivZero,
       ``ManuscriptAudit.EtaleCohomologyPresheafZero.equivZero_natural,
       ``ManuscriptAudit.EtaleCohomologyPresheafZero.unitEquivZero_natural] do
     let ax ← collectAxioms name

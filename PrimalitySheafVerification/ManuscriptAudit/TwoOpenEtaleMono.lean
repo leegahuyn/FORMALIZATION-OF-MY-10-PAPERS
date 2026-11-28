@@ -32,17 +32,19 @@ private theorem injective_at_factor {Z : X.Etale} (g : Z ⟶ Scheme.Etale.mk j)
       change 𝟙 _ ≫ Z.hom = g.left ≫ j
       rw [Category.id_comp, hg])
   letI := hm
-  letI : Mono ((restriction j AddCommGrpCat.{u}).map m).hom :=
-    (sheafToPresheaf U.smallEtaleTopology AddCommGrpCat.{u}).map_mono _
+  letI : Mono ((restriction j AddCommGrpCat.{u}).map m).hom := by
+    change Mono ((sheafToPresheaf U.smallEtaleTopology AddCommGrpCat.{u}).map
+      ((restriction j AddCommGrpCat.{u}).map m))
+    exact (sheafToPresheaf U.smallEtaleTopology AddCommGrpCat.{u}).map_mono _
   have h : Mono (m.hom.app (op ((etalePostcompose j).obj D))) := by
     exact (NatTrans.mono_iff_mono_app ((restriction j AddCommGrpCat.{u}).map m).hom).mp
       inferInstance (op D)
   intro x y hxy
   apply (P.obj.mapIso e.op).addCommGroupIsoToAddEquiv.injective
   apply (AddCommGrpCat.mono_iff_injective _).mp h
-  exact (NatTrans.naturality_apply m.hom e.hom.op x).symm.trans
+  exact (NatTrans.naturality_apply m.hom e.hom.op x).trans
     ((congrArg (fun w => Q.obj.map e.hom.op w) hxy).trans
-      (NatTrans.naturality_apply m.hom e.hom.op y))
+      (NatTrans.naturality_apply m.hom e.hom.op y).symm)
 
 private theorem twoOpens_cover (h : Set.range j ∪ Set.range k = Set.univ) :
     Sieve.ofTwoArrows (openArrow j) (openArrow k) ∈ X.smallEtaleTopology (identityObject X) := by
@@ -71,7 +73,7 @@ theorem mono_of_restrictions (h : Set.range j ∪ Set.range k = Set.univ)
     have hP : Presieve.IsSheaf X.smallEtaleTopology P' :=
       (isSheaf_iff_isSheaf_of_type X.smallEtaleTopology _).mp
         ((sheafCompose X.smallEtaleTopology (forget AddCommGrpCat.{u})).obj P).property
-    apply (hP.isSheafFor _ hS).isSeparatedFor.ext
+    apply (hP.isSeparated (S.pullback t) hS).ext
     intro Z a ha
     have ha' : S (a ≫ t) := ha
     obtain ⟨d, g, _⟩ := Sieve.ofArrows.exists ha'
@@ -81,9 +83,9 @@ theorem mono_of_restrictions (h : Set.range j ∪ Set.range k = Set.univ)
       · exact injective_at_factor k m g hk
     change P.obj.map a.op x = P.obj.map a.op y
     apply hInject
-    exact (NatTrans.naturality_apply m.hom a.op x).symm.trans
+    exact (NatTrans.naturality_apply m.hom a.op x).trans
       ((congrArg (fun w => Q.obj.map a.op w) hxy).trans
-        (NatTrans.naturality_apply m.hom a.op y)))
+        (NatTrans.naturality_apply m.hom a.op y).symm))
   letI : Mono m.hom := hMono
   exact Sheaf.Hom.mono_of_presheaf_mono X.smallEtaleTopology AddCommGrpCat.{u} m
 

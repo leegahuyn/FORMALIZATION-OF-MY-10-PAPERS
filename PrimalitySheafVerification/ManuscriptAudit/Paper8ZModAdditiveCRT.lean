@@ -30,7 +30,7 @@ theorem stdAddChar_chineseRemainder {n m : ℕ} [NeZero n] [NeZero m] (h : n.Cop
   have hZ := congrArg (fun a : ℤ => (a : ℂ)) huv
   push_cast at hZ ⊢
   field_simp [hn, hm]
-  linear_combination -(2 * (Real.pi : ℂ) * Complex.I * (a : ℂ)) * hZ
+  linear_combination -(a : ℂ) * hZ
 
 def twistedSymmetricUnitSum {n : ℕ} [NeZero n] (χ : (ZMod n)ˣ → ℂ) (a : ZMod n) : ℂ :=
   ∑ x : (ZMod n)ˣ, χ x * ZMod.stdAddChar (a * ((x : ZMod n) + ((x⁻¹ : (ZMod n)ˣ) : ZMod n)))

@@ -33,9 +33,14 @@ def infinityPrime : HeightOneSpectrum (N W) where
     rw [Ideal.span_singleton_eq_bot]
     exact (localX_prime W).ne_zero
 
-private def punctureToLocalFractionField : P W →+* F W :=
+def punctureToLocalFractionField : P W →+* F W :=
   IsLocalization.Away.lift (localX W) (g := algebraMap (N W) (F W))
     (isUnit_iff_ne_zero.mpr (IsFractionRing.to_map_eq_zero_iff.not.mpr (localX_prime W).ne_zero))
+
+theorem punctureToLocalFractionField_base (a : N W) :
+    punctureToLocalFractionField W (algebraMap (N W) (P W) a) = algebraMap (N W) (F W) a := by
+  unfold punctureToLocalFractionField
+  exact IsLocalization.Away.lift_eq _ _ a
 
 /-- The genuine valuation at infinity on the actual punctured chart. -/
 def punctureValuation : Valuation (P W) ℤᵐ⁰ :=
@@ -97,6 +102,11 @@ private theorem affineToInfinityFractionField_injective :
 fraction field follows from their actual coordinate identification. -/
 def functionFieldMap : W.FunctionField →+* F W :=
   IsFractionRing.lift (affineToInfinityFractionField_injective W)
+
+theorem functionFieldMap_base (a : W.CoordinateRing) :
+    functionFieldMap W (algebraMap W.CoordinateRing W.FunctionField a) =
+      punctureToLocalFractionField W (affineToPuncture W a) :=
+  IsFractionRing.lift_algebraMap _ a
 
 /-- The genuine infinity valuation on the native Weierstrass function field. -/
 def functionFieldValuation : Valuation W.FunctionField ℤᵐ⁰ :=

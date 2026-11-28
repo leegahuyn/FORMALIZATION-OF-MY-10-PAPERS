@@ -95,8 +95,10 @@ private theorem overlap_range :
   change ((pullback.fst (neighborhoodOpen W) (affineOpen W)).opensRange : Set (neighborhoodScheme W)) =
     ((punctureToNeighborhood W).opensRange : Set (neighborhoodScheme W))
   rw [Scheme.Hom.opensRange_pullbackFst, preimage_affineOpen]
-  unfold punctureToNeighborhood
-  rw [Scheme.Hom.opensRange_localizationAway]
+  have hRange :
+      (punctureToNeighborhood W).opensRange = PrimeSpectrum.basicOpen (localX W) :=
+    Scheme.Hom.opensRange_localizationAway (R := CommRingCat.of (Neighborhood W)) (localX W)
+  rw [hRange]
 
 /-- The actual intersection in the proper closure is the principal-open spectrum. -/
 def overlapIso :
@@ -104,6 +106,7 @@ def overlapIso :
   IsOpenImmersion.isoOfRangeEq (pullback.fst (neighborhoodOpen W) (affineOpen W))
     (punctureToNeighborhood W) (overlap_range W)
 
+set_option maxHeartbeats 700000 in
 theorem overlapIso_fac :
     (overlapIso W).hom ≫ punctureToNeighborhood W = pullback.fst (neighborhoodOpen W) (affineOpen W) := by
   exact IsOpenImmersion.isoOfRangeEq_hom_fac _ _ (overlap_range W)

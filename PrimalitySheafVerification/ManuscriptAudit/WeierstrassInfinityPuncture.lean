@@ -114,6 +114,9 @@ def punctureToNeighborhood :
     Spec (CommRingCat.of (Puncture W)) ⟶ neighborhoodScheme W :=
   Spec.map (CommRingCat.ofHom (algebraMap (Neighborhood W) (Puncture W)))
 
+instance punctureToNeighborhood_isOpenImmersion : IsOpenImmersion (punctureToNeighborhood W) :=
+  IsOpenImmersion.of_isLocalization (localX W)
+
 end
 
 end ManuscriptAudit.WeierstrassInfinityOpenCover

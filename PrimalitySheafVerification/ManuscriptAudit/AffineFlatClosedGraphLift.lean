@@ -63,9 +63,9 @@ theorem exists_weaklyEtale_pullback {P F W : Scheme.{u}} [IsAffine P]
   refine ⟨V, inferInstance, j, hj, t, ?_⟩
   refine hq.flip.of_iso' W.isoSpec (Iso.refl _) F.isoSpec P.isoSpec ?_ ?_ ?_ ?_
   · simp [t]
-  · exact (Scheme.isoSpec_hom_naturality g).symm
+  · exact Scheme.isoSpec_hom_naturality g
   · simp [j, Category.assoc]
-  · exact (Scheme.isoSpec_hom_naturality k).symm
+  · exact Scheme.isoSpec_hom_naturality k
 
 end
 end ManuscriptAudit.AffineFlatClosedGraphLift

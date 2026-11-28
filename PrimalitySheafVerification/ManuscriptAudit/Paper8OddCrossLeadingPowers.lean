@@ -6,7 +6,8 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8OddCrossZetaFactorizatio
 namespace ManuscriptAudit.Paper8OddCrossLeadingPowers
 
 open Paper8OddCrossZetaFactorization Paper8OddCrossPoincareRowKernel Paper8OddCrossPoincareKernel
-open Paper8OddCrossPoincareConvergence Paper8OddCrossPoincareHeight
+open Paper8OddCrossPoincareConvergence Paper8OddCrossPoincareHeight MaassLaplacian
+open Paper8OddCrossCuspNormalization
 
 noncomputable section
 
@@ -45,7 +46,9 @@ theorem conj_normalizedNegativeRoot_eq_exp {w : ℂ} (hw : w ≠ 0) :
   rw [hN, ← Complex.exp_conj]
   congr 1
   change (starRingEnd ℂ) ((r - l) / 2) = (l - (starRingEnd ℂ) l) / 4
-  rw [map_div₀, map_sub, show (starRingEnd ℂ) (2 : ℂ) = 2 by norm_num]
+  have hTwo : (starRingEnd ℂ) (2 : ℂ) = 2 := by
+    rw [show (2 : ℂ) = 1 + 1 by norm_num, map_add, map_one]
+  rw [map_div₀, map_sub, hTwo]
   have hr' : (starRingEnd ℂ) r = r := Complex.conj_ofReal _
   rw [hr', show r = (l + (starRingEnd ℂ) l) / 2 from log_norm_eq_average w]
   ring

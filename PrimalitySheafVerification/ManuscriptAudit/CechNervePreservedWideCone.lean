@@ -24,14 +24,7 @@ private abbrev Q := WidePullbackShape.wideCospan (F.obj T) (fun _ : I (n := n) �
   fun _ ↦ F.map f
 
 private def diagramIso : P f n ⋙ F ≅ Q F f n :=
-  NatIso.ofComponents (fun i ↦ by cases i <;> exact Iso.refl _) (by
-    intro i j g
-    cases g with
-    | id =>
-      cases i <;> simp [WidePullbackShape.wideCospan]
-    | term k =>
-      change F.map f ≫ 𝟙 _ = 𝟙 _ ≫ F.map f
-      simp)
+  WidePullbackShape.diagramIsoWideCospan (P f n ⋙ F)
 
 private abbrev sourceCone := F.mapCone (limit.cone (P f n))
 

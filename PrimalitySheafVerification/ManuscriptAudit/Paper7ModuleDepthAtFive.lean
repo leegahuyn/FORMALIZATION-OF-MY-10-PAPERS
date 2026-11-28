@@ -1,6 +1,7 @@
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.KrullDimension.PID
 import Mathlib.RingTheory.KrullDimension.Module
+import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Regular.RegularSequence
 import PrimalitySheafVerification.ManuscriptAudit.Paper7KoszulCRTResidue
 
@@ -29,6 +30,18 @@ private theorem ring_not_field : ¬ IsField R := by
 
 theorem ring_dimension_one : ringKrullDim R = 1 := by
   letI : IsDomain R := IsLocalization.isDomain_of_local_atPrime inferInstance
+  let M : Submonoid ℤ := (Ideal.span ({(5 : ℤ)} : Set ℤ)).primeCompl
+  letI : IsLocalization M R := inferInstance
+  letI : IsPrincipalIdealRing R where
+    principal J := by
+      let D := J.under ℤ
+      let x := Submodule.IsPrincipal.generator D
+      refine ⟨algebraMap ℤ R x, ?_⟩
+      calc
+        J = Ideal.map (algebraMap ℤ R) D := (IsLocalization.map_under M R J).symm
+        _ = Ideal.map (algebraMap ℤ R) (Ideal.span {x}) :=
+          congrArg (Ideal.map (algebraMap ℤ R)) (Ideal.span_singleton_generator D).symm
+        _ = Ideal.span {algebraMap ℤ R x} := by rw [Ideal.map_span, Set.image_singleton]
   exact IsPrincipalIdealRing.ringKrullDim_eq_one R ring_not_field
 
 theorem module_dimension_one : Module.supportDim R F = 1 := by
@@ -61,7 +74,10 @@ theorem parameter_not_regular_for_module (a : R) (ha : a ∈ IsLocalRing.maximal
     · change reduction a * 1 = reduction a * 0
       rw [hA, zero_mul, zero_mul]
   have e : (1 : S) = 0 := congrArg Prod.snd (h hz)
-  exact (one_ne_zero : (1 : ZMod 5) ≠ 0) (by simpa using congrArg crtFieldEquiv e)
+  have he : crtFieldEquiv (1 : S) = crtFieldEquiv (0 : S) :=
+    congrArg (fun b : S ↦ crtFieldEquiv b) e
+  rw [map_one, map_zero] at he
+  exact (by decide : (1 : ZMod 5) ≠ 0) he
 
 /-- The maximum positive length of an actual local regular sequence in
 the finite module is zero although its support has dimension one. -/

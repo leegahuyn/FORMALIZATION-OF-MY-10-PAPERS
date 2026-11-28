@@ -81,7 +81,8 @@ theorem norm_weighted_symmetric_sum_odd_prime_power {p r : ℕ} [Fact p.Prime]
     unfold T
     simp_rw [hRow]
     rw [hRe]
-    exact norm_odd_branch_modulus_congr hM hp hr a (e : ZMod M) ha hE
+    simpa only [F, k, Nat.cast_pow] using
+      norm_odd_branch_modulus_congr hM hp hr a (e : ZMod M) ha hE
   have hNorm (c : ZMod k) (hc : c ^ 2 = 1) : ‖T c‖ = Real.sqrt (p : ℝ) := by
     rcases (prime_pow_sq_eq_one_iff P hp c).1 hc with he | he
     · have hv : c.val = 1 := by rw [he, ZMod.val_one'' hk1.ne']
@@ -89,7 +90,11 @@ theorem norm_weighted_symmetric_sum_odd_prime_power {p r : ℕ} [Fact p.Prime]
       rw [hv]
       simp
     · obtain ⟨j, hj⟩ := Nat.exists_eq_succ_of_ne_zero hk.ne'
-      have hv : c.val = j := by rw [he]; exact (by simpa only [hj] using ZMod.val_neg_one j)
+      have hv : c.val = j := by
+        rw [he]
+        change (-1 : ZMod k).val = j
+        rw [hj]
+        exact ZMod.val_neg_one j
       apply hNormModel c (-1) 1 (by simp)
       rw [hv, hj]
       push_cast

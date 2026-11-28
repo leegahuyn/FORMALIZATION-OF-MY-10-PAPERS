@@ -32,14 +32,14 @@ private def productFunctions : (B K × B K) ≃ₐ[B K] (Fin 2 → B K) :=
       funext a
       fin_cases a <;> rfl }
 
-private theorem toLine_etale : Etale (toLine K) :=
+theorem toLine_etale : Etale (toLine K) :=
   (HasRingHomProperty.Spec_iff (P := @Etale)).mpr
     (RingHom.etale_algebraMap.mpr (Algebra.Etale.of_equiv (productFunctions K).symm))
 
-private def branch (a : Bool) : affineLine K ⟶ splitScheme K :=
+def branch (a : Bool) : affineLine K ⟶ splitScheme K :=
   if a then second K else first K
 
-private theorem branch_over_line (a : Bool) :
+theorem branch_over_line (a : Bool) :
     branch K a ≫ toLine K = 𝟙 (affineLine K) := by
   cases a <;> simp only [branch, Bool.false_eq_true, if_false, if_true, first, second, toLine]
   all_goals
@@ -50,18 +50,18 @@ private theorem branch_over_line (a : Bool) :
     intro b
     rfl
 
-private theorem branch_etale (a : Bool) : Etale (branch K a) := by
+theorem branch_etale (a : Bool) : Etale (branch K a) := by
   letI := toLine_etale K
   letI : Etale (branch K a ≫ toLine K) := by
     rw [branch_over_line]
     infer_instance
   exact Etale.of_comp (branch K a) (toLine K)
 
-private theorem branch_mono (a : Bool) : Mono (branch K a) := by
+theorem branch_mono (a : Bool) : Mono (branch K a) := by
   have h : branch K a ≫ toLine K = 𝟙 _ := branch_over_line K a
   exact mono_of_mono_fac h
 
-private theorem branches_cover (x : splitScheme K) :
+theorem branches_cover (x : splitScheme K) :
     ∃ (a : Bool) (y : affineLine K), (branch K a) y = x := by
   rcases NodalNormalizationSwapPullback.components_cover K x with ⟨y, hy⟩ | ⟨y, hy⟩
   · exact ⟨false, y, hy⟩
@@ -79,7 +79,7 @@ private theorem first_second_disjoint :
       (hy.symm.trans (PrimeSpectrum.primeSpectrumProd_symm_inr y).symm)
   exact Sum.inl_ne_inr (e.symm.injective h)
 
-private theorem branches_disjoint (a b : Bool) (hab : a ≠ b) :
+theorem branches_disjoint (a b : Bool) (hab : a ≠ b) :
     Disjoint (Set.range (branch K a)) (Set.range (branch K b)) := by
   cases a <;> cases b
   · exact (hab rfl).elim
@@ -87,16 +87,16 @@ private theorem branches_disjoint (a b : Bool) (hab : a ≠ b) :
   · exact (first_second_disjoint K).symm
   · exact (hab rfl).elim
 
-private def retraction (a : Bool) : coverScheme K ⟶ affineLine K :=
+def retraction (a : Bool) : coverScheme K ⟶ affineLine K :=
   if a then secondRetraction K else firstRetraction K
 
-private theorem branch_closed (h2 : (2 : K) ≠ 0) (a : Bool) :
+theorem branch_closed (h2 : (2 : K) ≠ 0) (a : Bool) :
     IsClosedImmersion (branch K a ≫ toCover K) := by
   cases a
   · exact NodalNormalizationSwapPullback.first_closed K h2
   · exact NodalNormalizationSwapPullback.second_closed K h2
 
-private theorem branch_split (a : Bool) :
+theorem branch_split (a : Bool) :
     (branch K a ≫ toCover K) ≫ retraction K a = 𝟙 (affineLine K) := by
   cases a
   · exact NodalNormalizationSwapRetraction.first_retraction K

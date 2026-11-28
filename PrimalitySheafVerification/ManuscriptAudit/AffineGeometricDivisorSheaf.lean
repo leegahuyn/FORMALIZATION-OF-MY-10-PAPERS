@@ -1,5 +1,6 @@
 import Lean.Util.CollectAxioms
 import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas

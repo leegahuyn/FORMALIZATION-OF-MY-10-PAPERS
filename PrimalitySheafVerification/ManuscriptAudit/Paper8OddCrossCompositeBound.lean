@@ -21,7 +21,7 @@ private theorem isUnit_factor_term {R : Type*} [CommMonoid R] {u v : R} (h : u *
     IsUnit u :=
   ⟨⟨u, v, h, by simpa only [mul_comm] using h⟩, rfl⟩
 
-private theorem crt_local_coefficient_units {n m : ℕ} {u v a : ℤ}
+theorem crt_local_coefficient_units {n m : ℕ} {u v a : ℤ}
     (hBez : u * (m : ℤ) + v * (n : ℤ) = 1) (ha : IsUnit (a : ZMod (n * m))) :
     IsUnit ((u * a : ℤ) : ZMod n) ∧ IsUnit ((v * a : ℤ) : ZMod m) := by
   have hu : IsUnit (u : ZMod n) := by

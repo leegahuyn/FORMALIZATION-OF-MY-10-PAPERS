@@ -15,7 +15,7 @@ theorem phase_odd_baseline_mod_eight {h k : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 
   push_cast
   rw [phase_mod_eight_jacobi hh hk hC,
     phase_mod_eight_jacobi (by decide : 1 % 2 = 1) hk (Nat.coprime_one_left k)]
-  simp only [Int.cast_one, jacobiSym.one_left]
+  try simp only [Nat.cast_one, Int.cast_one, jacobiSym.one_left]
   ring
 
 theorem phase_odd_baseline_mod_twentyFour {h k : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 1)
@@ -43,7 +43,8 @@ theorem phase_odd_baseline_mod_twentyFour {h k : ℕ} (hh : h % 2 = 1) (hk : k %
     rw [hj]
     ring
   have h8' : (8 : ℤ) ∣ t - 6 * c := by
-    convert dvd_sub h8 hCorr using 1 <;> ring
+    rw [show t - 6 * c = (t - 2 * c) - 4 * c by ring]
+    exact dvd_sub h8 hCorr
   have h3' : (3 : ℤ) ∣ t - 6 * c := dvd_sub h3t ⟨2 * c, by ring⟩
   have hCop : IsCoprime (3 : ℤ) 8 := ⟨3, -1, by norm_num⟩
   simpa only [show (3 : ℤ) * 8 = 24 by norm_num] using hCop.mul_dvd h3' h8'

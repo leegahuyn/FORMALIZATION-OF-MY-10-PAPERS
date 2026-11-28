@@ -14,11 +14,6 @@ open scoped nonZeroDivisors
 
 noncomputable section
 
-private def localizationFieldLift {R S F : Type*} [CommRing R] [CommRing S] [Field F]
-    [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
-    [IsLocalization M S] (h : M ≤ nonZeroDivisors R) : S →+* F :=
-  (IsLocalization.localizationAlgebraOfSubmonoidLe S F M (nonZeroDivisors R) h).toRingHom
-
 private def localizationFieldEquiv {R S F : Type*} [CommRing R] [CommRing S] [Field F]
     [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
     [IsLocalization M S] (h : M ≤ nonZeroDivisors R) : F ≃+* FractionRing S := by
@@ -29,22 +24,17 @@ private def localizationFieldEquiv {R S F : Type*} [CommRing R] [CommRing S] [Fi
   letI : IsFractionRing S F := IsFractionRing.isFractionRing_of_isLocalization M S F h
   exact (FractionRing.algEquiv S F).symm.toRingEquiv
 
+private def localizationFieldLift {R S F : Type*} [CommRing R] [CommRing S] [Field F]
+    [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
+    [IsLocalization M S] (h : M ≤ nonZeroDivisors R) : S →+* F :=
+  (localizationFieldEquiv (S := S) (F := F) M h).symm.toRingHom.comp
+    (algebraMap S (FractionRing S))
+
 private theorem localizationFieldEquiv_symm_apply {R S F : Type*} [CommRing R] [CommRing S]
     [Field F] [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
     [IsLocalization M S] (h : M ≤ nonZeroDivisors R) (x : S) :
     (localizationFieldEquiv (S := S) (F := F) M h).symm (algebraMap S (FractionRing S) x) =
-      localizationFieldLift (F := F) M h x := by
-  letI : Algebra S F :=
-    IsLocalization.localizationAlgebraOfSubmonoidLe S F M (nonZeroDivisors R) h
-  letI : IsScalarTower R S F :=
-    IsLocalization.localization_isScalarTower_of_submonoid_le S F M (nonZeroDivisors R) h
-  letI : IsFractionRing S F := IsFractionRing.isFractionRing_of_isLocalization M S F h
-  let e := localizationFieldEquiv (S := S) (F := F) M h
-  change e.symm (algebraMap S (FractionRing S) x) = localizationFieldLift (F := F) M h x
-  apply e.injective
-  rw [RingEquiv.apply_symm_apply]
-  change algebraMap S (FractionRing S) x = (FractionRing.algEquiv S F).symm (algebraMap S F x)
-  exact ((FractionRing.algEquiv S F).symm.commutes x).symm
+      localizationFieldLift (F := F) M h x := rfl
 
 private theorem localizationFieldEquiv_base {R S F : Type*} [CommRing R] [CommRing S]
     [Field F] [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
@@ -112,8 +102,14 @@ def affineOverlapToFunctionField : ZOverlap W →+* W.FunctionField :=
 theorem affineOverlapToFunctionField_base (x : W.CoordinateRing) :
     affineOverlapToFunctionField W (algebraMap W.CoordinateRing (ZOverlap W) x) =
       algebraMap W.CoordinateRing W.FunctionField x := by
-  unfold affineOverlapToFunctionField localizationFieldLift
-  exact IsLocalization.lift_eq _ x
+  let e := affineOverlapFractionEquiv W
+  have h : e (algebraMap W.CoordinateRing W.FunctionField x) =
+      algebraMap (ZOverlap W) (FractionRing (ZOverlap W))
+        (algebraMap W.CoordinateRing (ZOverlap W) x) :=
+    localizationFieldEquiv_base _ _ x
+  change e.symm (algebraMap (ZOverlap W) (FractionRing (ZOverlap W))
+    (algebraMap W.CoordinateRing (ZOverlap W) x)) = _
+  exact (congrArg e.symm h.symm).trans (e.symm_apply_apply _)
 
 /-- Restriction of a regular function from the projective Y-chart to the
 generic point, expressed in the native Weierstrass function field. -/

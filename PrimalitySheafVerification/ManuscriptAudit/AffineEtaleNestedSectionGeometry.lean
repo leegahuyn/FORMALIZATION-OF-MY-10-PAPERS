@@ -52,8 +52,8 @@ theorem terminalSectionsSpec (F : Sheaf (X A).smallEtaleTopology AddCommGrpCat)
   change F.obj.map a.op (F.obj.map b.op (F.obj.map c.op x)) = _
   have h : F.obj.map a.op (F.obj.map b.op (F.obj.map c.op x)) =
       F.obj.map (a ≫ b ≫ c).op x := by
-    simp only [op_comp, Functor.map_comp, ConcreteCategory.comp_apply]
-  rw [h, terminalArrowSpec A S]
+    simp only [op_comp, Functor.map_comp, ConcreteCategory.comp_apply] <;> rfl
+  rw [h, terminalArrowSpec A S] <;> rfl
 
 end
 

@@ -69,14 +69,18 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
     change (extendMap (B := B) p).toUnder ≫ ((extend (B := B) f).toUnder ≫ w.hom) =
       (extend (B := B) v).toUnder ≫ coprod.inl
     rw [← Category.assoc, ← AlgHom.toUnder_comp, hfpL, AlgHom.toUnder_comp, Category.assoc]
-    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z)
-      (inl_tensorIso_hom (R := B) (S := D) (T := D))
+    have h : (tensorCofan (R := R (B := B)) D D).inl ≫ w.hom =
+        (coprod.inl : CommRingCat.mkUnder (R (B := B)) D ⟶ _) :=
+      inl_tensorIso_hom (R := B) (S := D) (T := D)
+    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z) h
   have hR : r ≫ t = c.ι.app i ≫ coprod.inr := by
     change (extendMap (B := B) q).toUnder ≫ ((extend (B := B) f).toUnder ≫ w.hom) =
       (extend (B := B) v).toUnder ≫ coprod.inr
     rw [← Category.assoc, ← AlgHom.toUnder_comp, hfpR, AlgHom.toUnder_comp, Category.assoc]
-    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z)
-      (inr_tensorIso_hom (R := B) (S := D) (T := D))
+    have h : (tensorCofan (R := R (B := B)) D D).inr ≫ w.hom =
+        (coprod.inr : CommRingCat.mkUnder (R (B := B)) D ⟶ _) :=
+      inr_tensorIso_hom (R := B) (S := D) (T := D)
+    exact congrArg (fun z ↦ (extend (B := B) v).toUnder ≫ z) h
   have hPi : ((algebraDiagram (A := B) (B := D)).obj i).hom.hom.FinitePresentation := by
     change (algebraMap B (B ⊗[A] M)).FinitePresentation
     exact RingHom.finitePresentation_algebraMap.mpr inferInstance
@@ -91,20 +95,28 @@ theorem exists_relative_stage (hApprox : FiniteTupleApproximation B D)
   · apply AlgHom.ext
     intro x
     have h := congrArg (fun h ↦ h ≫ z.inv) hlj
-    have hLeg : coprod.inl ≫ z.inv =
-        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inl := by
-      rw [← inl_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)]
-      rw [Category.assoc, z.hom_inv_id, Category.comp_id]
-    rw [Category.assoc, Category.assoc, hLeg] at h
+    have hLegHom : (tensorCofan (R := R (B := B)) j.carrier j.carrier).inl ≫ z.hom =
+        (coprod.inl : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) :=
+      inl_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)
+    have hLeg : (coprod.inl : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) ≫ z.inv =
+        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inl := calc
+      _ = ((tensorCofan (R := R (B := B)) j.carrier j.carrier).inl ≫ z.hom) ≫ z.inv :=
+        congrArg (fun t ↦ t ≫ z.inv) hLegHom.symm
+      _ = _ := by simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+    simp only [Category.assoc, hLeg] at h
     exact congrArg (fun a ↦ a.right x) h
   · apply AlgHom.ext
     intro x
     have h := congrArg (fun h ↦ h ≫ z.inv) hrj
-    have hLeg : coprod.inr ≫ z.inv =
-        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inr := by
-      rw [← inr_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)]
-      rw [Category.assoc, z.hom_inv_id, Category.comp_id]
-    rw [Category.assoc, Category.assoc, hLeg] at h
+    have hLegHom : (tensorCofan (R := R (B := B)) j.carrier j.carrier).inr ≫ z.hom =
+        (coprod.inr : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) :=
+      inr_tensorIso_hom (R := B) (S := j.carrier) (T := j.carrier)
+    have hLeg : (coprod.inr : CommRingCat.mkUnder (R (B := B)) j.carrier ⟶ _) ≫ z.inv =
+        (tensorCofan (R := R (B := B)) j.carrier j.carrier).inr := calc
+      _ = ((tensorCofan (R := R (B := B)) j.carrier j.carrier).inr ≫ z.hom) ≫ z.inv :=
+        congrArg (fun t ↦ t ≫ z.inv) hLegHom.symm
+      _ = _ := by simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+    simp only [Category.assoc, hLeg] at h
     exact congrArg (fun a ↦ a.right x) h
 
 end

@@ -24,43 +24,20 @@ noncomputable section
 
 universe u v w
 
-variable {U X : Scheme.{u}} (j : U ⟶ X) [IsOpenImmersion j]
+variable {U X : Scheme.{u}} (j : U ⟶ X)
 
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-/-- Compose a weakly étale scheme over the open with the open immersion. -/
+section WeaklyEtale
+
+variable [WeaklyEtale j]
+
+/-- Compose two weakly étale morphisms on the actual native sites. -/
 abbrev proetalePostcompose : U.ProEt ⥤ X.ProEt :=
   MorphismProperty.Over.map ⊤ (show WeaklyEtale j from inferInstance)
 
-/-- Postcomposition along an open immersion is fully faithful on weakly étale objects. -/
-def postcomposeFullyFaithful : (proetalePostcompose j).FullyFaithful where
-  preimage f := MorphismProperty.Over.homMk f.left (by
-    apply (cancel_mono j).mp
-    simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
-      MorphismProperty.Over.w f)
-  map_preimage f := by
-    apply (Scheme.ProEt.forget X).map_injective
-    exact CostructuredArrow.hom_ext _ _ rfl
-  preimage_map f := by
-    apply (Scheme.ProEt.forget U).map_injective
-    exact CostructuredArrow.hom_ext _ _ rfl
-
-private def postcomposeDownwardsClosed {Y : U.ProEt} {W : X.ProEt}
-    (f : W ⟶ (proetalePostcompose j).obj Y) : Σ W' : U.ProEt, (proetalePostcompose j).obj W' ≅ W := by
-  have h : (f.left ≫ Y.hom) ≫ j = W.hom := by
-    simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
-      MorphismProperty.Over.w f
-  letI : WeaklyEtale ((f.left ≫ Y.hom) ≫ j) := by
-    rw [h]
-    exact W.prop
-  let W' : U.ProEt :=
-    MorphismProperty.Over.mk ⊤ (f.left ≫ Y.hom) (WeaklyEtale.of_comp _ j)
-  refine ⟨W', MorphismProperty.Over.isoMk (Iso.refl W.left) ?_⟩
-  change 𝟙 W.left ≫ W.hom = (f.left ≫ Y.hom) ≫ j
-  simpa only [Category.id_comp] using h.symm
-
-/-- Composition with the open immersion preserves actual pro-étale covering sieves. -/
+/-- Weakly étale postcomposition preserves actual pro-étale covering sieves. -/
 theorem postcomposeCoverPreserving :
     CoverPreserving (Scheme.ProEt.topology U) (Scheme.ProEt.topology X) (proetalePostcompose j) where
   cover_preserve {W S} hS := by
@@ -92,6 +69,37 @@ theorem postcomposeCoverPreserving :
     apply (Sieve.generate_le_iff _ _).mpr
     rintro _ _ ⟨hf⟩
     exact Sieve.image_mem_functorPushforward _ _ (hPS _ _ hf)
+
+end WeaklyEtale
+
+variable [IsOpenImmersion j]
+
+/-- Postcomposition along an open immersion is fully faithful on weakly étale objects. -/
+def postcomposeFullyFaithful : (proetalePostcompose j).FullyFaithful where
+  preimage f := MorphismProperty.Over.homMk f.left (by
+    apply (cancel_mono j).mp
+    simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
+      MorphismProperty.Over.w f)
+  map_preimage f := by
+    apply (Scheme.ProEt.forget X).map_injective
+    exact CostructuredArrow.hom_ext _ _ rfl
+  preimage_map f := by
+    apply (Scheme.ProEt.forget U).map_injective
+    exact CostructuredArrow.hom_ext _ _ rfl
+
+private def postcomposeDownwardsClosed {Y : U.ProEt} {W : X.ProEt}
+    (f : W ⟶ (proetalePostcompose j).obj Y) : Σ W' : U.ProEt, (proetalePostcompose j).obj W' ≅ W := by
+  have h : (f.left ≫ Y.hom) ≫ j = W.hom := by
+    simpa only [Category.assoc, MorphismProperty.Over.map_obj_hom] using
+      MorphismProperty.Over.w f
+  letI : WeaklyEtale ((f.left ≫ Y.hom) ≫ j) := by
+    rw [h]
+    exact W.prop
+  let W' : U.ProEt :=
+    MorphismProperty.Over.mk ⊤ (f.left ≫ Y.hom) (WeaklyEtale.of_comp _ j)
+  refine ⟨W', MorphismProperty.Over.isoMk (Iso.refl W.left) ?_⟩
+  change 𝟙 W.left ≫ W.hom = (f.left ≫ Y.hom) ≫ j
+  simpa only [Category.id_comp] using h.symm
 
 theorem postcomposeContinuous :
     (proetalePostcompose j).IsContinuous (Scheme.ProEt.topology U) (Scheme.ProEt.topology X) := by

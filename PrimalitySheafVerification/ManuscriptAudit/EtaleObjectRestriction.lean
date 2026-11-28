@@ -25,7 +25,7 @@ noncomputable section
 set_option backward.defeqAttrib.useBackward true
 set_option backward.isDefEq.respectTransparency false
 
-private theorem compatiblePreserving_of_pullbacks {C D : Type*} [Category* C] [Category* D]
+theorem compatiblePreserving_of_pullbacks {C D : Type*} [Category* C] [Category* D]
     [HasPullbacks C] (J : GrothendieckTopology D) (F : C ⥤ D)
     [PreservesLimitsOfShape WalkingCospan F] : CompatiblePreserving.{w} J F where
   compatible P Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h := by

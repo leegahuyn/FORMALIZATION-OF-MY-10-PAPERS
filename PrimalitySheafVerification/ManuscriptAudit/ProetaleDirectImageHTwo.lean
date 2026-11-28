@@ -56,7 +56,7 @@ private def sourceShift : Sheaf.H (quotient F) 1 ≃+ Sheaf.H F 2 := by
 
 private def imageShift (h : Epi ((G f).map (quotientMap F))) :
     Sheaf.H ((G f).obj (quotient F)) 1 ≃+ Sheaf.H ((G f).obj F) 2 := by
-  letI : Injective ((G f).obj (Injective.under F)) :=
+  letI : Injective ((resolution F).map (G f)).X₂ :=
     Injective.injective_of_adjoint (adjunction f) (Injective.under F)
   exact hOneQuotientEquivHTwo ((resolution F).map (G f)) (image_shortExact f F h)
 
@@ -98,7 +98,7 @@ image, the two native degree-one groups are canonically equivalent via
 their global-section cokernels. -/
 def hOneEquivOfImageEpi (h : Epi ((G f).map (quotientMap F))) :
     Sheaf.H ((G f).obj F) 1 ≃+ Sheaf.H F 1 := by
-  letI : Injective ((G f).obj (Injective.under F)) :=
+  letI : Injective ((resolution F).map (G f)).X₂ :=
     Injective.injective_of_adjoint (adjunction f) (Injective.under F)
   let e := ProetaleDirectImageHZero.equivalence f (quotient F)
   let eq := QuotientAddGroup.congr _ _ e (sections_range f F h)

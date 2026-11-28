@@ -84,8 +84,7 @@ theorem repr_stageOf {C : Type u} [CommRing C] [Algebra A C]
     exact Spec.map_id _
   have h : (sectionDiagram (B := C) I).map f x = x := by
     change I.obj.map (etaleMap f).op x = x
-    rw [he]
-    simp
+    rw [he, op_id, CategoryTheory.Functor.map_id] <;> rfl
   exact (repr_natural I f x).symm.trans (congrArg (incl I T) h)
 
 set_option maxHeartbeats 4800000 in

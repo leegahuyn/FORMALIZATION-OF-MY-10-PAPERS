@@ -133,8 +133,12 @@ theorem exists_section (hc : IsColimit c) (x : groups I c.pt) :
     ∃ (j : J) (y : @groups _ _ I (D.obj j) (hT j)),
       @restriction _ _ I (D.obj j) c.pt (hT j) hC (leg c j) y = x := by
   obtain ⟨T, z, hz⟩ := exists_representative (B := c.pt.right) I x
+  letI : Algebra A T.carrier := T.algebra
+  letI : Algebra.Etale A T.carrier := T.isEtale
   let U := CommRingCat.mkUnder (R (A := A)) T.carrier
-  have hU : U.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
+  have hU : U.hom.hom.FinitePresentation := by
+    change (algebraMap A T.carrier).FinitePresentation
+    exact RingHom.finitePresentation_algebraMap.mpr inferInstance
   obtain ⟨j, f, hf⟩ :=
     AffineStageFinitePresentationContinuity.exists_factorization U hc hU T.toChart.toUnder
   letI : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
@@ -145,7 +149,9 @@ theorem exists_section (hc : IsColimit c) (x : groups I c.pt) :
     exact congrArg (fun k : U ⟶ c.pt ↦ k.right a) hf
   let ev (g : T.carrier →ₐ[A] c.pt.right) := represent I (Stage.of A c.pt.right g) z
   have he : represent I (stageAfterMap (chartRingHom (leg c j)) S) z =
-      represent I T z := congrArg ev h
+      represent I T z := by
+    change ev ((chartRingHom (leg c j)).comp S.toChart) = ev T.toChart
+    exact congrArg ev h
   exact ⟨j, represent I S z, (restrict_repr I (leg c j) S z).trans (he.trans hz)⟩
 
 end

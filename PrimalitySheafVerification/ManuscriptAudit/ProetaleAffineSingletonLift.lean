@@ -22,14 +22,14 @@ variable {S : Scheme.{u}} {T : S.ProEt}
 private abbrev J := Scheme.ProEt.topology S
 private abbrev C := Sheaf (J (S := S)) AddCommGrpCat.{v}
 
-private theorem underlying_types_isSheaf (I : C.{u, v} (S := S)) :
+theorem underlying_types_isSheaf (I : C.{u, v} (S := S)) :
     Presieve.IsSheaf (J (S := S)) (I.obj ⋙ forget AddCommGrpCat.{v}) := by
   letI : PreservesLimitsOfSize.{u, u + 1} (forget AddCommGrpCat.{v}) :=
     AddCommGrpCat.adj.rightAdjoint_preservesLimits
   exact (isSheaf_iff_isSheaf_of_type (J (S := S)) _).mp
     (Presheaf.isSheaf_comp_of_isSheaf _ _ (forget AddCommGrpCat.{v}) I.property)
 
-private theorem sections_subsingleton_of_empty (I : C.{u, v} (S := S))
+theorem sections_subsingleton_of_empty (I : C.{u, v} (S := S))
     (W : S.ProEt) [IsEmpty W.left] : Subsingleton (I.obj.obj (op W)) := by
   let V : PEmpty.{u + 1} → S.ProEt := PEmpty.elim
   let f : ∀ i, V i ⟶ W := fun i ↦ PEmpty.elim i

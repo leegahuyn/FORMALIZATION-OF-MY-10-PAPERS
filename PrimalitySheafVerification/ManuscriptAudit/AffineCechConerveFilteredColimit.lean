@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Adjunction
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-! The chosen affine algebra Čech conerve commutes with actual
 colimits of arrows degree by degree. -/

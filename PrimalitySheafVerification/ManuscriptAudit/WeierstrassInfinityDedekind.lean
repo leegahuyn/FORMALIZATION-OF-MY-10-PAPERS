@@ -85,8 +85,7 @@ theorem neighborhood_isDedekindDomain : IsDedekindDomain (N W) := by
   letI hCZ : Algebra (C W) (Z W) := (toZChart W).toRingHom.toAlgebra
   have hChart : IsLocalization.Away (z W) (Z W) := by
     apply IsLocalization.isLocalization_of_algEquiv (S := YOverlap W) (Submonoid.powers (z W))
-    refine AlgEquiv.ofCommutes (overlapEquiv W).toRingEquiv ?_
-    intro a
+    refine { (overlapEquiv W).toRingEquiv with commutes' := fun a => ?_ }
     change toZOverlap W (algebraMap (C W) (YOverlap W) a) = toZChart W a
     unfold toZOverlap
     rw [IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq] <;> rfl

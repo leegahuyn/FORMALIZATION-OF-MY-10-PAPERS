@@ -40,7 +40,8 @@ def resolution (n : ℕ) (hn : n ≠ 0) : ProjectiveResolution (residues n) := b
     apply (ModuleCat.mono_iff_injective _).mpr
     intro a b h
     change (n : ℤ) * a = (n : ℤ) * b at h
-    exact mul_left_cancel₀ (by exact_mod_cast hn) h
+    have hn' : (n : ℤ) ≠ 0 := Int.ofNat_ne_zero.mpr hn
+    exact mul_left_cancel₀ hn' h
   letI : Epi (quotient n) := (ModuleCat.epi_iff_surjective _).mpr Ideal.Quotient.mk_surjective
   exact TwoTermProjectiveResolution.resolution (multiplication n) (quotient n)
     (multiplication_quotient n) (presentation_exact n)

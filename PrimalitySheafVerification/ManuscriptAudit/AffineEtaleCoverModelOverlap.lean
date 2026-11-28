@@ -38,13 +38,20 @@ private abbrev U (W : Type u) [CommRing W] [Algebra A W] := CommRingCat.mkUnder 
 abbrev inl : F →ₐ[A] F ⊗[B] F := (Algebra.TensorProduct.includeLeft : F →ₐ[B] _).restrictScalars A
 abbrev inr : F →ₐ[A] F ⊗[B] F := (Algebra.TensorProduct.includeRight : F →ₐ[B] _).restrictScalars A
 
-private abbrev f := (IsScalarTower.toAlgHom A B F).toUnder
+private abbrev f : U (A := A) B ⟶ U (A := A) F :=
+  AlgHom.toUnder (R := CommRingCat.of A) (IsScalarTower.toAlgHom A B F)
+
+private abbrev leftLeg : U (A := A) F ⟶ U (A := A) (F ⊗[B] F) :=
+  AlgHom.toUnder (R := CommRingCat.of A) (inl (A := A) (B := B) (F := F))
+
+private abbrev rightLeg : U (A := A) F ⟶ U (A := A) (F ⊗[B] F) :=
+  AlgHom.toUnder (R := CommRingCat.of A) (inr (A := A) (B := B) (F := F))
 
 /-- The ring of the actual relative self-intersection is the
 self-pushout, also retaining its map from the original base. -/
 theorem tensor_isPushout :
     IsPushout (f (A := A) (B := B) (F := F)) (f (A := A) (B := B) (F := F))
-      (inl (A := A) (B := B) (F := F)).toUnder (inr (A := A) (B := B) (F := F)).toUnder := by
+      (leftLeg (A := A) (B := B) (F := F)) (rightLeg (A := A) (B := B) (F := F)) := by
   apply IsPushout.of_map_of_faithful (Under.forget (CommRingCat.of A))
   exact CommRingCat.isPushout_tensorProduct B F F
 
@@ -56,8 +63,8 @@ theorem exists_tensor_overlap_map
     (h : f₀ ≫ e.hom = j.hom ≫ f (A := A) (B := B) (F := F))
     (h₀ : f₀ ≫ p₀ = f₀ ≫ q₀) :
     ∃ w : U (A := A) (F ⊗[B] F) ⟶ O₀,
-      (inl (A := A) (B := B) (F := F)).toUnder ≫ w = e.inv ≫ p₀ ∧
-      (inr (A := A) (B := B) (F := F)).toUnder ≫ w = e.inv ≫ q₀ :=
+      (leftLeg (A := A) (B := B) (F := F)) ≫ w = e.inv ≫ p₀ ∧
+      (rightLeg (A := A) (B := B) (F := F)) ≫ w = e.inv ≫ q₀ :=
   exists_overlap_map j e h h₀ tensor_isPushout
 
 end

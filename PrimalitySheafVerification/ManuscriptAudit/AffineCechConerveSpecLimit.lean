@@ -41,14 +41,7 @@ private def ringColimit : IsColimit (ringCocone f n) :=
   isColimitOfPreserves (Under.forget A) ((colimit.isColimit (D f n)).whiskerEquivalence (E (n := n)))
 
 private def specDiagramIso : (DR f n).rightOp ⋙ Scheme.Spec ≅ DS f n :=
-  NatIso.ofComponents (fun i ↦ by cases i <;> exact Iso.refl _) (by
-    intro i j g
-    cases g with
-    | id =>
-      cases i <;> simp [DR, DS, WidePushoutShape.wideSpan, WidePullbackShape.wideCospan, Spec.map_id]
-    | term k =>
-      change Spec.map f.hom.right ≫ 𝟙 _ = 𝟙 _ ≫ Spec.map f.hom.right
-      simp)
+  WidePullbackShape.diagramIsoWideCospan ((DR f n).rightOp ⋙ Scheme.Spec)
 
 private def beforeIso : Cone ((DR f n).rightOp ⋙ Scheme.Spec) :=
   Scheme.Spec.mapCone (coneRightOpOfCocone (ringCocone f n))

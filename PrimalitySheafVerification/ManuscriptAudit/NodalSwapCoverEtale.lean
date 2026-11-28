@@ -82,7 +82,7 @@ private theorem normalization_is_surjective (h2 : (2 : K) ≠ 0) :
     (faithfulSMul_iff_algebraMap_injective (A K) (B K)).mpr Subtype.val_injective
   exact Algebra.IsIntegral.comap_surjective (A K) (B K)
 
-private theorem node_isNoetherian : IsNoetherianRing (A K) := by
+theorem node_isNoetherian : IsNoetherianRing (A K) := by
   letI : Algebra.FiniteType K (A K) := by
     change Algebra.FiniteType K (Algebra.adjoin K ({x K, y K} : Set K[X]))
     exact Algebra.FiniteType.adjoin_of_finite ((Set.finite_singleton _).insert _)

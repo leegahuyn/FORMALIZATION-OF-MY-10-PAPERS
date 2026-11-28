@@ -7,7 +7,7 @@ width-two Dirichlet residual. -/
 namespace ManuscriptAudit.Paper10CoulombBoundaryFlux
 
 open MeasureTheory
-open Paper10CoulombDirichletMode (v v_smooth residual)
+open Paper10CoulombDirichletMode (v v_smooth)
 open Paper10CoulombDirichletWeak (weakPair)
 open Paper10CoulombMultiplier (ScalarField)
 open SmoothGaugeCurvature (partialX partialY)
@@ -54,8 +54,12 @@ private theorem endpoint_six : v 6 = 1 := by
 private theorem vertical_integral :
     (∫ y : ℝ in 4..6, -(deriv v y * v y)) = -(1/2) := by
   have hd (y : ℝ) : HasDerivAt (fun z ↦ v z * v z / 2) (deriv v y * v y) y := by
-    have h := (v_smooth.differentiable (by simp) y).hasDerivAt
-    convert (h.mul h).div_const (2 : ℝ) using 1 <;> ring
+    have h : HasDerivAt v (deriv v y) y :=
+      (v_smooth.differentiable (by simp) y).hasDerivAt
+    have h' : HasDerivAt (fun z ↦ v z * v z / 2)
+        ((deriv v y * v y + v y * deriv v y) / 2) y := (h.mul h).div_const _
+    rw [show (deriv v y * v y + v y * deriv v y) / (2 : ℝ) = deriv v y * v y by ring] at h'
+    exact h'
   have hc : Continuous (fun y ↦ deriv v y * v y) :=
     (show ContDiff ℝ ∞ (deriv v) from ContDiff.deriv' (by simpa using v_smooth)).continuous.mul
       v_smooth.continuous
@@ -86,21 +90,21 @@ private theorem horizontal_width :
 gradient when the test potential may have nonzero boundary trace. -/
 theorem unrestricted_weak_pair : weakPair testPotential = -1 := by
   change (∫ x : ℝ in 0..2, ∫ y : ℝ in 4..6,
-      (residual x y).1 * partialX testPotential x y) +
+      (Paper10CoulombDirichletMode.residual x y).1 * partialX testPotential x y) +
     (∫ x : ℝ in 0..2, ∫ y : ℝ in 4..6,
-      (residual x y).2 * partialY testPotential x y) = _
+      (Paper10CoulombDirichletMode.residual x y).2 * partialY testPotential x y) = _
   have hx (x y : ℝ) :
-      (residual x y).1 * partialX testPotential x y =
+      (Paper10CoulombDirichletMode.residual x y).1 * partialX testPotential x y =
         Real.cos (Real.pi * x)^2 * (-(deriv v y * v y)) := by
     rw [partial_x]
-    unfold residual
+    unfold Paper10CoulombDirichletMode.residual
     dsimp
     field_simp [Real.pi_ne_zero] <;> ring
   have hy (x y : ℝ) :
-      (residual x y).2 * partialY testPotential x y =
+      (Paper10CoulombDirichletMode.residual x y).2 * partialY testPotential x y =
         Real.sin (Real.pi * x)^2 * (-(deriv v y * v y)) := by
     rw [partial_y]
-    unfold residual
+    unfold Paper10CoulombDirichletMode.residual
     dsimp
     ring
   simp_rw [hx, hy, intervalIntegral.integral_const_mul, vertical_integral,

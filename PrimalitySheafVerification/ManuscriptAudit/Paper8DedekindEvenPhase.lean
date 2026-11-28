@@ -17,7 +17,7 @@ private theorem phase_numerator_reciprocity {h k : ℕ}
       (h : ℤ) ^ 2 + (k : ℤ) ^ 2 - 3 * (h : ℤ) * (k : ℤ) + 1 := by
   have hH := (dedekind_phase_numerator_spec hk hC).1
   have hK := (dedekind_phase_numerator_spec hh hC.symm).1
-  apply (Int.cast_injective (R := ℚ))
+  apply (Int.cast_injective (α := ℚ))
   push_cast
   rw [hH, hK]
   linear_combination dedekindSum_reciprocity_scaled hh hk hC
@@ -29,7 +29,7 @@ private theorem phase_numerator_translate_once {a b : ℕ} (hb : 0 < b) (hC : a.
   have hD : dedekindSum (((a + b : ℕ)) : ℤ) b = dedekindSum (a : ℤ) b := by
     push_cast
     simpa only [mul_one] using dedekind_translate hb (a : ℤ) 1
-  apply (Int.cast_injective (R := ℚ))
+  apply (Int.cast_injective (α := ℚ))
   rw [(dedekind_phase_numerator_spec hb hC').1, (dedekind_phase_numerator_spec hb hC).1, hD]
 
 theorem phase_even_numerator_two_part {h k t : ℕ} (hh : h % 2 = 1) (hk : k % 2 = 0)

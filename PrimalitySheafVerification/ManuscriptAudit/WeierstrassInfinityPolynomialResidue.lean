@@ -51,7 +51,7 @@ theorem scaledPolynomial_on_puncture (p : K[X]) (d : ℕ) (hd : 2 * p.natDegree 
       punctureX W ^ (d - 2 * i) =
     (algebraMap K (P W) (p.coeff i) * xAffine W ^ i) * punctureX W ^ d
   rw [mul_assoc, mul_assoc (algebraMap K (P W) (p.coeff i)), scaledPower W i d
-    ((Nat.mul_le_mul_left 2 (Polynomial.le_natDegree_of_mem_supp hi)).trans hd)]
+    ((Nat.mul_le_mul_left 2 (Polynomial.le_natDegree_of_mem_supp i hi)).trans hd)]
 
 private theorem term_residue (p : K[X]) (d i : ℕ) (hdi : 2 * i ≤ d) :
     localOrigin W (algebraMap K (N W) (p.coeff i) * localBracket W ^ i *
@@ -71,7 +71,7 @@ theorem residue_of_larger_pole (p : K[X]) (d : ℕ) (hd : 2 * p.natDegree < d) :
   apply Finset.sum_eq_zero
   intro i hi
   have h : 2 * i < d :=
-    (Nat.mul_le_mul_left 2 (Polynomial.le_natDegree_of_mem_supp hi)).trans_lt hd
+    (Nat.mul_le_mul_left 2 (Polynomial.le_natDegree_of_mem_supp i hi)).trans_lt hd
   rw [term_residue W p d i h.le, if_neg h.ne']
 
 /-- At the exact cleared pole the residue is the polynomial's leading coefficient. -/
@@ -85,7 +85,7 @@ theorem residue_at_exact_pole (p : K[X]) :
   · rw [term_residue W p _ _ le_rfl, if_pos rfl] <;> rfl
   · intro i hi hne
     have h : 2 * i < 2 * p.natDegree := Nat.mul_lt_mul_of_pos_left
-      (lt_of_le_of_ne (Polynomial.le_natDegree_of_mem_supp hi) hne) (by decide)
+      (lt_of_le_of_ne (Polynomial.le_natDegree_of_mem_supp i hi) hne) (by decide)
     rw [term_residue W p _ _ h.le, if_neg h.ne']
   · intro h
     exact (h (Polynomial.natDegree_mem_support_of_nonzero hp)).elim
