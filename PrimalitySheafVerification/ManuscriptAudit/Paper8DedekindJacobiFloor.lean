@@ -62,7 +62,8 @@ private theorem floor_pair {r k x : ℕ} (hk : 0 < k) (hr : r ≤ 2 * k)
     intro h
     rw [h, mul_zero] at hTrep
     omega
-  have ht : t / k = 1 := by omega
+  have ht : t / k = 1 :=
+    le_antisymm (Nat.le_of_lt_succ hTlt) (Nat.one_le_iff_ne_zero.mpr hTpos)
   have hR : a % k + b % k = k := by rw [ht, mul_one] at hTrep; exact hTrep.symm
   have hN : k * (a / k + b / k + 1) = k * (2 * (x + 1)) := by
     calc
@@ -127,11 +128,11 @@ theorem jacobiSym_eq_half_floor (h k : ℕ) (hh : h % 2 = 1) (hk : k % 2 = 1)
     have hR : r + 2 * k * q = h := Nat.mod_add_div h (2 * k)
     have hRlt : r < 2 * k := Nat.mod_lt h (by omega)
     have hRodd : r % 2 = 1 := by
-      have h := congrArg (fun a : ℕ => a % 2) hR
-      change (r + 2 * k * q) % 2 = h % 2 at h
+      have hMod := congrArg (fun a : ℕ => a % 2) hR
+      change (r + 2 * k * q) % 2 = h % 2 at hMod
       have hz : (2 * k * q) % 2 = 0 := by rw [Nat.mul_assoc, Nat.mul_mod_right]
-      rw [Nat.add_mod, hz, Nat.add_zero, Nat.mod_mod, hh] at h
-      exact h
+      rw [Nat.add_mod, hz, Nat.add_zero, Nat.mod_mod, hh] at hMod
+      exact hMod
     have hRcast : (r : ZMod k) = h := by
       have hf := congrArg (fun a : ℕ => (a : ZMod k)) hR
       push_cast at hf
@@ -145,7 +146,7 @@ theorem jacobiSym_eq_half_floor (h k : ℕ) (hh : h % 2 = 1) (hk : k % 2 = 1)
       exact hk1 hRC
     have hSmall (u : ℕ) (hu : u < k) (huo : u % 2 = 1) (huC : u.Coprime k) :
         jacobiSym (u : ℤ) k = (-1 : ℤ) ^ halfFloorWeight u k := by
-      rw [jacobiSym.quadratic_reciprocity (odd_iff.mpr huo) (odd_iff.mpr hk),
+      rw [jacobiSym.quadratic_reciprocity (Nat.odd_iff.mpr huo) (Nat.odd_iff.mpr hk),
         ih u hu k hk huo huC.symm, ← half_floor_sign_reciprocity huo hk huC]
     rw [← jacobi_eq_of_cast hRcast, ← hR, halfFloorWeight_periodic r k q hk0]
     by_cases hlt : r < k
@@ -170,7 +171,7 @@ theorem jacobiSym_eq_half_floor (h k : ℕ) (hh : h % 2 = 1) (hk : k % 2 = 1)
       apply (ZMod.intCast_eq_intCast_iff' _ _ k).1
       push_cast
       rw [hUCst, neg_neg]
-    rw [hJ, jacobiSym.neg _ (odd_iff.mpr hk), χ₄_eq_neg_one_pow hk, hSmall u hu huo huC]
+    rw [hJ, jacobiSym.neg _ (Nat.odd_iff.mpr hk), ZMod.χ₄_eq_neg_one_pow hk, hSmall u hu huo huC]
     exact (halfFloorWeight_reflect hk0 hRlt.le hRC).symm
 
 theorem jacobiSym_eq_weighted_floor (h k : ℕ) (hh : h % 2 = 1) (hk : k % 2 = 1)

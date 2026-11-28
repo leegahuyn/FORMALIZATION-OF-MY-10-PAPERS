@@ -13,7 +13,7 @@ open AffineEtaleStageTensorLegs (algebraHom)
 open NativeAffineEtaleStageSections (sectionDiagram)
 open NativeAffineEtaleRawSections (rawSectionCocone)
 open NativeAffineEtaleRawStageElements (stageAfterMap exists_representative exists_equal_representatives)
-open NativeAffineUnderRingRawSections (groups restriction represent restrict_repr)
+open NativeAffineUnderRingRawSections (groups restriction represent restrict_repr chartAlgebra chartRingHom)
 
 noncomputable section
 
@@ -29,31 +29,38 @@ private abbrev U (S : Type u) [CommRing S] [Algebra A S] := CommRingCat.mkUnder 
 private abbrev X := ProetaleAffineTensor.spectrum A
 private abbrev G := AddCommGrpCat.{u + 1}
 
+attribute [local instance] chartAlgebra
+
 variable (I : Sheaf (X (A := A)).smallEtaleTopology G.{u})
 
 private theorem repr_natural {B : Under (R (A := A))} [WeaklyEtale (Spec.map B.hom)]
-    {T V : Stage A B} (e : T ⟶ V) (x : (sectionDiagram (B := B) I).obj T) :
-    represent I V ((sectionDiagram (B := B) I).map e x) = represent I T x :=
+    {T V : Stage A B.right} (e : T ⟶ V) (x : (sectionDiagram (B := B.right) I).obj T) :
+    represent I V ((sectionDiagram (B := B.right) I).map e x) = represent I T x :=
   DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
-    ((rawSectionCocone (B := B) I).w e)) x
+    ((rawSectionCocone (B := B.right) I).w e)) x
 
 variable {J : Type*} [Category* J] [IsFiltered J] [EssentiallySmall.{u} J]
   {D : J ⥤ Under (R (A := A))}
   (hT : ∀ j, WeaklyEtale (Spec.map (D.obj j).hom)) {c : Cocone D}
-  [WeaklyEtale (Spec.map c.pt.hom)]
+  [hC : WeaklyEtale (Spec.map c.pt.hom)]
 
-local instance (i : J) : WeaklyEtale (Spec.map (D.obj i).hom) := hT i
+private abbrev leg (j : J) : D.obj j ⟶ c.pt := c.ι.app j
 
 set_option maxHeartbeats 10500000 in
 /-- A raw equality at the actual colimit is witnessed at one later
 chart ring in the specified diagram. -/
 theorem exists_equal_stage (hc : IsColimit c) (i : J)
-    (x y : groups I (D.obj i))
-    (hxy : restriction I (c.ι.app i) x = restriction I (c.ι.app i) y) :
-    ∃ (j : J) (e : i ⟶ j), restriction I (D.map e) x = restriction I (D.map e) y := by
-  obtain ⟨T, u, hu⟩ := exists_representative I x
-  obtain ⟨V, v, hv⟩ := exists_representative I y
-  let k := CommRingCat.toAlgHom (c.ι.app i)
+    (x y : @groups _ _ I (D.obj i) (hT i))
+    (hxy : @restriction _ _ I (D.obj i) c.pt (hT i) hC (leg c i) x =
+      @restriction _ _ I (D.obj i) c.pt (hT i) hC (leg c i) y) :
+    ∃ (j : J) (e : i ⟶ j), @restriction _ _ I (D.obj i) (D.obj j) (hT i) (hT j) (D.map e) x =
+      @restriction _ _ I (D.obj i) (D.obj j) (hT i) (hT j) (D.map e) y := by
+  letI : WeaklyEtale (Spec.map (D.obj i).hom) := hT i
+  letI : WeaklyEtale (ProetaleAffineTensor.structureMap A (D.obj i).right) := hT i
+  letI : WeaklyEtale (ProetaleAffineTensor.structureMap A c.pt.right) := hC
+  obtain ⟨T, u, hu⟩ := exists_representative (B := (D.obj i).right) I x
+  obtain ⟨V, v, hv⟩ := exists_representative (B := (D.obj i).right) I y
+  let k := chartRingHom (leg c i)
   let T' := stageAfterMap k T
   let V' := stageAfterMap k V
   have hEq : represent I T' u = represent I V' v := by
@@ -67,12 +74,12 @@ theorem exists_equal_stage (hc : IsColimit c) (i : J)
   have hQ : Q.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
   have hE : E.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
   obtain ⟨j, w, hw⟩ := AffineStageFinitePresentationContinuity.exists_factorization E hc hE N.toChart.toUnder
-  have hp : T.toChart.toUnder ≫ c.ι.app i = (hom p).toUnder ≫ N.toChart.toUnder := by
+  have hp : T.toChart.toUnder ≫ leg c i = (hom p).toUnder ≫ N.toChart.toUnder := by
     apply (Under.forget (R (A := A))).map_injective
     apply CommRingCat.hom_ext
     ext t
     exact (DFunLike.congr_fun p.property t).symm
-  have hq : V.toChart.toUnder ≫ c.ι.app i = (hom q).toUnder ≫ N.toChart.toUnder := by
+  have hq : V.toChart.toUnder ≫ leg c i = (hom q).toUnder ≫ N.toChart.toUnder := by
     apply (Under.forget (R (A := A))).map_injective
     apply CommRingCat.hom_ext
     ext t
@@ -85,23 +92,24 @@ theorem exists_equal_stage (hc : IsColimit c) (i : J)
   let q₁ : Q ⟶ D.obj l := V.toChart.toUnder ≫ D.map il
   let q₂ : Q ⟶ D.obj l := (hom q).toUnder ≫ w ≫ D.map jl
   have h₁ : p₁ ≫ c.ι.app l = p₂ ≫ c.ι.app l := by
-    simpa only [p₁, p₂, Category.assoc, c.w, hw] using hp
+    simpa only [p₁, p₂, leg, Category.assoc, c.w, hw] using hp
   have h₂ : q₁ ≫ c.ι.app l = q₂ ≫ c.ι.app l := by
-    simpa only [q₁, q₂, Category.assoc, c.w, hw] using hq
+    simpa only [q₁, q₂, leg, Category.assoc, c.w, hw] using hq
   obtain ⟨m, lm, hmP, hmQ⟩ :=
     AffineStageSimultaneousEqualities.exists_two_equalizers hc P Q hP hQ p₁ p₂ q₁ q₂ h₁ h₂
   let im := il ≫ lm
   let jm := jl ≫ lm
-  let W := Stage.of A (D.obj m) (algebraHom (w ≫ D.map jm))
+  letI : WeaklyEtale (Spec.map (D.obj m).hom) := hT m
+  let W := Stage.of A (D.obj m).right (algebraHom (w ≫ D.map jm))
   have h₁' : T.toChart.toUnder ≫ D.map im = (hom p).toUnder ≫ w ≫ D.map jm := by
-    simpa only [p₁, p₂, im, jm, Functor.map_comp, Category.assoc] using hmP
+    simpa only [p₁, p₂, im, jm, CategoryTheory.Functor.map_comp, Category.assoc] using hmP
   have h₂' : V.toChart.toUnder ≫ D.map im = (hom q).toUnder ≫ w ≫ D.map jm := by
-    simpa only [q₁, q₂, im, jm, Functor.map_comp, Category.assoc] using hmQ
-  let p' : stageAfterMap (CommRingCat.toAlgHom (D.map im)) T ⟶ W := ⟨hom p, by
+    simpa only [q₁, q₂, im, jm, CategoryTheory.Functor.map_comp, Category.assoc] using hmQ
+  let p' : stageAfterMap (chartRingHom (D.map im)) T ⟶ W := ⟨hom p, by
     apply AlgHom.ext
     intro t
     exact congrArg (fun a : P ⟶ D.obj m ↦ a.right t) h₁'.symm⟩
-  let q' : stageAfterMap (CommRingCat.toAlgHom (D.map im)) V ⟶ W := ⟨hom q, by
+  let q' : stageAfterMap (chartRingHom (D.map im)) V ⟶ W := ⟨hom q, by
     apply AlgHom.ext
     intro t
     exact congrArg (fun a : Q ⟶ D.obj m ↦ a.right t) h₂'.symm⟩

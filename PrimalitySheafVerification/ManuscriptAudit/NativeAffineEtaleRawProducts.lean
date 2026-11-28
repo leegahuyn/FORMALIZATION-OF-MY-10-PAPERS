@@ -110,9 +110,12 @@ private theorem eq_of_equal_restrictions {x y : S I (∀ i, B i)}
         (congrArg (fun g ↦ I.obj.map g.op) (component_assemble B V a i))) v)
   have ht (i : ι) : I.obj.map (component (A := A) C i).op t = (F I (B i)).map (a i) v := by
     change I.obj.map (component (A := A) C i).op (I.obj.map (etaleMap q).op w) = _
+    have hq := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
+      (congrArg (fun g ↦ I.obj.map g.op) (component_assemble B V b i))) w
+    have he : I.obj.map (etaleMap (b i)).op w = (F I (B i)).map (a i) v :=
+      (hab i).symm
     exact (restrict_restrict I (component (A := A) C i) (etaleMap q) w).trans
-      ((DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
-        (congrArg (fun g ↦ I.obj.map g.op) (component_assemble B V b i))) w).trans (hab i).symm)
+      (hq.trans he)
   obtain ⟨z, _, hZ⟩ := existsUnique_sections I C
     (fun i ↦ (F I (B i)).map (a i) v)
   have hst : s = t := (hZ s hs).trans (hZ t ht).symm

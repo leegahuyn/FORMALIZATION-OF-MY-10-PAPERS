@@ -19,7 +19,7 @@ theorem stdAddChar_chineseRemainder {n m : ℕ} [NeZero n] [NeZero m] (h : n.Cop
       ZMod.stdAddChar ((u : ZMod n) * (ZMod.chineseRemainder h z).1) *
       ZMod.stdAddChar ((v : ZMod m) * (ZMod.chineseRemainder h z).2) := by
   obtain ⟨a, rfl⟩ := ZMod.intCast_surjective z
-  rw [map_intCast]
+  rw [map_intCast (ZMod.chineseRemainder h)]
   change ZMod.stdAddChar (a : ZMod (n * m)) =
     ZMod.stdAddChar ((u : ZMod n) * (a : ZMod n)) * ZMod.stdAddChar ((v : ZMod m) * (a : ZMod m))
   rw [← Int.cast_mul, ← Int.cast_mul, ZMod.stdAddChar_coe, ZMod.stdAddChar_coe, ZMod.stdAddChar_coe,
@@ -63,7 +63,8 @@ theorem twistedSymmetricUnitSum_chineseRemainder {n m : ℕ} [NeZero n] [NeZero 
       ZMod.stdAddChar ((a : ZMod (n * m)) * ((x : ZMod (n * m)) + ((x⁻¹ : (ZMod (n * m))ˣ) : ZMod (n * m))))
   have hTerm (x : (ZMod (n * m))ˣ) : L x = F (e x).1 * G (e x).2 := by
     unfold L F G
-    rw [stdAddChar_chineseRemainder h u v huv, map_mul, map_add, map_intCast, hC, hI]
+    rw [stdAddChar_chineseRemainder h u v huv, map_mul (ZMod.chineseRemainder h),
+      map_add (ZMod.chineseRemainder h), map_intCast (ZMod.chineseRemainder h), hC, hI]
     change _ * (ZMod.stdAddChar ((u : ZMod n) * ((a : ZMod n) *
         (((e x).1 : ZMod n) + (((e x).1⁻¹ : (ZMod n)ˣ) : ZMod n)))) *
       ZMod.stdAddChar ((v : ZMod m) * ((a : ZMod m) *

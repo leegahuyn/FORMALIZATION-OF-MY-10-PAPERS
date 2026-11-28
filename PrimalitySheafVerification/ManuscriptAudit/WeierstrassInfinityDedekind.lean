@@ -82,9 +82,9 @@ theorem neighborhood_isDedekindDomain : IsDedekindDomain (N W) := by
   letI : IsDomain (N W) := neighborhood_isDomain W
   letI : IsNoetherianRing (N W) := neighborhood_noetherian W
   letI : IsDedekindDomain (Z W) := zOverlap_dedekind W
-  letI : Algebra (C W) (Z W) := (toZChart W).toRingHom.toAlgebra
+  letI hCZ : Algebra (C W) (Z W) := (toZChart W).toRingHom.toAlgebra
   have hChart : IsLocalization.Away (z W) (Z W) := by
-    apply IsLocalization.isLocalization_of_algEquiv (Submonoid.powers (z W))
+    apply IsLocalization.isLocalization_of_algEquiv (S := YOverlap W) (Submonoid.powers (z W))
     refine AlgEquiv.ofCommutes (overlapEquiv W).toRingEquiv ?_
     intro a
     change toZOverlap W (algebraMap (C W) (YOverlap W) a) = toZChart W a
@@ -98,12 +98,18 @@ theorem neighborhood_isDedekindDomain : IsDedekindDomain (N W) := by
   letI : IsDomain T := Localization.Away.isDomain hb
   letI : IsDedekindDomain T := IsLocalization.isDedekindDomain (Z W)
     (powers_le_nonZeroDivisors_of_noZeroDivisors hb) T
-  letI : Algebra (C W) T := ((algebraMap (Z W) T).comp (algebraMap (C W) (Z W))).toAlgebra
+  letI hZT : Algebra (Z W) T := inferInstance
+  letI hCT : Algebra (C W) T := ((algebraMap (Z W) T).comp (algebraMap (C W) (Z W))).toAlgebra
+  letI : SMul (C W) (Z W) := hCZ.toSMul
+  letI : SMul (Z W) T := hZT.toSMul
+  letI : SMul (C W) T := hCT.toSMul
   letI : IsScalarTower (C W) (Z W) T := IsScalarTower.of_algebraMap_eq' rfl
   let f : N W →ₐ[C W] T :=
     IsLocalization.Away.liftAlgHom (bracket W) (f := Algebra.ofId (C W) T)
       (IsLocalization.Away.algebraMap_isUnit (S := T) b)
-  letI : Algebra (N W) T := f.toRingHom.toAlgebra
+  letI hNT : Algebra (N W) T := f.toRingHom.toAlgebra
+  letI : SMul (N W) T := hNT.toSMul
+  letI : SMul (C W) (N W) := (inferInstance : Algebra (C W) (N W)).toSMul
   letI : IsScalarTower (C W) (N W) T :=
     IsScalarTower.of_algebraMap_eq fun a => (f.commutes a).symm
   letI : IsLocalization.Away (localZ W) T :=

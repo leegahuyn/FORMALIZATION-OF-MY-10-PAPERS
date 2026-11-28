@@ -29,7 +29,7 @@ theorem cofactor_dvd_iff (hm : 0 < m) (a : ℤ) :
   · rintro ⟨q, hq⟩
     have hd : (m : ℤ) ∣ (Nat.gcd m n : ℤ) * a := by
       rw [Nat.gcd_eq_gcd_ab, add_mul]
-      apply dvd_add
+      apply Int.dvd_add
       · exact ⟨Nat.gcdA m n * a, by ring⟩
       · refine ⟨Nat.gcdB m n * q, ?_⟩
         calc

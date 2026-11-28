@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Adjunction
 
 /-! The chosen affine algebra Čech conerve commutes with actual
 colimits of arrows degree by degree. -/
@@ -29,9 +30,13 @@ def isColimit_of_sides {F : J ⥤ Arrow C} (c : Cocone F)
     (hR.desc ((Arrow.rightFunc : Arrow C ⥤ C).mapCocone s)) (by
       apply hL.hom_ext
       intro i
+      have hl : (c.ι.app i).left ≫ hL.desc ((Arrow.leftFunc : Arrow C ⥤ C).mapCocone s) =
+          (s.ι.app i).left := hL.fac _ i
+      have hr : (c.ι.app i).right ≫ hR.desc ((Arrow.rightFunc : Arrow C ⥤ C).mapCocone s) =
+          (s.ι.app i).right := hR.fac _ i
       change (c.ι.app i).left ≫ _ = (c.ι.app i).left ≫ c.pt.hom ≫ _
-      rw [← Category.assoc, hL.fac]
-      rw [← Category.assoc, (c.ι.app i).w, Category.assoc, hR.fac]
+      rw [← Category.assoc, hl]
+      rw [← Category.assoc, (c.ι.app i).w, Category.assoc, hr]
       exact (s.ι.app i).w)
   fac s j := by
     apply Arrow.hom_ext
@@ -56,11 +61,15 @@ def isColimit_degree {F : J ⥤ Arrow C} {c : Cocone F} (hc : IsColimit c) (n : 
   let E : Arrow C ⥤ CosimplicialObject.Augmented C := CosimplicialObject.augmentedCechConerve
   let D : CosimplicialObject.Augmented C ⥤ CosimplicialObject C := CosimplicialObject.Augmented.drop
   letI : E.IsLeftAdjoint := (CosimplicialObject.cechConerveAdjunction (C := C)).isLeftAdjoint
+  letI : HasColimitsOfShape J (CosimplicialObject C) :=
+    inferInstanceAs (HasColimitsOfShape J (SimplexCategory ⥤ C))
+  letI : PreservesColimitsOfShape J (CosimplicialObject.const C) :=
+    inferInstanceAs (PreservesColimitsOfShape J (Functor.const SimplexCategory : C ⥤ SimplexCategory ⥤ C))
   letI : PreservesColimitsOfShape J D :=
-    inferInstanceAs (PreservesColimitsOfShape J (Comma.snd (Functor.const SimplexCategory)
+    inferInstanceAs (PreservesColimitsOfShape J (Comma.snd (CosimplicialObject.const C)
       (𝟭 (CosimplicialObject C))))
   change IsColimit (((E ⋙ D) ⋙ (evaluation SimplexCategory C).obj ⦋n⦌).mapCocone c)
-  exact isColimitOfPreserves _ hc
+  exact isColimitOfPreserves _ (isColimitOfPreserves D (isColimitOfPreserves E hc))
 
 end
 end ManuscriptAudit.AffineCechConerveFilteredColimit

@@ -76,7 +76,8 @@ theorem unit_at_affine
   let e : U ≅ V := MorphismProperty.Over.isoMk V.left.isoSpec.symm hS.symm
   let H := ((directImage (X (A := A))).obj ((inverseImage (X (A := A))).obj I)).obj
   have hU : Function.Bijective ((η I).app (op U)) :=
-    unit_at_chart I (hRaw (ProetaleAffineTensor.object A B) inferInstance)
+    unit_at_chart I (hRaw (ProetaleAffineTensor.object A B)
+      (inferInstanceAs (IsAffine (spectrum B))))
   have hI : Function.Bijective (I.obj.map e.hom.op) :=
     ⟨(AddCommGrpCat.mono_iff_injective _).mp inferInstance,
       (AddCommGrpCat.epi_iff_surjective _).mp inferInstance⟩

@@ -30,6 +30,19 @@ private abbrev R := CommRingCat.of A
 private abbrev X := spectrum A
 private abbrev G := AddCommGrpCat.{u + 1}
 
+abbrev chartAlgebra (B : Under (R (A := A))) : Algebra A B.right := B.hom.hom.toAlgebra
+
+attribute [local instance] chartAlgebra
+
+/-- Read a chart-ring map using the actual algebra structures from its arrows. -/
+abbrev chartRingHom {U V : Under (R (A := A))} (f : U ⟶ V) : U.right →ₐ[A] V.right :=
+  { toRingHom := f.right.hom
+    commutes' := fun x ↦ congrArg (fun g : R (A := A) ⟶ V.right ↦ g x) (Under.w f) }
+
+local instance chartWeaklyEtale (U : Under (R (A := A)))
+    [WeaklyEtale (Spec.map U.hom)] : WeaklyEtale (structureMap A U.right) :=
+  inferInstanceAs (WeaklyEtale (Spec.map U.hom))
+
 abbrev chart (U : Under (R (A := A))) [WeaklyEtale (Spec.map U.hom)] : (X (A := A)).ProEt :=
   Scheme.ProEt.mk (Spec.map U.hom)
 
@@ -61,69 +74,79 @@ abbrev restriction {U V : Under (R (A := A))}
     groups I U ⟶ groups I V :=
   (raw (X (A := A)) I).map (arrow f).op
 
-abbrev represent {U : Under (R (A := A))} [WeaklyEtale (Spec.map U.hom)] (T : Stage A U) :=
-  (rawSectionCocone (B := U) I).ι.app T
+abbrev represent {U : Under (R (A := A))} [WeaklyEtale (Spec.map U.hom)] (T : Stage A U.right) :=
+  (rawSectionCocone (B := U.right) I).ι.app T
 
 theorem restrict_repr {U V : Under (R (A := A))}
     [WeaklyEtale (Spec.map U.hom)] [WeaklyEtale (Spec.map V.hom)]
-    (f : U ⟶ V) (T : Stage A U) (x : (sectionDiagram (B := U) I).obj T) :
+    (f : U ⟶ V) (T : Stage A U.right) (x : (sectionDiagram (B := U.right) I).obj T) :
     restriction I f (represent I T x) =
-      represent I (stageAfterMap (CommRingCat.toAlgHom f) T) x :=
+      represent I (stageAfterMap (chartRingHom f) T) x :=
   DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
-    (rawSection_map I (CommRingCat.toAlgHom f) T)) x
+    (rawSection_map I (chartRingHom f) T)) x
 
 variable {J : Type*} [Category* J] {D : J ⥤ Under (R (A := A))}
   (hT : ∀ j, WeaklyEtale (Spec.map (D.obj j).hom)) (c : Cocone D)
 
-local instance (j : J) : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
-
 /-- Actual covariant restriction along the diagram of chart rings. -/
 def diagram : J ⥤ G.{u} where
-  obj j := groups I (D.obj j)
-  map f := restriction I (D.map f)
+  obj j := @groups _ _ I (D.obj j) (hT j)
+  map {i j} f := @restriction _ _ I (D.obj i) (D.obj j) (hT i) (hT j) (D.map f)
   map_id j := by
+    letI : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
     change (raw (X (A := A)) I).map (arrow (D.map (𝟙 j))).op = _
-    rw [Functor.map_id, arrow_id, op_id, Functor.map_id]
-  map_comp f g := by
+    rw [CategoryTheory.Functor.map_id, arrow_id, op_id, CategoryTheory.Functor.map_id]
+  map_comp {i j k} f g := by
+    letI : WeaklyEtale (Spec.map (D.obj i).hom) := hT i
+    letI : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
+    letI : WeaklyEtale (Spec.map (D.obj k).hom) := hT k
     change (raw (X (A := A)) I).map (arrow (D.map (f ≫ g))).op = _
-    rw [Functor.map_comp, arrow_comp, op_comp, Functor.map_comp] <;> rfl
+    rw [CategoryTheory.Functor.map_comp, arrow_comp, op_comp, CategoryTheory.Functor.map_comp] <;> rfl
 
-variable [WeaklyEtale (Spec.map c.pt.hom)]
+variable [hC : WeaklyEtale (Spec.map c.pt.hom)]
+
+private abbrev leg (j : J) : D.obj j ⟶ c.pt := c.ι.app j
 
 /-- The section cocone retains the literal geometric restriction maps. -/
 def sectionCocone : Cocone (diagram I hT) where
   pt := groups I c.pt
-  ι := { app := fun j ↦ restriction I (c.ι.app j)
+  ι := { app := fun j ↦ @restriction _ _ I (D.obj j) c.pt (hT j) hC (leg c j)
          naturality := by
            intro i j f
-           change restriction I (D.map f) ≫ restriction I (c.ι.app j) =
-             restriction I (c.ι.app i) ≫ 𝟙 _
+           letI : WeaklyEtale (Spec.map (D.obj i).hom) := hT i
+           letI : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
+           change restriction I (D.map f) ≫ restriction I (leg c j) =
+             restriction I (leg c i) ≫ 𝟙 _
            rw [Category.comp_id]
-           rw [show restriction I (D.map f) ≫ restriction I (c.ι.app j) =
-               restriction I (D.map f ≫ c.ι.app j) by
-                 change _ = (raw (X (A := A)) I).map (arrow (D.map f ≫ c.ι.app j)).op
-                 rw [arrow_comp, op_comp, Functor.map_comp] <;> rfl, c.w] }
+           have h : D.map f ≫ leg c j = leg c i := c.w f
+           calc
+             _ = restriction I (D.map f ≫ leg c j) := by
+               change _ = (raw (X (A := A)) I).map (arrow (D.map f ≫ leg c j)).op
+               rw [arrow_comp, op_comp, CategoryTheory.Functor.map_comp] <;> rfl
+             _ = _ := congrArg (restriction I) h }
 
 variable [IsFiltered J] [EssentiallySmall.{u} J]
 
 set_option maxHeartbeats 5300000 in
 /-- Each actual raw section at the affine limit comes from one diagram value. -/
 theorem exists_section (hc : IsColimit c) (x : groups I c.pt) :
-    ∃ (j : J) (y : groups I (D.obj j)), restriction I (c.ι.app j) y = x := by
-  obtain ⟨T, z, hz⟩ := exists_representative I x
+    ∃ (j : J) (y : @groups _ _ I (D.obj j) (hT j)),
+      @restriction _ _ I (D.obj j) c.pt (hT j) hC (leg c j) y = x := by
+  obtain ⟨T, z, hz⟩ := exists_representative (B := c.pt.right) I x
   let U := CommRingCat.mkUnder (R (A := A)) T.carrier
   have hU : U.hom.hom.FinitePresentation := RingHom.finitePresentation_algebraMap.mpr inferInstance
   obtain ⟨j, f, hf⟩ :=
     AffineStageFinitePresentationContinuity.exists_factorization U hc hU T.toChart.toUnder
-  let S := Stage.of A (D.obj j) (algebraHom f)
-  have h : (CommRingCat.toAlgHom (c.ι.app j)).comp S.toChart = T.toChart := by
+  letI : WeaklyEtale (Spec.map (D.obj j).hom) := hT j
+  let S := Stage.of A (D.obj j).right (algebraHom f)
+  have h : (chartRingHom (leg c j)).comp S.toChart = T.toChart := by
     apply AlgHom.ext
     intro a
     exact congrArg (fun k : U ⟶ c.pt ↦ k.right a) hf
-  let ev (g : T.carrier →ₐ[A] c.pt) := represent I (Stage.of A c.pt g) z
-  have he : represent I (stageAfterMap (CommRingCat.toAlgHom (c.ι.app j)) S) z =
+  let ev (g : T.carrier →ₐ[A] c.pt.right) := represent I (Stage.of A c.pt.right g) z
+  have he : represent I (stageAfterMap (chartRingHom (leg c j)) S) z =
       represent I T z := congrArg ev h
-  exact ⟨j, represent I S z, (restrict_repr I (c.ι.app j) S z).trans (he.trans hz)⟩
+  exact ⟨j, represent I S z, (restrict_repr I (leg c j) S z).trans (he.trans hz)⟩
 
 end
 end ManuscriptAudit.NativeAffineUnderRingRawSections

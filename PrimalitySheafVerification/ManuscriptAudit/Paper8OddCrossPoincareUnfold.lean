@@ -54,7 +54,10 @@ theorem crossRealKernel_continuous (s : ℂ) {y c : ℝ} (hy : 0 < y) (hc : 0 < 
       (Real.sqrt_pos.2 (norm_pos_iff.mpr (hw u))).ne')).mul (hNorm.div hWC hw)
   have hPow : Continuous (fun u => (h u : ℂ) ^ s) :=
     (Complex.continuous_ofReal.comp hHeight).cpow continuous_const (fun u =>
-      Or.inl (by simpa only [Complex.ofReal_re] using kernelHeight_pos hy hc u))
+      Or.inl (by
+        change 0 < ((h u : ℝ) : ℂ).re
+        rw [Complex.ofReal_re]
+        exact kernelHeight_pos hy hc u))
   have hDen : Continuous (fun u => (c : ℂ) ^ 2 * w u) := continuous_const.mul hWC
   have hDen0 (u : ℝ) : (c : ℂ) ^ 2 * w u ≠ 0 :=
     mul_ne_zero (pow_ne_zero _ (Complex.ofReal_ne_zero.mpr hc.ne')) (hw u)
@@ -73,7 +76,7 @@ private theorem kernelExponential_norm_le {y c : ℝ} (hy : 0 < y) (u : ℝ) :
   have hV : v.im = c ^ 2 * y := by
     change (((c : ℂ) ^ 2) * complexPoint u y).im = _
     rw [← Complex.ofReal_pow]
-    simp [Complex.mul_im, complexPoint_im]
+    simp only [Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, complexPoint_im, zero_mul, add_zero]
   have hI : b.im = oddInfinityFrequency * v.im / Complex.normSq v := by
     dsimp only [b]
     simp [Complex.sub_im, Complex.div_im, Complex.mul_im] <;> ring
@@ -146,7 +149,7 @@ theorem hasSum_oddCross_row_fourier {D : ℕ} (A : CrossRow (D + 1)) (s : ℂ)
   let a := crossEntry (D + 1) (A.matrix 0 0) (A.matrix 1 1)
   have hK : Integrable K := crossRealKernel_integrable s hs hy (by dsimp only [c]; positivity)
   have hS := (hK.hasSum_intervalIntegral b).mul_left a
-  refine hS.congr (fun n => ?_)
+  refine hS.congr_fun (fun n => ?_)
   rw [← intervalIntegral.integral_const_mul]
   have hTrans : (∫ x in (0 : ℝ)..(1 : ℝ), a * K (x + (b + (n : ℝ)))) =
       ∫ u in b + (n : ℝ)..b + (n : ℝ) + 1, a * K u := by

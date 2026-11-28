@@ -102,12 +102,16 @@ private theorem tensorProductMap_bijective : Function.Bijective (tensorProductMa
   rw [h]
   exact e.symm.bijective.comp d.bijective
 
-set_option maxHeartbeats 800000 in
-private theorem productMap_bijective : Function.Bijective (productMap A B t s) := by
-  let f : TensorDomain A B t s →ₗ[A] TensorCodomain A B t s := productMap A B t s
-  have h : Function.Bijective (f.lTensor B) := tensorProductMap_bijective A B t s ht hs
-  change Function.Bijective f
-  exact of_lTensor_bijective A B (M := TensorDomain A B t s) (N := TensorCodomain A B t s) f h
+attribute [local irreducible] productMap
+
+set_option maxHeartbeats 1000000 in
+private theorem productMap_reflection :
+    Function.Bijective (tensorProductMap A B t s) ↔ Function.Bijective (productMap A B t s) := by
+  unfold tensorProductMap
+  exact Module.FaithfullyFlat.lTensor_bijective_iff_bijective A B (productMap A B t s)
+
+private theorem productMap_bijective : Function.Bijective (productMap A B t s) :=
+  (productMap_reflection A B t s).mp (tensorProductMap_bijective A B t s ht hs)
 
 /-- This multiplication map is an isomorphism of descended modules, as
 can be checked after the genuinely faithfully flat extension. -/

@@ -13,13 +13,11 @@ open IsLocalRing
 
 noncomputable section
 
-variable (A B : Type*) [CommRing A] [CommRing B]
-variable [IsDedekindDomain A] [IsDomain B] [Algebra A B] [Algebra.Etale A B]
-
 /-- The true affine coordinate ring of an integral étale chart over a
 Dedekind domain is a Dedekind domain without any global PID assumption. -/
-include ‹IsDedekindDomain A› ‹Algebra.Etale A B› in
-theorem isDedekindDomain : IsDedekindDomain B := by
+theorem isDedekindDomain (A B : Type*) [CommRing A] [CommRing B]
+    [IsDedekindDomain A] [IsDomain B] [Algebra A B] [Algebra.Etale A B] :
+    IsDedekindDomain B := by
   letI hNoeth : IsNoetherianRing B := Algebra.FiniteType.isNoetherianRing A B
   have hDvr : IsDedekindDomainDvr B := by
     refine { toIsNoetherian := hNoeth, is_dvr_at_nonzero_prime := ?_ }
@@ -44,7 +42,7 @@ theorem isDedekindDomain : IsDedekindDomain B := by
         have hTower : IsScalarTower A L M := inferInstance
         letI : IsScalarTower A L M := hTower
         have he : (maximalIdeal L).map (algebraMap L M) = p.map (algebraMap A M) := by
-          rw [← Localization.AtPrime.map_eq_maximalIdeal p, Ideal.map_map,
+          rw [← Localization.AtPrime.map_eq_maximalIdeal (I := p), Ideal.map_map,
             ← IsScalarTower.algebraMap_eq A L M]
         rw [← hMap, ← he]
         exact Submodule.IsPrincipal.map_ringHom (algebraMap L M) hL

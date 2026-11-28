@@ -32,10 +32,9 @@ theorem weighted_symmetric_sum_stationary {n m : ℕ} [NeZero n] [NeZero m]
   let H (x : ZMod (n * m)) := a * (1 - (x⁻¹) ^ 2)
   let S (b : ZMod m) := ∑ y : ZMod n, weightedSymmetricUnitTerm w a (T (X b) (Y y))
   have hLow (b : ZMod m) (y : ZMod n) : reduceLowDigit (T (X b) (Y y)) = b := by
-    unfold T
-    rw [map_add, map_mul, map_natCast, ZMod.natCast_self, zero_mul, add_zero]
-    unfold X
-    rw [map_natCast, ZMod.natCast_zmod_val]
+    unfold T X
+    simp only [map_add, map_mul, map_natCast, ZMod.natCast_self, zero_mul, add_zero,
+      ZMod.natCast_zmod_val]
   have hHigh (y : ZMod n) : (((Y y).val : ℕ) : ZMod n) = y := by
     rw [← reduceHighDigit_apply]
     unfold Y
@@ -56,8 +55,9 @@ theorem weighted_symmetric_sum_stationary {n m : ℕ} [NeZero n] [NeZero m]
         high_digit_stationary_condition a (X b) ha hb
       unfold S
       simp_rw [hPoint, ← Finset.mul_sum, mul_comm (reduceHighDigit (H (X b)))]
-      rw [AddChar.sum_mulShift _ (ZMod.isPrimitive_stdAddChar n), ZMod.card, hStation, hb, true_and]
-      split_ifs <;> ring
+      rw [AddChar.sum_mulShift _ (ZMod.isPrimitive_stdAddChar n), ZMod.card]
+      simp only [hStation, hb, true_and]
+      split_ifs <;> push_cast <;> ring
     · have hZero (y : ZMod n) : weightedSymmetricUnitTerm w a (T (X b) (Y y)) = 0 := by
         unfold weightedSymmetricUnitTerm
         exact if_neg fun h => hb ((unit_shift_high_digit hd (X b) (Y y)).1 h)

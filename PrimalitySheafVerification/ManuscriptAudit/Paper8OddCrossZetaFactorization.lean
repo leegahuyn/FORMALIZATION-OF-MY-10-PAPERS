@@ -39,6 +39,7 @@ theorem crossRealKernel_factor (s : ℂ) {y c : ℝ} (hy : 0 < y) (hc : 0 < c) (
   unfold crossRealKernel crossModulusFactor crossRemainderKernel crossLeadingKernel
   try dsimp only
   rw [hH, Complex.ofReal_mul, Complex.mul_cpow_ofReal_nonneg (by positivity) (by positivity), hEx]
+  simp only [neg_mul]
   change _ = _ * (((starRingEnd ℂ) (normalizedNegativeRoot w) *
       ((y / (u ^ 2 + y ^ 2) : ℝ) : ℂ) ^ s * exponentialPhase (-b)) +
     ((starRingEnd ℂ) (normalizedNegativeRoot w) *

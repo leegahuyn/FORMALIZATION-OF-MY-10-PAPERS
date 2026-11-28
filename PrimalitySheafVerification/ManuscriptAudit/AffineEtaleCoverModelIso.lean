@@ -59,17 +59,22 @@ private theorem ringIso_cover (e : F ≃ₐ[B] B ⊗[T.carrier] E) :
     (left (baseLimit T) (fixedRing T E)).right ≫ (ringIso T E e).hom =
       CommRingCat.ofHom (algebraMap B F) := by
   let Z := tensorIso (R := CommRingCat.of T.carrier) B E
-  have h₀ := AffineStageTensorLegs.inl_tensorIso_hom (R := T.carrier) (S := B) (T := E)
+  have h₀ : (tensorCofan (R := CommRingCat.of T.carrier) B E).inl ≫ Z.hom =
+      (coprod.inl : CommRingCat.mkUnder (CommRingCat.of T.carrier) B ⟶ _) :=
+    AffineStageTensorLegs.inl_tensorIso_hom (R := T.carrier) (S := B) (T := E)
   have h₁ : (coprod.inl : CommRingCat.mkUnder (CommRingCat.of T.carrier) B ⟶ _) ≫ Z.inv =
       (tensorCofan (R := CommRingCat.of T.carrier) B E).inl := by
-    rw [← h₀, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+    calc
+      _ = ((tensorCofan (R := CommRingCat.of T.carrier) B E).inl ≫ Z.hom) ≫ Z.inv :=
+        congrArg (fun f ↦ f ≫ Z.inv) h₀.symm
+      _ = _ := by simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
   change (left (baseLimit T) (fixedRing T E)).right ≫
-      (Z.inv.right ≫ e.symm.toUnder.hom.right) = _
+      (Z.inv.right ≫ CommRingCat.ofHom e.symm.toRingHom) = _
   have h₂ : (left (baseLimit T) (fixedRing T E)).right ≫ Z.inv.right =
       (tensorCofan (R := CommRingCat.of T.carrier) B E).inl.right :=
     congrArg (Under.forget (CommRingCat.of T.carrier)).map h₁
   rw [← Category.assoc, h₂]
-  exact Under.w e.symm.toUnder.hom
+  exact Under.w ((AlgEquiv.toUnder (R := CommRingCat.of B) e.symm).hom)
 
 /-- The actual chart of the descended cover is isomorphic over A to
 the relative affine étale cover ring F. -/

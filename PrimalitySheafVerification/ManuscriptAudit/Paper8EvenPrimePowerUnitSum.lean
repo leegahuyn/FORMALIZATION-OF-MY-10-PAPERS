@@ -104,7 +104,7 @@ theorem norm_symmetricUnitSum_even_prime_power {p r : ℕ} (hPrime : p.Prime) (h
         unfold S
         simp_rw [hAt, ← Finset.mul_sum, sum_stdAddChar_high_digit]
         change _ = _
-        rw [show reduceHighDigit C = 0 ↔ x ^ 2 = 1 from hStation]
+        simp only [show reduceHighDigit C = 0 ↔ x ^ 2 = 1 from hStation]
       rw [hEval, norm_mul, norm_stdAddChar, one_mul]
       split_ifs <;> simp
     · have hxL : ¬ IsUnit (X x) := fun h => hx ((hL x).1 h)
@@ -118,7 +118,7 @@ theorem norm_symmetricUnitSum_even_prime_power {p r : ℕ} (hPrime : p.Prime) (h
   have hSum : symmetricUnitSum a = ∑ x : ZMod k, S x := by
     unfold symmetricUnitSum
     rw [sum_residue_digits, Finset.sum_comm]
-    simp only [S, X, Y, Nat.cast_add, Nat.cast_mul]
+    simp only [S, X, Y, k, Nat.cast_add, Nat.cast_mul]
   let R := Finset.univ.filter (fun x : ZMod k => x ^ 2 = 1)
   have hSub : R ⊆ ({1, -1} : Finset (ZMod k)) := by
     intro x hx

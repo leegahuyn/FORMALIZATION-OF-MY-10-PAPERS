@@ -111,7 +111,6 @@ theorem restrictLift_transition :
         ((R A S).obj I).obj.map (secondProjection S (Cover A B S)).op (restrictLift A B S y) :=
     transition_image S (Cover A B S) (i' A S i)
       (restrictGlobal A S i x) (restrictLift A B S y) (restrictLift_spec A B S i x y hy)
-  rw [hTransition, ← hUnits]
   have hm := restrictSection_sheafMap (j A S) i q
   have ht := congrArg (fun f => f.hom v) hm
   simp only [ConcreteCategory.comp_apply] at ht
@@ -126,15 +125,15 @@ theorem restrictLift_transition :
       simp [restrictedInjection]
     exact congrArg (fun f : (R A S).obj (G A) ⟶ (R A S).obj I =>
       f.hom.app (op D) ((restrictSection (j A S) (G A) q).hom v)) h
-  rw [hv, ← ht]
   have hDiff := restrictSection_difference (j A S) I (coverMap A B S) q
     (firstProjection S (Cover A B S)) (secondProjection S (Cover A B S))
     (firstProjection A B) (secondProjection A B) (firstSquare A B S) (secondSquare A B S) y
   have hImage : i.hom.app (op W) v =
       I.obj.map (firstProjection A B).op y - I.obj.map (secondProjection A B).op y :=
     transition_image A B i x y hy
-  rw [hImage]
-  exact hDiff.symm
+  have hSource := congrArg (fun z => (restrictSection (j A S) I q).hom z) hImage
+  have hTarget := congrArg (fun z => (i' A S i).hom.app (op D) z) hUnits
+  exact hTransition.trans ((hSource.trans hDiff).symm.trans (ht.trans (hv.symm.trans hTarget)))
 
 end
 

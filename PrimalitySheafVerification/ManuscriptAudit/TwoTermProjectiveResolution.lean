@@ -63,7 +63,14 @@ private def augmentation (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0) :
 
 private theorem augmentation_f_zero (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0) :
     (augmentation f q w).f 0 = q :=
-  ChainComplex.toSingle₀Equiv_symm_apply_f_zero q _
+  ChainComplex.toSingle₀Equiv_symm_apply_f_zero (C := complex f) (X := X) q _
+
+private theorem exactOfArrowEq {d f : A ⟶ B} {p q : B ⟶ X}
+    {z : d ≫ p = 0} {w : f ≫ q = 0} (hd : d = f) (hp : p = q)
+    (h : (ShortComplex.mk f q w).Exact) : (ShortComplex.mk d p z).Exact := by
+  subst d
+  subst p
+  exact h
 
 /-- The literal two-term complex resolves the actual degree-zero quotient. -/
 def resolution (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0)
@@ -85,8 +92,10 @@ def resolution (f : A ⟶ B) (q : B ⟶ X) (w : f ≫ q = 0)
         rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
         · change (ShortComplex.mk ((complex f).d 1 0) ((augmentation f q w).f 0) _).Exact ∧
             Epi ((augmentation f q w).f 0)
-          rw [augmentation_f_zero, d_one_zero]
-          exact ⟨h, inferInstance⟩
+          constructor
+          · exact exactOfArrowEq (d_one_zero f) (augmentation_f_zero f q w) h
+          · rw [augmentation_f_zero]
+            infer_instance
         all_goals rfl
     | succ n =>
         rw [quasiIsoAt_iff_exactAt']

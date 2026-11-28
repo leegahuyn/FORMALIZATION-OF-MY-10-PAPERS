@@ -125,8 +125,7 @@ theorem restrict_injective (hApprox : FiniteTupleApproximation A B)
     rw [restrict_restrict, restrict_restrict, algMap_comp, algMap_comp, hp, hq] at hh
     change I.obj.map (algMap e).op (I.obj.map (algMap l).op s) =
       I.obj.map (algMap e).op (I.obj.map (algMap l).op z)
-    rw [restrict_restrict, restrict_restrict, algMap_comp, algMap_comp]
-    exact hh
+    simpa only [restrict_restrict, algMap_comp] using hh
   exact hs.symm.trans ((repr_natural I m s).symm.trans
     ((congrArg (repr I R) hMatch).trans ((repr_natural I m z).trans hz)))
 

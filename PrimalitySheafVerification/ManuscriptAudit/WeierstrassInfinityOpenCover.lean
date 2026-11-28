@@ -2,6 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.AlgebraicGeometry.Restrict
 import PrimalitySheafVerification.ManuscriptAudit.WeierstrassInfinityPuncture
 import PrimalitySheafVerification.ManuscriptAudit.EtaleMayerVietoris
+import PrimalitySheafVerification.ManuscriptAudit.EtaleOpenIntersection
 
 /-! The true projective Weierstrass closure is covered by the original affine
 chart and the principal Cartier neighborhood. Their pullback is the actual
@@ -79,8 +80,10 @@ theorem cover :
       rwa [hq] at hp
     letI : IsOpenImmersion (neighborhoodToChart W) := IsOpenImmersion.of_isLocalization (bracket W)
     have hN : q ∈ (neighborhoodToChart W).opensRange := by
-      unfold neighborhoodToChart
-      rw [Scheme.Hom.opensRange_localizationAway]
+      have hRange :
+          (neighborhoodToChart W).opensRange = PrimeSpectrum.basicOpen (bracket W) :=
+        Scheme.Hom.opensRange_localizationAway (R := CommRingCat.of (Ring W)) (bracket W)
+      rw [hRange]
       exact bracket_nonmem_of_z_mem W q₀ hz
     obtain ⟨u, hu⟩ := hN
     refine ⟨u, ?_⟩
@@ -103,8 +106,7 @@ def overlapIso :
 
 theorem overlapIso_fac :
     (overlapIso W).hom ≫ punctureToNeighborhood W = pullback.fst (neighborhoodOpen W) (affineOpen W) := by
-  unfold overlapIso
-  simp
+  exact IsOpenImmersion.isoOfRangeEq_hom_fac _ _ (overlap_range W)
 
 /-- Native exact étale cohomology sequence of this actual projective cover. -/
 theorem native_mayerVietoris_exact

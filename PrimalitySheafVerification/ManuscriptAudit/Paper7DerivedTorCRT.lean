@@ -6,6 +6,8 @@ import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import PrimalitySheafVerification.ManuscriptAudit.NativeLeftDerivedAdditive
 
 /-! The native derived Tor functor sends the actual finite CRT splitting
 to the corresponding direct sum, in every homological degree. -/
@@ -18,7 +20,10 @@ open scoped BigOperators
 noncomputable section
 universe u
 
-variable {R : Type u} [CommRing R] {J : Type u} [Fintype J]
+variable {R : Type u} [CommRing R] {J : Type} [Fintype J]
+local instance : HasFiniteBiproducts (ModuleCat.{u} R) :=
+  HasFiniteBiproducts.of_hasFiniteProducts
+
 variable (I : J → Ideal R) (hI : Pairwise (IsCoprime on I))
 
 /-- The actual CRT isomorphism is linear for the original ring action. -/
@@ -45,7 +50,7 @@ def torCRTIso (n : ℕ) (A : ModuleCat.{u} R) :
   let F := (Tor (ModuleCat.{u} R) n).obj A
   letI : F.Additive := by
     change (((MonoidalCategory.tensoringLeft (ModuleCat.{u} R)).obj A).leftDerived n).Additive
-    infer_instance
+    exact NativeLeftDerivedAdditive.additive _ n
   exact F.mapIso (quotientIsoProduct I hI) ≪≫
     PreservesProduct.iso F (component I) ≪≫ (biproduct.isoProduct (fun j ↦ F.obj (component I j))).symm
 

@@ -82,10 +82,12 @@ def affineToPuncture : W.CoordinateRing →ₐ[K] P W :=
   AdjoinRoot.liftAlgHom W.polynomial (Polynomial.aeval (xAffine W)) (yAffine W) (evaluation_puncture W)
 
 theorem affineToPuncture_x : affineToPuncture W (affineX W) = xAffine W :=
-  (AdjoinRoot.liftAlgHom_of W.polynomial _ _ (evaluation_puncture W) X).trans (Polynomial.aeval_X _)
+  (AdjoinRoot.liftAlgHom_of W.polynomial (Polynomial.aeval (R := K) (xAffine W))
+    (yAffine W) (evaluation_puncture W) X).trans (Polynomial.aeval_X _)
 
 theorem affineToPuncture_y : affineToPuncture W (affineY W) = yAffine W :=
-  AdjoinRoot.liftAlgHom_root _ _ _ (evaluation_puncture W)
+  AdjoinRoot.liftAlgHom_root W.polynomial (Polynomial.aeval (R := K) (xAffine W))
+    (yAffine W) (evaluation_puncture W)
 
 end
 

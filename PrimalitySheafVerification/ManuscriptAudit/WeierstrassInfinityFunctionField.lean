@@ -39,8 +39,12 @@ private theorem localizationFieldEquiv_symm_apply {R S F : Type*} [CommRing R] [
   letI : IsScalarTower R S F :=
     IsLocalization.localization_isScalarTower_of_submonoid_le S F M (nonZeroDivisors R) h
   letI : IsFractionRing S F := IsFractionRing.isFractionRing_of_isLocalization M S F h
-  change FractionRing.algEquiv S F (algebraMap S (FractionRing S) x) = algebraMap S F x
-  exact (FractionRing.algEquiv S F).commutes x
+  let e := localizationFieldEquiv (S := S) (F := F) M h
+  change e.symm (algebraMap S (FractionRing S) x) = localizationFieldLift (F := F) M h x
+  apply e.injective
+  rw [RingEquiv.apply_symm_apply]
+  change algebraMap S (FractionRing S) x = (FractionRing.algEquiv S F).symm (algebraMap S F x)
+  exact ((FractionRing.algEquiv S F).symm.commutes x).symm
 
 private theorem localizationFieldEquiv_base {R S F : Type*} [CommRing R] [CommRing S]
     [Field F] [Algebra R S] [Algebra R F] [IsFractionRing R F] (M : Submonoid R)
@@ -99,12 +103,22 @@ def functionFieldEquiv : W.FunctionField ≃+* FractionRing (Neighborhood W) :=
     ((overlapFractionEquiv W).symm.trans
       ((infinityOverlapFractionEquiv W).symm.trans (infinityNeighborhoodFractionEquiv W)))
 
+/-- The genuine restriction from the common affine overlap to the native
+Weierstrass function field. -/
+def affineOverlapToFunctionField : ZOverlap W →+* W.FunctionField :=
+  localizationFieldLift (Submonoid.powers (affineY W))
+    (powers_le_nonZeroDivisors_of_noZeroDivisors (affineY_ne_zero W))
+
+theorem affineOverlapToFunctionField_base (x : W.CoordinateRing) :
+    affineOverlapToFunctionField W (algebraMap W.CoordinateRing (ZOverlap W) x) =
+      algebraMap W.CoordinateRing W.FunctionField x := by
+  unfold affineOverlapToFunctionField localizationFieldLift
+  exact IsLocalization.lift_eq _ x
+
 /-- Restriction of a regular function from the projective Y-chart to the
 generic point, expressed in the native Weierstrass function field. -/
 def yChartToFunctionField : C W →+* W.FunctionField :=
-  (localizationFieldLift (Submonoid.powers (affineY W))
-    (powers_le_nonZeroDivisors_of_noZeroDivisors (affineY_ne_zero W))).comp
-      (toZChart W).toRingHom
+  (affineOverlapToFunctionField W).comp (toZChart W).toRingHom
 
 theorem functionFieldEquiv_yChart (x : C W) :
     functionFieldEquiv W (yChartToFunctionField W x) =
@@ -145,7 +159,8 @@ end ManuscriptAudit.WeierstrassInfinityFunctionField
 open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  for name in [``ManuscriptAudit.WeierstrassInfinityFunctionField.functionFieldEquiv,
+  for name in [``ManuscriptAudit.WeierstrassInfinityFunctionField.affineOverlapToFunctionField_base,
+      ``ManuscriptAudit.WeierstrassInfinityFunctionField.functionFieldEquiv,
       ``ManuscriptAudit.WeierstrassInfinityFunctionField.functionFieldEquiv_yChart] do
     let ax ← collectAxioms name
     let bad := ax.filter fun n => !allowed.contains n

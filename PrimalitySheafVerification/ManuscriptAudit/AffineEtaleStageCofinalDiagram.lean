@@ -24,6 +24,7 @@ variable {A : Type u} [CommRing A]
   {D : J ⥤ Under (CommRingCat.of A)} (c : Cocone D)
 
 private abbrev B := c.pt
+local instance chartAlgebra : Algebra A (B c).right := (B c).hom.hom.toAlgebra
 private abbrev U (R : Type u) [CommRing R] [Algebra A R] :=
   CommRingCat.mkUnder (CommRingCat.of A) R
 

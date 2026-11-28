@@ -66,22 +66,35 @@ theorem pointMap_default (p : HeightOneSpectrum A) :
       rw [hx, ← RingHom.ker_eq_comap_bot]
       exact point_ker K A p
 
-private abbrev comparison := Scheme.AffineEtale.sheafEquiv (X A) AddCommGrpCat.{0}
+end
+
+noncomputable section
+
+private abbrev comparison (A : Type) [CommRing A] :=
+  Scheme.AffineEtale.sheafEquiv (X A) AddCommGrpCat.{0}
 
 /-- The integer skyscraper sheaf at the actual geometric point. -/
-abbrev skyscraper (p : HeightOneSpectrum A) : Sheaf (X A).smallEtaleTopology AddCommGrpCat.{0} :=
+abbrev skyscraper (K A : Type) [Field K] [IsAlgClosed K] [CommRing A] [IsDedekindDomain A]
+    [Algebra K A] [Algebra.FiniteType K A] (p : HeightOneSpectrum A) :
+    Sheaf (X A).smallEtaleTopology AddCommGrpCat.{0} :=
   (Scheme.pointSmallEtale (pointMap K A p)).skyscraperSheaf (AddCommGrpCat.of ℤ)
 
 /-- The native divisor sheaf on the literal affine étale basis. -/
-def affineDivisorSheaf : Sheaf (Scheme.AffineEtale.topology (X A)) AddCommGrpCat.{0} :=
+def affineDivisorSheaf (K A : Type) [Field K] [IsAlgClosed K] [CommRing A] [IsDedekindDomain A]
+    [Algebra K A] [Algebra.FiniteType K A] :
+    Sheaf (Scheme.AffineEtale.topology (X A)) AddCommGrpCat.{0} :=
   FiniteSupportPresheaf.affineEtaleDirectSum (X A)
     (fun p : HeightOneSpectrum A => (comparison A).inverse.obj (skyscraper K A p))
 
 /-- The same actual divisor sheaf on the full small étale site. -/
-def divisorSheaf : Sheaf (X A).smallEtaleTopology AddCommGrpCat.{0} :=
+def divisorSheaf (K A : Type) [Field K] [IsAlgClosed K] [CommRing A] [IsDedekindDomain A]
+    [Algebra K A] [Algebra.FiniteType K A] :
+    Sheaf (X A).smallEtaleTopology AddCommGrpCat.{0} :=
   (comparison A).functor.obj (affineDivisorSheaf K A)
 
-def restrictionIso : (comparison A).inverse.obj (divisorSheaf K A) ≅ affineDivisorSheaf K A :=
+def restrictionIso (K A : Type) [Field K] [IsAlgClosed K] [CommRing A] [IsDedekindDomain A]
+    [Algebra K A] [Algebra.FiniteType K A] :
+    (comparison A).inverse.obj (divisorSheaf K A) ≅ affineDivisorSheaf K A :=
   ((comparison A).unitIso.app (affineDivisorSheaf K A)).symm
 
 end

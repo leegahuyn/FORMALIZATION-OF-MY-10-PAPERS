@@ -41,8 +41,11 @@ variable {J : Type*} [Category* J] [IsFiltered J] [EssentiallySmall.{u} J]
   (hR : ∀ j, WeaklyEtale (Spec.map (F.obj j).right.hom))
   [WeaklyEtale (Spec.map c.pt.left.hom)] [WeaklyEtale (Spec.map c.pt.right.hom)]
 
-local instance (j : J) : WeaklyEtale (Spec.map (F.obj j).left.hom) := hL j
-local instance (j : J) : WeaklyEtale (Spec.map (F.obj j).right.hom) := hR j
+private abbrev stageNerve (j : J) (n : ℕ) :=
+  @nerve _ _ (F.obj j) (hL j) (hR j) n
+
+private abbrev stageArrow (j : J) :=
+  @nativeArrow _ _ (F.obj j) (hL j) (hR j)
 
 private abbrev model (n : ℕ) := (AffineCechConerveFilteredColimit.degree n).mapCocone c
 
@@ -53,13 +56,15 @@ private abbrev actualCocone :=
 set_option maxHeartbeats 6000000 in
 private theorem exists_affine_representative (hc : IsColimit c) (n : ℕ)
     (z : (nativePresheaf I).obj (op (nerve c.pt n))) :
-    ∃ (i : J) (y : (nativePresheaf I).obj (op (nerve (F.obj i) n))),
+    ∃ (i : J) (y : (nativePresheaf I).obj (op (stageNerve hL hR i n))),
       ((actualCocone I c hL hR).ι.app i).f n y = z := by
   obtain ⟨x, hx⟩ := (comparison_bijective I c.pt hComp n).surjective z
   let d := model c n
   obtain ⟨i, y, hy⟩ := NativeAffineUnderRingRawSections.exists_section I
-    (fun i ↦ inferInstanceAs (WeaklyEtale (Spec.map (AffineCechConerveSpecLimit.degree (F.obj i) n).hom)))
+    (fun i ↦ AffineCechConerveSiteComparison.property_degree @WeaklyEtale (F.obj i) (hL i) (hR i) n)
     d (AffineCechConerveFilteredColimit.isColimit_degree hc n) x
+  letI : WeaklyEtale (Spec.map (F.obj i).left.hom) := hL i
+  letI : WeaklyEtale (Spec.map (F.obj i).right.hom) := hR i
   refine ⟨i, comparison I (F.obj i) n y, ?_⟩
   have h := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
     (comparison_natural I (c.ι.app i) n)) y
@@ -69,11 +74,13 @@ private theorem exists_affine_representative (hc : IsColimit c) (n : ℕ)
 
 set_option maxHeartbeats 6000000 in
 private theorem detects_affine_zero (hc : IsColimit c) (n : ℕ) (i : J)
-    (z : (nativePresheaf I).obj (op (nerve (F.obj i) n)))
+    (z : (nativePresheaf I).obj (op (stageNerve hL hR i n)))
     (hz : ((actualCocone I c hL hR).ι.app i).f n z = 0) :
     ∃ (j : J) (ij : i ⟶ j), ((actualCocone I c hL hR).ι.app  i).f n z = 0 ∧
       ((AffineCechSiteArrowDiagram.diagram @WeaklyEtale F hL hR ⋙
         NativeCechArrowFunctor.cochains (nativePresheaf I)).map ij).f n z = 0 := by
+  letI : WeaklyEtale (Spec.map (F.obj i).left.hom) := hL i
+  letI : WeaklyEtale (Spec.map (F.obj i).right.hom) := hR i
   obtain ⟨x, hx⟩ := (comparison_bijective I (F.obj i) hComp n).surjective z
   let d := model c n
   have h := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
@@ -87,8 +94,10 @@ private theorem detects_affine_zero (hc : IsColimit c) (n : ℕ) (i : J)
     rw [map_zero]
     exact h.symm
   obtain ⟨j, ij, hEq⟩ := NativeAffineUnderRingRawEqualities.exists_equal_stage I
-    (fun i ↦ inferInstanceAs (WeaklyEtale (Spec.map (AffineCechConerveSpecLimit.degree (F.obj i) n).hom)))
+    (fun i ↦ AffineCechConerveSiteComparison.property_degree @WeaklyEtale (F.obj i) (hL i) (hR i) n)
     (AffineCechConerveFilteredColimit.isColimit_degree hc n) i x 0 h₀
+  letI : WeaklyEtale (Spec.map (F.obj j).left.hom) := hL j
+  letI : WeaklyEtale (Spec.map (F.obj j).right.hom) := hR j
   refine ⟨j, ij, hz, ?_⟩
   have h' := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom
     (comparison_natural I (F.map ij) n)) x
@@ -104,7 +113,7 @@ set_option maxHeartbeats 3900000 in
 /-- The actual native tensor nerve is exact at the desired positive
 degree if its actual filtered affine stage nerves are exact there. -/
 theorem exactAt_succ (hc : IsColimit c) (n : ℕ)
-    (hStage : ∀ j, (Cech (nativeArrow (F.obj j)) (nativePresheaf I)).ExactAt (n + 1)) :
+    (hStage : ∀ j, (Cech (stageArrow hL hR j) (nativePresheaf I)).ExactAt (n + 1)) :
     (Cech (nativeArrow c.pt) (nativePresheaf I)).ExactAt (n + 1) := by
   apply NativeCechExactnessByAffineStages.exactAt_succ (actualCocone I c hL hR) n
   · exact exists_affine_representative I hComp c hL hR hc (n + 1)

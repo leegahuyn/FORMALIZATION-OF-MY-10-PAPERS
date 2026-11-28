@@ -44,9 +44,8 @@ private def specDiagramIso : (DR f n).rightOp ⋙ Scheme.Spec ≅ DS f n :=
   NatIso.ofComponents (fun i ↦ by cases i <;> exact Iso.refl _) (by
     intro i j g
     cases g with
-    | id k =>
-      change Spec.map (𝟙 _) ≫ 𝟙 _ = 𝟙 _ ≫ 𝟙 _
-      simp
+    | id =>
+      cases i <;> simp [DR, DS, WidePushoutShape.wideSpan, WidePullbackShape.wideCospan, Spec.map_id]
     | term k =>
       change Spec.map f.hom.right ≫ 𝟙 _ = 𝟙 _ ≫ Spec.map f.hom.right
       simp)

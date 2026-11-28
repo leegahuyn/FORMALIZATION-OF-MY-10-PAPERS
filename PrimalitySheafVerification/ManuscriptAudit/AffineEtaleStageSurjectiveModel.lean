@@ -29,16 +29,19 @@ private theorem surjective_pullback_fst_iff {P X Y S : Scheme.{u}}
     {a : P ⟶ X} {b : P ⟶ Y} {f : X ⟶ S} {g : Y ⟶ S}
     (h : IsPullback a b f g) :
     Function.Surjective (pullback.fst f g) ↔ Function.Surjective a := by
-  have he : h.isoPullback.hom ≫ pullback.fst f g = a := h.isoPullback_hom_fst
-  have hi : h.isoPullback.inv ≫ a = pullback.fst f g := by
-    rw [← he, h.isoPullback.inv_hom_id_assoc]
+  let e := h.isoPullback
+  have he : e.hom ≫ pullback.fst f g = a := h.isoPullback_hom_fst
+  have hi : e.inv ≫ a = pullback.fst f g := calc
+    _ = e.inv ≫ e.hom ≫ pullback.fst f g :=
+      congrArg (fun m : P ⟶ X ↦ e.inv ≫ m) he.symm
+    _ = _ := e.inv_hom_id_assoc _
   constructor
   · intro hs x
     obtain ⟨y, hy⟩ := hs x
-    exact ⟨h.isoPullback.inv y, by simpa only [← Scheme.Hom.comp_apply, hi] using hy⟩
+    exact ⟨e.inv y, by simpa only [← Scheme.Hom.comp_apply, hi] using hy⟩
   · intro hs x
     obtain ⟨y, hy⟩ := hs x
-    exact ⟨h.isoPullback.hom y, by simpa only [← Scheme.Hom.comp_apply, he] using hy⟩
+    exact ⟨e.hom y, by simpa only [← Scheme.Hom.comp_apply, he] using hy⟩
 
 variable (T : Stage A B)
   (E : Type u) [CommRing E] [Algebra T.carrier E] [Algebra.Etale T.carrier E]

@@ -66,10 +66,16 @@ theorem sectionEquiv_nested (x : F.obj.obj (op (Scheme.Etale.mk j))) :
   let f := nestedObjectArrow i j
   change F.obj.map a.op (F.obj.map b.op (F.obj.map c.op (F.obj.map d.op x))) =
     F.obj.map e.op (F.obj.map f.op x)
-  rw [sections_comp F c d, sections_comp F b (c ≫ d),
-    sections_comp F a (b ≫ c ≫ d), sections_comp F e f]
-  exact congrArg (fun g : (etalePostcompose (i ≫ j)).obj (terminal V) ⟶
-    Scheme.Etale.mk j => F.obj.map g.op x) (actual_arrows_compose i j)
+  calc
+    _ = F.obj.map a.op (F.obj.map b.op (F.obj.map (c ≫ d).op x)) :=
+      congrArg (fun y => F.obj.map a.op (F.obj.map b.op y)) (sections_comp F c d x)
+    _ = F.obj.map a.op (F.obj.map (b ≫ c ≫ d).op x) :=
+      congrArg (fun y => F.obj.map a.op y) (sections_comp F b (c ≫ d) x)
+    _ = F.obj.map (a ≫ b ≫ c ≫ d).op x := sections_comp F a (b ≫ c ≫ d) x
+    _ = F.obj.map (e ≫ f).op x :=
+      congrArg (fun g : (etalePostcompose (i ≫ j)).obj (terminal V) ⟶
+        Scheme.Etale.mk j => F.obj.map g.op x) (actual_arrows_compose i j)
+    _ = _ := (sections_comp F e f x).symm
 
 end
 

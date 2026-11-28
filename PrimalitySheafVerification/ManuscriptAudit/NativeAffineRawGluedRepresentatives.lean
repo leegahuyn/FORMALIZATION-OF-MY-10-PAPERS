@@ -39,7 +39,10 @@ abbrev stageOf {C : Type u} [CommRing C] [Algebra A C]
     (HasRingHomProperty.Spec_iff (P := @Etale) (φ := M.hom)).mp
       (inferInstanceAs (Etale (Spec.map M.hom)))
   letI : Algebra.Etale A M.right := (RingHom.etale_algebraMap).mp h
-  exact Stage.of A C (CommRingCat.toAlgHom f)
+  exact Stage.of A C
+    { toRingHom := f.right.hom
+      commutes' := fun x ↦
+        congrArg (fun j : CommRingCat.of A ⟶ CommRingCat.of C ↦ j x) (Under.w f) }
 
 /-- The étale object of the stage is the literal spectrum over the base. -/
 theorem etaleObject_stageOf {C : Type u} [CommRing C] [Algebra A C]
@@ -101,12 +104,17 @@ theorem exists_raw_preimage (k : B →ₐ[A] D)
   let T₀ := stageOf T a
   let V₀ := stageOf V b
   let M₀ := stageOf M (v ≫ b)
-  let f₀ : stageAfterMap k T₀ ⟶ V₀ := ⟨CommRingCat.toAlgHom f, by
-    change (CommRingCat.toAlgHom b).comp (CommRingCat.toAlgHom f) =
-      k.comp (CommRingCat.toAlgHom a)
-    rw [← CommRingCat.toAlgHom_comp, h, CommRingCat.toAlgHom_comp]
+  let f₀ : stageAfterMap k T₀ ⟶ V₀ := ⟨
+    { toRingHom := f.right.hom
+      commutes' := fun z ↦ congrArg (fun j : R (A := A) ⟶ V.right ↦ j z) (Under.w f) },
+    by
+      apply AlgHom.ext
+      intro z
+      exact congrArg (fun j : T ⟶ U (A := A) D ↦ j.right z) h⟩
+  let v₀ : M₀ ⟶ V₀ := ⟨
+    { toRingHom := v.right.hom
+      commutes' := fun z ↦ congrArg (fun j : R (A := A) ⟶ V.right ↦ j z) (Under.w v) },
     rfl⟩
-  let v₀ : M₀ ⟶ V₀ := ⟨CommRingCat.toAlgHom v, rfl⟩
   refine ⟨incl I T₀ s, ?_⟩
   have ht := DFunLike.congr_fun (congrArg AddCommGrpCat.Hom.hom (rawSection_map I k T₀)) s
   calc

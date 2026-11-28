@@ -44,7 +44,7 @@ theorem native_residue_HTwo_subsingleton
   let M := AddCommGrpCat.of (ZMod (ℓ^r))
   let F := (constantSheaf (X K).smallEtaleTopology A).obj M
   letI : Subsingleton (Sheaf.H F 2) := AffineLineEtaleHTwo.cyclic_HTwo_subsingleton K (ℓ^r)
-  letI : Subsingleton (Sheaf.H ((liftedImage (X K)).obj F) 2) :=
+  have hSource : Subsingleton (Sheaf.H ((liftedImage (X K)).obj F) 2) :=
     (EtaleProetaleAffineLowHTwoFromCech.comparison_HTwo_surjective (X K) hZero hOne hTwo F).subsingleton
   let M' := (AddCommGrpCat.uliftFunctor.{1} : A ⥤ B).obj M
   let i := (inverseImage (X K)).mapIso ((EtaleCoefficientUniverseLift.constantIso (X K)).app M) ≪≫
@@ -54,7 +54,7 @@ theorem native_residue_HTwo_subsingleton
     apply Function.LeftInverse.injective (g := Sheaf.H.map i.hom 2)
     intro x
     rw [← Sheaf.H.map_comp_apply, i.inv_hom_id, Sheaf.H.map_id_apply]
-  exact ⟨fun a b ↦ hI (Subsingleton.elim _ _)⟩
+  exact ⟨fun a b ↦ hI (hSource.elim (Sheaf.H.map i.inv 2 a) (Sheaf.H.map i.inv 2 b))⟩
 
 end
 end ManuscriptAudit.AffineLineNativeResidueHTwoFromCech

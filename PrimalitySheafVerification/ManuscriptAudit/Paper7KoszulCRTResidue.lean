@@ -67,9 +67,12 @@ def after_homology_iso :
   have hG : K.g = 0 := by
     change ModuleCat.ofHom (reduction 5 • (LinearMap.id : S →ₗ[S] S)) = 0
     rw [reduction_parameter]
-    have hz : (0 : S) • (LinearMap.id : S →ₗ[S] S) = 0 := zero_smul _ _
-    rw [hz]
-    rfl
+    have hz : (0 : S) • (LinearMap.id : S →ₗ[S] S) = 0 := by
+      apply LinearMap.ext
+      intro x
+      change (0 : S) * x = 0
+      exact zero_mul x
+    rw [hz] <;> rfl
   exact (ShortComplex.HomologyData.ofZeros K rfl hG).left.homologyIso
 
 end

@@ -19,23 +19,23 @@ variable {S T U W : Scheme.{u}}
 variable (a : U ⟶ T) (i : S ⟶ T) (r : T ⟶ S)
 variable (w : W ⟶ pullback a i)
 
-private abbrev fiberToBase := pullback.snd a i
-private abbrev wToBase := w ≫ fiberToBase a i
+abbrev fiberToBase := pullback.snd a i
+abbrev wToBase := w ≫ fiberToBase a i
 
-private abbrev ambient := pullback (wToBase a i w) (a ≫ r)
-private abbrev fiberProduct := pullback (wToBase a i w) (fiberToBase a i)
+abbrev ambient := pullback (wToBase a i w) (a ≫ r)
+abbrev fiberProduct := pullback (wToBase a i w) (fiberToBase a i)
 
 private theorem fiber_agrees (hir : i ≫ r = 𝟙 S) :
     pullback.fst a i ≫ a ≫ r = fiberToBase a i := by
   rw [pullback.condition_assoc, hir, Category.comp_id]
 
-private def fiberInAmbient (hir : i ≫ r = 𝟙 S) :
+def fiberInAmbient (hir : i ≫ r = 𝟙 S) :
     fiberProduct a i w ⟶ ambient a i r w :=
   pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ pullback.fst a i) (by
     rw [Category.assoc, fiber_agrees a i r hir]
     exact pullback.condition)
 
-private theorem fiberInAmbient_isPullback (hir : i ≫ r = 𝟙 S) :
+theorem fiberInAmbient_isPullback (hir : i ≫ r = 𝟙 S) :
     IsPullback (fiberInAmbient a i r w hir) (pullback.snd _ _)
       (pullback.snd (wToBase a i w) (a ≫ r)) (pullback.fst a i) := by
   have h : IsPullback (fiberInAmbient a i r w hir ≫ pullback.fst _ _) (pullback.snd _ _)
@@ -46,7 +46,7 @@ private theorem fiberInAmbient_isPullback (hir : i ≫ r = 𝟙 S) :
   exact h.of_right (by simp only [fiberInAmbient, pullback.lift_snd])
     (IsPullback.of_hasPullback (wToBase a i w) (a ≫ r))
 
-private def graph : W ⟶ fiberProduct a i w :=
+def graph : W ⟶ fiberProduct a i w :=
   pullback.lift (𝟙 W) w (Category.id_comp _)
 
 private theorem graph_open [Etale a] : IsOpenImmersion (graph a i w) := by

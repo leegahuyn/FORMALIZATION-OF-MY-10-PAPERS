@@ -34,7 +34,7 @@ private def homSource (F : C Y) : ((L f).obj (Z X) ⟶ F) ≃+ (Z Y ⟶ F) where
   invFun a := (constantIso f).hom ≫ a
   left_inv _ := by simp only [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
   right_inv _ := by simp only [← Category.assoc, Iso.inv_hom_id, Category.id_comp]
-  map_add' _ _ := Preadditive.comp_add _ _ _
+  map_add' _ _ := by simp only [Preadditive.comp_add]
 
 /-- The degree-zero comparison is precisely the adjunction on the native
 constant integer object representing sections. -/

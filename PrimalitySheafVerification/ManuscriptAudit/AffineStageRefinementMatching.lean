@@ -1,4 +1,5 @@
 import Lean.Util.CollectAxioms
+import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import PrimalitySheafVerification.ManuscriptAudit.AffineStageFixedCoproductLimits
@@ -56,9 +57,9 @@ theorem exists_refinement (hc : IsColimit c) (E : Under R)
         w ≫ (coverCocone k c (E ⨿ E)).ι.app j = y ∧
         a ≫ w = v ≫ (Under.map k).map (L (F.obj j) E) ∧
         b ≫ w = v ≫ (Under.map k).map (H (F.obj j) E) := by
-  let l := whiskerRight (AffineStageFixedCoproductLimits.map F (coprod.inl : E ⟶ E ⨿ E))
+  let l := CategoryTheory.Functor.whiskerRight (AffineStageFixedCoproductLimits.map F (coprod.inl : E ⟶ E ⨿ E))
     (Under.map k)
-  let r := whiskerRight (AffineStageFixedCoproductLimits.map F (coprod.inr : E ⟶ E ⨿ E))
+  let r := CategoryTheory.Functor.whiskerRight (AffineStageFixedCoproductLimits.map F (coprod.inr : E ⟶ E ⨿ E))
     (Under.map k)
   have hl (j : J) : (coverCocone k c E).ι.app j ≫ (Under.map k).map (L c.pt E) =
       l.app j ≫ (coverCocone k c (E ⨿ E)).ι.app j := by

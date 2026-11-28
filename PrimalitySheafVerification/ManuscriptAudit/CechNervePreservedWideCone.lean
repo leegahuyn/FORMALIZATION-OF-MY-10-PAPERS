@@ -27,8 +27,8 @@ private def diagramIso : P f n ⋙ F ≅ Q F f n :=
   NatIso.ofComponents (fun i ↦ by cases i <;> exact Iso.refl _) (by
     intro i j g
     cases g with
-    | id k =>
-      cases k <;> simp [WidePullbackShape.wideCospan]
+    | id =>
+      cases i <;> simp [WidePullbackShape.wideCospan]
     | term k =>
       change F.map f ≫ 𝟙 _ = 𝟙 _ ≫ F.map f
       simp)

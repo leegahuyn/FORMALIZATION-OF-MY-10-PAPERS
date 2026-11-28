@@ -49,7 +49,7 @@ theorem phase_prime_baseline_mod_twentyFour {p h : ℕ} [Fact p.Prime] (hp : p �
     unfold z
     push_cast
     rw [phase_mod_eight_legendre hp hh hC, phase_mod_eight_legendre hp (by decide) h1C]
-    simp only [Int.cast_one, legendreSym.at_one]
+    try simp only [Nat.cast_one, Int.cast_one, legendreSym.at_one]
     have h8 : (8 : ZMod 8) = 0 := by decide
     calc
       _ = (8 : ZMod 8) * (((legendreSym p (h : ℤ) : ℤ) : ZMod 8) - 1) := by ring
@@ -78,7 +78,7 @@ private theorem expPhase_legendre_shift {p h : ℕ} [Fact p.Prime] (hC : h.Copri
   have hH : ((h : ℤ) : ZMod p) ≠ 0 := by
     push_cast
     exact (ZMod.unitOfCoprime h hC).ne_zero
-  rcases legendreSym.eq_one_or_neg_one hH with h | h
+  rcases legendreSym.eq_one_or_neg_one p hH with h | h
   · rw [h]
     norm_num [exponentialPhase]
   · rw [h]
@@ -86,7 +86,9 @@ private theorem expPhase_legendre_shift {p h : ℕ} [Fact p.Prime] (hC : h.Copri
       obtain ⟨m, hm⟩ := hv
       refine ⟨m, ?_⟩
       linear_combination 12 * hm
-    rw [expPhase_div_eq_of_dvd_sub (D := 24) (by decide) _ 12 h24]
+    have hExp := expPhase_div_eq_of_dvd_sub (D := 24) (by decide) _ 12 h24
+    norm_num only [Nat.cast_ofNat] at hExp
+    rw [hExp]
     unfold exponentialPhase
     push_cast
     rw [show 2 * (Real.pi : ℂ) * Complex.I * ((12 : ℂ) / 24) = (Real.pi : ℂ) * Complex.I by ring,
@@ -149,7 +151,9 @@ theorem dedekind_prime_salie_summand {p h : ℕ} [Fact p.Prime] (hp : p ≠ 2)
     ring
   have hSign := expPhase_legendre_shift hC v (inverse_two_odd hp huv)
   rw [hPhase, hSplit, expPhase_add, expPhase_div_eq_of_dvd_sub (D := p) hp0 _ _ hU]
-  rw [expPhase_div_eq_of_dvd_sub (D := 24) (by decide : 0 < 24) _ _ hV, hVsplit, expPhase_add, hSign]
+  have hExp := expPhase_div_eq_of_dvd_sub (D := 24) (by decide : 0 < 24) _ _ hV
+  norm_num only [Nat.cast_ofNat] at hExp
+  rw [hExp, hVsplit, expPhase_add, hSign]
 
 end
 end ManuscriptAudit.Paper8DedekindPrimeSaliePhase
