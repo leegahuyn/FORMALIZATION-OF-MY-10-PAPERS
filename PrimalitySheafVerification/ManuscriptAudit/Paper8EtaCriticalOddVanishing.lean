@@ -71,7 +71,7 @@ theorem partner_norm_cuspTranslate_sq (F : ℂ → ℂ) (g : SL(2, ℤ)) (z : �
   have hPos : 0 ≤ (g • z : ℍ).im ^ (-(1 / 4 : ℝ)) :=
     Real.rpow_nonneg (g • z : ℍ).im_pos.le _
   rw [norm_cuspTranslate, div_pow, Real.sq_sqrt hN.le]
-  simp only [partnerOnUpper, holomorphicPartner, norm_mul, Complex.norm_real,
+  simp only [partnerOnUpper, holomorphicPartner, UpperHalfPlane.coe_im, norm_mul, Complex.norm_real,
     Real.norm_eq_abs, abs_of_nonneg hPos, Complex.norm_conj, mul_pow, inverse_quarterHeight_sq]
   field_simp [hN.ne'] <;> ring
 
@@ -84,7 +84,9 @@ theorem partner_weightedEnergy_eq_maassStripEnergy (F : ℂ → ℂ) (g : SL(2, 
   have hNorm (x : ℝ) : ‖cuspTranslate (partnerOnUpper F) g (complexPoint x y)‖ ^ 2 = a * G x := by
     have hIm : 0 < (complexPoint x y).im := by simpa only [complexPoint_im] using hy
     have h := partner_norm_cuspTranslate_sq F g (⟨complexPoint x y, hIm⟩ : ℍ)
-    simpa only [a, G, ofComplex_apply_of_im_pos hIm, complexPoint_im] using h
+    have hY : (⟨complexPoint x y, hIm⟩ : ℍ).im = y := complexPoint_im x y
+    rw [hY] at h
+    simpa only [a, G, ofComplex_apply_of_im_pos hIm] using h
   have hInt :
       (∫ x : ℝ in (0 : ℝ)..width, ‖cuspTranslate (partnerOnUpper F) g (complexPoint x y)‖ ^ 2) =
         a * ∫ x : ℝ in (0 : ℝ)..width, G x := by
@@ -111,7 +113,7 @@ theorem odd_maass_raising_kernel_eq_zero {F : ℂ → ℂ} (hLaw : OddMaassLaw F
   have hPartnerMass (g : SL(2, ℤ)) :
       IntegrableOn (weightedEnergy (cuspTranslate (partnerOnUpper F) g) 4) (Ioi 1) :=
     (hMass g).congr_fun (fun y hy =>
-      (partner_weightedEnergy_eq_maassStripEnergy F g 4 (zero_lt_one.trans hy)).symm) measurableSet_Ioi
+      (partner_weightedEnergy_eq_maassStripEnergy F g 4 y (zero_lt_one.trans hy)).symm) measurableSet_Ioi
   have hVanishing := Paper8EtaInverseWeightedVanishing.gammaZero_eq_zero_of_weighted_LTwo
     (N := 4) (by decide) (by decide) (partner_inverseSquaredAutomorphy hLaw)
     (partnerOnUpper_holomorphic hF hKernel) hPartnerMass

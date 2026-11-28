@@ -8,7 +8,7 @@ import PrimalitySheafVerification.ManuscriptAudit.Paper8ModularHeightCutoff
 namespace ManuscriptAudit.Paper8MaassCutoffTaper
 
 open Set Filter UpperHalfPlane Paper8ModularHeightCutoff
-open scoped MatrixGroups Topology
+open scoped MatrixGroups Topology ContDiff
 
 noncomputable section
 

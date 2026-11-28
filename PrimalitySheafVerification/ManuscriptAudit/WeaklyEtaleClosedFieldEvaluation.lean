@@ -9,7 +9,7 @@ closed field has finitely many values on its actual affine spectrum. -/
 namespace ManuscriptAudit.WeaklyEtaleClosedFieldEvaluation
 
 open AlgebraicGeometry CategoryTheory Polynomial
-open ProetaleAffineTensor (spectrum structureMap)
+open ProetaleAffineTensor (structureMap)
 open WeaklyEtaleAlgebraicallyClosed (rationalSectionThrough)
 
 noncomputable section
@@ -22,7 +22,8 @@ universe u
 variable (K B : Type u) [Field K] [IsAlgClosed K] [CommRing B] [Algebra K B]
   [WeaklyEtale (structureMap K B)]
 
-private def atPoint (p : PrimeSpectrum B) : spectrum K ⟶ spectrum B :=
+private def atPoint (p : PrimeSpectrum B) :
+    ProetaleAffineTensor.spectrum K ⟶ ProetaleAffineTensor.spectrum B :=
   Classical.choose (rationalSectionThrough K (structureMap K B) p)
 
 private abbrev value (p : PrimeSpectrum B) : CommRingCat.of B ⟶ CommRingCat.of K :=

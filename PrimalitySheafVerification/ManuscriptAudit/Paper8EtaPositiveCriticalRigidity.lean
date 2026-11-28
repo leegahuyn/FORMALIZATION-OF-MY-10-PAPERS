@@ -100,7 +100,7 @@ theorem gammaZero_positive_lowering_eq_const_mul_eta {N : ℕ} (hN : 0 < N) (hN2
       (HolomorphicStripEnergy.weightedEnergy (Paper8EtaNormalizedCuspTranslate.cuspTranslate f g)
         (N : ℝ)) (Ioi 1) :=
     (maassStripEnergy_integrable_of_global_mass hCont.measurable hInv hMassG g N).congr_fun
-      (fun y hy => (partner_weightedEnergy_eq_maassStripEnergy G g (N : ℝ) (zero_lt_one.trans hy)).symm)
+      (fun y hy => (partner_weightedEnergy_eq_maassStripEnergy G g (N : ℝ) y (zero_lt_one.trans hy)).symm)
       measurableSet_Ioi
   obtain ⟨c, hc⟩ :=
     Paper8EtaWeightedCuspRigidity.gammaZero_eq_const_mul_eta_of_weighted_LTwo hN hN24 hHol hAgree hStrip

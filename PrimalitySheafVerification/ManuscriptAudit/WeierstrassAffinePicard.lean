@@ -34,7 +34,9 @@ private theorem integralClass_is_point (I : Ideal (R W)) (u : (FI W)ˣ)
   have wf : WellFounded ((· > ·) : Ideal (R W) → Ideal (R W) → Prop) :=
     (isNoetherian_iff (R := R W) (M := R W)).mp inferInstance
   revert u
-  refine wf.induction I ?_
+  refine wf.induction (C := fun J : Ideal (R W) =>
+    ∀ v : (FI W)ˣ, (v : FI W) = (J : FI W) →
+      ∃ P : W.Point, Point.toClass P = Additive.ofMul (ClassGroup.mk (F W) v)) I ?_
   clear I
   intro I ih u hu
   by_cases hI : I = ⊤

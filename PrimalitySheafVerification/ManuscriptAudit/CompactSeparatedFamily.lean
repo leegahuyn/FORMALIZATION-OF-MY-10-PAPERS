@@ -14,7 +14,7 @@ theorem finite_index (f : I → E) (K : Set E) (hK : IsCompact K)
     (hmem : ∀ i, f i ∈ K) (r : ℝ) (hr : 0 < r)
     (hsep : ∀ i j, i ≠ j → r ≤ dist (f i) (f j)) : Finite I := by
   classical
-  obtain ⟨t, _, ht, hcover⟩ := Metric.finite_cover_balls_of_compact hK
+  obtain ⟨t, _, ht, hcover⟩ := finite_cover_balls_of_compact hK
     (show 0 < r / 2 by positivity)
   have hex (i : I) : ∃ y : t, dist (f i) y < r / 2 := by
     have hi := hcover (hmem i)

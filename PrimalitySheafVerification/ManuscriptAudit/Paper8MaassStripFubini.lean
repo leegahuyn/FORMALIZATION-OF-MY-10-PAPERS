@@ -7,10 +7,10 @@ import PrimalitySheafVerification.ManuscriptAudit.MaassLaplacian
 
 namespace ManuscriptAudit.Paper8MaassStripFubini
 
-open Set Function MeasureTheory UpperHalfPlane
+open Set Filter Function MeasureTheory UpperHalfPlane
 open MaassLaplacian Paper8MaassStripCover
 open Paper8EtaCosetMass (cosetCells)
-open scoped MatrixGroups ENNReal
+open scoped MatrixGroups ENNReal NNReal
 
 noncomputable section
 
@@ -76,7 +76,8 @@ private def coordinateUpper (p : ℝ × ℝ) : ℍ :=
   ⟨complexPoint p.1 (max p.2 1), by rw [complexPoint_im]; exact zero_lt_one.trans_le (le_max_right _ _)⟩
 
 private theorem continuous_coordinateUpper : Continuous coordinateUpper := by
-  refine Continuous.subtype_mk ?_ _
+  apply UpperHalfPlane.isEmbedding_coe.continuous_iff.mpr
+  change Continuous (fun p : ℝ × ℝ => complexPoint p.1 (max p.2 1))
   unfold complexPoint
   fun_prop
 
@@ -105,8 +106,9 @@ theorem stripEnergy_integrable_of_global_mass {H : Subgroup SL(2, ℤ)} {F : ℂ
     unfold D normSquareDensity
     exact ENNReal.measurable_ofReal.comp ((hF.comp hS).norm.pow_const 2)
   have hHigh : (∫⁻ z in highStrip (w : ℝ), D z) < ⊤ :=
-    cusp_mass_lt_top H (normSquareDensity F) (fun h hh z => by simp [normSquareDensity, hInv h hh z])
-      hMass g w
+    cusp_mass_lt_top H (normSquareDensity F) (fun h hh z => by
+        unfold normSquareDensity
+        rw [hInv h hh z]) hMass g w
   let K (p : ℝ × ℝ) := ‖F (g • coordinateUpper p : ℍ)‖ ^ 2 / p.2 ^ 2
   have hK : Measurable K := by
     have hS : Measurable (fun z : ℍ => g • z) := measurable_const_smul (g : GL (Fin 2) ℝ)
@@ -139,6 +141,8 @@ theorem stripEnergy_integrable_of_global_mass {H : Subgroup SL(2, ℤ)} {F : ℂ
       rw [hW, hUpper, div_eq_inv_mul, ENNReal.ofReal_mul (inv_nonneg.mpr (sq_nonneg _))]
     exact (heq.trans hPull).trans_lt hHigh
   have hFinite : (∫⁻ p, ENNReal.ofReal (K p) ∂μ.prod ν) < ⊤ := by
+    change (∫⁻ p in stripCoordinates (w : ℝ), ENNReal.ofReal (K p)
+      ∂((volume : Measure ℝ).prod volume)) < ⊤ at hFin
     simpa only [μ, ν, Measure.prod_restrict, stripCoordinates] using hFin
   have hInt : Integrable K (μ.prod ν) := by
     refine ⟨hK.aestronglyMeasurable, (hasFiniteIntegral_iff_ofReal ?_).mpr hFinite⟩

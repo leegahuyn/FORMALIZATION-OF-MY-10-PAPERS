@@ -61,7 +61,7 @@ theorem exists_refinement {Y : Scheme.{0}} [IsAffine Y] (U : ℕ → Scheme.{0})
     letI := hW n
     letI := hS n
     exact RingHom.faithfullyFlat_algebraMap_iff.mp
-      ((Flat.flat_and_surjective_SpecMap_iff (f n).appTop).mp
+      ((AlgebraicGeometry.flat_and_surjective_SpecMap_iff (f n).appTop).mp
         ⟨(specMap_appTop_weaklyEtale (f n)).flat, specMap_appTop_surjective (f n)⟩)
   let c := AffineEtaleCommonCountableCover.coverMap B
   letI : WeaklyEtale c := AffineWeaklyEtaleCommonCountableCover.cover_weaklyEtale B hFaithful hWeak

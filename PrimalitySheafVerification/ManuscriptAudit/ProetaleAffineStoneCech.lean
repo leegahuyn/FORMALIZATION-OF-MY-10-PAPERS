@@ -68,6 +68,7 @@ private theorem actual_cocycle (b : C(↥(D p), M))
     _ = b (d₁₂ p w) - b (d₀₂ p w) + b (d₀₁ p w) := by abel
     _ = 0 := hb w
 
+include c in
 variable [DiscreteTopology M] [Finite M] in
 set_option maxHeartbeats 1800000 in
 /-- The primitive restricts through the two actual scheme projections. -/
@@ -93,6 +94,7 @@ theorem exists_primitive (b : C(↥(D p), M))
   rw [← homeomorph_apply c p z] at h
   exact h.trans (congrArg b (e.symm_apply_apply z))
 
+include c in
 set_option maxHeartbeats 1800000 in
 /-- Integral adic cocycles on the actual affine overlap are coboundaries when
 the cover is surjective. -/

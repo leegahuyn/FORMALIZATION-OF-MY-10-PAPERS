@@ -8,7 +8,7 @@ namespace ManuscriptAudit.Paper8ModularHeightCutoff
 
 open Set Filter Function UpperHalfPlane
 open Paper8ActualEtaSquaredModularity
-open scoped MatrixGroups Manifold Topology
+open scoped MatrixGroups Manifold Topology ContDiff
 
 noncomputable section
 

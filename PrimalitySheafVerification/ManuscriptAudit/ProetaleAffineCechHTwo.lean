@@ -2,7 +2,7 @@ import Lean.Util.CollectAxioms
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
-import PrimalitySheafVerification.ManuscriptAudit.NativeCechNerve
+import PrimalitySheafVerification.ManuscriptAudit.InjectiveTerminalCech
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAffineCechTerms
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleAffineSingletonLift
 import PrimalitySheafVerification.ManuscriptAudit.SheafCohomologyPositiveShift
@@ -59,12 +59,11 @@ private theorem presentation_shortExact : (ShortComplex.cokernelSequence m).Shor
 set_option maxHeartbeats 2500000 in
 /-- The actual quotient of a mono with degree-one and degree-two affine
 Čech exactness has degree-one exactness when the middle sheaf does. -/
-theorem quotient_affineExactAt_one (hF₁ : AffineExactAt X F 1)
-    (hF₂ : AffineExactAt X F 2) (hI₁ : AffineExactAt X I 1) :
-    AffineExactAt X (cokernel m) 1 := by
-  intro U T f haU haT hf
-  letI : IsAffine U.left := haU
-  letI : IsAffine T.left := haT
+theorem quotient_exactAt_one (hF₁ : AffineExactAt X F 1)
+    (hF₂ : AffineExactAt X F 2)
+    {U T : X.ProEt} (f : U ⟶ T) [IsAffine U.left] [IsAffine T.left]
+    (hf : Covers (J X) f) (hI₁ : (Cech f I.obj).ExactAt 1) :
+    (Cech f (cokernel m).obj).ExactAt 1 := by
   let S := ShortComplex.cokernelSequence m
   let B := sheafToPresheaf (J X) A ⋙ cochains f
   let P := S.map B
@@ -84,18 +83,16 @@ theorem quotient_affineExactAt_one (hF₁ : AffineExactAt X F 1)
   change P.X₃.ExactAt 1
   apply (P.X₃.exactAt_iff_isZero_homology 1).mpr
   let e := hP.homology_exact₃ 1 2 (show (ComplexShape.up ℕ).Rel 1 2 by rfl)
-  have hI : IsZero (P.X₂.homology 1) := (hI₁ f haU haT hf).isZero_homology
-  have hF : IsZero (P.X₁.homology 2) := (hF₂ f haU haT hf).isZero_homology
+  have hI : IsZero (P.X₂.homology 1) := hI₁.isZero_homology
+  have hF : IsZero (P.X₁.homology 2) := (hF₂ f inferInstance inferInstance hf).isZero_homology
   exact e.isZero_X₂ (hI.eq_of_src _ _) (hF.eq_of_tgt _ _)
 
 variable [IsAffine X]
 
-/-- The affine native cohomology vanishes once the genuine affine
-Čech degrees one and two vanish. The injective input is its ordinary
-degree-one Čech acyclicity on the same actual site. -/
+/-- The native H² on an affine scheme vanishes once the actual affine
+singleton Čech complexes are exact at degrees one and two. -/
 theorem HTwo_subsingleton (F : C X)
-    (hF₁ : AffineExactAt X F 1) (hF₂ : AffineExactAt X F 2)
-    (hInjective : AffineExactAt X (Injective.under F) 1) :
+    (hF₁ : AffineExactAt X F 1) (hF₂ : AffineExactAt X F 2) :
     Subsingleton (Sheaf.H F 2) := by
   let T := Scheme.ProEt.mk (𝟙 X)
   let hT : IsTerminal T := MorphismProperty.Over.mkIdTerminal @WeaklyEtale X
@@ -105,9 +102,18 @@ theorem HTwo_subsingleton (F : C X)
   let hS := presentation_shortExact i
   let Q := cokernel i
   let j := Injective.ι Q
-  have hQ : AffineExactAt X Q 1 := quotient_affineExactAt_one i hF₁ hF₂ hInjective
-  have hz : Subsingleton (Sheaf.H Q 1) :=
-    SheafH1Descent.H1_subsingleton_of_global_lifts j hT (cokernel_sections_surjective j hQ T)
+  have hz : Subsingleton (Sheaf.H Q 1) := by
+    apply SheafH1Descent.H1_subsingleton_of_global_lifts j hT
+    intro x
+    let q := cokernel.π j
+    letI : Sheaf.IsLocallySurjective q := (Sheaf.isLocallySurjective_iff_epi' A q).mpr inferInstance
+    obtain ⟨U, f, ha, _, _, hf, y, hy⟩ :=
+      ProetaleAffineSingletonLift.exists_singleton_cover_lift (T := T) q x
+    letI : IsAffine U.left := ha
+    have hI : (Cech f (Injective.under F).obj).ExactAt 1 :=
+      InjectiveTerminalCech.exactAt_one f hT (Injective.under F)
+    have hQ : (Cech f Q.obj).ExactAt 1 := quotient_exactAt_one i hF₁ hF₂ f hf hI
+    exact NativeCechNerve.exists_global_lift f j hf hQ x y hy
   letI : Injective S.X₂ := inferInstanceAs (Injective (Injective.under F))
   exact SheafCohomologyDimensionShift.H_succ_subsingleton_of_injectiveMiddle S hS 1 hz
 
@@ -118,7 +124,7 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleAffineCechHTwo.cokernel_sections_surjective,
-      ``ManuscriptAudit.ProetaleAffineCechHTwo.quotient_affineExactAt_one,
+      ``ManuscriptAudit.ProetaleAffineCechHTwo.quotient_exactAt_one,
       ``ManuscriptAudit.ProetaleAffineCechHTwo.HTwo_subsingleton] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName

@@ -57,14 +57,14 @@ private theorem differential (n : ℕ) :
   exact CochainComplex.of_d (fun i : ℕ ↦ A.obj ⦋i⦌)
     (AlternatingCofaceMapComplex.objD A) n
 
-private theorem d₀ (x : P.obj (op (N f 0))) :
+theorem d₀ (x : P.obj (op (N f 0))) :
     (Cech f P).d 0 1 x = P.map (face f 0 0).op x - P.map (face f 0 1).op x := by
   rw [differential, Fin.sum_univ_two]
   change ((1 : ℤ) • P.map (face f 0 0).op + (-1 : ℤ) • P.map (face f 0 1).op) x = _
   rw [one_zsmul, neg_smul, one_zsmul, AddCommGrpCat.hom_add_apply]
   exact (sub_eq_add_neg _ _).symm
 
-private theorem d₁ (x : P.obj (op (N f 1))) :
+theorem d₁ (x : P.obj (op (N f 1))) :
     (Cech f P).d 1 2 x =
       P.map (face f 1 0).op x - P.map (face f 1 1).op x + P.map (face f 1 2).op x := by
   rw [differential, Fin.sum_univ_succ, Fin.sum_univ_two]
