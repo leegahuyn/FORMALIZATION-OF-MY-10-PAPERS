@@ -38,9 +38,9 @@ def below (R : ℝ) : Submodule ℝ D where
     change c * b.repr (J x) i = 0
     rw [hx i hi, mul_zero]
 
+include hJ hInj he in
 /-- The actual low-energy coordinate map has the full function space on the low
 indices as target, and the form energy there is strictly below the cutoff. -/
-include hJ hInj he in
 theorem below_equiv (R : ℝ) [Finite {i // e i < R}] :
     (∀ u : below J b e R, u ≠ 0 → ‖(u : D)‖^2 < R * ‖J u‖^2) ∧
     Nonempty (below J b e R ≃ₗ[ℝ] ({i // e i < R} → ℝ)) := by
@@ -79,9 +79,9 @@ theorem below_equiv (R : ℝ) [Finite {i // e i < R}] :
   rw [hp, hU]
   exact dif_pos i.property
 
+include hJ hInj in
 /-- For a compact form inclusion, the spectral count below a real energy is exactly
 the largest dimension on which every nonzero vector has Rayleigh energy below it. -/
-include hJ hInj in
 theorem variational_count (hK : IsCompactOperator J)
     (b₀ : HilbertBasis (Paper10FriedrichsEigenbasis.EigenIndex J) ℝ H)
     (hb₀ : ∀ i, (b₀ i, i.1 • b₀ i) ∈ (realization J).graph) (R : ℝ) :

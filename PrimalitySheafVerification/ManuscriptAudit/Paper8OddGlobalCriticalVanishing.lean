@@ -161,7 +161,7 @@ theorem raisingField_eq_zero_of_global_mass {F G : ℂ → ℂ} (hLaw : OddMaass
   have hOpen : EqOn (fun z : ℍ => G z) (fun _ => 0) O :=
     Measure.eqOn_open_of_ae_eq hAE hO hC.continuousOn continuousOn_const
   have hdF (w : ℂ) (hw : 0 < w.im) : DifferentiableAt ℝ F w :=
-    ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (le_refl 1)
+    ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (by norm_num)
   have hAll : (fun z : ℍ => G z) =ᵐ[(volume : Measure ℍ)] (fun _ => 0) := by
     filter_upwards [open_cells_meet_ae_orbit Γ₄] with z hz
     obtain ⟨g, w, hw, rfl⟩ := hz
@@ -179,7 +179,7 @@ theorem odd_critical_form_eq_zero_of_global_mass {F G : ℂ → ℂ} (hLaw : Odd
   have hZero := raisingField_eq_zero_of_global_mass hLaw hF hG hRaise hAdj hMass
   apply odd_maass_raising_kernel_eq_zero_of_global_mass hLaw ?_ ?_ hMass
   · intro w hw
-    exact ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (le_refl 1)
+    exact ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (by norm_num)
   · intro x y hy
     let z : ℍ := ⟨complexPoint x y, by rwa [complexPoint_im]⟩
     exact (hRaise x y hy).symm.trans (hZero z)

@@ -34,7 +34,7 @@ private theorem differentiableAt_of_contDiffOn {F : ℂ → ℂ}
     (hF : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im}) {w : ℂ} (hw : 0 < w.im) :
     DifferentiableAt ℝ F w := by
   have hU : IsOpen {v : ℂ | 0 < v.im} := isOpen_lt continuous_const Complex.continuous_im
-  exact ((hF w hw).contDiffAt (hU.mem_nhds hw)).differentiableAt (le_refl 1)
+  exact ((hF w hw).contDiffAt (hU.mem_nhds hw)).differentiableAt (by norm_num)
 
 private theorem continuous_of_differentiableAt {F : ℂ → ℂ}
     (hF : ∀ w : ℂ, 0 < w.im → DifferentiableAt ℝ F w) :

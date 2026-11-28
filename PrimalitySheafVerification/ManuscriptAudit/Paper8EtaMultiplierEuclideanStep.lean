@@ -21,7 +21,7 @@ private theorem lowerRight_emod_pos {g : SL(2, ℤ)} (hc : 0 < g 1 0) (hOne : g 
   have hNonneg : 0 ≤ g 1 1 % g 1 0 := Int.emod_nonneg _ hc.ne'
   by_contra! hZero
   have hR : g 1 1 % g 1 0 = 0 := le_antisymm hZero hNonneg
-  have hDiv := Int.emod_add_ediv (g 1 1) (g 1 0)
+  have hDiv := Int.emod_add_mul_ediv (g 1 1) (g 1 0)
   rw [hR, zero_add] at hDiv
   let q := g 0 0 * (g 1 1 / g 1 0) - g 0 1
   have hQ : g 1 0 * q = 1 := by
@@ -55,7 +55,7 @@ theorem principalEtaMultiplier_euclidean_step (g : SL(2, ℤ)) (hc : 0 < g 1 0) 
       change (g * ModularGroup.T ^ m) 1 1 = _
       rw [(right_T_entries g m).2.2]
       unfold m
-      have hDiv := Int.emod_add_ediv (g 1 1) (g 1 0)
+      have hDiv := Int.emod_add_mul_ediv (g 1 1) (g 1 0)
       rw [mul_neg]
       linarith
     have hSc : g' 1 0 = h 1 1 := (right_S_entries h).1

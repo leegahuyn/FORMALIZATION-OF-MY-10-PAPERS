@@ -95,7 +95,7 @@ theorem weightedCurl_eq_zero_above {J : ℂ → ℂ} {B : ℝ}
     exact hg
   have hAction : ContinuousAt (fun w : ℂ => (fractionalLinear g w).im) z :=
     Complex.continuous_im.continuousAt.comp ((fractionalLinear_hasDerivAt g z).continuousAt)
-  have hLocal : J =ᶠ[𝓝 (z : ℂ)] (fun _ : ℂ => (0 : ℂ)) := by
+  have hLocal : J =ᶠ[𝓝 (z : ℂ)] (Function.const ℂ (0 : ℂ)) := by
     filter_upwards [isOpen_upper.mem_nhds z.im_pos,
       hAction.tendsto.eventually (Ioi_mem_nhds hComplex)]
       with w hw hW
@@ -161,7 +161,7 @@ theorem integral_compact_current_zero (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
   have hB' : 1 ≤ B + 1 := by linarith
   have hTrace := trace_contDiffOn H J hJ hInv
   have hD (z : ℍ) : DifferentiableAt ℝ J z :=
-    ((hJ z z.im_pos).contDiffAt (isOpen_upper.mem_nhds z.im_pos)).differentiableAt (le_refl 1)
+    ((hJ z z.im_pos).contDiffAt (isOpen_upper.mem_nhds z.im_pos)).differentiableAt (by norm_num)
   refine integral_global_curl_zero H hNeg J hD hInv
     (integrableOn_weightedCurl H J hJ hSupport) hB' ?_
     (traceRegularity_of_contDiffOn _ hB' hTrace)

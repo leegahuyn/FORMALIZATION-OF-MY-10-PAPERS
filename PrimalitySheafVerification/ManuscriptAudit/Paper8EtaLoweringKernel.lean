@@ -18,7 +18,7 @@ theorem lowering_weighted_eta (x y : ℝ) (hy : 0 < y) :
   let d := deriv ModularForm.eta (complexPoint x y)
   have hη : HasDerivAt ModularForm.eta d (complexPoint x y) :=
     (ModularForm.differentiableAt_eta_of_mem_upperHalfPlaneSet
-      (by simpa only [complexPoint_im] using hy)).hasDerivAt
+      (by change 0 < (complexPoint x y).im; rwa [complexPoint_im])).hasDerivAt
   have hDx : partialX (weighted (1 / 4) ModularForm.eta) x y = A * d :=
     ((horizontal_derivative hη).const_mul A).deriv
   have hP : HasDerivAt (fun t : ℝ => ((t ^ (1 / 4 : ℝ) : ℝ) : ℂ)) ((1 / 4 : ℂ) * B) y := by

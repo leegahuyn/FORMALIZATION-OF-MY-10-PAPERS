@@ -1,10 +1,10 @@
 import Lean.Util.CollectAxioms
 import Mathlib.RingTheory.Etale.Basic
-import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.TensorProduct.Maps
 
-/-! Actual affine étale stages over a Noetherian base have tensor
+/-! Actual affine étale stages have tensor
 products and coequalize parallel stage maps over the actual chart. -/
 
 namespace ManuscriptAudit.AffineEtaleStageCoequalizer
@@ -36,7 +36,7 @@ theorem tensor_stage [Algebra.Etale A S] [Algebra.Etale A C]
 set_option maxHeartbeats 2600000 in
 /-- Parallel maps from an étale stage agree after the actual open-and-closed
 diagonal quotient, which still maps to the given chart. -/
-theorem exists_coequalizer [IsNoetherianRing A] [Algebra.Etale A S] [Algebra.Etale A C]
+theorem exists_coequalizer [Algebra.Etale A S] [Algebra.Etale A C]
     (f g : S →ₐ[A] C) (k : C →ₐ[A] B) (hk : k.comp f = k.comp g) :
     ∃ (Q : Type u) (_ : CommRing Q) (_ : Algebra A Q), Algebra.Etale A Q ∧
       ∃ (q : C →ₐ[A] Q) (l : Q →ₐ[A] B), q.comp f = q.comp g ∧ l.comp q = k := by
@@ -44,13 +44,15 @@ theorem exists_coequalizer [IsNoetherianRing A] [Algebra.Etale A S] [Algebra.Eta
   let m : T →ₐ[A] S := lift (AlgHom.id A S) (AlgHom.id A S) (fun _ _ ↦ Commute.all _ _)
   let t : T →ₐ[A] C := lift f g (fun _ _ ↦ Commute.all _ _)
   letI : Algebra T S := m.toRingHom.toAlgebra
-  have hmL (x : S) : m (x ⊗ₜ[A] (1 : S)) = x := by simp [m]
-  have hmR (x : S) : m ((1 : S) ⊗ₜ[A] x) = x := by simp [m]
+  have hmL (x : S) : m (x ⊗ₜ[A] (1 : S)) = x := by change x * 1 = x; exact mul_one x
+  have hmR (x : S) : m ((1 : S) ⊗ₜ[A] x) = x := by change 1 * x = x; exact one_mul x
   letI : IsScalarTower S T S := IsScalarTower.of_algebraMap_eq (fun x ↦ (hmL x).symm)
   have hmSurj : Function.Surjective (algebraMap T S) := fun x ↦ ⟨x ⊗ₜ[A] (1 : S), hmL x⟩
   have hmEt : Algebra.FormallyEtale T S :=
     Algebra.FormallyEtale.of_restrictScalars (R := S) (A := T) (B := S)
+  letI : Algebra.Etale A T := Algebra.Etale.comp A S T
   let I : Ideal T := RingHom.ker m.toRingHom
+  have hIFg : I.FG := Algebra.FinitePresentation.ker_fG_of_surjective m hmSurj
   have hI : I * I = I := (Algebra.FormallyEtale.iff_of_surjective hmSurj).mp hmEt
   let J := I.map t.toRingHom
   have hJ : IsIdempotentElem J := by
@@ -61,7 +63,8 @@ theorem exists_coequalizer [IsNoetherianRing A] [Algebra.Etale A S] [Algebra.Eta
     intro x y
     change k (t (x ⊗ₜ[A] y)) = k (f (m (x ⊗ₜ[A] y)))
     have hh : k (g y) = k (f y) := (DFunLike.congr_fun hk y).symm
-    simp only [t, m, lift_tmul, AlgHom.id_apply, map_mul, hh]
+    change k (f x * g y) = k (f (x * y))
+    rw [map_mul, map_mul, map_mul, hh]
   have hker : J ≤ RingHom.ker k.toRingHom := by
     apply Ideal.map_le_iff_le_comap.mpr
     intro x hx
@@ -79,9 +82,8 @@ theorem exists_coequalizer [IsNoetherianRing A] [Algebra.Etale A S] [Algebra.Eta
         change IsIdempotentElem (RingHom.ker (Ideal.Quotient.mk J))
         rw [Ideal.mk_ker]
         exact hJ)
-  letI : IsNoetherianRing C := Algebra.FiniteType.isNoetherianRing A C
   letI : Algebra.FinitePresentation A Q := Algebra.FinitePresentation.quotient (I := J)
-    (IsNoetherian.noetherian J)
+    (hIFg.map t.toRingHom)
   have hEt : Algebra.Etale A Q := ⟨Algebra.FormallyEtale.comp A C Q, inferInstance⟩
   refine ⟨Q, inferInstance, inferInstance, hEt, q, l, ?_, ?_⟩
   · ext x
@@ -92,7 +94,9 @@ theorem exists_coequalizer [IsNoetherianRing A] [Algebra.Etale A S] [Algebra.Eta
     have hDiff : f x - g x ∈ J := by
       have hh := Ideal.mem_map_of_mem t.toRingHom hM
       change t ((x ⊗ₜ[A] (1 : S)) - ((1 : S) ⊗ₜ[A] x)) ∈ J at hh
-      simpa only [map_sub, t, lift_tmul, map_one, mul_one, one_mul] using hh
+      rw [map_sub] at hh
+      change f x * g 1 - f 1 * g x ∈ J at hh
+      simpa only [map_one, mul_one, one_mul] using hh
     have hZero : q (f x - g x) = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr hDiff
     rw [map_sub] at hZero
     exact sub_eq_zero.mp hZero

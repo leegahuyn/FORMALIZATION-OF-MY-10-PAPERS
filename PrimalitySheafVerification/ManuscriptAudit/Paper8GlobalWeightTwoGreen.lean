@@ -40,7 +40,7 @@ theorem integral_global_curl_zero (H : Subgroup SL(2, ℤ)) [H.FiniteIndex]
   let f := trace H (fun u : ℍ => J u) hInv
   let K := asComplexCurrent f
   have hAbove (z : ℍ) (hZ : B < z.im) : weightedCurl K z = 0 := by
-    have hLocal : K =ᶠ[𝓝 (z : ℂ)] (fun _ : ℂ => (0 : ℂ)) := by
+    have hLocal : K =ᶠ[𝓝 (z : ℂ)] (Function.const ℂ (0 : ℂ)) := by
       filter_upwards [Complex.continuous_im.continuousAt.tendsto.eventually (Ioi_mem_nhds hZ)] with w hw
       have hPos : 0 < w.im := (zero_lt_one.trans_le hB).trans hw
       change f (ofComplex w) = 0

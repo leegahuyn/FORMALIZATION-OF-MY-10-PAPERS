@@ -9,7 +9,7 @@ is étale over the base when all its points lie in the étale locus. -/
 namespace ManuscriptAudit.EtaleLocusOpenRestriction
 
 open AlgebraicGeometry CategoryTheory
-open ProetaleAffineTensor (spectrum structureMap)
+open ProetaleAffineTensor (structureMap)
 
 noncomputable section
 
@@ -22,8 +22,8 @@ variable (A D : Type u) [CommRing A] [CommRing D] [Algebra A D] [Algebra.FiniteP
 
 set_option maxHeartbeats 2200000 in
 /-- The open's literal structural morphism is étale. -/
-theorem etale (U : (spectrum D).Opens)
-    (hU : (U : Set (PrimeSpectrum D)) ⊆ Algebra.etaleLocus A D) :
+theorem etale (U : (ProetaleAffineTensor.spectrum D).Opens)
+    (hU : (U : Set (ProetaleAffineTensor.spectrum D)) ⊆ Algebra.etaleLocus A D) :
     Etale (U.ι ≫ structureMap A D) := by
   classical
   let f := U.ι ≫ structureMap A D
@@ -33,7 +33,7 @@ theorem etale (U : (spectrum D).Opens)
     obtain ⟨_, ⟨_, ⟨a, rfl⟩, rfl⟩, hx, ha⟩ :=
       PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open x.property U.isOpen
     let L := Localization.Away a
-    let i : spectrum L ⟶ spectrum D :=
+    let i : ProetaleAffineTensor.spectrum L ⟶ ProetaleAffineTensor.spectrum D :=
       Spec.map (CommRingCat.ofHom (algebraMap D L))
     letI : IsOpenImmersion i := IsOpenImmersion.of_isLocalization a
     have hi : Set.range i = (PrimeSpectrum.basicOpen a : Set (PrimeSpectrum D)) :=
@@ -42,13 +42,13 @@ theorem etale (U : (spectrum D).Opens)
       rw [hi]
       intro p hp
       exact ⟨⟨p, ha hp⟩, rfl⟩
-    let j : spectrum L ⟶ U.toScheme := IsOpenImmersion.lift U.ι i hRange
+    let j : ProetaleAffineTensor.spectrum L ⟶ U.toScheme := IsOpenImmersion.lift U.ι i hRange
     have hj : j ≫ U.ι = i := IsOpenImmersion.lift_fac U.ι i hRange
     letI : IsOpenImmersion (j ≫ U.ι) := hj.symm ▸ inferInstanceAs (IsOpenImmersion i)
-    refine ⟨spectrum L, j, IsOpenImmersion.of_comp j U.ι, ?_, ?_⟩
+    refine ⟨ProetaleAffineTensor.spectrum L, j, IsOpenImmersion.of_comp j U.ι, ?_, ?_⟩
     · have hx' : x.val ∈ Set.range i := hi.symm ▸ hx
       obtain ⟨z, hz⟩ := hx'
-      have he := congrArg (fun g : spectrum L ⟶ spectrum D ↦ g z) hj
+      have he := congrArg (fun g : ProetaleAffineTensor.spectrum L ⟶ ProetaleAffineTensor.spectrum D ↦ g z) hj
       change (j z).val = i z at he
       exact ⟨z, Subtype.ext (he.trans hz)⟩
     · have hEt : Algebra.Etale A L :=

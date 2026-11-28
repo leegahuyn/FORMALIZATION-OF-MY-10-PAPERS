@@ -35,8 +35,10 @@ private theorem restriction_injective : Function.Injective (restriction W).hom :
     let y := (inPlane W).imageι x
     obtain ⟨_, ⟨V, hV, rfl⟩, hyV, -⟩ :=
       (projectivePlane K).isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
-    refine ⟨(inPlane W).imageι ⁻¹ᵁ V, le_top, hyV, (inPlane W).toImage_app_injective ⟨V, hV⟩ ?_⟩
-    change j.app ((inPlane W).imageι ⁻¹ᵁ V) (_ s) = 0
+    let U : (projectiveScheme W).Opens := (inPlane W).imageι ⁻¹ᵁ V
+    let i : U ⟶ (⊤ : (projectiveScheme W).Opens) := homOfLE le_top
+    refine ⟨U, le_top, hyV, (inPlane W).toImage_app_injective ⟨V, hV⟩ ?_⟩
+    change j.app U ((projectiveScheme W).presheaf.map i.op s) = 0
     rw [← ConcreteCategory.comp_apply, j.naturality]
     simp [hs]
   exact (Scheme.ΓSpecIso (A W)).commRingCatIsoToRingEquiv.injective.comp hj

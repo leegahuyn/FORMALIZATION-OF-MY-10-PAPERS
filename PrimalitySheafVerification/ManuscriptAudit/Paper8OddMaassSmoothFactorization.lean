@@ -30,7 +30,7 @@ private theorem dirPart_fderiv {F : ℂ → ℂ} {w : ℂ}
     HasFDerivAt (fun q : ℂ => fderiv ℝ F q v)
       ((ContinuousLinearMap.apply ℝ ℂ v).comp (fderiv ℝ (fderiv ℝ F) w)) w := by
   have hOne : ContDiffAt ℝ 1 (fderiv ℝ F) w := hF.fderiv_right (by norm_num)
-  have hD : DifferentiableAt ℝ (fderiv ℝ F) w := hOne.differentiableAt (le_refl 1)
+  have hD : DifferentiableAt ℝ (fderiv ℝ F) w := hOne.differentiableAt (by norm_num)
   exact (ContinuousLinearMap.apply ℝ ℂ v).hasFDerivAt.comp w hD.hasFDerivAt
 
 private theorem profileDir_eq_partialX {F : ℂ → ℂ} {x y : ℝ}

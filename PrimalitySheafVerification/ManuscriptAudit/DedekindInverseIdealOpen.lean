@@ -46,7 +46,7 @@ private theorem localMap_isOpenImmersion (a : A) : IsOpenImmersion (localMap A K
 
 private theorem localMap_range (a : A) :
     Set.range (localMap A K I a) =
-      (PrimeSpectrum.basicOpen (algebraMap A (C A K I) a) : Set (X A K I)) :=
+      (PrimeSpectrum.basicOpen (algebraMap A (C A K I) a) : Set (PrimeSpectrum (C A K I))) :=
   PrimeSpectrum.localization_away_comap_range (P A K I a) (algebraMap A (C A K I) a)
 
 private theorem comp_isOpenImmersion (hI : I ≠ ⊥) (a : A) (ha : a ∈ I) (h₀ : a ≠ 0) :
@@ -56,7 +56,7 @@ private theorem comp_isOpenImmersion (hI : I ≠ ⊥) (a : A) (ha : a ∈ I) (h�
   exact IsOpenImmersion.of_isLocalization a
 
 private theorem comp_range (hI : I ≠ ⊥) (a : A) (ha : a ∈ I) (h₀ : a ≠ 0) :
-    Set.range (localMap A K I a ≫ stageMap A K I) = (PrimeSpectrum.basicOpen a : Set (Y A)) := by
+    Set.range (localMap A K I a ≫ stageMap A K I) = (PrimeSpectrum.basicOpen a : Set (PrimeSpectrum A)) := by
   rw [comp_eq]
   letI := DedekindInverseIdealLocalization.isLocalization_away A K I hI ha h₀
   exact PrimeSpectrum.localization_away_comap_range (P A K I a) a

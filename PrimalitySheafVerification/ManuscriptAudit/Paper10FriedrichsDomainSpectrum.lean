@@ -29,9 +29,9 @@ theorem positive_label (i : I) : 0 < e i := by
   rw [h, norm_zero] at hn
   exact zero_ne_one hn
 
+include hJ hInj he in
 /-- The Hilbert space of the form has a basis with coordinates given by square roots of
 the actual positive energies times the ambient spectral coefficients. -/
-include hJ hInj he in
 theorem exists_form_basis :
     ∃ d : HilbertBasis I ℝ D, ∀ u i, d.repr u i = Real.sqrt (e i) * b.repr (J u) i := by
   classical
@@ -83,9 +83,9 @@ theorem exists_form_basis :
   rw [HilbertBasis.repr_apply_apply, congrFun (HilbertBasis.coe_mk hOrtho hTotal) i]
   exact hv i u
 
+include hJ hInj he in
 /-- Ambient vectors belong to the form domain precisely when multiplication by the
 square roots of the positive energy labels gives an ℓ² sequence. -/
-include hJ hInj he in
 theorem range_iff_memℓp (x : H) :
     x ∈ Set.range J ↔ Memℓp (fun i => Real.sqrt (e i) * b.repr x i) 2 := by
   obtain ⟨d, hd⟩ := exists_form_basis J hJ hInj b e he

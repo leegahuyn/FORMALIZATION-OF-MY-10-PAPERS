@@ -78,14 +78,19 @@ theorem local_properties (g : model K L →ₐ[R K] B) (r : Ideal B) [r.IsPrime]
   · have hP₀ : P.asIdeal = ⊥ := Ideal.eq_bot_of_comap_eq_bot (hP.trans hp)
     letI : IsFractionRing (C i) S := by
       change IsLocalization (C i)⁰ (Localization.AtPrime P.asIdeal)
-      rw [← Ideal.primeCompl_bot, ← hP₀]
-      infer_instance
+      have hCompl : P.asIdeal.primeCompl = (C i)⁰ := by
+        ext a
+        change (a ∉ P.asIdeal) ↔ a ∈ (C i)⁰
+        rw [hP₀, Ideal.mem_bot, mem_nonZeroDivisors_iff_ne_zero]
+      exact hCompl ▸ (inferInstance : IsLocalization P.asIdeal.primeCompl S)
     letI : IsFractionRing (C i) (L i) :=
-      integralClosure.isFractionRing_of_finite_extension (R K) (F K) (L i)
+      IsIntegralClosure.isFractionRing_of_finite_extension (R K) (F K) (L i) (C i)
     let e₀ : S ≃ₐ[C i] L i := IsLocalization.algEquiv (C i)⁰ _ _
     let e₁ := e.trans (e₀.restrictScalars (R K))
     letI : Algebra.FormallyEtale (R K) (L i) := formallyEtale_component K L i
-    exact ⟨valuation_of_equiv e₁.toRingEquiv, Algebra.FormallyEtale.of_equiv e₁.symm⟩
+    letI : Algebra.FormallyEtale (R K) (Localization.AtPrime q) :=
+      Algebra.FormallyEtale.of_equiv e₁.symm
+    exact ⟨valuation_of_equiv e₁.toRingEquiv, inferInstance⟩
   · have hP₀ : P.asIdeal ≠ ⊥ := by
       intro h
       apply hp
@@ -93,7 +98,7 @@ theorem local_properties (g : model K L →ₐ[R K] B) (r : Ideal B) [r.IsPrime]
         _ = P.asIdeal.comap (algebraMap (R K) (C i)) := hP.symm
         _ = ⊥ := by
           rw [h, ← RingHom.ker_eq_comap_bot]
-          apply RingHom.ker_eq_bot.mpr
+          apply (RingHom.injective_iff_ker_eq_bot (algebraMap (R K) (C i))).mp
           have hL : Function.Injective (algebraMap (R K) (L i)) := by
             rw [IsScalarTower.algebraMap_eq (R K) (F K) (L i)]
             exact (RingHom.injective _).comp (IsFractionRing.injective (R K) (F K))
@@ -103,9 +108,24 @@ theorem local_properties (g : model K L →ₐ[R K] B) (r : Ideal B) [r.IsPrime]
             congrArg (algebraMap (C i) (L i)) hxy
     letI : IsDedekindDomain (C i) := component_dedekind K L i
     letI : IsDiscreteValuationRing S :=
-      IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain hP₀ S
-    letI : IsDiscreteValuationRing (Localization.AtPrime q) :=
-      RingEquivClass.isDiscreteValuationRing e.symm
+      IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain (C i) hP₀ S
+    letI : IsPrincipalIdealRing (Localization.AtPrime q) :=
+      IsPrincipalIdealRing.of_surjective e.symm.toRingEquiv.toRingHom e.symm.surjective
+    letI : IsDiscreteValuationRing (Localization.AtPrime q) := by
+      constructor
+      intro h
+      apply IsDiscreteValuationRing.not_a_field S
+      apply bot_unique
+      intro x hx
+      have hne : ¬ IsUnit x := by
+        simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff] using hx
+      have hm : e.symm x ∈ IsLocalRing.maximalIdeal (Localization.AtPrime q) := by
+        rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff]
+        intro hu
+        apply hne
+        exact e.apply_symm_apply x ▸ hu.map e.toRingEquiv.toRingHom
+      have hx₀ : e.symm x = 0 := Ideal.mem_bot.mp (h ▸ hm)
+      exact Ideal.mem_bot.mpr (e.symm.injective (hx₀.trans (map_zero e.symm).symm))
     letI : Module.Finite (R K) D := model_finite K L
     letI := Localization.AtPrime.algebraOfLiesOver p q
     let t := Submodule.IsPrincipal.generator p

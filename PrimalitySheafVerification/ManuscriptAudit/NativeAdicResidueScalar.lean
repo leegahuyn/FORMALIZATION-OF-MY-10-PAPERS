@@ -87,15 +87,38 @@ theorem reduction_scalar (d n : ℕ) (r : ℤ_[ℓ]) (x : X.EllAdicCohomology �
       Sheaf.H.map_comp_apply g _ x
     _ = _ := H_map_nsmul_id X (finiteCoefficient X ℓ n) d m (Sheaf.H.map g d x)
 
+/-- The finite coefficient modulus annihilates every corresponding actual cohomology group. -/
+theorem residue_cohomology_annihilated (d n : ℕ)
+    (x : Sheaf.H (finiteCoefficient X ℓ n) d) : (ℓ ^ n) • x = 0 := by
+  let F := finiteCoefficient X ℓ n
+  have hSheaf : ((ℓ ^ n) • 𝟙 F : F ⟶ F) = 0 := by
+    apply Sheaf.hom_ext
+    apply NatTrans.ext
+    funext U
+    apply AddCommGrpCat.ext
+    intro a
+    change ((ℓ ^ n) • 𝟙 F : F ⟶ F).hom.app U a = 0
+    rw [nsmul_id_eval]
+    apply ULift.ext
+    apply ContinuousMap.ext
+    intro t
+    change (((ℓ ^ n) • (a.down : C(U.unop.left, ZMod (ℓ ^ n)))) t) = 0
+    rw [ContinuousMap.nsmul_apply, nsmul_eq_mul, ZMod.natCast_self, zero_mul]
+  calc
+    _ = Sheaf.H.map ((ℓ ^ n) • 𝟙 F) d x := (H_map_nsmul_id X F d (ℓ ^ n) x).symm
+    _ = _ := by rw [hSheaf]; simp
+
+
 end
 end ManuscriptAudit.NativeAdicResidueScalar
 
 open Lean Elab Command in
 run_cmd do
-  let name := ``ManuscriptAudit.NativeAdicResidueScalar.reduction_scalar
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
-  let dependencies ← collectAxioms name
-  let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
-  unless unexpected.isEmpty do
-    throwError m!"{name} depends on unexpected axioms {unexpected}"
-  logInfo m!"{name} uses {dependencies}"
+  for name in [``ManuscriptAudit.NativeAdicResidueScalar.reduction_scalar,
+      ``ManuscriptAudit.NativeAdicResidueScalar.residue_cohomology_annihilated] do
+    let dependencies ← collectAxioms name
+    let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
+    unless unexpected.isEmpty do
+      throwError m!"{name} depends on unexpected axioms {unexpected}"
+    logInfo m!"{name} uses {dependencies}"

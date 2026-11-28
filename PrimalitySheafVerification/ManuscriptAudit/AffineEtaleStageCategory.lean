@@ -72,7 +72,7 @@ def chartCocone : Cocone (ringDiagram (A := A) (B := B)) where
         rw [Category.comp_id]
         exact CommRingCat.hom_ext (congrArg AlgHom.toRingHom f.property) }
 
-instance filtered [IsNoetherianRing A] : IsFiltered (Stage A B) where
+instance filtered : IsFiltered (Stage A B) where
   nonempty := ⟨Stage.of A B (Algebra.ofId A B)⟩
   cocone_objs X Y := by
     obtain ⟨ht, v, hX, hY⟩ := AffineEtaleStageCoequalizer.tensor_stage X.toChart Y.toChart

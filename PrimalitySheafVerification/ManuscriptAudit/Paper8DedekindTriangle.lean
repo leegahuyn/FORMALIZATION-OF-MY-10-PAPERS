@@ -2,7 +2,10 @@ import Lean.Util.CollectAxioms
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Rat.Floor
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-! The weighted lattice triangle under the reciprocal rational slope, evaluated by rows and columns. -/
 
@@ -46,7 +49,7 @@ private theorem row_sum {h k : ℕ} (hh : 0 < h) (hk : 0 < k) (j : Fin k) :
   rw [hF]
   calc
     (∑ v ∈ Iic b, (v.val : ℚ)) =
-        ∑ u ∈ (Iic b).map Fin.valEmbedding, (u : ℚ) := by simp only [Finset.sum_map]; rfl
+        ∑ u ∈ (Iic b).map Fin.valEmbedding, (u : ℚ) := by simpa only [Finset.sum_map]
     _ = ∑ u ∈ range (q + 1), (u : ℚ) := by
       rw [Fin.map_valEmbedding_Iic]
       have hI : Iic (b.val) = range (q + 1) := by

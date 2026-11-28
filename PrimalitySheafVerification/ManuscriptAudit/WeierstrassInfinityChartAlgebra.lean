@@ -48,8 +48,9 @@ theorem relation : z W * bracket W = x W ^ 3 := by
 /-- The rational point with the genuine affine coordinates u=v=0. -/
 def origin : Ring W →ₐ[K] K :=
   AdjoinRoot.liftAlgHom (equation W) (Polynomial.aeval (0 : K)) 0 (by
-    simp only [equation, eval₂_sub, eval₂_mul, eval₂_X, eval₂_pow, eval₂_C,
-      Polynomial.aeval_X, zero_mul, zero_pow (by decide : (3 : ℕ) ≠ 0), sub_self])
+    simp only [equation, eval₂_sub, eval₂_mul, eval₂_X, eval₂_pow, eval₂_C, zero_mul]
+    change 0 - (Polynomial.aeval (0 : K)) X ^ 3 = 0
+    rw [Polynomial.aeval_X, zero_pow (by decide : (3 : ℕ) ≠ 0), sub_zero])
 
 theorem origin_x : origin W (x W) = 0 := by
   simp [origin, x]

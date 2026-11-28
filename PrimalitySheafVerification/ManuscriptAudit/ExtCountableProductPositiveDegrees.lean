@@ -35,8 +35,8 @@ theorem projections_jointly_bijective
   induction d generalizing F with
   | zero =>
       have hProducts' (G H : ℕ → C) (f : ∀ n, G n ⟶ H n) (hf : ∀ n, Epi (f n)) :
-          Epi (Pi.map (f := G) (g := H) f) := by
-        have h : Pi.map (f := G) (g := H) f = mapProduct f := by
+          Epi (CategoryTheory.Limits.Pi.map (f := G) (g := H) f) := by
+        have h : CategoryTheory.Limits.Pi.map (f := G) (g := H) f = mapProduct f := by
           apply Pi.hom_ext
           intro n
           rw [Pi.map_π, mapProduct_π]

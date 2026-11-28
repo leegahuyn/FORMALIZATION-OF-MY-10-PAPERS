@@ -82,47 +82,66 @@ theorem pairing_tmul (x : invariants A B t) (y : invariants A B t⁻¹) :
   rw [LinearEquiv.apply_symm_apply]
   exact rawProduct_tmul A B t x y
 
-set_option maxHeartbeats 2000000 in
-theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
+private abbrev PairingDomain : Type u := invariants A B t ⊗[A] invariants A B t⁻¹
+
+private def tensorPairing : B ⊗[A] PairingDomain A B t →ₗ[A] B ⊗[A] A :=
+  (pairing A B t).lTensor B
+
+private def tensorPairingEquiv (ht : IsCocycle A B t) :
+    B ⊗[A] PairingDomain A B t ≃ₗ[A] B :=
   let L := invariants A B t
   let N := invariants A B t⁻¹
   let eL := (extensionEquiv A B t ht).restrictScalars A
   let eN := (extensionEquiv A B t⁻¹ (inverse_isCocycle A B t ht)).restrictScalars A
-  let e : B ⊗[A] (L ⊗[A] N) ≃ₗ[A] B :=
-    (TensorProduct.assoc A B L N).symm.trans
-      ((TensorProduct.congr eL (LinearEquiv.refl A N)).trans eN)
-  let f := (pairing A B t).lTensor B
+  (TensorProduct.assoc A B L N).symm.trans
+    ((TensorProduct.congr eL (LinearEquiv.refl A N)).trans eN)
+
+private theorem tensorPairing_formula (ht : IsCocycle A B t) :
+    (TensorProduct.rid A B).toLinearMap.comp (tensorPairing A B t) =
+      (tensorPairingEquiv A B t ht).toLinearMap := by
+  apply TensorProduct.ext'
+  intro b z
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y =>
+    change (pairing A B t (x ⊗ₜ[A] y)) • b = (b * x.val) * y.val
+    rw [Algebra.smul_def, pairing_tmul, mul_comm (x.val * y.val) b, mul_assoc]
+  | add x y hx hy => simp only [TensorProduct.tmul_add, map_add, hx, hy]
+
+private theorem tensorPairing_bijective (ht : IsCocycle A B t) :
+    Function.Bijective (tensorPairing A B t) := by
   let r := TensorProduct.rid A B
-  have hMap : r.toLinearMap.comp f = e.toLinearMap := by
-    apply TensorProduct.ext'
-    intro b z
-    induction z using TensorProduct.induction_on with
-    | zero => simp
-    | tmul x y =>
-      change (pairing A B t (x ⊗ₜ[A] y)) • b = (b * x.val) * y.val
-      rw [Algebra.smul_def, pairing_tmul, mul_comm (x.val * y.val) b, mul_assoc]
-    | add x y hx hy => simp only [TensorProduct.tmul_add, map_add, hx, hy]
-  have hf : Function.Bijective f := by
-    have he : f = r.symm.toLinearMap.comp e.toLinearMap := by
-      apply LinearMap.ext
-      intro z
-      apply r.injective
-      exact (LinearMap.congr_fun hMap z).trans (r.apply_symm_apply (e z)).symm
-    rw [he]
-    exact r.symm.bijective.comp e.bijective
-  let g := pairing A B t
-  let before : Unit →ₗ[A] (L ⊗[A] N) := 0
+  let e := tensorPairingEquiv A B t ht
+  have he : tensorPairing A B t = r.symm.toLinearMap.comp e.toLinearMap := by
+    apply LinearMap.ext
+    intro z
+    apply r.injective
+    exact (LinearMap.congr_fun (tensorPairing_formula A B t ht) z).trans
+      (r.apply_symm_apply (e z)).symm
+  rw [he]
+  exact r.symm.bijective.comp e.bijective
+
+private theorem pairing_injective_of_tensor
+    (hf : Function.Injective (tensorPairing A B t)) : Function.Injective (pairing A B t) := by
+  let before : Unit →ₗ[A] PairingDomain A B t := 0
+  apply (LinearMap.exact_zero_iff_injective Unit (pairing A B t)).1
+  apply Module.FaithfullyFlat.lTensor_reflects_exact A B before (pairing A B t)
+  change Function.Exact ((0 : Unit →ₗ[A] PairingDomain A B t).lTensor B) (tensorPairing A B t)
+  rw [LinearMap.lTensor_zero]
+  exact (LinearMap.exact_zero_iff_injective (B ⊗[A] Unit) (tensorPairing A B t)).2 hf
+
+private theorem pairing_surjective_of_tensor
+    (hf : Function.Surjective (tensorPairing A B t)) : Function.Surjective (pairing A B t) := by
   let after : A →ₗ[A] Unit := 0
-  have hinj : Function.Exact (before.lTensor B) (g.lTensor B) := by
-    simpa only [before, LinearMap.lTensor_zero] using
-      (LinearMap.exact_zero_iff_injective (B ⊗[A] Unit) f).2 hf.1
-  have hsurj : Function.Exact (g.lTensor B) (after.lTensor B) := by
-    simpa only [after, LinearMap.lTensor_zero] using
-      (LinearMap.exact_zero_iff_surjective (B ⊗[A] Unit) f).2 hf.2
-  exact ⟨(LinearMap.exact_zero_iff_injective Unit g).1
-      (Module.FaithfullyFlat.lTensor_reflects_exact A B before g hinj),
-    (LinearMap.exact_zero_iff_surjective Unit g).1
-      (Module.FaithfullyFlat.lTensor_reflects_exact A B g after hsurj)⟩
+  apply (LinearMap.exact_zero_iff_surjective Unit (pairing A B t)).1
+  apply Module.FaithfullyFlat.lTensor_reflects_exact A B (pairing A B t) after
+  change Function.Exact (tensorPairing A B t) ((0 : A →ₗ[A] Unit).lTensor B)
+  rw [LinearMap.lTensor_zero]
+  exact (LinearMap.exact_zero_iff_surjective (B ⊗[A] Unit) (tensorPairing A B t)).2 hf
+
+theorem pairing_bijective (ht : IsCocycle A B t) : Function.Bijective (pairing A B t) := by
+  have h := tensorPairing_bijective A B t ht
+  exact ⟨pairing_injective_of_tensor A B t h.1, pairing_surjective_of_tensor A B t h.2⟩
 
 /-- A genuine faithfully flat unit cocycle determines an invertible module. -/
 theorem invariants_invertible (ht : IsCocycle A B t) :

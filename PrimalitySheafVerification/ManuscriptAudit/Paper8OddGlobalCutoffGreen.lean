@@ -29,7 +29,7 @@ private theorem isOpen_upper : IsOpen {w : ℂ | 0 < w.im} :=
 private theorem contDiffOn_to_differentiableAt {F : ℂ → ℂ}
     (hF : ContDiffOn ℝ 1 F {w : ℂ | 0 < w.im}) {w : ℂ} (hw : 0 < w.im) :
     DifferentiableAt ℝ F w :=
-  ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (le_refl 1)
+  ((hF w hw).contDiffAt (isOpen_upper.mem_nhds hw)).differentiableAt (by norm_num)
 
 private theorem ofComplex_coe (z : ℍ) : ofComplex (z : ℂ) = z := by
   rw [ofComplex_apply_of_im_pos z.im_pos]

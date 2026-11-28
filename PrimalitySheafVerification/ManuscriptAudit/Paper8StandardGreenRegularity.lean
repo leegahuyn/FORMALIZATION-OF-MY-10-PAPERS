@@ -61,7 +61,7 @@ theorem traceRegularity_of_contDiffOn (f : ℍ → ℂ) {B : ℝ} (hB : 1 ≤ B)
   have hSpan : ContinuousOn (fun p : ℝ × ℝ => ((B - arcHeight p.1 : ℝ) : ℂ)) R :=
     Complex.continuous_ofReal.comp_continuousOn
       ((continuous_const.sub (hA.comp continuous_fst)).continuousOn)
-  have hSlope : ContinuousOn (fun p : ℝ × ℝ => (slope arcHeight p.1 p.2 : ℂ)) R :=
+  have hSlope : ContinuousOn (fun p : ℝ × ℝ => (Paper8CurvedGreenChart.slope arcHeight p.1 p.2 : ℂ)) R :=
     Complex.continuous_ofReal.comp_continuousOn
       ((continuous_const.sub continuous_snd).continuousOn.mul hDX)
   refine ⟨hCurl.mono ?_, ?_, ?_, ?_⟩
@@ -69,7 +69,7 @@ theorem traceRegularity_of_contDiffOn (f : ℍ → ℂ) {B : ℝ} (hB : 1 ≤ B)
     exact z.im_pos
   · intro x hx t ht
     have h := hMap (show (x,t) ∈ R from ⟨hx, ht⟩)
-    exact ((hF _ h).contDiffAt (hOpen.mem_nhds h)).differentiableAt (le_refl 1)
+    exact ((hF _ h).contDiffAt (hOpen.mem_nhds h)).differentiableAt (by norm_num)
   · unfold rateX
     exact ((continuousOn_const.mul hDXC).mul hJ).add
       ((continuousOn_const.mul hSpan).mul (hD1.add (hSlope.mul hDI)))

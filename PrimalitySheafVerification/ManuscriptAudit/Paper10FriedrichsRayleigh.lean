@@ -29,9 +29,9 @@ private theorem norm_hasSum (x : H) :
   rw [hEq, real_inner_self_eq_norm_sq] at h
   exact h
 
+include hJ hInj he in
 /-- The true form energy is the sum of the ambient spectral masses with one energy
 factor per eigenvector. -/
-include hJ hInj he in
 theorem form_energy_hasSum (u : D) :
     HasSum (fun i => e i * (b.repr (J u) i)^2) (‖u‖^2) := by
   obtain ⟨d, hd⟩ := exists_form_basis J hJ hInj b e he
@@ -46,9 +46,9 @@ theorem form_energy_hasSum (u : D) :
   rw [hEq, real_inner_self_eq_norm_sq] at h
   exact h
 
+include hJ hInj he in
 /-- An ambient state with no coordinates below the threshold has at least the threshold
 Rayleigh energy. -/
-include hJ hInj he in
 theorem rayleigh_ge_of_low_coordinates_zero (R : ℝ) (u : D)
     (hZero : ∀ i, e i < R → b.repr (J u) i = 0) :
     R * ‖J u‖^2 ≤ ‖u‖^2 := by
@@ -62,9 +62,9 @@ theorem rayleigh_ge_of_low_coordinates_zero (R : ℝ) (u : D)
   exact le_of_tendsto_of_tendsto hL hU
     (Filter.Eventually.of_forall fun s => Finset.sum_le_sum (fun i _ => hLE i))
 
+include hJ hInj he in
 /-- Restriction to the low-energy coordinates is injective on every linear subspace
 whose nonzero vectors all have strictly lower Rayleigh energy. -/
-include hJ hInj he in
 theorem exists_injective_low_coordinates (R : ℝ) (W : Submodule ℝ D)
     (hW : ∀ u : W, u ≠ 0 → ‖(u : D)‖^2 < R * ‖J u‖^2) :
     ∃ P : W →ₗ[ℝ] ({i // e i < R} → ℝ), Function.Injective P ∧
@@ -92,9 +92,9 @@ theorem exists_injective_low_coordinates (R : ℝ) (W : Submodule ℝ D)
   exact (not_lt_of_ge (rayleigh_ge_of_low_coordinates_zero J hJ hInj b e he R u hz))
     (hW u hne)
 
+include hJ hInj he in
 /-- Every nonzero form-domain vector whose coordinates are supported strictly below
 the threshold has strict Rayleigh energy below the threshold. -/
-include hJ hInj he in
 theorem rayleigh_lt_of_high_coordinates_zero (R : ℝ) (u : D) (hu : u ≠ 0)
     (hZero : ∀ i, R ≤ e i → b.repr (J u) i = 0) :
     ‖u‖^2 < R * ‖J u‖^2 := by

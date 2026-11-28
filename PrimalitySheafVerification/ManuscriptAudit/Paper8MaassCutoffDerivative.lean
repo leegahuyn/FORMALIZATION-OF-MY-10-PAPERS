@@ -19,7 +19,7 @@ def complexCutoff (Y : ℝ) (w : ℂ) : ℂ := (modularCutoff Y (ofComplex w) : 
 private theorem derivativeZ_realHeight {a : ℝ → ℝ} {w : ℂ}
     (ha : DifferentiableAt ℝ a w.im) :
     derivativeZ (fun v : ℂ => (a v.im : ℂ)) w =
-      -Complex.I * (deriv a w.im : ℂ) / 2 := by
+      -Complex.I * ((deriv a w.im : ℝ) : ℂ) / 2 := by
   let x := w.re
   let y := w.im
   have hPoint : complexPoint x y = w := Complex.re_add_im w
@@ -30,7 +30,7 @@ private theorem derivativeZ_realHeight {a : ℝ → ℝ} {w : ℂ}
     (by rwa [hPoint])
   have hx : partialX (fun u v => A (complexPoint u v)) x y = 0 := by
     simp only [partialX, A, complexPoint_im, deriv_const]
-  have hy : partialY (fun u v => A (complexPoint u v)) x y = (deriv a y : ℂ) := by
+  have hy : partialY (fun u v => A (complexPoint u v)) x y = ((deriv a y : ℝ) : ℂ) := by
     simpa only [partialY, A, complexPoint_im] using ha.hasDerivAt.ofReal_comp.deriv
   rw [hPoint, hx, hy, zero_sub] at h
   simpa only [A, y, neg_mul] using h
@@ -38,7 +38,7 @@ private theorem derivativeZ_realHeight {a : ℝ → ℝ} {w : ℂ}
 theorem derivativeZ_cutoff_chart {Y : ℝ} (hY : 2 < Y) (z : ℍ) :
     ∃ g : SL(2, ℤ), derivativeZ (complexCutoff Y) z =
       (denominator g z ^ 2)⁻¹ *
-        (-Complex.I * (deriv (taper Y) (g • z : ℍ).im : ℂ) / 2) := by
+        (-Complex.I * ((deriv (taper Y) (g • z : ℍ).im : ℝ) : ℂ) / 2) := by
   let A (w : ℂ) := (taper Y w.im : ℂ)
   have hY0 : 0 < Y := by linarith
   obtain ⟨g, hChart⟩ := cutoff_eventually_eq_chart (taper Y) hY
