@@ -16,14 +16,13 @@ open SplitClosedProetaleComplement (baseComplement chart_quasiCompact)
 open ProetaleBaseChange (directImage)
 
 noncomputable section
-universe v
 
 variable (K : Type) [Field K]
 
 theorem map_epi
-    {F G : Sheaf (Scheme.ProEt.topology (Spec (CommRingCat.of K))) AddCommGrpCat.{v}}
+    {F G : Sheaf (Scheme.ProEt.topology (Spec (CommRingCat.of K))) AddCommGrpCat.{1}}
     (a : F ⟶ G) [Epi a] :
-    Epi ((directImage (projectiveOrigin K) AddCommGrpCat.{v}).map a) := by
+    Epi ((directImage (projectiveOrigin K) AddCommGrpCat.{1}).map a) := by
   letI := projectiveOrigin_closed K
   have hOpen : baseComplement (projectiveOrigin K) = smoothOpen K := by
     apply SetLike.coe_injective

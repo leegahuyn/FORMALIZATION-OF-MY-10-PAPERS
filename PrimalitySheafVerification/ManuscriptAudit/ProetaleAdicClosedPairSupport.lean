@@ -60,7 +60,7 @@ private theorem section_value_zero {B : Scheme.{0}} (i : B ⟶ X)
 variable [IsClosedImmersion i₀] [IsClosedImmersion i₁]
 variable (j : U ⟶ X) [IsOpenImmersion j] [QuasiCompact j]
 
-private def restrictionIso (h : Set.range j = (Set.range i₀ ∪ Set.range i₁)ᶜ) :
+def restrictionIso (h : Set.range j = (Set.range i₀ ∪ Set.range i₁)ᶜ) :
     (restriction j A).obj (support i₀ i₁ ℓ) ≅ functions (M ℓ) U := by
   let R := restriction j A
   letI : R.IsRightAdjoint := (abelianExtensionByZeroAdjunction j).isRightAdjoint

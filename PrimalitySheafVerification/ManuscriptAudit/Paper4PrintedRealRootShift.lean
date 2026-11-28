@@ -30,16 +30,14 @@ theorem root_gt (A : ℝ) (hA : 0 ≤ A) (p : ℕ) (hp : 0 < p) :
     _ < printedRoot A p :=
       Real.rpow_lt_rpow (pow_nonneg hA _) (lt_add_of_pos_right _ hpR) (inv_pos.mpr hpR)
 
-/-- In the printed range the exact real root difference is positive and
-strictly smaller than 1/A^(p−1). -/
-theorem root_shift_bound (A : ℝ) (hA : 0 < A) (p : ℕ) (hp : 1 < p) :
-    0 < printedRoot A p - A ∧ printedRoot A p - A < 1 / A ^ (p - 1) := by
-  have hp₀ : 0 < p := Nat.zero_lt_of_lt hp
-  have hpR : 0 < (p : ℝ) := by exact_mod_cast hp₀
+/-- The exact shift is the inverse power at an intermediate point. -/
+theorem mean_value_power (A : ℝ) (hA : 0 < A) (p : ℕ) (hp : 0 < p) :
+    ∃ c ∈ Set.Ioo A (printedRoot A p),
+      printedRoot A p - A = 1 / c ^ (p - 1) := by
   let b := printedRoot A p
-  have hLess : A < b := root_gt A hA.le p hp₀
-  have hb : b ^ p = A ^ p + (p : ℝ) := root_pow A hA.le p hp₀
-  have h₀ : 0 < b - A := sub_pos.mpr hLess
+  have hLess : A < b := root_gt A hA.le p hp
+  have hpR : 0 < (p : ℝ) := by exact_mod_cast hp
+  have hb : b ^ p = A ^ p + (p : ℝ) := root_pow A hA.le p hp
   have hC : Continuous (fun x : ℝ ↦ x ^ p) := continuous_id.pow p
   have hD : Differentiable ℝ (fun x : ℝ ↦ x ^ p) := differentiable_id.pow p
   obtain ⟨c, hc, hm⟩ := exists_deriv_eq_slope (fun x : ℝ ↦ x ^ p) hLess
@@ -47,19 +45,26 @@ theorem root_shift_bound (A : ℝ) (hA : 0 < A) (p : ℕ) (hp : 1 < p) :
   have hnum : b ^ p - A ^ p = (p : ℝ) := by rw [hb] <;> ring
   have hSlope : (p : ℝ) * c ^ (p - 1) = (p : ℝ) / (b - A) := by
     simpa only [deriv_pow_field, hnum] using hm
-  have hProd : (p : ℝ) * c ^ (p - 1) * (b - A) = (p : ℝ) :=
-    (eq_div_iff h₀.ne').mp hSlope
+  have hPos : 0 < c := hA.trans hc.1
+  have ht : 0 < b - A := sub_pos.mpr hLess
+  have hProd : (p : ℝ) * (c ^ (p - 1) * (b - A)) = (p : ℝ) * 1 := by
+    rw [← mul_assoc, (eq_div_iff ht.ne').mp hSlope, mul_one]
+  have hScalar := mul_left_cancel₀ hpR.ne' hProd
+  refine ⟨c, hc, (eq_div_iff (pow_pos hPos _).ne').mpr ?_⟩
+  simpa only [mul_comm] using hScalar
+
+/-- In the printed range the exact real root difference is positive and
+strictly smaller than 1/A^(p−1). -/
+theorem root_shift_bound (A : ℝ) (hA : 0 < A) (p : ℕ) (hp : 1 < p) :
+    0 < printedRoot A p - A ∧ printedRoot A p - A < 1 / A ^ (p - 1) := by
+  have hp₀ : 0 < p := Nat.zero_lt_of_lt hp
+  obtain ⟨c, hc, ht⟩ := mean_value_power A hA p hp₀
   have he : 0 < ((p - 1 : ℕ) : ℝ) := by exact_mod_cast Nat.sub_pos_of_lt hp
   have hPow : A ^ (p - 1) < c ^ (p - 1) := by
     simpa only [Real.rpow_natCast] using Real.rpow_lt_rpow hA.le hc.1 he
-  have hMul : (p : ℝ) * (A ^ (p - 1) * (b - A)) < (p : ℝ) * 1 := by
-    calc
-      _ = ((p : ℝ) * A ^ (p - 1)) * (b - A) := (mul_assoc _ _ _).symm
-      _ < ((p : ℝ) * c ^ (p - 1)) * (b - A) :=
-        mul_lt_mul_of_pos_right (mul_lt_mul_of_pos_left hPow hpR) h₀
-      _ = (p : ℝ) * 1 := hProd.trans (mul_one _).symm
-  have hScaled : A ^ (p - 1) * (b - A) < 1 := (mul_lt_mul_left₀ hpR).mp hMul
-  exact ⟨h₀, (lt_div_iff₀ (pow_pos hA _)).mpr (by simpa only [mul_comm] using hScaled)⟩
+  refine ⟨sub_pos.mpr (root_gt A hA.le p hp₀), ?_⟩
+  rw [ht]
+  exact one_div_lt_one_div_of_lt (pow_pos hA _) hPow
 
 end
 end ManuscriptAudit.Paper4PrintedRealRootShift
@@ -67,6 +72,7 @@ end ManuscriptAudit.Paper4PrintedRealRootShift
 open Lean Elab Command in
 run_cmd do
   for name in [``ManuscriptAudit.Paper4PrintedRealRootShift.root_gt,
+      ``ManuscriptAudit.Paper4PrintedRealRootShift.mean_value_power,
       ``ManuscriptAudit.Paper4PrintedRealRootShift.root_shift_bound] do
     let ax ← collectAxioms name
     let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]

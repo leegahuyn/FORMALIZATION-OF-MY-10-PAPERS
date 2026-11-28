@@ -7,7 +7,7 @@ import PrimalitySheafVerification.ManuscriptAudit.CuspRelativePowerMap
 namespace ManuscriptAudit.CuspRelativePowerOpenRanges
 
 open AlgebraicGeometry CategoryTheory CategoryTheory.Limits HomogeneousLocalization
-open CuspPunctured (CuspSubalgebra)
+open CuspPunctured (CuspSubalgebra cuspSquare)
 open CuspProperCompactification
 open CuspProperYChart (lineOpen yOpen lineOpen_range lineOpen_preimage_affine affine_chart_cover)
 open CuspRelativePowerCoordinates (cuspPower)
@@ -53,6 +53,20 @@ theorem affine_preimage_line :
     Proj.awayι_preimage_basicOpen (𝒜 := standardPlaneGrading K) (standardPlane_X_mem_one K 2)
       (by decide) (standardPlane_X_mem_one K 1) (by decide), SpecMap_preimage_basicOpen]
   exact congrArg PrimeSpectrum.basicOpen (eval_y_over_z K)
+
+/-- Inverting the cube gives the same actual principal cusp open as inverting the square. -/
+theorem affine_preimage_line_square :
+    (j K) ⁻¹ᵁ (k K).opensRange = PrimeSpectrum.basicOpen (cuspSquare K) := by
+  rw [affine_preimage_line]
+  have h : (cuspCube K) ^ 2 = (cuspSquare K) ^ 3 := by
+    apply Subtype.ext
+    change ((Polynomial.X : Polynomial K) ^ 3) ^ 2 = ((Polynomial.X : Polynomial K) ^ 2) ^ 3
+    rw [← pow_mul, ← pow_mul] <;> rfl
+  calc
+    _ = PrimeSpectrum.basicOpen ((cuspCube K) ^ 2) :=
+      (PrimeSpectrum.basicOpen_pow _ _ (by decide)).symm
+    _ = PrimeSpectrum.basicOpen ((cuspSquare K) ^ 3) := congrArg PrimeSpectrum.basicOpen h
+    _ = _ := PrimeSpectrum.basicOpen_pow _ _ (by decide)
 
 private theorem power_cube (m : ℕ) (hm : 2 ≤ m) :
     cuspPower K m hm (cuspCube K) = (cuspCube K) ^ m := by

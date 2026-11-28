@@ -57,6 +57,11 @@ def reindexIso (H : IsPullback p q f j) :
       (reindex_square H W).isoPullback_hom_snd]
     simp only [baseChange, MorphismProperty.Over.pullback_map_left, pullback.lift_snd_assoc]
 
+/-- The comparison preserves the first projection to the original chart. -/
+theorem reindexIso_hom_fst (H : IsPullback p q f j) (W : U.ProEt) :
+    ((reindexIso H).hom.app W).left ≫ pullback.fst (W.hom ≫ j) f = pullback.fst W.hom q :=
+  (reindex_square H W).isoPullback_hom_fst
+
 private abbrev A := AddCommGrpCat.{v}
 
 /-- A natural comparison of the actual direct images and weakly étale restrictions. -/
@@ -83,6 +88,25 @@ def directImageRestrictionIso (H : IsPullback p q f j) :
       M.obj.map (θ.hom.app D) ≫ g.hom.app ((F'.op ⋙ G'.op).obj D)
     exact (g.hom.naturality (θ.hom.app D)).symm
 
+set_option maxHeartbeats 4900000 in
+/-- The literal component is restriction along the actual pasted comparison. -/
+theorem directImageRestrictionIso_hom_app_app (H : IsPullback p q f j)
+    (M : Sheaf (Scheme.ProEt.topology Y) A.{v}) (W : U.ProEt) :
+    ((directImageRestrictionIso H).hom.app M).hom.app (op W) =
+      M.obj.map ((reindexIso H).hom.app W).op := by
+  let F := proetalePostcompose j
+  let G := baseChange f
+  let F' := baseChange q
+  let G' := proetalePostcompose p
+  let θ : F.op ⋙ G.op ≅ F'.op ⋙ G'.op :=
+    (CategoryTheory.Functor.opComp _ _).symm ≪≫ CategoryTheory.NatIso.op (reindexIso H) ≪≫
+      CategoryTheory.Functor.opComp _ _
+  have hθ : θ.hom.app (op W) = ((reindexIso H).hom.app W).op := by
+    change 𝟙 _ ≫ (((reindexIso H).hom.app W).op ≫ 𝟙 _) = _
+    rw [Category.id_comp, Category.comp_id]
+  change 𝟙 _ ≫ (M.obj.map (θ.hom.app (op W)) ≫ 𝟙 _) = _
+  rw [Category.id_comp, Category.comp_id, hθ]
+
 end
 end ManuscriptAudit.ProetaleDirectImageRestrictionPullback
 
@@ -90,7 +114,8 @@ open Lean Elab Command in
 run_cmd do
   let allowed : List Name := [``propext, ``Classical.choice, ``Quot.sound]
   for name in [``ManuscriptAudit.ProetaleDirectImageRestrictionPullback.reindexIso,
-      ``ManuscriptAudit.ProetaleDirectImageRestrictionPullback.directImageRestrictionIso] do
+      ``ManuscriptAudit.ProetaleDirectImageRestrictionPullback.directImageRestrictionIso,
+      ``ManuscriptAudit.ProetaleDirectImageRestrictionPullback.directImageRestrictionIso_hom_app_app] do
     let dependencies ← collectAxioms name
     let unexpected := dependencies.filter fun axiomName => !allowed.contains axiomName
     unless unexpected.isEmpty do

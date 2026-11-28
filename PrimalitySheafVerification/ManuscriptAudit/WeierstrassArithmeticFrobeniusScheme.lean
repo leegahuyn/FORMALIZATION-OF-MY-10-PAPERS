@@ -36,7 +36,8 @@ theorem fieldFrobenius_toRingHom :
 
 variable (W : WeierstrassCurve.Affine k)
 
-private abbrev V := W.baseChange K
+private abbrev V {k : Type} [Field k] (K : Type) [Field K] [Algebra k K]
+    (W : WeierstrassCurve.Affine k) := W.baseChange K
 private abbrev e := fieldFrobenius k K
 
 private theorem coefficients_fixed : (V K W).map (e k K).toRingHom = V K W := by

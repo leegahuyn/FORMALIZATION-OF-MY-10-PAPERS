@@ -87,8 +87,10 @@ private theorem picardClassOfLift_add :
   unfold picardClassOfLift
   let t := transition R B ι x y hy
   let s := transition R B ι x' y' hy'
-  exact (cocycleClass_congr R B _ (mul_isCocycle R B t s _ _) (transition_add R ι B x x' y y' hy hy')).trans
-    (picardClass_mul R B t s _ _)
+  let ht := transition_isCocycle R B ι x y hy
+  let hs := transition_isCocycle R B ι x' y' hy'
+  exact (cocycleClass_congr R B _ (mul_isCocycle R B t s ht hs)
+    (transition_add R ι B x x' y y' hy hy')).trans (picardClass_mul R B t s ht hs)
 
 end Local
 
@@ -125,8 +127,11 @@ theorem toPicard_add (h k : Sheaf.H (G R) 1) :
     { coverRing := D, commRing := inferInstance, algebra := inferInstance, etale := inferInstance,
       faithfullyFlat := inferInstance, value := w, lifts := hw }
   have hsum : connectingSection ι (terminal R) (x + x') = h + k := by
-    simp only [connectingSection, map_add] at hx hx' ⊢
-    rw [hx, hx']
+    calc
+      _ = connectingSection ι (terminal R) x + connectingSection ι (terminal R) x' := by
+        unfold connectingSection
+        rw [(Sheaf.H.equiv₀ (cokernel ι) (terminal R)).symm.map_add, map_add]
+      _ = _ := congrArg₂ (· + ·) hx hx'
   rw [toPicard_of_representative R ι (x + x') (h + k)
         (tc (x + x') (yl + yr) (lift_add R ι D x x' yl yr hl hr)) hsum,
     toPicard_of_representative R ι x h (tc x yl hl) hx,

@@ -15,13 +15,13 @@ noncomputable section
 variable {K : Type*} [Field K] [DecidableEq K]
 variable (W : WeierstrassCurve.Affine K) [IsDedekindDomain W.CoordinateRing]
 
-private def pointIdeal {x y : K} (h : W.Nonsingular x y) : (Ideal W.CoordinateRing)⁰ :=
+def pointIdeal {x y : K} (h : W.Nonsingular x y) : (Ideal W.CoordinateRing)⁰ :=
   ⟨CoordinateRing.XYIdeal W x (C y), mem_nonZeroDivisors_iff_ne_zero.mpr (by
     intro hI
     apply (CoordinateRing.XYIdeal' h).ne_zero
     rw [CoordinateRing.XYIdeal'_eq, hI] <;> rfl)⟩
 
-private theorem classSome {x y : K} (h : W.Nonsingular x y) :
+theorem classSome {x y : K} (h : W.Nonsingular x y) :
     (Point.toClass (Point.some x y h)).toMul = ClassGroup.mk0 (pointIdeal W h) := by
   change ClassGroup.mk W.FunctionField (CoordinateRing.XYIdeal' h) = _
   rw [← ClassGroup.mk_mk0 (K := W.FunctionField)]

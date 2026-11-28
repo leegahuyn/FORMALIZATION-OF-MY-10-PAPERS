@@ -18,10 +18,13 @@ attribute [local instance] GeometricSkyscraperCohomology.etaleSiteHasExt
 variable (k K : Type) [Field k] [Fintype k] [Field K] [Algebra k K] [IsAlgClosed K]
 variable (W : WeierstrassCurve.Affine k)
 
-private abbrev X := projectiveScheme (W.baseChange K)
-private abbrev U := affineScheme (W.baseChange K)
+private abbrev X {k : Type} [Field k] (K : Type) [Field K] [Algebra k K]
+    (W : WeierstrassCurve.Affine k) := projectiveScheme (W.baseChange K)
+private abbrev U {k : Type} [Field k] (K : Type) [Field K] [Algebra k K]
+    (W : WeierstrassCurve.Affine k) := affineScheme (W.baseChange K)
 private abbrev G (Y : Scheme.{0}) := Sheaf.H (fullCoordinateUnitSheaf Y) 1
-private abbrev j := affineOpen (W.baseChange K)
+private abbrev j {k : Type} [Field k] (K : Type) [Field K] [Algebra k K]
+    (W : WeierstrassCurve.Affine k) := affineOpen (W.baseChange K)
 
 /-- Pullback by the genuine projective Frobenius, calculated on actual
 injective representatives in the small étale site. -/

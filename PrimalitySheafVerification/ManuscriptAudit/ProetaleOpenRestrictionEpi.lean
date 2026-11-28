@@ -1,4 +1,7 @@
 import Lean.Util.CollectAxioms
+import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
+import Mathlib.CategoryTheory.Sites.EpiMono
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import PrimalitySheafVerification.ManuscriptAudit.ProetaleRestrictionLocalLift
 
 /-! Epimorphism of a native pro-étale sheaf map is local for an actual
@@ -12,11 +15,11 @@ open ProetaleBaseChange (baseChange)
 open ProetaleObjectRestriction (restriction)
 
 noncomputable section
-universe u v
+universe u
 
 variable {X : Scheme.{u}} (C : X.OpenCover)
-private abbrev A := AddCommGrpCat.{v}
-private abbrev H := Sheaf (Scheme.ProEt.topology X) A.{v}
+private abbrev A := AddCommGrpCat.{u+1}
+private abbrev H := Sheaf (Scheme.ProEt.topology X) A.{u}
 
 private abbrev chart (U : X.ProEt) (i : C.I₀) : X.ProEt :=
   (proetalePostcompose (C.f i)).obj ((baseChange (C.f i)).obj U)
@@ -44,8 +47,8 @@ private theorem charts_cover (U : X.ProEt) :
     infer_instance
 
 /-- Epi on each genuine open restriction implies epi on the actual site. -/
-theorem epi_of_openCover {F G : H.{u,v}} (α : F ⟶ G)
-    (h : ∀ i, Epi ((restriction (C.f i) A.{v}).map α)) : Epi α := by
+theorem epi_of_openCover {F G : H.{u}} (α : F ⟶ G)
+    (h : ∀ i, Epi ((restriction (C.f i) A.{u}).map α)) : Epi α := by
   have hl : Sheaf.IsLocallySurjective α := by
     constructor
     intro U s
@@ -55,8 +58,8 @@ theorem epi_of_openCover {F G : H.{u,v}} (α : F ⟶ G)
     obtain ⟨i, t, rfl⟩ := (Sieve.mem_ofArrows_iff (chart C U) (arrow C U) g).mp hg
     rw [Sieve.pullback_comp]
     apply (Scheme.ProEt.topology X).pullback_stable t
-    letI : Sheaf.IsLocallySurjective ((restriction (C.f i) A.{v}).map α) :=
-      (Sheaf.isLocallySurjective_iff_epi' A.{v} _).mpr (h i)
+    letI : Sheaf.IsLocallySurjective ((restriction (C.f i) A.{u}).map α) :=
+      (Sheaf.isLocallySurjective_iff_epi' A.{u} _).mpr (h i)
     exact ProetaleRestrictionLocalLift.covering_on_restriction (C.f i) (arrow C U i) α s
   letI := hl
   exact Sheaf.epi_of_isLocallySurjective α
